@@ -1,7 +1,11 @@
+import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
+
 
 export const Employees = () => {
     return (
-        <NavBar />
+        <div>
+            <NavBar />
+        </div>
     );
 }
