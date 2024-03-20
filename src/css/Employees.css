@@ -1,0 +1,112 @@
+table {
+    width: 75%;
+    border-collapse: collapse;
+    margin: 10px;
+    margin-top: 80px;
+    font-size: 0.8em;
+    table-layout: fixed;
+    word-wrap: break-word;
+    float: right;
+}
+
+.table-container {
+    position: relative;
+}
+
+th,
+td {
+    border: 1px solid #000;
+    padding: 4px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 20%;
+    height: 50px;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
+
+button {
+    position: absolute;
+    top: 80px;
+    left: 480px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 10px;
+    font-size: 1em;
+    border: none;
+    background-color: #6495ed;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-button {
+    position: absolute;
+    top: 95px;
+    left: 480px;
+}
+
+.refresh-button {
+    position: absolute;
+    top: 95px;
+    left: 530px;
+}
+
+button:hover {
+    background-color: #395c9c;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
