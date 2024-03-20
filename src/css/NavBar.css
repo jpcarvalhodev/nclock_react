@@ -1,0 +1,149 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: #6495ed;
+}
+
+.navbar-container {
+    display: flex;
+    width: 100%;
+}
+
+.navbar-brand {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    margin-left: 100px;
+}
+
+.nav li {
+    margin: 0 1rem;
+}
+
+.nav li a {
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.nav .dropdown .dropdown-content a {
+    display: block;
+    color: #6495ed;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 12px 16px;
+    z-index: 1;
+}
+
+.dropdown-content .dropdown {
+    visibility: hidden;
+    position: absolute;
+    left: 100%;
+    top: 0;
+}
+
+.dropdown-content .dropdown a {
+    display: block;
+}
+
+.dropdown-content a:hover+.dropdown,
+.dropdown-content a:focus+.dropdown {
+    visibility: visible;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.navbar-icons {
+    margin-left: 900px;
+    display: flex;
+    gap: 20px;
+    color: white
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 12px 16px;
+    z-index: 1;
+    right: 0;
+    left: auto;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-content:last-of-type {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 12px 16px;
+    z-index: 1;
+}
+
+.dropdown-content:last-of-type:hover {
+    display: block;
+}
+
+.dropdown-content:last-of-type a {
+    display: block;
+}
+
+.dropdown-content:last-of-type a:hover {
+    background-color: #ddd;
+}
+
+
+.dropdown-content:last-of-type {
+    transition: none;
+}
+
+.profile-avatar {
+    height: 50px;
+    width: 50px;
+    margin-bottom: 10px;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.username-style{
+    color: black;
+    margin-bottom: 30px;
+}
+
+email-style{
+    color: black;
+    margin-bottom: 30px;
+}
+

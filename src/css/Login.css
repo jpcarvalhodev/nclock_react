@@ -1,0 +1,93 @@
+.background-login {
+    background-image: url(/public/bg_login.jpg);
+    background-size: cover;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    padding: 50px;
+    border-radius: 10px;
+}
+
+.form-login input[type="text"], .form-login input[type="password"] {
+    margin: 15px;
+    padding: 10px;
+    width: 200px;
+}
+
+.form-login input[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 20px;
+}
+
+.username-password-labels{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.username-label {
+    margin-top: 20px;
+    margin-right: 30px;
+}
+
+.password-label {
+    margin-bottom: 20px;
+}
+
+.remember_me-label {
+    margin-bottom: 20px;
+}
+
+.message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+  }
+
+@media screen and (max-width: 900px) {
+    .form-login input[type="username"], .form-login input[type="submit"] {
+        width: 80%;
+    }
+    
+    .form-login {
+        margin: 10px;
+    }
+
+    .logo-login {
+        width: 150px;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    .form-login {
+        margin-right: 0;
+        font-size: 12px;
+    }
+
+    .form-login input[type="submit"] {
+        width: 100%;
+    }
+
+    .logo-login {
+        width: 120px;
+    }
+}
