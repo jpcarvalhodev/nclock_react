@@ -8,6 +8,7 @@
 .navbar-container {
     display: flex;
     width: 100%;
+    align-items: center;
 }
 
 .navbar-brand {
@@ -78,7 +79,8 @@
     margin-left: 900px;
     display: flex;
     gap: 20px;
-    color: white
+    color: white;
+    align-items: center;
 }
 
 .dropdown-menu {
@@ -146,4 +148,3 @@ email-style{
     color: black;
     margin-bottom: 30px;
 }
-
