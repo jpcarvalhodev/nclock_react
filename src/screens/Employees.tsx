@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
 import '../css/Employees.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faSync } from '@fortawesome/free-solid-svg-icons';
 import profileAvatar from '../assets/img/profileAvatar.png';
+import { EmployeeModal } from "../Modals/EmployeeModal";
+import IconButton from '@mui/material/IconButton';
+import { PersonAdd, Refresh } from '@mui/icons-material';
 
 type Employee = {
     id: number;
@@ -42,40 +43,8 @@ type Employee = {
 
 export const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const [showModal, setShowModal] = useState(false);
-    const [newEmployeeData, setNewEmployeeData] = useState<Employee>({
-        id: 0,
-        number: '',
-        name: '',
-        shortName: '',
-        nameAcronym: '',
-        comments: '',
-        photo: '',
-        address: '',
-        zipcode: '',
-        locality: '',
-        village: '',
-        district: '',
-        phone: '',
-        mobile: '',
-        email: '',
-        birthday: '',
-        nacionality: '',
-        gender: '',
-        biNumber: '',
-        biIssuance: '',
-        biValidity: '',
-        nif: '',
-        admissionDate: '',
-        exitDate: '',
-        rgpdAut: '',
-        departmentId: 0,
-        professionId: 0,
-        categoryId: 0,
-        groupId: 0,
-        zoneId: 0,
-        externalEntityId: 0,
-    });
+    const [open, setOpen] = useState(false);
+    
 
     const fetchEmployees = () => {
         const token = localStorage.getItem('token');
@@ -101,145 +70,33 @@ export const Employees = () => {
         fetchEmployees();
     }, []);
 
-    const addEmployee = () => {
-        const token = localStorage.getItem('token');
-
-        fetch('https://localhost:7129/api/Employees', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newEmployeeData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao adicionar novo funcionário');
-                }
-                fetchEmployees();
-                setShowModal(false);
-            })
-            .catch(error => console.error('Erro ao adicionar funcionário:', error));
-    };
+    
 
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
-    const handleModalOpen = () => {
-        setNewEmployeeData({
-            id: 0,
-            number: '',
-            name: '',
-            shortName: '',
-            nameAcronym: '',
-            comments: '',
-            photo: '',
-            address: '',
-            zipcode: '',
-            locality: '',
-            village: '',
-            district: '',
-            phone: '',
-            mobile: '',
-            email: '',
-            birthday: '',
-            nacionality: '',
-            gender: '',
-            biNumber: '',
-            biIssuance: '',
-            biValidity: '',
-            nif: '',
-            admissionDate: '',
-            exitDate: '',
-            rgpdAut: '',
-            departmentId: 0,
-            professionId: 0,
-            categoryId: 0,
-            groupId: 0,
-            zoneId: 0,
-            externalEntityId: 0,
-        });
-        setShowModal(true);
+    const handleOpen = () => {
+        setOpen(true);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
     };
-    const handleModalClose = () => {
-        setShowModal(false);
-    };
+
 
     return (
         <div>
             <NavBar />
-            <button className='refresh-button' onClick={refreshEmployees}><FontAwesomeIcon icon={faSync} /></button>
-            <button className='add-button' onClick={handleModalOpen}><FontAwesomeIcon icon={faPlus} /></button>
-            <div className={`modal ${showModal ? 'show' : ''}`}>
-                <div className="modal-content">
-                    <span className="close" onClick={handleModalClose}>&times;</span>
-                    <h2>Add Employee</h2>
-                    <form onSubmit={addEmployee}>
-                        <label htmlFor="number">Number:</label>
-                        <input type="text" id="number" name="number" onChange={e => setNewEmployeeData({ ...newEmployeeData, number: e.target.value })} required />
-                        <label htmlFor="name">Name:</label>
-                        <input type="text" id="name" name="name" onChange={e => setNewEmployeeData({ ...newEmployeeData, name: e.target.value })} required />
-                        <label htmlFor="shortName">Short Name:</label>
-                        <input type="text" id="shortName" name="shortName" onChange={e => setNewEmployeeData({ ...newEmployeeData, shortName: e.target.value })} required />
-                        <label htmlFor="nameAcronym">Name Acronym:</label>
-                        <input type="text" id="nameAcronym" name="nameAcronym" onChange={e => setNewEmployeeData({ ...newEmployeeData, nameAcronym: e.target.value })} required />
-                        <label htmlFor="comments">Comments:</label>
-                        <input type="text" id="comments" name="comments" onChange={e => setNewEmployeeData({ ...newEmployeeData, comments: e.target.value })} />
-                        <label htmlFor="photo">Photo:</label>
-                        <input type="text" id="photo" name="photo" onChange={e => setNewEmployeeData({ ...newEmployeeData, photo: e.target.value })} />
-                        <label htmlFor="address">Address:</label>
-                        <input type="text" id="address" name="address" onChange={e => setNewEmployeeData({ ...newEmployeeData, address: e.target.value })} />
-                        <label htmlFor="zipcode">ZIP code:</label>
-                        <input type="text" id="zipcode" name="zipcode" onChange={e => setNewEmployeeData({ ...newEmployeeData, zipcode: e.target.value })} />
-                        <label htmlFor="locality">Locality:</label>
-                        <input type="text" id="locality" name="locality" onChange={e => setNewEmployeeData({ ...newEmployeeData, locality: e.target.value })} />
-                        <label htmlFor="village">Village:</label>
-                        <input type="text" id="village" name="village" onChange={e => setNewEmployeeData({ ...newEmployeeData, village: e.target.value })} />
-                        <label htmlFor="district">District:</label>
-                        <input type="text" id="district" name="district" onChange={e => setNewEmployeeData({ ...newEmployeeData, district: e.target.value })} />
-                        <label htmlFor="phone">Phone:</label>
-                        <input type="text" id="phone" name="phone" onChange={e => setNewEmployeeData({ ...newEmployeeData, phone: e.target.value })} />
-                        <label htmlFor="mobile">Mobile:</label>
-                        <input type="text" id="mobile" name="mobile" onChange={e => setNewEmployeeData({ ...newEmployeeData, mobile: e.target.value })} />
-                        <label htmlFor="email">Email:</label>
-                        <input type="text" id="email" name="email" onChange={e => setNewEmployeeData({ ...newEmployeeData, email: e.target.value })} />
-                        <label htmlFor="birthday">Birthday:</label>
-                        <input type="text" id="birthday" name="birthday" onChange={e => setNewEmployeeData({ ...newEmployeeData, birthday: e.target.value })} />
-                        <label htmlFor="nacionality">Nacionality:</label>
-                        <input type="text" id="nacionality" name="nacionality" onChange={e => setNewEmployeeData({ ...newEmployeeData, nacionality: e.target.value })} />
-                        <label htmlFor="gender">Gender:</label>
-                        <input type="text" id="gender" name="gender" onChange={e => setNewEmployeeData({ ...newEmployeeData, gender: e.target.value })} />
-                        <label htmlFor="biNumber">BI Number:</label>
-                        <input type="text" id="biNumber" name="biNumber" onChange={e => setNewEmployeeData({ ...newEmployeeData, biNumber: e.target.value })} />
-                        <label htmlFor="biIssuance">BI Issuance:</label>
-                        <input type="text" id="biIssuance" name="biIssuance" onChange={e => setNewEmployeeData({ ...newEmployeeData, biIssuance: e.target.value })} />
-                        <label htmlFor="biValidity">BI Validity:</label>
-                        <input type="text" id="biValidity" name="biValidity" onChange={e => setNewEmployeeData({ ...newEmployeeData, biValidity: e.target.value })} />
-                        <label htmlFor="nif">NIF:</label>
-                        <input type="text" id="nif" name="nif" onChange={e => setNewEmployeeData({ ...newEmployeeData, nif: e.target.value })} />
-                        <label htmlFor="admissionDate">Admission Date:</label>
-                        <input type="text" id="admissionDate" name="admissionDate" onChange={e => setNewEmployeeData({ ...newEmployeeData, admissionDate: e.target.value })} />
-                        <label htmlFor="exitDate">Exit Date:</label>
-                        <input type="text" id="exitDate" name="exitDate" onChange={e => setNewEmployeeData({ ...newEmployeeData, exitDate: e.target.value })} />
-                        <label htmlFor="rgpdAut">RGPD Authorization:</label>
-                        <input type="text" id="rgpdAut" name="rgpdAut" onChange={e => setNewEmployeeData({ ...newEmployeeData, rgpdAut: e.target.value })} />
-                        <label htmlFor="departmentId">Department ID:</label>
-                        <input type="number" id="departmentId" name="departmentId" onChange={e => setNewEmployeeData({ ...newEmployeeData, departmentId: parseInt(e.target.value) })} />
-                        <label htmlFor="professionId">Profession ID:</label>
-                        <input type="number" id="professionId" name="professionId" onChange={e => setNewEmployeeData({ ...newEmployeeData, professionId: parseInt(e.target.value) })} />
-                        <label htmlFor="categoryId">Category ID:</label>
-                        <input type="number" id="categoryId" name="categoryId" onChange={e => setNewEmployeeData({ ...newEmployeeData, categoryId: parseInt(e.target.value) })} />
-                        <label htmlFor="groupId">Group ID:</label>
-                        <input type="number" id="groupId" name="groupId" onChange={e => setNewEmployeeData({ ...newEmployeeData, groupId: parseInt(e.target.value) })} />
-                        <label htmlFor="zoneId">Zone ID:</label>
-                        <input type="number" id="zoneId" name="zoneId" onChange={e => setNewEmployeeData({ ...newEmployeeData, zoneId: parseInt(e.target.value) })} />
-                        <label htmlFor="externalEntityId">External Entity ID:</label>
-                        <input type="number" id="externalEntityId" name="externalEntityId" onChange={e => setNewEmployeeData({ ...newEmployeeData, externalEntityId: parseInt(e.target.value) })} />
-                        <button type="submit">Add Employee</button>
-                    </form>
-                </div >
-            </div >
+            <div>
+            <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshEmployees}>
+                <Refresh />
+            </IconButton>
+            <IconButton className='add-button'  color="primary" aria-label="add-employee" onClick={handleOpen}>
+                <PersonAdd />
+            </IconButton>
+            <EmployeeModal open={open} onClose={handleClose} />
+            </div>
             <div className="table-container">
                 <table>
                     <div className="employees-content">
