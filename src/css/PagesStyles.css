@@ -1,0 +1,50 @@
+.grid-table {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 10px;
+    padding: 20px;
+}
+
+.avatar-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.grid-name {
+    padding-left: 10px
+}
+
+img{
+    max-height: 50px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.add-button:hover,
+.refresh-button:hover {
+    background-color: #6495ed;
+}
+
+.add-button {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    size: 20px;
+}
+
+.refresh-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    size: 20px;
+}

@@ -1,39 +1,39 @@
-import React, { useState } from "react";
+import { useState } from 'react';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 type FilterProps = {
-    number: string;
-    name: string;
-    shortName: string;
-    nameAcronym: string;
-};
+    filters: { value: string; label: string }[];
+    handleFilterSelection: (value: string) => void;
+  };
 
-type FilterComponentProps = {
-    filters: FilterProps;
-};
+export const Filter = ({ filters, handleFilterSelection }: FilterProps) => {
+  const [selectedFilter, setSelectedFilter] = useState('');
 
-export const Filter: React.FC<FilterComponentProps> = ({ filters }) => {
-    const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const handleChange = (event: any) => {
+    const { value } = event.target;
+    setSelectedFilter(value);
+    handleFilterSelection(value);
+  };
 
-    const handleFilterSelection = (filter: string) => {
-        if (selectedFilters.includes(filter)) {
-            setSelectedFilters(selectedFilters.filter((selected) => selected !== filter));
-        } else {
-            setSelectedFilters([...selectedFilters, filter]);
-        }
-    };
-
-    return (
-        <div>
-            {Object.keys(filters).map((filterKey) => (
-                <label key={filterKey}>
-                    <input
-                        type="checkbox"
-                        checked={selectedFilters.includes(filterKey)}
-                        onChange={() => handleFilterSelection(filterKey)}
-                    />
-                    {filterKey}
-                </label>
-            ))}
-        </div>
-    );
+  return (
+    <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+      <InputLabel id="filter-label">Filter</InputLabel>
+      <Select
+        labelId="filter-label"
+        id="filter-select"
+        value={selectedFilter}
+        onChange={handleChange}
+        label="Filter"
+      >
+        <MenuItem value="">
+          <em>None</em>
+        </MenuItem>
+        {filters.map((filter) => (
+          <MenuItem key={filter.value} value={filter.value}>
+            {filter.label}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
 };
