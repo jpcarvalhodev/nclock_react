@@ -1,12 +1,20 @@
 import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import CloseIcon from '@mui/icons-material/Close';
-import { ForwardedRef, forwardRef, useState } from 'react';
+import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
 import React from 'react';
+
+type Profession = {
+    id: string,
+    code: number,
+    description: string,
+    acronym: string,
+};
 
 interface ProfessionModalProps {
     open: boolean;
     onClose: () => void;
+    profession: Profession | null;
 }
 
 interface NewProfessionData {
@@ -29,41 +37,75 @@ const fields = [
     { key: 'acronym', label: 'Acronym' },
 ];
 
-export default function ProfessionModal({ open, onClose }: ProfessionModalProps) {
+export default function ProfessionModal({ open, onClose, profession }: ProfessionModalProps) {
     const [newProfessionData, setNewProfessionData] = useState<NewProfessionData>({
         code: 0,
         description: '',
         acronym: '',
     });
 
-    const addProfession = () => {
-        const token = localStorage.getItem('token');
+    const handleSubmit = () => {
+        if (profession) {
+            const token = localStorage.getItem('token');
 
-        fetch('https://localhost:7129/api/Professions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newProfessionData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error adding profession');
-                }
-
-                setNewProfessionData({
-                    code: 0,
-                    description: '',
-                    acronym: '',
-                });
-
+            fetch(`https://localhost:7129/api/Professions/${profession.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newProfessionData)
             })
-            .catch(error => console.error('Error adding profession:', error));
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error updating profession');
+                    }
+
+                    setNewProfessionData({
+                        code: 0,
+                        description: '',
+                        acronym: '',
+
+                    });
+
+                })
+                .catch(error => console.error('Error updating profession:', error));
+        } else {
+            const token = localStorage.getItem('token');
+
+            fetch('https://localhost:7129/api/Groups', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newProfessionData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error adding new profession');
+                    }
+
+                    setNewProfessionData({
+                        code: 0,
+                        description: '',
+                        acronym: '',
+
+                    });
+
+                })
+                .catch(error => console.error('Error adding new profession:', error));
+        }
     };
 
+    useEffect(() => {
+        if (profession) {
+            setNewProfessionData(profession);
+        }
+    }, [profession]);
+
     const handleClose = () => {
-        addProfession();
+        handleSubmit();
         onClose();
     };
 

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Typography, Avatar } from "@mui/material";
-import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon, Edit, Delete } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import CategoriesModal from "../Modals/CategoriesModal";
 
-type Category = {
+export type Category = {
     id: string,
     code: number,
     description: string,
@@ -16,6 +16,7 @@ type Category = {
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [open, setOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
     const fetchCategories = () => {
         const token = localStorage.getItem('token');
@@ -39,6 +40,23 @@ export const Categories = () => {
             .catch(error => console.error('Error fetching the categories', error));
     };
 
+    const deleteCategory = (id: string) => {
+        fetch(`https://localhost:7129/api/Categories/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error deleting category');
+                }
+                refreshCategories();
+            })
+            .catch(error => console.error(error));
+    };
+
     useEffect(() => {
         fetchCategories();
     }, []);
@@ -55,6 +73,11 @@ export const Categories = () => {
         setOpen(false);
     };
 
+    const handleOpenUpdateModal = (category: Category) => {
+        setSelectedCategory(category);
+        setOpen(true);
+    };
+
     return (
         <div>
             <NavBar />
@@ -65,7 +88,7 @@ export const Categories = () => {
                 <IconButton className='add-button' color="primary" aria-label="add-category" onClick={handleOpen}>
                     <PersonAdd />
                 </IconButton>
-                <CategoriesModal open={open} onClose={handleClose} />
+                <CategoriesModal open={open} onClose={handleClose} category={selectedCategory} />
             </div>
             <div>
                 <Grid className='grid-table' container spacing={3}>
@@ -77,9 +100,9 @@ export const Categories = () => {
                                     aria-controls={`panel${index}-content`}
                                     id={`panel${index}-header`}
                                 >
-                                <div className='avatar-name'>
-                                    <Typography className='grid-name'>{category.description}</Typography>
-                                </div>
+                                    <div className='avatar-name'>
+                                        <Typography className='grid-name'>{category.description}</Typography>
+                                    </div>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Grid container spacing={3}>
@@ -90,6 +113,12 @@ export const Categories = () => {
                                         </Grid>
                                     </Grid>
                                 </AccordionDetails>
+                                <IconButton color="primary" aria-label="update-category" onClick={() => handleOpenUpdateModal(category)}>
+                                    <Edit />
+                                </IconButton>
+                                <IconButton className='delete-button' color="primary" aria-label="delete-category" onClick={() => deleteCategory(category.id)}>
+                                    <Delete />
+                                </IconButton>
                             </Accordion>
                         </Grid>
                     ))}

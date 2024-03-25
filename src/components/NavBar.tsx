@@ -11,16 +11,20 @@ import '../css/NavBar.css';
 import profileAvatar from '../assets/img/profileAvatar.png';
 import { Box, Menu } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
 
-const pages = ['Categories', 'Departments', 'Employees', 'External Entities', 'Groups', 'Professions', 'Zones'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['Categories', 'Departments', 'Employees', 'ExternalEntities', 'Groups', 'Professions', 'Zones'];
+
+const formatPageName = (page: string) => {
+    return page.replace(/([A-Z])/g, ' $1').trim();
+};
 
 export const NavBar = () => {
     const navigate = useNavigate();
     const handleNavigation = (page: string) => {
         navigate(`/${page}`);
     };
-
+    const [user, setUser] = useState({ name: '', email: '' });
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -44,6 +48,26 @@ export const NavBar = () => {
         localStorage.removeItem('username');
         navigate('/');
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await fetch('', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error fetching user data: ${response.status}`);
+            }
+
+            const userData = await response.json();
+            setUser(userData);
+        };
+
+        fetchData();
+    }, []);
 
     const theme = useTheme();
     return (
@@ -90,7 +114,7 @@ export const NavBar = () => {
                         >
                             {pages.map((page) => (
                                 <Button key={page} onClick={() => handleNavigation(page)}>
-                                    {page}
+                                    {formatPageName(page)}
                                 </Button>
                             ))}
                         </Menu>
@@ -99,7 +123,7 @@ export const NavBar = () => {
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <Button key={page} onClick={() => handleNavigation(page)} sx={{ my: 2, color: 'white', display: 'block' }}>
-                                {page}
+                                {formatPageName(page)}
                             </Button>
                         ))}
                     </Box>
@@ -114,11 +138,9 @@ export const NavBar = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
-                                <Button key={setting} onClick={handleLogout}>
-                                    {setting}
-                                </Button>
-                            ))}
+                            <Typography variant="subtitle1">{user.name}</Typography>
+                            <Typography variant="subtitle2">{user.email}</Typography>
+                            <Button onClick={handleLogout}>Logout</Button>
                         </Menu>
                     </Box>
                 </Toolbar>

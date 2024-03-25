@@ -1,12 +1,21 @@
 import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import CloseIcon from '@mui/icons-material/Close';
-import { ForwardedRef, forwardRef, useState } from 'react';
+import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
 import React from 'react';
+
+type Department = {
+    id: string,
+    code: number,
+    name: string,
+    description: string,
+    paiId: number,
+};
 
 interface DepartmentModalProps {
     open: boolean;
     onClose: () => void;
+    department: Department | null;
 }
 
 interface NewDepartmentData {
@@ -31,7 +40,7 @@ const fields = [
     { key: 'paiId', label: 'Parent Department ID', type: 'number' },
 ];
 
-export default function EmployeeModal({ open, onClose }: DepartmentModalProps) {
+export default function EmployeeModal({ open, onClose, department }: DepartmentModalProps) {
     const [newDepartmentData, setNewDepartmentData] = useState<NewDepartmentData>({
         code: 0,
         name: '',
@@ -39,35 +48,70 @@ export default function EmployeeModal({ open, onClose }: DepartmentModalProps) {
         paiId: 0,
     });
 
-    const addDepartment = () => {
-        const token = localStorage.getItem('token');
+    const handleSubmit = () => {
+        if (department) {
+            const token = localStorage.getItem('token');
 
-        fetch('https://localhost:7129/api/Departaments', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newDepartmentData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error adding department');
-                }
-
-                setNewDepartmentData({
-                    code: 0,
-                    name: '',
-                    description: '',
-                    paiId: 0,
-                });
-
+            fetch(`https://localhost:7129/api/Departaments/${department.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newDepartmentData)
             })
-            .catch(error => console.error('Error adding department:', error));
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error updating department');
+                    }
+
+                    setNewDepartmentData({
+                        code: 0,
+                        name: '',
+                        description: '',
+                        paiId: 0,
+
+                    });
+
+                })
+                .catch(error => console.error('Error updating department:', error));
+        } else {
+            const token = localStorage.getItem('token');
+
+            fetch('https://localhost:7129/api/Departaments', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newDepartmentData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error adding new department');
+                    }
+
+                    setNewDepartmentData({
+                        code: 0,
+                        name: '',
+                        description: '',
+                        paiId: 0,
+
+                    });
+
+                })
+                .catch(error => console.error('Error adding new department:', error));
+        }
     };
 
+    useEffect(() => {
+        if (department) {
+            setNewDepartmentData(department);
+        }
+    }, [department]);
+
     const handleClose = () => {
-        addDepartment();
+        handleSubmit();
         onClose();
     };
 

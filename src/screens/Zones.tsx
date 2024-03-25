@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
-import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon, Edit, Delete } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import ZonesModal from "../Modals/ZonesModal";
 
-type Zone = {
-    id: number,
+export type Zone = {
+    id: string,
     type: string,
     name: string,
     description: string,
@@ -25,6 +25,7 @@ type Zone = {
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
     const [open, setOpen] = useState(false);
+    const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
 
     const fetchZones = () => {
         const token = localStorage.getItem('token');
@@ -48,6 +49,23 @@ export const Zones = () => {
             .catch(error => console.error('Error fetching the zones', error));
     };
 
+    const deleteZone = (id: string) => {
+        fetch(`https://localhost:7129/api/Zones/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error deleting zone');
+                }
+                refreshZones();
+            })
+            .catch(error => console.error(error));
+    };
+
     useEffect(() => {
         fetchZones();
     }, []);
@@ -64,6 +82,11 @@ export const Zones = () => {
         setOpen(false);
     };
 
+    const handleOpenUpdateModal = (zone: Zone) => {
+        setSelectedZone(zone);
+        setOpen(true);
+    };
+
     return (
         <div>
             <NavBar />
@@ -74,7 +97,7 @@ export const Zones = () => {
                 <IconButton className='add-button' color="primary" aria-label="add-zone" onClick={handleOpen}>
                     <PersonAdd />
                 </IconButton>
-                <ZonesModal open={open} onClose={handleClose} />
+                <ZonesModal open={open} onClose={handleClose} zone={selectedZone} />
             </div>
             <div>
                 <Grid className='grid-table' container spacing={3}>
@@ -105,6 +128,12 @@ export const Zones = () => {
                                         </Grid>
                                     </Grid>
                                 </AccordionDetails>
+                                <IconButton color="primary" aria-label="update-group" onClick={() => handleOpenUpdateModal(zone)}>
+                                    <Edit />
+                                </IconButton>
+                                <IconButton className='delete-button' color="primary" aria-label="delete-group" onClick={() => deleteZone(zone.id)}>
+                                    <Delete />
+                                </IconButton>
                             </Accordion>
                         </Grid>
                     ))}

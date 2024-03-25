@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Typography, Avatar } from "@mui/material";
-import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon, Edit, Delete } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import GroupsModal from "../Modals/GroupsModal";
 
-type Group = {
-    id: number;
+export type Group = {
+    id: string;
     name: string;
     description: string;
     paiID: number;
@@ -16,6 +16,7 @@ type Group = {
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
     const [open, setOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
     const fetchGroups = () => {
         const token = localStorage.getItem('token');
@@ -39,6 +40,23 @@ export const Groups = () => {
             .catch(error => console.error('Error fetching the groups', error));
     };
 
+    const deleteGroup = (id: string) => {
+        fetch(`https://localhost:7129/api/Groups/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error deleting group');
+                }
+                refreshGroups();
+            })
+            .catch(error => console.error(error));
+    };
+
     useEffect(() => {
         fetchGroups();
     }, []);
@@ -55,6 +73,11 @@ export const Groups = () => {
         setOpen(false);
     };
 
+    const handleOpenUpdateModal = (group: Group) => {
+        setSelectedGroup(group);
+        setOpen(true);
+    };
+
     return (
         <div>
             <NavBar />
@@ -65,7 +88,7 @@ export const Groups = () => {
                 <IconButton className='add-button' color="primary" aria-label="add-groups" onClick={handleOpen}>
                     <PersonAdd />
                 </IconButton>
-                <GroupsModal open={open} onClose={handleClose} />
+                <GroupsModal open={open} onClose={handleClose} group={selectedGroup} />
             </div>
             <div>
                 <Grid className='grid-table' container spacing={3}>
@@ -90,6 +113,12 @@ export const Groups = () => {
                                         </Grid>
                                     </Grid>
                                 </AccordionDetails>
+                                <IconButton color="primary" aria-label="update-group" onClick={() => handleOpenUpdateModal(group)}>
+                                    <Edit />
+                                </IconButton>
+                                <IconButton className='delete-button' color="primary" aria-label="delete-group" onClick={() => deleteGroup(group.id)}>
+                                    <Delete />
+                                </IconButton>
                             </Accordion>
                         </Grid>
                     ))}

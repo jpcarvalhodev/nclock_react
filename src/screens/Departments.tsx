@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Typography, Avatar } from "@mui/material";
-import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon, Delete, Edit } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import DepartmentsModal from "../Modals/DepartmentsModal";
 
-type Department = {
+export type Department = {
     id: string,
     code: number,
     name: string,
@@ -17,6 +17,7 @@ type Department = {
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
     const [open, setOpen] = useState(false);
+    const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
 
     const fetchDepartments = () => {
         const token = localStorage.getItem('token');
@@ -40,6 +41,23 @@ export const Departments = () => {
             .catch(error => console.error('Error fetching the departments', error));
     };
 
+    const deleteDepartment = (id: string) => {
+        fetch(`https://localhost:7129/api/Departaments/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error deleting department');
+                }
+                refreshDepartments();
+            })
+            .catch(error => console.error(error));
+    };
+
     useEffect(() => {
         fetchDepartments();
     }, []);
@@ -56,6 +74,11 @@ export const Departments = () => {
         setOpen(false);
     };
 
+    const handleOpenUpdateModal = (department: Department) => {
+        setSelectedDepartment(department);
+        setOpen(true);
+    };
+
     return (
         <div>
             <NavBar />
@@ -66,7 +89,7 @@ export const Departments = () => {
                 <IconButton className='add-button' color="primary" aria-label="add-department" onClick={handleOpen}>
                     <PersonAdd />
                 </IconButton>
-                <DepartmentsModal open={open} onClose={handleClose} />
+                <DepartmentsModal open={open} onClose={handleClose} department={selectedDepartment} />
             </div>
             <div>
                 <Grid className='grid-table' container spacing={3}>
@@ -78,9 +101,9 @@ export const Departments = () => {
                                     aria-controls={`panel${index}-content`}
                                     id={`panel${index}-header`}
                                 >
-                                <div className='avatar-name'>
-                                    <Typography className='grid-name'>{department.name}</Typography>
-                                </div>
+                                    <div className='avatar-name'>
+                                        <Typography className='grid-name'>{department.name}</Typography>
+                                    </div>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Grid container spacing={3}>
@@ -92,6 +115,12 @@ export const Departments = () => {
                                         </Grid>
                                     </Grid>
                                 </AccordionDetails>
+                                <IconButton color="primary" aria-label="update-department" onClick={() => handleOpenUpdateModal(department)}>
+                                    <Edit />
+                                </IconButton>
+                                <IconButton className='delete-button' color="primary" aria-label="delete-department" onClick={() => deleteDepartment(department.id)}>
+                                    <Delete />
+                                </IconButton>
                             </Accordion>
                         </Grid>
                     ))}

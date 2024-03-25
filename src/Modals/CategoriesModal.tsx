@@ -1,12 +1,20 @@
 import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import CloseIcon from '@mui/icons-material/Close';
-import { ForwardedRef, forwardRef, useState } from 'react';
+import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
 import React from 'react';
+
+type Category = {
+    id: string,
+    code: number,
+    description: string,
+    acronym: string,
+};
 
 interface CategoryModalProps {
     open: boolean;
     onClose: () => void;
+    category: Category | null;
 }
 
 interface NewCategoryData {
@@ -29,41 +37,75 @@ const fields = [
     { key: 'acronym', label: 'Acronym' },
 ];
 
-export default function CategoryModal({ open, onClose }: CategoryModalProps) {
+export default function CategoryModal({ open, onClose, category }: CategoryModalProps) {
     const [newCategoryData, setNewCategoryData] = useState<NewCategoryData>({
         code: 0,
         description: '',
         acronym: '',
     });
 
-    const addCategory = () => {
-        const token = localStorage.getItem('token');
+    const handleSubmit = () => {
+        if (category) {
+            const token = localStorage.getItem('token');
 
-        fetch('https://localhost:7129/api/Categories', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newCategoryData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error adding category');
-                }
-
-                setNewCategoryData({
-                    code: 0,
-                    description: '',
-                    acronym: '',
-                });
-
+            fetch(`https://localhost:7129/api/Categories/${category.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newCategoryData)
             })
-            .catch(error => console.error('Error adding category:', error));
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error updating category');
+                    }
+
+                    setNewCategoryData({
+                        code: 0,
+                        description: '',
+                        acronym: '',
+
+                    });
+
+                })
+                .catch(error => console.error('Error updating category:', error));
+        } else {
+            const token = localStorage.getItem('token');
+
+            fetch(`https://localhost:7129/api/Categories`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newCategoryData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error adding new category');
+                    }
+
+                    setNewCategoryData({
+                        code: 0,
+                        description: '',
+                        acronym: '',
+
+                    });
+
+                })
+                .catch(error => console.error('Error adding new category:', error));
+        }
     };
 
+    useEffect(() => {
+        if (category) {
+            setNewCategoryData(category);
+        }
+    }, [category]);
+
     const handleClose = () => {
-        addCategory();
+        handleSubmit();
         onClose();
     };
 

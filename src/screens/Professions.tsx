@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Typography, Avatar } from "@mui/material";
-import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon, Edit, Delete } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import ProfessionsModal from "../Modals/ProfessionsModal";
 
-type Profession = {
+export type Profession = {
     id: string,
     code: number,
     description: string,
@@ -16,6 +16,7 @@ type Profession = {
 export const Professions = () => {
     const [professions, setProfessions] = useState<Profession[]>([]);
     const [open, setOpen] = useState(false);
+    const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
 
     const fetchProfessions = () => {
         const token = localStorage.getItem('token');
@@ -39,6 +40,23 @@ export const Professions = () => {
             .catch(error => console.error('Error fetching the professions', error));
     };
 
+    const deleteProfession = (id: string) => {
+        fetch(`https://localhost:7129/api/Professions/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error deleting profession');
+                }
+                refreshProfessions();
+            })
+            .catch(error => console.error(error));
+    };
+
     useEffect(() => {
         fetchProfessions();
     }, []);
@@ -55,6 +73,11 @@ export const Professions = () => {
         setOpen(false);
     };
 
+    const handleOpenUpdateModal = (profession: Profession) => {
+        setSelectedProfession(profession);
+        setOpen(true);
+    };
+
     return (
         <div>
             <NavBar />
@@ -65,7 +88,7 @@ export const Professions = () => {
                 <IconButton className='add-button' color="primary" aria-label="add-profession" onClick={handleOpen}>
                     <PersonAdd />
                 </IconButton>
-                <ProfessionsModal open={open} onClose={handleClose} />
+                <ProfessionsModal open={open} onClose={handleClose} profession={selectedProfession} />
             </div>
             <div>
                 <Grid className='grid-table' container spacing={3}>
@@ -90,6 +113,12 @@ export const Professions = () => {
                                         </Grid>
                                     </Grid>
                                 </AccordionDetails>
+                                <IconButton color="primary" aria-label="update-group" onClick={() => handleOpenUpdateModal(profession)}>
+                                    <Edit />
+                                </IconButton>
+                                <IconButton className='delete-button' color="primary" aria-label="delete-group" onClick={() => deleteProfession(profession.id)}>
+                                    <Delete />
+                                </IconButton>
                             </Accordion>
                         </Grid>
                     ))}

@@ -1,12 +1,20 @@
 import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import CloseIcon from '@mui/icons-material/Close';
-import { ForwardedRef, forwardRef, useState } from 'react';
+import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
 import React from 'react';
+
+type Group = {
+    id: string;
+    name: string;
+    description: string;
+    paiID: number;
+};
 
 interface GroupModalProps {
     open: boolean;
     onClose: () => void;
+    group: Group | null;
 }
 
 interface NewGroupData {
@@ -29,41 +37,75 @@ const fields = [
     { key: 'paiID', label: 'Parent ID' },
 ];
 
-export default function GroupModal({ open, onClose }: GroupModalProps) {
+export default function GroupModal({ open, onClose, group }: GroupModalProps) {
     const [newGroupData, setNewGroupData] = useState<NewGroupData>({
         name: '',
         description: '',
         paiID: 0,
     });
 
-    const addGroup = () => {
-        const token = localStorage.getItem('token');
+    const handleSubmit = () => {
+        if (group) {
+            const token = localStorage.getItem('token');
 
-        fetch('https://localhost:7129/api/Groups', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newGroupData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error adding group');
-                }
-
-                setNewGroupData({
-                    name: '',
-                    description: '',
-                    paiID: 0,
-                });
-
+            fetch(`https://localhost:7129/api/Groups/${group.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newGroupData)
             })
-            .catch(error => console.error('Error adding group:', error));
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error updating group');
+                    }
+
+                    setNewGroupData({
+                        name: '',
+                        description: '',
+                        paiID: 0,
+
+                    });
+
+                })
+                .catch(error => console.error('Error updating group:', error));
+        } else {
+            const token = localStorage.getItem('token');
+
+            fetch('https://localhost:7129/api/Groups', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newGroupData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error adding new group');
+                    }
+
+                    setNewGroupData({
+                        name: '',
+                        description: '',
+                        paiID: 0,
+
+                    });
+
+                })
+                .catch(error => console.error('Error adding new group:', error));
+        }
     };
 
+    useEffect(() => {
+        if (group) {
+            setNewGroupData(group);
+        }
+    }, [group]);
+
     const handleClose = () => {
-        addGroup();
+        handleSubmit();
         onClose();
     };
 
