@@ -247,7 +247,9 @@ export default function EmployeeModal({ open, onClose, employee }: EmployeeModal
       })
         .then(response => {
           if (!response.ok) {
+            console.log(newEmployeeData);
             throw new Error('Error adding new employee');
+
           }
 
           setNewEmployeeData({
@@ -288,6 +290,7 @@ export default function EmployeeModal({ open, onClose, employee }: EmployeeModal
             externalEntityId: '',
             externalEntityName: '',
           });
+          console.log(setNewEmployeeData)
 
         })
         .catch(error => console.error('Error adding new employee:', error));

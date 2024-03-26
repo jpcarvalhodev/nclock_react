@@ -71,7 +71,7 @@ export const NavBar = () => {
 
     const theme = useTheme();
     return (
-        <AppBar position="static">
+        <AppBar position="static" style={{ width: '100vw', overflowX: 'auto' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Typography
@@ -128,7 +128,7 @@ export const NavBar = () => {
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box sx={{ flexGrow: 1 }}>
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                             <img className="profile-avatar" src={profileAvatar} alt="Profile" />
                         </IconButton>

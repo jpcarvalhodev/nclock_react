@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
-import { IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Typography, Avatar } from "@mui/material";
+import { IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
 import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon, Edit, Delete } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
