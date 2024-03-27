@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
-import { IconButton, Accordion, AccordionSummary, AccordionDetails, Typography, Avatar, Grid } from "@mui/material";
-import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon, Edit, Delete } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import { PersonAdd, Refresh, Edit, Delete, ViewList } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import ExternalEntityModal from "../Modals/ExternalEntitiesModal";
-import profileAvatar from '../assets/img/profileAvatar.png';
+import { ColumnSelectorModal } from "../Modals/ColumnSelectorModal";
+import DataTable, { TableColumn } from 'react-data-table-component';
 
 export type ExternalEntity = {
+    [key: string]: any;
     id: string,
     name: string,
     Comments: string,
@@ -33,6 +35,9 @@ export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
     const [open, setOpen] = useState(false);
     const [selectedExternalEntity, setSelectedExternalEntity] = useState<ExternalEntity | null>(null);
+    const [filterText, setFilterText] = useState('');
+    const [openColumnSelector, setOpenColumnSelector] = useState(false);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'nif']);
 
     const fetchExternalEntities = () => {
         const token = localStorage.getItem('token');
@@ -94,68 +99,85 @@ export const ExternalEntities = () => {
         setOpen(true);
     };
 
+    const filteredItems = externalEntities.filter(item =>
+        Object.keys(item).some(key =>
+            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
+        )
+    );
+
+    const toggleColumn = (columnName: string) => {
+        if (selectedColumns.includes(columnName)) {
+            setSelectedColumns(selectedColumns.filter(col => col !== columnName));
+        } else {
+            setSelectedColumns([...selectedColumns, columnName]);
+        }
+    };
+
+    const resetColumns = () => {
+        setSelectedColumns(['name', 'nif']);
+    };
+
+    let tableColumns = selectedColumns.map(columnName => ({
+        name: columnName,
+        selector: (row: ExternalEntity) => row[columnName],
+        sortable: true,
+      }));
+
+    const actionColumn: TableColumn<ExternalEntity> = {
+        name: 'Actions',
+        cell: (row: ExternalEntity) => (
+            <div>
+                <IconButton color="primary" aria-label="edit" onClick={() => handleOpenUpdateModal(row)}>
+                    <Edit />
+                </IconButton>
+                <IconButton color="error" aria-label="delete" onClick={() => deleteExternalEntity(row.id)}>
+                    <Delete />
+                </IconButton>
+            </div>
+        ),
+        selector: undefined,
+    };
+
     return (
         <div>
             <NavBar />
-            <div>
+            <div className='refresh-add-edit-upper-class'>
                 <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshExternalEntities}>
                     <Refresh />
                 </IconButton>
                 <IconButton className='add-button' color="primary" aria-label="add-external-entity" onClick={handleOpen}>
                     <PersonAdd />
                 </IconButton>
+                <IconButton className='edit-columns' color="primary" aria-label="view-list" onClick={() => setOpenColumnSelector(true)}>
+                    <ViewList />
+                </IconButton>
                 <ExternalEntityModal open={open} onClose={handleClose} externalEntity={selectedExternalEntity} />
             </div>
-            <div className="table-container-external-entities">
-                <Grid container spacing={3}>
-                    {externalEntities.map((externalEntity, index) => (
-                        <Grid item xs={12} sm={6} key={externalEntity.id}>
-                            <Accordion>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls={`panel${index}-content`}
-                                    id={`panel${index}-header`}
-                                >
-                                    <div className='avatar-name'>
-                                        <Avatar alt="External Entity Photo" src={externalEntity.Photo ? externalEntity.Photo : profileAvatar} />
-                                        <Typography className='grid-name'>{externalEntity.name}</Typography>
-                                    </div>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        ID: {externalEntity.id}<br />
-                                        Name: {externalEntity.name}<br />
-                                        Comments: {externalEntity.Comments}<br />
-                                        Commercial Name: {externalEntity.CommercialName}<br />
-                                        Responsible Name: {externalEntity.ResponsibleName}<br />
-                                        Photo: {externalEntity.Photo}<br />
-                                        Address: {externalEntity.Address}<br />
-                                        ZIP Code: {externalEntity.ZIPCode}<br />
-                                        Locality: {externalEntity.Locality}<br />
-                                        Village: {externalEntity.Village}<br />
-                                        District: {externalEntity.District}<br />
-                                        Phone: {externalEntity.Phone}<br />
-                                        Mobile: {externalEntity.Mobile}<br />
-                                        Email: {externalEntity.Email}<br />
-                                        WWW: {externalEntity.WWW}<br />
-                                        Fax: {externalEntity.Fax}<br />
-                                        NIF: {externalEntity.NIF}<br />
-                                        Date Inserted: {externalEntity.DateInserted}<br />
-                                        Date Updated: {externalEntity.DateUpdated}<br />
-                                    </Typography>
-                                </AccordionDetails>
-                                <IconButton color="primary" aria-label="update-external-entity" onClick={() => handleOpenUpdateModal(externalEntity)}>
-                                    <Edit />
-                                </IconButton>
-                                <IconButton className='delete-button' color="primary" aria-label="delete-external-entity" onClick={() => deleteExternalEntity(externalEntity.id)}>
-                                    <Delete />
-                                </IconButton>
-                            </Accordion>
-                        </Grid>
-                    ))}
-                </Grid>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Filter"
+                    value={filterText}
+                    onChange={e => setFilterText(e.target.value)}
+                />
+                <div className='table-css'>
+                    <DataTable
+                        columns={[...tableColumns, actionColumn]}
+                        data={filteredItems}
+                        pagination
+                    />
+                </div>
             </div>
             <Footer />
+            {openColumnSelector && (
+                <ColumnSelectorModal
+                    columns={Object.keys(filteredItems[0])}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setOpenColumnSelector(false)}
+                    onColumnToggle={toggleColumn}
+                    onResetColumns={resetColumns}
+                />
+            )}
         </div>
     );
 }

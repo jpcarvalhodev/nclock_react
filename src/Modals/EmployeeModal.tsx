@@ -5,7 +5,7 @@ import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
 import React from 'react';
 
 type Employee = {
-  id: string;
+  [key: string]: any;
   number: number;
   name: string;
   shortName: string;
@@ -50,45 +50,47 @@ interface EmployeeModalProps {
   employee: Employee | null;
 }
 
-interface NewEmployeeData {
-  [key: string]: string | number;
-  number: number;
-  name: string;
-  shortName: string;
-  nameAcronym: string;
-  comments: string;
-  photo: string;
-  address: string;
-  zipcode: string;
-  locality: string;
-  village: string;
-  district: string;
-  phone: number;
-  mobile: number;
-  email: string;
-  birthday: string;
-  nacionality: string;
-  gender: string;
-  biNumber: string;
-  biIssuance: string;
-  biValidity: string;
-  nif: number;
-  admissionDate: string;
-  exitDate: string;
-  rgpdAut: string;
-  departmentId: string;
-  departmentName: string;
-  professionId: string;
-  professionName: string;
-  categoryId: string;
-  categoryName: string;
-  groupId: string;
-  groupName: string;
-  zoneId: string;
-  zoneName: string;
-  externalEntityId: string;
-  externalEntityName: string;
-}
+const createEmptyEmployeeData = (): Employee => {
+  const emptyEmployee: Employee = {
+    number: 0,
+    name: '',
+    shortName: '',
+    nameAcronym: '',
+    comments: '',
+    photo: '',
+    address: '',
+    zipcode: '',
+    locality: '',
+    village: '',
+    district: '',
+    phone: 0,
+    mobile: 0,
+    email: '',
+    birthday: '',
+    nacionality: '',
+    gender: '',
+    biNumber: '',
+    biIssuance: '',
+    biValidity: '',
+    nif: 0,
+    admissionDate: '',
+    exitDate: '',
+    rgpdAut: '',
+    departmentId: '',
+    departmentName: '',
+    professionId: '',
+    professionName: '',
+    categoryId: '',
+    categoryName: '',
+    groupId: '',
+    groupName: '',
+    zoneId: '',
+    zoneName: '',
+    externalEntityId: '',
+    externalEntityName: '',
+  };
+  return emptyEmployee;
+};
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement | undefined },
@@ -137,44 +139,48 @@ const fields = [
 ];
 
 export default function EmployeeModal({ open, onClose, employee }: EmployeeModalProps) {
-  const [newEmployeeData, setNewEmployeeData] = useState<NewEmployeeData>({
-    number: 0,
-    name: '',
-    shortName: '',
-    nameAcronym: '',
-    comments: '',
-    photo: '',
-    address: '',
-    zipcode: '',
-    locality: '',
-    village: '',
-    district: '',
-    phone: 0,
-    mobile: 0,
-    email: '',
-    birthday: '',
-    nacionality: '',
-    gender: '',
-    biNumber: '',
-    biIssuance: '',
-    biValidity: '',
-    nif: 0,
-    admissionDate: '',
-    exitDate: '',
-    rgpdAut: '',
-    departmentId: '',
-    departmentName: '',
-    professionId: '',
-    professionName: '',
-    categoryId: '',
-    categoryName: '',
-    groupId: '',
-    groupName: '',
-    zoneId: '',
-    zoneName: '',
-    externalEntityId: '',
-    externalEntityName: '',
-  });
+  const [newEmployeeData, setNewEmployeeData] = useState<Employee>(createEmptyEmployeeData());
+
+  const setEmployeeData = () => {
+    setNewEmployeeData({
+      number: 0,
+      name: '',
+      shortName: '',
+      nameAcronym: '',
+      comments: '',
+      photo: '',
+      address: '',
+      zipcode: '',
+      locality: '',
+      village: '',
+      district: '',
+      phone: 0,
+      mobile: 0,
+      email: '',
+      birthday: '',
+      nacionality: '',
+      gender: '',
+      biNumber: '',
+      biIssuance: '',
+      biValidity: '',
+      nif: 0,
+      admissionDate: '',
+      exitDate: '',
+      rgpdAut: '',
+      departmentId: '',
+      departmentName: '',
+      professionId: '',
+      professionName: '',
+      categoryId: '',
+      categoryName: '',
+      groupId: '',
+      groupName: '',
+      zoneId: '',
+      zoneName: '',
+      externalEntityId: '',
+      externalEntityName: '',
+    });
+  };
 
   const handleSubmit = () => {
     if (employee) {
@@ -193,44 +199,7 @@ export default function EmployeeModal({ open, onClose, employee }: EmployeeModal
             throw new Error('Error updating employee');
           }
 
-          setNewEmployeeData({
-            number: 0,
-            name: '',
-            shortName: '',
-            nameAcronym: '',
-            comments: '',
-            photo: '',
-            address: '',
-            zipcode: '',
-            locality: '',
-            village: '',
-            district: '',
-            phone: 0,
-            mobile: 0,
-            email: '',
-            birthday: '',
-            nacionality: '',
-            gender: '',
-            biNumber: '',
-            biIssuance: '',
-            biValidity: '',
-            nif: 0,
-            admissionDate: '',
-            exitDate: '',
-            rgpdAut: '',
-            departmentId: '',
-            departmentName: '',
-            professionId: '',
-            professionName: '',
-            categoryId: '',
-            categoryName: '',
-            groupId: '',
-            groupName: '',
-            zoneId: '',
-            zoneName: '',
-            externalEntityId: '',
-            externalEntityName: '',
-          });
+          setEmployeeData();
 
         })
         .catch(error => console.error('Error updating employee:', error));
@@ -252,45 +221,7 @@ export default function EmployeeModal({ open, onClose, employee }: EmployeeModal
 
           }
 
-          setNewEmployeeData({
-            number: 0,
-            name: '',
-            shortName: '',
-            nameAcronym: '',
-            comments: '',
-            photo: '',
-            address: '',
-            zipcode: '',
-            locality: '',
-            village: '',
-            district: '',
-            phone: 0,
-            mobile: 0,
-            email: '',
-            birthday: '',
-            nacionality: '',
-            gender: '',
-            biNumber: '',
-            biIssuance: '',
-            biValidity: '',
-            nif: 0,
-            admissionDate: '',
-            exitDate: '',
-            rgpdAut: '',
-            departmentId: '',
-            departmentName: '',
-            professionId: '',
-            professionName: '',
-            categoryId: '',
-            categoryName: '',
-            groupId: '',
-            groupName: '',
-            zoneId: '',
-            zoneName: '',
-            externalEntityId: '',
-            externalEntityName: '',
-          });
-          console.log(setNewEmployeeData)
+          setEmployeeData();
 
         })
         .catch(error => console.error('Error adding new employee:', error));

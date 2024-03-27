@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
-import { IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Typography } from "@mui/material";
-import { PersonAdd, Refresh, ExpandMore as ExpandMoreIcon, Edit, Delete } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import { PersonAdd, Refresh, Edit, Delete, ViewList } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import ZonesModal from "../Modals/ZonesModal";
+import { ColumnSelectorModal } from "../Modals/ColumnSelectorModal";
+import DataTable, { TableColumn } from 'react-data-table-component';
 
 export type Zone = {
+    [key: string]: any;
     id: string,
     type: string,
     name: string,
@@ -26,6 +29,9 @@ export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
     const [open, setOpen] = useState(false);
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
+    const [filterText, setFilterText] = useState('');
+    const [openColumnSelector, setOpenColumnSelector] = useState(false);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'acronym']);
 
     const fetchZones = () => {
         const token = localStorage.getItem('token');
@@ -87,59 +93,85 @@ export const Zones = () => {
         setOpen(true);
     };
 
+    const filteredItems = zones.filter(item =>
+        Object.keys(item).some(key =>
+            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
+        )
+    );
+
+    const toggleColumn = (columnName: string) => {
+        if (selectedColumns.includes(columnName)) {
+            setSelectedColumns(selectedColumns.filter(col => col !== columnName));
+        } else {
+            setSelectedColumns([...selectedColumns, columnName]);
+        }
+    };
+
+    const resetColumns = () => {
+        setSelectedColumns(['name', 'acronym']);
+    };
+
+    let tableColumns = selectedColumns.map(columnName => ({
+        name: columnName,
+        selector: (row: Zone) => row[columnName],
+        sortable: true,
+      }));
+
+    const actionColumn: TableColumn<Zone> = {
+        name: 'Actions',
+        cell: (row: Zone) => (
+            <div>
+                <IconButton color="primary" aria-label="edit" onClick={() => handleOpenUpdateModal(row)}>
+                    <Edit />
+                </IconButton>
+                <IconButton color="error" aria-label="delete" onClick={() => deleteZone(row.id)}>
+                    <Delete />
+                </IconButton>
+            </div>
+        ),
+        selector: undefined,
+    };
+
     return (
         <div>
             <NavBar />
-            <div>
+            <div className='refresh-add-edit-upper-class'>
                 <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshZones}>
                     <Refresh />
                 </IconButton>
                 <IconButton className='add-button' color="primary" aria-label="add-zone" onClick={handleOpen}>
                     <PersonAdd />
                 </IconButton>
+                <IconButton className='edit-columns' color="primary" aria-label="view-list" onClick={() => setOpenColumnSelector(true)}>
+                    <ViewList />
+                </IconButton>
                 <ZonesModal open={open} onClose={handleClose} zone={selectedZone} />
             </div>
             <div>
-                <Grid className='grid-table' container spacing={3}>
-                    {zones.map((zone, index) => (
-                        <Grid item xs={12} key={zone.id}>
-                            <Accordion>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls={`panel${index}-content`}
-                                    id={`panel${index}-header`}
-                                >
-                                    <Typography className='grid-name'>{zone.name}</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Grid container spacing={3}>
-                                        <Grid item xs={12} sm={6}>
-                                            <Typography>Type: {zone.type}</Typography>
-                                            <Typography>Description: {zone.description}</Typography>
-                                            <Typography>Acronym: {zone.acronym}</Typography>
-                                            <Typography>Address: {zone.address}</Typography>
-                                            <Typography>ZIP Code: {zone.zipCode}</Typography>
-                                            <Typography>Locality: {zone.locality}</Typography>
-                                            <Typography>Village: {zone.village}</Typography>
-                                            <Typography>District: {zone.district}</Typography>
-                                            <Typography>Phone: {zone.phone}</Typography>
-                                            <Typography>Mobile: {zone.mobile}</Typography>
-                                            <Typography>Email: {zone.email}</Typography>
-                                        </Grid>
-                                    </Grid>
-                                </AccordionDetails>
-                                <IconButton color="primary" aria-label="update-group" onClick={() => handleOpenUpdateModal(zone)}>
-                                    <Edit />
-                                </IconButton>
-                                <IconButton className='delete-button' color="primary" aria-label="delete-group" onClick={() => deleteZone(zone.id)}>
-                                    <Delete />
-                                </IconButton>
-                            </Accordion>
-                        </Grid>
-                    ))}
-                </Grid>
+                <input
+                    type="text"
+                    placeholder="Filter"
+                    value={filterText}
+                    onChange={e => setFilterText(e.target.value)}
+                />
+                <div className='table-css'>
+                    <DataTable
+                        columns={[...tableColumns, actionColumn]}
+                        data={filteredItems}
+                        pagination
+                    />
+                </div>
             </div>
             <Footer />
+            {openColumnSelector && (
+                <ColumnSelectorModal
+                    columns={Object.keys(filteredItems[0])}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setOpenColumnSelector(false)}
+                    onColumnToggle={toggleColumn}
+                    onResetColumns={resetColumns}
+                />
+            )}
         </div >
     );
 }

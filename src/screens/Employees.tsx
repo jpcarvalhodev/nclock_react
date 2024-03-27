@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
 import '../css/PagesStyles.css';
-import profileAvatar from '../assets/img/profileAvatar.png';
 import EmployeeModal from "../Modals/EmployeeModal";
 import IconButton from '@mui/material/IconButton';
 import { Delete, Edit, PersonAdd, Refresh, ViewList } from '@mui/icons-material';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { EmployeeColumnSelectorModal } from '../Modals/EmployeeColumnSelectorModal';
+import { ColumnSelectorModal } from '../Modals/ColumnSelectorModal';
 
 export type Employee = {
     [key: string]: any;
@@ -140,7 +139,7 @@ export const Employees = () => {
         name: columnName,
         selector: (row: Employee) => row[columnName],
         sortable: true,
-      }));
+    }));
 
     const actionColumn: TableColumn<Employee> = {
         name: 'Actions',
@@ -160,7 +159,7 @@ export const Employees = () => {
     return (
         <div>
             <NavBar />
-            <div>
+            <div className='refresh-add-edit-upper-class'>
                 <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshEmployees}>
                     <Refresh />
                 </IconButton>
@@ -187,9 +186,8 @@ export const Employees = () => {
                     />
                 </div>
             </div>
-            <Footer />
             {openColumnSelector && (
-                <EmployeeColumnSelectorModal
+                <ColumnSelectorModal
                     columns={Object.keys(filteredItems[0])}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
@@ -197,6 +195,7 @@ export const Employees = () => {
                     onResetColumns={resetColumns}
                 />
             )}
+            <Footer />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, FormControlLabel, Checkbox, Button, DialogActions, styled } from '@mui/material';
 
-interface EmployeeColumnSelectorModalProps {
+interface ColumnSelectorModalProps {
     columns: string[];
     selectedColumns: string[];
     onClose: () => void;
@@ -19,7 +19,7 @@ const StyledDialogContent = styled(DialogContent)({
     width: 400,
 });
 
-export const EmployeeColumnSelectorModal: React.FC<EmployeeColumnSelectorModalProps> = ({
+export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
     columns,
     selectedColumns,
     onClose,
