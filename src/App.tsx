@@ -1,14 +1,14 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Login } from './screens/Login';
-import { Dashboard } from './screens/Dashboard';
-import { ForgotPassword } from './screens/ForgotPassword';
-import { Employees } from './screens/Employees';
-import { Departments } from './screens/Departments';
-import { Categories } from './screens/Categories';
-import { ExternalEntities } from './screens/ExternalEntities';
-import { Groups } from './screens/Groups';
-import { Professions } from './screens/Professions';
-import { Zones } from './screens/Zones';
+import { Login } from './pages/Login';
+import { Dashboard } from './pages/Dashboard';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { Employees } from './pages/Employees';
+import { Departments } from './pages/Departments';
+import { Categories } from './pages/Categories';
+import { ExternalEntities } from './pages/ExternalEntities';
+import { Groups } from './pages/Groups';
+import { Professions } from './pages/Professions';
+import { Zones } from './pages/Zones';
 
 function App() {
   return (

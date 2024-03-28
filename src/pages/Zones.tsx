@@ -1,29 +1,12 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
-import { IconButton } from "@mui/material";
-import { PersonAdd, Refresh, Edit, Delete, ViewList } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
-import ZonesModal from "../Modals/ZonesModal";
-import { ColumnSelectorModal } from "../Modals/ColumnSelectorModal";
+import ZonesModal from "../modals/ZonesModal";
+import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-
-export type Zone = {
-    [key: string]: any;
-    id: string,
-    type: string,
-    name: string,
-    description: string,
-    acronym: string,
-    address: string,
-    zipCode: string,
-    locality: string,
-    village: string,
-    district: string,
-    phone: number,
-    mobile: number,
-    email: string,
-};
+import { Zone } from "../types/Types";
+import Button from "react-bootstrap/esm/Button";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -121,12 +104,8 @@ export const Zones = () => {
         name: 'Actions',
         cell: (row: Zone) => (
             <div>
-                <IconButton color="primary" aria-label="edit" onClick={() => handleOpenUpdateModal(row)}>
-                    <Edit />
-                </IconButton>
-                <IconButton color="error" aria-label="delete" onClick={() => deleteZone(row.id)}>
-                    <Delete />
-                </IconButton>
+                <Button variant="outline-primary" onClick={() => handleOpenUpdateModal(row)}>Editar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => deleteZone(row.id)}>Apagar</Button>{' '}
             </div>
         ),
         selector: undefined,
@@ -136,15 +115,9 @@ export const Zones = () => {
         <div>
             <NavBar />
             <div className='refresh-add-edit-upper-class'>
-                <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshZones}>
-                    <Refresh />
-                </IconButton>
-                <IconButton className='add-button' color="primary" aria-label="add-zone" onClick={handleOpen}>
-                    <PersonAdd />
-                </IconButton>
-                <IconButton className='edit-columns' color="primary" aria-label="view-list" onClick={() => setOpenColumnSelector(true)}>
-                    <ViewList />
-                </IconButton>
+                <Button variant="outline-primary" onClick={refreshZones}>Atualizar</Button>{' '}
+                <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
                 <ZonesModal open={open} onClose={handleClose} zone={selectedZone} />
             </div>
             <div>

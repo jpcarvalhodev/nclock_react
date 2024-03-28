@@ -1,33 +1,25 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
-import { IconButton } from "@mui/material";
-import { PersonAdd, Refresh, Edit, Delete, ViewList } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
-import CategoriesModal from "../Modals/CategoriesModal";
-import { ColumnSelectorModal } from "../Modals/ColumnSelectorModal";
+import GroupsModal from "../modals/GroupsModal";
+import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
+import { Group } from "../types/Types";
+import Button from "react-bootstrap/esm/Button";
 
-export type Category = {
-    [key: string]: any;
-    id: string,
-    code: number,
-    description: string,
-    acronym: string,
-};
-
-export const Categories = () => {
-    const [categories, setCategories] = useState<Category[]>([]);
+export const Groups = () => {
+    const [groups, setGroups] = useState<Group[]>([]);
     const [open, setOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'description']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name']);
 
-    const fetchCategories = () => {
+    const fetchGroups = () => {
         const token = localStorage.getItem('token');
 
-        fetch('https://localhost:7129/api/Categories', {
+        fetch('https://localhost:7129/api/Groups', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -36,18 +28,18 @@ export const Categories = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error fetching categories data');
+                    throw new Error('Error fetching groups data');
                 }
                 return response.json();
             })
             .then(data => {
-                setCategories(data);
+                setGroups(data);
             })
-            .catch(error => console.error('Error fetching the categories', error));
+            .catch(error => console.error('Error fetching the groups', error));
     };
 
-    const deleteCategory = (id: string) => {
-        fetch(`https://localhost:7129/api/Categories/${id}`, {
+    const deleteGroups = (id: string) => {
+        fetch(`https://localhost:7129/api/Groups/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -56,19 +48,19 @@ export const Categories = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error deleting category');
+                    throw new Error('Error deleting group');
                 }
-                refreshCategories();
+                refreshGroups();
             })
             .catch(error => console.error(error));
     };
 
     useEffect(() => {
-        fetchCategories();
+        fetchGroups();
     }, []);
 
-    const refreshCategories = () => {
-        fetchCategories();
+    const refreshGroups = () => {
+        fetchGroups();
     };
 
     const handleOpen = () => {
@@ -79,12 +71,12 @@ export const Categories = () => {
         setOpen(false);
     };
 
-    const handleOpenUpdateModal = (category: Category) => {
-        setSelectedCategory(category);
+    const handleOpenUpdateModal = (group: Group) => {
+        setSelectedGroup(group);
         setOpen(true);
     };
 
-    const filteredItems = categories.filter(item =>
+    const filteredItems = groups.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
@@ -99,25 +91,21 @@ export const Categories = () => {
     };
 
     const resetColumns = () => {
-        setSelectedColumns(['code', 'description']);
+        setSelectedColumns(['name']);
     };
 
     let tableColumns = selectedColumns.map(columnName => ({
         name: columnName,
-        selector: (row: Category) => row[columnName],
+        selector: (row: Group) => row[columnName],
         sortable: true,
       }));
 
-    const actionColumn: TableColumn<Category> = {
+    const actionColumn: TableColumn<Group> = {
         name: 'Actions',
-        cell: (row: Category) => (
+        cell: (row: Group) => (
             <div>
-                <IconButton color="primary" aria-label="edit" onClick={() => handleOpenUpdateModal(row)}>
-                    <Edit />
-                </IconButton>
-                <IconButton color="error" aria-label="delete" onClick={() => deleteCategory(row.id)}>
-                    <Delete />
-                </IconButton>
+                <Button variant="outline-primary" onClick={() => handleOpenUpdateModal(row)}>Editar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => deleteGroups(row.id)}>Apagar</Button>{' '}
             </div>
         ),
         selector: undefined,
@@ -127,16 +115,10 @@ export const Categories = () => {
         <div>
             <NavBar />
             <div className='refresh-add-edit-upper-class'>
-                <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshCategories}>
-                    <Refresh />
-                </IconButton>
-                <IconButton className='add-button' color="primary" aria-label="add-category" onClick={handleOpen}>
-                    <PersonAdd />
-                </IconButton>
-                <IconButton className='edit-columns' color="primary" aria-label="view-list" onClick={() => setOpenColumnSelector(true)}>
-                    <ViewList />
-                </IconButton>
-                <CategoriesModal open={open} onClose={handleClose} category={selectedCategory} />
+                <Button variant="outline-primary" onClick={refreshGroups}>Atualizar</Button>{' '}
+                <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <GroupsModal open={open} onClose={handleClose} group={selectedGroup} />
             </div>
             <div>
                 <input

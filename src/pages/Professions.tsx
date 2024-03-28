@@ -1,48 +1,25 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
-import { IconButton } from "@mui/material";
-import { PersonAdd, Refresh, Edit, Delete, ViewList } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
-import ExternalEntityModal from "../Modals/ExternalEntitiesModal";
-import { ColumnSelectorModal } from "../Modals/ColumnSelectorModal";
+import ProfessionsModal from "../modals/ProfessionsModal";
+import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
+import { Profession } from "../types/Types";
+import Button from "react-bootstrap/esm/Button";
 
-export type ExternalEntity = {
-    [key: string]: any;
-    id: string,
-    name: string,
-    Comments: string,
-    CommercialName: string,
-    ResponsibleName: string,
-    Photo: string,
-    Address: string,
-    ZIPCode: string,
-    Locality: string,
-    Village: string,
-    District: string,
-    Phone: number,
-    Mobile: number,
-    Email: string,
-    WWW: string,
-    Fax: number,
-    NIF: number,
-    DateInserted: string,
-    DateUpdated: string,
-};
-
-export const ExternalEntities = () => {
-    const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
+export const Professions = () => {
+    const [professions, setProfessions] = useState<Profession[]>([]);
     const [open, setOpen] = useState(false);
-    const [selectedExternalEntity, setSelectedExternalEntity] = useState<ExternalEntity | null>(null);
+    const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'nif']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'description']);
 
-    const fetchExternalEntities = () => {
+    const fetchProfessions = () => {
         const token = localStorage.getItem('token');
 
-        fetch('https://localhost:7129/api/ExternalEntities', {
+        fetch('https://localhost:7129/api/Professions', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -51,18 +28,18 @@ export const ExternalEntities = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error fetching external entities data');
+                    throw new Error('Error fetching professions data');
                 }
                 return response.json();
             })
             .then(data => {
-                setExternalEntities(data);
+                setProfessions(data);
             })
-            .catch(error => console.error('Error fetching the external entities', error));
+            .catch(error => console.error('Error fetching the professions', error));
     };
 
-    const deleteExternalEntity = (id: string) => {
-        fetch(`https://localhost:7129/api/ExternalEntities/${id}`, {
+    const deleteProfessions = (id: string) => {
+        fetch(`https://localhost:7129/api/Professions/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -71,19 +48,19 @@ export const ExternalEntities = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error deleting external entity');
+                    throw new Error('Error deleting profession');
                 }
-                refreshExternalEntities();
+                refreshProfessions();
             })
             .catch(error => console.error(error));
     };
 
     useEffect(() => {
-        fetchExternalEntities();
+        fetchProfessions();
     }, []);
 
-    const refreshExternalEntities = () => {
-        fetchExternalEntities();
+    const refreshProfessions = () => {
+        fetchProfessions();
     };
 
     const handleOpen = () => {
@@ -94,12 +71,12 @@ export const ExternalEntities = () => {
         setOpen(false);
     };
 
-    const handleOpenUpdateModal = (externalEntity: ExternalEntity) => {
-        setExternalEntities(externalEntities.filter(e => e.id !== externalEntity.id));
+    const handleOpenUpdateModal = (profession: Profession) => {
+        setSelectedProfession(profession);
         setOpen(true);
     };
 
-    const filteredItems = externalEntities.filter(item =>
+    const filteredItems = professions.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
@@ -114,25 +91,21 @@ export const ExternalEntities = () => {
     };
 
     const resetColumns = () => {
-        setSelectedColumns(['name', 'nif']);
+        setSelectedColumns(['code', 'description']);
     };
 
     let tableColumns = selectedColumns.map(columnName => ({
         name: columnName,
-        selector: (row: ExternalEntity) => row[columnName],
+        selector: (row: Profession) => row[columnName],
         sortable: true,
       }));
 
-    const actionColumn: TableColumn<ExternalEntity> = {
+    const actionColumn: TableColumn<Profession> = {
         name: 'Actions',
-        cell: (row: ExternalEntity) => (
+        cell: (row: Profession) => (
             <div>
-                <IconButton color="primary" aria-label="edit" onClick={() => handleOpenUpdateModal(row)}>
-                    <Edit />
-                </IconButton>
-                <IconButton color="error" aria-label="delete" onClick={() => deleteExternalEntity(row.id)}>
-                    <Delete />
-                </IconButton>
+                <Button variant="outline-primary" onClick={() => handleOpenUpdateModal(row)}>Editar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => deleteProfessions(row.id)}>Apagar</Button>{' '}
             </div>
         ),
         selector: undefined,
@@ -142,16 +115,10 @@ export const ExternalEntities = () => {
         <div>
             <NavBar />
             <div className='refresh-add-edit-upper-class'>
-                <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshExternalEntities}>
-                    <Refresh />
-                </IconButton>
-                <IconButton className='add-button' color="primary" aria-label="add-external-entity" onClick={handleOpen}>
-                    <PersonAdd />
-                </IconButton>
-                <IconButton className='edit-columns' color="primary" aria-label="view-list" onClick={() => setOpenColumnSelector(true)}>
-                    <ViewList />
-                </IconButton>
-                <ExternalEntityModal open={open} onClose={handleClose} externalEntity={selectedExternalEntity} />
+                <Button variant="outline-primary" onClick={refreshProfessions}>Atualizar</Button>{' '}
+                <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <ProfessionsModal open={open} onClose={handleClose} profession={selectedProfession} />
             </div>
             <div>
                 <input
@@ -178,6 +145,6 @@ export const ExternalEntities = () => {
                     onResetColumns={resetColumns}
                 />
             )}
-        </div>
+        </div >
     );
 }

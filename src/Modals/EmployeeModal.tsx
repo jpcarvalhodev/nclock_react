@@ -20,15 +20,15 @@ type Employee = {
   phone: number;
   mobile: number;
   email: string;
-  birthday: string;
+  birthday: Date;
   nacionality: string;
   gender: string;
   biNumber: string;
-  biIssuance: string;
-  biValidity: string;
+  biIssuance: Date;
+  biValidity: Date;
   nif: number;
-  admissionDate: string;
-  exitDate: string;
+  admissionDate: Date;
+  exitDate: Date;
   rgpdAut: string;
   departmentId: string;
   departmentName: string;
@@ -66,15 +66,15 @@ const createEmptyEmployeeData = (): Employee => {
     phone: 0,
     mobile: 0,
     email: '',
-    birthday: '',
+    birthday: new Date(),
     nacionality: '',
     gender: '',
     biNumber: '',
-    biIssuance: '',
-    biValidity: '',
+    biIssuance: new Date(),
+    biValidity: new Date(),
     nif: 0,
-    admissionDate: '',
-    exitDate: '',
+    admissionDate: new Date(),
+    exitDate: new Date(),
     rgpdAut: '',
     departmentId: '',
     departmentName: '',
@@ -157,15 +157,15 @@ export default function EmployeeModal({ open, onClose, employee }: EmployeeModal
       phone: 0,
       mobile: 0,
       email: '',
-      birthday: '',
+      birthday: new Date(),
       nacionality: '',
       gender: '',
       biNumber: '',
-      biIssuance: '',
-      biValidity: '',
+      biIssuance: new Date(),
+      biValidity: new Date(),
       nif: 0,
-      admissionDate: '',
-      exitDate: '',
+      admissionDate: new Date(),
+      exitDate: new Date(),
       rgpdAut: '',
       departmentId: '',
       departmentName: '',

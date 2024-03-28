@@ -1,8 +1,6 @@
-import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
+import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
-import React from 'react';
+import { useEffect, useState } from 'react';
 
 type ExternalEntity = {
     id: string,
@@ -22,9 +20,11 @@ type ExternalEntity = {
     WWW: string,
     Fax: number,
     NIF: number,
-    DateInserted: string,
-    DateUpdated: string,
+    DateInserted: Date,
+    DateUpdated: Date,
 };
+
+type NewExternalEntityData = Partial<ExternalEntity>;
 
 interface ExternalEntityModalProps {
     open: boolean;
@@ -32,58 +32,8 @@ interface ExternalEntityModalProps {
     externalEntity: ExternalEntity | null;
 }
 
-interface NewExternalEntityData {
-    [key: string]: string | number;
-    name: string,
-    Comments: string,
-    CommercialName: string,
-    ResponsibleName: string,
-    Photo: string,
-    Address: string,
-    ZIPCode: string,
-    Locality: string,
-    Village: string,
-    District: string,
-    Phone: number,
-    Mobile: number,
-    Email: string,
-    WWW: string,
-    Fax: number,
-    NIF: number,
-    DateInserted: string,
-    DateUpdated: string,
-}
-
-const Transition = forwardRef(function Transition(
-    props: TransitionProps & { children?: React.ReactElement | undefined },
-    ref: ForwardedRef<unknown>,
-) {
-    return <Slide direction="up" ref={ref} {...props} children={props.children || <div />} />;
-});
-
-const fields = [
-    { key: 'name', type: 'string', required: true, label: 'Name' },
-    { key: 'Comments', type: 'string', label: 'Comments' },
-    { key: 'CommercialName', type: 'string', label: 'Commercial Name' },
-    { key: 'ResponsibleName', type: 'string', label: 'Responsible Name' },
-    { key: 'Photo', type: 'string', label: 'Photo' },
-    { key: 'Address', type: 'string', label: 'Address' },
-    { key: 'ZIPCode', type: 'string', label: 'ZIP Code' },
-    { key: 'Locality', type: 'string', label: 'Locality' },
-    { key: 'Village', type: 'string', label: 'Village' },
-    { key: 'District', type: 'string', label: 'District' },
-    { key: 'Phone', type: 'number', label: 'Phone' },
-    { key: 'Mobile', type: 'number', label: 'Mobile' },
-    { key: 'Email', type: 'string', label: 'Email' },
-    { key: 'WWW', type: 'string', label: 'WWW' },
-    { key: 'Fax', type: 'number', label: 'Fax' },
-    { key: 'NIF', type: 'number', required: true, label: 'NIF' },
-    { key: 'DateInserted', type: 'string', label: 'Date Inserted' },
-    { key: 'DateUpdated', type: 'string', label: 'Date Updated' },
-];
-
 export default function ExternalEntityModal({ open, onClose, externalEntity }: ExternalEntityModalProps) {
-    const [newExternalEntityData, setNewExternalEntityData] = useState<NewExternalEntityData>({
+    const initialExternalEntityData: NewExternalEntityData = {
         name: '',
         Comments: '',
         CommercialName: '',
@@ -100,9 +50,10 @@ export default function ExternalEntityModal({ open, onClose, externalEntity }: E
         WWW: '',
         Fax: 0,
         NIF: 0,
-        DateInserted: '',
-        DateUpdated: '',
-    });
+        DateInserted: new Date(),
+        DateUpdated: new Date(),
+    };
+    const [newExternalEntityData, setNewExternalEntityData] = useState<NewExternalEntityData>(initialExternalEntityData);
 
     const handleSubmit = () => {
         if (externalEntity) {
@@ -138,8 +89,8 @@ export default function ExternalEntityModal({ open, onClose, externalEntity }: E
                         WWW: '',
                         Fax: 0,
                         NIF: 0,
-                        DateInserted: '',
-                        DateUpdated: '',
+                        DateInserted: new Date(),
+                        DateUpdated: new Date(),
 
                     });
 
@@ -178,9 +129,8 @@ export default function ExternalEntityModal({ open, onClose, externalEntity }: E
                         WWW: '',
                         Fax: 0,
                         NIF: 0,
-                        DateInserted: '',
-                        DateUpdated: '',
-
+                        DateInserted: new Date(),
+                        DateUpdated: new Date(),
                     });
 
                 })
@@ -191,8 +141,10 @@ export default function ExternalEntityModal({ open, onClose, externalEntity }: E
     useEffect(() => {
         if (externalEntity) {
             setNewExternalEntityData(externalEntity);
+        } else {
+            setNewExternalEntityData(initialExternalEntityData);
         }
-    }, [externalEntity]);
+    }, [externalEntity, initialExternalEntityData]);
 
     const handleClose = () => {
         handleSubmit();
@@ -204,7 +156,7 @@ export default function ExternalEntityModal({ open, onClose, externalEntity }: E
             fullScreen
             open={open}
             onClose={onClose}
-            TransitionComponent={Transition}
+            TransitionComponent={Slide}
         >
             <AppBar sx={{ position: 'relative' }}>
                 <Toolbar>
@@ -225,17 +177,17 @@ export default function ExternalEntityModal({ open, onClose, externalEntity }: E
                 </Toolbar>
             </AppBar>
             <Grid container spacing={3} sx={{ mt: 2 }}>
-                {fields.map(field => (
-                    <Grid item xs={4} key={field.key}>
+                {Object.entries(newExternalEntityData).map(([key, value]) => (
+                    <Grid item xs={4} key={key}>
                         <TextField
                             fullWidth
-                            label={field.required ? `${field.label} *` : field.label}
+                            label={key}
                             variant="outlined"
-                            value={newExternalEntityData[field.key]}
+                            value={value || ''}
                             onChange={(e) =>
                                 setNewExternalEntityData((prevData) => ({
                                     ...prevData,
-                                    [field.key]: e.target.value,
+                                    [key]: e.target.value,
                                 }))
                             }
                         />

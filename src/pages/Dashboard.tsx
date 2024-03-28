@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
-import { Employee } from './Employees';
 import { NavBar } from '../components/NavBar';
 import { Footer } from '../components/Footer';
+import { Employee } from '../types/Types';
 
 export const Dashboard = () => {
     const [chartData, setChartData] = useState<{ [key: string]: { xAxis: { data: string[] }[], series: { data: number[] }[] } }>({});

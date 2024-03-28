@@ -2,52 +2,11 @@ import { useState, useEffect } from 'react';
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
 import '../css/PagesStyles.css';
-import EmployeeModal from "../Modals/EmployeeModal";
-import IconButton from '@mui/material/IconButton';
-import { Delete, Edit, PersonAdd, Refresh, ViewList } from '@mui/icons-material';
+import EmployeeModal from "../modals/EmployeeModal";
+import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../Modals/ColumnSelectorModal';
-
-export type Employee = {
-    [key: string]: any;
-    id: string;
-    number: number;
-    name: string;
-    shortName: string;
-    nameAcronym: string;
-    comments: string;
-    photo: string;
-    address: string;
-    zipcode: string;
-    locality: string;
-    village: string;
-    district: string;
-    phone: number;
-    mobile: number;
-    email: string;
-    birthday: string;
-    nacionality: string;
-    gender: string;
-    biNumber: string;
-    biIssuance: string;
-    biValidity: string;
-    nif: number;
-    admissionDate: string;
-    exitDate: string;
-    rgpdAut: string;
-    departmentId: string;
-    departmentName: string;
-    professionId: string;
-    professionName: string;
-    categoryId: string;
-    categoryName: string;
-    groupId: string;
-    groupName: string;
-    zoneId: string;
-    zoneName: string;
-    externalEntityId: string;
-    externalEntityName: string;
-};
+import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
+import { Employee } from '../types/Types';
 
 export const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -145,12 +104,8 @@ export const Employees = () => {
         name: 'Actions',
         cell: (row: Employee) => (
             <div>
-                <IconButton color="primary" aria-label="edit" onClick={() => handleOpenUpdateModal(row)}>
-                    <Edit />
-                </IconButton>
-                <IconButton color="error" aria-label="delete" onClick={() => deleteEmployee(row.id)}>
-                    <Delete />
-                </IconButton>
+                <Button variant="outline-primary" onClick={() => handleOpenUpdateModal(row)}>Editar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => deleteEmployee(row.id)}>Apagar</Button>{' '}
             </div>
         ),
         selector: undefined,
@@ -160,15 +115,9 @@ export const Employees = () => {
         <div>
             <NavBar />
             <div className='refresh-add-edit-upper-class'>
-                <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshEmployees}>
-                    <Refresh />
-                </IconButton>
-                <IconButton className='add-button' color="primary" aria-label="add-employee" onClick={handleOpen}>
-                    <PersonAdd />
-                </IconButton>
-                <IconButton className='edit-columns' color="primary" aria-label="view-list" onClick={() => setOpenColumnSelector(true)}>
-                    <ViewList />
-                </IconButton>
+                <Button variant="outline-primary" onClick={refreshEmployees}>Atualizar</Button>{' '}
+                <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
                 <EmployeeModal open={open} onClose={handleClose} employee={selectedEmployee} />
             </div>
             <div>

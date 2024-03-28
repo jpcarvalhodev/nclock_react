@@ -1,33 +1,25 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
-import { IconButton } from "@mui/material";
-import { PersonAdd, Refresh, Edit, Delete, ViewList } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
-import ProfessionsModal from "../Modals/ProfessionsModal";
-import { ColumnSelectorModal } from "../Modals/ColumnSelectorModal";
+import CategoriesModal from "../modals/CategoriesModal";
+import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
+import { Category } from "../types/Types";
+import Button from "react-bootstrap/esm/Button";
 
-export type Profession = {
-    [key: string]: any;
-    id: string,
-    code: number,
-    description: string,
-    acronym: string,
-};
-
-export const Professions = () => {
-    const [professions, setProfessions] = useState<Profession[]>([]);
+export const Categories = () => {
+    const [categories, setCategories] = useState<Category[]>([]);
     const [open, setOpen] = useState(false);
-    const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'description']);
 
-    const fetchProfessions = () => {
+    const fetchCategories = () => {
         const token = localStorage.getItem('token');
 
-        fetch('https://localhost:7129/api/Professions', {
+        fetch('https://localhost:7129/api/Categories', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -36,18 +28,18 @@ export const Professions = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error fetching professions data');
+                    throw new Error('Error fetching categories data');
                 }
                 return response.json();
             })
             .then(data => {
-                setProfessions(data);
+                setCategories(data);
             })
-            .catch(error => console.error('Error fetching the professions', error));
+            .catch(error => console.error('Error fetching the categories', error));
     };
 
-    const deleteProfessions = (id: string) => {
-        fetch(`https://localhost:7129/api/Professions/${id}`, {
+    const deleteCategory = (id: string) => {
+        fetch(`https://localhost:7129/api/Categories/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -56,19 +48,19 @@ export const Professions = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error deleting profession');
+                    throw new Error('Error deleting category');
                 }
-                refreshProfessions();
+                refreshCategories();
             })
             .catch(error => console.error(error));
     };
 
     useEffect(() => {
-        fetchProfessions();
+        fetchCategories();
     }, []);
 
-    const refreshProfessions = () => {
-        fetchProfessions();
+    const refreshCategories = () => {
+        fetchCategories();
     };
 
     const handleOpen = () => {
@@ -79,12 +71,12 @@ export const Professions = () => {
         setOpen(false);
     };
 
-    const handleOpenUpdateModal = (profession: Profession) => {
-        setSelectedProfession(profession);
+    const handleOpenUpdateModal = (category: Category) => {
+        setSelectedCategory(category);
         setOpen(true);
     };
 
-    const filteredItems = professions.filter(item =>
+    const filteredItems = categories.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
@@ -104,20 +96,16 @@ export const Professions = () => {
 
     let tableColumns = selectedColumns.map(columnName => ({
         name: columnName,
-        selector: (row: Profession) => row[columnName],
+        selector: (row: Category) => row[columnName],
         sortable: true,
       }));
 
-    const actionColumn: TableColumn<Profession> = {
+    const actionColumn: TableColumn<Category> = {
         name: 'Actions',
-        cell: (row: Profession) => (
+        cell: (row: Category) => (
             <div>
-                <IconButton color="primary" aria-label="edit" onClick={() => handleOpenUpdateModal(row)}>
-                    <Edit />
-                </IconButton>
-                <IconButton color="error" aria-label="delete" onClick={() => deleteProfessions(row.id)}>
-                    <Delete />
-                </IconButton>
+                <Button variant="outline-primary" onClick={() => handleOpenUpdateModal(row)}>Editar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => deleteCategory(row.id)}>Apagar</Button>{' '}
             </div>
         ),
         selector: undefined,
@@ -127,16 +115,10 @@ export const Professions = () => {
         <div>
             <NavBar />
             <div className='refresh-add-edit-upper-class'>
-                <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshProfessions}>
-                    <Refresh />
-                </IconButton>
-                <IconButton className='add-button' color="primary" aria-label="add-profession" onClick={handleOpen}>
-                    <PersonAdd />
-                </IconButton>
-                <IconButton className='edit-columns' color="primary" aria-label="view-list" onClick={() => setOpenColumnSelector(true)}>
-                    <ViewList />
-                </IconButton>
-                <ProfessionsModal open={open} onClose={handleClose} profession={selectedProfession} />
+                <Button variant="outline-primary" onClick={refreshCategories}>Atualizar</Button>{' '}
+                <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <CategoriesModal open={open} onClose={handleClose} category={selectedCategory} />
             </div>
             <div>
                 <input

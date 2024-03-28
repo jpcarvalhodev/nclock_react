@@ -1,33 +1,25 @@
 import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
-import { IconButton } from "@mui/material";
-import { PersonAdd, Refresh, Edit, Delete, ViewList } from "@mui/icons-material";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
-import GroupsModal from "../Modals/GroupsModal";
-import { ColumnSelectorModal } from "../Modals/ColumnSelectorModal";
+import DepartmentsModal from "../modals/DepartmentsModal";
+import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
+import { Department } from "../types/Types";
+import Button from "react-bootstrap/esm/Button";
 
-export type Group = {
-    [key: string]: any;
-    id: string;
-    name: string;
-    description: string;
-    paiID: number;
-};
-
-export const Groups = () => {
-    const [groups, setGroups] = useState<Group[]>([]);
+export const Departments = () => {
+    const [departments, setDepartments] = useState<Department[]>([]);
     const [open, setOpen] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+    const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'name']);
 
-    const fetchGroups = () => {
+    const fetchDepartments = () => {
         const token = localStorage.getItem('token');
 
-        fetch('https://localhost:7129/api/Groups', {
+        fetch('https://localhost:7129/api/Departaments', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -36,18 +28,18 @@ export const Groups = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error fetching groups data');
+                    throw new Error('Error fetching departments data');
                 }
                 return response.json();
             })
             .then(data => {
-                setGroups(data);
+                setDepartments(data);
             })
-            .catch(error => console.error('Error fetching the groups', error));
+            .catch(error => console.error('Error fetching the departments', error));
     };
 
-    const deleteGroups = (id: string) => {
-        fetch(`https://localhost:7129/api/Groups/${id}`, {
+    const deleteDepartment = (id: string) => {
+        fetch(`https://localhost:7129/api/Departaments/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -56,19 +48,19 @@ export const Groups = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Error deleting group');
+                    throw new Error('Error deleting department');
                 }
-                refreshGroups();
+                refreshDepartments();
             })
             .catch(error => console.error(error));
     };
 
     useEffect(() => {
-        fetchGroups();
+        fetchDepartments();
     }, []);
 
-    const refreshGroups = () => {
-        fetchGroups();
+    const refreshDepartments = () => {
+        fetchDepartments();
     };
 
     const handleOpen = () => {
@@ -79,12 +71,12 @@ export const Groups = () => {
         setOpen(false);
     };
 
-    const handleOpenUpdateModal = (group: Group) => {
-        setSelectedGroup(group);
+    const handleOpenUpdateModal = (department: Department) => {
+        setSelectedDepartment(department);
         setOpen(true);
     };
 
-    const filteredItems = groups.filter(item =>
+    const filteredItems = departments.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
@@ -99,25 +91,21 @@ export const Groups = () => {
     };
 
     const resetColumns = () => {
-        setSelectedColumns(['name']);
+        setSelectedColumns(['code', 'name']);
     };
 
     let tableColumns = selectedColumns.map(columnName => ({
         name: columnName,
-        selector: (row: Group) => row[columnName],
+        selector: (row: Department) => row[columnName],
         sortable: true,
       }));
 
-    const actionColumn: TableColumn<Group> = {
+    const actionColumn: TableColumn<Department> = {
         name: 'Actions',
-        cell: (row: Group) => (
+        cell: (row: Department) => (
             <div>
-                <IconButton color="primary" aria-label="edit" onClick={() => handleOpenUpdateModal(row)}>
-                    <Edit />
-                </IconButton>
-                <IconButton color="error" aria-label="delete" onClick={() => deleteGroups(row.id)}>
-                    <Delete />
-                </IconButton>
+                <Button variant="outline-primary" onClick={() => handleOpenUpdateModal(row)}>Editar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => deleteDepartment(row.id)}>Apagar</Button>{' '}
             </div>
         ),
         selector: undefined,
@@ -127,16 +115,10 @@ export const Groups = () => {
         <div>
             <NavBar />
             <div className='refresh-add-edit-upper-class'>
-                <IconButton className='refresh-button' color="primary" aria-label="refresh" onClick={refreshGroups}>
-                    <Refresh />
-                </IconButton>
-                <IconButton className='add-button' color="primary" aria-label="add-groups" onClick={handleOpen}>
-                    <PersonAdd />
-                </IconButton>
-                <IconButton className='edit-columns' color="primary" aria-label="view-list" onClick={() => setOpenColumnSelector(true)}>
-                    <ViewList />
-                </IconButton>
-                <GroupsModal open={open} onClose={handleClose} group={selectedGroup} />
+                <Button variant="outline-primary" onClick={refreshDepartments}>Atualizar</Button>{' '}
+                <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <DepartmentsModal open={open} onClose={handleClose} department={selectedDepartment} />
             </div>
             <div>
                 <input
