@@ -1,54 +1,148 @@
-#ribbon {
-    background-color: #FFF;
-    border-bottom: 1px solid #CCC;
-}
-
-.tabs {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.nav-container {
     display: flex;
+    align-items: center;
+    background-color: #1976d2;
 }
 
-.tabs li {
-    padding: 10px 20px;
-    cursor: pointer;
-    color: #333;
-    transition: background-color 0.3s;
+.logo {
+    font-weight: bold;
+    font-size: 25px;
+    padding: 10px;
+    line-height: 0;
+    color: white
 }
 
-.tabs li:hover {
-    background-color: #DDD;
+.nav {
+    display: flex;
+    align-items: center;
 }
 
-.tabs .active {
-    background-color: #1976D2;
-    color: #FFF;
+.pessoas-tab {
+    margin-right: 5px;
 }
 
-.content {
-    padding: 20px;
+.dispositivos-tab {
+    margin-right: 5px;
 }
 
-.tab-content {
-    display: none;
+.configuracao-tab {
+    margin-right: 5px;
 }
 
-.tab-content.active {
+.section {
+    display: flex;
+    justify-content: start;
+    border-bottom: 1px solid #ccc;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid #ccc;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.title-container {
+    background-color: #dfdfdf;
+    width: 100%;
+    text-align: center;
+}
+
+.title {
+    font-size: 14px;
+}
+
+.ribbon-button-pessoas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.icon-text-pessoas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ribbon-button-pessoas .icon {
+    margin-bottom: 2px;
+}
+
+.ribbon-button, .ribbon-icon-button {
+    margin: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.ribbon-button .icon, .ribbon-icon-button .icon {
     display: block;
+    text-align: center;
 }
 
-.tab-content ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.ribbon-button .icon, .ribbon-icon-button .icon {
+    display: inline-block;
+    margin-right: 5px;
 }
 
-.tab-content ul li {
-    padding: 10px 0;
-    cursor: pointer;
+.ribbon-button .text, .ribbon-icon-button .text {
+    display: inline-block;
 }
 
-.tab-content ul li:hover {
-    background-color: #F3F3F3;
+.ribbon-button-pessoas .icon, .ribbon-button-pessoas .text {
+    display: block;
+    text-align: center;
+    font-size: 14px;
+}
+
+.ribbon-button-pessoas .icon {
+    margin-bottom: 5px;
+}
+
+.ribbon-button-pessoas .icon img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.ribbon-button, .ribbon-icon-button {
+    background-color: transparent;
+    font-size: 12px;
+}
+
+.user-section {
+    margin-left: auto;
+}
+
+.user-info {
+    font-size: 18px;
+}
+
+.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.dropdown-content img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 10px;
 }

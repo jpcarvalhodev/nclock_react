@@ -1,9 +1,17 @@
-import '../css/NavBar.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { Employee } from '../types/Types';
-import Nav from 'react-bootstrap/Nav';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../css/NavBar.css';
+import profileAvatar from '../assets/img/profileAvatar.png';
+import categories from '../assets/img/categories.png';
+import departments from '../assets/img/departments.png';
+import externalEntities from '../assets/img/externalEntities.png';
+import groups from '../assets/img/groups.png';
+import professions from '../assets/img/professions.png';
+import zones from '../assets/img/zones.png';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 interface MyTokenPayload extends JwtPayload {
 	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
@@ -13,8 +21,10 @@ interface MyTokenPayload extends JwtPayload {
 export const NavBar = () => {
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
-	const [showDropdown, setShowDropdown] = useState(false);
-	const [key, setKey] = useState('home');
+	const [showRibbon, setShowRibbon] = useState(false);
+	const [showDispositivos, setShowDispositivos] = useState(false);
+	const [showConfiguracao, setShowConfiguracao] = useState(false);
+	const [showAjuda, setShowAjuda] = useState(false);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -37,8 +47,20 @@ export const NavBar = () => {
 			.catch(error => console.error('Error:', error));
 	}, []);
 
-	const toggleDropdown = () => {
-		setShowDropdown(!showDropdown);
+	const handlePessoasClick = () => {
+		setShowRibbon(!showRibbon);
+	};
+
+	const handleDispositivosClick = () => {
+		setShowDispositivos(!showDispositivos);
+	};
+
+	const handleConfiguracaoClick = () => {
+		setShowConfiguracao(!showConfiguracao);
+	};
+
+	const handleAjudaClick = () => {
+		setShowAjuda(!showAjuda);
 	};
 
 	const logout = () => {
@@ -46,21 +68,151 @@ export const NavBar = () => {
 		navigate('/');
 	};
 
+	const handleLogoClick = () => {
+		navigate('/Dashboard');
+	}
+
 	return (
-		<div>
-			<Nav variant="tabs" defaultActiveKey="/home">
-				<Nav.Item>
-					<Nav.Link href="#">Active</Nav.Link>
-				</Nav.Item>
-				<Nav.Item>
-					<Nav.Link eventKey="link-1">Option 2</Nav.Link>
-				</Nav.Item>
-				<Nav.Item>
-					<Nav.Link eventKey="disabled" disabled>
-						Disabled
-					</Nav.Link>
-				</Nav.Item>
-			</Nav>
-		</div>
+		<nav data-role="ribbonmenu">
+			<div className="nav-container">
+				<div className="logo">
+					<a className="nav-link active" onClick={handleLogoClick}>Nclock</a>
+				</div>
+				<ul className="nav nav-tabs">
+					<li className="nav-item">
+						<a className="nav-link active pessoas-tab" id="pessoas-tab" onClick={handlePessoasClick}>Pessoas</a>
+					</li>
+					<li className="nav-item">
+						<a className="nav-link active dispositivos-tab" id="dispositivos-tab" onClick={handleDispositivosClick}>Dispositivos</a>
+					</li>
+					<li className="nav-item">
+						<a className="nav-link active configuracao-tab" id="configuracao-tab" onClick={handleConfiguracaoClick}>Configuração</a>
+					</li>
+					<li className="nav-item">
+						<a className="nav-link active ajuda-tab" id="ajuda-tab" onClick={handleAjudaClick}>Ajuda</a>
+					</li>
+				</ul>
+				<Dropdown className='user-section'>
+					<Dropdown.Toggle variant="basic" id="dropdown-basic">
+						<span className='user-info'>{user.name}</span>
+					</Dropdown.Toggle>
+					<Dropdown.Menu>
+						<div className='dropdown-content'>
+						<img src={employee?.photo || profileAvatar} alt="User" />
+						<Dropdown.Item disabled>{user.name}</Dropdown.Item>
+						<Dropdown.Item disabled>{user.email}</Dropdown.Item>
+						<Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+						</div>
+					</Dropdown.Menu>
+				</Dropdown>
+			</div>
+
+			{showRibbon && (
+				<div className="tab-content" id="myTabContent">
+					<div className="tab-pane fade show active" id="pessoas" role="tabpanel" aria-labelledby="pessoas-tab">
+						<div className="section" id="section-group">
+							<div className="group">
+								<div className="btn-group" role="group">
+									<div className='icon-text-pessoas'>
+										<button type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<span className="icon">
+												<img src={profileAvatar} alt="Profile" />
+											</span>
+										</button>
+										<span className="text">Pessoas</span>
+									</div>
+									<div className="grid-container">
+										<Link to="/Employees" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={profileAvatar} alt="avatar funcionários" />
+											</span>
+											<span className="text">Funcionários</span>
+										</Link>
+										<button type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={profileAvatar} alt="avatar visitantes" />
+											</span>
+											<span className="text">Visitantes</span>
+										</button>
+										<button type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={profileAvatar} alt="avatar funcionários externos" />
+											</span>
+											<span className="text">Funcionários Externos</span>
+										</button>
+										<button type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={profileAvatar} alt="avatar contactos" />
+											</span>
+											<span className="text">Contactos</span>
+										</button>
+										<button type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={profileAvatar} alt="avatar utentes" />
+											</span>
+											<span className="text">Utentes</span>
+										</button>
+										<button type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={profileAvatar} alt="avatar provisórios" />
+											</span>
+											<span className="text">Provisórios</span>
+										</button>
+									</div>
+								</div>
+								<div className="title-container">
+									<span className="title">Pessoas</span>
+								</div>
+							</div>
+							<div className="group">
+								<div className="btn-group" role="group">
+									<div className="grid-container">
+										<Link to="/Departments" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={departments} alt="avatar funcionários" />
+											</span>
+											<span className="text">Departamentos</span>
+										</Link>
+										<Link to="/Professions" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={professions} alt="avatar visitantes" />
+											</span>
+											<span className="text">Profissões</span>
+										</Link>
+										<Link to="/Groups" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={groups} alt="avatar funcionários externos" />
+											</span>
+											<span className="text">Grupos</span>
+										</Link>
+										<Link to="/Zones" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={zones} alt="avatar contactos" />
+											</span>
+											<span className="text">Zonas</span>
+										</Link>
+										<Link to="/Categories" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={categories} alt="avatar utentes" />
+											</span>
+											<span className="text">Categorias</span>
+										</Link>
+										<Link to="/ExternalEntities" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={externalEntities} alt="avatar provisórios" />
+											</span>
+											<span className="text">Entidades Externas</span>
+										</Link>
+									</div>
+								</div>
+								<div className="title-container">
+									<span className="title">Organização</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+		</nav>
 	);
 };

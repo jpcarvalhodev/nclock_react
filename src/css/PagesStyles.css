@@ -14,11 +14,19 @@ img {
     max-height: 50px;
 }
 
-.refresh-add-edit-upper-class {
+.filter-refresh-add-edit-upper-class {
     display: flex;
-    margin-left: 200px;
-    z-index: 1;
-    transform: translateY(35px);
+    margin-top: 30px;
+    margin-left: 50px;
+    margin-bottom: 30px;
+}
+
+.filter-input {
+    margin-right: 10px;
+}
+
+.filter-refresh-add-edit-upper-class button {
+    margin-right: 10px;
 }
 
 .add-button:hover,
@@ -37,6 +45,7 @@ img {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+    margin-top: 50px;
     margin-bottom: 100px;
 }
 

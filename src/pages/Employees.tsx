@@ -114,19 +114,20 @@ export const Employees = () => {
     return (
         <div>
             <NavBar />
-            <div className='refresh-add-edit-upper-class'>
+            <div className='filter-refresh-add-edit-upper-class'>
+                <input
+                    className='filter-input'
+                    type="text"
+                    placeholder="Filter"
+                    value={filterText}
+                    onChange={e => setFilterText(e.target.value)}
+                />
                 <Button variant="outline-primary" onClick={refreshEmployees}>Atualizar</Button>{' '}
                 <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
                 <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
                 <EmployeeModal open={open} onClose={handleClose} employee={selectedEmployee} />
             </div>
             <div>
-                <input
-                    type="text"
-                    placeholder="Filter"
-                    value={filterText}
-                    onChange={e => setFilterText(e.target.value)}
-                />
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}

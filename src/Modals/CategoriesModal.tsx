@@ -1,8 +1,5 @@
-import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
-import CloseIcon from '@mui/icons-material/Close';
-import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
-import React from 'react';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
 
 type Category = {
     id: string,
@@ -23,13 +20,6 @@ interface NewCategoryData {
     description: string,
     acronym: string,
 }
-
-const Transition = forwardRef(function Transition(
-    props: TransitionProps & { children?: React.ReactElement | undefined },
-    ref: ForwardedRef<unknown>,
-) {
-    return <Slide direction="up" ref={ref} {...props} children={props.children || <div />} />;
-});
 
 const fields = [
     { key: 'code', label: 'Code', required: true },
@@ -110,48 +100,41 @@ export default function CategoryModal({ open, onClose, category }: CategoryModal
     };
 
     return (
-        <Dialog
-            fullScreen
-            open={open}
-            onClose={onClose}
-            TransitionComponent={Transition}
-        >
-            <AppBar sx={{ position: 'relative' }}>
-                <Toolbar>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        onClick={onClose}
-                        aria-label="close"
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                        Add New Category
-                    </Typography>
-                    <Button autoFocus color="inherit" onClick={handleClose}>
-                        Add and Close
-                    </Button>
-                </Toolbar>
-            </AppBar>
-            <Grid container spacing={3} sx={{ mt: 2 }}>
-                {fields.map(field => (
-                    <Grid item xs={4} key={field.key}>
-                        <TextField
-                            fullWidth
-                            label={field.required ? `${field.label} *` : field.label}
-                            variant="outlined"
-                            value={newCategoryData[field.key]}
-                            onChange={(e) =>
-                                setNewCategoryData((prevData) => ({
-                                    ...prevData,
-                                    [field.key]: e.target.value,
-                                }))
-                            }
-                        />
-                    </Grid>
-                ))}
-            </Grid>
-        </Dialog>
+        <Modal show={open} onHide={onClose} fullscreen>
+            <Modal.Header closeButton>
+                <Modal.Title>Add New Category</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    <Row>
+                        {fields.map(field => (
+                            <Col xs={4} key={field.key}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>{field.required ? `${field.label} *` : field.label}</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={newCategoryData[field.key]}
+                                        onChange={(e) =>
+                                            setNewCategoryData((prevData) => ({
+                                                ...prevData,
+                                                [field.key]: e.target.value,
+                                            }))
+                                        }
+                                    />
+                                </Form.Group>
+                            </Col>
+                        ))}
+                    </Row>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={onClose}>
+                    Close
+                </Button>
+                <Button variant="primary" onClick={handleClose}>
+                    Add and Close
+                </Button>
+            </Modal.Footer>
+        </Modal>
     );
 }

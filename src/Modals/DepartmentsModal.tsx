@@ -1,8 +1,5 @@
-import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
-import CloseIcon from '@mui/icons-material/Close';
-import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
-import React from 'react';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
 
 type Department = {
     id: string,
@@ -25,13 +22,6 @@ interface NewDepartmentData {
     description: string,
     paiId: number,
 }
-
-const Transition = forwardRef(function Transition(
-    props: TransitionProps & { children?: React.ReactElement | undefined },
-    ref: ForwardedRef<unknown>,
-) {
-    return <Slide direction="up" ref={ref} {...props} children={props.children || <div />} />;
-});
 
 const fields = [
     { key: 'code', label: 'Code', type: 'number', required: true },
@@ -116,48 +106,37 @@ export default function EmployeeModal({ open, onClose, department }: DepartmentM
     };
 
     return (
-        <Dialog
-            fullScreen
-            open={open}
-            onClose={onClose}
-            TransitionComponent={Transition}
-        >
-            <AppBar sx={{ position: 'relative' }}>
-                <Toolbar>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        onClick={onClose}
-                        aria-label="close"
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                        Add New Department
-                    </Typography>
-                    <Button autoFocus color="inherit" onClick={handleClose}>
-                        Add and Close
-                    </Button>
-                </Toolbar>
-            </AppBar>
-            <Grid container spacing={3} sx={{ mt: 2 }}>
-                {fields.map(field => (
-                    <Grid item xs={3} key={field.key}>
-                        <TextField
-                            fullWidth
-                            label={field.required ? `${field.label} *` : field.label}
-                            variant="outlined"
-                            value={newDepartmentData[field.key]}
-                            onChange={(e) =>
-                                setNewDepartmentData((prevData) => ({
-                                    ...prevData,
-                                    [field.key]: e.target.value,
-                                }))
-                            }
-                        />
-                    </Grid>
-                ))}
-            </Grid>
-        </Dialog>
+        <Modal show={open} onHide={onClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Edit Department</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    {fields.map(field => (
+                        <Form.Group key={field.key}>
+                            <Form.Label>{field.label}</Form.Label>
+                            <Form.Control
+                                type={field.type}
+                                value={newDepartmentData[field.key]}
+                                onChange={(e) =>
+                                    setNewDepartmentData((prevData) => ({
+                                        ...prevData,
+                                        [field.key]: e.target.value,
+                                    }))
+                                }
+                            />
+                        </Form.Group>
+                    ))}
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={onClose}>
+                    Close
+                </Button>
+                <Button variant="primary" onClick={handleSubmit}>
+                    Save Changes
+                </Button>
+            </Modal.Footer>
+        </Modal>
     );
 }

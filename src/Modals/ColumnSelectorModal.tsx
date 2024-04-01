@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, FormControlLabel, Checkbox, Button, DialogActions, styled } from '@mui/material';
+import { Modal, Button, FormCheck } from 'react-bootstrap';
 
 interface ColumnSelectorModalProps {
     columns: string[];
@@ -9,16 +9,6 @@ interface ColumnSelectorModalProps {
     onResetColumns: () => void;
 }
 
-const StyledDialog = styled(Dialog)({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-});
-
-const StyledDialogContent = styled(DialogContent)({
-    width: 400,
-});
-
 export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
     columns,
     selectedColumns,
@@ -27,21 +17,25 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
     onResetColumns,
 }) => {
     return (
-        <StyledDialog open={true} onClose={onClose}>
-            <DialogTitle>Select Columns</DialogTitle>
-            <StyledDialogContent>
+        <Modal show={true} onHide={onClose} centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Select Columns</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
                 {columns.map(columnName => (
-                    <FormControlLabel
+                    <FormCheck 
                         key={columnName}
-                        control={<Checkbox checked={selectedColumns.includes(columnName)} onChange={() => onColumnToggle(columnName)} />}
+                        type="checkbox"
                         label={columnName}
+                        checked={selectedColumns.includes(columnName)}
+                        onChange={() => onColumnToggle(columnName)}
                     />
                 ))}
-            </StyledDialogContent>
-            <DialogActions>
-                <Button onClick={onResetColumns}>Reset</Button>
-                <Button onClick={onClose}>Close</Button>
-            </DialogActions>
-        </StyledDialog>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={onResetColumns}>Reset</Button>
+                <Button variant="primary" onClick={onClose}>Close</Button>
+            </Modal.Footer>
+        </Modal>
     );
 };

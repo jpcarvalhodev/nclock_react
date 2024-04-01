@@ -1,8 +1,5 @@
-import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
-import CloseIcon from '@mui/icons-material/Close';
-import { ForwardedRef, forwardRef, useEffect, useState } from 'react';
-import React from 'react';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
 
 type Employee = {
   [key: string]: any;
@@ -92,13 +89,6 @@ const createEmptyEmployeeData = (): Employee => {
   return emptyEmployee;
 };
 
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & { children?: React.ReactElement | undefined },
-  ref: ForwardedRef<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} children={props.children || <div />} />;
-});
-
 const fields = [
   { label: 'Number', key: 'number', type: 'number', required: true },
   { label: 'Name', key: 'name', type: 'string', required: true },
@@ -186,7 +176,7 @@ export default function EmployeeModal({ open, onClose, employee }: EmployeeModal
     if (employee) {
       const token = localStorage.getItem('token');
 
-      fetch('https://localhost:7129/api/Employees', {
+      fetch(`https://localhost:7129/api/Employees/${employee.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -240,77 +230,65 @@ export default function EmployeeModal({ open, onClose, employee }: EmployeeModal
   };
 
   return (
-    <Dialog
-      fullScreen
-      open={open}
-      onClose={onClose}
-      TransitionComponent={Transition}
-    >
-      <AppBar sx={{ position: 'relative' }}>
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={onClose}
-            aria-label="close"
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Add New Employee
-          </Typography>
-          <Button autoFocus color="inherit" onClick={handleClose}>
-            Add and Close
-          </Button>
-        </Toolbar>
-      </AppBar>
-      <Grid container spacing={3} sx={{ mt: 2 }}>
-        {fields.map(field => (
-          <Grid item xs={4} key={field.key}>
-            {field.key === 'gender' || field.key === 'rgpdAut' ? (
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>{field.label}</InputLabel>
-                <Select
-                  label={field.required ? `${field.label} *` : field.label}
-                  value={newEmployeeData[field.key]}
-                  onChange={(e) =>
-                    setNewEmployeeData((prevData) => ({
-                      ...prevData,
-                      [field.key]: e.target.value,
-                    }))
-                  }
-                >
-                  {field.key === 'gender' ?
-                    [
-                      <MenuItem value="male" key="male">Male</MenuItem>,
-                      <MenuItem value="female" key="female">Female</MenuItem>,
-                      <MenuItem value="" key="">Other</MenuItem>,
-                    ]
-                    :
-                    [
-                      <MenuItem value="yes" key="yes">Yes</MenuItem>,
-                      <MenuItem value="no" key="no">No</MenuItem>,
-                    ]
-                  }
-                </Select>
-              </FormControl>
-            ) : (
-              <TextField
-                fullWidth
-                label={field.required ? `${field.label} *` : field.label}
-                variant="outlined"
-                value={newEmployeeData[field.key]}
-                onChange={(e) =>
-                  setNewEmployeeData((prevData) => ({
-                    ...prevData,
-                    [field.key]: e.target.value,
-                  }))
-                }
-              />
-            )}
-          </Grid>
-        ))}
-      </Grid>
-    </Dialog>
+    <Modal show={open} onHide={onClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Employee</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          {fields.map(field => (
+            <Form.Group as={Row} key={field.key}>
+              <Form.Label column sm={2}>
+                {field.required ? `${field.label} *` : field.label}
+              </Form.Label>
+              <Col sm={10}>
+                {field.key === 'gender' || field.key === 'rgpdAut' ? (
+                  <Form.Control as="select"
+                    value={newEmployeeData[field.key]}
+                    onChange={(e) =>
+                      setNewEmployeeData((prevData) => ({
+                        ...prevData,
+                        [field.key]: e.target.value,
+                      }))
+                    }
+                  >
+                    {field.key === 'gender' ?
+                      [
+                        <option value="male" key="male">Male</option>,
+                        <option value="female" key="female">Female</option>,
+                        <option value="" key="">Other</option>,
+                      ]
+                      :
+                      [
+                        <option value="yes" key="yes">Yes</option>,
+                        <option value="no" key="no">No</option>,
+                      ]
+                    }
+                  </Form.Control>
+                ) : (
+                  <Form.Control
+                    value={newEmployeeData[field.key]}
+                    onChange={(e) =>
+                      setNewEmployeeData((prevData) => ({
+                        ...prevData,
+                        [field.key]: e.target.value,
+                      }))
+                    }
+                  />
+                )}
+              </Col>
+            </Form.Group>
+          ))}
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+        <Button variant="primary" onClick={handleSubmit}>
+          Save Changes
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }

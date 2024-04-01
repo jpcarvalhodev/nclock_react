@@ -1,5 +1,4 @@
-import { Dialog, AppBar, Toolbar, IconButton, Typography, Button, Slide, TextField, Grid } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
 type ExternalEntity = {
@@ -152,48 +151,35 @@ export default function ExternalEntityModal({ open, onClose, externalEntity }: E
     };
 
     return (
-        <Dialog
-            fullScreen
-            open={open}
-            onClose={onClose}
-            TransitionComponent={Slide}
-        >
-            <AppBar sx={{ position: 'relative' }}>
-                <Toolbar>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        onClick={onClose}
-                        aria-label="close"
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                        Add New External Entity
-                    </Typography>
-                    <Button autoFocus color="inherit" onClick={handleClose}>
-                        Add and Close
-                    </Button>
-                </Toolbar>
-            </AppBar>
-            <Grid container spacing={3} sx={{ mt: 2 }}>
-                {Object.entries(newExternalEntityData).map(([key, value]) => (
-                    <Grid item xs={4} key={key}>
-                        <TextField
-                            fullWidth
-                            label={key}
-                            variant="outlined"
-                            value={value || ''}
-                            onChange={(e) =>
-                                setNewExternalEntityData((prevData) => ({
-                                    ...prevData,
-                                    [key]: e.target.value,
-                                }))
-                            }
-                        />
-                    </Grid>
-                ))}
-            </Grid>
-        </Dialog>
+        <Modal show={open} onHide={onClose} fullscreen>
+            <Modal.Header closeButton>
+                <Modal.Title>Add New External Entity</Modal.Title>
+                <Button variant="secondary" onClick={handleClose}>
+                    Add and Close
+                </Button>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    {Object.entries(newExternalEntityData).map(([key, value]) => (
+                        <Form.Group as={Row} key={key}>
+                            <Form.Label column sm={2}>
+                                {key}
+                            </Form.Label>
+                            <Col sm={10}>
+                                <Form.Control
+                                    value={value instanceof Date ? value.toISOString() : value || ''}
+                                    onChange={(e) =>
+                                        setNewExternalEntityData((prevData) => ({
+                                            ...prevData,
+                                            [key]: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </Col>
+                        </Form.Group>
+                    ))}
+                </Form>
+            </Modal.Body>
+        </Modal>
     );
 }

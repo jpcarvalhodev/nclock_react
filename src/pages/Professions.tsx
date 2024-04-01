@@ -122,6 +122,7 @@ export const Professions = () => {
             </div>
             <div>
                 <input
+                    className="filter-input"
                     type="text"
                     placeholder="Filter"
                     value={filterText}
