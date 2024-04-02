@@ -98,7 +98,7 @@ export const Departments = () => {
         name: columnName,
         selector: (row: Department) => row[columnName],
         sortable: true,
-      }));
+    }));
 
     const actionColumn: TableColumn<Department> = {
         name: 'Actions',
@@ -114,20 +114,20 @@ export const Departments = () => {
     return (
         <div>
             <NavBar />
-            <div className='refresh-add-edit-upper-class'>
+            <div className='filter-refresh-add-edit-upper-class'>
+                <input
+                    className='filter-input'
+                    type="text"
+                    placeholder="Filter"
+                    value={filterText}
+                    onChange={e => setFilterText(e.target.value)}
+                />
                 <Button variant="outline-primary" onClick={refreshDepartments}>Atualizar</Button>{' '}
                 <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
                 <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
                 <DepartmentsModal open={open} onClose={handleClose} department={selectedDepartment} />
             </div>
             <div>
-                <input
-                    className="filter-input"
-                    type="text"
-                    placeholder="Filter"
-                    value={filterText}
-                    onChange={e => setFilterText(e.target.value)}
-                />
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}

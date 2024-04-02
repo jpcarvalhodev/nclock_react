@@ -41,9 +41,26 @@ export const NavBar = () => {
 	}, []);
 
 	useEffect(() => {
-		fetch('https://localhost:7129/api/Employees')
-			.then(response => response.json())
-			.then(data => setEmployee(data))
+		const token = localStorage.getItem('token');
+
+		fetch('https://localhost:7129/api/Employees', {
+			headers: new Headers({
+				'Authorization': `Bearer ${token}`,
+			}),
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(data => {
+				if (data) {
+					setEmployee(data);
+				} else {
+					console.error('No data received');
+				}
+			})
 			.catch(error => console.error('Error:', error));
 	}, []);
 
@@ -98,10 +115,10 @@ export const NavBar = () => {
 					</Dropdown.Toggle>
 					<Dropdown.Menu>
 						<div className='dropdown-content'>
-						<img src={employee?.photo || profileAvatar} alt="User" />
-						<Dropdown.Item disabled>{user.name}</Dropdown.Item>
-						<Dropdown.Item disabled>{user.email}</Dropdown.Item>
-						<Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+							<img src={employee?.photo || profileAvatar} alt="User" />
+							<Dropdown.Item disabled>{user.name}</Dropdown.Item>
+							<Dropdown.Item disabled>{user.email}</Dropdown.Item>
+							<Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
 						</div>
 					</Dropdown.Menu>
 				</Dropdown>

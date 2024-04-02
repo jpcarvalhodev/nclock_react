@@ -98,7 +98,7 @@ export const Groups = () => {
         name: columnName,
         selector: (row: Group) => row[columnName],
         sortable: true,
-      }));
+    }));
 
     const actionColumn: TableColumn<Group> = {
         name: 'Actions',
@@ -114,20 +114,20 @@ export const Groups = () => {
     return (
         <div>
             <NavBar />
-            <div className='refresh-add-edit-upper-class'>
+            <div className='filter-refresh-add-edit-upper-class'>
+                <input
+                    className='filter-input'
+                    type="text"
+                    placeholder="Filter"
+                    value={filterText}
+                    onChange={e => setFilterText(e.target.value)}
+                />
                 <Button variant="outline-primary" onClick={refreshGroups}>Atualizar</Button>{' '}
                 <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
                 <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
                 <GroupsModal open={open} onClose={handleClose} group={selectedGroup} />
             </div>
             <div>
-                <input
-                    className="filter-input"
-                    type="text"
-                    placeholder="Filter"
-                    value={filterText}
-                    onChange={e => setFilterText(e.target.value)}
-                />
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
