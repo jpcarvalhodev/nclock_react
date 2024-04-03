@@ -5,6 +5,7 @@ import { Employee } from '../types/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import profileAvatar from '../assets/img/profileAvatar.png';
+import person from '../assets/img/person.png';
 import categories from '../assets/img/categories.png';
 import departments from '../assets/img/departments.png';
 import externalEntities from '../assets/img/externalEntities.png';
@@ -110,7 +111,7 @@ export const NavBar = () => {
 					</li>
 				</ul>
 				<Dropdown className='user-section'>
-					<Dropdown.Toggle variant="basic" id="dropdown-basic">
+					<Dropdown.Toggle className='dropdown-icon' variant="basic" id="dropdown-basic">
 						<span className='user-info'>{user.name}</span>
 					</Dropdown.Toggle>
 					<Dropdown.Menu>
@@ -133,45 +134,45 @@ export const NavBar = () => {
 									<div className='icon-text-pessoas'>
 										<button type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
-												<img src={profileAvatar} alt="Profile" />
+												<img src={person} alt="Profile" />
 											</span>
+											<span className="text">Pessoas</span>
 										</button>
-										<span className="text">Pessoas</span>
 									</div>
 									<div className="grid-container">
 										<Link to="/Employees" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
-												<img src={profileAvatar} alt="avatar funcionários" />
+												<img src={person} alt="avatar funcionários" />
 											</span>
 											<span className="text">Funcionários</span>
 										</Link>
 										<button type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
-												<img src={profileAvatar} alt="avatar visitantes" />
+												<img src={person} alt="avatar visitantes" />
 											</span>
 											<span className="text">Visitantes</span>
 										</button>
 										<button type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
-												<img src={profileAvatar} alt="avatar funcionários externos" />
+												<img src={person} alt="avatar funcionários externos" />
 											</span>
 											<span className="text">Funcionários Externos</span>
 										</button>
 										<button type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
-												<img src={profileAvatar} alt="avatar contactos" />
+												<img src={person} alt="avatar contactos" />
 											</span>
 											<span className="text">Contactos</span>
 										</button>
 										<button type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
-												<img src={profileAvatar} alt="avatar utentes" />
+												<img src={person} alt="avatar utentes" />
 											</span>
 											<span className="text">Utentes</span>
 										</button>
 										<button type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
-												<img src={profileAvatar} alt="avatar provisórios" />
+												<img src={person} alt="avatar provisórios" />
 											</span>
 											<span className="text">Provisórios</span>
 										</button>

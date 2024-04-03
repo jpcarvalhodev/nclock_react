@@ -184,7 +184,7 @@ export const Dashboard = () => {
     return (
         <div>
             <NavBar />
-            <div className="container mt-4">
+            <div>
                 <div className="dashboard-grid">
                     <div>
                         <h2 className="mb-5">Quantidade de Funcionários</h2>

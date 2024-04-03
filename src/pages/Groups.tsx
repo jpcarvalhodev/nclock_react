@@ -2,41 +2,51 @@ import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
-import GroupsModal from "../modals/GroupsModal";
 import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { Group } from "../types/Types";
 import Button from "react-bootstrap/esm/Button";
+import { CreateModal } from "../modals/CreateModal";
+import { UpdateModal } from "../modals/UpdateModal";
 
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
-    const [open, setOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name']);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
-    const fetchGroups = () => {
+    const fields = [
+        { key: 'name', label: 'Name', type: 'string', required: true },
+        { key: 'description', label: 'Description', type: 'string' },
+        { key: 'paiID', label: 'Parent ID', type: 'number' },
+    ];
+
+    const fetchGroups = async () => {
         const token = localStorage.getItem('token');
-
-        fetch('https://localhost:7129/api/Groups', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error fetching groups data');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setGroups(data);
-            })
-            .catch(error => console.error('Error fetching the groups', error));
-    };
+    
+        try {
+            const response = await fetch('https://localhost:7129/api/Groups', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error('Error fetching groups data');
+            }
+    
+            const data = await response.json();
+            setGroups(data);
+        } catch (error) {
+            console.error('Error fetching the groups', error);
+        }
+    };    
 
     const deleteGroups = (id: string) => {
         fetch(`https://localhost:7129/api/Groups/${id}`, {
@@ -63,17 +73,81 @@ export const Groups = () => {
         fetchGroups();
     };
 
-    const handleOpen = () => {
-        setOpen(true);
-    }
+    const handleAddGroup = async (newGroup: Group) => {
+        const token = localStorage.getItem('token');
+    
+        try {
+            const response = await fetch('https://localhost:7129/api/Groups', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newGroup)
+            });
+    
+            if (!response.ok) {
+                throw new Error('Error adding new group');
+            }
+    
+            const data = await response.json();
+            setGroups([...groups, data]);
+        } catch (error) {
+            console.error('Error adding new group:', error);
+        }
+    
+        handleCloseAddModal();
+        refreshGroups();
+    };    
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleOpenAddModal = () => {
+        setShowAddModal(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setShowAddModal(false);
+    };
+
+    const handleEditGroup = (group: Group) => {
+        setSelectedGroupId(group.id);
+        handleOpenUpdateModal(group);
     };
 
     const handleOpenUpdateModal = (group: Group) => {
         setSelectedGroup(group);
-        setOpen(true);
+        setShowUpdateModal(true);
+    };
+
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedGroup(null);
+    };
+
+    const handleUpdateGroup = async (updatedGroup: Group) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Groups/${updatedGroup.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedGroup)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating group');
+            }
+
+            const updatedGroups = groups.map(item => (item.id === updatedGroup.id ? updatedGroup : item));
+            setGroups(updatedGroups);
+        } catch (error) {
+            console.error('Error updating group:', error);
+        }
+
+        handleCloseUpdateModal();
+        refreshGroups();
     };
 
     const filteredItems = groups.filter(item =>
@@ -104,7 +178,7 @@ export const Groups = () => {
         name: 'Actions',
         cell: (row: Group) => (
             <div>
-                <Button variant="outline-primary" onClick={() => handleOpenUpdateModal(row)}>Editar</Button>{' '}
+                <Button variant="outline-primary" onClick={() => handleEditGroup(row)}>Editar</Button>{' '}
                 <Button variant="outline-primary" onClick={() => deleteGroups(row.id)}>Apagar</Button>{' '}
             </div>
         ),
@@ -123,9 +197,26 @@ export const Groups = () => {
                     onChange={e => setFilterText(e.target.value)}
                 />
                 <Button variant="outline-primary" onClick={refreshGroups}>Atualizar</Button>{' '}
-                <Button variant="outline-primary" onClick={handleOpen}>Adicionar</Button>{' '}
+                <Button variant="outline-primary" onClick={handleOpenAddModal}>Adicionar</Button>{' '}
                 <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
-                <GroupsModal open={open} onClose={handleClose} group={selectedGroup} />
+                <CreateModal
+                    title="Adicionar Grupo"
+                    open={showAddModal}
+                    onClose={handleCloseAddModal}
+                    onSave={handleAddGroup}
+                    fields={fields}
+                    initialValues={{}}
+                />
+                {selectedGroup && (
+                    <UpdateModal
+                        open={showUpdateModal}
+                        onClose={handleCloseUpdateModal}
+                        onUpdate={handleUpdateGroup}
+                        entity={selectedGroup}
+                        fields={fields}
+                        title="Atualizar Grupo"
+                    />
+                )}
             </div>
             <div>
                 <div className='table-css'>

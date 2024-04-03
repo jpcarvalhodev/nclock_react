@@ -17,7 +17,7 @@ img {
 .filter-refresh-add-edit-upper-class {
     display: flex;
     margin-top: 30px;
-    margin-left: 50px;
+    margin-left: 55px;
     margin-bottom: 30px;
 }
 
@@ -41,6 +41,9 @@ img {
     justify-content: center;
     align-items: center;
     margin-top: 50px;
+    margin-left: 100px;
+    margin-right: 100px;
+    margin-bottom: 100px;
 }
 
 .footer {
@@ -60,7 +63,7 @@ img {
     margin: 0;
 }
 
-@media (max-width: 500px) {    
+@media (max-width: 400px) {    
     .dashboard-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
@@ -74,9 +77,29 @@ img {
     .mb-4 {
         margin-bottom: 1rem;
     }
+
+    .filter-refresh-add-edit-upper-class {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-left: -10px;
+    }
+
+    .filter-input {
+        margin-bottom: 10px;
+    }
+
+    .filter-refresh-add-edit-upper-class button {
+        margin-bottom: 10px;
+    }
+
+    .table-css {
+        margin-bottom: 150px;
+    }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
     .dashboard-grid {
         grid-template-columns: repeat(1, 1fr);
         gap: 2rem;
@@ -90,5 +113,27 @@ img {
 
     .mb-4 {
         margin-bottom: 2rem;
+    }
+
+    .filter-refresh-add-edit-upper-class {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-left: -10px;
+    }
+
+    .filter-input {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .filter-refresh-add-edit-upper-class button {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .table-css {
+        margin-bottom: 150px;
     }
 }
