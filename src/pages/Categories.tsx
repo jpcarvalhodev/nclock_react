@@ -4,10 +4,11 @@ import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Category } from "../types/Types";
+import { Category } from "../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
+import { DeleteModal } from "../modals/DeleteModal";
 
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -17,17 +18,18 @@ export const Categories = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<string | null>(null);
 
     const fields = [
-        { label: 'Code', key: 'code', type: 'number', required: true },
-        { label: 'Description', key: 'description', type: 'string', required: true },
-        { label: 'Acronym', key: 'acronym', type: 'string' },
+        { label: 'Código', key: 'code', type: 'number', required: true },
+        { label: 'Descrição', key: 'description', type: 'string', required: true },
+        { label: 'Acrônimo', key: 'acronym', type: 'string' },
     ];
 
     const fetchCategories = async () => {
         const token = localStorage.getItem('token');
-    
+
         try {
             const response = await fetch('https://localhost:7129/api/Categories', {
                 method: 'GET',
@@ -36,33 +38,94 @@ export const Categories = () => {
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error('Error fetching categories data');
             }
-    
+
             const data = await response.json();
             setCategories(data);
         } catch (error) {
             console.error('Error fetching the categories', error);
         }
-    };    
+    };
 
-    const deleteCategory = (id: string) => {
-        fetch(`https://localhost:7129/api/Categories/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error deleting category');
-                }
-                refreshCategories();
-            })
-            .catch(error => console.error(error));
+    const handleAddCategory = async (category: Category) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch('https://localhost:7129/api/Categories', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(category)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error adding new category');
+            }
+
+            const data = await response.json();
+            setCategories([...categories, data]);
+        } catch (error) {
+            console.error('Error adding new category:', error);
+        }
+
+        setShowAddModal(false);
+        refreshCategories();
+    };
+
+    const handleUpdateCategory = async (category: Category) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Categories/${category.categoryID}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(category)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating category');
+            }
+
+            const updatedCategories = categories.map(cat => {
+                return cat.id === category.id ? category : cat;
+            });
+            setCategories(updatedCategories);
+        } catch (error) {
+            console.error('Error updating category:', error);
+        }
+
+        handleCloseUpdateModal();
+        refreshCategories();
+    };
+
+    const handleDeleteCategory = async (categoryID: string) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Categories/${categoryID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error deleting category');
+            }
+
+            refreshCategories();
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     useEffect(() => {
@@ -73,33 +136,6 @@ export const Categories = () => {
         fetchCategories();
     };
 
-    const handleAddCategory = async (category: Category) => {
-        const token = localStorage.getItem('token');
-    
-        try {
-            const response = await fetch('https://localhost:7129/api/Categories', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(category)
-            });
-    
-            if (!response.ok) {
-                throw new Error('Error adding new category');
-            }
-    
-            const data = await response.json();
-            setCategories([...categories, data]);
-        } catch (error) {
-            console.error('Error adding new category:', error);
-        }
-    
-        setShowAddModal(false);
-        refreshCategories();
-    };
-
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
@@ -108,48 +144,19 @@ export const Categories = () => {
         setShowAddModal(false);
     };
 
-    const handleOpenUpdateModal = (category: Category) => {
-        setSelectedCategory(category);
-        setShowUpdateModal(true);
-    };
-
     const handleCloseUpdateModal = () => {
         setSelectedCategory(null);
         setShowUpdateModal(false);
     };
 
     const handleEditCategory = (category: Category) => {
-        setSelectedCategoryId(category.id);
-        handleOpenUpdateModal(category);
+        setSelectedCategory(category);
+        setShowUpdateModal(true);
     };
 
-    const handleUpdateCategory = async (category: Category) => {
-        const token = localStorage.getItem('token');
-    
-        try {
-            const response = await fetch(`https://localhost:7129/api/Categories/${category.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(category)
-            });
-    
-            if (!response.ok) {
-                throw new Error('Error updating category');
-            }
-    
-            const updatedCategories = categories.map(cat => {
-                return cat.id === category.id ? category : cat;
-            });
-            setCategories(updatedCategories);
-        } catch (error) {
-            console.error('Error updating category:', error);
-        }
-    
-        handleCloseUpdateModal();
-        refreshCategories();
+    const handleOpenDeleteModal = (categoryID: string) => {
+        setSelectedCategoryForDelete(categoryID);
+        setShowDeleteModal(true);
     };
 
     const filteredItems = categories.filter(item =>
@@ -170,21 +177,49 @@ export const Categories = () => {
         setSelectedColumns(['code', 'description']);
     };
 
-    let tableColumns = selectedColumns.map(columnName => ({
-        name: columnName,
-        selector: (row: Category) => row[columnName],
-        sortable: true,
-    }));
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página'
+    };
+
+    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+        acc[field.key] = field.label;
+        return acc;
+    }, {});
+
+    const tableColumns = selectedColumns
+        .map(columnKey => ({
+            name: columnNamesMap[columnKey] || columnKey,
+            selector: (row: Record<string, any>) => row[columnKey],
+            sortable: true,
+        }));
+
+    const ExpandedComponent: React.FC<{ data: Category }> = ({ data }) => (
+        <div className="expanded-details-container">
+            {Object.entries(data).map(([key, value], index) => {
+                let displayValue = value;
+                if (typeof value === 'object' && value !== null) {
+                    displayValue = JSON.stringify(value, null, 2);
+                }
+                const displayName = columnNamesMap[key] || key;
+                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
+                    <p key={index}>
+                        <span className="detail-key">{`${displayName}: `}</span>
+                        {displayValue}
+                    </p>
+                );
+            })}
+        </div>
+    );
 
     const actionColumn: TableColumn<Category> = {
-        name: 'Actions',
+        name: 'Ações',
         cell: (row: Category) => (
             <div>
                 <Button variant="outline-primary" onClick={() => handleEditCategory(row)}>Editar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => deleteCategory(row.id)}>Apagar</Button>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)}>Apagar</Button>{' '}
             </div>
         ),
-        selector: undefined,
+        selector: (row: Category) => row.categoryID,
     };
 
     return (
@@ -213,12 +248,18 @@ export const Categories = () => {
                     <UpdateModal
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateCategory}
+                        onUpdate={() => handleUpdateCategory(selectedCategory)}
                         entity={selectedCategory}
                         fields={fields}
                         title="Atualizar Categoria"
                     />
                 )}
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={handleDeleteCategory}
+                    entityId={selectedCategoryForDelete}
+                />
             </div>
             <div>
                 <div className='table-css'>
@@ -226,6 +267,9 @@ export const Categories = () => {
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
                         pagination
+                        paginationComponentOptions={paginationOptions}
+                        expandableRows
+                        expandableRowsComponent={ExpandedComponent}
                     />
                 </div>
             </div>

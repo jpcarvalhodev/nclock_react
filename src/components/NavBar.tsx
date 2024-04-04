@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { Employee } from '../types/Types';
+import { Employee } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import profileAvatar from '../assets/img/profileAvatar.png';
@@ -26,6 +26,7 @@ export const NavBar = () => {
 	const [showDispositivos, setShowDispositivos] = useState(false);
 	const [showConfiguracao, setShowConfiguracao] = useState(false);
 	const [showAjuda, setShowAjuda] = useState(false);
+	const [activeTab, setActiveTab] = useState('pessoas');
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -66,19 +67,23 @@ export const NavBar = () => {
 	}, []);
 
 	const handlePessoasClick = () => {
-		setShowRibbon(!showRibbon);
+		setShowRibbon((prevState) => !prevState);
+		setActiveTab('pessoas');
 	};
 
 	const handleDispositivosClick = () => {
-		setShowDispositivos(!showDispositivos);
+		setShowDispositivos((prevState) => !prevState);
+		setActiveTab('dispositivos');
 	};
 
 	const handleConfiguracaoClick = () => {
-		setShowConfiguracao(!showConfiguracao);
+		setShowConfiguracao((prevState) => !prevState);
+		setActiveTab('configuracao');
 	};
 
 	const handleAjudaClick = () => {
-		setShowAjuda(!showAjuda);
+		setShowAjuda((prevState) => !prevState);
+		setActiveTab('ajuda');
 	};
 
 	const logout = () => {
@@ -87,7 +92,7 @@ export const NavBar = () => {
 	};
 
 	const handleLogoClick = () => {
-		navigate('/Dashboard');
+		navigate('/dashboard');
 	}
 
 	return (
@@ -97,17 +102,17 @@ export const NavBar = () => {
 					<a className="nav-link active" onClick={handleLogoClick}>Nclock</a>
 				</div>
 				<ul className="nav nav-tabs">
-					<li className="nav-item">
-						<a className="nav-link active pessoas-tab" id="pessoas-tab" onClick={handlePessoasClick}>Pessoas</a>
+					<li className={`nav-item ${activeTab === 'pessoas' ? 'active' : ''}`}>
+						<a className="nav-link pessoas-tab" id="pessoas-tab" onClick={handlePessoasClick}>Pessoas</a>
 					</li>
-					<li className="nav-item">
-						<a className="nav-link active dispositivos-tab" id="dispositivos-tab" onClick={handleDispositivosClick}>Dispositivos</a>
+					<li className={`nav-item ${activeTab === 'dispositivos' ? 'active' : ''}`}>
+						<a className="nav-link dispositivos-tab" id="dispositivos-tab" onClick={handleDispositivosClick}>Dispositivos</a>
 					</li>
-					<li className="nav-item">
-						<a className="nav-link active configuracao-tab" id="configuracao-tab" onClick={handleConfiguracaoClick}>Configuração</a>
+					<li className={`nav-item ${activeTab === 'configuracao' ? 'active' : ''}`}>
+						<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={handleConfiguracaoClick}>Configuração</a>
 					</li>
-					<li className="nav-item">
-						<a className="nav-link active ajuda-tab" id="ajuda-tab" onClick={handleAjudaClick}>Ajuda</a>
+					<li className={`nav-item ${activeTab === 'ajuda' ? 'active' : ''}`}>
+						<a className="nav-link ajuda-tab" id="ajuda-tab" onClick={handleAjudaClick}>Ajuda</a>
 					</li>
 				</ul>
 				<Dropdown className='user-section'>
@@ -116,7 +121,7 @@ export const NavBar = () => {
 					</Dropdown.Toggle>
 					<Dropdown.Menu>
 						<div className='dropdown-content'>
-							<img src={employee?.photo || profileAvatar} alt="User" />
+							<img src={employee?.photo || profileAvatar} alt="user photo" />
 							<Dropdown.Item disabled>{user.name}</Dropdown.Item>
 							<Dropdown.Item disabled>{user.email}</Dropdown.Item>
 							<Dropdown.Item onClick={logout}>Logout</Dropdown.Item>

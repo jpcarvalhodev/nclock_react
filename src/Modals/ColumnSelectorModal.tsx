@@ -19,9 +19,9 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
     return (
         <Modal show={true} onHide={onClose} centered>
             <Modal.Header closeButton>
-                <Modal.Title>Select Columns</Modal.Title>
+                <Modal.Title>Selecionar Colunas</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="modal-body-scrollable">
                 {columns.map(columnName => (
                     <FormCheck 
                         key={columnName}
@@ -33,8 +33,8 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
                 ))}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onResetColumns}>Reset</Button>
-                <Button variant="primary" onClick={onClose}>Close</Button>
+                <Button variant="secondary" onClick={onResetColumns}>Resetar</Button>
+                <Button variant="primary" onClick={onClose}>Fechar</Button>
             </Modal.Footer>
         </Modal>
     );

@@ -5,9 +5,10 @@ import '../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Department } from '../types/Types';
+import { Department } from '../helpers/Types';
 import { CreateModal } from '../modals/CreateModal';
 import { UpdateModal } from '../modals/UpdateModal';
+import { DeleteModal } from '../modals/DeleteModal';
 
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -17,18 +18,19 @@ export const Departments = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
-    const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedDepartmentForDelete, setSelectedDepartmentForDelete] = useState<string | null>(null);
 
     const fields = [
-        { label: 'Code', key: 'code', type: 'number', required: true },
-        { label: 'Name', key: 'name', type: 'string', required: true },
-        { label: 'Description', key: 'description', type: 'string' },
-        { label: 'Parent ID', key: 'paiId', type: 'number' },
+        { label: 'Código', key: 'code', type: 'number', required: true },
+        { label: 'Nome', key: 'name', type: 'string', required: true },
+        { label: 'Descrição', key: 'description', type: 'string' },
+        { label: 'ID de Parente', key: 'paiId', type: 'number' },
     ];
 
     const fetchDepartments = async () => {
         const token = localStorage.getItem('token');
-    
+
         try {
             const response = await fetch('https://localhost:7129/api/Departaments', {
                 method: 'GET',
@@ -37,11 +39,11 @@ export const Departments = () => {
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error('Error fetching departments data');
             }
-    
+
             const data = await response.json();
             setDepartments(data);
         } catch (error) {
@@ -49,20 +51,75 @@ export const Departments = () => {
         }
     };
 
-    const deleteDepartment = async (id: string) => {
+    const handleAddDepartment = async (department: Department) => {
+        const token = localStorage.getItem('token');
+
         try {
-            const response = await fetch(`https://localhost:7129/api/Departaments/${id}`, {
+            const response = await fetch('https://localhost:7129/api/Departaments', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(department)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error adding new department');
+            }
+
+            const data = await response.json();
+            setDepartments([...departments, data]);
+            handleCloseAddModal();
+        } catch (error) {
+            console.error('Error adding new department:', error);
+        }
+        refreshDepartments();
+    };
+
+    const handleUpdateDepartment = async (department: Department) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Departaments/${department.departmentID}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(department)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating department');
+            }
+
+            const updatedDepartments = departments.map(dep => dep.departmentID === department.departmentID ? department : dep);
+            setDepartments(updatedDepartments);
+        } catch (error) {
+            console.error('Error updating department:', error);
+        }
+
+        handleCloseUpdateModal();
+        refreshDepartments();
+    };
+
+    const handleDeleteDepartment = async (departmentID: string) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Departaments/${departmentID}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error('Error deleting department');
             }
-    
+
             refreshDepartments();
         } catch (error) {
             console.error(error);
@@ -85,68 +142,9 @@ export const Departments = () => {
         setShowAddModal(false);
     };
 
-    const handleOpenUpdateModal = (department: Department) => {
-        setSelectedDepartment(department);
-        setShowUpdateModal(true);
-    };
-
     const handleCloseUpdateModal = () => {
         setSelectedDepartment(null);
         setShowUpdateModal(false);
-    };
-
-    const handleAddDepartment = async (department: Department) => {
-        const token = localStorage.getItem('token');
-    
-        try {
-            const response = await fetch('https://localhost:7129/api/Departaments', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(department)
-            });
-    
-            if (!response.ok) {
-                throw new Error('Error adding new department');
-            }
-    
-            const data = await response.json();
-            setDepartments([...departments, data]);
-            handleCloseAddModal();
-        } catch (error) {
-            console.error('Error adding new department:', error);
-        }
-    };
-
-    const handleUpdateDepartment = async (department: Department) => {
-        const token = localStorage.getItem('token');
-    
-        try {
-            const response = await fetch(`https://localhost:7129/api/Departaments/${department.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(department)
-            });
-    
-            if (!response.ok) {
-                throw new Error('Error updating department');
-            }
-    
-            const updatedDepartments = departments.map(department => {
-                return department.id === department.id ? department : department;
-            });
-            setDepartments(updatedDepartments);
-        } catch (error) {
-            console.error('Error updating department:', error);
-        }
-    
-        handleCloseUpdateModal();
-        refreshDepartments();
     };
 
     const filteredItems = departments.filter(item =>
@@ -167,26 +165,59 @@ export const Departments = () => {
         setSelectedColumns(['code', 'name']);
     };
 
-    let tableColumns = selectedColumns.map(columnName => ({
-        name: columnName,
-        selector: (row: Department) => row[columnName],
-        sortable: true,
-    }));
+    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+        acc[field.key] = field.label;
+        return acc;
+    }, {});
+
+    const tableColumns = selectedColumns
+        .map(columnKey => ({
+            name: columnNamesMap[columnKey] || columnKey,
+            selector: (row: Record<string, any>) => row[columnKey],
+            sortable: true,
+        }));
 
     const handleEditDepartment = (department: Department) => {
-        setSelectedDepartmentId(department.id);
-        handleOpenUpdateModal(department);
+        setSelectedDepartment(department);
+        setShowUpdateModal(true);
     };
 
+    const handleOpenDeleteModal = (departmentID: string) => {
+        setSelectedDepartmentForDelete(departmentID);
+        setShowDeleteModal(true);
+    };
+
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página'
+    };
+
+    const ExpandedComponent: React.FC<{ data: Department }> = ({ data }) => (
+        <div className="expanded-details-container">
+            {Object.entries(data).map(([key, value], index) => {
+                let displayValue = value;
+                if (typeof value === 'object' && value !== null) {
+                    displayValue = JSON.stringify(value, null, 2);
+                }
+                const displayName = columnNamesMap[key] || key;
+                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
+                    <p key={index}>
+                        <span className="detail-key">{`${displayName}: `}</span>
+                        {displayValue}
+                    </p>
+                );
+            })}
+        </div>
+    );
+
     const actionColumn: TableColumn<Department> = {
-        name: 'Actions',
+        name: 'Ações',
         cell: (row: Department) => (
             <div>
                 <Button variant="outline-primary" onClick={() => handleEditDepartment(row)}>Editar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => deleteDepartment(row.id)}>Apagar</Button>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentID)}>Apagar</Button>
             </div>
         ),
-        selector: undefined,
+        selector: (row: Department) => row.departmentID,
     };
 
     return (
@@ -215,12 +246,18 @@ export const Departments = () => {
                     <UpdateModal
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateDepartment}
+                        onUpdate={() => handleUpdateDepartment(selectedDepartment)}
                         entity={selectedDepartment}
                         fields={fields}
                         title="Atualizar Departamento"
                     />
                 )}
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={handleDeleteDepartment}
+                    entityId={selectedDepartmentForDelete}
+                />
             </div>
             <div>
                 <div className='table-css'>
@@ -228,6 +265,9 @@ export const Departments = () => {
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
                         pagination
+                        paginationComponentOptions={paginationOptions}
+                        expandableRows
+                        expandableRowsComponent={ExpandedComponent}
                     />
                 </div>
             </div>

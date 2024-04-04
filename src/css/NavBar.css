@@ -15,18 +15,51 @@
 .nav {
     display: flex;
     align-items: center;
+    border-color: #1976d2;
 }
 
 .pessoas-tab {
     margin-right: 5px;
+    color: white;
 }
 
 .dispositivos-tab {
     margin-right: 5px;
+    color: white;
 }
 
 .configuracao-tab {
     margin-right: 5px;
+    color: white;
+}
+
+.ajuda-tab {
+    margin-right: 5px;
+    color: white;
+}
+
+.pessoas-tab.active,
+.pessoas-tab:hover {
+    background-color: white;
+    color: #1976d2;
+}
+
+.dispositivos-tab.active,
+.dispositivos-tab:hover {
+    background-color: white;
+    color: #1976d2;
+}
+
+.configuracao-tab.active,
+.configuracao-tab:hover {
+    background-color: white;
+    color: #1976d2;
+}
+
+.ajuda-tab.active,
+.ajuda-tab:hover {
+    background-color: white;
+    color: #1976d2;
 }
 
 .section {
@@ -51,8 +84,8 @@
 }
 
 .icon img {
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
 }
 
 .title-container {
@@ -117,8 +150,8 @@
 }
 
 .ribbon-button-pessoas .icon img {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
 }
 
@@ -142,6 +175,11 @@
     color: white;
 }
 
+.dropdown-icon img {
+    width: 30px;
+    height: 30px;
+}
+
 .dropdown-content {
     display: flex;
     flex-direction: column;
@@ -152,7 +190,6 @@
 .dropdown-content img {
     width: 50px;
     height: 50px;
-    border-radius: 50%;
     margin-bottom: 10px;
 }
 

@@ -10,13 +10,14 @@ interface Field {
 }
 
 interface Entity {
+  id: string;
   [key: string]: any;
 }
 
 interface UpdateModalProps<T extends Entity> {
   open: boolean;
   onClose: () => void;
-  onUpdate: (data: T) => void;
+  onUpdate: (entity: T) => Promise<void>; 
   entity: T;
   fields: Field[];
   title: string;
@@ -42,7 +43,7 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="modal-body-scrollable">
         <form>
           {fields.map(field => (
             <div key={field.key} className="mb-3">
@@ -60,10 +61,10 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>
-          Close
+          Fechar
         </Button>
         <Button variant="primary" onClick={handleSubmit}>
-          Save Changes
+          Salvar
         </Button>
       </Modal.Footer>
     </Modal>

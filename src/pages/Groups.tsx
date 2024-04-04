@@ -4,30 +4,32 @@ import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Group } from "../types/Types";
+import { Group } from "../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
+import { DeleteModal } from "../modals/DeleteModal";
 
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
-    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
 
     const fields = [
-        { key: 'name', label: 'Name', type: 'string', required: true },
-        { key: 'description', label: 'Description', type: 'string' },
-        { key: 'paiID', label: 'Parent ID', type: 'number' },
+        { key: 'Nome', label: 'Name', type: 'string', required: true },
+        { key: 'Descrição', label: 'Description', type: 'string' },
+        { key: 'ID de Parente', label: 'Parent ID', type: 'number' },
     ];
 
     const fetchGroups = async () => {
         const token = localStorage.getItem('token');
-    
+
         try {
             const response = await fetch('https://localhost:7129/api/Groups', {
                 method: 'GET',
@@ -36,33 +38,94 @@ export const Groups = () => {
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error('Error fetching groups data');
             }
-    
+
             const data = await response.json();
             setGroups(data);
         } catch (error) {
             console.error('Error fetching the groups', error);
         }
-    };    
+    };
 
-    const deleteGroups = (id: string) => {
-        fetch(`https://localhost:7129/api/Groups/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error deleting group');
-                }
-                refreshGroups();
-            })
-            .catch(error => console.error(error));
+    const handleAddGroup = async (group: Group) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch('https://localhost:7129/api/Groups', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(group)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error adding new group');
+            }
+
+            const data = await response.json();
+            setGroups([...groups, data]);
+        } catch (error) {
+            console.error('Error adding new group:', error);
+        }
+
+        handleCloseAddModal();
+        refreshGroups();
+    };
+
+    const handleUpdateGroup = async (group: Group) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Groups/${group.groupID}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(group)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating group');
+            }
+
+            const updatedGroups = groups.map(group => {
+                return group.id === group.id ? group : group;
+            });
+            setGroups(updatedGroups);
+        } catch (error) {
+            console.error('Error updating group:', error);
+        }
+
+        handleCloseUpdateModal();
+        refreshGroups();
+    };
+
+    const handleDeleteGroup = async (groupID: string) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Groups/${groupID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error deleting group');
+            }
+
+            refreshGroups();
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     useEffect(() => {
@@ -73,33 +136,6 @@ export const Groups = () => {
         fetchGroups();
     };
 
-    const handleAddGroup = async (newGroup: Group) => {
-        const token = localStorage.getItem('token');
-    
-        try {
-            const response = await fetch('https://localhost:7129/api/Groups', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newGroup)
-            });
-    
-            if (!response.ok) {
-                throw new Error('Error adding new group');
-            }
-    
-            const data = await response.json();
-            setGroups([...groups, data]);
-        } catch (error) {
-            console.error('Error adding new group:', error);
-        }
-    
-        handleCloseAddModal();
-        refreshGroups();
-    };    
-
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
@@ -109,11 +145,6 @@ export const Groups = () => {
     };
 
     const handleEditGroup = (group: Group) => {
-        setSelectedGroupId(group.id);
-        handleOpenUpdateModal(group);
-    };
-
-    const handleOpenUpdateModal = (group: Group) => {
         setSelectedGroup(group);
         setShowUpdateModal(true);
     };
@@ -123,31 +154,9 @@ export const Groups = () => {
         setSelectedGroup(null);
     };
 
-    const handleUpdateGroup = async (updatedGroup: Group) => {
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`https://localhost:7129/api/Groups/${updatedGroup.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedGroup)
-            });
-
-            if (!response.ok) {
-                throw new Error('Error updating group');
-            }
-
-            const updatedGroups = groups.map(item => (item.id === updatedGroup.id ? updatedGroup : item));
-            setGroups(updatedGroups);
-        } catch (error) {
-            console.error('Error updating group:', error);
-        }
-
-        handleCloseUpdateModal();
-        refreshGroups();
+    const handleOpenDeleteModal = (groupID: string) => {
+        setSelectedGroupForDelete(groupID);
+        setShowDeleteModal(true);
     };
 
     const filteredItems = groups.filter(item =>
@@ -168,21 +177,49 @@ export const Groups = () => {
         setSelectedColumns(['name']);
     };
 
-    let tableColumns = selectedColumns.map(columnName => ({
-        name: columnName,
-        selector: (row: Group) => row[columnName],
-        sortable: true,
-    }));
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página'
+    };
+
+    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+        acc[field.key] = field.label;
+        return acc;
+    }, {});
+
+    const tableColumns = selectedColumns
+        .map(columnKey => ({
+            name: columnNamesMap[columnKey] || columnKey,
+            selector: (row: Record<string, any>) => row[columnKey],
+            sortable: true,
+        }));
+
+    const ExpandedComponent: React.FC<{ data: Group }> = ({ data }) => (
+        <div className="expanded-details-container">
+            {Object.entries(data).map(([key, value], index) => {
+                let displayValue = value;
+                if (typeof value === 'object' && value !== null) {
+                    displayValue = JSON.stringify(value, null, 2);
+                }
+                const displayName = columnNamesMap[key] || key;
+                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
+                    <p key={index}>
+                        <span className="detail-key">{`${displayName}: `}</span>
+                        {displayValue}
+                    </p>
+                );
+            })}
+        </div>
+    );
 
     const actionColumn: TableColumn<Group> = {
-        name: 'Actions',
+        name: 'Ações',
         cell: (row: Group) => (
             <div>
                 <Button variant="outline-primary" onClick={() => handleEditGroup(row)}>Editar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => deleteGroups(row.id)}>Apagar</Button>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)}>Apagar</Button>{' '}
             </div>
         ),
-        selector: undefined,
+        selector: (row: Group) => row.groupID,
     };
 
     return (
@@ -192,7 +229,7 @@ export const Groups = () => {
                 <input
                     className='filter-input'
                     type="text"
-                    placeholder="Filter"
+                    placeholder="Filtro"
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
@@ -211,12 +248,18 @@ export const Groups = () => {
                     <UpdateModal
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateGroup}
+                        onUpdate={() => handleUpdateGroup(selectedGroup)}
                         entity={selectedGroup}
                         fields={fields}
                         title="Atualizar Grupo"
                     />
                 )}
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={handleDeleteGroup}
+                    entityId={selectedGroupForDelete}
+                />
             </div>
             <div>
                 <div className='table-css'>
@@ -224,6 +267,9 @@ export const Groups = () => {
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
                         pagination
+                        paginationComponentOptions={paginationOptions}
+                        expandableRows
+                        expandableRowsComponent={ExpandedComponent}
                     />
                 </div>
             </div>

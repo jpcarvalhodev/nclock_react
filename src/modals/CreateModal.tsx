@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import '../css/PagesStyles.css';
 
 interface FieldConfig {
     label: string;
@@ -34,11 +35,11 @@ export const CreateModal = <T extends Record<string, string | number>>({ title, 
     };
 
     return (
-        <Modal show={open} onHide={onClose}>
+        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="modal-body-scrollable">
                 <form>
                     {fields.map(field => (
                         <div className="form-group" key={field.key}>
@@ -57,10 +58,10 @@ export const CreateModal = <T extends Record<string, string | number>>({ title, 
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>
-                    Close
+                    Fechar
                 </Button>
                 <Button variant="primary" onClick={handleSave}>
-                    Save
+                    Salvar
                 </Button>
             </Modal.Footer>
         </Modal>

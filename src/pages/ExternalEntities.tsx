@@ -4,10 +4,11 @@ import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ExternalEntity } from "../types/Types";
+import { ExternalEntity } from "../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
+import { DeleteModal } from "../modals/DeleteModal";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -17,27 +18,28 @@ export const ExternalEntities = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedExternalEntity, setSelectedExternalEntity] = useState<ExternalEntity | null>(null);
-    const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
 
     const fields = [
-        { label: 'Name', key: 'name', type: 'string', required: true },
-        { label: 'Comments', key: 'comments', type: 'string' },
-        { label: 'Commercial Name', key: 'commercialName', type: 'string' },
-        { label: 'Responsible Name', key: 'responsibleName', type: 'string' },
-        { label: 'Photo', key: 'photo', type: 'string' },
-        { label: 'Address', key: 'address', type: 'string' },
-        { label: 'ZIP Code', key: 'ZIPCode', type: 'string' },
-        { label: 'Locality', key: 'locality', type: 'string' },
-        { label: 'Village', key: 'village', type: 'string' },
-        { label: 'District', key: 'district', type: 'string' },
-        { label: 'Phone', key: 'phone', type: 'number' },
-        { label: 'Mobile', key: 'mobile', type: 'number' },
-        { label: 'Email', key: 'email', type: 'string' },
+        { label: 'Nome', key: 'name', type: 'string', required: true },
+        { label: 'Comentários', key: 'comments', type: 'string' },
+        { label: 'Nome Comercial', key: 'commercialName', type: 'string' },
+        { label: 'Nome Responsável', key: 'responsibleName', type: 'string' },
+        { label: 'Foto', key: 'photo', type: 'string' },
+        { label: 'Morada', key: 'address', type: 'string' },
+        { label: 'Código Postal', key: 'ZIPCode', type: 'string' },
+        { label: 'Localidade', key: 'locality', type: 'string' },
+        { label: 'Freguesia', key: 'village', type: 'string' },
+        { label: 'Distrito', key: 'district', type: 'string' },
+        { label: 'Telefone', key: 'phone', type: 'number' },
+        { label: 'Telemóvel', key: 'mobile', type: 'number' },
+        { label: 'E-Mail', key: 'email', type: 'string' },
         { label: 'WWW', key: 'www', type: 'string' },
         { label: 'Fax', key: 'fax', type: 'number' },
         { label: 'NIF', key: 'nif', type: 'number', required: true },
-        { label: 'Date Inserted', key: 'dateInserted', type: 'string' },
-        { label: 'Date Updated', key: 'dateUpdated', type: 'string' },
+        { label: 'Data Inserida', key: 'dateInserted', type: 'string' },
+        { label: 'Data Atualizada', key: 'dateUpdated', type: 'string' },
     ];
 
     const fetchExternalEntities = async () => {
@@ -63,32 +65,7 @@ export const ExternalEntities = () => {
         }
     };
 
-    const deleteExternalEntity = (id: string) => {
-        fetch(`https://localhost:7129/api/ExternalEntities/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error deleting external entity');
-                }
-                refreshExternalEntities();
-            })
-            .catch(error => console.error(error));
-    };
-
-    useEffect(() => {
-        fetchExternalEntities();
-    }, []);
-
-    const refreshExternalEntities = () => {
-        fetchExternalEntities();
-    };
-
-    const handleAddExternalEntity = async (entity: ExternalEntity) => {
+    const handleAddExternalEntity = async (externalEntity: ExternalEntity) => {
         const token = localStorage.getItem('token');
 
         try {
@@ -98,7 +75,7 @@ export const ExternalEntities = () => {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(entity)
+                body: JSON.stringify(externalEntity)
             });
 
             if (!response.ok) {
@@ -115,6 +92,65 @@ export const ExternalEntities = () => {
         refreshExternalEntities();
     };
 
+    const handleUpdateExternalEntity = async (externalEntity: ExternalEntity) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/ExternalEntities/${externalEntity.externalEntityID}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(externalEntity)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating external entity');
+            }
+
+            const updatedExternalEntities = externalEntities.map(entity => {
+                return entity.id === externalEntity.id ? externalEntity : entity;
+            });
+            setExternalEntities(updatedExternalEntities);
+        } catch (error) {
+            console.error('Error updating external entity:', error);
+        }
+
+        handleCloseUpdateModal();
+        refreshExternalEntities();
+    };
+
+    const handleDeleteExternalEntity = async (externalEntityID: string) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/ExternalEntities/${externalEntityID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error deleting external entity');
+            }
+
+            refreshExternalEntities();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchExternalEntities();
+    }, []);
+
+    const refreshExternalEntities = () => {
+        fetchExternalEntities();
+    };
+
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
@@ -124,11 +160,6 @@ export const ExternalEntities = () => {
     };
 
     const handleEditExternalEntity = (externalEntity: ExternalEntity) => {
-        setSelectedEntityId(externalEntity.id);
-        handleOpenUpdateModal(externalEntity)
-    };
-
-    const handleOpenUpdateModal = (externalEntity: ExternalEntity) => {
         setSelectedExternalEntity(externalEntity);
         setShowUpdateModal(true);
     };
@@ -137,31 +168,9 @@ export const ExternalEntities = () => {
         setShowUpdateModal(false);
     };
 
-    const handleUpdateExternalEntity = async (entity: ExternalEntity) => {
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`https://localhost:7129/api/ExternalEntities/${entity.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(entity)
-            });
-
-            if (!response.ok) {
-                throw new Error('Error updating external entity');
-            }
-
-            const updatedEntities = externalEntities.map(item => (item.id === entity.id ? entity : item));
-            setExternalEntities(updatedEntities);
-        } catch (error) {
-            console.error('Error updating external entity:', error);
-        }
-
-        handleCloseUpdateModal();
-        refreshExternalEntities();
+    const handleOpenDeleteModal = (externalEntityID: string) => {
+        setSelectedExternalEntityForDelete(externalEntityID);
+        setShowDeleteModal(true);
     };
 
     const filteredItems = externalEntities.filter(item =>
@@ -182,21 +191,49 @@ export const ExternalEntities = () => {
         setSelectedColumns(['name', 'nif']);
     };
 
-    let tableColumns = selectedColumns.map(columnName => ({
-        name: columnName,
-        selector: (row: ExternalEntity) => row[columnName],
-        sortable: true,
-    }));
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página'
+    };
+
+    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+        acc[field.key] = field.label;
+        return acc;
+    }, {});
+
+    const tableColumns = selectedColumns
+        .map(columnKey => ({
+            name: columnNamesMap[columnKey] || columnKey,
+            selector: (row: Record<string, any>) => row[columnKey],
+            sortable: true,
+        }));
+
+    const ExpandedComponent: React.FC<{ data: ExternalEntity }> = ({ data }) => (
+        <div className="expanded-details-container">
+            {Object.entries(data).map(([key, value], index) => {
+                let displayValue = value;
+                if (typeof value === 'object' && value !== null) {
+                    displayValue = JSON.stringify(value, null, 2);
+                }
+                const displayName = columnNamesMap[key] || key;
+                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
+                    <p key={index}>
+                        <span className="detail-key">{`${displayName}: `}</span>
+                        {displayValue}
+                    </p>
+                );
+            })}
+        </div>
+    );
 
     const actionColumn: TableColumn<ExternalEntity> = {
-        name: 'Actions',
+        name: 'Ações',
         cell: (row: ExternalEntity) => (
             <div>
                 <Button variant="outline-primary" onClick={() => handleEditExternalEntity(row)}>Editar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => deleteExternalEntity(row.id)}>Apagar</Button>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityID)}>Apagar</Button>{' '}
             </div>
         ),
-        selector: undefined,
+        selector: (row: ExternalEntity) => row.externalEntityID,
     };
 
     return (
@@ -206,7 +243,7 @@ export const ExternalEntities = () => {
                 <input
                     className='filter-input'
                     type="text"
-                    placeholder="Filter"
+                    placeholder="Filtro"
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
@@ -225,12 +262,18 @@ export const ExternalEntities = () => {
                     <UpdateModal
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateExternalEntity}
+                        onUpdate={() => handleUpdateExternalEntity(selectedExternalEntity)}
                         entity={selectedExternalEntity}
                         fields={fields}
                         title="Atualizar Entidade Externa"
                     />
                 )}
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={handleDeleteExternalEntity}
+                    entityId={selectedExternalEntityForDelete}
+                />
             </div>
             <div>
                 <div className='table-css'>
@@ -238,6 +281,9 @@ export const ExternalEntities = () => {
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
                         pagination
+                        paginationComponentOptions={paginationOptions}
+                        expandableRows
+                        expandableRowsComponent={ExpandedComponent}
                     />
                 </div>
             </div>

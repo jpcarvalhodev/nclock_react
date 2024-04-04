@@ -4,10 +4,11 @@ import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Zone } from "../types/Types";
+import { Zone } from "../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
+import { DeleteModal } from "../modals/DeleteModal";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -17,26 +18,27 @@ export const Zones = () => {
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'acronym']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<string | null>(null);
 
     const fields = [
-        { key: 'type', label: 'Type', type: 'string' },
-        { key: 'name', label: 'Name', type: 'string', required: true },
-        { key: 'description', label: 'Description', type: 'string' },
-        { key: 'acronym', label: 'Acronym', type: 'string', required: true },
-        { key: 'address', label: 'Address', type: 'string' },
-        { key: 'zipCode', label: 'ZIP Code', type: 'string' },
-        { key: 'locality', label: 'Locality', type: 'string' },
-        { key: 'village', label: 'Village', type: 'string' },
-        { key: 'district', label: 'District', type: 'string' },
-        { key: 'phone', label: 'Phone', type: 'number' },
-        { key: 'mobile', label: 'Mobile', type: 'number' },
-        { key: 'email', label: 'Email', type: 'string' },
+        { key: 'Tipo', label: 'Type', type: 'string' },
+        { key: 'Nome', label: 'Name', type: 'string', required: true },
+        { key: 'Descrição', label: 'Description', type: 'string' },
+        { key: 'Acrônimo', label: 'Acronym', type: 'string', required: true },
+        { key: 'Morada', label: 'Address', type: 'string' },
+        { key: 'Código Postal', label: 'ZIP Code', type: 'string' },
+        { key: 'Localidade', label: 'Locality', type: 'string' },
+        { key: 'Freguesia', label: 'Village', type: 'string' },
+        { key: 'Distrito', label: 'District', type: 'string' },
+        { key: 'Telefone', label: 'Phone', type: 'number' },
+        { key: 'Telemóvel', label: 'Mobile', type: 'number' },
+        { key: 'E-Mail', label: 'Email', type: 'string' },
     ];
 
     const fetchZones = async () => {
         const token = localStorage.getItem('token');
-    
+
         try {
             const response = await fetch('https://localhost:7129/api/Zones', {
                 method: 'GET',
@@ -45,49 +47,16 @@ export const Zones = () => {
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error('Error fetching zones data');
             }
-    
+
             const data = await response.json();
             setZones(data);
         } catch (error) {
             console.error('Error fetching the zones', error);
         }
-    };    
-
-    const deleteZone = (id: string) => {
-        fetch(`https://localhost:7129/api/Zones/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error deleting zone');
-                }
-                refreshZones();
-            })
-            .catch(error => console.error(error));
-    };
-
-    useEffect(() => {
-        fetchZones();
-    }, []);
-
-    const refreshZones = () => {
-        fetchZones();
-    };
-    
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
     };
 
     const handleAddZone = async (zone: Zone) => {
@@ -117,12 +86,74 @@ export const Zones = () => {
         refreshZones();
     };
 
-    const handleEditZone = (zone: Zone) => {
-        setSelectedZoneId(zone.id);
-        handleOpenUpdateModal(zone);
+    const handleUpdateZone = async (zone: Zone) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Zones/${zone.zoneID}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(zone)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating zone');
+            }
+
+            const updatedZones = zones.map(zone => {
+                return zone.id === zone.id ? zone : zone;
+            });
+            setZones(updatedZones);
+        } catch (error) {
+            console.error('Error updating zone:', error);
+        }
+
+        handleCloseUpdateModal();
+        refreshZones();
     };
 
-    const handleOpenUpdateModal = (zone: Zone) => {
+    const handleDeleteZone = async (zoneID: string) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Zones/${zoneID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error deleting department');
+            }
+
+            refreshZones();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchZones();
+    }, []);
+
+    const refreshZones = () => {
+        fetchZones();
+    };
+
+    const handleOpenAddModal = () => {
+        setShowAddModal(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setShowAddModal(false);
+    };
+
+    const handleEditZone = (zone: Zone) => {
         setSelectedZone(zone);
         setShowUpdateModal(true);
     };
@@ -132,31 +163,9 @@ export const Zones = () => {
         setSelectedZone(null);
     };
 
-    const handleUpdateZone = async (updatedZone: Zone) => {
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`https://localhost:7129/api/Zones/${updatedZone.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedZone)
-            });
-
-            if (!response.ok) {
-                throw new Error('Error updating zone');
-            }
-
-            const updatedZones = zones.map(item => (item.id === updatedZone.id ? updatedZone : item));
-            setZones(updatedZones);
-        } catch (error) {
-            console.error('Error updating zone:', error);
-        }
-
-        handleCloseUpdateModal();
-        refreshZones();
+    const handleOpenDeleteModal = (zoneID: string) => {
+        setSelectedZoneForDelete(zoneID);
+        setShowDeleteModal(true);
     };
 
     const filteredItems = zones.filter(item =>
@@ -177,18 +186,46 @@ export const Zones = () => {
         setSelectedColumns(['name', 'acronym']);
     };
 
-    let tableColumns = selectedColumns.map(columnName => ({
-        name: columnName,
-        selector: (row: Zone) => row[columnName],
-        sortable: true,
-    }));
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página'
+    };
+
+    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+        acc[field.key] = field.label;
+        return acc;
+    }, {});
+
+    const tableColumns = selectedColumns
+        .map(columnKey => ({
+            name: columnNamesMap[columnKey] || columnKey,
+            selector: (row: Record<string, any>) => row[columnKey],
+            sortable: true,
+        }));
+
+    const ExpandedComponent: React.FC<{ data: Zone }> = ({ data }) => (
+        <div className="expanded-details-container">
+            {Object.entries(data).map(([key, value], index) => {
+                let displayValue = value;
+                if (typeof value === 'object' && value !== null) {
+                    displayValue = JSON.stringify(value, null, 2);
+                }
+                const displayName = columnNamesMap[key] || key;
+                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
+                    <p key={index}>
+                        <span className="detail-key">{`${displayName}: `}</span>
+                        {displayValue}
+                    </p>
+                );
+            })}
+        </div>
+    );
 
     const actionColumn: TableColumn<Zone> = {
-        name: 'Actions',
+        name: 'Ações',
         cell: (row: Zone) => (
             <div>
                 <Button variant="outline-primary" onClick={() => handleEditZone(row)}>Editar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => deleteZone(row.id)}>Apagar</Button>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneID)}>Apagar</Button>{' '}
             </div>
         ),
         selector: undefined,
@@ -201,7 +238,7 @@ export const Zones = () => {
                 <input
                     className='filter-input'
                     type="text"
-                    placeholder="Filter"
+                    placeholder="Filtro"
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
@@ -220,12 +257,18 @@ export const Zones = () => {
                     <UpdateModal
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateZone}
+                        onUpdate={() => handleUpdateZone(selectedZone)}
                         entity={selectedZone}
                         fields={fields}
                         title="Atualizar Zona"
                     />
                 )}
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={handleDeleteZone}
+                    entityId={selectedZoneForDelete}
+                />
             </div>
             <div>
                 <div className='table-css'>
@@ -233,6 +276,9 @@ export const Zones = () => {
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
                         pagination
+                        paginationComponentOptions={paginationOptions}
+                        expandableRows
+                        expandableRowsComponent={ExpandedComponent}
                     />
                 </div>
             </div>

@@ -5,7 +5,7 @@ import '../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Employee } from '../types/Types';
+import { Employee } from '../helpers/Types';
 import { CreateModal } from '../modals/CreateModal';
 import { UpdateModal } from '../modals/UpdateModal';
 import { DeleteModal } from '../modals/DeleteModal';
@@ -17,48 +17,47 @@ export const Employees = () => {
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['number', 'name', 'shortName']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedEmployeeIdToDelete, setSelectedEmployeeIdToDelete] = useState<string | null>(null);
+    const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
 
     const fields = [
-        { label: 'Number', key: 'number', type: 'number', required: true },
-        { label: 'Name', key: 'name', type: 'string', required: true },
-        { label: 'Short Name', key: 'shortName', type: 'string', required: true },
-        { label: 'Name Acronym', key: 'nameAcronym', type: 'string', required: true },
-        { label: 'Comments', key: 'comments', type: 'string' },
-        { label: 'Photo', key: 'photo', type: 'string' },
-        { label: 'Address', key: 'address', type: 'string' },
-        { label: 'Zipcode', key: 'zipcode', type: 'string' },
-        { label: 'Locality', key: 'locality', type: 'string' },
-        { label: 'Village', key: 'village', type: 'string' },
-        { label: 'District', key: 'district', type: 'string' },
-        { label: 'Phone', key: 'phone', type: 'number' },
-        { label: 'Mobile', key: 'mobile', type: 'number' },
-        { label: 'Email', key: 'email', type: 'string' },
-        { label: 'Birthday', key: 'birthday', type: 'string' },
-        { label: 'Nacionality', key: 'nacionality', type: 'string' },
-        { label: 'Gender', key: 'gender', type: 'string' },
-        { label: 'BI Number', key: 'biNumber', type: 'string' },
-        { label: 'BI Issuance', key: 'biIssuance', type: 'string' },
-        { label: 'BI Validity', key: 'biValidity', type: 'string' },
+        { label: 'Número', key: 'number', type: 'number', required: true },
+        { label: 'Nome', key: 'name', type: 'string', required: true },
+        { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
+        { label: 'Acrônimo do Nome', key: 'nameAcronym', type: 'string', required: true },
+        { label: 'Comentários', key: 'comments', type: 'string' },
+        { label: 'Foto', key: 'photo', type: 'string' },
+        { label: 'Morada', key: 'address', type: 'string' },
+        { label: 'Código Postal', key: 'zipcode', type: 'string' },
+        { label: 'Localidade', key: 'locality', type: 'string' },
+        { label: 'Freguesia', key: 'village', type: 'string' },
+        { label: 'Distrito', key: 'district', type: 'string' },
+        { label: 'Telefone', key: 'phone', type: 'number' },
+        { label: 'Telemóvel', key: 'mobile', type: 'number' },
+        { label: 'E-Mail', key: 'email', type: 'string' },
+        { label: 'Data de Nascimento', key: 'birthday', type: 'string' },
+        { label: 'Nacionalidade', key: 'nacionality', type: 'string' },
+        { label: 'Gênero', key: 'gender', type: 'string' },
+        { label: 'Número de BI', key: 'biNumber', type: 'string' },
+        { label: 'Emissão de BI', key: 'biIssuance', type: 'string' },
+        { label: 'Validade de BI', key: 'biValidity', type: 'string' },
         { label: 'NIF', key: 'nif', type: 'number' },
-        { label: 'Admission Date', key: 'admissionDate', type: 'string' },
-        { label: 'Exit Date', key: 'exitDate', type: 'string' },
-        { label: 'RGPD Aut', key: 'rgpdAut', type: 'string' },
-        { label: 'Department ID', key: 'departmentId', type: 'string' },
-        { label: 'Department Name', key: 'departmentName', type: 'string' },
-        { label: 'Profession ID', key: 'professionId', type: 'string' },
-        { label: 'Profession Name', key: 'professionName', type: 'string' },
-        { label: 'Category ID', key: 'categoryId', type: 'string' },
-        { label: 'Category Name', key: 'categoryName', type: 'string' },
-        { label: 'Group ID', key: 'groupId', type: 'string' },
-        { label: 'Group Name', key: 'groupName', type: 'string' },
-        { label: 'Zone ID', key: 'zoneId', type: 'string' },
-        { label: 'Zone Name', key: 'zoneName', type: 'string' },
-        { label: 'External Entity ID', key: 'externalEntityId', type: 'string' },
-        { label: 'External Entity Name', key: 'externalEntityName', type: 'string' },
+        { label: 'Data de Admissão', key: 'admissionDate', type: 'string' },
+        { label: 'Data de Saída', key: 'exitDate', type: 'string' },
+        { label: 'Autorização RGPD', key: 'rgpdAut', type: 'string' },
+        { label: 'ID do Departmento', key: 'departmentId', type: 'string' },
+        { label: 'Nome do Departmento', key: 'departmentName', type: 'string' },
+        { label: 'ID da Profissão', key: 'professionId', type: 'string' },
+        { label: 'Nome da Profissão', key: 'professionName', type: 'string' },
+        { label: 'ID da Categoria', key: 'categoryId', type: 'string' },
+        { label: 'Nome da Categoria', key: 'categoryName', type: 'string' },
+        { label: 'ID do Grupo', key: 'groupId', type: 'string' },
+        { label: 'Nome do Grupo', key: 'groupName', type: 'string' },
+        { label: 'ID da Zona', key: 'zoneId', type: 'string' },
+        { label: 'Nome da Zona', key: 'zoneName', type: 'string' },
+        { label: 'ID da Entidade Externa', key: 'externalEntityId', type: 'string' },
+        { label: 'Nome da Entidade Externa', key: 'externalEntityName', type: 'string' },
     ];
 
     const fetchEmployees = async () => {
@@ -82,32 +81,6 @@ export const Employees = () => {
         } catch (error) {
             console.error('Error fetching the employees', error);
         }
-    };
-
-    useEffect(() => {
-        fetchEmployees();
-    }, []);
-
-    const refreshEmployees = () => {
-        fetchEmployees();
-    };
-
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
-    };
-
-    const handleOpenUpdateModal = (employee: Employee) => {
-        setSelectedEmployee(employee);
-        setShowUpdateModal(true);
-    };
-
-    const handleCloseUpdateModal = () => {
-        setSelectedEmployee(null);
-        setShowUpdateModal(false);
     };
 
     const handleAddEmployee = async (employee: Employee) => {
@@ -141,7 +114,7 @@ export const Employees = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch(`https://localhost:7129/api/Employees`, {
+            const response = await fetch(`https://localhost:7129/api/Employees/${employee.employeeID}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -154,8 +127,8 @@ export const Employees = () => {
                 throw new Error('Error updating employee');
             }
 
-            const updatedEmployees = employees.map(employee => {
-                return employee.id === employee.id ? employee : employee;
+            const updatedEmployees = employees.map(emp => {
+                return emp.id === employee.id ? employee : emp;
             });
             setEmployees(updatedEmployees);
         } catch (error) {
@@ -164,6 +137,53 @@ export const Employees = () => {
 
         handleCloseUpdateModal();
         refreshEmployees();
+    };
+
+    const handleDeleteEmployee = async (employeeID: string) => {
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch(`https://localhost:7129/api/Employees/${employeeID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error deleting employee');
+            }
+            refreshEmployees();
+        } catch (error) {
+            console.error('Error deleting employee:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
+
+    const refreshEmployees = () => {
+        fetchEmployees();
+    };
+
+    const handleOpenAddModal = () => {
+        setShowAddModal(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setShowAddModal(false);
+    };
+
+    const handleCloseUpdateModal = () => {
+        setSelectedEmployee(null);
+        setShowUpdateModal(false);
+    };
+
+    const handleOpenDeleteModal = (employeeID: string) => {
+        setSelectedEmployeeToDelete(employeeID);
+        setShowDeleteModal(true);
     };
 
     const filteredItems = employees.filter(item =>
@@ -184,62 +204,54 @@ export const Employees = () => {
         setSelectedColumns(['number', 'name', 'shortName']);
     };
 
-    const tableColumns = selectedColumns.map(columnName => ({
-        name: columnName,
-        selector: (row: Employee) => row[columnName],
-        sortable: true,
-    }));
+    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+        acc[field.key] = field.label;
+        return acc;
+    }, {});
+
+    const tableColumns = selectedColumns
+        .map(columnKey => ({
+            name: columnNamesMap[columnKey] || columnKey,
+            selector: (row: Record<string, any>) => row[columnKey],
+            sortable: true,
+        }));
 
     const handleEditEmployee = (employee: Employee) => {
-        setSelectedEmployeeId(employee.id);
-        handleOpenUpdateModal(employee);
-    };
-
-    const handleOpenDeleteModal = (employee: Employee) => {
         setSelectedEmployee(employee);
-        setShowDeleteModal(true);
+        setShowUpdateModal(true);
     };
 
-    const handleCloseDeleteModal = () => {
-        setSelectedEmployeeIdToDelete(null);
-        setShowDeleteModal(false);
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página'
     };
 
-    const handleDeleteEmployee = async (id: string) => {
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`https://localhost:7129/api/Employees/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Error deleting employee');
-            }
-
-            const updatedEmployees = employees.filter(employee => employee.id !== id);
-            setEmployees(updatedEmployees);
-        } catch (error) {
-            console.error('Error deleting employee:', error);
-        }
-
-        handleCloseDeleteModal();
-        refreshEmployees();
-    }    
+    const ExpandedComponent: React.FC<{ data: Employee }> = ({ data }) => (
+        <div className="expanded-details-container">
+            {Object.entries(data).map(([key, value], index) => {
+                let displayValue = value;
+                if (typeof value === 'object' && value !== null) {
+                    displayValue = JSON.stringify(value, null, 2);
+                }
+                const displayName = columnNamesMap[key] || key;
+                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
+                    <p key={index}>
+                        <span className="detail-key">{`${displayName}: `}</span>
+                        {displayValue}
+                    </p>
+                );
+            })}
+        </div>
+    );
 
     const actionColumn: TableColumn<Employee> = {
-        name: 'Actions',
+        name: 'Ações',
         cell: (row: Employee) => (
             <div>
                 <Button variant="outline-primary" onClick={() => handleEditEmployee(row)}>Editar</Button>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row)}>Apagar</Button>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>Apagar</Button>{' '}
             </div>
         ),
-        selector: undefined,
+        selector: (row: Employee) => row.employeeID,
     };
 
     return (
@@ -268,7 +280,7 @@ export const Employees = () => {
                     <UpdateModal
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateEmployee}
+                        onUpdate={() => handleUpdateEmployee(selectedEmployee)}
                         entity={selectedEmployee}
                         fields={fields}
                         title="Atualizar Funcionário"
@@ -276,9 +288,9 @@ export const Employees = () => {
                 )}
                 <DeleteModal
                     open={showDeleteModal}
-                    onClose={handleCloseDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
                     onDelete={handleDeleteEmployee}
-                    entityId={selectedEmployeeIdToDelete}
+                    entityId={selectedEmployee?.id || null}
                 />
             </div>
             <div>
@@ -287,6 +299,9 @@ export const Employees = () => {
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
                         pagination
+                        paginationComponentOptions={paginationOptions}
+                        expandableRows
+                        expandableRowsComponent={ExpandedComponent}
                     />
                 </div>
             </div>
