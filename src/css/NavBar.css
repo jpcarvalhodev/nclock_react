@@ -1,7 +1,7 @@
 .nav-container {
     display: flex;
     align-items: center;
-    background-color: #1976d2;
+    background-color: #0050a0;
 }
 
 .logo {
@@ -15,7 +15,7 @@
 .nav {
     display: flex;
     align-items: center;
-    border-color: #1976d2;
+    border-color: #0050a0;
 }
 
 .pessoas-tab {
@@ -41,25 +41,25 @@
 .pessoas-tab.active,
 .pessoas-tab:hover {
     background-color: white;
-    color: #1976d2;
+    color: #0050a0;
 }
 
 .dispositivos-tab.active,
 .dispositivos-tab:hover {
     background-color: white;
-    color: #1976d2;
+    color: #0050a0;
 }
 
 .configuracao-tab.active,
 .configuracao-tab:hover {
     background-color: white;
-    color: #1976d2;
+    color: #0050a0;
 }
 
 .ajuda-tab.active,
 .ajuda-tab:hover {
     background-color: white;
-    color: #1976d2;
+    color: #0050a0;
 }
 
 .section {

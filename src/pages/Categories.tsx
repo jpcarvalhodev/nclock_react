@@ -9,6 +9,8 @@ import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { fetchWithAuth } from "../components/FetchWithAuth";
 
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -28,13 +30,10 @@ export const Categories = () => {
     ];
 
     const fetchCategories = async () => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Categories', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Categories', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -51,13 +50,10 @@ export const Categories = () => {
     };
 
     const handleAddCategory = async (category: Category) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Categories', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Categories', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(category)
@@ -78,13 +74,10 @@ export const Categories = () => {
     };
 
     const handleUpdateCategory = async (category: Category) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Categories/${category.categoryID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Categories/${category.categoryID}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(category)
@@ -107,13 +100,10 @@ export const Categories = () => {
     };
 
     const handleDeleteCategory = async (categoryID: string) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Categories/${categoryID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Categories/${categoryID}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -177,6 +167,10 @@ export const Categories = () => {
         setSelectedColumns(['code', 'description']);
     };
 
+    const onSelectAllColumns = (allColumnKeys: string[]) => {
+        setSelectedColumns(allColumnKeys);
+    };
+
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página'
     };
@@ -215,8 +209,10 @@ export const Categories = () => {
         name: 'Ações',
         cell: (row: Category) => (
             <div>
-                <Button variant="outline-primary" onClick={() => handleEditCategory(row)}>Editar</Button>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)}>Apagar</Button>{' '}
+                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditCategory(row)}></CustomOutlineButton>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryId)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
             </div>
         ),
         selector: (row: Category) => row.categoryID,
@@ -233,9 +229,9 @@ export const Categories = () => {
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
-                <Button variant="outline-primary" onClick={refreshCategories}>Atualizar</Button>{' '}
-                <Button variant="outline-primary" onClick={handleOpenAddModal}>Adicionar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
+                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                 <CreateModal
                     title="Adicionar Categoria"
                     open={showAddModal}
@@ -276,11 +272,12 @@ export const Categories = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={Object.keys(filteredItems[0])}
+                    columns={fields} 
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
                     onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
                 />
             )}
         </div >

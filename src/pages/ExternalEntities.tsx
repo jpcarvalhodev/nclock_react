@@ -9,6 +9,8 @@ import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { fetchWithAuth } from "../components/FetchWithAuth";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -43,13 +45,10 @@ export const ExternalEntities = () => {
     ];
 
     const fetchExternalEntities = async () => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/ExternalEntities', {
+            const response = await fetchWithAuth('https://localhost:7129/api/ExternalEntities', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -66,13 +65,10 @@ export const ExternalEntities = () => {
     };
 
     const handleAddExternalEntity = async (externalEntity: ExternalEntity) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/ExternalEntities', {
+            const response = await fetchWithAuth('https://localhost:7129/api/ExternalEntities', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(externalEntity)
@@ -93,13 +89,10 @@ export const ExternalEntities = () => {
     };
 
     const handleUpdateExternalEntity = async (externalEntity: ExternalEntity) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/ExternalEntities/${externalEntity.externalEntityID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/ExternalEntities/${externalEntity.externalEntityID}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(externalEntity)
@@ -122,13 +115,10 @@ export const ExternalEntities = () => {
     };
 
     const handleDeleteExternalEntity = async (externalEntityID: string) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/ExternalEntities/${externalEntityID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/ExternalEntities/${externalEntityID}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -191,6 +181,10 @@ export const ExternalEntities = () => {
         setSelectedColumns(['name', 'nif']);
     };
 
+    const onSelectAllColumns = (allColumnKeys: string[]) => {
+        setSelectedColumns(allColumnKeys);
+    };
+
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página'
     };
@@ -229,8 +223,10 @@ export const ExternalEntities = () => {
         name: 'Ações',
         cell: (row: ExternalEntity) => (
             <div>
-                <Button variant="outline-primary" onClick={() => handleEditExternalEntity(row)}>Editar</Button>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityID)}>Apagar</Button>{' '}
+                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditExternalEntity(row)}></CustomOutlineButton>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
             </div>
         ),
         selector: (row: ExternalEntity) => row.externalEntityID,
@@ -247,9 +243,9 @@ export const ExternalEntities = () => {
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
-                <Button variant="outline-primary" onClick={refreshExternalEntities}>Atualizar</Button>{' '}
-                <Button variant="outline-primary" onClick={handleOpenAddModal}>Adicionar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntities} />
+                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                 <CreateModal
                     title="Adicionar Entidade Externa"
                     open={showAddModal}
@@ -290,11 +286,12 @@ export const ExternalEntities = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={Object.keys(filteredItems[0])}
+                    columns={fields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
                     onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
                 />
             )}
         </div>

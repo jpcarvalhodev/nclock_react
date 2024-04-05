@@ -9,6 +9,8 @@ import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { fetchWithAuth } from "../components/FetchWithAuth";
 
 export const Professions = () => {
     const [professions, setProfessions] = useState<Profession[]>([]);
@@ -28,13 +30,10 @@ export const Professions = () => {
     ];
 
     const fetchProfessions = async () => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Professions', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Professions', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -51,13 +50,10 @@ export const Professions = () => {
     };
 
     const handleAddProfession = async (profession: Profession) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Professions', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Professions', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(profession)
@@ -78,13 +74,10 @@ export const Professions = () => {
     };
 
     const handleUpdateProfession = async (profession: Profession) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Professions/${profession.professionID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Professions/${profession.professionID}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(profession)
@@ -107,13 +100,10 @@ export const Professions = () => {
     };
 
     const handleDeleteProfessions = async (professionID: string) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Professions/${professionID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Professions/${professionID}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -177,6 +167,10 @@ export const Professions = () => {
         setSelectedColumns(['code', 'description']);
     };
 
+    const onSelectAllColumns = (allColumnKeys: string[]) => {
+        setSelectedColumns(allColumnKeys);
+    };
+
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página'
     };
@@ -215,8 +209,10 @@ export const Professions = () => {
         name: 'Ações',
         cell: (row: Profession) => (
             <div>
-                <Button variant="outline-primary" onClick={() => handleEditProfession(row)}>Editar</Button>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)}>Apagar</Button>{' '}
+                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditProfession(row)}></CustomOutlineButton>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
             </div>
         ),
         selector: (row: Profession) => row.professionID,
@@ -233,9 +229,9 @@ export const Professions = () => {
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
-                <Button variant="outline-primary" onClick={refreshProfessions}>Atualizar</Button>{' '}
-                <Button variant="outline-primary" onClick={handleOpenAddModal}>Adicionar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
+                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                 <CreateModal
                     title="Adicionar Profissão"
                     open={showAddModal}
@@ -276,11 +272,12 @@ export const Professions = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={Object.keys(filteredItems[0])}
+                    columns={fields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
                     onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
                 />
             )}
         </div >

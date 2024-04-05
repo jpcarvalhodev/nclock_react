@@ -3,6 +3,7 @@ import '../css/Login.css';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import React from 'react';
+import { Button } from 'react-bootstrap';
 
 type User = {
   username: string;
@@ -67,7 +68,7 @@ export const Login = () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      setMessage('An error occurred while logging in. Please try again.');
+      setMessage('Problema com o servidor, contacte o administrador.');
     }
   };
 
@@ -93,12 +94,11 @@ export const Login = () => {
             Remember me?
             <input style={{ marginLeft: '10px' }} type="checkbox" name="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
           </label>
-          <Link style={{ marginBottom: '20px' }} to="/forgot-password">Forgot your password?</Link>
-          <button style={{ fontSize: '15px', padding: '5px 10px' }} type="submit">Login</button>
+          <Link className="btn-my-custom-link" to="/forgot-password">Forgot your password?</Link>
+          <Button className="btn-my-custom-button" type='submit'>Login</Button>
         </form>
         {message && <div className="message">{message}</div>}
       </div>
     </div>
   );
 };
-

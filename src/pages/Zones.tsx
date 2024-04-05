@@ -9,6 +9,8 @@ import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { fetchWithAuth } from "../components/FetchWithAuth";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -37,13 +39,10 @@ export const Zones = () => {
     ];
 
     const fetchZones = async () => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Zones', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Zones', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -60,13 +59,10 @@ export const Zones = () => {
     };
 
     const handleAddZone = async (zone: Zone) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Zones', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Zones', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(zone)
@@ -87,13 +83,10 @@ export const Zones = () => {
     };
 
     const handleUpdateZone = async (zone: Zone) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Zones/${zone.zoneID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Zones/${zone.zoneID}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(zone)
@@ -116,13 +109,10 @@ export const Zones = () => {
     };
 
     const handleDeleteZone = async (zoneID: string) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Zones/${zoneID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Zones/${zoneID}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -186,6 +176,10 @@ export const Zones = () => {
         setSelectedColumns(['name', 'acronym']);
     };
 
+    const onSelectAllColumns = (allColumnKeys: string[]) => {
+        setSelectedColumns(allColumnKeys);
+    };
+
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página'
     };
@@ -224,8 +218,10 @@ export const Zones = () => {
         name: 'Ações',
         cell: (row: Zone) => (
             <div>
-                <Button variant="outline-primary" onClick={() => handleEditZone(row)}>Editar</Button>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneID)}>Apagar</Button>{' '}
+                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditZone(row)}></CustomOutlineButton>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
             </div>
         ),
         selector: undefined,
@@ -242,9 +238,9 @@ export const Zones = () => {
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
-                <Button variant="outline-primary" onClick={refreshZones}>Atualizar</Button>{' '}
-                <Button variant="outline-primary" onClick={handleOpenAddModal}>Adicionar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} />
+                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                 <CreateModal
                     title="Adicionar Zona"
                     open={showAddModal}
@@ -285,11 +281,12 @@ export const Zones = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={Object.keys(filteredItems[0])}
+                    columns={fields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
                     onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
                 />
             )}
         </div >

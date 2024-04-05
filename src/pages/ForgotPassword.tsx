@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../css/ForgotPassword.css';
+import { Button } from 'react-bootstrap';
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -40,7 +41,7 @@ export const ForgotPassword = () => {
           Email:
           <input style={{ marginLeft: '20px', flex: 1 }} type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </label>
-        <input style={{ marginTop: '20px' }} type="submit" value="Send password reset link" />
+        <Button variant='outline-primary' className='edit-button' style={{ marginTop: '20px' }}>Send password reset link</Button>
       </form>
     </div>
   );

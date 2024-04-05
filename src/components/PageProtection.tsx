@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
 interface PageProtectionProps {
@@ -6,28 +6,35 @@ interface PageProtectionProps {
 }
 
 export const PageProtection: React.FC<PageProtectionProps> = ({ children }) => {
-  function isAuthenticated() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return false;
-    }
+  const [redirectTo, setRedirectTo] = useState('');
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (Date.now() >= payload.exp * 1000) {
-        localStorage.removeItem('token');
+  useEffect(() => {
+    function isAuthenticated() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setRedirectTo('/notfound'); 
         return false;
       }
-    } catch {
-      localStorage.removeItem('token');
-      return false;
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (Date.now() >= payload.exp * 1000) {
+          localStorage.removeItem('token');
+          setRedirectTo('/unauthorized'); 
+          return false;
+        }
+      } catch {
+        localStorage.removeItem('token');
+        setRedirectTo('/notfound');
+        return false;
+      }
+      return true;
     }
 
-    return true;
-  }
+    isAuthenticated();
+  }, []);
 
-  if (!isAuthenticated()) {
-    return <Navigate to="/notfound" />;
+  if (redirectTo) {
+    return <Navigate to={redirectTo} />;
   }
 
   return <>{children}</>;

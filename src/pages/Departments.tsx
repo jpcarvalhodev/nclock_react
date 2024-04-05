@@ -9,6 +9,8 @@ import { Department } from '../helpers/Types';
 import { CreateModal } from '../modals/CreateModal';
 import { UpdateModal } from '../modals/UpdateModal';
 import { DeleteModal } from '../modals/DeleteModal';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { fetchWithAuth } from '../components/FetchWithAuth';
 
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -29,47 +31,33 @@ export const Departments = () => {
     ];
 
     const fetchDepartments = async () => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Departaments', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
+            const response = await fetchWithAuth('https://localhost:7129/api/Departaments'); 
             if (!response.ok) {
                 throw new Error('Error fetching departments data');
             }
-
             const data = await response.json();
             setDepartments(data);
         } catch (error) {
             console.error('Error fetching the departments', error);
         }
-    };
+    };    
 
     const handleAddDepartment = async (department: Department) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Departaments', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Departaments', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(department)
             });
-
+    
             if (!response.ok) {
                 throw new Error('Error adding new department');
             }
-
             const data = await response.json();
-            setDepartments([...departments, data]);
+            setDepartments(deps => [...deps, data]);
             handleCloseAddModal();
         } catch (error) {
             console.error('Error adding new department:', error);
@@ -78,53 +66,44 @@ export const Departments = () => {
     };
 
     const handleUpdateDepartment = async (department: Department) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Departaments/${department.departmentID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Departaments/${department.departmentID}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(department)
             });
-
+    
             if (!response.ok) {
                 throw new Error('Error updating department');
             }
-
             const updatedDepartments = departments.map(dep => dep.departmentID === department.departmentID ? department : dep);
             setDepartments(updatedDepartments);
         } catch (error) {
             console.error('Error updating department:', error);
         }
-
         handleCloseUpdateModal();
         refreshDepartments();
-    };
+    };    
 
     const handleDeleteDepartment = async (departmentID: string) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Departaments/${departmentID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Departaments/${departmentID}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
-
+    
             if (!response.ok) {
                 throw new Error('Error deleting department');
             }
-
             refreshDepartments();
         } catch (error) {
-            console.error(error);
+            console.error('Error deleting department:', error);
         }
-    };
+    };    
 
     useEffect(() => {
         fetchDepartments();
@@ -163,6 +142,10 @@ export const Departments = () => {
 
     const resetColumns = () => {
         setSelectedColumns(['code', 'name']);
+    };
+
+    const onSelectAllColumns = (allColumnKeys: string[]) => {
+        setSelectedColumns(allColumnKeys);
     };
 
     const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
@@ -213,8 +196,10 @@ export const Departments = () => {
         name: 'Ações',
         cell: (row: Department) => (
             <div>
-                <Button variant="outline-primary" onClick={() => handleEditDepartment(row)}>Editar</Button>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentID)}>Apagar</Button>
+                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditDepartment(row)}></CustomOutlineButton>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
             </div>
         ),
         selector: (row: Department) => row.departmentID,
@@ -231,9 +216,9 @@ export const Departments = () => {
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
-                <Button variant="outline-primary" onClick={refreshDepartments}>Atualizar</Button>{' '}
-                <Button variant="outline-primary" onClick={handleOpenAddModal}>Adicionar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshDepartments} />
+                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                 <CreateModal
                     title="Adicionar Departamento"
                     open={showAddModal}
@@ -273,11 +258,12 @@ export const Departments = () => {
             </div>
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={Object.keys(filteredItems[0])}
+                    columns={fields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
                     onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
                 />
             )}
             <Footer />

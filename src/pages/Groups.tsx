@@ -9,6 +9,8 @@ import Button from "react-bootstrap/esm/Button";
 import { CreateModal } from "../modals/CreateModal";
 import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { fetchWithAuth } from "../components/FetchWithAuth";
 
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
@@ -28,13 +30,10 @@ export const Groups = () => {
     ];
 
     const fetchGroups = async () => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Groups', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Groups', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -51,13 +50,10 @@ export const Groups = () => {
     };
 
     const handleAddGroup = async (group: Group) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Groups', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Groups', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(group)
@@ -78,13 +74,10 @@ export const Groups = () => {
     };
 
     const handleUpdateGroup = async (group: Group) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Groups/${group.groupID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Groups/${group.groupID}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(group)
@@ -107,13 +100,10 @@ export const Groups = () => {
     };
 
     const handleDeleteGroup = async (groupID: string) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Groups/${groupID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Groups/${groupID}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -177,6 +167,10 @@ export const Groups = () => {
         setSelectedColumns(['name']);
     };
 
+    const onSelectAllColumns = (allColumnKeys: string[]) => {
+        setSelectedColumns(allColumnKeys);
+    };
+
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página'
     };
@@ -215,8 +209,10 @@ export const Groups = () => {
         name: 'Ações',
         cell: (row: Group) => (
             <div>
-                <Button variant="outline-primary" onClick={() => handleEditGroup(row)}>Editar</Button>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)}>Apagar</Button>{' '}
+                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditGroup(row)}></CustomOutlineButton>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
             </div>
         ),
         selector: (row: Group) => row.groupID,
@@ -233,9 +229,9 @@ export const Groups = () => {
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
-                <Button variant="outline-primary" onClick={refreshGroups}>Atualizar</Button>{' '}
-                <Button variant="outline-primary" onClick={handleOpenAddModal}>Adicionar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
+                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                 <CreateModal
                     title="Adicionar Grupo"
                     open={showAddModal}
@@ -276,11 +272,12 @@ export const Groups = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={Object.keys(filteredItems[0])}
+                    columns={fields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
                     onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
                 />
             )}
         </div >

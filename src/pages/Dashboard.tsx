@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'moment/locale/pt';
 import { Employee } from "../helpers/Types";
+
+moment.locale('pt');
+
+const localizer = momentLocalizer(moment);
 
 interface CalendarEvent {
     id: string;
@@ -14,7 +18,20 @@ interface CalendarEvent {
     allDay: boolean;
 }
 
-const localizer = momentLocalizer(moment);
+const messages = {
+    allDay: 'Todo o dia',
+    previous: '<',
+    next: '>',
+    today: 'Hoje',
+    month: 'Mês',
+    week: 'Semana',
+    day: 'Dia',
+    agenda: 'Agenda',
+    date: 'Data',
+    time: 'Hora',
+    event: 'Evento',
+    showMore: (total: number) => `+ Ver mais (${total})`
+};
 
 export const Dashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -61,15 +78,16 @@ export const Dashboard = () => {
     }, []);
 
     return (
-        <div>
+        <div className="dashboard-container">
             <NavBar />
-            <div style={{ height: '500px', width: '1000px' }}>
+            <div className="dashboard-calendar">
                 <Calendar
                     localizer={localizer}
                     events={events}
                     startAccessor="start"
                     endAccessor="end"
                     style={{ height: '100%' }}
+                    messages={messages}
                 />
             </div>
             <Footer />

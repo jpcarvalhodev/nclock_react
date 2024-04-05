@@ -29,21 +29,13 @@ img {
     margin-right: 10px;
 }
 
-.add-button:hover,
-.refresh-button:hover {
-    background-color: #6495ed;
-}
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10rem;
-    justify-content: center;
-    align-items: center;
-    margin-top: 50px;
-    margin-left: 100px;
-    margin-right: 100px;
-    margin-bottom: 100px;
+.dashboard-calendar {
+    height: 610px;
+    width: calc(100% - 40px);
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 80px;
 }
 
 .expanded-details-container {
@@ -75,12 +67,13 @@ img {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #1976d2;
+    background-color: #0050a0;
     color: #fff;
     padding: 20px;
     display: flex;
     align-items: center;
     flex-direction: column;
+    z-index: 1000;
 }
 
 .footer p {
@@ -96,11 +89,15 @@ img {
     overflow-y: auto;
 }
 
+.btn-selector-modal-close {
+    background-color: #0050a0 !important;
+}
+
+.btn-selector-modal-close:hover {
+    background-color: #00366d !important;
+}
+
 @media (max-width: 400px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
 
     .profile-avatar {
         max-width: 20px;
@@ -130,14 +127,13 @@ img {
     .table-css {
         margin-bottom: 150px;
     }
+
+    .dashboard-container {
+        padding-bottom: 20px;
+    }
 }
 
 @media (max-width: 800px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(1, 1fr);
-        gap: 2rem;
-        margin-bottom: 150px;
-    }
 
     .profile-avatar {
         max-width: 30px;
@@ -168,5 +164,9 @@ img {
 
     .table-css {
         margin-bottom: 150px;
+    }
+
+    .dashboard-container {
+        padding-bottom: 20px;
     }
 }

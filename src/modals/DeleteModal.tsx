@@ -9,6 +9,7 @@ interface DeleteModalProps {
 }
 
 export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalProps) => {
+    
     const handleDelete = () => {
         if (entityId) {
             onDelete(entityId);

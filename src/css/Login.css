@@ -23,7 +23,8 @@
     border-radius: 10px;
 }
 
-.form-login input[type="text"], .form-login input[type="password"] {
+.form-login input[type="text"],
+.form-login input[type="password"] {
     margin: 15px;
     padding: 10px;
     width: 200px;
@@ -34,7 +35,7 @@
     padding: 10px 20px;
 }
 
-.username-password-labels{
+.username-password-labels {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,13 +62,31 @@
     margin-bottom: 1rem;
     border: 1px solid transparent;
     border-radius: .25rem;
-  }
+}
+
+.btn-my-custom-button {
+    border-color: #0050a0 !important;
+    color: #0050a0 !important;
+    background-color: transparent !important;
+}
+
+.btn-my-custom-button:hover {
+    background-color: #0050a0 !important;
+    color: white !important;
+}
+
+.btn-my-custom-link {
+    color: #0050a0;
+    margin-bottom: 20px;
+}
 
 @media screen and (max-width: 900px) {
-    .form-login input[type="username"], .form-login input[type="submit"] {
+
+    .form-login input[type="username"],
+    .form-login input[type="submit"] {
         width: 80%;
     }
-    
+
     .form-login {
         margin: 10px;
     }

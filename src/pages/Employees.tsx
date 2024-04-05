@@ -9,6 +9,8 @@ import { Employee } from '../helpers/Types';
 import { CreateModal } from '../modals/CreateModal';
 import { UpdateModal } from '../modals/UpdateModal';
 import { DeleteModal } from '../modals/DeleteModal';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { fetchWithAuth } from '../components/FetchWithAuth';
 
 export const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -61,21 +63,11 @@ export const Employees = () => {
     ];
 
     const fetchEmployees = async () => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Employees', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
+            const response = await fetchWithAuth('https://localhost:7129/api/Employees');
             if (!response.ok) {
                 throw new Error('Error fetching employees');
             }
-
             const data = await response.json();
             setEmployees(data);
         } catch (error) {
@@ -84,13 +76,10 @@ export const Employees = () => {
     };
 
     const handleAddEmployee = async (employee: Employee) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch('https://localhost:7129/api/Employees', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Employees', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(employee)
@@ -99,7 +88,6 @@ export const Employees = () => {
             if (!response.ok) {
                 throw new Error('Error adding new employee');
             }
-
             const data = await response.json();
             setEmployees([...employees, data]);
         } catch (error) {
@@ -111,13 +99,10 @@ export const Employees = () => {
     };
 
     const handleUpdateEmployee = async (employee: Employee) => {
-        const token = localStorage.getItem('token');
-
         try {
-            const response = await fetch(`https://localhost:7129/api/Employees/${employee.employeeID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/${employee.employeeID}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(employee)
@@ -127,9 +112,7 @@ export const Employees = () => {
                 throw new Error('Error updating employee');
             }
 
-            const updatedEmployees = employees.map(emp => {
-                return emp.id === employee.id ? employee : emp;
-            });
+            const updatedEmployees = employees.map(emp => emp.id === employee.id ? employee : emp);
             setEmployees(updatedEmployees);
         } catch (error) {
             console.error('Error updating employee:', error);
@@ -140,13 +123,12 @@ export const Employees = () => {
     };
 
     const handleDeleteEmployee = async (employeeID: string) => {
-        const token = localStorage.getItem('token');
+        console.log(employeeID);
 
         try {
-            const response = await fetch(`https://localhost:7129/api/Employees/${employeeID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/${employeeID}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
@@ -204,6 +186,10 @@ export const Employees = () => {
         setSelectedColumns(['number', 'name', 'shortName']);
     };
 
+    const onSelectAllColumns = (allColumnKeys: string[]) => {
+        setSelectedColumns(allColumnKeys);
+    };
+
     const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
@@ -222,7 +208,8 @@ export const Employees = () => {
     };
 
     const paginationOptions = {
-        rowsPerPageText: 'Linhas por página'
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
     };
 
     const ExpandedComponent: React.FC<{ data: Employee }> = ({ data }) => (
@@ -247,8 +234,10 @@ export const Employees = () => {
         name: 'Ações',
         cell: (row: Employee) => (
             <div>
-                <Button variant="outline-primary" onClick={() => handleEditEmployee(row)}>Editar</Button>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>Apagar</Button>{' '}
+                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditEmployee(row)}></CustomOutlineButton>{' '}
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeId)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
             </div>
         ),
         selector: (row: Employee) => row.employeeID,
@@ -265,9 +254,9 @@ export const Employees = () => {
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
-                <Button variant="outline-primary" onClick={refreshEmployees}>Atualizar</Button>{' '}
-                <Button variant="outline-primary" onClick={handleOpenAddModal}>Adicionar</Button>{' '}
-                <Button variant="outline-primary" onClick={() => setOpenColumnSelector(true)}>Visualizar</Button>{' '}
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} />
+                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                 <CreateModal
                     title="Adicionar Funcionário"
                     open={showAddModal}
@@ -290,7 +279,7 @@ export const Employees = () => {
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
                     onDelete={handleDeleteEmployee}
-                    entityId={selectedEmployee?.id || null}
+                    entityId={setSelectedEmployeeToDelete}
                 />
             </div>
             <div>
@@ -307,11 +296,12 @@ export const Employees = () => {
             </div>
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={Object.keys(filteredItems[0])}
+                    columns={fields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
                     onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
                 />
             )}
             <Footer />

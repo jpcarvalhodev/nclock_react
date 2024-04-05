@@ -51,7 +51,7 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
               <input
                 type={field.type}
                 className="form-control"
-                value={formData[field.key]}
+                value={formData[field.key] === undefined ? '' : formData[field.key]}
                 onChange={(e) => handleInputChange(e, field.key)}
                 required={field.required}
               />

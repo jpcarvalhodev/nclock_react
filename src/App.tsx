@@ -11,6 +11,9 @@ import { Professions } from './pages/Professions';
 import { Zones } from './pages/Zones';
 import { NotFound } from './pages/NotFound';
 import { PageProtection } from './components/PageProtection';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Unauthorized } from './pages/Unauthorized';
 
 function App() {
   return (
@@ -18,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
         <Route path="/employees" element={<PageProtection><Employees /></PageProtection>} />
         <Route path="/departments" element={<PageProtection><Departments /></PageProtection>} />
