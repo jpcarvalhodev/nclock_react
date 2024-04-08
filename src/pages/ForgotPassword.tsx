@@ -41,7 +41,7 @@ export const ForgotPassword = () => {
           Email:
           <input style={{ marginLeft: '20px', flex: 1 }} type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </label>
-        <Button variant='outline-primary' className='edit-button' style={{ marginTop: '20px' }}>Send password reset link</Button>
+        <Button className="btn-my-custom-button" type='submit'>Enviar</Button>
       </form>
     </div>
   );

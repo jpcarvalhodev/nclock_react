@@ -5,6 +5,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/pt';
 import { Employee } from "../helpers/Types";
+import TreeViewData from "../components/TreeView";
 
 moment.locale('pt');
 
@@ -80,17 +81,22 @@ export const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar />
-            <div className="dashboard-calendar">
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: '100%' }}
-                    messages={messages}
-                />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ flex: 1 }}>
+                    <TreeViewData />
+                </div>
+                <div className="dashboard-calendar" style={{ flex: 3 }}>
+                    <Calendar
+                        localizer={localizer}
+                        events={events}
+                        startAccessor="start"
+                        endAccessor="end"
+                        style={{ height: '100%' }}
+                        messages={messages}
+                    />
+                </div>
             </div>
             <Footer />
         </div>
-    );
+    );    
 };

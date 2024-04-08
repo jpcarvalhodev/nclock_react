@@ -4,3 +4,6 @@ declare module 'react-table';
 declare module 'react-bootstrap-ribbon';
 declare module 'react-sidebar';
 declare module 'react-big-calendar';
+declare module '@react-spring/web';
+declare module '@mui/material/TreeView';
+declare module '@mui/material/TreeItem';

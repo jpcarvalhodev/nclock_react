@@ -79,11 +79,11 @@ export const Login = () => {
           <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
           <div className='username-password-labels'>
             <label className='username-label'>
-              Username:
+              Nome de Usuário:
               <input style={{ marginLeft: '20px' }} type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} />
             </label>
             <label className='password-label'>
-              Password:
+              Senha:
               <input style={{ marginLeft: '20px' }} type={showPassword ? "text" : "password"} name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
               <i onClick={togglePasswordVisibility} style={{ marginLeft: '10px' }}>
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -91,10 +91,10 @@ export const Login = () => {
             </label>
           </div>
           <label className='remember_me-label'>
-            Remember me?
+            Guardar dados?
             <input style={{ marginLeft: '10px' }} type="checkbox" name="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
           </label>
-          <Link className="btn-my-custom-link" to="/forgot-password">Forgot your password?</Link>
+          <Link className="btn-my-custom-link" to="/forgot-password">Esqueceu sua senha?</Link>
           <Button className="btn-my-custom-button" type='submit'>Login</Button>
         </form>
         {message && <div className="message">{message}</div>}

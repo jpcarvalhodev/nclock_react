@@ -1,0 +1,21 @@
+.tree-node {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.tree-node-label {
+    margin-left: 8px;
+}
+
+.tree-children {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    margin-left: 8px;
+}

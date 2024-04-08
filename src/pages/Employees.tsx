@@ -250,7 +250,7 @@ export const Employees = () => {
                 <input
                     className='filter-input'
                     type="text"
-                    placeholder="Filtro"
+                    placeholder="Pesquisa"
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
@@ -279,7 +279,7 @@ export const Employees = () => {
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
                     onDelete={handleDeleteEmployee}
-                    entityId={setSelectedEmployeeToDelete}
+                    entityId={selectedEmployeeToDelete}
                 />
             </div>
             <div>

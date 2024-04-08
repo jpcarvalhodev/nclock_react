@@ -225,7 +225,7 @@ export const Categories = () => {
                 <input
                     className='filter-input'
                     type="text"
-                    placeholder="Filtro"
+                    placeholder="Pesquisa"
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                 />
