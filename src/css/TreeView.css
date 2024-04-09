@@ -1,21 +1,18 @@
-.tree-node {
-    margin-left: 20px;
+.treeview-container {
     display: flex;
-    align-items: center;
-}
-
-.tree-node-label {
-    margin-left: 8px;
-}
-
-.tree-children {
-    margin-top: 10px;
-    margin-left: 20px;
-}
-
-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    margin-left: 8px;
-}
+    flex-direction: column;
+    max-width: 300px; /* Adjust the initial size as needed */
+  }
+  
+  #resizable-treeview {
+    resize: horizontal;
+    overflow: auto;
+    border-right: 2px solid #ccc; /* Just for visibility, adjust as needed */
+  }
+  
+  .search-box {
+    margin-top: 5px; /* Add spacing between tree view and search box */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }

@@ -9,7 +9,7 @@ interface Field {
   required?: boolean;
 }
 
-interface Entity {
+export interface Entity {
   id: string;
   [key: string]: any;
 }

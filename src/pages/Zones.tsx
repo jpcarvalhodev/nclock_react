@@ -11,6 +11,7 @@ import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
+import { zoneFields } from "../helpers/Fields";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -22,21 +23,6 @@ export const Zones = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<string | null>(null);
-
-    const fields = [
-        { key: 'Tipo', label: 'Type', type: 'string' },
-        { key: 'Nome', label: 'Name', type: 'string', required: true },
-        { key: 'Descrição', label: 'Description', type: 'string' },
-        { key: 'Acrônimo', label: 'Acronym', type: 'string', required: true },
-        { key: 'Morada', label: 'Address', type: 'string' },
-        { key: 'Código Postal', label: 'ZIP Code', type: 'string' },
-        { key: 'Localidade', label: 'Locality', type: 'string' },
-        { key: 'Freguesia', label: 'Village', type: 'string' },
-        { key: 'Distrito', label: 'District', type: 'string' },
-        { key: 'Telefone', label: 'Phone', type: 'number' },
-        { key: 'Telemóvel', label: 'Mobile', type: 'number' },
-        { key: 'E-Mail', label: 'Email', type: 'string' },
-    ];
 
     const fetchZones = async () => {
         try {
@@ -97,7 +83,7 @@ export const Zones = () => {
             }
 
             const updatedZones = zones.map(zone => {
-                return zone.id === zone.id ? zone : zone;
+                return zone.id ? zone : zone;
             });
             setZones(updatedZones);
         } catch (error) {
@@ -184,7 +170,7 @@ export const Zones = () => {
         rowsPerPageText: 'Linhas por página'
     };
 
-    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = zoneFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -246,7 +232,7 @@ export const Zones = () => {
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddZone}
-                    fields={fields}
+                    fields={zoneFields}
                     initialValues={{}}
                 />
                 {selectedZone && (
@@ -255,7 +241,7 @@ export const Zones = () => {
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateZone(selectedZone)}
                         entity={selectedZone}
-                        fields={fields}
+                        fields={zoneFields}
                         title="Atualizar Zona"
                     />
                 )}
@@ -281,7 +267,7 @@ export const Zones = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={fields}
+                    columns={zoneFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

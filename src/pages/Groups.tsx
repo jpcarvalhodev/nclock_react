@@ -11,6 +11,7 @@ import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
+import { groupFields } from "../helpers/Fields";
 
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
@@ -22,12 +23,6 @@ export const Groups = () => {
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
-
-    const fields = [
-        { key: 'Nome', label: 'Name', type: 'string', required: true },
-        { key: 'Descrição', label: 'Description', type: 'string' },
-        { key: 'ID de Parente', label: 'Parent ID', type: 'number' },
-    ];
 
     const fetchGroups = async () => {
         try {
@@ -88,7 +83,7 @@ export const Groups = () => {
             }
 
             const updatedGroups = groups.map(group => {
-                return group.id === group.id ? group : group;
+                return group.id ? group : group;
             });
             setGroups(updatedGroups);
         } catch (error) {
@@ -175,7 +170,7 @@ export const Groups = () => {
         rowsPerPageText: 'Linhas por página'
     };
 
-    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = groupFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -237,7 +232,7 @@ export const Groups = () => {
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddGroup}
-                    fields={fields}
+                    fields={groupFields}
                     initialValues={{}}
                 />
                 {selectedGroup && (
@@ -246,7 +241,7 @@ export const Groups = () => {
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateGroup(selectedGroup)}
                         entity={selectedGroup}
-                        fields={fields}
+                        fields={groupFields}
                         title="Atualizar Grupo"
                     />
                 )}
@@ -272,7 +267,7 @@ export const Groups = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={fields}
+                    columns={groupFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

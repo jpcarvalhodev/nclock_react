@@ -11,6 +11,7 @@ import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
+import { externalEntityFields } from "../helpers/Fields";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -22,27 +23,6 @@ export const ExternalEntities = () => {
     const [selectedExternalEntity, setSelectedExternalEntity] = useState<ExternalEntity | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
-
-    const fields = [
-        { label: 'Nome', key: 'name', type: 'string', required: true },
-        { label: 'Comentários', key: 'comments', type: 'string' },
-        { label: 'Nome Comercial', key: 'commercialName', type: 'string' },
-        { label: 'Nome Responsável', key: 'responsibleName', type: 'string' },
-        { label: 'Foto', key: 'photo', type: 'string' },
-        { label: 'Morada', key: 'address', type: 'string' },
-        { label: 'Código Postal', key: 'ZIPCode', type: 'string' },
-        { label: 'Localidade', key: 'locality', type: 'string' },
-        { label: 'Freguesia', key: 'village', type: 'string' },
-        { label: 'Distrito', key: 'district', type: 'string' },
-        { label: 'Telefone', key: 'phone', type: 'number' },
-        { label: 'Telemóvel', key: 'mobile', type: 'number' },
-        { label: 'E-Mail', key: 'email', type: 'string' },
-        { label: 'WWW', key: 'www', type: 'string' },
-        { label: 'Fax', key: 'fax', type: 'number' },
-        { label: 'NIF', key: 'nif', type: 'number', required: true },
-        { label: 'Data Inserida', key: 'dateInserted', type: 'string' },
-        { label: 'Data Atualizada', key: 'dateUpdated', type: 'string' },
-    ];
 
     const fetchExternalEntities = async () => {
         try {
@@ -189,7 +169,7 @@ export const ExternalEntities = () => {
         rowsPerPageText: 'Linhas por página'
     };
 
-    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = externalEntityFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -251,7 +231,7 @@ export const ExternalEntities = () => {
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddExternalEntity}
-                    fields={fields}
+                    fields={externalEntityFields}
                     initialValues={{}}
                 />
                 {selectedExternalEntity && (
@@ -260,7 +240,7 @@ export const ExternalEntities = () => {
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateExternalEntity(selectedExternalEntity)}
                         entity={selectedExternalEntity}
-                        fields={fields}
+                        fields={externalEntityFields}
                         title="Atualizar Entidade Externa"
                     />
                 )}
@@ -286,7 +266,7 @@ export const ExternalEntities = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={fields}
+                    columns={externalEntityFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

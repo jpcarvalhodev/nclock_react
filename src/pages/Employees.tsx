@@ -11,6 +11,7 @@ import { UpdateModal } from '../modals/UpdateModal';
 import { DeleteModal } from '../modals/DeleteModal';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { fetchWithAuth } from '../components/FetchWithAuth';
+import { employeeFields } from '../helpers/Fields';
 
 export const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -22,45 +23,6 @@ export const Employees = () => {
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
-
-    const fields = [
-        { label: 'Número', key: 'number', type: 'number', required: true },
-        { label: 'Nome', key: 'name', type: 'string', required: true },
-        { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
-        { label: 'Acrônimo do Nome', key: 'nameAcronym', type: 'string', required: true },
-        { label: 'Comentários', key: 'comments', type: 'string' },
-        { label: 'Foto', key: 'photo', type: 'string' },
-        { label: 'Morada', key: 'address', type: 'string' },
-        { label: 'Código Postal', key: 'zipcode', type: 'string' },
-        { label: 'Localidade', key: 'locality', type: 'string' },
-        { label: 'Freguesia', key: 'village', type: 'string' },
-        { label: 'Distrito', key: 'district', type: 'string' },
-        { label: 'Telefone', key: 'phone', type: 'number' },
-        { label: 'Telemóvel', key: 'mobile', type: 'number' },
-        { label: 'E-Mail', key: 'email', type: 'string' },
-        { label: 'Data de Nascimento', key: 'birthday', type: 'string' },
-        { label: 'Nacionalidade', key: 'nacionality', type: 'string' },
-        { label: 'Gênero', key: 'gender', type: 'string' },
-        { label: 'Número de BI', key: 'biNumber', type: 'string' },
-        { label: 'Emissão de BI', key: 'biIssuance', type: 'string' },
-        { label: 'Validade de BI', key: 'biValidity', type: 'string' },
-        { label: 'NIF', key: 'nif', type: 'number' },
-        { label: 'Data de Admissão', key: 'admissionDate', type: 'string' },
-        { label: 'Data de Saída', key: 'exitDate', type: 'string' },
-        { label: 'Autorização RGPD', key: 'rgpdAut', type: 'string' },
-        { label: 'ID do Departmento', key: 'departmentId', type: 'string' },
-        { label: 'Nome do Departmento', key: 'departmentName', type: 'string' },
-        { label: 'ID da Profissão', key: 'professionId', type: 'string' },
-        { label: 'Nome da Profissão', key: 'professionName', type: 'string' },
-        { label: 'ID da Categoria', key: 'categoryId', type: 'string' },
-        { label: 'Nome da Categoria', key: 'categoryName', type: 'string' },
-        { label: 'ID do Grupo', key: 'groupId', type: 'string' },
-        { label: 'Nome do Grupo', key: 'groupName', type: 'string' },
-        { label: 'ID da Zona', key: 'zoneId', type: 'string' },
-        { label: 'Nome da Zona', key: 'zoneName', type: 'string' },
-        { label: 'ID da Entidade Externa', key: 'externalEntityId', type: 'string' },
-        { label: 'Nome da Entidade Externa', key: 'externalEntityName', type: 'string' },
-    ];
 
     const fetchEmployees = async () => {
         try {
@@ -190,7 +152,7 @@ export const Employees = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = employeeFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -262,7 +224,7 @@ export const Employees = () => {
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddEmployee}
-                    fields={fields}
+                    fields={employeeFields}
                     initialValues={{}}
                 />
                 {selectedEmployee && (
@@ -271,7 +233,7 @@ export const Employees = () => {
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateEmployee(selectedEmployee)}
                         entity={selectedEmployee}
-                        fields={fields}
+                        fields={employeeFields}
                         title="Atualizar Funcionário"
                     />
                 )}
@@ -296,7 +258,7 @@ export const Employees = () => {
             </div>
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={fields}
+                    columns={employeeFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

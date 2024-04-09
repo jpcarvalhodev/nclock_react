@@ -11,6 +11,7 @@ import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
+import { categoryFields } from "../helpers/Fields";
 
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -22,12 +23,6 @@ export const Categories = () => {
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<string | null>(null);
-
-    const fields = [
-        { label: 'Código', key: 'code', type: 'number', required: true },
-        { label: 'Descrição', key: 'description', type: 'string', required: true },
-        { label: 'Acrônimo', key: 'acronym', type: 'string' },
-    ];
 
     const fetchCategories = async () => {
         try {
@@ -175,7 +170,7 @@ export const Categories = () => {
         rowsPerPageText: 'Linhas por página'
     };
 
-    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = categoryFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -237,7 +232,7 @@ export const Categories = () => {
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddCategory}
-                    fields={fields}
+                    fields={categoryFields}
                     initialValues={{}}
                 />
                 {selectedCategory && (
@@ -246,7 +241,7 @@ export const Categories = () => {
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateCategory(selectedCategory)}
                         entity={selectedCategory}
-                        fields={fields}
+                        fields={categoryFields}
                         title="Atualizar Categoria"
                     />
                 )}
@@ -272,7 +267,7 @@ export const Categories = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={fields} 
+                    columns={categoryFields} 
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

@@ -11,6 +11,7 @@ import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
+import { professionFields } from "../helpers/Fields";
 
 export const Professions = () => {
     const [professions, setProfessions] = useState<Profession[]>([]);
@@ -22,12 +23,6 @@ export const Professions = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
-
-    const fields = [
-        { key: 'Código', label: 'Code', type: 'string', required: true },
-        { key: 'Descrição', label: 'Description', type: 'string', required: true },
-        { key: 'Acrônimo', label: 'Acronym', type: 'string' },
-    ];
 
     const fetchProfessions = async () => {
         try {
@@ -88,7 +83,7 @@ export const Professions = () => {
             }
 
             const updatedProfessions = professions.map(profession => {
-                return profession.id === profession.id ? profession : profession;
+                return profession.id ? profession : profession;
             });
             setProfessions(updatedProfessions);
         } catch (error) {
@@ -175,7 +170,7 @@ export const Professions = () => {
         rowsPerPageText: 'Linhas por página'
     };
 
-    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = professionFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -237,7 +232,7 @@ export const Professions = () => {
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddProfession}
-                    fields={fields}
+                    fields={professionFields}
                     initialValues={{}}
                 />
                 {selectedProfession && (
@@ -246,7 +241,7 @@ export const Professions = () => {
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateProfession(selectedProfession)}
                         entity={selectedProfession}
-                        fields={fields}
+                        fields={professionFields}
                         title="Atualizar Profissão"
                     />
                 )}
@@ -272,7 +267,7 @@ export const Professions = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={fields}
+                    columns={professionFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

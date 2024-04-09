@@ -11,6 +11,7 @@ import { UpdateModal } from '../modals/UpdateModal';
 import { DeleteModal } from '../modals/DeleteModal';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { fetchWithAuth } from '../components/FetchWithAuth';
+import { departmentFields } from '../helpers/Fields';
 
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -22,13 +23,6 @@ export const Departments = () => {
     const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedDepartmentForDelete, setSelectedDepartmentForDelete] = useState<string | null>(null);
-
-    const fields = [
-        { label: 'Código', key: 'code', type: 'number', required: true },
-        { label: 'Nome', key: 'name', type: 'string', required: true },
-        { label: 'Descrição', key: 'description', type: 'string' },
-        { label: 'ID de Parente', key: 'paiId', type: 'number' },
-    ];
 
     const fetchDepartments = async () => {
         try {
@@ -148,7 +142,7 @@ export const Departments = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    const columnNamesMap = fields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = departmentFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -224,7 +218,7 @@ export const Departments = () => {
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddDepartment}
-                    fields={fields}
+                    fields={departmentFields}
                     initialValues={{}}
                 />
                 {selectedDepartment && (
@@ -233,7 +227,7 @@ export const Departments = () => {
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateDepartment(selectedDepartment)}
                         entity={selectedDepartment}
-                        fields={fields}
+                        fields={departmentFields}
                         title="Atualizar Departamento"
                     />
                 )}
@@ -258,7 +252,7 @@ export const Departments = () => {
             </div>
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={fields}
+                    columns={departmentFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
