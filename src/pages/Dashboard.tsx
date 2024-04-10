@@ -5,7 +5,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/pt';
 import { Employee } from "../helpers/Types";
-import TreeViewData from "../components/TreeView";
+import { TreeViewData } from "../components/TreeView";
 
 moment.locale('pt');
 
@@ -76,7 +76,7 @@ export const Dashboard = () => {
 
     useEffect(() => {
         loadData();
-    }, []);
+    },);
 
     return (
         <div className="dashboard-container">

@@ -1,18 +1,19 @@
-.treeview-container {
+.TreeViewContainer {
     display: flex;
     flex-direction: column;
-    max-width: 300px; /* Adjust the initial size as needed */
+    height: 100%;
   }
   
-  #resizable-treeview {
-    resize: horizontal;
-    overflow: auto;
-    border-right: 2px solid #ccc; /* Just for visibility, adjust as needed */
+  .SearchBox fieldset {
+    margin-top: 8px;
+    margin-right: 8px;
+    margin-left: 8px;
   }
   
-  .search-box {
-    margin-top: 5px; /* Add spacing between tree view and search box */
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  .SearchBox .MuiInputLabel-root {
+    text-align: center;
+  }
+  
+  .SearchBox .MuiInputBase-input {
+    text-align: center;
   }
