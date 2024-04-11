@@ -24,13 +24,13 @@ function CustomSearchBox(props: TextFieldProps) {
 
 interface Department {
   id: string;
-  name: string;
+  description: string;
   employees: Employee[];
 }
 
 interface Group {
   id: string;
-  name: string;
+  description: string;
   employees: Employee[];
 }
 
@@ -39,22 +39,24 @@ interface Employee {
   name: string;
 }
 
-function filterItems(items: TreeViewBaseItem[], term: string, expandedIds: string[] = []): [TreeViewBaseItem[], string[]] {
-  if (!term) return [items, []];
-  return items.reduce(([filtered, ids]: [TreeViewBaseItem[], string[]], item) => {
-    let matches = item.label.toLowerCase().includes(term.toLowerCase());
-    let childrenFiltered: TreeViewBaseItem[] = [];
-    let childrenIds: string[] = [];
-    if (item.children) {
-      [childrenFiltered, childrenIds] = filterItems(item.children, term, ids);
-      matches = matches || childrenFiltered.length > 0;
+function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem[], Set<string>] {
+  let expandedIds = new Set<string>();
+
+  function filterRecursively(item: TreeViewBaseItem): TreeViewBaseItem | null {
+    const matchesSearch = item.label.toLowerCase().includes(term.toLowerCase());
+    const children = item.children || [];
+    const filteredChildren = children.map(filterRecursively).filter((child): child is TreeViewBaseItem => child !== null);
+
+    if (matchesSearch || filteredChildren.length > 0) {
+      expandedIds.add(item.id);
+      return { ...item, children: filteredChildren };
     }
-    if (matches) {
-      filtered.push({ ...item, children: childrenFiltered });
-      ids.push(item.id, ...childrenIds);
-    }
-    return [filtered, ids];
-  }, [[], expandedIds]);
+
+    return null;
+  }
+
+  const filteredItems = items.map(filterRecursively).filter((item): item is TreeViewBaseItem => item !== null);
+  return [filteredItems, expandedIds];
 }
 
 export function TreeViewData() {
@@ -80,7 +82,7 @@ export function TreeViewData() {
 
         const departmentItems = departments.map((dept: Department) => ({
           id: dept.id || `temp-dept-${tempIdCounter++}`,
-          label: dept.name,
+          label: dept.description,
           children: (dept.employees ?? []).map((emp: Employee) => ({
             id: emp.id || `temp-emp-dept-${tempIdCounter++}`,
             label: emp.name,
@@ -89,12 +91,12 @@ export function TreeViewData() {
         
         const groupItems = groups.map((group: Group) => ({
           id: group.id || `temp-group-${tempIdCounter++}`,
-          label: group.name,
+          label: group.description,
           children: (group.employees ?? []).map((emp: Employee) => ({
             id: emp.id || `temp-emp-group-${tempIdCounter++}`,
             label: emp.name,
           })),
-        }));        
+        }));               
 
         setItems([
           {
@@ -106,6 +108,8 @@ export function TreeViewData() {
             ],
           },
         ]);
+
+        setExpandedIds([]);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -120,18 +124,23 @@ export function TreeViewData() {
   };
 
   useEffect(() => {
-    const [newFilteredItems, newExpandedIds] = filterItems(items, searchTerm);
+    const [newFilteredItems, newExpandedIds] = filterItems(items, searchTerm.toLowerCase());
+    if (searchTerm.trim() === '') {
+      setExpandedIds([]);
+    } else {
+      setExpandedIds([...newExpandedIds]);
+    }
     setFilteredItems(newFilteredItems);
-    setExpandedIds(prevIds => Array.from(new Set([...prevIds, ...newExpandedIds])));
   }, [items, searchTerm]);
-
+     
   return (
-    <Box className="TreeViewContainer" sx={{ height: 400, flexGrow: 1, maxWidth: 400 }}>
+    <Box className="TreeViewContainer">
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         <RichTreeView
           items={items}
           expandedItems={expandedIds}
           onExpandedItemsChange={handleToggle}
+          getItemLabel={(item: TreeViewBaseItem) => item.label || 'Sem Título'}
         />
       </Box>
       <CustomSearchBox
@@ -139,7 +148,7 @@ export function TreeViewData() {
         variant="outlined"
         size="small"
         onChange={(e) => setSearchTerm(e.target.value)}
-        sx={{ mb: 2 }}
+        sx={{ mb: 18 }}
       />
     </Box>
   );

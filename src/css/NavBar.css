@@ -38,33 +38,10 @@
     color: white;
 }
 
-.pessoas-tab.active,
-.pessoas-tab:hover {
-    background-color: white;
-    color: #0050a0;
-}
-
-.dispositivos-tab.active,
-.dispositivos-tab:hover {
-    background-color: white;
-    color: #0050a0;
-}
-
-.configuracao-tab.active,
-.configuracao-tab:hover {
-    background-color: white;
-    color: #0050a0;
-}
-
-.ajuda-tab.active,
-.ajuda-tab:hover {
-    background-color: white;
-    color: #0050a0;
-}
-
 .section {
     display: flex;
     justify-content: start;
+    margin-right: 400px;
     border-bottom: 1px solid #ccc;
 }
 
@@ -79,8 +56,28 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-left: 20px;
-    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    height: 100%;
+}
+
+.grid-container-organizacao {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    height: 100%;
+}
+
+.grid-container-entidades {
+    display: grid;
+    gap: 10px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .icon img {
@@ -92,6 +89,28 @@
     background-color: #dfdfdf;
     width: 100%;
     text-align: center;
+    margin-top: 5px;
+}
+
+.title-container-organizacao {
+    background-color: #dfdfdf;
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.title-container-entidades {
+    background-color: #dfdfdf;
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.title-container-informacoes {
+    background-color: #dfdfdf;
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
 }
 
 .title {
@@ -116,7 +135,78 @@
     margin-bottom: 2px;
 }
 
-.ribbon-button, .ribbon-icon-button {
+.ribbon-button-ent,
+.ribbon-icon-button {
+    margin: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.ribbon-button-entidades {
+    display: flex;
+    flex-direction: column;
+}
+
+.ribbon-button-ent .icon,
+.ribbon-icon-button .icon {
+    display: block;
+    text-align: center;
+}
+
+.ribbon-button-ent .icon,
+.ribbon-icon-button .icon {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.ribbon-button-entidades .icon,
+.ribbon-button-entidades .text {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.ribbon-button-entidades .icon {
+    margin-bottom: 5px;
+}
+
+.ribbon-button-entidades .icon img {
+    width: 40px;
+    height: 40px;
+}
+
+.ribbon-button-ent,
+.ribbon-icon-button {
+    background-color: transparent;
+    border-color: transparent;
+    font-size: 12px;
+}
+
+.ribbon-button-entidades {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.icon-text-entidades {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 17px;
+}
+
+.ribbon-button-entidades .icon {
+    margin-bottom: 2px;
+}
+
+.ribbon-button,
+.ribbon-icon-button {
     margin: 0 5px;
     display: flex;
     align-items: center;
@@ -128,21 +218,34 @@
     flex-direction: column;
 }
 
-.ribbon-button .icon, .ribbon-icon-button .icon {
-    display: block;
-    text-align: center;
+.ribbon-button-funcext {
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    justify-content: start;
+    white-space: nowrap;
+    margin-left: 5px;
+    background-color: transparent;
+    border-color: transparent;
 }
 
-.ribbon-button .icon, .ribbon-icon-button .icon {
-    display: inline-block;
-    margin-right: 5px;
+.ribbon-button-funcext .text {
+    margin-left: 8px;
+    padding-right: 8px;
 }
 
-.ribbon-button-pessoas .icon, .ribbon-button-pessoas .text {
+.ribbon-button .icon,
+.ribbon-icon-button .icon {
+    margin-right: 10px;
+}
+
+.ribbon-button-pessoas .icon,
+.ribbon-button-pessoas .text {
     display: flex;
     flex-direction: column;
     text-align: center;
     font-size: 14px;
+    margin-right: 5px;
 }
 
 .ribbon-button-pessoas .icon {
@@ -150,15 +253,46 @@
 }
 
 .ribbon-button-pessoas .icon img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    width: 40px;
+    height: 40px;
 }
 
-.ribbon-button, .ribbon-icon-button {
+.ribbon-button,
+.ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
     font-size: 12px;
+}
+
+.icon-text-informacoes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 17px;
+}
+
+.ribbon-button-informacoes .icon {
+    margin-bottom: 2px;
+}
+
+.ribbon-button-informacoes .icon,
+.ribbon-button-informacoes .text {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.ribbon-button-informacoes .icon {
+    margin-bottom: 5px;
+}
+
+.ribbon-button-informacoes .icon img {
+    width: 50px;
+    height: 50px;
 }
 
 .user-section {
@@ -193,6 +327,13 @@
     margin-bottom: 10px;
 }
 
+.nav-item.active .nav-link,
+.nav-item:hover .nav-link {
+    background-color: white;
+    color: #0050a0;
+    border-color: transparent;
+}
+
 @media (max-width: 500px) {
     .group {
         width: 100%;
@@ -207,7 +348,8 @@
         height: 30px;
     }
 
-    .ribbon-button, .ribbon-icon-button {
+    .ribbon-button,
+    .ribbon-icon-button {
         font-size: 10px;
     }
 
@@ -235,7 +377,8 @@
         height: 40px;
     }
 
-    .ribbon-button, .ribbon-icon-button {
+    .ribbon-button,
+    .ribbon-icon-button {
         font-size: 11px;
     }
 

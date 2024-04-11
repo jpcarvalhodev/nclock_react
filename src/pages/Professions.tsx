@@ -34,13 +34,13 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error fetching professions data');
+                throw new Error('Erro ao buscar os dados das profissões');
             }
 
             const data = await response.json();
             setProfessions(data);
         } catch (error) {
-            console.error('Error fetching the professions', error);
+            console.error('Erro ao buscar os dados das profissões:', error);
         }
     };
 
@@ -55,13 +55,13 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error adding new profession');
+                throw new Error('Erro ao adicionar nova profissão');
             }
 
             const data = await response.json();
             setProfessions([...professions, data]);
         } catch (error) {
-            console.error('Error adding new profession:', error);
+            console.error('Erro ao adicionar nova profissão:', error);
         }
 
         setShowAddModal(false);
@@ -79,15 +79,14 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error updating profession');
+                throw new Error('Erro ao atualizar a profissão');
             }
 
-            const updatedProfessions = professions.map(profession => {
-                return profession.id ? profession : profession;
-            });
-            setProfessions(updatedProfessions);
+            const updatedProfession = await response.json();
+            setProfessions(professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
+
         } catch (error) {
-            console.error('Error updating profession:', error);
+            console.error('Erro ao atualizar a profissão:', error);
         }
 
         handleCloseUpdateModal();
@@ -104,12 +103,12 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error deleting profession');
+                throw new Error('Erro ao apagar a profissão');
             }
 
             refreshProfessions();
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao apagar a profissão:', error);
         }
     };
 
@@ -185,6 +184,7 @@ export const Professions = () => {
     const ExpandedComponent: React.FC<{ data: Profession }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
+                if (key === 'id') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -205,7 +205,7 @@ export const Professions = () => {
         cell: (row: Profession) => (
             <div>
                 <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditProfession(row)}></CustomOutlineButton>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

@@ -1,7 +1,7 @@
 export type Employee = {
     [key: string]: any;
     id: string;
-    number: number;
+    enrollNumber: number;
     name: string;
     shortName: string;
     nameAcronym: string;

@@ -40,15 +40,15 @@ export const Login = () => {
       });
 
       if (response.status === 401) {
-        setMessage('Incorrect username or password. Please try again.');
+        setMessage('Dados incorretos. Tente novamente.');
       } else if (!response.ok) {
         console.error('Error:', response.status, response.statusText);
-        setMessage('An error occurred while logging in. Please try again.');
+        setMessage('Ocorreu um erro ao fazer login. Tente novamente.');
       } else {
         const data = await response.json();
 
         if (data.token == null) {
-          setMessage('An error occurred while logging in. Please try again.');
+          setMessage('Ocorreu um erro ao fazer login. Tente novamente.');
           return;
         }
 

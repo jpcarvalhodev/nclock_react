@@ -1,5 +1,5 @@
 export const employeeFields = [
-    { label: 'Número', key: 'number', type: 'number', required: true },
+    { label: 'Número de Matrícula', key: 'enrollNumber', type: 'number', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
     { label: 'Acrônimo do Nome', key: 'nameAcronym', type: 'string', required: true },

@@ -28,12 +28,12 @@ export const Departments = () => {
         try {
             const response = await fetchWithAuth('https://localhost:7129/api/Departaments'); 
             if (!response.ok) {
-                throw new Error('Error fetching departments data');
+                throw new Error('Erro ao buscar dados dos departamentos');
             }
             const data = await response.json();
             setDepartments(data);
         } catch (error) {
-            console.error('Error fetching the departments', error);
+            console.error('Erro ao buscar dados dos departamentos:', error);
         }
     };    
 
@@ -48,13 +48,13 @@ export const Departments = () => {
             });
     
             if (!response.ok) {
-                throw new Error('Error adding new department');
+                throw new Error('Erro ao adicionar novo departamento');
             }
             const data = await response.json();
             setDepartments(deps => [...deps, data]);
             handleCloseAddModal();
         } catch (error) {
-            console.error('Error adding new department:', error);
+            console.error('Erro ao adicionar novo departamento:', error);
         }
         refreshDepartments();
     };
@@ -70,12 +70,14 @@ export const Departments = () => {
             });
     
             if (!response.ok) {
-                throw new Error('Error updating department');
+                throw new Error('Erro ao atualizar departamento');
             }
-            const updatedDepartments = departments.map(dep => dep.departmentID === department.departmentID ? department : dep);
-            setDepartments(updatedDepartments);
+
+            const updatedDepartment = await response.json();
+            setDepartments(deps => deps.map(dep => dep.departmentID === updatedDepartment.departmentID ? updatedDepartment : dep));
+
         } catch (error) {
-            console.error('Error updating department:', error);
+            console.error('Erro ao atualizar departamento:', error);
         }
         handleCloseUpdateModal();
         refreshDepartments();
@@ -91,11 +93,11 @@ export const Departments = () => {
             });
     
             if (!response.ok) {
-                throw new Error('Error deleting department');
+                throw new Error('Erro ao apagar departamento');
             }
             refreshDepartments();
         } catch (error) {
-            console.error('Error deleting department:', error);
+            console.error('Erro ao apagar departamento:', error);
         }
     };    
 
@@ -171,6 +173,7 @@ export const Departments = () => {
     const ExpandedComponent: React.FC<{ data: Department }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
+                if (key === 'id') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -191,7 +194,7 @@ export const Departments = () => {
         cell: (row: Department) => (
             <div>
                 <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditDepartment(row)}></CustomOutlineButton>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

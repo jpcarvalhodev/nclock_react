@@ -14,6 +14,7 @@ import { PageProtection } from './components/PageProtection';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Unauthorized } from './pages/Unauthorized';
+import { Persons } from './pages/Persons';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
+        <Route path="/persons" element={<PageProtection><Persons /></PageProtection>} />
         <Route path="/employees" element={<PageProtection><Employees /></PageProtection>} />
         <Route path="/departments" element={<PageProtection><Departments /></PageProtection>} />
         <Route path="/categories" element={<PageProtection><Categories /></PageProtection>} />

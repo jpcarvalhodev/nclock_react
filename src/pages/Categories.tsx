@@ -34,13 +34,13 @@ export const Categories = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error fetching categories data');
+                throw new Error('Erro ao buscar os dados das categorias');
             }
 
             const data = await response.json();
             setCategories(data);
         } catch (error) {
-            console.error('Error fetching the categories', error);
+            console.error('Erro ao buscar os dados das categorias:', error);
         }
     };
 
@@ -55,13 +55,13 @@ export const Categories = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error adding new category');
+                throw new Error('Erro ao adicionar nova categoria');
             }
 
             const data = await response.json();
             setCategories([...categories, data]);
         } catch (error) {
-            console.error('Error adding new category:', error);
+            console.error('Erro ao adicionar nova categoria:', error);
         }
 
         setShowAddModal(false);
@@ -79,15 +79,14 @@ export const Categories = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error updating category');
+                throw new Error('Erro ao atualizar categoria');
             }
 
-            const updatedCategories = categories.map(cat => {
-                return cat.id === category.id ? category : cat;
-            });
-            setCategories(updatedCategories);
+            const updatedCategory = await response.json();
+            setCategories(categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
+
         } catch (error) {
-            console.error('Error updating category:', error);
+            console.error('Erro ao atualizar categoria:', error);
         }
 
         handleCloseUpdateModal();
@@ -104,12 +103,12 @@ export const Categories = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error deleting category');
+                throw new Error('Erro ao apagar categoria');
             }
 
             refreshCategories();
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao apagar categoria:', error);
         }
     };
 
@@ -185,6 +184,7 @@ export const Categories = () => {
     const ExpandedComponent: React.FC<{ data: Category }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
+                if (key === 'id') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -205,7 +205,7 @@ export const Categories = () => {
         cell: (row: Category) => (
             <div>
                 <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditCategory(row)}></CustomOutlineButton>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryId)}>
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

@@ -4,12 +4,12 @@ import Button from "react-bootstrap/Button";
 interface DeleteModalProps {
     open: boolean;
     onClose: () => void;
-    onDelete: (id: string) => void;
+    onDelete: (entityId: string) => void;
     entityId: string | null;
 }
 
 export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalProps) => {
-    
+
     const handleDelete = () => {
         if (entityId) {
             onDelete(entityId);
@@ -23,14 +23,14 @@ export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalPr
                 <Modal.Title>Confirmar Exclusão</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                Tem certeza que deseja excluir os dados da linha selecionada?
+                Tem certeza que deseja apagar os dados da linha selecionada?
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>
                     Cancelar
                 </Button>
                 <Button variant="danger" onClick={handleDelete}>
-                    Excluir
+                    Apagar
                 </Button>
             </Modal.Footer>
         </Modal>

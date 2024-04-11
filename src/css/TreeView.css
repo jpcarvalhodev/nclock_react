@@ -1,19 +1,13 @@
 .TreeViewContainer {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  .SearchBox fieldset {
-    margin-top: 8px;
-    margin-right: 8px;
-    margin-left: 8px;
-  }
-  
-  .SearchBox .MuiInputLabel-root {
-    text-align: center;
-  }
-  
-  .SearchBox .MuiInputBase-input {
-    text-align: center;
-  }
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+.SearchBox fieldset {
+  margin-top: 4px;
+  margin-right: 4px;
+  margin-left: 4px;
+}

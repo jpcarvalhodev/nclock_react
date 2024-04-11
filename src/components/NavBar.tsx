@@ -12,6 +12,12 @@ import externalEntities from '../assets/img/externalEntities.png';
 import groups from '../assets/img/groups.png';
 import professions from '../assets/img/professions.png';
 import zones from '../assets/img/zones.png';
+import fraccoes from '../assets/img/fraccoes.png';
+import types from '../assets/img/types.png';
+import fonts from '../assets/img/fonts.png';
+import interventionAreas from '../assets/img/interventionAreas.png';
+import businessAreas from '../assets/img/businessAreas.png';
+import internalContacts from '../assets/img/internalContacts.png';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 interface MyTokenPayload extends JwtPayload {
@@ -26,7 +32,7 @@ export const NavBar = () => {
 	const [showDispositivos, setShowDispositivos] = useState(false);
 	const [showConfiguracao, setShowConfiguracao] = useState(false);
 	const [showAjuda, setShowAjuda] = useState(false);
-	const [activeTab, setActiveTab] = useState('pessoas');
+	const [activeTab, setActiveTab] = useState('');
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -42,48 +48,40 @@ export const NavBar = () => {
 		}
 	}, []);
 
-	useEffect(() => {
-		const token = localStorage.getItem('token');
-
-		fetch('https://localhost:7129/api/Employees', {
-			headers: new Headers({
-				'Authorization': `Bearer ${token}`,
-			}),
-		})
-			.then(response => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-				return response.json();
-			})
-			.then(data => {
-				if (data) {
-					setEmployee(data);
-				} else {
-					console.error('No data received');
-				}
-			})
-			.catch(error => console.error('Error:', error));
-	}, []);
-
 	const handlePessoasClick = () => {
 		setShowRibbon((prevState) => !prevState);
-		setActiveTab('pessoas');
+		if (showRibbon) {
+			setActiveTab('');
+		} else {
+			setActiveTab('pessoas');
+		}
 	};
 
 	const handleDispositivosClick = () => {
 		setShowDispositivos((prevState) => !prevState);
-		setActiveTab('dispositivos');
+		if (showDispositivos) {
+			setActiveTab('');
+		} else {
+			setActiveTab('dispositivos');
+		}
 	};
 
 	const handleConfiguracaoClick = () => {
 		setShowConfiguracao((prevState) => !prevState);
-		setActiveTab('configuracao');
+		if (showConfiguracao) {
+			setActiveTab('');
+		} else {
+			setActiveTab('configuracao');
+		}
 	};
 
 	const handleAjudaClick = () => {
 		setShowAjuda((prevState) => !prevState);
-		setActiveTab('ajuda');
+		if (showAjuda) {
+			setActiveTab('');
+		} else {
+			setActiveTab('ajuda');
+		}
 	};
 
 	const logout = () => {
@@ -137,12 +135,12 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className='icon-text-pessoas'>
-										<button type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+										<Link to="/Persons" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={person} alt="Profile" />
 											</span>
 											<span className="text">Pessoas</span>
-										</button>
+										</Link>
 									</div>
 									<div className="grid-container">
 										<Link to="/Employees" type="button" className="btn btn-light ribbon-button">
@@ -151,36 +149,36 @@ export const NavBar = () => {
 											</span>
 											<span className="text">Funcionários</span>
 										</Link>
-										<button type="button" className="btn btn-light ribbon-button">
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="avatar visitantes" />
 											</span>
 											<span className="text">Visitantes</span>
-										</button>
-										<button type="button" className="btn btn-light ribbon-button">
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button-funcext">
 											<span className="icon">
 												<img src={person} alt="avatar funcionários externos" />
 											</span>
 											<span className="text">Funcionários Externos</span>
-										</button>
-										<button type="button" className="btn btn-light ribbon-button">
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="avatar contactos" />
 											</span>
 											<span className="text">Contactos</span>
-										</button>
-										<button type="button" className="btn btn-light ribbon-button">
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="avatar utentes" />
 											</span>
 											<span className="text">Utentes</span>
-										</button>
-										<button type="button" className="btn btn-light ribbon-button">
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="avatar provisórios" />
 											</span>
 											<span className="text">Provisórios</span>
-										</button>
+										</Link>
 									</div>
 								</div>
 								<div className="title-container">
@@ -189,7 +187,7 @@ export const NavBar = () => {
 							</div>
 							<div className="group">
 								<div className="btn-group" role="group">
-									<div className="grid-container">
+									<div className="grid-container-organizacao">
 										<Link to="/Departments" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={departments} alt="avatar funcionários" />
@@ -220,16 +218,76 @@ export const NavBar = () => {
 											</span>
 											<span className="text">Categorias</span>
 										</Link>
-										<Link to="/ExternalEntities" type="button" className="btn btn-light ribbon-button">
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
-												<img src={externalEntities} alt="avatar provisórios" />
+												<img src={fraccoes} alt="avatar provisórios" />
+											</span>
+											<span className="text">Fracções</span>
+										</Link>
+									</div>
+								</div>
+								<div className="title-container-organizacao">
+									<span className="title">Organização</span>
+								</div>
+							</div>
+							<div className="group">
+								<div className="btn-group" role="group">
+									<div className='icon-text-entidades'>
+										<Link to="/externalentities" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<span className="icon">
+												<img src={externalEntities} alt="Profile" />
 											</span>
 											<span className="text">Entidades Externas</span>
 										</Link>
 									</div>
+									<div className="grid-container-entidades">
+										<Link to="/Employees" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={types} alt="avatar funcionários" />
+											</span>
+											<span className="text">Tipos</span>
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button-ent">
+											<span className="icon">
+												<img src={fonts} alt="avatar visitantes" />
+											</span>
+											<span className="text">Fontes</span>
+										</Link>
+									</div>
+									<div className='icon-text-entidades'>
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<span className="icon">
+												<img src={interventionAreas} alt="Profile" />
+											</span>
+											<span className="text">Áreas de Intervenção</span>
+										</Link>
+									</div>
+									<div className='icon-text-entidades'>
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<span className="icon">
+												<img src={businessAreas} alt="Profile" />
+											</span>
+											<span className="text">Áreas de Negócios</span>
+										</Link>
+									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Organização</span>
+								<div className="title-container-entidades">
+									<span className="title">Entidades</span>
+								</div>
+							</div>
+							<div className="group">
+								<div className="btn-group" role="group">
+									<div className='icon-text-informacoes'>
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<span className="icon">
+												<img src={internalContacts} alt="Profile" />
+											</span>
+											<span className="text">Contactos Internos</span>
+										</Link>
+									</div>
+								</div>
+								<div className="title-container-informacoes">
+									<span className="title">Informações</span>
 								</div>
 							</div>
 						</div>

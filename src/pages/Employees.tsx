@@ -26,20 +26,20 @@ export const Employees = () => {
 
     const fetchEmployees = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees');
+            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
             if (!response.ok) {
-                throw new Error('Error fetching employees');
+                throw new Error('Erro ao buscar os dados dos funcionários');
             }
             const data = await response.json();
             setEmployees(data);
         } catch (error) {
-            console.error('Error fetching the employees', error);
+            console.error('Erro ao buscar os dados dos funcionários:', error);
         }
     };
 
     const handleAddEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Employees/CreateEmployee', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,12 +48,12 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error adding new employee');
+                throw new Error('Erro ao adicionar novo funcionário');
             }
             const data = await response.json();
             setEmployees([...employees, data]);
         } catch (error) {
-            console.error('Error adding new employee:', error);
+            console.error('Erro ao adicionar novo funcionário:', error);
         }
 
         handleCloseAddModal();
@@ -61,8 +61,9 @@ export const Employees = () => {
     };
 
     const handleUpdateEmployee = async (employee: Employee) => {
+
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/${employee.employeeID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/UpdateEmployee/${employee.employeeID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,13 +72,14 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error updating employee');
+                throw new Error('Erro ao atualizar funcionário');
             }
+            
+            const updatedEmployee = await response.json();
+            setEmployees(employees.map(e => e.employeeID === updatedEmployee.employeeID ? updatedEmployee : e));
 
-            const updatedEmployees = employees.map(emp => emp.id === employee.id ? employee : emp);
-            setEmployees(updatedEmployees);
         } catch (error) {
-            console.error('Error updating employee:', error);
+            console.error('Erro ao atualizar funcionário:', error);
         }
 
         handleCloseUpdateModal();
@@ -85,10 +87,9 @@ export const Employees = () => {
     };
 
     const handleDeleteEmployee = async (employeeID: string) => {
-        console.log(employeeID);
 
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/${employeeID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/DeleteEmployee/${employeeID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -96,11 +97,11 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error deleting employee');
+                throw new Error('Erro ao apagar funcionário');
             }
             refreshEmployees();
         } catch (error) {
-            console.error('Error deleting employee:', error);
+            console.error('Erro ao apagar funcionário:', error);
         }
     };
 
@@ -177,6 +178,7 @@ export const Employees = () => {
     const ExpandedComponent: React.FC<{ data: Employee }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
+                if (key === 'id') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -197,7 +199,7 @@ export const Employees = () => {
         cell: (row: Employee) => (
             <div>
                 <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditEmployee(row)}></CustomOutlineButton>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeId)}>
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

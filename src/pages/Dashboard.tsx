@@ -5,7 +5,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/pt';
 import { Employee } from "../helpers/Types";
-import { TreeViewData } from "../components/TreeView";
+import { fetchWithAuth } from "../components/FetchWithAuth";
 
 moment.locale('pt');
 
@@ -38,19 +38,17 @@ export const Dashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
 
     const fetchEvents = async (): Promise<CalendarEvent[]> => {
-        const token = localStorage.getItem('token');
         try {
-            const response = await fetch('https://localhost:7129/api/Employees', {
+            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees', {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
             if (!response.ok) throw new Error('Erro ao buscar eventos');
             const employees: Employee[] = await response.json();
-            const currentYear = new Date().getFullYear(); // Pega o ano atual
+            const currentYear = new Date().getFullYear();
             return employees.map(employee => {
-                const birthdayThisYear = moment(employee.birthday).set('year', currentYear).toDate(); // Define o ano do aniversário para o ano atual
+                const birthdayThisYear = moment(employee.birthday).set('year', currentYear).toDate();
                 return {
                     id: employee.id,
                     title: `Aniversário de ${employee.name}`,
@@ -82,9 +80,6 @@ export const Dashboard = () => {
         <div className="dashboard-container">
             <NavBar />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ flex: 1 }}>
-                    <TreeViewData />
-                </div>
                 <div className="dashboard-calendar" style={{ flex: 3 }}>
                     <Calendar
                         localizer={localizer}
@@ -98,5 +93,5 @@ export const Dashboard = () => {
             </div>
             <Footer />
         </div>
-    );    
+    );
 };

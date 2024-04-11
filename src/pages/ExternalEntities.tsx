@@ -34,13 +34,13 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error fetching external entities data');
+                throw new Error('Erro ao buscar os dados das entidades externas');
             }
 
             const data = await response.json();
             setExternalEntities(data);
         } catch (error) {
-            console.error('Error fetching the external entities', error);
+            console.error('Erro ao buscar os dados das entidades externas:', error);
         }
     };
 
@@ -55,13 +55,13 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error adding new external entity');
+                throw new Error('Erro ao adicionar nova entidade externa');
             }
 
             const data = await response.json();
             setExternalEntities([...externalEntities, data]);
         } catch (error) {
-            console.error('Error adding new external entity:', error);
+            console.error('Erro ao adicionar nova entidade externa:', error);
         }
 
         handleCloseAddModal();
@@ -79,15 +79,14 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error updating external entity');
+                throw new Error('Erro ao atualizar entidade externa');
             }
 
-            const updatedExternalEntities = externalEntities.map(entity => {
-                return entity.id === externalEntity.id ? externalEntity : entity;
-            });
-            setExternalEntities(updatedExternalEntities);
+            const updatedExternalEntity = await response.json();
+            setExternalEntities(externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
+
         } catch (error) {
-            console.error('Error updating external entity:', error);
+            console.error('Erro ao atualizar entidade externa:', error);
         }
 
         handleCloseUpdateModal();
@@ -104,12 +103,12 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error deleting external entity');
+                throw new Error('Erro ao apagar entidade externa');
             }
 
             refreshExternalEntities();
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao apagar entidade externa:', error);
         }
     };
 
@@ -184,6 +183,7 @@ export const ExternalEntities = () => {
     const ExpandedComponent: React.FC<{ data: ExternalEntity }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
+                if (key === 'id') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -204,7 +204,7 @@ export const ExternalEntities = () => {
         cell: (row: ExternalEntity) => (
             <div>
                 <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditExternalEntity(row)}></CustomOutlineButton>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

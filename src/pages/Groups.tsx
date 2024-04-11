@@ -34,13 +34,13 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error fetching groups data');
+                throw new Error('Erro ao buscar os dados dos grupos');
             }
 
             const data = await response.json();
             setGroups(data);
         } catch (error) {
-            console.error('Error fetching the groups', error);
+            console.error('Erro ao buscar os dados dos grupos:', error);
         }
     };
 
@@ -55,13 +55,13 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error adding new group');
+                throw new Error('Erro ao adicionar novo grupo');
             }
 
             const data = await response.json();
             setGroups([...groups, data]);
         } catch (error) {
-            console.error('Error adding new group:', error);
+            console.error('Erro ao adicionar novo grupo:', error);
         }
 
         handleCloseAddModal();
@@ -79,15 +79,14 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error updating group');
+                throw new Error('Erro ao atualizar grupo');
             }
 
-            const updatedGroups = groups.map(group => {
-                return group.id ? group : group;
-            });
-            setGroups(updatedGroups);
+            const updatedGroup = await response.json();
+            setGroups(groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
+
         } catch (error) {
-            console.error('Error updating group:', error);
+            console.error('Erro ao atualizar grupo:', error);
         }
 
         handleCloseUpdateModal();
@@ -104,12 +103,12 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error deleting group');
+                throw new Error('Erro ao apagar grupo');
             }
 
             refreshGroups();
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao apagar grupo:', error);
         }
     };
 
@@ -185,6 +184,7 @@ export const Groups = () => {
     const ExpandedComponent: React.FC<{ data: Group }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
+                if (key === 'id') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -205,7 +205,7 @@ export const Groups = () => {
         cell: (row: Group) => (
             <div>
                 <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditGroup(row)}></CustomOutlineButton>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

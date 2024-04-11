@@ -34,13 +34,13 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error fetching zones data');
+                throw new Error('Erro ao buscar os dados das zonas');
             }
 
             const data = await response.json();
             setZones(data);
         } catch (error) {
-            console.error('Error fetching the zones', error);
+            console.error('Erro ao buscar os dados das zonas:', error);
         }
     };
 
@@ -55,13 +55,13 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error adding new zone');
+                throw new Error('Erro ao adicionar nova zona');
             }
 
             const data = await response.json();
             setZones([...zones, data]);
         } catch (error) {
-            console.error('Error adding new zone:', error);
+            console.error('Erro ao adicionar nova zona:', error);
         }
 
         setShowAddModal(false);
@@ -79,15 +79,14 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error updating zone');
+                throw new Error('Erro ao atualizar zona');
             }
 
-            const updatedZones = zones.map(zone => {
-                return zone.id ? zone : zone;
-            });
-            setZones(updatedZones);
+            const updatedZone = await response.json();
+            setZones(zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
+
         } catch (error) {
-            console.error('Error updating zone:', error);
+            console.error('Erro ao atualizar zona:', error);
         }
 
         handleCloseUpdateModal();
@@ -104,12 +103,12 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Error deleting department');
+                throw new Error('Erro ao apagar zona');
             }
 
             refreshZones();
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao apagar zona:', error);
         }
     };
 
@@ -185,6 +184,7 @@ export const Zones = () => {
     const ExpandedComponent: React.FC<{ data: Zone }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
+                if (key === 'id') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -205,12 +205,12 @@ export const Zones = () => {
         cell: (row: Zone) => (
             <div>
                 <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditZone(row)}></CustomOutlineButton>{' '}
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentId)}>
+                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneId)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
-        selector: undefined,
+        selector: (row: Zone) => row.zoneID,
     };
 
     return (

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import '../css/ForgotPassword.css';
 import { Button } from 'react-bootstrap';
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleForgotPasswordFormSubmit = async (event: React.FormEvent) => {
@@ -21,15 +21,15 @@ export const ForgotPassword = () => {
       });
   
       if (!response.ok) {
-        throw new Error('Failed to send password reset email');
+        throw new Error('Ocorreu um erro. Tente novamente.');
       }
   
-      toast.success('Password reset email sent');
+      setMessage('Password reset email sent');
 
       navigate('/');
     } catch (error) {
       console.error(error);
-      toast.error('Failed to send password reset email');
+      setMessage('Ocorreu um erro. Tente novamente.');
     }
   };
 
@@ -43,6 +43,7 @@ export const ForgotPassword = () => {
         </label>
         <Button className="btn-my-custom-button" type='submit'>Enviar</Button>
       </form>
+      {message && <div className="message">{message}</div>}
     </div>
   );
 };
