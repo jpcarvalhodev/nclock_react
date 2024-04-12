@@ -7,3 +7,6 @@ declare module 'react-big-calendar';
 declare module '@react-spring/web';
 declare module '@mui/material/TreeView';
 declare module '@mui/material/TreeItem';
+declare module 'file-saver';
+declare module 'jspdf';
+declare module 'xlsx';

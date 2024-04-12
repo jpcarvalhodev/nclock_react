@@ -12,6 +12,8 @@ import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import { groupFields } from "../helpers/Fields";
+import { ExportButton } from "../components/ExportButton";
+import { toast } from "react-toastify";
 
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
@@ -34,7 +36,7 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao buscar os dados dos grupos');
+                toast.error('Erro ao buscar os dados dos grupos');
             }
 
             const data = await response.json();
@@ -55,11 +57,12 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao adicionar novo grupo');
+                toast.error('Erro ao adicionar novo grupo');
             }
 
             const data = await response.json();
             setGroups([...groups, data]);
+            toast.success('Grupo adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar novo grupo:', error);
         }
@@ -77,21 +80,30 @@ export const Groups = () => {
                 },
                 body: JSON.stringify(group)
             });
-
+    
             if (!response.ok) {
-                throw new Error('Erro ao atualizar grupo');
+                const errorText = await response.text();
+                toast.error(`Erro ao atualizar grupo: ${errorText}`);
+                return;
             }
-
-            const updatedGroup = await response.json();
-            setGroups(groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
-
+    
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const updatedGroup = await response.json();
+                setGroups(groups => groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
+                toast.success('Grupo atualizado com sucesso!');
+            } else {
+                await response.text();
+                toast.success('Grupo atualizado com sucesso!');
+            }
         } catch (error) {
             console.error('Erro ao atualizar grupo:', error);
+            toast.error('Falha ao conectar ao servidor');
+        } finally {
+            handleCloseUpdateModal();
+            refreshGroups();
         }
-
-        handleCloseUpdateModal();
-        refreshGroups();
-    };
+    };    
 
     const handleDeleteGroup = async (groupID: string) => {
         try {
@@ -103,13 +115,14 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao apagar grupo');
+                toast.error('Erro ao apagar grupo');
             }
 
-            refreshGroups();
+            toast.success('Grupo apagado com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar grupo:', error);
         }
+        refreshGroups();
     };
 
     useEffect(() => {
@@ -166,7 +179,8 @@ export const Groups = () => {
     };
 
     const paginationOptions = {
-        rowsPerPageText: 'Linhas por página'
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
     };
 
     const columnNamesMap = groupFields.reduce<Record<string, string>>((acc, field) => {
@@ -184,7 +198,7 @@ export const Groups = () => {
     const ExpandedComponent: React.FC<{ data: Group }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
-                if (key === 'id') return null;
+                if (key === 'groupID') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -227,6 +241,7 @@ export const Groups = () => {
                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                <ExportButton data={groups} fields={groupFields} />
                 <CreateModal
                     title="Adicionar Grupo"
                     open={showAddModal}

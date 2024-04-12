@@ -15,10 +15,13 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Unauthorized } from './pages/Unauthorized';
 import { Persons } from './pages/Persons';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
     <Router>
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

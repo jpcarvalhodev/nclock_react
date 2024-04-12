@@ -12,6 +12,8 @@ import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import { professionFields } from "../helpers/Fields";
+import { ExportButton } from "../components/ExportButton";
+import { toast } from "react-toastify";
 
 export const Professions = () => {
     const [professions, setProfessions] = useState<Profession[]>([]);
@@ -34,7 +36,7 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao buscar os dados das profissões');
+                toast.error('Erro ao buscar os dados das profissões');
             }
 
             const data = await response.json();
@@ -55,11 +57,12 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao adicionar nova profissão');
+                toast.error('Erro ao adicionar nova profissão');
             }
 
             const data = await response.json();
             setProfessions([...professions, data]);
+            toast.success('Profissão adicionada com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar nova profissão:', error);
         }
@@ -77,21 +80,30 @@ export const Professions = () => {
                 },
                 body: JSON.stringify(profession)
             });
-
+    
             if (!response.ok) {
-                throw new Error('Erro ao atualizar a profissão');
+                const errorText = await response.text();  // Obtem a resposta como texto se houver erro
+                toast.error(`Erro ao atualizar a profissão: ${errorText}`);
+                return;
             }
-
-            const updatedProfession = await response.json();
-            setProfessions(professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
-
+    
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const updatedProfession = await response.json();
+                setProfessions(professions => professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
+                toast.success('Profissão atualizada com sucesso!');
+            } else {
+                await response.text();
+                toast.success('Profissão atualizada com sucesso!');
+            }
         } catch (error) {
             console.error('Erro ao atualizar a profissão:', error);
+            toast.error('Falha ao conectar ao servidor');
+        } finally {
+            handleCloseUpdateModal();
+            refreshProfessions();
         }
-
-        handleCloseUpdateModal();
-        refreshProfessions();
-    };
+    };    
 
     const handleDeleteProfessions = async (professionID: string) => {
         try {
@@ -103,13 +115,14 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao apagar a profissão');
+                toast.error('Erro ao apagar a profissão');
             }
 
-            refreshProfessions();
+            toast.success('Profissão apagada com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar a profissão:', error);
         }
+        refreshProfessions();
     };
 
     useEffect(() => {
@@ -166,7 +179,8 @@ export const Professions = () => {
     };
 
     const paginationOptions = {
-        rowsPerPageText: 'Linhas por página'
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
     };
 
     const columnNamesMap = professionFields.reduce<Record<string, string>>((acc, field) => {
@@ -184,7 +198,7 @@ export const Professions = () => {
     const ExpandedComponent: React.FC<{ data: Profession }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
-                if (key === 'id') return null;
+                if (key === 'professionID') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -227,6 +241,7 @@ export const Professions = () => {
                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                <ExportButton data={professions} fields={professionFields} />
                 <CreateModal
                     title="Adicionar Profissão"
                     open={showAddModal}

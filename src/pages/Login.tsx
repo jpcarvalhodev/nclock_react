@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import React from 'react';
 import { Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 type User = {
   username: string;
@@ -14,7 +15,6 @@ export const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -40,15 +40,15 @@ export const Login = () => {
       });
 
       if (response.status === 401) {
-        setMessage('Dados incorretos. Tente novamente.');
+        toast.error('Dados incorretos. Tente novamente.');
       } else if (!response.ok) {
         console.error('Error:', response.status, response.statusText);
-        setMessage('Ocorreu um erro ao fazer login. Tente novamente.');
+        toast.error('Ocorreu um erro ao fazer login. Tente novamente.');
       } else {
         const data = await response.json();
 
         if (data.token == null) {
-          setMessage('Ocorreu um erro ao fazer login. Tente novamente.');
+          toast.error('Ocorreu um erro ao fazer login. Tente novamente.');
           return;
         }
 
@@ -63,12 +63,12 @@ export const Login = () => {
           localStorage.removeItem('rememberMePassword');
         }
 
-        setMessage('User logged in successfully!');
+        toast('Usuário logado com sucesso!', {progressClassName: 'custom-progress-bar'});
         navigate('/dashboard');
       }
     } catch (error) {
       console.error('Error:', error);
-      setMessage('Problema com o servidor, contacte o administrador.');
+      toast.error('Problema com o servidor, contacte o administrador.');
     }
   };
 
@@ -97,7 +97,6 @@ export const Login = () => {
           <Link className="btn-my-custom-link" to="/forgot-password">Esqueceu sua senha?</Link>
           <Button className="btn-my-custom-button" type='submit'>Login</Button>
         </form>
-        {message && <div className="message">{message}</div>}
       </div>
     </div>
   );

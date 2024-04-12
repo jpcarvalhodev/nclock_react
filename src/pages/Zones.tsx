@@ -12,6 +12,8 @@ import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import { zoneFields } from "../helpers/Fields";
+import { ExportButton } from "../components/ExportButton";
+import { toast } from "react-toastify";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -34,7 +36,7 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao buscar os dados das zonas');
+                toast.error('Erro ao buscar os dados das zonas');
             }
 
             const data = await response.json();
@@ -55,11 +57,12 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao adicionar nova zona');
+                toast.error('Erro ao adicionar nova zona');
             }
 
             const data = await response.json();
             setZones([...zones, data]);
+            toast.success('Zona adicionada com sucesso');
         } catch (error) {
             console.error('Erro ao adicionar nova zona:', error);
         }
@@ -77,21 +80,30 @@ export const Zones = () => {
                 },
                 body: JSON.stringify(zone)
             });
-
+    
             if (!response.ok) {
-                throw new Error('Erro ao atualizar zona');
+                const errorText = await response.text();  // Obtem a resposta como texto se houver erro
+                toast.error(`Erro ao atualizar zona: ${errorText}`);
+                return;
             }
-
-            const updatedZone = await response.json();
-            setZones(zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
-
+    
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const updatedZone = await response.json();
+                setZones(zones => zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
+                toast.success('Zona atualizada com sucesso!');
+            } else {
+                await response.text();
+                toast.success('Zona atualizada com sucesso!');
+            }
         } catch (error) {
             console.error('Erro ao atualizar zona:', error);
+            toast.error('Falha ao conectar ao servidor');
+        } finally {
+            handleCloseUpdateModal();
+            refreshZones();
         }
-
-        handleCloseUpdateModal();
-        refreshZones();
-    };
+    };    
 
     const handleDeleteZone = async (zoneID: string) => {
         try {
@@ -103,13 +115,14 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao apagar zona');
+                toast.error('Erro ao apagar zona');
             }
 
-            refreshZones();
+            toast.success('Zona apagada com sucesso');
         } catch (error) {
             console.error('Erro ao apagar zona:', error);
         }
+        refreshZones();
     };
 
     useEffect(() => {
@@ -166,7 +179,8 @@ export const Zones = () => {
     };
 
     const paginationOptions = {
-        rowsPerPageText: 'Linhas por página'
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
     };
 
     const columnNamesMap = zoneFields.reduce<Record<string, string>>((acc, field) => {
@@ -184,7 +198,7 @@ export const Zones = () => {
     const ExpandedComponent: React.FC<{ data: Zone }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
-                if (key === 'id') return null;
+                if (key === 'zoneID') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -227,6 +241,7 @@ export const Zones = () => {
                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} />
                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                <ExportButton data={zones} fields={zoneFields} />
                 <CreateModal
                     title="Adicionar Zona"
                     open={showAddModal}

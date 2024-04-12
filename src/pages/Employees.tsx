@@ -12,12 +12,14 @@ import { DeleteModal } from '../modals/DeleteModal';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { fetchWithAuth } from '../components/FetchWithAuth';
 import { employeeFields } from '../helpers/Fields';
+import { ExportButton } from '../components/ExportButton';
+import { toast } from 'react-toastify';
 
 export const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['number', 'name', 'shortName']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['enrollNumber', 'name', 'shortName']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -28,7 +30,7 @@ export const Employees = () => {
         try {
             const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
             if (!response.ok) {
-                throw new Error('Erro ao buscar os dados dos funcionários');
+                toast.error('Erro ao buscar os dados dos funcionários');
             }
             const data = await response.json();
             setEmployees(data);
@@ -48,10 +50,11 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao adicionar novo funcionário');
+                toast.error('Erro ao adicionar novo funcionário');
             }
             const data = await response.json();
             setEmployees([...employees, data]);
+            toast.success('Funcionário adicionado com sucesso');
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         }
@@ -61,7 +64,6 @@ export const Employees = () => {
     };
 
     const handleUpdateEmployee = async (employee: Employee) => {
-
         try {
             const response = await fetchWithAuth(`https://localhost:7129/api/Employees/UpdateEmployee/${employee.employeeID}`, {
                 method: 'PUT',
@@ -70,21 +72,30 @@ export const Employees = () => {
                 },
                 body: JSON.stringify(employee)
             });
-
+    
             if (!response.ok) {
-                throw new Error('Erro ao atualizar funcionário');
+                const errorText = await response.text();
+                toast.error(`Erro ao atualizar funcionário: ${errorText}`);
+                return;
             }
-            
-            const updatedEmployee = await response.json();
-            setEmployees(employees.map(e => e.employeeID === updatedEmployee.employeeID ? updatedEmployee : e));
-
+    
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const updatedEmployee = await response.json();
+                setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
+            } else {
+                await response.text();
+                toast.success('Funcionário atualizado com sucesso');
+            }
+    
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
+            toast.error('Falha ao conectar ao servidor');
+        } finally {
+            handleCloseUpdateModal();
+            refreshEmployees();
         }
-
-        handleCloseUpdateModal();
-        refreshEmployees();
-    };
+    };    
 
     const handleDeleteEmployee = async (employeeID: string) => {
 
@@ -97,12 +108,14 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao apagar funcionário');
+                toast.error('Erro ao apagar funcionário');
             }
-            refreshEmployees();
+
+            toast.success('Funcionário apagado com sucesso');
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
         }
+        refreshEmployees();
     };
 
     useEffect(() => {
@@ -178,7 +191,7 @@ export const Employees = () => {
     const ExpandedComponent: React.FC<{ data: Employee }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
-                if (key === 'id') return null;
+                if (key === 'employeeID') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -221,6 +234,7 @@ export const Employees = () => {
                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} />
                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                <ExportButton data={employees} fields={employeeFields} />
                 <CreateModal
                     title="Adicionar Funcionário"
                     open={showAddModal}
@@ -233,7 +247,7 @@ export const Employees = () => {
                     <UpdateModal
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={() => handleUpdateEmployee(selectedEmployee)}
+                        onUpdate={handleUpdateEmployee}
                         entity={selectedEmployee}
                         fields={employeeFields}
                         title="Atualizar Funcionário"

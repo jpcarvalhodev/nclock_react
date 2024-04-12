@@ -12,6 +12,8 @@ import { DeleteModal } from '../modals/DeleteModal';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { fetchWithAuth } from '../components/FetchWithAuth';
 import { departmentFields } from '../helpers/Fields';
+import { ExportButton } from '../components/ExportButton';
+import { toast } from 'react-toastify';
 
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -28,7 +30,7 @@ export const Departments = () => {
         try {
             const response = await fetchWithAuth('https://localhost:7129/api/Departaments'); 
             if (!response.ok) {
-                throw new Error('Erro ao buscar dados dos departamentos');
+                toast.error('Erro ao buscar dados dos departamentos');
             }
             const data = await response.json();
             setDepartments(data);
@@ -48,10 +50,11 @@ export const Departments = () => {
             });
     
             if (!response.ok) {
-                throw new Error('Erro ao adicionar novo departamento');
+                toast.error('Erro ao adicionar novo departamento');
             }
             const data = await response.json();
             setDepartments(deps => [...deps, data]);
+            toast.success('Departamento adicionado com sucesso');
             handleCloseAddModal();
         } catch (error) {
             console.error('Erro ao adicionar novo departamento:', error);
@@ -61,7 +64,7 @@ export const Departments = () => {
 
     const handleUpdateDepartment = async (department: Department) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Departaments/${department.departmentID}`, {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Departments/${department.departmentID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,18 +73,28 @@ export const Departments = () => {
             });
     
             if (!response.ok) {
-                throw new Error('Erro ao atualizar departamento');
+                const errorText = await response.text();
+                toast.error(`Erro ao atualizar departamento: ${errorText}`);
+                return;
             }
-
-            const updatedDepartment = await response.json();
-            setDepartments(deps => deps.map(dep => dep.departmentID === updatedDepartment.departmentID ? updatedDepartment : dep));
-
+    
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const updatedDepartment = await response.json();
+                setDepartments(deps => deps.map(dep => dep.departmentID === updatedDepartment.departmentID ? updatedDepartment : dep));
+                toast.success('Departamento atualizado com sucesso');
+            } else {
+                await response.text();
+                toast.success('Departamento atualizado com sucesso');
+            }
         } catch (error) {
             console.error('Erro ao atualizar departamento:', error);
+            toast.error('Falha ao conectar ao servidor');
+        } finally {
+            handleCloseUpdateModal();
+            refreshDepartments();
         }
-        handleCloseUpdateModal();
-        refreshDepartments();
-    };    
+    };        
 
     const handleDeleteDepartment = async (departmentID: string) => {
         try {
@@ -93,12 +106,14 @@ export const Departments = () => {
             });
     
             if (!response.ok) {
-                throw new Error('Erro ao apagar departamento');
+                toast.error('Erro ao apagar departamento');
             }
-            refreshDepartments();
+
+            toast.success('Departamento apagado com sucesso');
         } catch (error) {
             console.error('Erro ao apagar departamento:', error);
         }
+        refreshDepartments();
     };    
 
     useEffect(() => {
@@ -167,13 +182,14 @@ export const Departments = () => {
     };
 
     const paginationOptions = {
-        rowsPerPageText: 'Linhas por página'
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
     };
 
     const ExpandedComponent: React.FC<{ data: Department }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
-                if (key === 'id') return null;
+                if (key === 'departmentID') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -216,6 +232,7 @@ export const Departments = () => {
                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshDepartments} />
                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                <ExportButton data={departments} fields={departmentFields} />
                 <CreateModal
                     title="Adicionar Departamento"
                     open={showAddModal}

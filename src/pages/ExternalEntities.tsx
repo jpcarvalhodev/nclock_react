@@ -12,6 +12,8 @@ import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import { externalEntityFields } from "../helpers/Fields";
+import { ExportButton } from "../components/ExportButton";
+import { toast } from "react-toastify";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -34,7 +36,7 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao buscar os dados das entidades externas');
+                toast.error('Erro ao buscar os dados das entidades externas');
             }
 
             const data = await response.json();
@@ -55,11 +57,12 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao adicionar nova entidade externa');
+                toast.error('Erro ao adicionar nova entidade externa');
             }
 
             const data = await response.json();
             setExternalEntities([...externalEntities, data]);
+            toast.success('Entidade externa adicionada com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar nova entidade externa:', error);
         }
@@ -77,21 +80,30 @@ export const ExternalEntities = () => {
                 },
                 body: JSON.stringify(externalEntity)
             });
-
+    
             if (!response.ok) {
-                throw new Error('Erro ao atualizar entidade externa');
+                const errorText = await response.text();
+                toast.error(`Erro ao atualizar entidade externa: ${errorText}`);
+                return;
             }
-
-            const updatedExternalEntity = await response.json();
-            setExternalEntities(externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
-
+    
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const updatedExternalEntity = await response.json();
+                setExternalEntities(externalEntities => externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
+                toast.success('Entidade externa atualizada com sucesso!');
+            } else {
+                await response.text();
+                toast.success('Entidade externa atualizada com sucesso!');
+            }
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);
+            toast.error('Falha ao conectar ao servidor');
+        } finally {
+            handleCloseUpdateModal();
+            refreshExternalEntities();
         }
-
-        handleCloseUpdateModal();
-        refreshExternalEntities();
-    };
+    };    
 
     const handleDeleteExternalEntity = async (externalEntityID: string) => {
         try {
@@ -103,13 +115,14 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao apagar entidade externa');
+                toast.error('Erro ao apagar entidade externa');
             }
 
-            refreshExternalEntities();
+            toast.success('Entidade externa apagada com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar entidade externa:', error);
         }
+        refreshExternalEntities();
     };
 
     useEffect(() => {
@@ -183,7 +196,7 @@ export const ExternalEntities = () => {
     const ExpandedComponent: React.FC<{ data: ExternalEntity }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
-                if (key === 'id') return null;
+                if (key === 'externalEntityID') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -226,6 +239,7 @@ export const ExternalEntities = () => {
                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntities} />
                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                <ExportButton data={externalEntities} fields={externalEntityFields} />
                 <CreateModal
                     title="Adicionar Entidade Externa"
                     open={showAddModal}

@@ -72,28 +72,28 @@ export const externalEntityFields = [
 ];
 
 export const groupFields = [
-    { key: 'Nome', label: 'Name', type: 'string', required: true },
-    { key: 'Descrição', label: 'Description', type: 'string' },
-    { key: 'ID de Parente', label: 'Parent ID', type: 'number' },
+    { key: 'name', label: 'Nome', type: 'string', required: true },
+    { key: 'description', label: 'Descrição', type: 'string' },
+    { key: 'paiId', label: 'ID de Parente', type: 'number' },
 ];
 
 export const professionFields = [
-    { key: 'Código', label: 'Code', type: 'string', required: true },
-    { key: 'Descrição', label: 'Description', type: 'string', required: true },
-    { key: 'Acrônimo', label: 'Acronym', type: 'string' },
+    { key: 'code', label: 'Código', type: 'string', required: true },
+    { key: 'description', label: 'Descrição', type: 'string', required: true },
+    { key: 'acronym', label: 'Acrônimo', type: 'string' },
 ];
 
 export const zoneFields = [
-    { key: 'Tipo', label: 'Type', type: 'string' },
-    { key: 'Nome', label: 'Name', type: 'string', required: true },
-    { key: 'Descrição', label: 'Description', type: 'string' },
-    { key: 'Acrônimo', label: 'Acronym', type: 'string', required: true },
-    { key: 'Morada', label: 'Address', type: 'string' },
-    { key: 'Código Postal', label: 'ZIP Code', type: 'string' },
-    { key: 'Localidade', label: 'Locality', type: 'string' },
-    { key: 'Freguesia', label: 'Village', type: 'string' },
-    { key: 'Distrito', label: 'District', type: 'string' },
-    { key: 'Telefone', label: 'Phone', type: 'number' },
-    { key: 'Telemóvel', label: 'Mobile', type: 'number' },
-    { key: 'E-Mail', label: 'Email', type: 'string' },
+    { key: 'type', label: 'Tipo', type: 'string' },
+    { key: 'name', label: 'Nome', type: 'string', required: true },
+    { key: 'description', label: 'Descrição', type: 'string' },
+    { key: 'acronym', label: 'Acrônimo', type: 'string', required: true },
+    { key: 'address', label: 'Morada', type: 'string' },
+    { key: 'ZIPCode', label: 'Código Postal', type: 'string' },
+    { key: 'locality', label: 'Localidade', type: 'string' },
+    { key: 'village', label: 'Freguesia', type: 'string' },
+    { key: 'District', label: 'Distrito', type: 'string' },
+    { key: 'Phone', label: 'Telefone', type: 'number' },
+    { key: 'Mobile', label: 'Telemóvel', type: 'number' },
+    { key: 'Email', label: 'E-Mail', type: 'string' },
 ];

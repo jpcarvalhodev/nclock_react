@@ -6,6 +6,7 @@ import moment from 'moment';
 import 'moment/locale/pt';
 import { Employee } from "../helpers/Types";
 import { fetchWithAuth } from "../components/FetchWithAuth";
+import { toast } from "react-toastify";
 
 moment.locale('pt');
 
@@ -31,6 +32,7 @@ const messages = {
     date: 'Data',
     time: 'Hora',
     event: 'Evento',
+    noEventsInRange: 'Não há eventos neste intervalo',
     showMore: (total: number) => `+ Ver mais (${total})`
 };
 
@@ -44,7 +46,7 @@ export const Dashboard = () => {
                     'Content-Type': 'application/json',
                 },
             });
-            if (!response.ok) throw new Error('Erro ao buscar eventos');
+            if (!response.ok) toast.error('Erro ao buscar eventos');
             const employees: Employee[] = await response.json();
             const currentYear = new Date().getFullYear();
             return employees.map(employee => {
@@ -58,7 +60,7 @@ export const Dashboard = () => {
                 };
             });
         } catch (error) {
-            console.error('Error fetching events:', error);
+            console.error('Erro ao buscar eventos:', error);
             return [];
         }
     };
@@ -68,7 +70,7 @@ export const Dashboard = () => {
             const employeeEvents = await fetchEvents();
             setEvents(employeeEvents);
         } catch (error) {
-            console.error("Error loading data: ", error);
+            console.error("Erro ao carregar dados: ", error);
         }
     };
 

@@ -12,6 +12,8 @@ import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import { categoryFields } from "../helpers/Fields";
+import { ExportButton } from "../components/ExportButton";
+import { toast } from "react-toastify";
 
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -34,7 +36,7 @@ export const Categories = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao buscar os dados das categorias');
+                toast.error('Erro ao buscar os dados das categorias');
             }
 
             const data = await response.json();
@@ -55,11 +57,12 @@ export const Categories = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao adicionar nova categoria');
+                toast.error('Erro ao adicionar nova categoria');
             }
 
             const data = await response.json();
             setCategories([...categories, data]);
+            toast.success('Categoria adicionada com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar nova categoria:', error);
         }
@@ -77,21 +80,30 @@ export const Categories = () => {
                 },
                 body: JSON.stringify(category)
             });
-
+    
             if (!response.ok) {
-                throw new Error('Erro ao atualizar categoria');
+                const errorText = await response.text();
+                toast.error(`Erro ao atualizar categoria: ${errorText}`);
+                return;
             }
-
-            const updatedCategory = await response.json();
-            setCategories(categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
-
+    
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const updatedCategory = await response.json();
+                setCategories(categories => categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
+                toast.success('Categoria atualizada com sucesso!');
+            } else {
+                await response.text();
+                toast.success('Categoria atualizada com sucesso!');
+            }
         } catch (error) {
             console.error('Erro ao atualizar categoria:', error);
+            toast.error('Falha ao conectar ao servidor');
+        } finally {
+            handleCloseUpdateModal();
+            refreshCategories();
         }
-
-        handleCloseUpdateModal();
-        refreshCategories();
-    };
+    };    
 
     const handleDeleteCategory = async (categoryID: string) => {
         try {
@@ -103,13 +115,14 @@ export const Categories = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao apagar categoria');
+                toast.error('Erro ao apagar categoria');
             }
 
-            refreshCategories();
+            toast.success('Categoria apagada com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar categoria:', error);
         }
+        refreshCategories();
     };
 
     useEffect(() => {
@@ -166,7 +179,8 @@ export const Categories = () => {
     };
 
     const paginationOptions = {
-        rowsPerPageText: 'Linhas por página'
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
     };
 
     const columnNamesMap = categoryFields.reduce<Record<string, string>>((acc, field) => {
@@ -184,7 +198,7 @@ export const Categories = () => {
     const ExpandedComponent: React.FC<{ data: Category }> = ({ data }) => (
         <div className="expanded-details-container">
             {Object.entries(data).map(([key, value], index) => {
-                if (key === 'id') return null;
+                if (key === 'categoryID') return null;
                 let displayValue = value;
                 if (typeof value === 'object' && value !== null) {
                     displayValue = JSON.stringify(value, null, 2);
@@ -227,6 +241,7 @@ export const Categories = () => {
                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                <ExportButton data={categories} fields={categoryFields} />
                 <CreateModal
                     title="Adicionar Categoria"
                     open={showAddModal}

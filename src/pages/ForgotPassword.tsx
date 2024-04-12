@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/ForgotPassword.css';
 import { Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleForgotPasswordFormSubmit = async (event: React.FormEvent) => {
@@ -21,15 +21,15 @@ export const ForgotPassword = () => {
       });
   
       if (!response.ok) {
-        throw new Error('Ocorreu um erro. Tente novamente.');
+        toast.error('Ocorreu um erro. Tente novamente.');
       }
   
-      setMessage('Password reset email sent');
-
+      toast('Password reset email sent', {progressClassName: 'custom-progress-bar'});
       navigate('/');
+      
     } catch (error) {
       console.error(error);
-      setMessage('Ocorreu um erro. Tente novamente.');
+      toast.error('Ocorreu um erro. Tente novamente.');
     }
   };
 
@@ -43,7 +43,6 @@ export const ForgotPassword = () => {
         </label>
         <Button className="btn-my-custom-button" type='submit'>Enviar</Button>
       </form>
-      {message && <div className="message">{message}</div>}
     </div>
   );
 };

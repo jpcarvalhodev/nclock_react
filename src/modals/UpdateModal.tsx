@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
@@ -26,15 +26,20 @@ interface UpdateModalProps<T extends Entity> {
 export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
   const [formData, setFormData] = useState<T>({ ...entity });
 
+  useEffect(() => {
+    setFormData(entity);
+  }, [entity]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
-    setFormData({
-      ...formData,
-      [key]: e.target.value,
-    });
+    const value = e.target.value;
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [key]: value
+    }));
   };
 
-  const handleSubmit = () => {
-    onUpdate(formData);
+  const handleSubmit = async () => {
+    await onUpdate(formData);
     onClose();
   };
 
@@ -51,7 +56,7 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
               <input
                 type={field.type}
                 className="form-control"
-                value={formData[field.key] === undefined ? '' : formData[field.key]}
+                value={formData[field.key] ?? ''}
                 onChange={(e) => handleInputChange(e, field.key)}
                 required={field.required}
               />

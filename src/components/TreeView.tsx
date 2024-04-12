@@ -5,6 +5,7 @@ import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { fetchWithAuth } from './FetchWithAuth';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
+import { toast } from 'react-toastify';
 
 function CustomSearchBox(props: TextFieldProps) {
   return (
@@ -71,7 +72,14 @@ export function TreeViewData() {
         const deptResponse = await fetchWithAuth('https://localhost:7129/api/Departaments/Employees');
         const groupResponse = await fetchWithAuth('https://localhost:7129/api/Groups/Employees');
 
-        if (!deptResponse.ok || !groupResponse.ok) throw new Error('Failed to fetch data');
+        if (!deptResponse.ok) {
+          toast.error('Falha ao buscar dados dos departamentos');
+          return;
+        }
+        if (!groupResponse.ok) {
+          toast.error('Falha ao buscar dados dos grupos');
+          return;
+        }
 
         const [departments, groups] = await Promise.all([
           deptResponse.json(),
@@ -88,7 +96,7 @@ export function TreeViewData() {
             label: emp.name,
           })),
         }));
-        
+
         const groupItems = groups.map((group: Group) => ({
           id: group.id || `temp-group-${tempIdCounter++}`,
           label: group.description,
@@ -96,7 +104,7 @@ export function TreeViewData() {
             id: emp.id || `temp-emp-group-${tempIdCounter++}`,
             label: emp.name,
           })),
-        }));               
+        }));
 
         setItems([
           {
@@ -112,7 +120,7 @@ export function TreeViewData() {
         setExpandedIds([]);
 
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Erro ao buscar dados:', error);
       }
     }
 
@@ -132,7 +140,7 @@ export function TreeViewData() {
     }
     setFilteredItems(newFilteredItems);
   }, [items, searchTerm]);
-     
+
   return (
     <Box className="TreeViewContainer">
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>

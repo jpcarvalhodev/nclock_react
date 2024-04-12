@@ -59,16 +59,6 @@
     margin-bottom: 20px;
 }
 
-.message {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    padding: .75rem 1.25rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-    border-radius: .25rem;
-}
-
 .btn-my-custom-button {
     border-color: #0050a0 !important;
     color: #0050a0 !important;
@@ -83,6 +73,10 @@
 .btn-my-custom-link {
     color: #0050a0;
     margin-bottom: 20px;
+}
+
+.custom-progress-bar {
+    background: #0050a0 !important;
 }
 
 @media screen and (max-width: 900px) {
