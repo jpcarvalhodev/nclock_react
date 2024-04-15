@@ -9,4 +9,5 @@ declare module '@mui/material/TreeView';
 declare module '@mui/material/TreeItem';
 declare module 'file-saver';
 declare module 'jspdf';
+declare module 'jspdf-autotable';
 declare module 'xlsx';

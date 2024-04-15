@@ -23,6 +23,10 @@ function CustomSearchBox(props: TextFieldProps) {
   );
 }
 
+interface TreeViewDataProps {
+  onSelectEmployees: (employeeIds: string[] | null) => void;
+}
+
 interface Department {
   id: string;
   description: string;
@@ -60,11 +64,12 @@ function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem
   return [filteredItems, expandedIds];
 }
 
-export function TreeViewData() {
+export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -131,6 +136,13 @@ export function TreeViewData() {
     setExpandedIds(nodeIds);
   };
 
+  const handleSelectedItemsChange = (event: React.SyntheticEvent, itemIds: string[]) => {
+    setSelectedEmployeeIds(itemIds);
+
+    const employeeIds = itemIds.filter(id => id.startsWith('emp-')).map(id => id.substring(4));
+    onSelectEmployees(employeeIds);
+  };
+
   useEffect(() => {
     const [newFilteredItems, newExpandedIds] = filterItems(items, searchTerm.toLowerCase());
     if (searchTerm.trim() === '') {
@@ -145,7 +157,10 @@ export function TreeViewData() {
     <Box className="TreeViewContainer">
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         <RichTreeView
+          multiSelect={true}
           items={items}
+          onSelectedItemsChange={handleSelectedItemsChange}
+          selectedItems={selectedEmployeeIds}
           expandedItems={expandedIds}
           onExpandedItemsChange={handleToggle}
           getItemLabel={(item: TreeViewBaseItem) => item.label || 'Sem Título'}
@@ -156,7 +171,6 @@ export function TreeViewData() {
         variant="outlined"
         size="small"
         onChange={(e) => setSearchTerm(e.target.value)}
-        sx={{ mb: 18 }}
       />
     </Box>
   );

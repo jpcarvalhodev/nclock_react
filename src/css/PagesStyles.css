@@ -89,6 +89,33 @@ img {
     overflow-y: auto;
 }
 
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.content-container {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.treeview-container {
+    width: 800px;
+    height: 92%;
+    overflow: auto;
+    border-right: 2px solid #d3d3d3;
+}
+
+.datatable-container {
+    height: 100%;
+    overflow: auto;
+    margin-left: 8px;
+}
+
 .btn-selector-modal-close {
     background-color: #0050a0 !important;
 }
