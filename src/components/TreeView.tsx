@@ -6,6 +6,7 @@ import { fetchWithAuth } from './FetchWithAuth';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { toast } from 'react-toastify';
+import { Department, Employee, Group } from '../helpers/Types';
 
 function CustomSearchBox(props: TextFieldProps) {
   return (
@@ -24,24 +25,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 interface TreeViewDataProps {
-  onSelectEmployees: (employeeIds: string[] | null) => void;
-}
-
-interface Department {
-  id: string;
-  description: string;
-  employees: Employee[];
-}
-
-interface Group {
-  id: string;
-  description: string;
-  employees: Employee[];
-}
-
-interface Employee {
-  id: string;
-  name: string;
+  onSelectEmployees: (employeeIds: string[]) => void;
 }
 
 function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem[], Set<string>] {
@@ -91,22 +75,20 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           groupResponse.json(),
         ]);
 
-        let tempIdCounter = 1;
-
         const departmentItems = departments.map((dept: Department) => ({
-          id: dept.id || `temp-dept-${tempIdCounter++}`,
+          id: dept.departmentID,
           label: dept.description,
-          children: (dept.employees ?? []).map((emp: Employee) => ({
-            id: emp.id || `temp-emp-dept-${tempIdCounter++}`,
+          children: dept.employees.map((emp: Employee) => ({
+            id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
             label: emp.name,
           })),
         }));
 
         const groupItems = groups.map((group: Group) => ({
-          id: group.id || `temp-group-${tempIdCounter++}`,
+          id: group.groupID,
           label: group.description,
-          children: (group.employees ?? []).map((emp: Employee) => ({
-            id: emp.id || `temp-emp-group-${tempIdCounter++}`,
+          children: group.employees.map((emp: Employee) => ({
+            id: `group-${group.groupID}-emp-${emp.employeeID}`,
             label: emp.name,
           })),
         }));
@@ -137,10 +119,10 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   };
 
   const handleSelectedItemsChange = (event: React.SyntheticEvent, itemIds: string[]) => {
-    setSelectedEmployeeIds(itemIds);
-
-    const employeeIds = itemIds.filter(id => id.startsWith('emp-')).map(id => id.substring(4));
-    onSelectEmployees(employeeIds);
+    const employeeIds = itemIds
+      .filter(id => id.includes('-emp-'))
+      .map(id => id.substring(id.lastIndexOf('-emp-') + 5));
+    onSelectEmployees(employeeIds.length > 0 ? employeeIds : []);
   };
 
   useEffect(() => {
@@ -159,11 +141,11 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         <RichTreeView
           multiSelect={true}
           items={items}
+          getItemId={(item) => item.id}
           onSelectedItemsChange={handleSelectedItemsChange}
           selectedItems={selectedEmployeeIds}
           expandedItems={expandedIds}
           onExpandedItemsChange={handleToggle}
-          getItemLabel={(item: TreeViewBaseItem) => item.label || 'Sem Título'}
         />
       </Box>
       <CustomSearchBox

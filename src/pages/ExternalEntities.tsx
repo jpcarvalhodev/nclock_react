@@ -216,13 +216,15 @@ export const ExternalEntities = () => {
         name: 'Ações',
         cell: (row: ExternalEntity) => (
             <div>
-                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditExternalEntity(row)}></CustomOutlineButton>{' '}
                 <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
         selector: (row: ExternalEntity) => row.externalEntityID,
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
     };
 
     return (
@@ -270,6 +272,7 @@ export const ExternalEntities = () => {
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
+                        onRowDoubleClicked={handleEditExternalEntity}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows

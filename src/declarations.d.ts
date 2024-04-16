@@ -1,4 +1,5 @@
 declare module '*.png';
+
 declare module 'jquery';
 declare module 'react-table';
 declare module 'react-bootstrap-ribbon';
@@ -7,7 +8,7 @@ declare module 'react-big-calendar';
 declare module '@react-spring/web';
 declare module '@mui/material/TreeView';
 declare module '@mui/material/TreeItem';
+
 declare module 'file-saver';
-declare module 'jspdf';
-declare module 'jspdf-autotable';
+declare module '@react-pdf/renderer';
 declare module 'xlsx';

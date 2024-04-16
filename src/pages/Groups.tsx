@@ -218,13 +218,15 @@ export const Groups = () => {
         name: 'Ações',
         cell: (row: Group) => (
             <div>
-                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditGroup(row)}></CustomOutlineButton>{' '}
                 <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
         selector: (row: Group) => row.groupID,
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
     };
 
     return (
@@ -272,6 +274,7 @@ export const Groups = () => {
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
+                        onRowDoubleClicked={handleEditGroup}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows

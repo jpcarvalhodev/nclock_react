@@ -1,16 +1,25 @@
 import { useEffect, useState } from "react";
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'moment/locale/pt';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Employee } from "../helpers/Types";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import { toast } from "react-toastify";
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { setYear } from 'date-fns';
 
-moment.locale('pt');
+const locales = {
+  'pt': ptBR,
+};
 
-const localizer = momentLocalizer(moment);
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
 
 interface CalendarEvent {
     id: string;
@@ -50,7 +59,8 @@ export const Dashboard = () => {
             const employees: Employee[] = await response.json();
             const currentYear = new Date().getFullYear();
             return employees.map(employee => {
-                const birthdayThisYear = moment(employee.birthday).set('year', currentYear).toDate();
+                const birthday = new Date(employee.birthday);
+                const birthdayThisYear = setYear(birthday, currentYear);
                 return {
                     id: employee.id,
                     title: `Aniversário de ${employee.name}`,
@@ -90,6 +100,7 @@ export const Dashboard = () => {
                         endAccessor="end"
                         style={{ height: '100%' }}
                         messages={messages}
+                        culture="pt"
                     />
                 </div>
             </div>

@@ -82,7 +82,7 @@ export const Zones = () => {
             });
     
             if (!response.ok) {
-                const errorText = await response.text();  // Obtem a resposta como texto se houver erro
+                const errorText = await response.text();
                 toast.error(`Erro ao atualizar zona: ${errorText}`);
                 return;
             }
@@ -218,13 +218,15 @@ export const Zones = () => {
         name: 'Ações',
         cell: (row: Zone) => (
             <div>
-                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditZone(row)}></CustomOutlineButton>{' '}
                 <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneId)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
         selector: (row: Zone) => row.zoneID,
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
     };
 
     return (
@@ -272,6 +274,7 @@ export const Zones = () => {
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
+                        onRowDoubleClicked={handleEditZone}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows

@@ -1,9 +1,34 @@
 import Dropdown from 'react-bootstrap/Dropdown';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { CustomOutlineButton } from './CustomOutlineButton';
+
+const styles = StyleSheet.create({
+    page: {
+        flexDirection: 'column',
+        padding: 30,
+        backgroundColor: '#FFF'
+    },
+    section: {
+        margin: 10,
+        padding: 10,
+        flexGrow: 1
+    },
+    tableRow: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E4E4E4',
+        borderBottomStyle: 'solid',
+        alignItems: 'center',
+        height: 24,
+        fontStyle: 'bold',
+    },
+    tableCell: {
+        fontSize: 10,
+        marginLeft: 12,
+    }
+});
 
 interface DataItem {
     [key: string]: any;
@@ -39,48 +64,21 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]) => {
     saveAs(blob, fileName + fileExtension);
 };
 
-const exportToPDF = (data: DataItem[], fileName: string, fields: Field[]): void => {
-    const doc = new jsPDF({
-        orientation: 'landscape',
-        format: 'a4',
-    });
-    const maxColumnsPerPage = 10;  
-    let startY = 10;  
-
-    const pageFields = fields.reduce((acc, field, index) => {
-        if (index % maxColumnsPerPage === 0 && index !== 0) {
-            acc.push([]);
-        }
-        acc[acc.length - 1].push(field);
-        return acc;
-    }, [[]] as Field[][]);
-
-    pageFields.forEach((fieldsGroup, index) => {
-        if (index !== 0 && startY + 20 > (doc.internal.pageSize.height - 10)) {
-            doc.addPage();
-            startY = 10;
-        }
-
-        const headers = fieldsGroup.map(field => field.label);
-        const body = data.map(row => 
-            fieldsGroup.map(field => row[field.key] ? row[field.key].toString() : '')
-        );
-
-        doc.autoTable({
-            head: [headers],
-            body: body,
-            theme: 'grid',
-            startY: startY,
-            pageBreak: 'avoid',
-            margin: { horizontal: 10, top: 10, bottom: 10 },
-            tableWidth: 'auto',
-        });
-
-        startY = doc.autoTable.previous.finalY + 10;
-    });
-
-    doc.save(`${fileName}.pdf`);
-};
+const PDFDocument = ({ data, fields }: { data: DataItem[], fields: Field[] }) => (
+    <Document>
+        <Page size="A4" style={styles.page}>
+            {data.map((item, index) => (
+                <View key={index} style={styles.section}>
+                    {fields.map(field => (
+                        <View key={field.key} style={styles.tableRow}>
+                            <Text style={styles.tableCell}>{field.label}: {item[field.key]}</Text>
+                        </View>
+                    ))}
+                </View>
+            ))}
+        </Page>
+    </Document>
+);
 
 const exportToTXT = (data: DataItem[], fileName: string) => {
     const fileExtension = '.txt';
@@ -89,31 +87,19 @@ const exportToTXT = (data: DataItem[], fileName: string) => {
 };
 
 export const ExportButton = ({ data, fields }: ExportButtonProps) => {
-    const handleExport = (type: string) => {
-        const fileName = 'data_export';
-        switch (type) {
-            case 'xlsx':
-                exportToXLSX(data, fileName, fields);
-                break;
-            case 'pdf':
-                exportToPDF(data, fileName, fields);
-                break;
-            case 'txt':
-                exportToTXT(data, fileName);
-                break;
-            default:
-                console.log('No format selected');
-        }
-    };
+
+    const fileName = 'data_export';
 
     return (
         <Dropdown>
             <Dropdown.Toggle as={CustomOutlineButton} icon='bi-file-earmark-arrow-down' id="dropdown-basic" iconSize='1.1em'>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-                <Dropdown.Item onClick={() => handleExport('xlsx')}>Exportar em XLSX</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleExport('pdf')}>Exportar em PDF</Dropdown.Item>
-                <Dropdown.Item onClick={() => handleExport('txt')}>Exportar em TXT</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToXLSX(data, fileName, fields)}>Exportar em XLSX</Dropdown.Item>
+                <Dropdown.Item as="button" className='dropdown-item'>
+                    <PDFDownloadLink document={<PDFDocument data={data} fields={fields} />} fileName={`${fileName}.pdf`} style={{ textDecoration: 'none', color: 'inherit' }}>Exportar em PDF</PDFDownloadLink>
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToTXT(data, fileName)}>Exportar em TXT</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     );

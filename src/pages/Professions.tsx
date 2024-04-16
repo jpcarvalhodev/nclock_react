@@ -82,7 +82,7 @@ export const Professions = () => {
             });
     
             if (!response.ok) {
-                const errorText = await response.text();  // Obtem a resposta como texto se houver erro
+                const errorText = await response.text();
                 toast.error(`Erro ao atualizar a profissão: ${errorText}`);
                 return;
             }
@@ -218,13 +218,15 @@ export const Professions = () => {
         name: 'Ações',
         cell: (row: Profession) => (
             <div>
-                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditProfession(row)}></CustomOutlineButton>{' '}
                 <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
         selector: (row: Profession) => row.professionID,
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
     };
 
     return (
@@ -272,6 +274,7 @@ export const Professions = () => {
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
+                        onRowDoubleClicked={handleEditProfession}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows

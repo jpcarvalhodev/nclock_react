@@ -218,13 +218,15 @@ export const Categories = () => {
         name: 'Ações',
         cell: (row: Category) => (
             <div>
-                <CustomOutlineButton icon="bi-pencil-square" onClick={() => handleEditCategory(row)}></CustomOutlineButton>{' '}
                 <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
         selector: (row: Category) => row.categoryID,
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
     };
 
     return (
@@ -272,6 +274,7 @@ export const Categories = () => {
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
                         data={filteredItems}
+                        onRowDoubleClicked={handleEditCategory}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows

@@ -1,7 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom';
 import '../css/Login.css';
 import { useState } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { BiShow, BiHide } from 'react-icons/bi';
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -86,7 +86,7 @@ export const Login = () => {
               Senha:
               <input style={{ marginLeft: '20px' }} type={showPassword ? "text" : "password"} name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
               <i onClick={togglePasswordVisibility} style={{ marginLeft: '10px' }}>
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {showPassword ? <BiHide /> : <BiShow />}
               </i>
             </label>
           </div>
