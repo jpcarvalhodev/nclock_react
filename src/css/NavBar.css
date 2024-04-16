@@ -41,15 +41,19 @@
 .section {
     display: flex;
     justify-content: start;
+    align-items: stretch;
     margin-right: 400px;
     border-bottom: 1px solid #ccc;
+    height: 100%;
 }
 
 .group {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     align-items: center;
     border-right: 1px solid #ccc;
+    height: 100%;
 }
 
 .grid-container {
@@ -85,32 +89,14 @@
     height: 20px;
 }
 
-.title-container {
-    background-color: #dfdfdf;
-    width: 100%;
-    text-align: center;
-    margin-top: 5px;
-}
-
-.title-container-organizacao {
-    background-color: #dfdfdf;
-    width: 100%;
-    text-align: center;
-    margin-top: 5px;
-}
-
-.title-container-entidades {
-    background-color: #dfdfdf;
-    width: 100%;
-    text-align: center;
-    margin-top: 5px;
-}
-
+.title-container,
+.title-container-organizacao,
+.title-container-entidades,
 .title-container-informacoes {
-    background-color: #dfdfdf;
     width: 100%;
     text-align: center;
-    margin-top: 5px;
+    margin-top: auto;
+    background-color: #ccc;
 }
 
 .title {
@@ -197,8 +183,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 17px;
+    margin-top: 33px;
+    margin-bottom: 25px;
 }
 
 .ribbon-button-entidades .icon {
@@ -269,8 +255,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 17px;
+    margin-top: 33px;
+    margin-bottom: 25px;
 }
 
 .ribbon-button-informacoes .icon {
