@@ -40,11 +40,7 @@
 
 .section {
     display: flex;
-    justify-content: start;
-    align-items: stretch;
-    margin-right: 400px;
     border-bottom: 1px solid #ccc;
-    height: 100%;
 }
 
 .group {
@@ -53,7 +49,6 @@
     justify-content: space-between;
     align-items: center;
     border-right: 1px solid #ccc;
-    height: 100%;
 }
 
 .grid-container {
@@ -95,7 +90,7 @@
 .title-container-informacoes {
     width: 100%;
     text-align: center;
-    margin-top: auto;
+    margin-top: 5px;
     background-color: #ccc;
 }
 
@@ -320,22 +315,55 @@
     border-color: transparent;
 }
 
-@media (max-width: 500px) {
+@media (min-width: 300px) and (max-width: 700px) {
+
+    .tab-content {
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+    }
+
+    .nav-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-link {
+        text-align: center;
+        padding: 5px;
+        width: 100%;
+    }
+
+    .logo {
+        font-size: 20px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .section {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
     .group {
         width: 100%;
     }
 
-    .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    }
-
     .ribbon-button-pessoas .icon img {
-        width: 30px;
-        height: 30px;
+        width: 40px;
+        height: 40px;
     }
 
     .ribbon-button,
     .ribbon-icon-button {
+        font-size: 10px;
+    }
+
+    .ribbon-button .text,
+    .ribbon-button-ent .text,
+    .ribbon-button-entidades .text,
+    .ribbon-button-funcext .text,
+    .ribbon-button-informacoes .text {
         font-size: 10px;
     }
 
@@ -347,15 +375,23 @@
         width: 30px;
         height: 30px;
     }
+    
 }
 
-@media (max-width: 900px) {
-    .group {
-        width: 100%;
+@media (min-width: 701px) and (max-width: 1200px){
+
+    .logo {
+        font-size: 20px;
     }
 
-    .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    .section {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .group {
+        width: 100%;
     }
 
     .ribbon-button-pessoas .icon img {
@@ -365,15 +401,23 @@
 
     .ribbon-button,
     .ribbon-icon-button {
-        font-size: 11px;
+        font-size: 10px;
+    }
+
+    .ribbon-button .text,
+    .ribbon-button-ent .text,
+    .ribbon-button-entidades .text,
+    .ribbon-button-funcext .text,
+    .ribbon-button-informacoes .text {
+        font-size: 14px;
     }
 
     .user-info {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .dropdown-content img {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
     }
 }

@@ -6,6 +6,11 @@
   max-width: 400px;
 }
 
+.treeViewFlexItem {
+  flex-grow: 1;
+  overflow: auto;
+}
+
 .SearchBox fieldset {
   margin-top: 4px;
   margin-right: 4px;

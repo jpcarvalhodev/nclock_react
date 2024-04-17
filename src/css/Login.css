@@ -79,33 +79,9 @@
     background: #0050a0 !important;
 }
 
-@media screen and (max-width: 900px) {
-
-    .form-login input[type="username"],
-    .form-login input[type="submit"] {
-        width: 80%;
-    }
+@media (min-width: 300px) and (max-width: 700px) {
 
     .form-login {
-        margin: 10px;
-    }
-
-    .logo-login {
-        width: 150px;
-    }
-}
-
-@media screen and (max-width: 300px) {
-    .form-login {
-        margin-right: 0;
-        font-size: 12px;
-    }
-
-    .form-login input[type="submit"] {
-        width: 100%;
-    }
-
-    .logo-login {
-        width: 120px;
+        width: 350px;
     }
 }

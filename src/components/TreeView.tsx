@@ -137,7 +137,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
 
   return (
     <Box className="TreeViewContainer">
-      <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+      <Box className="treeViewFlexItem">
         <RichTreeView
           multiSelect={true}
           items={items}

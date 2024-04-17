@@ -104,10 +104,9 @@ img {
 }
 
 .treeview-container {
-    width: 800px;
     height: 92%;
     overflow: auto;
-    border-right: 2px solid #d3d3d3;
+    min-width: 100px;
 }
 
 .datatable-container {
@@ -123,6 +122,25 @@ img {
     gap: 10px;
 }
 
+.split {
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+.gutter {
+    background-color: #eee;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    height: 92%;
+}
+
+.gutter.gutter-horizontal {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+    cursor: col-resize;
+}
+
 .btn-selector-modal-close {
     background-color: #0050a0 !important;
 }
@@ -131,7 +149,7 @@ img {
     background-color: #00366d !important;
 }
 
-@media (max-width: 400px) {
+@media (min-width: 300px) and (max-width: 700px) {
 
     .profile-avatar {
         max-width: 20px;
@@ -162,20 +180,39 @@ img {
         margin-bottom: 150px;
     }
 
+    .footer {
+        height: 80px;
+    }
+
+    .footer p {
+        height: 20px;
+    }
+
     .dashboard-container {
         padding-bottom: 20px;
     }
+
+    .treeview-container {
+        flex: 2;
+    }
+
+    .datatable-container {
+        flex: 2;
+    }
+
+    .split {
+        height: 92%;
+    }
+
+    .gutter {
+        height: 92%;
+    }
 }
 
-@media (max-width: 800px) {
-
+@media (min-width: 701) and (max-width: 1200px) {
     .profile-avatar {
         max-width: 30px;
         max-height: 30px;
-    }
-
-    .mb-4 {
-        margin-bottom: 2rem;
     }
 
     .filter-refresh-add-edit-upper-class {
@@ -187,12 +224,10 @@ img {
     }
 
     .filter-input {
-        margin-right: 10px;
         margin-bottom: 10px;
     }
 
     .filter-refresh-add-edit-upper-class button {
-        margin-right: 10px;
         margin-bottom: 10px;
     }
 
@@ -200,7 +235,31 @@ img {
         margin-bottom: 150px;
     }
 
+    .footer {
+        height: 80px;
+    }
+
+    .footer p {
+        height: 20px;
+    }
+
     .dashboard-container {
         padding-bottom: 20px;
+    }
+
+    .treeview-container {
+        flex: 2;
+    }
+
+    .datatable-container {
+        flex: 2;
+    }
+
+    .split {
+        height: 92%;
+    }
+
+    .gutter {
+        height: 92%;
     }
 }
