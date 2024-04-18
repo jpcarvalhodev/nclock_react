@@ -85,9 +85,6 @@ export const Login = () => {
             <label className='password-label'>
               Senha:
               <input style={{ marginLeft: '20px' }} type={showPassword ? "text" : "password"} name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-              <i onClick={togglePasswordVisibility} style={{ marginLeft: '10px' }}>
-                {showPassword ? <BiHide /> : <BiShow />}
-              </i>
             </label>
           </div>
           <label className='remember_me-label'>

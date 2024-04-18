@@ -17,6 +17,7 @@ import { Unauthorized } from './pages/Unauthorized';
 import { Persons } from './pages/Persons';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import { ResetPassword } from './pages/PasswordReset';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
         <Route path="/persons" element={<PageProtection><Persons /></PageProtection>} />

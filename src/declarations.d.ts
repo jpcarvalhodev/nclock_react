@@ -8,6 +8,8 @@ declare module 'react-big-calendar';
 declare module '@react-spring/web';
 declare module '@mui/material/TreeView';
 declare module '@mui/material/TreeItem';
+declare module '@mui/x-tree-view/RichTreeView';
+declare module '@mui/x-tree-view/models';
 declare module 'split.js';
 
 declare module 'file-saver';

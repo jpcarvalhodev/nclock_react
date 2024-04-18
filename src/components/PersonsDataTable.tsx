@@ -1,21 +1,60 @@
 import { useEffect, useState } from 'react';
-import DataTable from 'react-data-table-component';
+import DataTable, { TableColumn } from 'react-data-table-component';
 import { fetchWithAuth } from './FetchWithAuth';
 import { toast } from 'react-toastify';
 import { CircularProgress } from '@mui/material';
 import { Employee } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModal } from '../modals/UpdateModal';
+import { Button } from 'react-bootstrap';
+import { DeleteModal } from '../modals/DeleteModal';
 
 interface PersonsDataTableProps {
     selectedEmployeeIds: string[];
+    selectedColumns: string[];
 }
 
-export const PersonsDataTable = ({ selectedEmployeeIds }: PersonsDataTableProps) => {
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: PersonsDataTableProps) => {
+    const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+    const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<Employee | null>(null);
+
+    const fetchAllEmployees = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
+            if (!response.ok) {
+                toast.error('Falha ao carregar dados dos funcionários');
+                console.error('Erro ao carregar todos os funcionários:', response.status);
+                return;
+            }
+            const employeesData = await response.json();
+            setAllEmployees(employeesData);
+            setEmployees(employeesData);
+        } catch (error) {
+            toast.error('Erro ao buscar dados dos funcionários');
+            console.error('Erro da API:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAllEmployees();
+    }, []);
+
+    useEffect(() => {
+        if (selectedEmployeeIds.length > 0) {
+            const filteredEmployees = allEmployees.filter(emp => selectedEmployeeIds.includes(emp.employeeID));
+            setEmployees(filteredEmployees);
+        } else {
+            setEmployees(allEmployees);
+        }
+    }, [selectedEmployeeIds, allEmployees]);
 
     const emptyEmployee = employeeFields.reduce((acc, field) => ({
         ...acc,
@@ -50,11 +89,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds }: PersonsDataTableProps)
 
     useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
-            fetchEmployeesDetails();
+            const filteredEmployees = allEmployees.filter(emp => selectedEmployeeIds.includes(emp.employeeID));
+            setEmployees(filteredEmployees);
         } else {
-            setEmployees([]);
+            setEmployees(allEmployees);
         }
-    }, [selectedEmployeeIds]);
+    }, [selectedEmployeeIds, allEmployees]);    
 
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
@@ -86,9 +126,41 @@ export const PersonsDataTable = ({ selectedEmployeeIds }: PersonsDataTableProps)
             toast.error('Falha ao conectar ao servidor');
         } finally {
             handleCloseUpdateModal();
-            fetchEmployeesDetails();
+            fetchAllEmployees();
         }
-    };  
+    };
+
+    const handleDeleteEmployee = async (employeeID: string) => {
+        try {
+            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/DeleteEmployee/${employeeID}`, {
+                method: 'DELETE',
+            });
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                toast.error(`Erro ao excluir funcionário: ${errorText}`);
+                return;
+            }
+    
+            setEmployees(prevEmployees => prevEmployees.filter(emp => emp.employeeID !== employeeID));
+            toast.success('Funcionário excluído com sucesso');
+        } catch (error) {
+            console.error('Erro ao excluir funcionário:', error);
+            toast.error('Falha ao conectar ao servidor');
+        } finally {
+            fetchAllEmployees();
+        }
+    }
+
+    const handleOpenDeleteModal = (employee: Employee) => {
+        setSelectedEmployeeToDelete(employee);
+        setShowDeleteModal(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setShowDeleteModal(false);
+        setSelectedEmployeeToDelete(null);
+    };
 
     const columns = employeeFields.map(field => ({
         name: field.label,
@@ -113,6 +185,31 @@ export const PersonsDataTable = ({ selectedEmployeeIds }: PersonsDataTableProps)
         rangeSeparatorText: 'de',
     };
 
+    const tableColumns = employeeFields
+    .filter(field => selectedColumns.includes(field.key))
+    .map(field => ({
+        name: field.label,
+        selector: (row: Employee) => row[field.key],
+        sortable: true,
+    }));
+
+    const actionColumn: TableColumn<Employee> = {
+        name: 'Ações',
+        cell: (row: Employee) => (
+            row.employeeID ? (
+                <div>
+                    <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row)}>
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>{' '}
+                </div>
+            ) : null
+        ),
+        selector: (row: Employee) => row.employeeID,
+        ignoreRowClick: true,
+        allowOverflow: true,
+        button: true,
+    };
+
     return (
         <div>
             {isLoading ? (
@@ -120,7 +217,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds }: PersonsDataTableProps)
             ) : (
                 <>
                     <DataTable
-                        columns={columns}
+                        columns={[...tableColumns, actionColumn]}
                         data={data}
                         noHeader
                         highlightOnHover
@@ -136,6 +233,14 @@ export const PersonsDataTable = ({ selectedEmployeeIds }: PersonsDataTableProps)
                             entity={selectedEmployee}
                             fields={employeeFields}
                             title="Atualizar Funcionário"
+                        />
+                    )}
+                    {showDeleteModal && (
+                        <DeleteModal
+                            open={showDeleteModal}
+                            onClose={handleCloseDeleteModal}
+                            onDelete={handleDeleteEmployee}
+                            entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
                         />
                     )}
                 </>
