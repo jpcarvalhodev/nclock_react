@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { fetchWithAuth } from './FetchWithAuth';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { toast } from 'react-toastify';
 import { Department, Employee, Group } from '../helpers/Types';
+import { TreeViewBaseItem } from '@mui/x-tree-view';
 
 function CustomSearchBox(props: TextFieldProps) {
   return (
@@ -141,7 +141,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         <RichTreeView
           multiSelect={true}
           items={items}
-          getItemId={(item) => item.id}
+          getItemId={(item: TreeViewBaseItem) => item.id}
           onSelectedItemsChange={handleSelectedItemsChange}
           selectedItems={selectedEmployeeIds}
           expandedItems={expandedIds}

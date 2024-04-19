@@ -223,8 +223,6 @@ export const ExternalEntities = () => {
         ),
         selector: (row: ExternalEntity) => row.externalEntityID,
         ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
     };
 
     return (

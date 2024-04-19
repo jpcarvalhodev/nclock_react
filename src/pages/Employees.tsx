@@ -218,8 +218,6 @@ export const Employees = () => {
         ),
         selector: (row: Employee) => row.employeeID,
         ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
     };
 
     return (

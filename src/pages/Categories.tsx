@@ -225,8 +225,6 @@ export const Categories = () => {
         ),
         selector: (row: Category) => row.categoryID,
         ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
     };
 
     return (

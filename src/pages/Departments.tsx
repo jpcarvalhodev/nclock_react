@@ -216,8 +216,6 @@ export const Departments = () => {
         ),
         selector: (row: Department) => row.departmentID,
         ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
     };
 
     return (

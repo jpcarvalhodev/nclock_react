@@ -225,8 +225,6 @@ export const Professions = () => {
         ),
         selector: (row: Profession) => row.professionID,
         ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
     };
 
     return (

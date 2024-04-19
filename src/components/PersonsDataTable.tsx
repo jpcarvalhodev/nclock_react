@@ -12,9 +12,12 @@ import { DeleteModal } from '../modals/DeleteModal';
 interface PersonsDataTableProps {
     selectedEmployeeIds: string[];
     selectedColumns: string[];
+    showAllEmployees: boolean;
+    filterText: string;
+    filteredEmployees: (filtered: Employee[]) => void;
 }
 
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: PersonsDataTableProps) => {
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, showAllEmployees, filterText, filteredEmployees }: PersonsDataTableProps) => {
     const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -61,32 +64,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
         [field.key]: ''
     }), {});
 
-    const fetchEmployeesDetails = async () => {
-        setIsLoading(true);
-        try {
-            const responses = await Promise.all(
-                selectedEmployeeIds.map(employeeID =>
-                    fetchWithAuth(`https://localhost:7129/api/Employees/GetEmployeeById/${employeeID}`)
-                )
-            );
-
-            const employeesData = await Promise.all(responses.map(res => {
-                if (!res.ok) {
-                    console.log('Erro na requisição:', res.status);
-                    toast.error('A requisição falhou');
-                }
-                return res.json();
-            }));
-
-            setEmployees(employeesData);
-        } catch (error) {
-            toast.error('Erro ao buscar dados dos funcionários');
-            console.error('Erro da API:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
             const filteredEmployees = allEmployees.filter(emp => selectedEmployeeIds.includes(emp.employeeID));
@@ -94,7 +71,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
         } else {
             setEmployees(allEmployees);
         }
-    }, [selectedEmployeeIds, allEmployees]);    
+    }, [selectedEmployeeIds, allEmployees]);
 
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
@@ -105,13 +82,13 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
                 },
                 body: JSON.stringify(employee)
             });
-    
+
             if (!response.ok) {
                 const errorText = await response.text();
                 toast.error(`Erro ao atualizar funcionário: ${errorText}`);
                 return;
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedEmployee = await response.json();
@@ -120,7 +97,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
                 await response.text();
                 toast.success('Funcionário atualizado com sucesso');
             }
-    
+
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -135,13 +112,13 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
             const response = await fetchWithAuth(`https://localhost:7129/api/Employees/DeleteEmployee/${employeeID}`, {
                 method: 'DELETE',
             });
-    
+
             if (!response.ok) {
                 const errorText = await response.text();
                 toast.error(`Erro ao excluir funcionário: ${errorText}`);
                 return;
             }
-    
+
             setEmployees(prevEmployees => prevEmployees.filter(emp => emp.employeeID !== employeeID));
             toast.success('Funcionário excluído com sucesso');
         } catch (error) {
@@ -152,6 +129,25 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
         }
     }
 
+    useEffect(() => {
+        let filtered = employees;
+    
+        if (filterText) {
+            filtered = filtered.filter(employee =>
+                Object.keys(employee).some(key => {
+                    const value = employee[key];
+                    return value != null && value.toString().toLowerCase().includes(filterText.toLowerCase());
+                })
+            );
+        }
+    
+        if (!showAllEmployees && selectedEmployeeIds.length > 0) {
+            filtered = filtered.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
+        }
+    
+        filteredEmployees(filtered);
+    }, [employees, filterText, selectedEmployeeIds, showAllEmployees, filteredEmployees]);     
+
     const handleOpenDeleteModal = (employee: Employee) => {
         setSelectedEmployeeToDelete(employee);
         setShowDeleteModal(true);
@@ -161,12 +157,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
         setShowDeleteModal(false);
         setSelectedEmployeeToDelete(null);
     };
-
-    const columns = employeeFields.map(field => ({
-        name: field.label,
-        selector: (row: Employee) => row[field.key],
-        sortable: true,
-    }));
 
     const handleRowDoubleClicked = (row: Employee) => {
         setSelectedEmployee(row);
@@ -186,12 +176,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
     };
 
     const tableColumns = employeeFields
-    .filter(field => selectedColumns.includes(field.key))
-    .map(field => ({
-        name: field.label,
-        selector: (row: Employee) => row[field.key],
-        sortable: true,
-    }));
+        .filter(field => selectedColumns.includes(field.key))
+        .map(field => ({
+            name: field.label,
+            selector: (row: Employee) => row[field.key],
+            sortable: true,
+        }));
 
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
@@ -206,8 +196,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns }: Perso
         ),
         selector: (row: Employee) => row.employeeID,
         ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
     };
 
     return (

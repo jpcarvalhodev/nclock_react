@@ -225,8 +225,6 @@ export const Groups = () => {
         ),
         selector: (row: Group) => row.groupID,
         ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
     };
 
     return (

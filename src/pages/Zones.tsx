@@ -225,8 +225,6 @@ export const Zones = () => {
         ),
         selector: (row: Zone) => row.zoneID,
         ignoreRowClick: true,
-        allowOverflow: true,
-        button: true,
     };
 
     return (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
 import { PersonsDataTable } from "../components/PersonsDataTable";
@@ -12,6 +12,7 @@ import { Employee } from '../helpers/Types';
 import { fetchWithAuth } from '../components/FetchWithAuth';
 import { toast } from 'react-toastify';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
+import { ExportButton } from '../components/ExportButton';
 
 export const Persons = () => {
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
@@ -19,6 +20,10 @@ export const Persons = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
+    const [resetSelection, setResetSelection] = useState(false);
+    const [showAllEmployees, setShowAllEmployees] = useState(true);
+    const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
+    const [filterText, setFilterText] = useState('');
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
 
     const handleSelectEmployees = (employeeIds: string[]) => {
@@ -67,6 +72,17 @@ export const Persons = () => {
         fetchAllEmployees();
     };
 
+    const clearSelection = () => {
+        setSelectedEmployeeIds([]);
+        setShowAllEmployees(true);
+    };
+
+    useEffect(() => {
+        if (resetSelection) {
+            setResetSelection(false);
+        }
+    }, [resetSelection]);
+
     const handleColumnToggle = (columnKey: string) => {
         if (selectedColumns.includes(columnKey)) {
             setSelectedColumns(selectedColumns.filter(key => key !== columnKey));
@@ -78,11 +94,15 @@ export const Persons = () => {
     const handleResetColumns = () => {
         setSelectedColumns(defaultColumns);
     };
-    
+
     const handleSelectAllColumns = () => {
         const allColumnKeys = employeeFields.map(field => field.key);
         setSelectedColumns(allColumnKeys);
-    };   
+    };
+
+    const handleFilteredEmployees = (filtered: Employee[]) => {
+        setFilteredEmployees(filtered);
+    };
 
     const openAddModal = () => setShowAddModal(true);
     const closeAddModal = () => setShowAddModal(false);
@@ -99,11 +119,25 @@ export const Persons = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-header">
+                            <input
+                                type="text"
+                                placeholder="Pesquisa"
+                                value={filterText}
+                                onChange={e => setFilterText(e.target.value)}
+                            />
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployeeData} iconSize='1.1em' />
                             <CustomOutlineButton icon="bi-plus" onClick={openAddModal} iconSize='1.1em' />
                             <CustomOutlineButton icon="bi-eye" onClick={openColumnSelector} iconSize='1.1em' />
+                            <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
+                            <ExportButton data={filteredEmployees} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
                         </div>
-                        <PersonsDataTable selectedEmployeeIds={selectedEmployeeIds} selectedColumns={selectedColumns} />
+                        <PersonsDataTable
+                            selectedEmployeeIds={selectedEmployeeIds}
+                            selectedColumns={selectedColumns}
+                            showAllEmployees={showAllEmployees}
+                            filterText={filterText}
+                            filteredEmployees={handleFilteredEmployees}
+                        />
                     </div>
                 </Split>
             </div>
@@ -120,13 +154,13 @@ export const Persons = () => {
             )}
             {showColumnSelector && (
                 <ColumnSelectorModal
-                columns={employeeFields}
-                selectedColumns={selectedColumns}
-                onClose={closeColumnSelector}
-                onColumnToggle={handleColumnToggle}
-                onResetColumns={handleResetColumns}
-                onSelectAllColumns={handleSelectAllColumns}
-            />
+                    columns={employeeFields}
+                    selectedColumns={selectedColumns}
+                    onClose={closeColumnSelector}
+                    onColumnToggle={handleColumnToggle}
+                    onResetColumns={handleResetColumns}
+                    onSelectAllColumns={handleSelectAllColumns}
+                />
             )}
         </div>
     );
