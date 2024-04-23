@@ -310,7 +310,7 @@
     border-color: transparent;
 }
 
-@media (min-width: 300px) and (max-width: 700px) {
+@media (min-width: 300px) and (max-width: 500px) {
 
     .tab-content {
         max-height: calc(100vh - 200px);
@@ -373,7 +373,7 @@
     
 }
 
-@media (min-width: 701px) and (max-width: 1100px){
+@media (min-width: 501px) and (max-width: 900px){
 
     .logo {
         font-size: 20px;

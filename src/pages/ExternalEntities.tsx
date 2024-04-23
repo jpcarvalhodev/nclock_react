@@ -14,6 +14,7 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { externalEntityFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
+import { ExpandedComponent } from "../components/ExpandedComponent";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -193,25 +194,6 @@ export const ExternalEntities = () => {
             sortable: true,
         }));
 
-    const ExpandedComponent: React.FC<{ data: ExternalEntity }> = ({ data }) => (
-        <div className="expanded-details-container">
-            {Object.entries(data).map(([key, value], index) => {
-                if (key === 'externalEntityID') return null;
-                let displayValue = value;
-                if (typeof value === 'object' && value !== null) {
-                    displayValue = JSON.stringify(value, null, 2);
-                }
-                const displayName = columnNamesMap[key] || key;
-                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
-                    <p key={index}>
-                        <span className="detail-key">{`${displayName}: `}</span>
-                        {displayValue}
-                    </p>
-                );
-            })}
-        </div>
-    );
-
     const actionColumn: TableColumn<ExternalEntity> = {
         name: 'Ações',
         cell: (row: ExternalEntity) => (
@@ -274,7 +256,7 @@ export const ExternalEntities = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={ExpandedComponent}
+                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={externalEntityFields} />}
                     />
                 </div>
             </div>

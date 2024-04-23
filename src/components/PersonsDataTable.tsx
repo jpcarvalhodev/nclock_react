@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { fetchWithAuth } from './FetchWithAuth';
 import { toast } from 'react-toastify';
@@ -17,7 +17,7 @@ interface PersonsDataTableProps {
     filteredEmployees: (filtered: Employee[]) => void;
 }
 
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, showAllEmployees, filterText, filteredEmployees }: PersonsDataTableProps) => {
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees }: PersonsDataTableProps) => {
     const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -58,11 +58,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, showAll
             setEmployees(allEmployees);
         }
     }, [selectedEmployeeIds, allEmployees]);
-
-    const emptyEmployee = employeeFields.reduce((acc, field) => ({
-        ...acc,
-        [field.key]: ''
-    }), {});
 
     useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
@@ -129,24 +124,20 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, showAll
         }
     }
 
+    const memoizedFilteredEmployees = useCallback(filteredEmployees, []);
+
     useEffect(() => {
-        let filtered = employees;
-    
-        if (filterText) {
-            filtered = filtered.filter(employee =>
-                Object.keys(employee).some(key => {
-                    const value = employee[key];
-                    return value != null && value.toString().toLowerCase().includes(filterText.toLowerCase());
-                })
-            );
-        }
-    
-        if (!showAllEmployees && selectedEmployeeIds.length > 0) {
-            filtered = filtered.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
-        }
-    
-        filteredEmployees(filtered);
-    }, [employees, filterText, selectedEmployeeIds, showAllEmployees, filteredEmployees]);     
+        let filteredByIDs = selectedEmployeeIds.length > 0
+            ? allEmployees.filter(emp => selectedEmployeeIds.includes(emp.employeeID))
+            : allEmployees;
+
+        let filteredBySearchText = filteredByIDs.filter(employee =>
+            employee.name.toLowerCase().includes(filterText.toLowerCase())
+        );
+
+        setEmployees(filteredBySearchText);
+        memoizedFilteredEmployees(filteredBySearchText);
+    }, [selectedEmployeeIds, filterText, allEmployees, memoizedFilteredEmployees]);
 
     const handleOpenDeleteModal = (employee: Employee) => {
         setSelectedEmployeeToDelete(employee);
@@ -168,20 +159,41 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, showAll
         setSelectedEmployee(null);
     };
 
-    const data = employees.length >= 5 ? employees : [...employees, ...Array(5 - employees.length).fill(emptyEmployee)];
+    const data = employees
 
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
-    const tableColumns = employeeFields
-        .filter(field => selectedColumns.includes(field.key))
-        .map(field => ({
+    const columns: TableColumn<Employee>[] = employeeFields
+    .filter(field => selectedColumns.includes(field.key))
+    .map(field => {
+        const formatField = (row: Employee) => {
+            switch (field.key) {
+                case 'departmentId':
+                    return row.departmentName || '';
+                case 'professionId':
+                    return row.professionCode || '';
+                case 'categoryId':
+                    return row.categoryCode || '';
+                case 'groupId':
+                    return row.groupName || '';
+                case 'zoneId':
+                    return row.zoneName || '';
+                case 'externalEntityId':
+                    return row.externalEntityName || '';
+                default:
+                    return row[field.key] || '';
+            }
+        };
+    
+        return {
             name: field.label,
-            selector: (row: Employee) => row[field.key],
+            selector: row => formatField(row),
             sortable: true,
-        }));
+        };
+    });
 
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
@@ -205,7 +217,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, showAll
             ) : (
                 <>
                     <DataTable
-                        columns={[...tableColumns, actionColumn]}
+                        columns={[...columns, actionColumn]}
                         data={data}
                         noHeader
                         highlightOnHover

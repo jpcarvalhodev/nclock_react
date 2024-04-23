@@ -14,9 +14,13 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { employeeFields } from '../helpers/Fields';
 import { ExportButton } from '../components/ExportButton';
 import { toast } from 'react-toastify';
+import Split from 'react-split';
+import { TreeViewData } from '../components/TreeView';
+import { ExpandedComponentEmployee } from '../components/ExpandedComponentEmployee';
 
 export const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['enrollNumber', 'name', 'shortName']);
@@ -26,6 +30,7 @@ export const Employees = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
 
+
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
@@ -34,6 +39,7 @@ export const Employees = () => {
             }
             const data = await response.json();
             setEmployees(data);
+            setFilteredEmployees(data);
         } catch (error) {
             console.error('Erro ao buscar os dados dos funcionários:', error);
         }
@@ -72,13 +78,13 @@ export const Employees = () => {
                 },
                 body: JSON.stringify(employee)
             });
-    
+
             if (!response.ok) {
                 const errorText = await response.text();
                 toast.error(`Erro ao atualizar funcionário: ${errorText}`);
                 return;
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedEmployee = await response.json();
@@ -87,7 +93,7 @@ export const Employees = () => {
                 await response.text();
                 toast.success('Funcionário atualizado com sucesso');
             }
-    
+
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -95,7 +101,7 @@ export const Employees = () => {
             handleCloseUpdateModal();
             refreshEmployees();
         }
-    };    
+    };
 
     const handleDeleteEmployee = async (employeeID: string) => {
 
@@ -126,6 +132,19 @@ export const Employees = () => {
         fetchEmployees();
     };
 
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        if (selectedIds.length === 0) {
+            setFilteredEmployees(employees);
+        } else {
+            const filtered = employees.filter(employee => selectedIds.includes(employee.employeeID));
+            setFilteredEmployees(filtered);
+        }
+    };
+
+    useEffect(() => {
+        setFilteredEmployees(employees);
+    }, [employees]);    
+
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
@@ -144,7 +163,7 @@ export const Employees = () => {
         setShowDeleteModal(true);
     };
 
-    const filteredItems = employees.filter(item =>
+    const filteredItems = filteredEmployees.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
@@ -159,53 +178,55 @@ export const Employees = () => {
     };
 
     const resetColumns = () => {
-        setSelectedColumns(['number', 'name', 'shortName']);
+        setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
 
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
-    const columnNamesMap = employeeFields.reduce<Record<string, string>>((acc, field) => {
-        acc[field.key] = field.label;
-        return acc;
-    }, {});
-
-    const tableColumns = selectedColumns
-        .map(columnKey => ({
-            name: columnNamesMap[columnKey] || columnKey,
-            selector: (row: Record<string, any>) => row[columnKey],
+    const columns: TableColumn<Employee>[] = employeeFields
+    .filter(field => selectedColumns.includes(field.key))
+    .map(field => {
+        const formatField = (row: Employee) => {
+            switch (field.key) {
+                case 'departmentId':
+                    return row.departmentName || '';
+                case 'professionId':
+                    return row.professionCode || '';
+                case 'categoryId':
+                    return row.categoryCode || '';
+                case 'groupId':
+                    return row.groupName || '';
+                case 'zoneId':
+                    return row.zoneName || '';
+                case 'externalEntityId':
+                    return row.externalEntityName || '';
+                default:
+                    return row[field.key] || '';
+            }
+        };
+    
+        return {
+            name: field.label,
+            selector: row => formatField(row),
             sortable: true,
-        }));
+        };
+    });
 
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
+    const clearSelection = () => {
+        setFilteredEmployees(employees);
+    }
+
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
-
-    const ExpandedComponent: React.FC<{ data: Employee }> = ({ data }) => (
-        <div className="expanded-details-container">
-            {Object.entries(data).map(([key, value], index) => {
-                if (key === 'employeeID') return null;
-                let displayValue = value;
-                if (typeof value === 'object' && value !== null) {
-                    displayValue = JSON.stringify(value, null, 2);
-                }
-                const displayName = columnNamesMap[key] || key;
-                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
-                    <p key={index}>
-                        <span className="detail-key">{`${displayName}: `}</span>
-                        {displayValue}
-                    </p>
-                );
-            })}
-        </div>
-    );
 
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
@@ -221,58 +242,64 @@ export const Employees = () => {
     };
 
     return (
-        <div>
+        <div className="main-container">
             <NavBar />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <input
-                    className='filter-input'
-                    type="text"
-                    placeholder="Pesquisa"
-                    value={filterText}
-                    onChange={e => setFilterText(e.target.value)}
-                />
-                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} />
-                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
-                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                <ExportButton data={employees} fields={employeeFields} />
-                <CreateModal
-                    title="Adicionar Funcionário"
-                    open={showAddModal}
-                    onClose={handleCloseAddModal}
-                    onSave={handleAddEmployee}
+            <div className="content-container">
+                <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-header">
+                            <input
+                                type="text"
+                                placeholder="Pesquisa"
+                                value={filterText}
+                                onChange={e => setFilterText(e.target.value)}
+                            />
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
+                            <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                            <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
+                            <ExportButton data={employees} fields={employeeFields} />
+                        </div>
+                        <DataTable
+                            columns={[...columns, actionColumn]}
+                            data={filteredItems}
+                            onRowDoubleClicked={handleEditEmployee}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            expandableRows
+                            expandableRowsComponent={ExpandedComponentEmployee}
+                        />
+                    </div>
+                </Split>
+            </div>
+            <Footer />
+            <CreateModal
+                title="Adicionar Funcionário"
+                open={showAddModal}
+                onClose={handleCloseAddModal}
+                onSave={handleAddEmployee}
+                fields={employeeFields}
+                initialValues={{}}
+            />
+            {selectedEmployee && (
+                <UpdateModal
+                    open={showUpdateModal}
+                    onClose={handleCloseUpdateModal}
+                    onUpdate={handleUpdateEmployee}
+                    entity={selectedEmployee}
                     fields={employeeFields}
-                    initialValues={{}}
+                    title="Atualizar Funcionário"
                 />
-                {selectedEmployee && (
-                    <UpdateModal
-                        open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateEmployee}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Funcionário"
-                    />
-                )}
-                <DeleteModal
-                    open={showDeleteModal}
-                    onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteEmployee}
-                    entityId={selectedEmployeeToDelete}
-                />
-            </div>
-            <div>
-                <div className='table-css'>
-                    <DataTable
-                        columns={[...tableColumns, actionColumn]}
-                        data={filteredItems}
-                        onRowDoubleClicked={handleEditEmployee}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        expandableRows
-                        expandableRowsComponent={ExpandedComponent}
-                    />
-                </div>
-            </div>
+            )}
+            <DeleteModal
+                open={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={handleDeleteEmployee}
+                entityId={selectedEmployeeToDelete}
+            />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={employeeFields}
@@ -283,7 +310,6 @@ export const Employees = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            <Footer />
         </div>
     );
 }

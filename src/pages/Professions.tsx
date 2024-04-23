@@ -14,6 +14,7 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { professionFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
+import { ExpandedComponent } from "../components/ExpandedComponent";
 
 export const Professions = () => {
     const [professions, setProfessions] = useState<Profession[]>([]);
@@ -195,25 +196,6 @@ export const Professions = () => {
             sortable: true,
         }));
 
-    const ExpandedComponent: React.FC<{ data: Profession }> = ({ data }) => (
-        <div className="expanded-details-container">
-            {Object.entries(data).map(([key, value], index) => {
-                if (key === 'professionID') return null;
-                let displayValue = value;
-                if (typeof value === 'object' && value !== null) {
-                    displayValue = JSON.stringify(value, null, 2);
-                }
-                const displayName = columnNamesMap[key] || key;
-                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
-                    <p key={index}>
-                        <span className="detail-key">{`${displayName}: `}</span>
-                        {displayValue}
-                    </p>
-                );
-            })}
-        </div>
-    );
-
     const actionColumn: TableColumn<Profession> = {
         name: 'Ações',
         cell: (row: Profession) => (
@@ -276,7 +258,7 @@ export const Professions = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={ExpandedComponent}
+                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={professionFields} />}
                     />
                 </div>
             </div>

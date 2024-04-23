@@ -14,6 +14,7 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { departmentFields } from '../helpers/Fields';
 import { ExportButton } from '../components/ExportButton';
 import { toast } from 'react-toastify';
+import { ExpandedComponent } from '../components/ExpandedComponent';
 
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -186,25 +187,6 @@ export const Departments = () => {
         rangeSeparatorText: 'de',
     };
 
-    const ExpandedComponent: React.FC<{ data: Department }> = ({ data }) => (
-        <div className="expanded-details-container">
-            {Object.entries(data).map(([key, value], index) => {
-                if (key === 'departmentID') return null;
-                let displayValue = value;
-                if (typeof value === 'object' && value !== null) {
-                    displayValue = JSON.stringify(value, null, 2);
-                }
-                const displayName = columnNamesMap[key] || key;
-                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
-                    <p key={index}>
-                        <span className="detail-key">{`${displayName}: `}</span>
-                        {displayValue}
-                    </p>
-                );
-            })}
-        </div>
-    );
-
     const actionColumn: TableColumn<Department> = {
         name: 'Ações',
         cell: (row: Department) => (
@@ -267,7 +249,7 @@ export const Departments = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={ExpandedComponent}
+                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={departmentFields} />}
                     />
                 </div>
             </div>

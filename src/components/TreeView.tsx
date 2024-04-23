@@ -134,7 +134,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     }
     setFilteredItems(newFilteredItems);
   }, [items, searchTerm]);
-
+  
   return (
     <Box className="TreeViewContainer">
       <Box className="treeViewFlexItem">

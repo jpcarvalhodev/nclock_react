@@ -14,21 +14,6 @@ img {
     max-height: 50px;
 }
 
-.filter-refresh-add-edit-upper-class {
-    display: flex;
-    margin-top: 30px;
-    margin-left: 55px;
-    margin-bottom: 30px;
-}
-
-.filter-input {
-    margin-right: 10px;
-}
-
-.filter-refresh-add-edit-upper-class button {
-    margin-right: 10px;
-}
-
 .dashboard-calendar {
     height: 610px;
     width: calc(100% - 40px);
@@ -60,6 +45,21 @@ img {
 
 .detail-key {
     font-weight: bold;
+}
+
+.filter-refresh-add-edit-upper-class {
+    display: flex;
+    margin-top: 30px;
+    margin-left: 55px;
+    margin-bottom: 30px;
+}
+
+.filter-input {
+    margin-right: 10px;
+}
+
+.filter-refresh-add-edit-upper-class button {
+    margin-right: 10px;
 }
 
 .footer {
@@ -99,8 +99,7 @@ img {
     display: flex;
     flex-grow: 1;
     overflow: hidden;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin: 20px 0;
 }
 
 .treeview-container {
@@ -149,7 +148,7 @@ img {
     background-color: #00366d !important;
 }
 
-@media (min-width: 300px) and (max-width: 700px) {
+@media (min-width: 300px) and (max-width: 500px) {
 
     .profile-avatar {
         max-width: 20px;
@@ -180,20 +179,8 @@ img {
         margin-bottom: 150px;
     }
 
-    .footer {
-        height: 80px;
-    }
-
-    .footer p {
-        height: 20px;
-    }
-
-    .dashboard-container {
-        padding-bottom: 20px;
-    }
-
     .treeview-container {
-        flex: 2;
+        flex: 1;
     }
 
     .datatable-container {
@@ -201,15 +188,16 @@ img {
     }
 
     .split {
-        height: 92%;
+        height: 95%;
     }
 
     .gutter {
-        height: 92%;
+        height: 95%;
     }
 }
 
-@media (min-width: 701) and (max-width: 1100px) {
+@media (min-width: 501) and (max-width: 900px) {
+
     .profile-avatar {
         max-width: 30px;
         max-height: 30px;
@@ -233,18 +221,6 @@ img {
 
     .table-css {
         margin-bottom: 150px;
-    }
-
-    .footer {
-        height: 80px;
-    }
-
-    .footer p {
-        height: 20px;
-    }
-
-    .dashboard-container {
-        padding-bottom: 20px;
     }
 
     .treeview-container {

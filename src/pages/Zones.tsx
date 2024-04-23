@@ -14,6 +14,7 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { zoneFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
+import { ExpandedComponent } from "../components/ExpandedComponent";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -195,25 +196,6 @@ export const Zones = () => {
             sortable: true,
         }));
 
-    const ExpandedComponent: React.FC<{ data: Zone }> = ({ data }) => (
-        <div className="expanded-details-container">
-            {Object.entries(data).map(([key, value], index) => {
-                if (key === 'zoneID') return null;
-                let displayValue = value;
-                if (typeof value === 'object' && value !== null) {
-                    displayValue = JSON.stringify(value, null, 2);
-                }
-                const displayName = columnNamesMap[key] || key;
-                return !['id', 'algumOutroCampoParaExcluir'].includes(key) && (
-                    <p key={index}>
-                        <span className="detail-key">{`${displayName}: `}</span>
-                        {displayValue}
-                    </p>
-                );
-            })}
-        </div>
-    );
-
     const actionColumn: TableColumn<Zone> = {
         name: 'Ações',
         cell: (row: Zone) => (
@@ -276,7 +258,7 @@ export const Zones = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={ExpandedComponent}
+                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={zoneFields} />}
                     />
                 </div>
             </div>
