@@ -25,6 +25,9 @@ export type Employee = {
     admissionDate: Date;
     exitDate: Date;
     rgpdAut: string;
+    status: string;
+    statusEmail: string;
+    type: string;
     departmentId: string;
     departmentName: string;
     professionId: string;

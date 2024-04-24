@@ -74,9 +74,10 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
               <label className="form-label">{field.label}</label>
               {field.type === 'dropdown' ? (
                 <select
-                  className="form-control"
+                  className="form-select"
                   value={formData[field.key] ?? ''}
                   onChange={(e) => handleInputChange(e, field.key)}>
+                  <option value="">Selecione...</option>
                   {dropdownData[field.key]?.map(option => (
                     <option key={option.id} value={option.id}>
                       {field.showCodeInsteadOfName ? option.code : option.name}

@@ -74,8 +74,9 @@ export const Persons = () => {
 
     const clearSelection = () => {
         setSelectedEmployeeIds([]);
+        setResetSelection(prev => !prev);
         setShowAllEmployees(true);
-    };
+    };    
 
     useEffect(() => {
         if (resetSelection) {
@@ -137,6 +138,7 @@ export const Persons = () => {
                             showAllEmployees={showAllEmployees}
                             filterText={filterText}
                             filteredEmployees={handleFilteredEmployees}
+                            resetSelection={resetSelection}
                         />
                     </div>
                 </Split>

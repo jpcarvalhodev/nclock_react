@@ -45,14 +45,22 @@
     display: flex;
     flex-direction: column;
     margin-top: 30px;
-    align-items: center;
+    align-items: start;
+}
+
+.username-label p {
+    margin-left: 15px;
 }
 
 .password-label {
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
-    align-items: center;
+    align-items: start;
+}
+
+.password-label p {
+    margin-left: 15px;
 }
 
 .remember_me-label {

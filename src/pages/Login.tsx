@@ -79,12 +79,12 @@ export const Login = () => {
           <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
           <div className='username-password-labels'>
             <label className='username-label'>
-              Nome de Usuário:
-              <input style={{ marginLeft: '20px' }} type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+              <p>Nome de Usuário:</p>
+              <input type="text" name="username" value={username} placeholder='Nome de Usuário ou E-Mail' onChange={(e) => setUsername(e.target.value)} />
             </label>
             <label className='password-label'>
-              Senha:
-              <input style={{ marginLeft: '20px' }} type={showPassword ? "text" : "password"} name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <p>Senha:</p>
+              <input type={showPassword ? "text" : "password"} name="password" value={password} placeholder='Senha' onChange={(e) => setPassword(e.target.value)} />
             </label>
           </div>
           <label className='remember_me-label'>

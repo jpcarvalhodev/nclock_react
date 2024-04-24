@@ -15,9 +15,10 @@ interface PersonsDataTableProps {
     showAllEmployees: boolean;
     filterText: string;
     filteredEmployees: (filtered: Employee[]) => void;
+    resetSelection: boolean;
 }
 
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees }: PersonsDataTableProps) => {
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection }: PersonsDataTableProps) => {
     const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +26,8 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<Employee | null>(null);
+    const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
+    const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
 
     const fetchAllEmployees = async () => {
         setIsLoading(true);
@@ -139,6 +142,19 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         memoizedFilteredEmployees(filteredBySearchText);
     }, [selectedEmployeeIds, filterText, allEmployees, memoizedFilteredEmployees]);
 
+    useEffect(() => {
+        if (resetSelection) {
+            setResetSelectionInternal(true);
+        }
+    }, [resetSelection]);
+
+    useEffect(() => {
+        if (resetSelectionInternal) {
+            setResetSelectionInternal(false);
+            setSelectedRows([]);
+        }
+    }, [resetSelectionInternal]);
+
     const handleOpenDeleteModal = (employee: Employee) => {
         setSelectedEmployeeToDelete(employee);
         setShowDeleteModal(true);
@@ -159,6 +175,15 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         setSelectedEmployee(null);
     };
 
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Employee[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+        filteredEmployees(state.selectedRows);
+    };
+
     const data = employees
 
     const paginationOptions = {
@@ -167,33 +192,33 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     };
 
     const columns: TableColumn<Employee>[] = employeeFields
-    .filter(field => selectedColumns.includes(field.key))
-    .map(field => {
-        const formatField = (row: Employee) => {
-            switch (field.key) {
-                case 'departmentId':
-                    return row.departmentName || '';
-                case 'professionId':
-                    return row.professionCode || '';
-                case 'categoryId':
-                    return row.categoryCode || '';
-                case 'groupId':
-                    return row.groupName || '';
-                case 'zoneId':
-                    return row.zoneName || '';
-                case 'externalEntityId':
-                    return row.externalEntityName || '';
-                default:
-                    return row[field.key] || '';
-            }
-        };
-    
-        return {
-            name: field.label,
-            selector: row => formatField(row),
-            sortable: true,
-        };
-    });
+        .filter(field => selectedColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: Employee) => {
+                switch (field.key) {
+                    case 'departmentId':
+                        return row.departmentName || '';
+                    case 'professionId':
+                        return row.professionCode || '';
+                    case 'categoryId':
+                        return row.categoryCode || '';
+                    case 'groupId':
+                        return row.groupName || '';
+                    case 'zoneId':
+                        return row.zoneName || '';
+                    case 'externalEntityId':
+                        return row.externalEntityName || '';
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+
+            return {
+                name: field.label,
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
 
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
@@ -224,6 +249,10 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         pagination
                         paginationComponentOptions={paginationOptions}
                         onRowDoubleClicked={handleRowDoubleClicked}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        selectableRowsHighlight
+                        clearSelectedRows={resetSelectionInternal}
                     />
                     {selectedEmployee && (
                         <UpdateModal

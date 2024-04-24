@@ -29,7 +29,8 @@ export const Employees = () => {
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
-
+    const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     const fetchEmployees = async () => {
         try {
@@ -143,7 +144,7 @@ export const Employees = () => {
 
     useEffect(() => {
         setFilteredEmployees(employees);
-    }, [employees]);    
+    }, [employees]);
 
     const handleOpenAddModal = () => {
         setShowAddModal(true);
@@ -185,43 +186,52 @@ export const Employees = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Employee[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
+
+    const handleClearSelection = () => {
+        setClearSelectionToggle(!clearSelectionToggle);
+        setSelectedRows([]);
+    };
+
     const columns: TableColumn<Employee>[] = employeeFields
-    .filter(field => selectedColumns.includes(field.key))
-    .map(field => {
-        const formatField = (row: Employee) => {
-            switch (field.key) {
-                case 'departmentId':
-                    return row.departmentName || '';
-                case 'professionId':
-                    return row.professionCode || '';
-                case 'categoryId':
-                    return row.categoryCode || '';
-                case 'groupId':
-                    return row.groupName || '';
-                case 'zoneId':
-                    return row.zoneName || '';
-                case 'externalEntityId':
-                    return row.externalEntityName || '';
-                default:
-                    return row[field.key] || '';
-            }
-        };
-    
-        return {
-            name: field.label,
-            selector: row => formatField(row),
-            sortable: true,
-        };
-    });
+        .filter(field => selectedColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: Employee) => {
+                switch (field.key) {
+                    case 'departmentId':
+                        return row.departmentName || '';
+                    case 'professionId':
+                        return row.professionCode || '';
+                    case 'categoryId':
+                        return row.categoryCode || '';
+                    case 'groupId':
+                        return row.groupName || '';
+                    case 'zoneId':
+                        return row.zoneName || '';
+                    case 'externalEntityId':
+                        return row.externalEntityName || '';
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+
+            return {
+                name: field.label,
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
 
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
-
-    const clearSelection = () => {
-        setFilteredEmployees(employees);
-    }
 
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -260,7 +270,7 @@ export const Employees = () => {
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
                             <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
+                            <CustomOutlineButton icon="bi-x" onClick={handleClearSelection} iconSize='1.1em' />
                             <ExportButton data={employees} fields={employeeFields} />
                         </div>
                         <DataTable
@@ -271,6 +281,10 @@ export const Employees = () => {
                             paginationComponentOptions={paginationOptions}
                             expandableRows
                             expandableRowsComponent={ExpandedComponentEmployee}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
                         />
                     </div>
                 </Split>
