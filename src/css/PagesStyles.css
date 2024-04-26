@@ -156,11 +156,32 @@ img {
 }
 
 .datatable-header {
-    margin-top: 4px;
     display: flex;
+    margin-top: 10px;
     margin-bottom: 10px;
-    margin-left: 20px;
+    margin-left: 10px;
     gap: 10px;
+}
+
+.search-box {
+    margin-left: 3px;
+}
+
+.search-input {
+    height: 40px;
+}
+
+.buttons-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.buttons-container-others {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 .split {
@@ -247,6 +268,14 @@ img {
 
     .datatable-container {
         flex: 2;
+    }
+
+    .datatable-header {
+        flex-direction: column;
+    }
+
+    .buttons-container {
+        gap: 0;
     }
 
     .split {

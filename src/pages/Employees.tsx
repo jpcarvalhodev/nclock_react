@@ -204,6 +204,12 @@ export const Employees = () => {
         .map(field => {
             const formatField = (row: Employee) => {
                 switch (field.key) {
+                    case 'status':
+                        return row.status ? 'Activo' : 'Inactivo';
+                    case 'statusEmail':
+                        return row.statusEmail ? 'Activo' : 'Inactivo';
+                    case 'rgpdAut':
+                        return row.rgpdAut ? 'Autorizado' : 'Não Autorizado';
                     case 'departmentId':
                         return row.departmentName || '';
                     case 'professionId':
@@ -261,17 +267,22 @@ export const Employees = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-header">
-                            <input
-                                type="text"
-                                placeholder="Pesquisa"
-                                value={filterText}
-                                onChange={e => setFilterText(e.target.value)}
-                            />
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-x" onClick={handleClearSelection} iconSize='1.1em' />
-                            <ExportButton data={employees} fields={employeeFields} />
+                            <div className="search-box">
+                                <input
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    className='search-input'
+                                />
+                            </div>
+                            <div className="buttons-container">
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-x" onClick={handleClearSelection} iconSize='1.1em' />
+                                <ExportButton allData={employees} selectedData={selectedRows} fields={employeeFields} />
+                            </div>
                         </div>
                         <DataTable
                             columns={[...columns, actionColumn]}
@@ -285,6 +296,7 @@ export const Employees = () => {
                             onSelectedRowsChange={handleRowSelected}
                             clearSelectedRows={clearSelectionToggle}
                             selectableRowsHighlight
+                            noDataComponent="Não há dados disponíveis para exibir."
                         />
                     </div>
                 </Split>

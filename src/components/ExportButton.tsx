@@ -40,21 +40,22 @@ interface Field {
 }
 
 interface ExportButtonProps {
-    data: any[];
-    fields: { label: string; key: string }[];
+    allData: DataItem[];
+    selectedData: DataItem[];
+    fields: Field[];
 }
 
-const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]) => {
+const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void => {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
 
     const output = data.map(item => {
-        return fields.reduce((result, field) => {
-            if (field.key in item) {
+        return fields.reduce((result: Record<string, any>, field: Field) => {
+            if (item.hasOwnProperty(field.key)) {
                 result[field.label] = item[field.key];
             }
             return result;
-        }, {} as Record<string, any>);
+        }, {});
     });
 
     const ws = XLSX.utils.json_to_sheet(output);
@@ -69,7 +70,7 @@ const PDFDocument = ({ data, fields }: { data: DataItem[], fields: Field[] }) =>
         <Page size="A4" style={styles.page}>
             {data.map((item, index) => (
                 <View key={index} style={styles.section}>
-                    {fields.map(field => (
+                    {fields.map((field: Field) => (
                         <View key={field.key} style={styles.tableRow}>
                             <Text style={styles.tableCell}>{field.label}: {item[field.key]}</Text>
                         </View>
@@ -80,26 +81,26 @@ const PDFDocument = ({ data, fields }: { data: DataItem[], fields: Field[] }) =>
     </Document>
 );
 
-const exportToTXT = (data: DataItem[], fileName: string) => {
+const exportToTXT = (data: DataItem[], fileName: string): void => {
     const fileExtension = '.txt';
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'text/plain' });
     saveAs(blob, fileName + fileExtension);
 };
 
-export const ExportButton = ({ data, fields }: ExportButtonProps) => {
-
+export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProps) => {
     const fileName = 'data_export';
+    const dataToExport = selectedData.length > 0 ? selectedData : allData;
 
     return (
         <Dropdown>
             <Dropdown.Toggle as={CustomOutlineButton} icon='bi-file-earmark-arrow-down' id="dropdown-basic" iconSize='1.1em'>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-                <Dropdown.Item onClick={() => exportToXLSX(data, fileName, fields)}>Exportar em XLSX</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields)}>Export as XLSX</Dropdown.Item>
                 <Dropdown.Item as="button" className='dropdown-item'>
-                    <PDFDownloadLink document={<PDFDocument data={data} fields={fields} />} fileName={`${fileName}.pdf`} style={{ textDecoration: 'none', color: 'inherit' }}>Exportar em PDF</PDFDownloadLink>
+                    <PDFDownloadLink document={<PDFDocument data={dataToExport} fields={fields} />} fileName={`${fileName}.pdf`} style={{ textDecoration: 'none', color: 'inherit' }}>Export as PDF</PDFDownloadLink>
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => exportToTXT(data, fileName)}>Exportar em TXT</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToTXT(dataToExport, fileName)}>Export as TXT</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     );

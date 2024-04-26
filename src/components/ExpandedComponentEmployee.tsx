@@ -13,6 +13,15 @@ export const ExpandedComponentEmployee = ({ data }: { data: Employee }) => (
             const value = data[key];
             let displayValue = value;
             switch (key) {
+                case 'status':
+                    displayValue = value ? 'Activo' : 'Inactivo';
+                    break;
+                case 'statusEmail':
+                    displayValue = value ? 'Activo' : 'Inactivo';
+                    break;
+                case 'rgpdAut':
+                    displayValue = value ? 'Autorizado' : 'Não Autorizado';
+                    break;
                 case 'departmentId':
                     displayValue = data['departmentName'] || '';
                     break;

@@ -29,7 +29,7 @@ export const Departments = () => {
 
     const fetchDepartments = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Departaments'); 
+            const response = await fetchWithAuth('https://localhost:7129/api/Departaments');
             if (!response.ok) {
                 toast.error('Erro ao buscar dados dos departamentos');
             }
@@ -38,7 +38,7 @@ export const Departments = () => {
         } catch (error) {
             console.error('Erro ao buscar dados dos departamentos:', error);
         }
-    };    
+    };
 
     const handleAddDepartment = async (department: Department) => {
         try {
@@ -49,7 +49,7 @@ export const Departments = () => {
                 },
                 body: JSON.stringify(department)
             });
-    
+
             if (!response.ok) {
                 toast.error('Erro ao adicionar novo departamento');
             }
@@ -72,13 +72,13 @@ export const Departments = () => {
                 },
                 body: JSON.stringify(department)
             });
-    
+
             if (!response.ok) {
                 const errorText = await response.text();
                 toast.error(`Erro ao atualizar departamento: ${errorText}`);
                 return;
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedDepartment = await response.json();
@@ -95,7 +95,7 @@ export const Departments = () => {
             handleCloseUpdateModal();
             refreshDepartments();
         }
-    };        
+    };
 
     const handleDeleteDepartment = async (departmentID: string) => {
         try {
@@ -105,7 +105,7 @@ export const Departments = () => {
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
                 toast.error('Erro ao apagar departamento');
             }
@@ -115,7 +115,7 @@ export const Departments = () => {
             console.error('Erro ao apagar departamento:', error);
         }
         refreshDepartments();
-    };    
+    };
 
     useEffect(() => {
         fetchDepartments();
@@ -204,17 +204,23 @@ export const Departments = () => {
         <div>
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
-                <input
-                    className='filter-input'
-                    type="text"
-                    placeholder="Pesquisa"
-                    value={filterText}
-                    onChange={e => setFilterText(e.target.value)}
-                />
-                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshDepartments} />
-                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
-                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                <ExportButton data={departments} fields={departmentFields} />
+                <div className="datatable-header">
+                    <div className="search-box">
+                        <input
+                            className='search-input'
+                            type="text"
+                            placeholder="Pesquisa"
+                            value={filterText}
+                            onChange={e => setFilterText(e.target.value)}
+                        />
+                    </div>
+                    <div className="buttons-container-others">
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshDepartments} />
+                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <ExportButton selectedData={filteredItems} fields={departmentFields} />
+                    </div>
+                </div>
                 <CreateModal
                     title="Adicionar Departamento"
                     open={showAddModal}
@@ -250,6 +256,7 @@ export const Departments = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={departmentFields} />}
+                        noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>
             </div>

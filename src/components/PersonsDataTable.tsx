@@ -8,6 +8,7 @@ import { employeeFields } from '../helpers/Fields';
 import { UpdateModal } from '../modals/UpdateModal';
 import { Button } from 'react-bootstrap';
 import { DeleteModal } from '../modals/DeleteModal';
+import { ExpandedComponentEmployee } from './ExpandedComponentEmployee';
 
 interface PersonsDataTableProps {
     selectedEmployeeIds: string[];
@@ -196,6 +197,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         .map(field => {
             const formatField = (row: Employee) => {
                 switch (field.key) {
+                    case 'status':
+                        return row.status ? 'Activo' : 'Inactivo';
+                    case 'statusEmail':
+                        return row.statusEmail ? 'Activo' : 'Inactivo';
+                    case 'rgpdAut':
+                        return row.rgpdAut ? 'Autorizado' : 'Não Autorizado';
                     case 'departmentId':
                         return row.departmentName || '';
                     case 'professionId':
@@ -244,15 +251,17 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                     <DataTable
                         columns={[...columns, actionColumn]}
                         data={data}
-                        noHeader
                         highlightOnHover
                         pagination
                         paginationComponentOptions={paginationOptions}
                         onRowDoubleClicked={handleRowDoubleClicked}
+                        expandableRows
+                        expandableRowsComponent={ExpandedComponentEmployee}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         selectableRowsHighlight
                         clearSelectedRows={resetSelectionInternal}
+                        noDataComponent="Não há dados disponíveis para exibir."
                     />
                     {selectedEmployee && (
                         <UpdateModal

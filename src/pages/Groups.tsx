@@ -213,17 +213,23 @@ export const Groups = () => {
         <div>
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
-                <input
-                    className='filter-input'
-                    type="text"
-                    placeholder="Pesquisa"
-                    value={filterText}
-                    onChange={e => setFilterText(e.target.value)}
-                />
-                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
-                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
-                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                <ExportButton data={groups} fields={groupFields} />
+                <div className="datatable-header">
+                    <div className="search-box">
+                        <input
+                            className='search-input'
+                            type="text"
+                            placeholder="Pesquisa"
+                            value={filterText}
+                            onChange={e => setFilterText(e.target.value)}
+                        />
+                    </div>
+                    <div className="buttons-container-others">
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
+                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <ExportButton selectedData={filteredItems} fields={groupFields} />
+                    </div>
+                </div>
                 <CreateModal
                     title="Adicionar Grupo"
                     open={showAddModal}
@@ -259,6 +265,7 @@ export const Groups = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={groupFields} />}
+                        noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>
             </div>

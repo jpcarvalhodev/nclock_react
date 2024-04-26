@@ -13,6 +13,7 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { toast } from 'react-toastify';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
 import { ExportButton } from '../components/ExportButton';
+import { ExpandedComponentEmployee } from '../components/ExpandedComponentEmployee';
 
 export const Persons = () => {
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
@@ -76,7 +77,7 @@ export const Persons = () => {
         setSelectedEmployeeIds([]);
         setResetSelection(prev => !prev);
         setShowAllEmployees(true);
-    };    
+    };
 
     useEffect(() => {
         if (resetSelection) {
@@ -120,17 +121,22 @@ export const Persons = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-header">
-                            <input
-                                type="text"
-                                placeholder="Pesquisa"
-                                value={filterText}
-                                onChange={e => setFilterText(e.target.value)}
-                            />
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployeeData} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-plus" onClick={openAddModal} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-eye" onClick={openColumnSelector} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
-                            <ExportButton data={filteredEmployees} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                            <div className="search-box">
+                                <input
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    className='search-input'
+                                />
+                            </div>
+                            <div className="buttons-container">
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployeeData} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-plus" onClick={openAddModal} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-eye" onClick={openColumnSelector} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
+                                <ExportButton selectedData={filteredEmployees} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                            </div>
                         </div>
                         <PersonsDataTable
                             selectedEmployeeIds={selectedEmployeeIds}
@@ -141,6 +147,7 @@ export const Persons = () => {
                             resetSelection={resetSelection}
                         />
                     </div>
+
                 </Split>
             </div>
             <Footer />

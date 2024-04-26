@@ -28,6 +28,7 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
+    const fileInputRef = React.createRef<HTMLInputElement>();
 
     useEffect(() => {
         const fetchDropdownOptions = async (field: FieldConfig) => {
@@ -47,6 +48,20 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
         });
     }, [fields]);
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfileImage(reader.result as string);
+                setFormData({ ...formData, photo: reader.result as string });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const triggerFileSelectPopup = () => fileInputRef.current?.click();
+
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
@@ -56,6 +71,7 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
     };
 
     const handleSave = () => {
+        console.log('formData', formData);
         onSave(formData as T);
     };
 
@@ -68,36 +84,83 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
                 <Row>
                     <Col md={3} className='img-modal'>
                         <img
-                            src={formData.photo || modalAvatar}
+                            src={profileImage || modalAvatar}
                             alt="Profile Avatar"
+                            style={{ width: 200, height: 200, borderRadius: '50%', cursor: 'pointer' }}
+                            onDoubleClick={triggerFileSelectPopup}
                         />
+                        <div>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={handleImageChange}
+                                ref={fileInputRef}
+                            />
+                        </div>
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formEnrollNumber">
                             <Form.Label>Número de Matrícula</Form.Label>
-                            <Form.Control type="number" className="custom-input-height" />
+                            <Form.Control
+                                type="number"
+                                className="custom-input-height"
+                                value={formData.enrollNumber || ''}
+                                onChange={handleChange}
+                                name="enrollNumber"
+                            />
                         </Form.Group>
                         <Form.Group controlId="formName">
                             <Form.Label>Nome</Form.Label>
-                            <Form.Control type="text" className="custom-input-height" />
+                            <Form.Control
+                                type="text"
+                                className="custom-input-height"
+                                value={formData.name || ''}
+                                onChange={handleChange}
+                                name="name"
+                            />
                         </Form.Group>
                         <Form.Group controlId="formShortName">
                             <Form.Label>Nome Resumido</Form.Label>
-                            <Form.Control type="text" className="custom-input-height" />
+                            <Form.Control
+                                type="text"
+                                className="custom-input-height"
+                                value={formData.shortName || ''}
+                                onChange={handleChange}
+                                name="shortName"
+                            />
                         </Form.Group>
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formNameAcronym">
                             <Form.Label>Acrônimo do Nome</Form.Label>
-                            <Form.Control type="text" className="custom-input-height" />
+                            <Form.Control
+                                type="text"
+                                className="custom-input-height"
+                                value={formData.nameAcronym || ''}
+                                onChange={handleChange}
+                                name="nameAcronym"
+                            />
                         </Form.Group>
                         <Form.Group controlId="formComments">
                             <Form.Label>Comentários</Form.Label>
-                            <Form.Control as="text" className="custom-input-height" />
+                            <Form.Control
+                                type="text"
+                                className="custom-input-height"
+                                value={formData.comments || ''}
+                                onChange={handleChange}
+                                name="comments"
+                            />
                         </Form.Group>
                         <Form.Group controlId="formType">
                             <Form.Label>Tipo</Form.Label>
-                            <Form.Control type="text" className="custom-input-height" />
+                            <Form.Control
+                                type="text"
+                                className="custom-input-height"
+                                value={formData.type || ''}
+                                onChange={handleChange}
+                                name="type"
+                            />
                         </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -106,10 +169,11 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
                             <Form.Check
                                 type="switch"
                                 id="custom-switch-status"
-                                checked={formData.status}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.checked ? 'Ativo' : 'Inativo' })}
+                                checked={formData.status === true}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.checked ? true : false })}
                                 className="ms-auto"
                                 label=""
+                                name="status"
                             />
                         </Form.Group>
                         <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-3">
@@ -117,10 +181,23 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
                             <Form.Check
                                 type="switch"
                                 id="custom-switch-status-email"
-                                checked={formData.statusEmail}
-                                onChange={(e) => setFormData({ ...formData, statusEmail: e.target.checked ? 'Confirmado' : 'Não Confirmado' })}
+                                checked={formData.statusEmail === true}
+                                onChange={(e) => setFormData({ ...formData, statusEmail: e.target.checked ? true : false })}
                                 className="ms-auto"
                                 label=""
+                                name="statusEmail"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formRgptAut" className="d-flex align-items-center mb-3">
+                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Autorização RGPD:</Form.Label>
+                            <Form.Check
+                                type="switch"
+                                id="custom-switch-rgpt-aut"
+                                checked={formData.rgpdAut === true}
+                                onChange={(e) => setFormData({ ...formData, rgpdAut: e.target.checked ? true : false })}
+                                className="ms-auto"
+                                label=""
+                                name="rgpdAut"
                             />
                         </Form.Group>
                     </Col>
@@ -138,177 +215,79 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
                         <Tab.Pane eventKey="dadosPessoais">
                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                 <Row>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formNIF">
-                                            <Form.Label>NIF</Form.Label>
-                                            <Form.Control type="number" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formAddress">
-                                            <Form.Label>Morada</Form.Label>
-                                            <Form.Control type="text" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formZipcode">
-                                            <Form.Label>Código Postal</Form.Label>
-                                            <Form.Control type="text" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formLocality">
-                                            <Form.Label>Localidade</Form.Label>
-                                            <Form.Control type="text" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formVillage">
-                                            <Form.Label>Freguesia</Form.Label>
-                                            <Form.Control type="text" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formDistrict">
-                                            <Form.Label>Distrito</Form.Label>
-                                            <Form.Control type="text" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formPhone">
-                                            <Form.Label>Telefone</Form.Label>
-                                            <Form.Control type="number" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formMobile">
-                                            <Form.Label>Telemóvel</Form.Label>
-                                            <Form.Control type="number" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formEmail">
-                                            <Form.Label>E-Mail</Form.Label>
-                                            <Form.Control type="email" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formBirthday">
-                                            <Form.Label>Data de Nascimento</Form.Label>
-                                            <Form.Control type="date" className="custom-input-height custom-select-font-size" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formNacionality">
-                                            <Form.Label>Nacionalidade</Form.Label>
-                                            <Form.Control type="text" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formGender">
-                                            <Form.Label>Gênero</Form.Label>
-                                            <Form.Control type="text" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
+                                    {[
+                                        { key: 'nif', label: 'NIF', type: 'number' },
+                                        { key: 'address', label: 'Morada', type: 'text' },
+                                        { key: 'zipcode', label: 'Código Postal', type: 'text' },
+                                        { key: 'locality', label: 'Localidade', type: 'text' },
+                                        { key: 'village', label: 'Freguesia', type: 'text' },
+                                        { key: 'district', label: 'Distrito', type: 'text' },
+                                        { key: 'phone', label: 'Telefone', type: 'number' },
+                                        { key: 'mobile', label: 'Telemóvel', type: 'number' },
+                                        { key: 'email', label: 'E-Mail', type: 'email' },
+                                        { key: 'birthday', label: 'Data de Nascimento', type: 'date' },
+                                        { key: 'nacionality', label: 'Nacionalidade', type: 'text' },
+                                        { key: 'gender', label: 'Gênero', type: 'text' }
+                                    ].map((field) => (
+                                        <Col md={3}>
+                                            <Form.Group controlId={`form${field.key}`}>
+                                                <Form.Label>{field.label}</Form.Label>
+                                                <Form.Control
+                                                    type={field.type}
+                                                    className="custom-input-height"
+                                                    value={formData[field.key] || ''}
+                                                    onChange={handleChange}
+                                                    name={field.key}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    ))}
                                 </Row>
                             </Form>
                         </Tab.Pane>
                         <Tab.Pane eventKey="dadosProfissionais">
                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                 <Row>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formBiNumber">
-                                            <Form.Label>Número de BI</Form.Label>
-                                            <Form.Control type="text" className="custom-input-height" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formBiIssuance">
-                                            <Form.Label>Emissão de BI</Form.Label>
-                                            <Form.Control type="date" className="custom-input-height custom-select-font-size" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formBiValidity">
-                                            <Form.Label>Validade de BI</Form.Label>
-                                            <Form.Control type="date" className="custom-input-height custom-select-font-size" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formAdmissionDate">
-                                            <Form.Label>Data de Admissão</Form.Label>
-                                            <Form.Control type="date" className="custom-input-height custom-select-font-size" />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formExitDate">
-                                            <Form.Label>Data de Saída</Form.Label>
-                                            <Form.Control type="date" className="custom-input-height custom-select-font-size" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formDepartmentId">
-                                            <Form.Label>Departamento</Form.Label>
-                                            <Form.Control as="select" className="custom-input-height custom-select-font-size">
-                                                <option>Selecione...</option>
-                                                {dropdownData.departmentId?.map((item) => (
-                                                    <option key={item.id} value={item.id}>{item.name}</option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formProfessionId">
-                                            <Form.Label>Profissão</Form.Label>
-                                            <Form.Control as="select" className="custom-input-height custom-select-font-size">
-                                                <option>Selecione...</option>
-                                                {dropdownData.professionId?.map((item) => (
-                                                    <option key={item.id} value={item.id}>{item.name}</option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formGroupId">
-                                            <Form.Label>Grupo</Form.Label>
-                                            <Form.Control as="select" className="custom-input-height custom-select-font-size">
-                                                <option>Selecione...</option>
-                                                {dropdownData.groupId?.map((item) => (
-                                                    <option key={item.id} value={item.id}>{item.name}</option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formZoneId">
-                                            <Form.Label>Zona</Form.Label>
-                                            <Form.Control as="select" className="custom-input-height custom-select-font-size">
-                                                <option>Selecione...</option>
-                                                {dropdownData.zoneId?.map((item) => (
-                                                    <option key={item.id} value={item.id}>{item.name}</option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Group controlId="formExternalEntityId">
-                                            <Form.Label>Entidade Externa</Form.Label>
-                                            <Form.Control as="select" className="custom-input-height custom-select-font-size">
-                                                <option>Selecione...</option>
-                                                {dropdownData.externalEntityId?.map((item) => (
-                                                    <option key={item.id} value={item.id}>{item.name}</option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
+                                    {[
+                                        { key: 'biNumber', label: 'Número de BI', type: 'text' },
+                                        { key: 'biIssuance', label: 'Emissão de BI', type: 'date' },
+                                        { key: 'biValidity', label: 'Validade de BI', type: 'date' },
+                                        { key: 'admissionDate', label: 'Data de Admissão', type: 'date' },
+                                        { key: 'exitDate', label: 'Data de Saída', type: 'date' },
+                                        { key: 'departmentId', label: 'Departamento', type: 'dropdown' },
+                                        { key: 'professionId', label: 'Profissão', type: 'dropdown' },
+                                        { key: 'groupId', label: 'Grupo', type: 'dropdown' },
+                                        { key: 'zoneId', label: 'Zona', type: 'dropdown' },
+                                        { key: 'externalEntityId', label: 'Entidade Externa', type: 'dropdown' }
+                                    ].map((field) => (
+                                        <Col md={3}>
+                                            <Form.Group controlId={`form${field.key}`}>
+                                                <Form.Label>{field.label}</Form.Label>
+                                                {field.type === 'dropdown' ? (
+                                                    <Form.Control
+                                                        as="select"
+                                                        className="custom-input-height custom-select-font-size"
+                                                        value={formData[field.key] || ''}
+                                                        onChange={handleChange}
+                                                        name={field.key}
+                                                    >
+                                                        <option value="">Selecione...</option>
+                                                        {dropdownData[field.key]?.map(option => (
+                                                            <option key={option.value} value={option.value}>{option.name}</option>
+                                                        ))}
+                                                    </Form.Control>
+                                                ) : (
+                                                    <Form.Control
+                                                        type={field.type}
+                                                        className="custom-input-height"
+                                                        value={formData[field.key] || ''}
+                                                        onChange={handleChange}
+                                                        name={field.key}
+                                                    />
+                                                )}
+                                            </Form.Group>
+                                        </Col>
+                                    ))}
                                 </Row>
                             </Form>
                         </Tab.Pane>

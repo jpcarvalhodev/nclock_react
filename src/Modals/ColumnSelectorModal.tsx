@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Button, FormCheck } from 'react-bootstrap';
 
 interface ColumnSelectorModalProps {
-    columns: { label: string; key: string }[];
+    columns: { label: string; key: string; isBoolean?: boolean }[];
     selectedColumns: string[];
     onClose: () => void;
     onColumnToggle: (columnName: string) => void;

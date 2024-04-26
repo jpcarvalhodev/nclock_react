@@ -24,9 +24,9 @@ export type Employee = {
     nif: number;
     admissionDate: Date;
     exitDate: Date;
-    rgpdAut: string;
-    status: string;
-    statusEmail: string;
+    rgpdAut: boolean;
+    status: boolean;
+    statusEmail: boolean;
     type: string;
     departmentId: string;
     departmentName: string;
