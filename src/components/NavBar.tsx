@@ -19,6 +19,8 @@ import interventionAreas from '../assets/img/interventionAreas.png';
 import businessAreas from '../assets/img/businessAreas.png';
 import internalContacts from '../assets/img/internalContacts.png';
 import Dropdown from 'react-bootstrap/Dropdown';
+import lock from '../assets/img/lock.png';
+import unlock from '../assets/img/unlock.png';
 
 interface MyTokenPayload extends JwtPayload {
 	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
@@ -28,14 +30,20 @@ interface MyTokenPayload extends JwtPayload {
 export const NavBar = () => {
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
-	const [showRibbon, setShowRibbon] = useState(false);
-	const [showDispositivos, setShowDispositivos] = useState(false);
-	const [showConfiguracao, setShowConfiguracao] = useState(false);
-	const [showAjuda, setShowAjuda] = useState(false);
+	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
+	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
+	const [showConfiguracaoRibbon, setShowConfiguracaoRibbon] = useState(false);
+	const [showAjudaRibbon, setShowAjudaRibbon] = useState(false);
 	const [activeTab, setActiveTab] = useState('');
+	const [isRibbonPinned, setIsRibbonPinned] = useState(false);
 	const navigate = useNavigate();
 
 	useEffect(() => {
+		loadInitialToken();
+		loadRibbonState();
+	}, []);
+
+	const loadInitialToken = () => {
 		const token = localStorage.getItem('token');
 
 		if (token) {
@@ -46,41 +54,50 @@ export const NavBar = () => {
 
 			setUser({ name: userName, email: userEmail });
 		}
-	}, []);
+	};
+
+	const loadRibbonState = () => {
+		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
+		const pessoasShown = localStorage.getItem('showPessoasRibbon') === 'true';
+		const dispositivosShown = localStorage.getItem('showDispositivosRibbon') === 'true';
+		const configuracaoShown = localStorage.getItem('showConfiguracaoRibbon') === 'true';
+		const ajudaShown = localStorage.getItem('showAjudaRibbon') === 'true';
+		setShowPessoasRibbon(ribbonPinned || pessoasShown);
+		setShowDispositivosRibbon(ribbonPinned || dispositivosShown);
+		setShowConfiguracaoRibbon(ribbonPinned || configuracaoShown);
+		setShowAjudaRibbon(ribbonPinned || ajudaShown);
+		setIsRibbonPinned(ribbonPinned);
+	};
+
+	const toggleRibbon = (setterFunction: React.Dispatch<React.SetStateAction<boolean>>) => {
+		setterFunction(prevState => !prevState);
+	};
 
 	const handlePessoasClick = () => {
-		setShowRibbon((prevState) => !prevState);
-		if (showRibbon) {
-			setActiveTab('');
-		} else {
-			setActiveTab('pessoas');
+		if (!isRibbonPinned || activeTab === 'pessoas') {
+			toggleRibbon(setShowPessoasRibbon);
+			setActiveTab(prevTab => prevTab === 'pessoas' ? '' : 'pessoas');
 		}
 	};
 
 	const handleDispositivosClick = () => {
-		setShowDispositivos((prevState) => !prevState);
-		if (showDispositivos) {
-			setActiveTab('');
-		} else {
-			setActiveTab('dispositivos');
+		if (!isRibbonPinned || activeTab === 'dispositivos') {
+			toggleRibbon(setShowDispositivosRibbon);
+			setActiveTab(prevTab => prevTab === 'dispositivos' ? '' : 'dispositivos');
 		}
 	};
 
 	const handleConfiguracaoClick = () => {
-		setShowConfiguracao((prevState) => !prevState);
-		if (showConfiguracao) {
-			setActiveTab('');
-		} else {
-			setActiveTab('configuracao');
+		if (!isRibbonPinned || activeTab === 'configuracao') {
+			toggleRibbon(setShowConfiguracaoRibbon);
+			setActiveTab(prevTab => prevTab === 'configuracao' ? '' : 'configuracao');
 		}
 	};
 
 	const handleAjudaClick = () => {
-		setShowAjuda((prevState) => !prevState);
-		if (showAjuda) {
-			setActiveTab('');
-		} else {
-			setActiveTab('ajuda');
+		if (!isRibbonPinned || activeTab === 'ajuda') {
+			toggleRibbon(setShowAjudaRibbon);
+			setActiveTab(prevTab => prevTab === 'ajuda' ? '' : 'ajuda');
 		}
 	};
 
@@ -92,6 +109,49 @@ export const NavBar = () => {
 	const handleLogoClick = () => {
 		navigate('/dashboard');
 	}
+
+	useEffect(() => {
+		const handleStateChange = () => {
+			localStorage.setItem('showPessoasRibbon', String(showPessoasRibbon));
+			localStorage.setItem('showDispositivosRibbon', String(showDispositivosRibbon));
+			localStorage.setItem('showConfiguracaoRibbon', String(showConfiguracaoRibbon));
+			localStorage.setItem('showAjudaRibbon', String(showAjudaRibbon));
+			localStorage.setItem('ribbonPinned', String(isRibbonPinned));
+		};
+
+		const timer = setTimeout(handleStateChange, 10);
+
+		return () => clearTimeout(timer);
+	}, [isRibbonPinned]);
+
+	const togglePinRibbon = () => {
+		const newState = !isRibbonPinned;
+		setIsRibbonPinned(newState);
+
+		if (newState) {
+			switch (activeTab) {
+				case 'pessoas':
+					setShowPessoasRibbon(newState);
+					break;
+				case 'dispositivos':
+					setShowDispositivosRibbon(newState);
+					break;
+				case 'configuracao':
+					setShowConfiguracaoRibbon(newState);
+					break;
+				case 'ajuda':
+					setShowAjudaRibbon(newState);
+					break;
+				default:
+					break;
+			}
+		} else {
+			setShowPessoasRibbon(false);
+			setShowDispositivosRibbon(false);
+			setShowConfiguracaoRibbon(false);
+			setShowAjudaRibbon(false);
+		}
+	};
 
 	return (
 		<nav data-role="ribbonmenu">
@@ -128,7 +188,7 @@ export const NavBar = () => {
 				</Dropdown>
 			</div>
 
-			{showRibbon && (
+			{showPessoasRibbon && (
 				<div className="tab-content" id="myTabContent">
 					<div className="tab-pane fade show active" id="pessoas" role="tabpanel" aria-labelledby="pessoas-tab">
 						<div className="section" id="section-group">
@@ -291,6 +351,14 @@ export const NavBar = () => {
 								</div>
 							</div>
 						</div>
+					</div>
+					<div className="ribbon-toggle">
+						<img
+							src={isRibbonPinned ? unlock : lock}
+							alt="Lock/Unlock Ribbon"
+							onClick={togglePinRibbon}
+							className='ribbon-icon'
+						/>
 					</div>
 				</div>
 			)}

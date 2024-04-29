@@ -31,7 +31,6 @@ export const fetchWithAuth = async (url: string, options: FetchOptions = {}): Pr
 };
 
 const handleHTTPError = async (response: Response) => {
-    const responseBody = await response.text();
 
     switch (response.status) {
         case 401:
@@ -46,7 +45,7 @@ const handleHTTPError = async (response: Response) => {
             toast.error('Página não encontrada');
             break;
         default:
-            toast.error(`Erro ${response.status}: ${responseBody}`);
+            toast.error(`Erro ao tentar executar a operação. Código de erro: ${response.status}`);
             break;
     }
 };

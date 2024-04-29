@@ -29,6 +29,22 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    const validateForm = () => {
+        const isValid = fields.every(field => {
+            if (field.required) {
+                const fieldValue = formData?.[field.key];
+                return fieldValue !== null && fieldValue !== undefined && typeof fieldValue === 'string' && fieldValue.trim() !== '';
+            }
+            return true;
+        });
+        setIsFormValid(isValid);
+    };
+
+    useEffect(() => {
+        validateForm();
+    }, [formData, fields]);
 
     useEffect(() => {
         const fetchDropdownOptions = async (field: FieldConfig) => {
@@ -71,7 +87,6 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
     };
 
     const handleSave = () => {
-        console.log('formData', formData);
         onSave(formData as T);
     };
 
@@ -95,7 +110,7 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
                         <img
                             src={profileImage || modalAvatar}
                             alt="Profile Avatar"
-                            style={{ width: 200, height: 200, borderRadius: '50%', cursor: 'pointer' }}
+                            style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer' }}
                             onDoubleClick={triggerFileSelectPopup}
                         />
                         <div>
@@ -110,45 +125,49 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formEnrollNumber">
-                            <Form.Label>Número de Matrícula</Form.Label>
+                            <Form.Label>Número de Matrícula <span className="required-asterisk">*</span></Form.Label>
                             <Form.Control
                                 type="number"
                                 className="custom-input-height"
                                 value={formData.enrollNumber || ''}
                                 onChange={handleChange}
                                 name="enrollNumber"
+                                required
                             />
                         </Form.Group>
                         <Form.Group controlId="formName">
-                            <Form.Label>Nome</Form.Label>
+                            <Form.Label>Nome <span className="required-asterisk">*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 className="custom-input-height"
                                 value={formData.name || ''}
                                 onChange={handleChange}
                                 name="name"
+                                required
                             />
                         </Form.Group>
                         <Form.Group controlId="formShortName">
-                            <Form.Label>Nome Resumido</Form.Label>
+                            <Form.Label>Nome Resumido <span className="required-asterisk">*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 className="custom-input-height"
                                 value={formData.shortName || ''}
                                 onChange={handleChange}
                                 name="shortName"
+                                required
                             />
                         </Form.Group>
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formNameAcronym">
-                            <Form.Label>Acrônimo do Nome</Form.Label>
+                            <Form.Label>Acrônimo do Nome <span className="required-asterisk">*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 className="custom-input-height"
                                 value={formData.nameAcronym || ''}
                                 onChange={handleChange}
                                 name="nameAcronym"
+                                required
                             />
                         </Form.Group>
                         <Form.Group controlId="formComments">
@@ -310,7 +329,7 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="primary" onClick={handleSave}>Guardar</Button>
+                <Button variant="primary" onClick={handleSave} disabled={!isFormValid}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

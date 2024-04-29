@@ -77,7 +77,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
 
         const departmentItems = departments.map((dept: Department) => ({
           id: dept.departmentID,
-          label: dept.description,
+          label: dept.name,
           children: dept.employees.map((emp: Employee) => ({
             id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
             label: emp.name,
@@ -86,7 +86,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
 
         const groupItems = groups.map((group: Group) => ({
           id: group.groupID,
-          label: group.description,
+          label: group.name,
           children: group.employees.map((emp: Employee) => ({
             id: `group-${group.groupID}-emp-${emp.employeeID}`,
             label: emp.name,
@@ -134,7 +134,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     }
     setFilteredItems(newFilteredItems);
   }, [items, searchTerm]);
-  
+
   return (
     <Box className="TreeViewContainer">
       <Box className="treeViewFlexItem">

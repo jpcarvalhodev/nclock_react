@@ -219,6 +219,10 @@ img {
     height: 30px !important;
 }
 
+.required-asterisk {
+    color: red;
+}
+
 .custom-select-font-size {
     font-size: 14px !important; 
 }

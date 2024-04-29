@@ -99,7 +99,7 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
             <img
               src={profileImage || modalAvatar}
               alt="Profile Avatar"
-              style={{ width: 200, height: 200, borderRadius: '50%', cursor: 'pointer' }}
+              style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer' }}
               onDoubleClick={triggerFileSelectPopup}
             />
             <div>
@@ -121,6 +121,7 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
                 value={formData.enrollNumber || ''}
                 onChange={handleChange}
                 name="enrollNumber"
+                required
               />
             </Form.Group>
             <Form.Group controlId="formName">
@@ -131,6 +132,7 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
                 value={formData.name || ''}
                 onChange={handleChange}
                 name="name"
+                required
               />
             </Form.Group>
             <Form.Group controlId="formShortName">
@@ -141,6 +143,7 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
                 value={formData.shortName || ''}
                 onChange={handleChange}
                 name="shortName"
+                required
               />
             </Form.Group>
           </Col>
@@ -153,6 +156,7 @@ export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity,
                 value={formData.nameAcronym || ''}
                 onChange={handleChange}
                 name="nameAcronym"
+                required
               />
             </Form.Group>
             <Form.Group controlId="formComments">
