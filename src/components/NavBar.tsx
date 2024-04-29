@@ -149,31 +149,31 @@ export const NavBar = () => {
 											</span>
 											<span className="text">Funcionários</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
+										<Link to='/Visitors' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="avatar visitantes" />
 											</span>
 											<span className="text">Visitantes</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button-funcext">
+										<Link to='/ExternalEmployees' type="button" className="btn btn-light ribbon-button-funcext">
 											<span className="icon">
 												<img src={person} alt="avatar funcionários externos" />
 											</span>
 											<span className="text">Funcionários Externos</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
+										<Link to='/Contacts' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="avatar contactos" />
 											</span>
 											<span className="text">Contactos</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
+										<Link to='/User' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="avatar utentes" />
 											</span>
 											<span className="text">Utentes</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
+										<Link to='/Temporaries' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="avatar provisórios" />
 											</span>

@@ -227,7 +227,7 @@ export const Professions = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
                         <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton selectedData={filteredItems} fields={professionFields} />
+                        <ExportButton allData={professions} selectedData={filteredItems} fields={professionFields} />
                     </div>
                 </div>
                 <CreateModal

@@ -13,7 +13,6 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { toast } from 'react-toastify';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
 import { ExportButton } from '../components/ExportButton';
-import { ExpandedComponentEmployee } from '../components/ExpandedComponentEmployee';
 
 export const Persons = () => {
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
@@ -63,8 +62,8 @@ export const Persons = () => {
                 toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
-            const addedEmployee = await response.json();
-
+            const data = await response.json();
+            setEmployees([...employees, data]);
             toast.success('Funcionário adicionado com sucesso');
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
@@ -135,7 +134,7 @@ export const Persons = () => {
                                 <CustomOutlineButton icon="bi-plus" onClick={openAddModal} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={openColumnSelector} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
-                                <ExportButton selectedData={filteredEmployees} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                                <ExportButton allData={employees} selectedData={filteredEmployees} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
                             </div>
                         </div>
                         <PersonsDataTable
@@ -153,7 +152,7 @@ export const Persons = () => {
             <Footer />
             {showAddModal && (
                 <CreateModal
-                    title="Adicionar Funcionário"
+                    title="Adicionar Pessoa"
                     open={showAddModal}
                     onClose={closeAddModal}
                     onSave={handleAddEmployee}

@@ -18,7 +18,7 @@ import Split from 'react-split';
 import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmployee } from '../components/ExpandedComponentEmployee';
 
-export const Employees = () => {
+export const Temporaries = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -40,7 +40,7 @@ export const Employees = () => {
                 return;
             }
             const data = await response.json();
-            const filteredData = data.filter((emp: Employee) => emp.type === 'funcionário');
+            const filteredData = data.filter((emp: Employee) => emp.type === 'provisório');
             setEmployees(filteredData);
             setFilteredEmployees(filteredData);
         } catch (error) {
@@ -305,7 +305,7 @@ export const Employees = () => {
             </div>
             <Footer />
             <CreateModal
-                title="Adicionar Funcionário"
+                title="Adicionar Provisório"
                 open={showAddModal}
                 onClose={handleCloseAddModal}
                 onSave={handleAddEmployee}
@@ -319,7 +319,7 @@ export const Employees = () => {
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}
-                    title="Atualizar Funcionário"
+                    title="Atualizar Provisório"
                 />
             )}
             <DeleteModal

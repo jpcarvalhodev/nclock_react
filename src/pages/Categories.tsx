@@ -227,7 +227,7 @@ export const Categories = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
                         <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton selectedData={filteredItems} fields={categoryFields} />
+                        <ExportButton allData={categories} selectedData={filteredItems} fields={categoryFields} />
                     </div>
                 </div>
                 <CreateModal

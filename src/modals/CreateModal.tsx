@@ -75,6 +75,15 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
         onSave(formData as T);
     };
 
+    const typeOptions = [
+        { value: 'funcionário', label: 'Funcionário' },
+        { value: 'funcionário_externo', label: 'Funcionário Externo' },
+        { value: 'utente', label: 'Utente' },
+        { value: 'visitante', label: 'Visitante' },
+        { value: 'contacto', label: 'Contacto' },
+        { value: 'provisório', label: 'Provisório' }
+    ];
+
     return (
         <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
@@ -155,12 +164,17 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
                         <Form.Group controlId="formType">
                             <Form.Label>Tipo</Form.Label>
                             <Form.Control
-                                type="text"
-                                className="custom-input-height"
+                                as="select"
+                                className="custom-input-height custom-select-font-size"
                                 value={formData.type || ''}
                                 onChange={handleChange}
                                 name="type"
-                            />
+                            >
+                                <option value="">Selecione...</option>
+                                {typeOptions.map(option => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </Form.Control>
                         </Form.Group>
                     </Col>
                     <Col md={3}>

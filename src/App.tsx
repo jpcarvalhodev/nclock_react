@@ -18,6 +18,11 @@ import { Persons } from './pages/Persons';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { ResetPassword } from './pages/PasswordReset';
+import { ExternalEmployees } from './pages/ExternalEmployees';
+import { User } from './pages/User';
+import { Visitors } from './pages/Visitors';
+import { Contacts } from './pages/Contacts';
+import { Temporaries } from './pages/Temporaries';
 
 function App() {
   return (
@@ -31,6 +36,11 @@ function App() {
         <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
         <Route path="/persons" element={<PageProtection><Persons /></PageProtection>} />
         <Route path="/employees" element={<PageProtection><Employees /></PageProtection>} />
+        <Route path="/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
+        <Route path="/user" element={<PageProtection><User /></PageProtection>} />
+        <Route path="/visitors" element={<PageProtection><Visitors /></PageProtection>} />
+        <Route path="/contacts" element={<PageProtection><Contacts /></PageProtection>} />
+        <Route path="/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
         <Route path="/departments" element={<PageProtection><Departments /></PageProtection>} />
         <Route path="/categories" element={<PageProtection><Categories /></PageProtection>} />
         <Route path="/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />

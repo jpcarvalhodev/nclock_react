@@ -9,7 +9,8 @@
     font-size: 25px;
     padding: 10px;
     line-height: 0;
-    color: white
+    color: white;
+    cursor: pointer;
 }
 
 .nav {
@@ -308,6 +309,7 @@
     background-color: white;
     color: #0050a0;
     border-color: transparent;
+    cursor: pointer;
 }
 
 @media (min-width: 300px) and (max-width: 500px) {

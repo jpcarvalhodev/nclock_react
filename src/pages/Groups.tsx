@@ -227,7 +227,7 @@ export const Groups = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
                         <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton selectedData={filteredItems} fields={groupFields} />
+                        <ExportButton allData={groups} selectedData={filteredItems} fields={groupFields} />
                     </div>
                 </div>
                 <CreateModal

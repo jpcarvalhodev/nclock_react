@@ -225,7 +225,7 @@ export const ExternalEntities = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntities} />
                         <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton selectedData={filteredItems} fields={externalEntityFields} />
+                        <ExportButton allData={externalEntities} selectedData={filteredItems} fields={externalEntityFields} />
                     </div>
                 </div>
                 <CreateModal

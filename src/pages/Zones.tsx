@@ -227,7 +227,7 @@ export const Zones = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} />
                         <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton selectedData={filteredItems} fields={zoneFields} />
+                        <ExportButton allData={zones} selectedData={filteredItems} fields={zoneFields} />
                     </div>
                 </div>
                 <CreateModal

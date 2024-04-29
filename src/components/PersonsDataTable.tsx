@@ -270,7 +270,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                             onUpdate={handleUpdateEmployee}
                             entity={selectedEmployee}
                             fields={employeeFields}
-                            title="Atualizar Funcionário"
+                            title="Atualizar Pessoa"
                         />
                     )}
                     {showDeleteModal && (
