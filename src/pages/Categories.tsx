@@ -6,8 +6,6 @@ import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { Category } from "../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
-import { CreateModal } from "../modals/CreateModal";
-import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
@@ -15,6 +13,8 @@ import { categoryFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponent } from "../components/ExpandedComponent";
+import { UpdateModalGeneric } from "../modals/UpdateModalGeneric";
+import { CreateModalGeneric } from "../modals/CreateModalGeneric";
 
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -230,7 +230,7 @@ export const Categories = () => {
                         <ExportButton allData={categories} selectedData={filteredItems} fields={categoryFields} />
                     </div>
                 </div>
-                <CreateModal
+                <CreateModalGeneric
                     title="Adicionar Categoria"
                     open={showAddModal}
                     onClose={handleCloseAddModal}
@@ -239,7 +239,7 @@ export const Categories = () => {
                     initialValues={{}}
                 />
                 {selectedCategory && (
-                    <UpdateModal
+                    <UpdateModalGeneric
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateCategory(selectedCategory)}

@@ -6,8 +6,6 @@ import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { Group } from "../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
-import { CreateModal } from "../modals/CreateModal";
-import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
@@ -15,6 +13,10 @@ import { groupFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponent } from "../components/ExpandedComponent";
+import { CreateModalGeneric } from "../modals/CreateModalGeneric";
+import { UpdateModalGeneric } from "../modals/UpdateModalGeneric";
+import { CreateModalDeptGrp } from "../modals/CreateModalDeptGrp";
+import { UpdateModalDeptGrp } from "../modals/UpdateModalDeptGrp";
 
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
@@ -230,21 +232,22 @@ export const Groups = () => {
                         <ExportButton allData={groups} selectedData={filteredItems} fields={groupFields} />
                     </div>
                 </div>
-                <CreateModal
+                <CreateModalDeptGrp
                     title="Adicionar Grupo"
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddGroup}
                     fields={groupFields}
                     initialValues={{}}
+                    entityType='group'
                 />
                 {selectedGroup && (
-                    <UpdateModal
+                    <UpdateModalDeptGrp
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateGroup(selectedGroup)}
                         entity={selectedGroup}
-                        fields={groupFields}
+                        entityType='group'
                         title="Atualizar Grupo"
                     />
                 )}

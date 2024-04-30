@@ -23,6 +23,7 @@ import { User } from './pages/User';
 import { Visitors } from './pages/Visitors';
 import { Contacts } from './pages/Contacts';
 import { Temporaries } from './pages/Temporaries';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (

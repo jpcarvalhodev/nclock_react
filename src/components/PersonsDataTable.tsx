@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { CircularProgress } from '@mui/material';
 import { Employee } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
-import { UpdateModal } from '../modals/UpdateModal';
+import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { Button } from 'react-bootstrap';
 import { DeleteModal } from '../modals/DeleteModal';
 import { ExpandedComponentEmployee } from './ExpandedComponentEmployee';
@@ -264,7 +264,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         noDataComponent="Não há dados disponíveis para exibir."
                     />
                     {selectedEmployee && (
-                        <UpdateModal
+                        <UpdateModalEmployees
                             open={showUpdateModal}
                             onClose={handleCloseUpdateModal}
                             onUpdate={handleUpdateEmployee}

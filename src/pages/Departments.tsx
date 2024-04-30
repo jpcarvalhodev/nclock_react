@@ -6,8 +6,8 @@ import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
 import { Department } from '../helpers/Types';
-import { CreateModal } from '../modals/CreateModal';
-import { UpdateModal } from '../modals/UpdateModal';
+import { CreateModalDeptGrp } from '../modals/CreateModalDeptGrp';
+import { UpdateModalDeptGrp } from '../modals/UpdateModalDeptGrp';
 import { DeleteModal } from '../modals/DeleteModal';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { fetchWithAuth } from '../components/FetchWithAuth';
@@ -221,21 +221,22 @@ export const Departments = () => {
                         <ExportButton allData={departments} selectedData={filteredItems} fields={departmentFields} />
                     </div>
                 </div>
-                <CreateModal
+                <CreateModalDeptGrp
                     title="Adicionar Departamento"
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddDepartment}
                     fields={departmentFields}
                     initialValues={{}}
+                    entityType='department'
                 />
                 {selectedDepartment && (
-                    <UpdateModal
+                    <UpdateModalDeptGrp
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateDepartment(selectedDepartment)}
                         entity={selectedDepartment}
-                        fields={departmentFields}
+                        entityType='department'
                         title="Atualizar Departamento"
                     />
                 )}

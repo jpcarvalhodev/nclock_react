@@ -1,7 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 import '../css/Login.css';
-import { useState } from 'react';
-import { BiShow, BiHide } from 'react-icons/bi';
+import { useEffect, useState } from 'react';
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -18,9 +17,12 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
 
   const handleLoginFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -80,7 +82,7 @@ export const Login = () => {
           <div className='username-password-labels'>
             <label className='username-label'>
               <p>Nome de Usuário:</p>
-              <input type="text" name="username" value={username} placeholder='Nome de Usuário ou E-Mail' onChange={(e) => setUsername(e.target.value)} />
+              <input type="text" name="username" value={username} placeholder='Nome de Usuário' onChange={(e) => setUsername(e.target.value)} />
             </label>
             <label className='password-label'>
               <p>Senha:</p>

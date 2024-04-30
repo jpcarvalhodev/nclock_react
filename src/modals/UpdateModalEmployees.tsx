@@ -16,7 +16,6 @@ interface Field {
   type: string;
   required?: boolean;
   optionsUrl?: string;
-  showCodeInsteadOfName?: boolean;
 }
 
 interface UpdateModalProps<T extends Entity> {
@@ -28,7 +27,7 @@ interface UpdateModalProps<T extends Entity> {
   title: string;
 }
 
-export const UpdateModal = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
   const [formData, setFormData] = useState<T>({ ...entity });
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);

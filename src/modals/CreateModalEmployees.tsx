@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
 import { fetchWithAuth } from '../components/FetchWithAuth';
-import { Tab, Row, Col, Nav, Form } from 'react-bootstrap';
+import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/modalAvatar.png';
 
 interface FieldConfig {
@@ -12,7 +12,6 @@ interface FieldConfig {
     type: string;
     required?: boolean;
     optionsUrl?: string;
-    showCodeInsteadOfName?: boolean;
 }
 
 interface Props<T> {
@@ -24,7 +23,7 @@ interface Props<T> {
     initialValues: Partial<T>;
 }
 
-export const CreateModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
+export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
@@ -125,50 +124,78 @@ export const CreateModal = <T extends Record<string, any>>({ title, open, onClos
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formEnrollNumber">
-                            <Form.Label>Número de Matrícula <span className="required-asterisk">*</span></Form.Label>
-                            <Form.Control
-                                type="number"
-                                className="custom-input-height"
-                                value={formData.enrollNumber || ''}
-                                onChange={handleChange}
-                                name="enrollNumber"
-                                required
-                            />
+                            <Form.Label>
+                                Número de Matrícula <span style={{ color: 'red' }}>*</span>
+                            </Form.Label>
+                            <OverlayTrigger
+                                placement="right"
+                                overlay={<Tooltip id="tooltip-enrollNumber">Número de matrícula é obrigatório.</Tooltip>}
+                            >
+                                <Form.Control
+                                    type="number"
+                                    className="custom-input-height"
+                                    value={formData.enrollNumber || ''}
+                                    onChange={handleChange}
+                                    name="enrollNumber"
+                                    required
+                                />
+                            </OverlayTrigger>
                         </Form.Group>
                         <Form.Group controlId="formName">
-                            <Form.Label>Nome <span className="required-asterisk">*</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                className="custom-input-height"
-                                value={formData.name || ''}
-                                onChange={handleChange}
-                                name="name"
-                                required
-                            />
+                            <Form.Label>
+                                Nome <span style={{ color: 'red' }}>*</span>
+                            </Form.Label>
+                            <OverlayTrigger
+                                placement="right"
+                                overlay={<Tooltip id="tooltip-name">Nome é obrigatório.</Tooltip>}
+                            >
+                                <Form.Control
+                                    type="text"
+                                    className="custom-input-height"
+                                    value={formData.name || ''}
+                                    onChange={handleChange}
+                                    name="name"
+                                    required
+                                />
+                            </OverlayTrigger>
                         </Form.Group>
                         <Form.Group controlId="formShortName">
-                            <Form.Label>Nome Resumido <span className="required-asterisk">*</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                className="custom-input-height"
-                                value={formData.shortName || ''}
-                                onChange={handleChange}
-                                name="shortName"
-                                required
-                            />
+                            <Form.Label>
+                                Nome Resumido <span style={{ color: 'red' }}>*</span>
+                            </Form.Label>
+                            <OverlayTrigger
+                                placement="right"
+                                overlay={<Tooltip id="tooltip-shortName">Nome resumido é obrigatório.</Tooltip>}
+                            >
+                                <Form.Control
+                                    type="text"
+                                    className="custom-input-height"
+                                    value={formData.shortName || ''}
+                                    onChange={handleChange}
+                                    name="shortName"
+                                    required
+                                />
+                            </OverlayTrigger>
                         </Form.Group>
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formNameAcronym">
-                            <Form.Label>Acrônimo do Nome <span className="required-asterisk">*</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                className="custom-input-height"
-                                value={formData.nameAcronym || ''}
-                                onChange={handleChange}
-                                name="nameAcronym"
-                                required
-                            />
+                            <Form.Label>
+                                Acrônimo do Nome <span style={{ color: 'red' }}>*</span>
+                            </Form.Label>
+                            <OverlayTrigger
+                                placement="right"
+                                overlay={<Tooltip id="tooltip-nameAcronym">Acrônimo do nome é obrigatório.</Tooltip>}
+                            >
+                                <Form.Control
+                                    type="text"
+                                    className="custom-input-height"
+                                    value={formData.nameAcronym || ''}
+                                    onChange={handleChange}
+                                    name="nameAcronym"
+                                    required
+                                />
+                            </OverlayTrigger>
                         </Form.Group>
                         <Form.Group controlId="formComments">
                             <Form.Label>Comentários</Form.Label>

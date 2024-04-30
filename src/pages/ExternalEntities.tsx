@@ -6,8 +6,6 @@ import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ExternalEntity } from "../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
-import { CreateModal } from "../modals/CreateModal";
-import { UpdateModal } from "../modals/UpdateModal";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { fetchWithAuth } from "../components/FetchWithAuth";
@@ -15,6 +13,8 @@ import { externalEntityFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponent } from "../components/ExpandedComponent";
+import { CreateModalGeneric } from "../modals/CreateModalGeneric";
+import { UpdateModalGeneric } from "../modals/UpdateModalGeneric";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -228,7 +228,7 @@ export const ExternalEntities = () => {
                         <ExportButton allData={externalEntities} selectedData={filteredItems} fields={externalEntityFields} />
                     </div>
                 </div>
-                <CreateModal
+                <CreateModalGeneric
                     title="Adicionar Entidade Externa"
                     open={showAddModal}
                     onClose={handleCloseAddModal}
@@ -237,7 +237,7 @@ export const ExternalEntities = () => {
                     initialValues={{}}
                 />
                 {selectedExternalEntity && (
-                    <UpdateModal
+                    <UpdateModalGeneric
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateExternalEntity(selectedExternalEntity)}

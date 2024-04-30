@@ -6,7 +6,7 @@ import { TreeViewData } from "../components/TreeView";
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import Split from 'react-split';
 import '../css/PagesStyles.css';
-import { CreateModal } from '../modals/CreateModal';
+import { CreateModalEmployees } from '../modals/CreateModalEmployees';
 import { employeeFields } from '../helpers/Fields';
 import { Employee } from '../helpers/Types';
 import { fetchWithAuth } from '../components/FetchWithAuth';
@@ -151,7 +151,7 @@ export const Persons = () => {
             </div>
             <Footer />
             {showAddModal && (
-                <CreateModal
+                <CreateModalEmployees
                     title="Adicionar Pessoa"
                     open={showAddModal}
                     onClose={closeAddModal}

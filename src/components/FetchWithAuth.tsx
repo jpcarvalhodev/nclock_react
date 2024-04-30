@@ -38,6 +38,9 @@ const handleHTTPError = async (response: Response) => {
             toast.error('Você não tem permissão para acessar esta página');
             break;
         case 404:
+            window.location.href = '/notfound';
+            toast.error('Página não encontrada');
+            break;
         case 502:
         case 503:
         case 504:

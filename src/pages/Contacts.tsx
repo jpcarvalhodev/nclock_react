@@ -6,8 +6,8 @@ import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
 import { Employee } from '../helpers/Types';
-import { CreateModal } from '../modals/CreateModal';
-import { UpdateModal } from '../modals/UpdateModal';
+import { CreateModalEmployees } from '../modals/CreateModalEmployees';
+import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { DeleteModal } from '../modals/DeleteModal';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { fetchWithAuth } from '../components/FetchWithAuth';
@@ -304,7 +304,7 @@ export const Contacts = () => {
                 </Split>
             </div>
             <Footer />
-            <CreateModal
+            <CreateModalEmployees
                 title="Adicionar Contacto"
                 open={showAddModal}
                 onClose={handleCloseAddModal}
@@ -313,7 +313,7 @@ export const Contacts = () => {
                 initialValues={{}}
             />
             {selectedEmployee && (
-                <UpdateModal
+                <UpdateModalEmployees
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
                     onUpdate={handleUpdateEmployee}
