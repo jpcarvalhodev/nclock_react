@@ -179,6 +179,14 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         }));
     };
 
+    const handleSaveClick = () => {
+        if (!isFormValid) {
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            return;
+        }
+        handleSave();
+    };
+
     const handleSave = () => {
         const payload = fields.reduce<Record<string, any>>((acc, field) => {
             if (formData[field.key] !== undefined) {
@@ -186,18 +194,18 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             }
             return acc;
         }, {});
-    
+
         onSave(payload as T);
         onClose();
-    };    
+    };
 
     const deptFieldRequirements = {
-        code: "O código é obrigatório",
-        name: "O nome é obrigatório",
+        code: "Campo obrigatório",
+        name: "Campo obrigatório",
     }
 
     const groupFieldRequirements = {
-        name: "O nome é obrigatório",
+        name: "Campo obrigatório",
     }
 
     return (
@@ -228,6 +236,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                         name="code"
                                                         value={formData['code'] || ''}
                                                         onChange={handleChange}
+                                                        className="custom-input-height"
                                                         required
                                                     />
                                                 </OverlayTrigger>
@@ -251,6 +260,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                 name="name"
                                                 value={formData['name'] || ''}
                                                 onChange={handleChange}
+                                                className="custom-input-height"
                                                 required
                                             />
                                         </OverlayTrigger>
@@ -266,6 +276,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                             name="description"
                                             value={formData['description'] || ''}
                                             onChange={handleChange}
+                                            className="custom-input-height"
                                         />
                                     </Form.Group>
                                 </Col>
@@ -277,6 +288,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                             name="parentId"
                                             value={formData['parentId'] || ''}
                                             onChange={handleChange}
+                                            className="custom-input-height"
                                         />
                                     </Form.Group>
                                 </Col>
@@ -286,13 +298,15 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                 <Table striped bordered hover size="sm">
                                     <thead>
                                         <tr>
-                                            <th>Nome</th>
+                                            <th>{entityType === 'department' ? 'Código' : 'Nome'}</th>
+                                            <th>{entityType === 'department' ? 'Nome' : 'Descrição'}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {(entityType === 'department' ? departments : groups).map(item => (
                                             <tr key={item[`${entityType}ID`]} onClick={() => entityType === 'department' ? handleDepartmentClick(item.departmentID) : handleGroupClick(item.groupID)}>
-                                                <td>{item.name}</td>
+                                                <td>{entityType === 'department' ? item.code : item.name}</td>
+                                                <td>{entityType === 'department' ? item.name : item.description}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -305,12 +319,14 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                 <Table striped bordered hover size="sm">
                                     <thead>
                                         <tr>
+                                            <th>Número de Matrícula</th>
                                             <th>Nome</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {employees.map(emp => (
                                             <tr key={emp.employeeID} onDoubleClick={() => handleEmployeeClick(emp)}>
+                                                <td>{emp.enrollNumber}</td>
                                                 <td>{emp.name}</td>
                                             </tr>
                                         ))}
@@ -324,7 +340,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="primary" onClick={handleSave} disabled={!isFormValid}>Guardar</Button>
+                <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
             {showEmployeeModal && (
                 <CreateModalEmployees

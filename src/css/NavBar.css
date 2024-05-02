@@ -1,4 +1,5 @@
-.nav-container {
+.nav-container,
+.nav {
     display: flex;
     align-items: center;
     background-color: #0050a0;
@@ -13,27 +14,9 @@
     cursor: pointer;
 }
 
-.nav {
-    display: flex;
-    align-items: center;
-    border-color: #0050a0;
-}
-
-.pessoas-tab {
-    margin-right: 5px;
-    color: white;
-}
-
-.dispositivos-tab {
-    margin-right: 5px;
-    color: white;
-}
-
-.configuracao-tab {
-    margin-right: 5px;
-    color: white;
-}
-
+.pessoas-tab,
+.dispositivos-tab,
+.configuracao-tab,
 .ajuda-tab {
     margin-right: 5px;
     color: white;
@@ -52,14 +35,7 @@
     border-right: 1px solid #ccc;
 }
 
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-left: 5px;
-    height: 100%;
-}
-
+.grid-container,
 .grid-container-organizacao {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -94,17 +70,20 @@
     font-size: 14px;
 }
 
-.ribbon-button-pessoas {
+.ribbon-button-pessoas,
+.ribbon-button-entidades {
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
 }
 
-.icon-text-pessoas {
+.icon-text-pessoas,
+.dropdown-content {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
     justify-content: center;
 }
 
@@ -120,6 +99,7 @@
     justify-content: start;
 }
 
+.ribbon-button-pessoas,
 .ribbon-button-entidades {
     display: flex;
     flex-direction: column;
@@ -150,6 +130,7 @@
     margin-bottom: 5px;
 }
 
+.ribbon-button-pessoas .icon img,
 .ribbon-button-entidades .icon img {
     width: 40px;
     height: 40px;
@@ -162,13 +143,6 @@
     font-size: 12px;
 }
 
-.ribbon-button-entidades {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
 .icon-text-entidades {
     display: flex;
     flex-direction: column;
@@ -178,7 +152,8 @@
     margin-bottom: 25px;
 }
 
-.ribbon-button-entidades .icon {
+.ribbon-button-entidades .icon,
+.ribbon-button-informacoes .icon {
     margin-bottom: 2px;
 }
 
@@ -188,11 +163,6 @@
     display: flex;
     align-items: center;
     justify-content: start;
-}
-
-.ribbon-button-pessoas {
-    display: flex;
-    flex-direction: column;
 }
 
 .ribbon-button-funcext {
@@ -217,7 +187,9 @@
 }
 
 .ribbon-button-pessoas .icon,
-.ribbon-button-pessoas .text {
+.ribbon-button-pessoas .text,
+.ribbon-button-informacoes .icon,
+.ribbon-button-informacoes .text {
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -225,13 +197,9 @@
     margin-right: 5px;
 }
 
-.ribbon-button-pessoas .icon {
+.ribbon-button-pessoas .icon,
+.ribbon-button-informacoes .icon {
     margin-bottom: 5px;
-}
-
-.ribbon-button-pessoas .icon img {
-    width: 40px;
-    height: 40px;
 }
 
 .ribbon-button,
@@ -250,24 +218,8 @@
     margin-bottom: 25px;
 }
 
-.ribbon-button-informacoes .icon {
-    margin-bottom: 2px;
-}
-
-.ribbon-button-informacoes .icon,
-.ribbon-button-informacoes .text {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    font-size: 14px;
-    margin-right: 5px;
-}
-
-.ribbon-button-informacoes .icon {
-    margin-bottom: 5px;
-}
-
-.ribbon-button-informacoes .icon img {
+.ribbon-button-informacoes .icon img,
+.dropdown-content img {
     width: 50px;
     height: 50px;
 }
@@ -291,26 +243,13 @@
     height: 30px;
 }
 
-.dropdown-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.dropdown-content img {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 10px;
-}
-
 .ribbon-icon {
     cursor: pointer;
     position: absolute;
-    right: 10px;
+    right: 5px;
     top: 45px;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
 }
 
 .nav-item.active .nav-link,
@@ -321,7 +260,7 @@
     cursor: pointer;
 }
 
-@media (min-width: 300px) and (max-width: 500px) {
+@media (max-width: 500px) {
 
     .tab-content {
         max-height: calc(100vh - 200px);
@@ -355,21 +294,19 @@
         width: 100%;
     }
 
-    .ribbon-button-pessoas .icon img {
+    .ribbon-button-pessoas .icon img,
+    .dropdown-content img {
         width: 40px;
         height: 40px;
-    }
-
-    .ribbon-button,
-    .ribbon-icon-button {
-        font-size: 10px;
     }
 
     .ribbon-button .text,
     .ribbon-button-ent .text,
     .ribbon-button-entidades .text,
     .ribbon-button-funcext .text,
-    .ribbon-button-informacoes .text {
+    .ribbon-button-informacoes .text,
+    .ribbon-button,
+    .ribbon-icon-button {
         font-size: 10px;
     }
 
@@ -377,14 +314,14 @@
         font-size: 14px;
     }
 
-    .dropdown-content img {
-        width: 30px;
-        height: 30px;
+    .ribbon-icon {
+        right: 0px;
+        top: 120px;
     }
-    
+
 }
 
-@media (min-width: 501px) and (max-width: 900px){
+@media (min-width: 501px) and (max-width: 900px) {
 
     .logo {
         font-size: 20px;
@@ -400,7 +337,8 @@
         width: 100%;
     }
 
-    .ribbon-button-pessoas .icon img {
+    .ribbon-button-pessoas .icon img,
+    .dropdown-content img {
         width: 40px;
         height: 40px;
     }
@@ -414,16 +352,8 @@
     .ribbon-button-ent .text,
     .ribbon-button-entidades .text,
     .ribbon-button-funcext .text,
-    .ribbon-button-informacoes .text {
-        font-size: 14px;
-    }
-
+    .ribbon-button-informacoes .text,
     .user-info {
         font-size: 14px;
-    }
-
-    .dropdown-content img {
-        width: 30px;
-        height: 30px;
     }
 }

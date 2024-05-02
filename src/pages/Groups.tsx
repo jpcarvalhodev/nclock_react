@@ -13,8 +13,6 @@ import { groupFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponent } from "../components/ExpandedComponent";
-import { CreateModalGeneric } from "../modals/CreateModalGeneric";
-import { UpdateModalGeneric } from "../modals/UpdateModalGeneric";
 import { CreateModalDeptGrp } from "../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../modals/UpdateModalDeptGrp";
 

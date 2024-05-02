@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { fetchWithAuth } from '../components/FetchWithAuth';
-import { Row, Col, Tab, Nav, Form } from 'react-bootstrap';
+import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/modalAvatar.png';
+import { toast } from 'react-toastify';
 
 export interface Entity {
   id: string;
@@ -31,7 +32,17 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
   const [formData, setFormData] = useState<T>({ ...entity });
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
+  const [isFormValid, setIsFormValid] = useState(false);
   const fileInputRef = React.createRef<HTMLInputElement>();
+
+  useEffect(() => {
+    const isValid = fields.every(field => {
+      const fieldValue = formData[field.key];
+      const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
+      return !field.required || (field.required && valueAsString !== '');
+    });
+    setIsFormValid(isValid);
+  }, [formData, fields]);
 
   useEffect(() => {
     const fetchDropdownOptions = async (field: Field) => {
@@ -71,6 +82,14 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
       ...prevState,
       [name]: value
     }));
+  };
+
+  const handleSaveClick = () => {
+    if (!isFormValid) {
+      toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+      return;
+    }
+    handleSubmit();
   };
 
   const handleSubmit = async () => {
@@ -113,50 +132,78 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
           </Col>
           <Col md={3}>
             <Form.Group controlId="formEnrollNumber">
-              <Form.Label>Número de Matrícula</Form.Label>
-              <Form.Control
-                type="number"
-                className="custom-input-height"
-                value={formData.enrollNumber || ''}
-                onChange={handleChange}
-                name="enrollNumber"
-                required
-              />
+              <Form.Label>
+                Número de Matrícula <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
+              <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+              >
+                <Form.Control
+                  type="number"
+                  className="custom-input-height"
+                  value={formData.enrollNumber || ''}
+                  onChange={handleChange}
+                  name="enrollNumber"
+                  required
+                />
+              </OverlayTrigger>
             </Form.Group>
             <Form.Group controlId="formName">
-              <Form.Label>Nome</Form.Label>
-              <Form.Control
-                type="text"
-                className="custom-input-height"
-                value={formData.name || ''}
-                onChange={handleChange}
-                name="name"
-                required
-              />
+              <Form.Label>
+                Nome <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
+              <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
+              >
+                <Form.Control
+                  type="text"
+                  className="custom-input-height"
+                  value={formData.name || ''}
+                  onChange={handleChange}
+                  name="name"
+                  required
+                />
+              </OverlayTrigger>
             </Form.Group>
             <Form.Group controlId="formShortName">
-              <Form.Label>Nome Resumido</Form.Label>
-              <Form.Control
-                type="text"
-                className="custom-input-height"
-                value={formData.shortName || ''}
-                onChange={handleChange}
-                name="shortName"
-                required
-              />
+              <Form.Label>
+                Nome Resumido <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
+              <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+              >
+                <Form.Control
+                  type="text"
+                  className="custom-input-height"
+                  value={formData.shortName || ''}
+                  onChange={handleChange}
+                  name="shortName"
+                  required
+                />
+              </OverlayTrigger>
             </Form.Group>
           </Col>
           <Col md={3}>
             <Form.Group controlId="formNameAcronym">
-              <Form.Label>Acrônimo do Nome</Form.Label>
-              <Form.Control
-                type="text"
-                className="custom-input-height"
-                value={formData.nameAcronym || ''}
-                onChange={handleChange}
-                name="nameAcronym"
-                required
-              />
+              <Form.Label>
+                Acrônimo do Nome <span style={{ color: 'red' }}>*</span>
+              </Form.Label>
+              <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip id="tooltip-nameAcronym">Campo obrigatório</Tooltip>}
+              >
+                <Form.Control
+                  type="text"
+                  className="custom-input-height"
+                  value={formData.nameAcronym || ''}
+                  onChange={handleChange}
+                  name="nameAcronym"
+                  required
+                />
+              </OverlayTrigger>
             </Form.Group>
             <Form.Group controlId="formComments">
               <Form.Label>Comentários</Form.Label>
@@ -224,7 +271,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
           </Col>
         </Row>
         <Tab.Container defaultActiveKey="dadosPessoais">
-          <Nav variant="tabs" className="mt-3">
+          <Nav variant="tabs" className="nav-modal">
             <Nav.Item>
               <Nav.Link eventKey="dadosPessoais">Dados Pessoais</Nav.Link>
             </Nav.Item>
@@ -317,7 +364,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>Fechar</Button>
-        <Button variant="primary" onClick={handleSubmit}>Guardar</Button>
+        <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
       </Modal.Footer>
     </Modal>
   );

@@ -13,8 +13,8 @@ import { categoryFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponent } from "../components/ExpandedComponent";
-import { UpdateModalGeneric } from "../modals/UpdateModalGeneric";
-import { CreateModalGeneric } from "../modals/CreateModalGeneric";
+import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
+import { CreateModalCatProf } from "../modals/CreateModalCatProf";
 
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -230,7 +230,7 @@ export const Categories = () => {
                         <ExportButton allData={categories} selectedData={filteredItems} fields={categoryFields} />
                     </div>
                 </div>
-                <CreateModalGeneric
+                <CreateModalCatProf
                     title="Adicionar Categoria"
                     open={showAddModal}
                     onClose={handleCloseAddModal}
@@ -239,7 +239,7 @@ export const Categories = () => {
                     initialValues={{}}
                 />
                 {selectedCategory && (
-                    <UpdateModalGeneric
+                    <UpdateModalCatProf
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateCategory(selectedCategory)}

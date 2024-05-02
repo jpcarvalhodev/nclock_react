@@ -19,8 +19,8 @@ import interventionAreas from '../assets/img/interventionAreas.png';
 import businessAreas from '../assets/img/businessAreas.png';
 import internalContacts from '../assets/img/internalContacts.png';
 import Dropdown from 'react-bootstrap/Dropdown';
-import lock from '../assets/img/lock.png';
-import unlock from '../assets/img/unlock.png';
+import pin from '../assets/img/pin.png';
+import unpin from '../assets/img/unpin.png';
 
 interface MyTokenPayload extends JwtPayload {
 	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
@@ -354,7 +354,7 @@ export const NavBar = () => {
 					</div>
 					<div className="ribbon-toggle">
 						<img
-							src={isRibbonPinned ? unlock : lock}
+							src={isRibbonPinned ? unpin : pin}
 							alt="Lock/Unlock Ribbon"
 							onClick={togglePinRibbon}
 							className='ribbon-icon'

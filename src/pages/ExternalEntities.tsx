@@ -13,8 +13,6 @@ import { externalEntityFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponent } from "../components/ExpandedComponent";
-import { CreateModalGeneric } from "../modals/CreateModalGeneric";
-import { UpdateModalGeneric } from "../modals/UpdateModalGeneric";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -228,15 +226,15 @@ export const ExternalEntities = () => {
                         <ExportButton allData={externalEntities} selectedData={filteredItems} fields={externalEntityFields} />
                     </div>
                 </div>
-                <CreateModalGeneric
+                {/* <CreateModalGeneric
                     title="Adicionar Entidade Externa"
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddExternalEntity}
                     fields={externalEntityFields}
                     initialValues={{}}
-                />
-                {selectedExternalEntity && (
+                /> */}
+                {/* {selectedExternalEntity && (
                     <UpdateModalGeneric
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
@@ -245,7 +243,7 @@ export const ExternalEntities = () => {
                         fields={externalEntityFields}
                         title="Atualizar Entidade Externa"
                     />
-                )}
+                )} */}
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}

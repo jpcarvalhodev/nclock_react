@@ -87,7 +87,7 @@
     background: #0050a0 !important;
 }
 
-@media (min-width: 300px) and (max-width: 500px) {
+@media (max-width: 500px) {
 
     .form-login {
         width: 350px;

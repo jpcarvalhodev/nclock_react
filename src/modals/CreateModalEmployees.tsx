@@ -5,6 +5,7 @@ import '../css/PagesStyles.css';
 import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/modalAvatar.png';
+import { toast } from 'react-toastify';
 
 interface FieldConfig {
     label: string;
@@ -85,6 +86,14 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }));
     };
 
+    const handleSaveClick = () => {
+        if (!isFormValid) {
+            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            return;
+        }
+        handleSave();
+    };
+
     const handleSave = () => {
         onSave(formData as T);
     };
@@ -129,7 +138,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-enrollNumber">Número de matrícula é obrigatório.</Tooltip>}
+                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     type="number"
@@ -147,7 +156,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-name">Nome é obrigatório.</Tooltip>}
+                                overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     type="text"
@@ -165,7 +174,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-shortName">Nome resumido é obrigatório.</Tooltip>}
+                                overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     type="text"
@@ -185,7 +194,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-nameAcronym">Acrônimo do nome é obrigatório.</Tooltip>}
+                                overlay={<Tooltip id="tooltip-nameAcronym">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     type="text"
@@ -263,7 +272,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                     </Col>
                 </Row>
                 <Tab.Container defaultActiveKey="dadosPessoais">
-                    <Nav variant="tabs" className="mt-3">
+                    <Nav variant="tabs" className="nav-modal">
                         <Nav.Item>
                             <Nav.Link eventKey="dadosPessoais">Dados Pessoais</Nav.Link>
                         </Nav.Item>
@@ -356,7 +365,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="primary" onClick={handleSave} disabled={!isFormValid}>Guardar</Button>
+                <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

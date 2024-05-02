@@ -13,8 +13,8 @@ import { zoneFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponent } from "../components/ExpandedComponent";
-import { UpdateModalGeneric } from "../modals/UpdateModalGeneric";
-import { CreateModalGeneric } from "../modals/CreateModalGeneric";
+import { CreateModalZones } from "../modals/CreateModalZones";
+import { UpdateModalZones } from "../modals/UpdateModalZones";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -230,7 +230,7 @@ export const Zones = () => {
                         <ExportButton allData={zones} selectedData={filteredItems} fields={zoneFields} />
                     </div>
                 </div>
-                <CreateModalGeneric
+                <CreateModalZones
                     title="Adicionar Zona"
                     open={showAddModal}
                     onClose={handleCloseAddModal}
@@ -239,7 +239,7 @@ export const Zones = () => {
                     initialValues={{}}
                 />
                 {selectedZone && (
-                    <UpdateModalGeneric
+                    <UpdateModalZones
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateZone(selectedZone)}

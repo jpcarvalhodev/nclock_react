@@ -85,6 +85,7 @@ export const zoneFields = [
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'description', label: 'Descrição', type: 'string' },
     { key: 'acronym', label: 'Acrônimo', type: 'string', required: true },
+    { key: 'photo', label: 'Foto', type: 'string' },
     { key: 'address', label: 'Morada', type: 'string' },
     { key: 'ZIPCode', label: 'Código Postal', type: 'string' },
     { key: 'locality', label: 'Localidade', type: 'string' },

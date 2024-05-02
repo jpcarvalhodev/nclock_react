@@ -111,7 +111,7 @@ export const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+            <div className="dashboard-content">
                 <div className="chart-container">
                     <div className="employee-pie-chart" style={{ flex: 1 }}>
                         <h2 className="employee-pie-chart-text">Total de Funcionários: {totalEmployees}</h2>

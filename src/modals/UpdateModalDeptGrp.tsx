@@ -33,9 +33,19 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [showUpdateEmployeeModal, setShowUpdateEmployeeModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [groups, setGroups] = useState<Group[]>([]);
-
+    const [isFormValid, setIsFormValid] = useState(false);
+    
     const fields = entityType === 'department' ? departmentFields : groupFields;
-
+    
+    useEffect(() => {
+        const isValid = fields.every(field => {
+            const fieldValue = formData[field.key];
+            const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
+            return !field.required || (field.required && valueAsString !== '');
+        });
+        setIsFormValid(isValid);
+    }, [formData, fields]);
+       
     useEffect(() => {
         setFormData(entity);
     }, [entity, open]);
@@ -165,18 +175,26 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }));
     };
 
+    const handleSaveClick = () => {
+        if (!isFormValid) {
+            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            return;
+        }
+        handleSubmit();
+    };
+
     const handleSubmit = async () => {
         await onUpdate(formData);
         onClose();
     };
 
     const deptFieldRequirements = {
-        code: "O código é obrigatório",
-        name: "O nome é obrigatório",
+        code: "Campo obrigatório",
+        name: "Campo obrigatório",
     }
 
     const groupFieldRequirements = {
-        name: "O nome é obrigatório",
+        name: "Campo obrigatório",
     }
 
     return (
@@ -207,6 +225,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                         name="code"
                                                         value={formData['code'] || ''}
                                                         onChange={handleChange}
+                                                        className="custom-input-height"
                                                         required
                                                     />
                                                 </OverlayTrigger>
@@ -230,6 +249,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                 name="name"
                                                 value={formData['name'] || ''}
                                                 onChange={handleChange}
+                                                className="custom-input-height"
                                                 required
                                             />
                                         </OverlayTrigger>
@@ -245,6 +265,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                             name="description"
                                             value={formData['description'] || ''}
                                             onChange={handleChange}
+                                            className="custom-input-height"
                                         />
                                     </Form.Group>
                                 </Col>
@@ -256,6 +277,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                             name="parentId"
                                             value={formData['parentId'] || ''}
                                             onChange={handleChange}
+                                            className="custom-input-height"
                                         />
                                     </Form.Group>
                                 </Col>
@@ -265,13 +287,15 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                 <Table striped bordered hover size="sm">
                                     <thead>
                                         <tr>
-                                            <th>Nome</th>
+                                            <th>{entityType === 'department' ? 'Código' : 'Nome'}</th>
+                                            <th>{entityType === 'department' ? 'Nome' : 'Descrição'}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {(entityType === 'department' ? departments : groups).map(item => (
                                             <tr key={item[`${entityType}ID`]} onClick={() => entityType === 'department' ? handleDepartmentClick(item.departmentID) : handleGroupClick(item.groupID)}>
-                                                <td>{item.name}</td>
+                                                <td>{entityType === 'department' ? item.code : item.name}</td>
+                                                <td>{entityType === 'department' ? item.name : item.description}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -284,12 +308,14 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                 <Table striped bordered hover size="sm">
                                     <thead>
                                         <tr>
+                                            <th>Número de Matrícula</th>
                                             <th>Nome</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {employees.map(emp => (
                                             <tr key={emp.employeeID} onDoubleClick={() => handleEmployeeClick(emp)}>
+                                                <td>{emp.enrollNumber}</td>
                                                 <td>{emp.name}</td>
                                             </tr>
                                         ))}
@@ -303,7 +329,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="primary" onClick={handleSubmit}>Guardar</Button>
+                <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
             {showEmployeeModal && (
                 <CreateModalEmployees
