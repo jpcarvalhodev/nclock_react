@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
@@ -6,6 +6,7 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/modalAvatar.png';
 import { toast } from 'react-toastify';
+import { Employee } from '../helpers/Types';
 
 interface FieldConfig {
     label: string;
@@ -42,9 +43,29 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         setIsFormValid(isValid);
     };
 
+    const fetchEmployeesAndSetNextEnrollNumber = async () => {
+        const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
+        if (response.ok) {
+            const employees: Employee[] = await response.json();
+            const maxEnrollNumber = employees.reduce((max: number, employee: Employee) => Math.max(max, (employee.enrollNumber)), 0);
+            setFormData(prevState => ({
+                ...prevState,
+                enrollNumber: maxEnrollNumber + 1
+            }));
+        } else {
+            toast.error('Erro ao buscar o número de matrícula dos funcionários.');
+        }
+    };
+
     useEffect(() => {
         validateForm();
     }, [formData, fields]);
+
+    useEffect(() => {
+        if (open) {
+            fetchEmployeesAndSetNextEnrollNumber();
+        }
+    }, [open]);
 
     useEffect(() => {
         const fetchDropdownOptions = async (field: FieldConfig) => {
@@ -78,12 +99,26 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
-    const handleChange = (e: React.ChangeEvent<any>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
             ...prevState,
             [name]: value
         }));
+
+        if (name === 'name') {
+            const names = value.split(' ');
+            let shortName = '';
+            if (names.length > 1) {
+                shortName = `${names[0]} ${names[names.length - 1]}`;
+            } else if (names.length === 1) {
+                shortName = names[0];
+            }
+            setFormData(prevState => ({
+                ...prevState,
+                shortName: shortName
+            }));
+        }
     };
 
     const handleSaveClick = () => {
@@ -99,12 +134,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     };
 
     const typeOptions = [
-        { value: 'funcionário', label: 'Funcionário' },
-        { value: 'funcionário_externo', label: 'Funcionário Externo' },
-        { value: 'utente', label: 'Utente' },
-        { value: 'visitante', label: 'Visitante' },
-        { value: 'contacto', label: 'Contacto' },
-        { value: 'provisório', label: 'Provisório' }
+        { value: 'Funcionário', label: 'Funcionário' },
+        { value: 'Funcionário Externo', label: 'Funcionário Externo' },
+        { value: 'Utente', label: 'Utente' },
+        { value: 'Visitante', label: 'Visitante' },
+        { value: 'Contacto', label: 'Contacto' },
+        { value: 'Provisório', label: 'Provisório' }
     ];
 
     return (

@@ -13,6 +13,8 @@ import { externalEntityFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponent } from "../components/ExpandedComponent";
+import { CreateModalExtEnt } from "../modals/CreateModalExtEnt";
+import { UpdateModalExtEnt } from "../modals/UpdateModalExtEnt";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -195,8 +197,9 @@ export const ExternalEntities = () => {
     const actionColumn: TableColumn<ExternalEntity> = {
         name: 'Ações',
         cell: (row: ExternalEntity) => (
-            <div>
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityID)}>
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditExternalEntity(row)}/>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
@@ -226,16 +229,16 @@ export const ExternalEntities = () => {
                         <ExportButton allData={externalEntities} selectedData={filteredItems} fields={externalEntityFields} />
                     </div>
                 </div>
-                {/* <CreateModalGeneric
+                <CreateModalExtEnt
                     title="Adicionar Entidade Externa"
                     open={showAddModal}
                     onClose={handleCloseAddModal}
                     onSave={handleAddExternalEntity}
                     fields={externalEntityFields}
                     initialValues={{}}
-                /> */}
-                {/* {selectedExternalEntity && (
-                    <UpdateModalGeneric
+                />
+                {selectedExternalEntity && (
+                    <UpdateModalExtEnt
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={() => handleUpdateExternalEntity(selectedExternalEntity)}
@@ -243,7 +246,7 @@ export const ExternalEntities = () => {
                         fields={externalEntityFields}
                         title="Atualizar Entidade Externa"
                     />
-                )} */}
+                )}
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}

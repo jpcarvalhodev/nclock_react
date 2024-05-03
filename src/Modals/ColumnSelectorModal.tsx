@@ -35,7 +35,7 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
     };
 
     return (
-        <Modal show={true} onHide={onClose} centered size='sm'>
+        <Modal show={true} onHide={onClose} centered size='lg'>
             <Modal.Header closeButton>
                 <Modal.Title>Selecionar Colunas</Modal.Title>
             </Modal.Header>
@@ -45,15 +45,17 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
                     checked={selectAll}
                     onChange={handleSelectAllToggle}
                 />
-                {columns.map(({ label, key }) => (
-                    <FormCheck
-                        key={key}
-                        type="checkbox"
-                        label={label}
-                        checked={selectedColumns.includes(key)}
-                        onChange={() => onColumnToggle(key)}
-                    />
-                ))}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                    {columns.map(({ label, key }) => (
+                        <FormCheck
+                            key={key}
+                            type="checkbox"
+                            label={label}
+                            checked={selectedColumns.includes(key)}
+                            onChange={() => onColumnToggle(key)}
+                        />
+                    ))}
+                </div>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onResetColumns}>Resetar</Button>

@@ -199,8 +199,9 @@ export const Professions = () => {
     const actionColumn: TableColumn<Profession> = {
         name: 'Ações',
         cell: (row: Profession) => (
-            <div>
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)}>
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditProfession(row)}/>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
@@ -237,6 +238,7 @@ export const Professions = () => {
                     onSave={handleAddProfession}
                     fields={professionFields}
                     initialValues={{}}
+                    entityType="profissões"
                 />
                 {selectedProfession && (
                     <UpdateModalCatProf

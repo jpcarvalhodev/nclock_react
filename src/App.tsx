@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { ForgotPassword } from './pages/ForgotPassword';
@@ -24,32 +24,50 @@ import { Visitors } from './pages/Visitors';
 import { Contacts } from './pages/Contacts';
 import { Temporaries } from './pages/Temporaries';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import './App.css';
+
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <TransitionGroup>
+      <CSSTransition
+        key={location.key}
+        timeout={500}
+        classNames="fade"
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
+          <Route path="/persons" element={<PageProtection><Persons /></PageProtection>} />
+          <Route path="/employees" element={<PageProtection><Employees /></PageProtection>} />
+          <Route path="/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
+          <Route path="/user" element={<PageProtection><User /></PageProtection>} />
+          <Route path="/visitors" element={<PageProtection><Visitors /></PageProtection>} />
+          <Route path="/contacts" element={<PageProtection><Contacts /></PageProtection>} />
+          <Route path="/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
+          <Route path="/departments" element={<PageProtection><Departments /></PageProtection>} />
+          <Route path="/categories" element={<PageProtection><Categories /></PageProtection>} />
+          <Route path="/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />
+          <Route path="/groups" element={<PageProtection><Groups /></PageProtection>} />
+          <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
+          <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </CSSTransition>
+    </TransitionGroup>
+  );
+}
 
 function App() {
   return (
     <Router>
       <ToastContainer />
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path='/reset-password' element={<ResetPassword />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
-        <Route path="/persons" element={<PageProtection><Persons /></PageProtection>} />
-        <Route path="/employees" element={<PageProtection><Employees /></PageProtection>} />
-        <Route path="/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
-        <Route path="/user" element={<PageProtection><User /></PageProtection>} />
-        <Route path="/visitors" element={<PageProtection><Visitors /></PageProtection>} />
-        <Route path="/contacts" element={<PageProtection><Contacts /></PageProtection>} />
-        <Route path="/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
-        <Route path="/departments" element={<PageProtection><Departments /></PageProtection>} />
-        <Route path="/categories" element={<PageProtection><Categories /></PageProtection>} />
-        <Route path="/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />
-        <Route path="/groups" element={<PageProtection><Groups /></PageProtection>} />
-        <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
-        <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <AnimatedRoutes />
     </Router>
   );
 }

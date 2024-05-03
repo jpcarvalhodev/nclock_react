@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
-import '../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
@@ -15,6 +14,9 @@ import { departmentFields } from '../helpers/Fields';
 import { ExportButton } from '../components/ExportButton';
 import { toast } from 'react-toastify';
 import { ExpandedComponent } from '../components/ExpandedComponent';
+import Split from 'react-split';
+import { TreeViewData } from '../components/TreeView';
+import '../css/PagesStyles.css';
 
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -152,6 +154,15 @@ export const Departments = () => {
         }
     };
 
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        if (selectedIds.length === 0) {
+            setDepartments(departments);
+        } else {
+            const filtered = departments.filter(departments => selectedIds.includes(departments.employeeID));
+            setDepartments(filtered);
+        }
+    };
+
     const resetColumns = () => {
         setSelectedColumns(['code', 'name']);
     };
@@ -190,8 +201,9 @@ export const Departments = () => {
     const actionColumn: TableColumn<Department> = {
         name: 'Ações',
         cell: (row: Department) => (
-            <div>
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentID)}>
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDepartment(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

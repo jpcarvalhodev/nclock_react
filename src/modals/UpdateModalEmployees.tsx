@@ -98,12 +98,12 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
   };
 
   const typeOptions = [
-    { value: 'funcionário', label: 'Funcionário' },
-    { value: 'funcionário_externo', label: 'Funcionário Externo' },
-    { value: 'utente', label: 'Utente' },
-    { value: 'visitante', label: 'Visitante' },
-    { value: 'contacto', label: 'Contacto' },
-    { value: 'provisório', label: 'Provisório' }
+    { value: 'Funcionário', label: 'Funcionário' },
+    { value: 'Funcionário Externo', label: 'Funcionário Externo' },
+    { value: 'Utente', label: 'Utente' },
+    { value: 'Visitante', label: 'Visitante' },
+    { value: 'Contacto', label: 'Contacto' },
+    { value: 'Provisório', label: 'Provisório' }
   ];
 
   return (

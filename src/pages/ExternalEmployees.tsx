@@ -40,7 +40,7 @@ export const ExternalEmployees = () => {
                 return;
             }
             const data = await response.json();
-            const filteredData = data.filter((emp: Employee) => emp.type === 'funcionário_externo');
+            const filteredData = data.filter((emp: Employee) => emp.type === 'Funcionário Externo');
             setEmployees(filteredData);
             setFilteredEmployees(filteredData);
         } catch (error) {
@@ -249,8 +249,9 @@ export const ExternalEmployees = () => {
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (
-            <div>
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeID)}>
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)}/>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

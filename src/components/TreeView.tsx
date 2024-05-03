@@ -60,20 +60,26 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
       try {
         const deptResponse = await fetchWithAuth('https://localhost:7129/api/Departaments/Employees');
         const groupResponse = await fetchWithAuth('https://localhost:7129/api/Groups/Employees');
+        const employeesResponse = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
 
-        if (!deptResponse.ok) {
-          toast.error('Falha ao buscar dados dos departamentos');
-          return;
-        }
-        if (!groupResponse.ok) {
-          toast.error('Falha ao buscar dados dos grupos');
+        if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
+          toast.error('Falha ao buscar dados');
           return;
         }
 
-        const [departments, groups] = await Promise.all([
+        const [departments, groups, allEmployees] = await Promise.all([
           deptResponse.json(),
           groupResponse.json(),
+          employeesResponse.json(),
         ]);
+
+        const unassignedDept = allEmployees.filter((emp: Employee) =>
+          emp.departmentId === null
+        );
+
+        const unassignedGroup = allEmployees.filter((emp: Employee) =>
+          emp.groupId === null
+        );
 
         const departmentItems = departments.map((dept: Department) => ({
           id: dept.departmentID,
@@ -93,24 +99,42 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           })),
         }));
 
-        setItems([
+        const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
+          id: `unassigned-emp-${emp.employeeID}`,
+          label: emp.name,
+        }));
+
+        const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
+          id: `unassigned-emp-${emp.employeeID}`,
+          label: emp.name,
+        }));
+
+        const treeItems = [
           {
             id: 'nclock',
             label: 'Nclock',
             children: [
               { id: 'departments', label: 'Departamentos', children: departmentItems },
+              ...(unassignedDepartmentItems.length > 0 ? [{
+                id: 'unassigned',
+                label: 'Sem Departamento',
+                children: unassignedDepartmentItems,
+              }] : []),
               { id: 'groups', label: 'Grupos', children: groupItems },
+              ...(unassignedGroupItems.length > 0 ? [{
+                id: 'unassignedGroup',
+                label: 'Sem Grupo',
+                children: unassignedGroupItems,
+              }] : []),
             ],
           },
-        ]);
-
+        ];
+        setItems(treeItems);
         setExpandedIds([]);
-
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
     }
-
     fetchData();
   }, []);
 

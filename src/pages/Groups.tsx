@@ -199,8 +199,9 @@ export const Groups = () => {
     const actionColumn: TableColumn<Group> = {
         name: 'Ações',
         cell: (row: Group) => (
-            <div>
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)}>
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)}/>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>

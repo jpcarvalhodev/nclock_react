@@ -53,10 +53,10 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     useEffect(() => {
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key] ?? '';
-            return !field.required || (field.required && (fieldValue as string).trim() !== '');
+            return !field.required || (field.required && String(fieldValue).trim() !== '');
         });
         setIsFormValid(isValid);
-    }, [formData, fields]);
+    }, [formData, fields]);    
 
     useEffect(() => {
         fetchData();
@@ -68,19 +68,28 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         try {
             const response = await fetchWithAuth(url);
             if (!response.ok) {
-                toast.error(`Erro ao buscar ${entityType === 'department' ? 'departamentos' : 'grupos'}`);
+                toast.error(`Erro ao buscar ${isDepartment ? 'departamentos' : 'grupos'}`);
                 return;
             }
-            const data = await response.json();
-            if (entityType === 'department') {
-                setDepartments(data);
+            const data: Department[] | Group[] = await response.json();
+            const items = data.map(item => ({
+                ...item,
+                code: (item.code)
+            }));
+    
+            if (isDepartment) {
+                setDepartments(items as Department[]);
             } else {
-                setGroups(data);
+                setGroups(items as Group[]);
             }
+    
+            const nextCode = items.reduce((max: number, item: Department | Group) => Math.max(max, item.code), 0) + 1;
+            setFormData(prev => ({ ...prev, code: nextCode }));
+    
         } catch (error) {
-            console.error(`Erro ao buscar ${entityType === 'department' ? 'departamentos' : 'grupos'}:`, error);
+            console.error(`Erro ao buscar ${isDepartment ? 'departamentos' : 'grupos'}:`, error);
         }
-    };
+    };    
 
     const handleAddEmployee = async (employee: Employee) => {
         try {

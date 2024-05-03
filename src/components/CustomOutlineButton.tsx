@@ -16,7 +16,12 @@ export const CustomOutlineButton = forwardRef<HTMLButtonElement, CustomOutlineBu
       borderColor: '#0050a0',
       color: '#0050a0',
       backgroundColor: 'transparent',
-      cursor: 'pointer'
+      cursor: 'pointer',
+      height: '30px',
+      width: '30px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     };
 
     const hoverStyle = {

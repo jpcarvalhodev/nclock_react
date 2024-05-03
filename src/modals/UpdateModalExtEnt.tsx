@@ -1,62 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import '../css/PagesStyles.css';
 import { fetchWithAuth } from '../components/FetchWithAuth';
-import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/modalAvatar.png';
 import { toast } from 'react-toastify';
 
-interface FieldConfig {
-    label: string;
+export interface Entity {
+    id: string;
+    [key: string]: any;
+}
+
+interface Field {
     key: string;
+    label: string;
     type: string;
     required?: boolean;
     optionsUrl?: string;
 }
 
-interface Props<T> {
-    title: string;
+interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
-    fields: FieldConfig[];
-    initialValues: Partial<T>;
+    onUpdate: (entity: T) => Promise<void>;
+    entity: T;
+    fields: Field[];
+    title: string;
 }
 
-export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>(initialValues);
+export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+    const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
-    const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false);
-
-    const validateForm = () => {
-        const isValid = fields.every(field => {
-            if (field.required) {
-                const fieldValue = formData?.[field.key];
-                return fieldValue !== null && fieldValue !== undefined && typeof fieldValue === 'string' && fieldValue.trim() !== '';
-            }
-            return true;
-        });
-        setIsFormValid(isValid);
-    };
+    const fileInputRef = React.createRef<HTMLInputElement>();
 
     useEffect(() => {
-        validateForm();
+        const isValid = fields.every(field => {
+            const fieldValue = formData[field.key];
+            const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
+            return !field.required || (field.required && valueAsString !== '');
+        });
+        setIsFormValid(isValid);
     }, [formData, fields]);
 
     useEffect(() => {
-        const fetchEmployees = async () => {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
-            if (response.ok) {
-                const employees = await response.json();
-                setDropdownData(prev => ({ ...prev, responsibleName: employees }));
+        const fetchDropdownOptions = async (field: Field) => {
+            if (field.optionsUrl) {
+                const response = await fetchWithAuth(field.optionsUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    setDropdownData(prev => ({ ...prev, [field.key]: data }));
+                }
             }
         };
 
-        fetchEmployees();
-    }, []);
+        fields.forEach(field => {
+            if (field.type === 'dropdown') {
+                fetchDropdownOptions(field);
+            }
+        });
+    }, [fields]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -85,11 +89,12 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
             return;
         }
-        handleSave();
+        handleSubmit();
     };
 
-    const handleSave = () => {
-        onSave(formData as T);
+    const handleSubmit = async () => {
+        await onUpdate(formData);
+        onClose();
     };
 
     return (
@@ -180,14 +185,13 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                     <Col md={3}>
                                         <Form.Group controlId="formResponsibleName">
                                             <Form.Label>Nome do Responsável</Form.Label>
-                                            <Form.Control as="select" value={formData.responsibleName || ''} onChange={handleChange} name="responsibleName" className="custom-input-height custom-select-font-size">
-                                                <option value="">Selecione...</option>
-                                                {dropdownData.responsibleName && dropdownData.responsibleName.map((employee) => (
-                                                    <option key={employee.id} value={employee.name}>
-                                                        {employee.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Control>
+                                            <Form.Control
+                                                type="text"
+                                                className="custom-input-height"
+                                                value={formData.responsibleName || ''}
+                                                onChange={handleChange}
+                                                name="responsibleName"
+                                            />
                                         </Form.Group>
                                         <Form.Group controlId="formPhone">
                                             <Form.Label>Telefone</Form.Label>
@@ -211,14 +215,14 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                         </Form.Group>
                                     </Col>
                                     <Col md={3}>
-                                        <Form.Group controlId="formDateInserted">
-                                            <Form.Label>Data Inserida</Form.Label>
+                                        <Form.Group controlId="formDateUpdated">
+                                            <Form.Label>Data Atualizada</Form.Label>
                                             <Form.Control
                                                 type="date"
-                                                className="custom-input-height custom-select-font-size"
-                                                value={formData.dateInserted || ''}
+                                                className="custom-input-height"
+                                                value={formData.dateUpdated || ''}
                                                 onChange={handleChange}
-                                                name="dateInserted"
+                                                name="dateUpdated"
                                             />
                                         </Form.Group>
                                         <Form.Group controlId="formMobile">

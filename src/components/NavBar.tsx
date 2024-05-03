@@ -286,7 +286,7 @@ export const NavBar = () => {
 										</Link>
 									</div>
 								</div>
-								<div className="title-container-organizacao">
+								<div className="title-container">
 									<span className="title">Organização</span>
 								</div>
 							</div>
@@ -331,7 +331,7 @@ export const NavBar = () => {
 										</Link>
 									</div>
 								</div>
-								<div className="title-container-entidades">
+								<div className="title-container">
 									<span className="title">Entidades</span>
 								</div>
 							</div>
@@ -346,7 +346,7 @@ export const NavBar = () => {
 										</Link>
 									</div>
 								</div>
-								<div className="title-container-informacoes">
+								<div className="title-container">
 									<span className="title">Informações</span>
 								</div>
 							</div>

@@ -14,7 +14,8 @@ img {
     max-height: 50px;
 }
 
-.chart-container, .calendar-container {
+.chart-container,
+.calendar-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -159,7 +160,7 @@ img {
 }
 
 .search-input {
-    height: 40px;
+    height: 30px;
 }
 
 .filter-refresh-add-edit-upper-class {
@@ -228,8 +229,17 @@ img {
     margin: auto;
 }
 
+.delete-button {
+    display: flex !important;
+    margin-left: 5px; 
+    width: 30px !important;
+    height: 30px !important; 
+    justify-content: center !important; 
+    align-items: center !important;
+}
+
 .custom-select-font-size {
-    font-size: 14px !important; 
+    font-size: 14px !important;
 }
 
 .btn-selector-modal-close {
@@ -271,8 +281,7 @@ img {
         gap: 0;
     }
 
-    .split
-    .gutter {
+    .split .gutter {
         height: 92%;
     }
 
@@ -294,13 +303,11 @@ img {
         margin-bottom: 150px;
     }
 
-    .treeview-container
-    .datatable-container {
+    .treeview-container .datatable-container {
         flex: 2;
     }
 
-    .split
-    .gutter {
+    .split .gutter {
         height: 92%;
     }
 

@@ -9,6 +9,7 @@ import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { Button } from 'react-bootstrap';
 import { DeleteModal } from '../modals/DeleteModal';
 import { ExpandedComponentEmployee } from './ExpandedComponentEmployee';
+import { CustomOutlineButton } from './CustomOutlineButton';
 
 interface PersonsDataTableProps {
     selectedEmployeeIds: string[];
@@ -176,6 +177,11 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         setSelectedEmployee(null);
     };
 
+    const handleEditEmployee = (employee: Employee) => {
+        setSelectedEmployee(employee);
+        setShowUpdateModal(true);
+    }
+
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -231,8 +237,9 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         name: 'Ações',
         cell: (row: Employee) => (
             row.employeeID ? (
-                <div>
-                    <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row)}>
+                <div style={{ display: 'flex' }}>
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)}/>
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
                         <i className="bi bi-trash-fill"></i>
                     </Button>{' '}
                 </div>

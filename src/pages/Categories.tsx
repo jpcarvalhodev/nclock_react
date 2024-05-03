@@ -199,8 +199,9 @@ export const Categories = () => {
     const actionColumn: TableColumn<Category> = {
         name: 'Ações',
         cell: (row: Category) => (
-            <div>
-                <Button variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)}>
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCategory(row)}/>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
@@ -237,6 +238,7 @@ export const Categories = () => {
                     onSave={handleAddCategory}
                     fields={categoryFields}
                     initialValues={{}}
+                    entityType="categorias"
                 />
                 {selectedCategory && (
                     <UpdateModalCatProf

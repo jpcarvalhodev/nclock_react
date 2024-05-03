@@ -57,10 +57,7 @@
     height: 20px;
 }
 
-.title-container,
-.title-container-organizacao,
-.title-container-entidades,
-.title-container-informacoes {
+.title-container {
     width: 100%;
     text-align: center;
     background-color: #ccc;

@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
+import { fetchWithAuth } from '../components/FetchWithAuth';
 
 interface FieldConfig {
     label: string;
@@ -19,9 +20,14 @@ interface Props<T> {
     onSave: (data: T) => void;
     fields: FieldConfig[];
     initialValues: Partial<T>;
+    entityType: 'categorias' | 'profissões';
 }
 
-export const CreateModalCatProf = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
+interface CodeItem {
+    code: number;
+}
+
+export const CreateModalCatProf = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [isFormValid, setIsFormValid] = useState(false);
 
@@ -36,6 +42,32 @@ export const CreateModalCatProf = <T extends Record<string, any>>({ title, open,
         });
         setIsFormValid(isValid);
     }, [formData, fields]);
+
+    useEffect(() => {
+        if (open) {
+            fetchCategoryOrProfessionData();
+        }
+    }, [open]);
+
+    const fetchCategoryOrProfessionData = async () => {
+        const url = entityType === 'categorias' ? 'https://localhost:7129/api/Categories' : 'https://localhost:7129/api/Professions';
+        try {
+            const response = await fetchWithAuth(url);
+            if (response.ok) {
+                const data: CodeItem[] = await response.json();
+                const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code), 0) + 1;
+                setFormData(prevState => ({
+                    ...prevState,
+                    code: maxCode
+                }));
+            } else {
+                toast.error(`Erro ao buscar dados de ${entityType}`);
+            }
+        } catch (error) {
+            console.error(`Erro ao buscar dados de ${entityType}:`, error);
+            toast.error(`Erro ao conectar ao servidor para ${entityType}`);
+        }
+    };    
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
