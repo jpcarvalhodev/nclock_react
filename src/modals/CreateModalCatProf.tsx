@@ -104,7 +104,7 @@ export const CreateModalCatProf = <T extends Record<string, any>>({ title, open,
                             </label>
                             <input
                                 type={field.type}
-                                className="custom-input-height form-control"
+                                className="custom-input-height form-control custom-select-font-size"
                                 id={field.key}
                                 name={field.key}
                                 value={formData[field.key] || ''}

@@ -100,12 +100,12 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         }));
 
         const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
-          id: `unassigned-emp-${emp.employeeID}`,
+          id: `unassigned-empdept-${emp.employeeID}`,
           label: emp.name,
         }));
 
         const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
-          id: `unassigned-emp-${emp.employeeID}`,
+          id: `unassigned-empgrp-${emp.employeeID}`,
           label: emp.name,
         }));
 

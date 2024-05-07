@@ -12,7 +12,7 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { groupFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
-import { ExpandedComponent } from "../components/ExpandedComponent";
+import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
 import { CreateModalDeptGrp } from "../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../modals/UpdateModalDeptGrp";
 
@@ -83,8 +83,7 @@ export const Groups = () => {
             });
     
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar grupo: ${errorText}`);
+                toast.error(`Erro ao atualizar grupo`);
                 return;
             }
     
@@ -266,7 +265,7 @@ export const Groups = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={groupFields} />}
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>

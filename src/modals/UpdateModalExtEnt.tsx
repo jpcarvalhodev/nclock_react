@@ -74,6 +74,11 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
         }
     };
 
+    const resetToDefaultAvatar = () => {
+        setProfileImage(modalAvatar);
+        setFormData({ ...formData, photo: '' });
+      };
+
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
     const handleChange = (e: React.ChangeEvent<any>) => {
@@ -115,7 +120,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
                                     name="name"
@@ -129,7 +134,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                             <Form.Label>Nome Comercial</Form.Label>
                             <Form.Control
                                 type="text"
-                                className="custom-input-height"
+                                className="custom-input-height custom-select-font-size"
                                 value={formData.commercialName || ''}
                                 onChange={handleChange}
                                 name="commercialName"
@@ -147,7 +152,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.nif || ''}
                                     onChange={handleChange}
                                     name="nif"
@@ -161,7 +166,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                             <Form.Label>Tipo</Form.Label>
                             <Form.Control
                                 type="text"
-                                className="custom-input-height"
+                                className="custom-input-height custom-select-font-size"
                                 value={formData.type || ''}
                                 onChange={handleChange}
                                 name="type"
@@ -187,7 +192,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>Nome do Responsável</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.responsibleName || ''}
                                                 onChange={handleChange}
                                                 name="responsibleName"
@@ -197,7 +202,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>Telefone</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.phone || ''}
                                                 onChange={handleChange}
                                                 name="phone"
@@ -207,7 +212,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>E-Mail</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.email || ''}
                                                 onChange={handleChange}
                                                 name="email"
@@ -219,7 +224,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>Data Atualizada</Form.Label>
                                             <Form.Control
                                                 type="date"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.dateUpdated || ''}
                                                 onChange={handleChange}
                                                 name="dateUpdated"
@@ -229,7 +234,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>Telemóvel</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.mobile || ''}
                                                 onChange={handleChange}
                                                 name="mobile"
@@ -239,7 +244,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>WWW</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.www || ''}
                                                 onChange={handleChange}
                                                 name="www"
@@ -251,7 +256,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>Fonte</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.font || ''}
                                                 onChange={handleChange}
                                                 name="font"
@@ -261,7 +266,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>Fax</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.fax || ''}
                                                 onChange={handleChange}
                                                 name="fax"
@@ -271,7 +276,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>Comentários</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.comments || ''}
                                                 onChange={handleChange}
                                                 name="comments"
@@ -294,6 +299,11 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                                 ref={fileInputRef}
                                             />
                                         </div>
+                                        <div>
+                                            <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
+                                                Remover Foto
+                                            </Button>
+                                        </div>
                                     </Col>
                                 </Row>
                             </Form>
@@ -306,7 +316,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Label>Morada</Form.Label>
                                             <Form.Control
                                                 type="string"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData['address'] || ''}
                                                 onChange={handleChange}
                                                 name="address"
@@ -326,7 +336,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                                 <Form.Label>{field.label}</Form.Label>
                                                 <Form.Control
                                                     type={field.type}
-                                                    className="custom-input-height"
+                                                    className="custom-input-height custom-select-font-size"
                                                     value={formData[field.key] || ''}
                                                     onChange={handleChange}
                                                     name={field.key}

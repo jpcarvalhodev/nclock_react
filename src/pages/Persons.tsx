@@ -26,14 +26,6 @@ export const Persons = () => {
     const [filterText, setFilterText] = useState('');
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
 
-    const handleSelectEmployees = (employeeIds: string[]) => {
-        setSelectedEmployeeIds(employeeIds);
-    };
-
-    const refreshEmployeeData = () => {
-        fetchAllEmployees();
-    }
-
     const fetchAllEmployees = async () => {
         try {
             const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
@@ -71,6 +63,14 @@ export const Persons = () => {
         setShowAddModal(false);
         fetchAllEmployees();
     };
+
+    const handleSelectEmployees = (employeeIds: string[]) => {
+        setSelectedEmployeeIds(employeeIds);
+    };
+
+    const refreshEmployeeData = () => {
+        fetchAllEmployees();
+    }
 
     const clearSelection = () => {
         setSelectedEmployeeIds([]);

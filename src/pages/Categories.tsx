@@ -12,7 +12,7 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { categoryFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
-import { ExpandedComponent } from "../components/ExpandedComponent";
+import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
 import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
 import { CreateModalCatProf } from "../modals/CreateModalCatProf";
 
@@ -83,8 +83,7 @@ export const Categories = () => {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar categoria: ${errorText}`);
+                toast.error(`Erro ao atualizar categoria`);
                 return;
             }
 
@@ -266,7 +265,7 @@ export const Categories = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={categoryFields} />}
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>

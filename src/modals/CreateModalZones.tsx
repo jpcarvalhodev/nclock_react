@@ -122,7 +122,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
                                     name="name"
@@ -132,20 +132,20 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                         </Form.Group>
                     </Col>
                     <Col md={3}>
-                        <Form.Group controlId="formNameAcronym">
+                        <Form.Group controlId="formAcronym">
                             <Form.Label>
-                                Acrônimo do Nome <span style={{ color: 'red' }}>*</span>
+                                Acrônimo <span style={{ color: 'red' }}>*</span>
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-nameAcronym">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-acronym">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
-                                    value={formData.nameAcronym || ''}
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.acronym || ''}
                                     onChange={handleChange}
-                                    name="nameAcronym"
+                                    name="acronym"
                                     required
                                 />
                             </OverlayTrigger>
@@ -186,11 +186,11 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                         <Form.Group controlId="formDescription">
                                             <Form.Label>Descrição</Form.Label>
                                             <Form.Control
-                                                type="text"
-                                                style={{ height: 200 }}
+                                                as="textarea"
                                                 value={formData.description || ''}
                                                 onChange={handleChange}
                                                 name="description"
+                                                className="custom-select-font-size textarea-large"
                                             />
                                         </Form.Group>
                                     </Col>
@@ -232,7 +232,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                                 <Form.Label>{field.label}</Form.Label>
                                                 <Form.Control
                                                     type={field.type}
-                                                    className="custom-input-height"
+                                                    className="custom-input-height custom-select-font-size"
                                                     value={formData[field.key] || ''}
                                                     onChange={handleChange}
                                                     name={field.key}

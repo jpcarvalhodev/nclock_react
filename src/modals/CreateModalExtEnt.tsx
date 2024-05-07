@@ -110,7 +110,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
                                     name="name"
@@ -124,7 +124,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             <Form.Label>Nome Comercial</Form.Label>
                             <Form.Control
                                 type="text"
-                                className="custom-input-height"
+                                className="custom-input-height custom-select-font-size"
                                 value={formData.commercialName || ''}
                                 onChange={handleChange}
                                 name="commercialName"
@@ -142,7 +142,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.nif || ''}
                                     onChange={handleChange}
                                     name="nif"
@@ -156,7 +156,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             <Form.Label>Tipo</Form.Label>
                             <Form.Control
                                 type="text"
-                                className="custom-input-height"
+                                className="custom-input-height custom-select-font-size"
                                 value={formData.type || ''}
                                 onChange={handleChange}
                                 name="type"
@@ -193,7 +193,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Label>Telefone</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.phone || ''}
                                                 onChange={handleChange}
                                                 name="phone"
@@ -203,7 +203,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Label>E-Mail</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.email || ''}
                                                 onChange={handleChange}
                                                 name="email"
@@ -225,7 +225,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Label>Telemóvel</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.mobile || ''}
                                                 onChange={handleChange}
                                                 name="mobile"
@@ -235,7 +235,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Label>WWW</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.www || ''}
                                                 onChange={handleChange}
                                                 name="www"
@@ -247,7 +247,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Label>Fonte</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.font || ''}
                                                 onChange={handleChange}
                                                 name="font"
@@ -257,7 +257,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Label>Fax</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.fax || ''}
                                                 onChange={handleChange}
                                                 name="fax"
@@ -267,7 +267,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Label>Comentários</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData.comments || ''}
                                                 onChange={handleChange}
                                                 name="comments"
@@ -302,7 +302,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Label>Morada</Form.Label>
                                             <Form.Control
                                                 type="string"
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 value={formData['address'] || ''}
                                                 onChange={handleChange}
                                                 name="address"
@@ -322,7 +322,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                                 <Form.Label>{field.label}</Form.Label>
                                                 <Form.Control
                                                     type={field.type}
-                                                    className="custom-input-height"
+                                                    className="custom-input-height custom-select-font-size"
                                                     value={formData[field.key] || ''}
                                                     onChange={handleChange}
                                                     name={field.key}

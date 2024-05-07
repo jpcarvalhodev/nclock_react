@@ -225,7 +225,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                         name="code"
                                                         value={formData['code'] || ''}
                                                         onChange={handleChange}
-                                                        className="custom-input-height"
+                                                        className="custom-input-height custom-select-font-size"
                                                         required
                                                     />
                                                 </OverlayTrigger>
@@ -249,7 +249,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                 name="name"
                                                 value={formData['name'] || ''}
                                                 onChange={handleChange}
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 required
                                             />
                                         </OverlayTrigger>
@@ -265,7 +265,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                             name="description"
                                             value={formData['description'] || ''}
                                             onChange={handleChange}
-                                            className="custom-input-height"
+                                            className="custom-input-height custom-select-font-size"
                                         />
                                     </Form.Group>
                                 </Col>
@@ -277,7 +277,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                             name="parentId"
                                             value={formData['parentId'] || ''}
                                             onChange={handleChange}
-                                            className="custom-input-height"
+                                            className="custom-input-height custom-select-font-size"
                                         />
                                     </Form.Group>
                                 </Col>

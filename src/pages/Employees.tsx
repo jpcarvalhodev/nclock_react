@@ -16,7 +16,7 @@ import { ExportButton } from '../components/ExportButton';
 import { toast } from 'react-toastify';
 import Split from 'react-split';
 import { TreeViewData } from '../components/TreeView';
-import { ExpandedComponentEmployee } from '../components/ExpandedComponentEmployee';
+import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
 
 export const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -83,8 +83,7 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar funcionário: ${errorText}`);
+                toast.error('Erro ao atualizar funcionário');
                 return;
             }
 
@@ -246,6 +245,10 @@ export const Employees = () => {
         rangeSeparatorText: 'de',
     };
 
+    const expandableRowComponent = (row: Employee) => (
+        <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
+    );
+
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (
@@ -294,7 +297,7 @@ export const Employees = () => {
                             pagination
                             paginationComponentOptions={paginationOptions}
                             expandableRows
-                            expandableRowsComponent={ExpandedComponentEmployee}
+                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                             selectableRows
                             onSelectedRowsChange={handleRowSelected}
                             clearSelectedRows={clearSelectionToggle}

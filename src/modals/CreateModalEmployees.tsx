@@ -6,7 +6,9 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/modalAvatar.png';
 import { toast } from 'react-toastify';
-import { Employee } from '../helpers/Types';
+import { Department, Employee, ExternalEntity, Group, Profession, Zone } from '../helpers/Types';
+
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 interface FieldConfig {
     label: string;
@@ -31,29 +33,75 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false);
+    const [departments, setDepartments] = useState<Department[]>([]);
+    const [groups, setGroups] = useState<Group[]>([]);
+    const [professions, setProfessions] = useState<Profession[]>([]);
+    const [zones, setZones] = useState<Zone[]>([]);
+    const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
 
     const validateForm = () => {
         const isValid = fields.every(field => {
+            const fieldValue = formData?.[field.key];
             if (field.required) {
-                const fieldValue = formData?.[field.key];
-                return fieldValue !== null && fieldValue !== undefined && typeof fieldValue === 'string' && fieldValue.trim() !== '';
+                if (typeof fieldValue === 'string') {
+                    return fieldValue.trim() !== '';
+                }
+                return fieldValue !== null && fieldValue !== undefined;
             }
             return true;
         });
-        setIsFormValid(isValid);
+
+        const enrollNumberValid = formData.enrollNumber !== undefined && formData.enrollNumber !== null;
+
+        setIsFormValid(isValid && enrollNumberValid);
     };
 
     const fetchEmployeesAndSetNextEnrollNumber = async () => {
         const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
         if (response.ok) {
             const employees: Employee[] = await response.json();
-            const maxEnrollNumber = employees.reduce((max: number, employee: Employee) => Math.max(max, (employee.enrollNumber)), 0);
+            const maxEnrollNumber = employees.reduce((max: number, employee: Employee) => Math.max(max, employee.enrollNumber), 0);
             setFormData(prevState => ({
                 ...prevState,
                 enrollNumber: maxEnrollNumber + 1
             }));
         } else {
             toast.error('Erro ao buscar o número de matrícula dos funcionários.');
+        }
+    };
+
+    const fetchDropdownOptions = async () => {
+        try {
+            const departmentsResponse = await fetchWithAuth('https://localhost:7129/api/Departaments');
+            const groupsResponse = await fetchWithAuth('https://localhost:7129/api/Groups');
+            const professionsResponse = await fetchWithAuth('https://localhost:7129/api/Professions');
+            const zonesResponse = await fetchWithAuth('https://localhost:7129/api/Zones');
+            const externalEntitiesResponse = await fetchWithAuth('https://localhost:7129/api/ExternalEntities');
+            if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
+                const departmentsData: Department[] = await departmentsResponse.json();
+                const groupsData: Group[] = await groupsResponse.json();
+                const professionsData: Profession[] = await professionsResponse.json();
+                const zonesData: Zone[] = await zonesResponse.json();
+                const externalEntitiesData: ExternalEntity[] = await externalEntitiesResponse.json();
+                setDepartments(departmentsData);
+                setGroups(groupsData);
+                setProfessions(professionsData);
+                setZones(zonesData);
+                setExternalEntities(externalEntitiesData);
+                setDropdownData(prev => ({
+                    ...prev,
+                    departmentId: departmentsData.map(department => ({ id: department.id, name: department.name })),
+                    groupId: groupsData.map(group => ({ id: group.id, name: group.name })),
+                    professionId: professionsData.map(profession => ({ id: profession.id, description: profession.description })),
+                    zoneId: zonesData.map(zone => ({ id: zone.id, name: zone.name })),
+                    externalEntityId: externalEntitiesData.map(externalEntity => ({ id: externalEntity.id, name: externalEntity.name }))
+                }));
+            } else {
+                toast.error('Erro ao buscar os dados de departamentos e grupos.');
+            }
+        } catch (error) {
+            toast.error('Erro ao buscar os dados de departamentos e grupos.');
+            console.error(error);
         }
     };
 
@@ -64,26 +112,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     useEffect(() => {
         if (open) {
             fetchEmployeesAndSetNextEnrollNumber();
+            fetchDropdownOptions();
         }
     }, [open]);
-
-    useEffect(() => {
-        const fetchDropdownOptions = async (field: FieldConfig) => {
-            if (field.optionsUrl) {
-                const response = await fetchWithAuth(field.optionsUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    setDropdownData(prev => ({ ...prev, [field.key]: data }));
-                }
-            }
-        };
-
-        fields.forEach(field => {
-            if (field.type === 'dropdown') {
-                fetchDropdownOptions(field);
-            }
-        });
-    }, [fields]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -119,6 +150,16 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 shortName: shortName
             }));
         }
+
+        validateForm();
+    };
+
+    const handleDropdownChange = (e: React.ChangeEvent<FormControlElement>) => {
+        const { name, value } = e.target as HTMLSelectElement;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
     };
 
     const handleSaveClick = () => {
@@ -130,6 +171,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     };
 
     const handleSave = () => {
+        console.log('Saving data:', formData);
         onSave(formData as T);
     };
 
@@ -177,11 +219,10 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             >
                                 <Form.Control
                                     type="number"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.enrollNumber || ''}
                                     onChange={handleChange}
                                     name="enrollNumber"
-                                    required
                                 />
                             </OverlayTrigger>
                         </Form.Group>
@@ -195,7 +236,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
                                     name="name"
@@ -213,7 +254,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.shortName || ''}
                                     onChange={handleChange}
                                     name="shortName"
@@ -224,28 +265,20 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formNameAcronym">
-                            <Form.Label>
-                                Acrônimo do Nome <span style={{ color: 'red' }}>*</span>
-                            </Form.Label>
-                            <OverlayTrigger
-                                placement="right"
-                                overlay={<Tooltip id="tooltip-nameAcronym">Campo obrigatório</Tooltip>}
-                            >
-                                <Form.Control
-                                    type="text"
-                                    className="custom-input-height"
-                                    value={formData.nameAcronym || ''}
-                                    onChange={handleChange}
-                                    name="nameAcronym"
-                                    required
-                                />
-                            </OverlayTrigger>
+                            <Form.Label>Acrônimo do Nome</Form.Label>
+                            <Form.Control
+                                type="text"
+                                className="custom-input-height custom-select-font-size"
+                                value={formData.nameAcronym || ''}
+                                onChange={handleChange}
+                                name="nameAcronym"
+                            />
                         </Form.Group>
                         <Form.Group controlId="formComments">
                             <Form.Label>Comentários</Form.Label>
                             <Form.Control
                                 type="text"
-                                className="custom-input-height"
+                                className="custom-input-height custom-select-font-size"
                                 value={formData.comments || ''}
                                 onChange={handleChange}
                                 name="comments"
@@ -338,7 +371,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                                 <Form.Label>{field.label}</Form.Label>
                                                 <Form.Control
                                                     type={field.type}
-                                                    className="custom-input-height"
+                                                    className="custom-input-height custom-select-font-size"
                                                     value={formData[field.key] || ''}
                                                     onChange={handleChange}
                                                     name={field.key}
@@ -357,14 +390,13 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                         { key: 'biIssuance', label: 'Emissão de BI', type: 'date' },
                                         { key: 'biValidity', label: 'Validade de BI', type: 'date' },
                                         { key: 'admissionDate', label: 'Data de Admissão', type: 'date' },
-                                        { key: 'exitDate', label: 'Data de Saída', type: 'date' },
                                         { key: 'departmentId', label: 'Departamento', type: 'dropdown' },
                                         { key: 'professionId', label: 'Profissão', type: 'dropdown' },
                                         { key: 'groupId', label: 'Grupo', type: 'dropdown' },
                                         { key: 'zoneId', label: 'Zona', type: 'dropdown' },
                                         { key: 'externalEntityId', label: 'Entidade Externa', type: 'dropdown' }
                                     ].map((field) => (
-                                        <Col md={3}>
+                                        <Col md={3} key={field.key}>
                                             <Form.Group controlId={`form${field.key}`}>
                                                 <Form.Label>{field.label}</Form.Label>
                                                 {field.type === 'dropdown' ? (
@@ -372,18 +404,20 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                                         as="select"
                                                         className="custom-input-height custom-select-font-size"
                                                         value={formData[field.key] || ''}
-                                                        onChange={handleChange}
+                                                        onChange={handleDropdownChange}
                                                         name={field.key}
                                                     >
                                                         <option value="">Selecione...</option>
-                                                        {dropdownData[field.key]?.map(option => (
-                                                            <option key={option.value} value={option.value}>{option.name}</option>
+                                                        {dropdownData[field.key]?.map((option) => (
+                                                            <option key={option.id} value={option.id}>
+                                                                {option.name || option.description}
+                                                            </option>
                                                         ))}
                                                     </Form.Control>
                                                 ) : (
                                                     <Form.Control
                                                         type={field.type}
-                                                        className="custom-input-height"
+                                                        className="custom-input-height custom-select-font-size"
                                                         value={formData[field.key] || ''}
                                                         onChange={handleChange}
                                                         name={field.key}

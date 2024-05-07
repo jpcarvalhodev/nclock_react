@@ -74,6 +74,11 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
         }
     };
 
+    const resetToDefaultAvatar = () => {
+        setProfileImage(modalAvatar);
+        setFormData({ ...formData, photo: '' });
+    };
+
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
     const handleChange = (e: React.ChangeEvent<any>) => {
@@ -121,7 +126,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
+                                    className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
                                     name="name"
@@ -131,20 +136,20 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                         </Form.Group>
                     </Col>
                     <Col md={3}>
-                        <Form.Group controlId="formNameAcronym">
+                        <Form.Group controlId="formAcronym">
                             <Form.Label>
-                                Acrônimo do Nome <span style={{ color: 'red' }}>*</span>
+                                Acrônimo <span style={{ color: 'red' }}>*</span>
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-nameAcronym">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-acronym">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     type="text"
-                                    className="custom-input-height"
-                                    value={formData.nameAcronym || ''}
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.acronym || ''}
                                     onChange={handleChange}
-                                    name="nameAcronym"
+                                    name="acronym"
                                     required
                                 />
                             </OverlayTrigger>
@@ -185,11 +190,11 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                         <Form.Group controlId="formDescription">
                                             <Form.Label>Descrição</Form.Label>
                                             <Form.Control
-                                                type="text"
-                                                style={{ height: 200 }}
+                                                type="textarea"
                                                 value={formData.description || ''}
                                                 onChange={handleChange}
                                                 name="description"
+                                                className="custom-select-font-size textarea-large"
                                             />
                                         </Form.Group>
                                     </Col>
@@ -208,6 +213,11 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                                 onChange={handleImageChange}
                                                 ref={fileInputRef}
                                             />
+                                        </div>
+                                        <div>
+                                            <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
+                                                Remover Foto
+                                            </Button>
                                         </div>
                                     </Col>
                                 </Row>
@@ -231,7 +241,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                                 <Form.Label>{field.label}</Form.Label>
                                                 <Form.Control
                                                     type={field.type}
-                                                    className="custom-input-height"
+                                                    className="custom-input-height custom-select-font-size"
                                                     value={formData[field.key] || ''}
                                                     onChange={handleChange}
                                                     name={field.key}

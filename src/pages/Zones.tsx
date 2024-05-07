@@ -12,9 +12,9 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { zoneFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
-import { ExpandedComponent } from "../components/ExpandedComponent";
 import { CreateModalZones } from "../modals/CreateModalZones";
 import { UpdateModalZones } from "../modals/UpdateModalZones";
+import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -81,13 +81,12 @@ export const Zones = () => {
                 },
                 body: JSON.stringify(zone)
             });
-    
+
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar zona: ${errorText}`);
+                toast.error(`Erro ao atualizar zona`);
                 return;
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedZone = await response.json();
@@ -104,7 +103,7 @@ export const Zones = () => {
             handleCloseUpdateModal();
             refreshZones();
         }
-    };    
+    };
 
     const handleDeleteZone = async (zoneID: string) => {
         try {
@@ -196,11 +195,15 @@ export const Zones = () => {
             sortable: true,
         }));
 
+    const expandableRowComponent = (row: Zone) => (
+        <ExpandedComponentEmpZoneExtEnt data={row} fields={zoneFields} />
+    );
+
     const actionColumn: TableColumn<Zone> = {
         name: 'Ações',
         cell: (row: Zone) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditZone(row)}/>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditZone(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneId)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
@@ -265,7 +268,7 @@ export const Zones = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={zoneFields} />}
+                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>

@@ -245,7 +245,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                         name="code"
                                                         value={formData['code'] || ''}
                                                         onChange={handleChange}
-                                                        className="custom-input-height"
+                                                        className="custom-input-height custom-select-font-size"
                                                         required
                                                     />
                                                 </OverlayTrigger>
@@ -269,7 +269,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                 name="name"
                                                 value={formData['name'] || ''}
                                                 onChange={handleChange}
-                                                className="custom-input-height"
+                                                className="custom-input-height custom-select-font-size"
                                                 required
                                             />
                                         </OverlayTrigger>
@@ -285,7 +285,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                             name="description"
                                             value={formData['description'] || ''}
                                             onChange={handleChange}
-                                            className="custom-input-height"
+                                            className="custom-input-height custom-select-font-size"
                                         />
                                     </Form.Group>
                                 </Col>
@@ -297,7 +297,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                             name="parentId"
                                             value={formData['parentId'] || ''}
                                             onChange={handleChange}
-                                            className="custom-input-height"
+                                            className="custom-input-height custom-select-font-size"
                                         />
                                     </Form.Group>
                                 </Col>

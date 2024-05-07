@@ -13,9 +13,7 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { departmentFields } from '../helpers/Fields';
 import { ExportButton } from '../components/ExportButton';
 import { toast } from 'react-toastify';
-import { ExpandedComponent } from '../components/ExpandedComponent';
-import Split from 'react-split';
-import { TreeViewData } from '../components/TreeView';
+import { ExpandedComponentGeneric } from '../components/ExpandedComponentGeneric';
 import '../css/PagesStyles.css';
 
 export const Departments = () => {
@@ -76,8 +74,7 @@ export const Departments = () => {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar departamento: ${errorText}`);
+                toast.error('Erro ao atualizar departamento');
                 return;
             }
 
@@ -268,7 +265,7 @@ export const Departments = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={departmentFields} />}
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={departmentFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>

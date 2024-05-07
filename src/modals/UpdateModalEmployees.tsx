@@ -19,6 +19,24 @@ interface Field {
   optionsUrl?: string;
 }
 
+interface Option {
+  id: number;
+  departmentId?: string;
+  departmentName?: string;
+  professionId?: string;
+  professionDescription?: string;
+  categoryId?: string;
+  categoryDescription?: string;
+  groupId?: string;
+  groupName?: string;
+  zoneId?: string;
+  zoneName?: string;
+  externalEntityId?: string;
+  externalEntityName?: string;
+  name?: string;
+  description?: string;
+}
+
 interface UpdateModalProps<T extends Entity> {
   open: boolean;
   onClose: () => void;
@@ -50,7 +68,10 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
         const response = await fetchWithAuth(field.optionsUrl);
         if (response.ok) {
           const data = await response.json();
-          setDropdownData(prev => ({ ...prev, [field.key]: data }));
+          setDropdownData(prevState => ({
+            ...prevState,
+            [field.key]: data
+          }));
         }
       }
     };
@@ -62,6 +83,26 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
     });
   }, [fields]);
 
+  const getDisplayName = (field: Field, option: Option) => {
+    const { key } = field;
+
+    switch (key) {
+      case 'departmentId':
+        return option.name ?? option.departmentId;
+      case 'professionId':
+      case 'categoryId':
+        return option.description ?? option.professionDescription ?? option.categoryDescription;
+      case 'groupId':
+        return option.name ?? option.groupName ?? option.groupId;
+      case 'zoneId':
+        return option.name ?? option.zoneName ?? option.zoneId;
+      case 'externalEntityId':
+        return option.name ?? option.externalEntityName ?? option.externalEntityId;
+      default:
+        return 'Desconhecido';
+    }
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -72,6 +113,11 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const resetToDefaultAvatar = () => {
+    setProfileImage(modalAvatar);
+    setFormData({ ...formData, photo: '' });
   };
 
   const triggerFileSelectPopup = () => fileInputRef.current?.click();
@@ -93,6 +139,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
   };
 
   const handleSubmit = async () => {
+    console.log('formData', formData);
     await onUpdate(formData);
     onClose();
   };
@@ -129,6 +176,11 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                 ref={fileInputRef}
               />
             </div>
+            <div>
+              <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
+                Remover Foto
+              </Button>
+            </div>
           </Col>
           <Col md={3}>
             <Form.Group controlId="formEnrollNumber">
@@ -141,7 +193,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
               >
                 <Form.Control
                   type="number"
-                  className="custom-input-height"
+                  className="custom-input-height custom-select-font-size"
                   value={formData.enrollNumber || ''}
                   onChange={handleChange}
                   name="enrollNumber"
@@ -159,7 +211,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
               >
                 <Form.Control
                   type="text"
-                  className="custom-input-height"
+                  className="custom-input-height custom-select-font-size"
                   value={formData.name || ''}
                   onChange={handleChange}
                   name="name"
@@ -177,7 +229,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
               >
                 <Form.Control
                   type="text"
-                  className="custom-input-height"
+                  className="custom-input-height custom-select-font-size"
                   value={formData.shortName || ''}
                   onChange={handleChange}
                   name="shortName"
@@ -188,28 +240,20 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
           </Col>
           <Col md={3}>
             <Form.Group controlId="formNameAcronym">
-              <Form.Label>
-                Acrônimo do Nome <span style={{ color: 'red' }}>*</span>
-              </Form.Label>
-              <OverlayTrigger
-                placement="right"
-                overlay={<Tooltip id="tooltip-nameAcronym">Campo obrigatório</Tooltip>}
-              >
-                <Form.Control
-                  type="text"
-                  className="custom-input-height"
-                  value={formData.nameAcronym || ''}
-                  onChange={handleChange}
-                  name="nameAcronym"
-                  required
-                />
-              </OverlayTrigger>
+              <Form.Label>Acrônimo do Nome</Form.Label>
+              <Form.Control
+                type="text"
+                className="custom-input-height custom-select-font-size"
+                value={formData.nameAcronym || ''}
+                onChange={handleChange}
+                name="nameAcronym"
+              />
             </Form.Group>
             <Form.Group controlId="formComments">
               <Form.Label>Comentários</Form.Label>
               <Form.Control
                 type="text"
-                className="custom-input-height"
+                className="custom-input-height custom-select-font-size"
                 value={formData.comments || ''}
                 onChange={handleChange}
                 name="comments"
@@ -302,7 +346,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                         <Form.Label>{field.label}</Form.Label>
                         <Form.Control
                           type={field.type}
-                          className="custom-input-height"
+                          className="custom-input-height custom-select-font-size"
                           value={formData[field.key] || ''}
                           onChange={handleChange}
                           name={field.key}
@@ -328,7 +372,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                     { key: 'zoneId', label: 'Zona', type: 'dropdown' },
                     { key: 'externalEntityId', label: 'Entidade Externa', type: 'dropdown' }
                   ].map((field) => (
-                    <Col md={3}>
+                    <Col md={3} key={field.key}>
                       <Form.Group controlId={`form${field.key}`}>
                         <Form.Label>{field.label}</Form.Label>
                         {field.type === 'dropdown' ? (
@@ -339,9 +383,11 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                             onChange={handleChange}
                             name={field.key}
                           >
-                            <option value="">Selecione...</option>
+                            <option value="" disabled>Selecione...</option>
                             {dropdownData[field.key]?.map(option => (
-                              <option key={option.value} value={option.value}>{option.name}</option>
+                              <option key={option.id ?? option[field.key]} value={option.id ?? option[field.key]}>
+                                {getDisplayName(field, option)}
+                              </option>
                             ))}
                           </Form.Control>
                         ) : (

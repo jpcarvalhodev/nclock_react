@@ -14,6 +14,10 @@
     align-items: center;
 }
 
+.logo-login {
+    max-width: 200px;
+}
+
 .form-login {
     display: flex;
     flex-direction: column;

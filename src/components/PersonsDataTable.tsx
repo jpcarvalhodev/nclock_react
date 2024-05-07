@@ -8,7 +8,7 @@ import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { Button } from 'react-bootstrap';
 import { DeleteModal } from '../modals/DeleteModal';
-import { ExpandedComponentEmployee } from './ExpandedComponentEmployee';
+import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
 import { CustomOutlineButton } from './CustomOutlineButton';
 
 interface PersonsDataTableProps {
@@ -84,8 +84,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar funcionário: ${errorText}`);
+                toast.error(`Erro ao atualizar funcionário`);
                 return;
             }
 
@@ -114,8 +113,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao excluir funcionário: ${errorText}`);
+                toast.error(`Erro ao excluir funcionário`);
                 return;
             }
 
@@ -233,12 +231,16 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             };
         });
 
+    const expandableRowComponent = (row: Employee) => (
+        <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
+    );
+
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (
             row.employeeID ? (
                 <div style={{ display: 'flex' }}>
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)}/>
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
                     <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
                         <i className="bi bi-trash-fill"></i>
                     </Button>{' '}
@@ -263,7 +265,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         paginationComponentOptions={paginationOptions}
                         onRowDoubleClicked={handleRowDoubleClicked}
                         expandableRows
-                        expandableRowsComponent={ExpandedComponentEmployee}
+                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         selectableRowsHighlight

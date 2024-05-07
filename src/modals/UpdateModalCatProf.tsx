@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { toast } from 'react-toastify';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
@@ -83,7 +82,7 @@ export const UpdateModalCatProf = <T extends Entity>({ open, onClose, onUpdate, 
                             </label>
                             <input
                                 type={field.type}
-                                className="custom-input-height form-control"
+                                className="custom-input-height form-control custom-select-font-size"
                                 id={field.key}
                                 name={field.key}
                                 value={formData[field.key] || ''}

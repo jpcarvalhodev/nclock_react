@@ -34,19 +34,23 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
         setSelectAll(!selectAll);
     };
 
+    const filteredColumns = columns.filter((column) => column.key !== 'photo');
+
     return (
         <Modal show={true} onHide={onClose} centered size='lg'>
             <Modal.Header closeButton>
                 <Modal.Title>Selecionar Colunas</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <FormCheck
-                    label="Selecionar Todas"
-                    checked={selectAll}
-                    onChange={handleSelectAllToggle}
-                />
+                <div style={{ textAlign: 'center', marginBottom: 15 }}>
+                    <FormCheck
+                        label="Selecionar Todas"
+                        checked={selectAll}
+                        onChange={handleSelectAllToggle}
+                    />
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-                    {columns.map(({ label, key }) => (
+                    {filteredColumns.map(({ label, key }) => (
                         <FormCheck
                             key={key}
                             type="checkbox"

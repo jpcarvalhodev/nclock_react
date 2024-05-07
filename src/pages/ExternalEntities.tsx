@@ -12,7 +12,7 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { externalEntityFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
-import { ExpandedComponent } from "../components/ExpandedComponent";
+import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
 import { CreateModalExtEnt } from "../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../modals/UpdateModalExtEnt";
 
@@ -81,13 +81,12 @@ export const ExternalEntities = () => {
                 },
                 body: JSON.stringify(externalEntity)
             });
-    
+
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar entidade externa: ${errorText}`);
+                toast.error(`Erro ao atualizar entidade externa`);
                 return;
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedExternalEntity = await response.json();
@@ -104,7 +103,7 @@ export const ExternalEntities = () => {
             handleCloseUpdateModal();
             refreshExternalEntities();
         }
-    };    
+    };
 
     const handleDeleteExternalEntity = async (externalEntityID: string) => {
         try {
@@ -194,11 +193,15 @@ export const ExternalEntities = () => {
             sortable: true,
         }));
 
+    const expandableRowComponent = (row: ExternalEntity) => (
+        <ExpandedComponentEmpZoneExtEnt data={row} fields={externalEntityFields} />
+    );
+
     const actionColumn: TableColumn<ExternalEntity> = {
         name: 'Ações',
         cell: (row: ExternalEntity) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditExternalEntity(row)}/>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditExternalEntity(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
@@ -263,7 +266,7 @@ export const ExternalEntities = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={externalEntityFields} />}
+                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>

@@ -10,12 +10,15 @@ body {
     max-height: 40px;
 }
 
-img {
-    max-height: 50px;
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .chart-container,
-.calendar-container {
+.calendar-container,
+.carousel-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,24 +29,18 @@ img {
     margin: 10px;
 }
 
-.chart-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.img-carousel {
+    width: 80% !important;
+    height: 80% !important;
+    object-fit: cover;
 }
 
 .dashboard-content {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    flex-wrap: wrap;
     margin-top: 20px;
-}
-
-.calendar-container {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    height: 610px;
 }
 
 .dashboard-calendar {
@@ -57,18 +54,30 @@ img {
 
 .employee-pie-chart {
     width: 100%;
-    max-width: 400px;
-    height: 400px;
+    max-width: 600px;
+    height: 100%;
     padding: 20px;
-    position: relative;
+}
+
+.departments-groups-chart {
+    width: 100%;
+    max-width: 800px;
+    height: 100%;
+    padding: 20px;
 }
 
 .employee-pie-chart-text {
     text-align: center;
     font-size: 20px;
     font-weight: bold;
-    margin-top: -50px;
-    margin-bottom: 20px;
+    margin-bottom: 100px;
+}
+
+.departments-groups-chart-text {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 200px;
 }
 
 .expanded-details-container {
@@ -96,9 +105,7 @@ img {
 }
 
 .footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    margin-top: auto;
     width: 100%;
     background-color: #0050a0;
     color: #fff;
@@ -106,7 +113,7 @@ img {
     display: flex;
     align-items: center;
     flex-direction: column;
-    z-index: 1000;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .footer p {
@@ -197,6 +204,7 @@ img {
 
 .img-modal {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -239,7 +247,12 @@ img {
 }
 
 .custom-select-font-size {
-    font-size: 14px !important;
+    font-size: 12px !important;
+}
+
+.textarea-large {
+    height: 200px !important;
+    resize: none !important;
 }
 
 .btn-selector-modal-close {
@@ -248,6 +261,10 @@ img {
 
 .btn-selector-modal-close:hover {
     background-color: #00366d !important;
+}
+
+.kgOwiN {
+    min-height: 35px !important;
 }
 
 @media (max-width: 500px) {

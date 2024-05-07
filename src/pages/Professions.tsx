@@ -12,7 +12,7 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { professionFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
-import { ExpandedComponent } from "../components/ExpandedComponent";
+import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
 import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
 import { CreateModalCatProf } from "../modals/CreateModalCatProf";
 
@@ -83,8 +83,7 @@ export const Professions = () => {
             });
     
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar a profissão: ${errorText}`);
+                toast.error(`Erro ao atualizar a profissão`);
                 return;
             }
     
@@ -266,7 +265,7 @@ export const Professions = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponent data={props.data} fields={professionFields} />}
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>

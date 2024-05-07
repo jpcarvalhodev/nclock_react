@@ -2,7 +2,7 @@ export const employeeFields = [
     { label: 'Número de Matrícula', key: 'enrollNumber', type: 'number', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
-    { label: 'Acrônimo do Nome', key: 'nameAcronym', type: 'string', required: true },
+    { label: 'Acrônimo do Nome', key: 'nameAcronym', type: 'string' },
     { label: 'Comentários', key: 'comments', type: 'string' },
     { label: 'Foto', key: 'photo', type: 'string' },
     { label: 'Morada', key: 'address', type: 'string' },

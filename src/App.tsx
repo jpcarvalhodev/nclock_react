@@ -26,6 +26,7 @@ import { Temporaries } from './pages/Temporaries';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import './App.css';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 function AnimatedRoutes() {
   const location = useLocation();
