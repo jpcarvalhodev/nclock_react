@@ -6,16 +6,8 @@ interface FetchOptions extends RequestInit {
     headers?: HeadersInit;
 }
 
-export const fetchWithAuth = async (endpoint: string, options: FetchOptions = {}): Promise<Response> => {
+export const fetchWithoutAuth = async (endpoint: string, options: FetchOptions = {}): Promise<Response> => {
     const url = `${BASE_URL}${endpoint}`;
-    const token = localStorage.getItem('token');
-
-    if (token) {
-        options.headers = {
-            ...options.headers,
-            'Authorization': `Bearer ${token}`,
-        };
-    }
 
     try {
         const response = await fetch(url, options);

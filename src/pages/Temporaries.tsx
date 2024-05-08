@@ -34,7 +34,7 @@ export const Temporaries = () => {
 
     const fetchEmployees = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
+            const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
                 toast.error('Erro ao buscar os dados dos funcionários');
                 return;
@@ -50,7 +50,7 @@ export const Temporaries = () => {
 
     const handleAddEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/CreateEmployee', {
+            const response = await fetchWithAuth('Employees/CreateEmployee', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const Temporaries = () => {
 
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/UpdateEmployee/${employee.employeeID}`, {
+            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export const Temporaries = () => {
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/DeleteEmployee/${employeeID}`, {
+            const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

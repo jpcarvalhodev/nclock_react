@@ -29,7 +29,7 @@ export const Groups = () => {
 
     const fetchGroups = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Groups', {
+            const response = await fetchWithAuth('Groups', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export const Groups = () => {
 
     const handleAddGroup = async (group: Group) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Groups', {
+            const response = await fetchWithAuth('Groups', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const Groups = () => {
 
     const handleUpdateGroup = async (group: Group) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Groups/${group.groupID}`, {
+            const response = await fetchWithAuth(`Groups/${group.groupID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export const Groups = () => {
 
     const handleDeleteGroup = async (groupID: string) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Groups/${groupID}`, {
+            const response = await fetchWithAuth(`Groups/${groupID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ export const Groups = () => {
     };
 
     return (
-        <div>
+        <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-header">

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import '../css/PasswordReset.css';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import { fetchWithoutAuth } from '../components/FetchWithoutAuth';
 
 export const ResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -41,7 +42,7 @@ export const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch(`https://localhost:7129/api/Authentication/ResetPassword?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
+      const response = await fetchWithoutAuth(`Authentication/ResetPassword?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

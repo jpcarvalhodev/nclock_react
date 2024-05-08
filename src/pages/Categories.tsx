@@ -29,7 +29,7 @@ export const Categories = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Categories', {
+            const response = await fetchWithAuth('Categories', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export const Categories = () => {
 
     const handleAddCategory = async (category: Category) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Categories', {
+            const response = await fetchWithAuth('Categories', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const Categories = () => {
 
     const handleUpdateCategory = async (category: Category) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Categories/${category.categoryID}`, {
+            const response = await fetchWithAuth(`Categories/${category.categoryID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export const Categories = () => {
 
     const handleDeleteCategory = async (categoryID: string) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Categories/${categoryID}`, {
+            const response = await fetchWithAuth(`Categories/${categoryID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ export const Categories = () => {
     };
 
     return (
-        <div>
+        <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-header">

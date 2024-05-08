@@ -29,7 +29,7 @@ export const Departments = () => {
 
     const fetchDepartments = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Departaments');
+            const response = await fetchWithAuth('Departaments');
             if (!response.ok) {
                 toast.error('Erro ao buscar dados dos departamentos');
             }
@@ -42,7 +42,7 @@ export const Departments = () => {
 
     const handleAddDepartment = async (department: Department) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Departaments', {
+            const response = await fetchWithAuth('Departaments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export const Departments = () => {
 
     const handleUpdateDepartment = async (department: Department) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Departments/${department.departmentID}`, {
+            const response = await fetchWithAuth(`Departments/${department.departmentID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export const Departments = () => {
 
     const handleDeleteDepartment = async (departmentID: string) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Departaments/${departmentID}`, {
+            const response = await fetchWithAuth(`Departaments/${departmentID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ export const Departments = () => {
     };
 
     return (
-        <div>
+        <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-header">

@@ -81,7 +81,7 @@ export const Dashboard = () => {
 
     const fetchEvents = async (): Promise<CalendarEvent[]> => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees', {
+            const response = await fetchWithAuth('Employees/GetAllEmployees', {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -109,7 +109,7 @@ export const Dashboard = () => {
 
     const fetchDepartments = async (): Promise<void> => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Departaments', {
+            const response = await fetchWithAuth('Departaments', {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -124,7 +124,7 @@ export const Dashboard = () => {
 
     const fetchGroups = async (): Promise<void> => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Groups', {
+            const response = await fetchWithAuth('Groups', {
                 headers: {
                     'Content-Type': 'application/json',
                 },

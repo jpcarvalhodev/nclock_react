@@ -50,7 +50,7 @@ export const CreateModalCatProf = <T extends Record<string, any>>({ title, open,
     }, [open]);
 
     const fetchCategoryOrProfessionData = async () => {
-        const url = entityType === 'categorias' ? 'https://localhost:7129/api/Categories' : 'https://localhost:7129/api/Professions';
+        const url = entityType === 'categorias' ? 'Categories' : 'Professions';
         try {
             const response = await fetchWithAuth(url);
             if (response.ok) {

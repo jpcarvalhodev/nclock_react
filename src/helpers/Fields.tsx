@@ -16,7 +16,7 @@ export const employeeFields = [
     { label: 'Data de Nascimento', key: 'birthday', type: 'string' },
     { label: 'Nacionalidade', key: 'nacionality', type: 'string' },
     { label: 'Gênero', key: 'gender', type: 'string' },
-    { label: 'Número de BI', key: 'biNumber', type: 'string' },
+    { label: 'Número de BI', key: 'biNumber', type: 'number' },
     { label: 'Emissão de BI', key: 'biIssuance', type: 'string' },
     { label: 'Validade de BI', key: 'biValidity', type: 'string' },
     { label: 'NIF', key: 'nif', type: 'number' },
@@ -26,12 +26,12 @@ export const employeeFields = [
     { label: 'Status', key: 'status', type: 'boolean' },
     { label: 'Status de E-Mail', key: 'statusEmail', type: 'boolean' },
     { label: 'Tipo', key: 'type', type: 'string' },
-    { label: 'Departamento', key: 'departmentId', type: 'dropdown', optionsUrl: 'https://localhost:7129/api/Departaments' },
-    { label: 'Profissão', key: 'professionId', type: 'dropdown', optionsUrl: 'https://localhost:7129/api/Professions', showCodeInsteadOfName: true },
-    { label: 'Categoria', key: 'categoryId', type: 'dropdown', optionsUrl: 'https://localhost:7129/api/Categories', showCodeInsteadOfName: true },
-    { label: 'Grupo', key: 'groupId', type: 'dropdown', optionsUrl: 'https://localhost:7129/api/Groups' },
-    { label: 'Zona', key: 'zoneId', type: 'dropdown', optionsUrl: 'https://localhost:7129/api/Zones' },
-    { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', optionsUrl: 'https://localhost:7129/api/ExternalEntities' },
+    { label: 'Departamento', key: 'departmentId', type: 'dropdown', optionsUrl: 'Departaments' },
+    { label: 'Profissão', key: 'professionId', type: 'dropdown', optionsUrl: 'Professions', showCodeInsteadOfName: true },
+    { label: 'Categoria', key: 'categoryId', type: 'dropdown', optionsUrl: 'Categories', showCodeInsteadOfName: true },
+    { label: 'Grupo', key: 'groupId', type: 'dropdown', optionsUrl: 'Groups' },
+    { label: 'Zona', key: 'zoneId', type: 'dropdown', optionsUrl: 'Zones' },
+    { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', optionsUrl: 'ExternalEntities' },
 ];
 
 export const departmentFields = [

@@ -13,6 +13,7 @@ declare module '@mui/x-tree-view/RichTreeView';
 declare module '@mui/x-tree-view/models';
 declare module 'split.js';
 declare module 'react-chartjs-2';
+declare module 'react-responsive-carousel';
 
 declare module 'file-saver';
 declare module '@react-pdf/renderer';

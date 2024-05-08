@@ -29,7 +29,7 @@ export const Zones = () => {
 
     const fetchZones = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Zones', {
+            const response = await fetchWithAuth('Zones', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export const Zones = () => {
 
     const handleAddZone = async (zone: Zone) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Zones', {
+            const response = await fetchWithAuth('Zones', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const Zones = () => {
 
     const handleUpdateZone = async (zone: Zone) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Zones/${zone.zoneID}`, {
+            const response = await fetchWithAuth(`Zones/${zone.zoneID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export const Zones = () => {
 
     const handleDeleteZone = async (zoneID: string) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Zones/${zoneID}`, {
+            const response = await fetchWithAuth(`Zones/${zoneID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ export const Zones = () => {
     };
 
     return (
-        <div>
+        <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-header">

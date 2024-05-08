@@ -29,7 +29,7 @@ export const Professions = () => {
 
     const fetchProfessions = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Professions', {
+            const response = await fetchWithAuth('Professions', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export const Professions = () => {
 
     const handleAddProfession = async (profession: Profession) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Professions', {
+            const response = await fetchWithAuth('Professions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const Professions = () => {
 
     const handleUpdateProfession = async (profession: Profession) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Professions/${profession.professionID}`, {
+            const response = await fetchWithAuth(`Professions/${profession.professionID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export const Professions = () => {
 
     const handleDeleteProfessions = async (professionID: string) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Professions/${professionID}`, {
+            const response = await fetchWithAuth(`Professions/${professionID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ export const Professions = () => {
     };
 
     return (
-        <div>
+        <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-header">

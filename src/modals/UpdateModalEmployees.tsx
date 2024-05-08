@@ -5,6 +5,9 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/modalAvatar.png';
 import { toast } from 'react-toastify';
+import { Department, ExternalEntity, Group, Profession, Zone } from '../helpers/Types';
+
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 export interface Entity {
   id: string;
@@ -17,24 +20,6 @@ interface Field {
   type: string;
   required?: boolean;
   optionsUrl?: string;
-}
-
-interface Option {
-  id: number;
-  departmentId?: string;
-  departmentName?: string;
-  professionId?: string;
-  professionDescription?: string;
-  categoryId?: string;
-  categoryDescription?: string;
-  groupId?: string;
-  groupName?: string;
-  zoneId?: string;
-  zoneName?: string;
-  externalEntityId?: string;
-  externalEntityName?: string;
-  name?: string;
-  description?: string;
 }
 
 interface UpdateModalProps<T extends Entity> {
@@ -52,56 +37,65 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const fileInputRef = React.createRef<HTMLInputElement>();
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [professions, setProfessions] = useState<Profession[]>([]);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
 
-  useEffect(() => {
+  const validateForm = () => {
     const isValid = fields.every(field => {
       const fieldValue = formData[field.key];
       const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
       return !field.required || (field.required && valueAsString !== '');
     });
     setIsFormValid(isValid);
+  }
+
+  const fetchDropdownOptions = async () => {
+    try {
+      const departmentsResponse = await fetchWithAuth('Departaments');
+      const groupsResponse = await fetchWithAuth('Groups');
+      const professionsResponse = await fetchWithAuth('Professions');
+      const zonesResponse = await fetchWithAuth('Zones');
+      const externalEntitiesResponse = await fetchWithAuth('ExternalEntities');
+      if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
+        const departmentsData: Department[] = await departmentsResponse.json();
+        const groupsData: Group[] = await groupsResponse.json();
+        const professionsData: Profession[] = await professionsResponse.json();
+        const zonesData: Zone[] = await zonesResponse.json();
+        const externalEntitiesData: ExternalEntity[] = await externalEntitiesResponse.json();
+        setDepartments(departmentsData);
+        setGroups(groupsData);
+        setProfessions(professionsData);
+        setZones(zonesData);
+        setExternalEntities(externalEntitiesData);
+        setDropdownData(prev => ({
+          ...prev,
+          departmentId: departmentsData.map(department => ({ id: department.id, name: department.name })),
+          groupId: groupsData.map(group => ({ id: group.id, name: group.name })),
+          professionId: professionsData.map(profession => ({ id: profession.id, description: profession.description })),
+          zoneId: zonesData.map(zone => ({ id: zone.id, name: zone.name })),
+          externalEntityId: externalEntitiesData.map(externalEntity => ({ id: externalEntity.id, name: externalEntity.name }))
+        }));
+      } else {
+        toast.error('Erro ao buscar os dados de departamentos e grupos.');
+      }
+    } catch (error) {
+      toast.error('Erro ao buscar os dados de departamentos e grupos.');
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    validateForm();
   }, [formData, fields]);
 
   useEffect(() => {
-    const fetchDropdownOptions = async (field: Field) => {
-      if (field.optionsUrl) {
-        const response = await fetchWithAuth(field.optionsUrl);
-        if (response.ok) {
-          const data = await response.json();
-          setDropdownData(prevState => ({
-            ...prevState,
-            [field.key]: data
-          }));
-        }
-      }
-    };
-
-    fields.forEach(field => {
-      if (field.type === 'dropdown') {
-        fetchDropdownOptions(field);
-      }
-    });
-  }, [fields]);
-
-  const getDisplayName = (field: Field, option: Option) => {
-    const { key } = field;
-
-    switch (key) {
-      case 'departmentId':
-        return option.name ?? option.departmentId;
-      case 'professionId':
-      case 'categoryId':
-        return option.description ?? option.professionDescription ?? option.categoryDescription;
-      case 'groupId':
-        return option.name ?? option.groupName ?? option.groupId;
-      case 'zoneId':
-        return option.name ?? option.zoneName ?? option.zoneId;
-      case 'externalEntityId':
-        return option.name ?? option.externalEntityName ?? option.externalEntityId;
-      default:
-        return 'Desconhecido';
+    if (open) {
+      fetchDropdownOptions();
     }
-  };
+  }, [open]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -121,6 +115,14 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
   };
 
   const triggerFileSelectPopup = () => fileInputRef.current?.click();
+
+  const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+    const { value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [key]: value
+    }));
+  };
 
   const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value } = e.target;
@@ -380,13 +382,13 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                             as="select"
                             className="custom-input-height custom-select-font-size"
                             value={formData[field.key] || ''}
-                            onChange={handleChange}
+                            onChange={(e) => handleDropdownChange(formData[field.key], e)}
                             name={field.key}
                           >
-                            <option value="" disabled>Selecione...</option>
-                            {dropdownData[field.key]?.map(option => (
-                              <option key={option.id ?? option[field.key]} value={option.id ?? option[field.key]}>
-                                {getDisplayName(field, option)}
+                            <option value="">Selecione...</option>
+                            {dropdownData[field.key]?.map((option: any) => (
+                              <option key={option.id} value={option.id}>
+                                {option.name || option.description}
                               </option>
                             ))}
                           </Form.Control>

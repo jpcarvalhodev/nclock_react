@@ -28,7 +28,7 @@ export const Persons = () => {
 
     const fetchAllEmployees = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
+            const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
                 toast.error('Erro ao buscar funcionários');
                 return;
@@ -42,7 +42,7 @@ export const Persons = () => {
 
     const handleAddEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/CreateEmployee', {
+            const response = await fetchWithAuth('Employees/CreateEmployee', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -66,6 +66,7 @@ export const Persons = () => {
 
     const handleSelectEmployees = (employeeIds: string[]) => {
         setSelectedEmployeeIds(employeeIds);
+        setShowAllEmployees(employeeIds.length === 0);
     };
 
     const refreshEmployeeData = () => {

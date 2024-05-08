@@ -22,7 +22,7 @@ export const ForgotPassword = () => {
     }
 
     try {
-      const response = await fetch(`https://localhost:7129/api/Authentication/ForgotPassword?emailAddress=${email}`, {
+      const response = await fetch(`Authentication/ForgotPassword?emailAddress=${email}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

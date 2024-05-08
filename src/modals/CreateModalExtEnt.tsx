@@ -48,7 +48,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
 
     useEffect(() => {
         const fetchEmployees = async () => {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
+            const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (response.ok) {
                 const employees = await response.json();
                 setDropdownData(prev => ({ ...prev, responsibleName: employees }));

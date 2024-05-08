@@ -54,13 +54,14 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+  const selectionChangedRef = { current: false };
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const deptResponse = await fetchWithAuth('https://localhost:7129/api/Departaments/Employees');
-        const groupResponse = await fetchWithAuth('https://localhost:7129/api/Groups/Employees');
-        const employeesResponse = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
+        const deptResponse = await fetchWithAuth('Departaments/Employees');
+        const groupResponse = await fetchWithAuth('Groups/Employees');
+        const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
 
         if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
           toast.error('Falha ao buscar dados');
@@ -82,7 +83,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         );
 
         const departmentItems = departments.map((dept: Department) => ({
-          id: dept.departmentID,
+          id: `department-${dept.departmentID}`,
           label: dept.name,
           children: dept.employees.map((emp: Employee) => ({
             id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
@@ -91,7 +92,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         }));
 
         const groupItems = groups.map((group: Group) => ({
-          id: group.groupID,
+          id: `group-${group.groupID}`,
           label: group.name,
           children: group.employees.map((emp: Employee) => ({
             id: `group-${group.groupID}-emp-${emp.employeeID}`,
@@ -130,9 +131,10 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           },
         ];
         setItems(treeItems);
-        setExpandedIds([]);
+        setFilteredItems(treeItems);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
+        toast.error('Falha ao buscar dados');
       }
     }
     fetchData();
@@ -146,7 +148,9 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     const employeeIds = itemIds
       .filter(id => id.includes('-emp-'))
       .map(id => id.substring(id.lastIndexOf('-emp-') + 5));
-    onSelectEmployees(employeeIds.length > 0 ? employeeIds : []);
+    setSelectedEmployeeIds(employeeIds);
+    selectionChangedRef.current = true;
+    onSelectEmployees(employeeIds);
   };
 
   useEffect(() => {
@@ -159,12 +163,18 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     setFilteredItems(newFilteredItems);
   }, [items, searchTerm]);
 
+  useEffect(() => {
+    if (selectionChangedRef.current) {
+      selectionChangedRef.current = false;
+    }
+  }, [selectedEmployeeIds]);
+
   return (
     <Box className="TreeViewContainer">
       <Box className="treeViewFlexItem">
         <RichTreeView
           multiSelect={true}
-          items={items}
+          items={filteredItems}
           getItemId={(item: TreeViewBaseItem) => item.id}
           onSelectedItemsChange={handleSelectedItemsChange}
           selectedItems={selectedEmployeeIds}

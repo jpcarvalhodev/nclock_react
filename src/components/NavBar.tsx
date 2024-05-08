@@ -301,7 +301,7 @@ export const NavBar = () => {
 										</Link>
 									</div>
 									<div className="grid-container-entidades">
-										<Link to="/Employees" type="button" className="btn btn-light ribbon-button">
+										<Link to="/Employees" type="button" className="btn btn-light ribbon-button-ent">
 											<span className="icon">
 												<img src={types} alt="avatar funcionários" />
 											</span>

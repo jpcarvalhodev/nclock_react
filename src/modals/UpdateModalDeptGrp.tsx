@@ -55,7 +55,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     }, []);
 
     const fetchEntities = async () => {
-        const url = entityType === 'department' ? 'https://localhost:7129/api/Departaments/Employees' : 'https://localhost:7129/api/Groups/Employees';
+        const url = entityType === 'department' ? 'Departaments/Employees' : 'Groups/Employees';
         try {
             const response = await fetchWithAuth(url);
             if (!response.ok) {
@@ -75,7 +75,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     const handleAddEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/CreateEmployee', {
+            const response = await fetchWithAuth('Employees/CreateEmployee', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/UpdateEmployee/${employee.employeeID}`, {
+            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

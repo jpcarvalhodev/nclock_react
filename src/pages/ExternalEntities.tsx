@@ -29,7 +29,7 @@ export const ExternalEntities = () => {
 
     const fetchExternalEntities = async () => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/ExternalEntities', {
+            const response = await fetchWithAuth('ExternalEntities', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export const ExternalEntities = () => {
 
     const handleAddExternalEntity = async (externalEntity: ExternalEntity) => {
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/ExternalEntities', {
+            const response = await fetchWithAuth('ExternalEntities', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const ExternalEntities = () => {
 
     const handleUpdateExternalEntity = async (externalEntity: ExternalEntity) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/ExternalEntities/${externalEntity.externalEntityID}`, {
+            const response = await fetchWithAuth(`ExternalEntities/${externalEntity.externalEntityID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export const ExternalEntities = () => {
 
     const handleDeleteExternalEntity = async (externalEntityID: string) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/ExternalEntities/${externalEntityID}`, {
+            const response = await fetchWithAuth(`ExternalEntities/${externalEntityID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -212,7 +212,7 @@ export const ExternalEntities = () => {
     };
 
     return (
-        <div>
+        <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-header">

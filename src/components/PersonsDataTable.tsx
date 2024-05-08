@@ -34,7 +34,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const fetchAllEmployees = async () => {
         setIsLoading(true);
         try {
-            const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
+            const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
                 toast.error('Falha ao carregar dados dos funcionários');
                 console.error('Erro ao carregar todos os funcionários:', response.status);
@@ -55,27 +55,9 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         fetchAllEmployees();
     }, []);
 
-    useEffect(() => {
-        if (selectedEmployeeIds.length > 0) {
-            const filteredEmployees = allEmployees.filter(emp => selectedEmployeeIds.includes(emp.employeeID));
-            setEmployees(filteredEmployees);
-        } else {
-            setEmployees(allEmployees);
-        }
-    }, [selectedEmployeeIds, allEmployees]);
-
-    useEffect(() => {
-        if (selectedEmployeeIds.length > 0) {
-            const filteredEmployees = allEmployees.filter(emp => selectedEmployeeIds.includes(emp.employeeID));
-            setEmployees(filteredEmployees);
-        } else {
-            setEmployees(allEmployees);
-        }
-    }, [selectedEmployeeIds, allEmployees]);
-
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/UpdateEmployee/${employee.employeeID}`, {
+            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -108,7 +90,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
     const handleDeleteEmployee = async (employeeID: string) => {
         try {
-            const response = await fetchWithAuth(`https://localhost:7129/api/Employees/DeleteEmployee/${employeeID}`, {
+            const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
                 method: 'DELETE',
             });
 
@@ -131,11 +113,17 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
     useEffect(() => {
         let filteredByIDs = selectedEmployeeIds.length > 0
-            ? allEmployees.filter(emp => selectedEmployeeIds.includes(emp.employeeID))
+            ? allEmployees.filter((emp) =>
+                selectedEmployeeIds.includes(emp.employeeID) ||
+                !emp.departmentId ||
+                !emp.groupId
+            )
             : allEmployees;
 
-        let filteredBySearchText = filteredByIDs.filter(employee =>
-            employee.name.toLowerCase().includes(filterText.toLowerCase())
+        let filteredBySearchText = filteredByIDs.filter((employee) =>
+            Object.values(employee).some((value) =>
+                String(value).toLowerCase().includes(filterText.toLowerCase())
+            )
         );
 
         setEmployees(filteredBySearchText);
@@ -188,8 +176,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         setSelectedRows(state.selectedRows);
         filteredEmployees(state.selectedRows);
     };
-
-    const data = employees
 
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -259,7 +245,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 <>
                     <DataTable
                         columns={[...columns, actionColumn]}
-                        data={data}
+                        data={employees}
                         highlightOnHover
                         pagination
                         paginationComponentOptions={paginationOptions}

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { set } from 'date-fns';
+import { fetchWithoutAuth } from '../components/FetchWithoutAuth';
 
 type User = {
   username: string;
@@ -34,7 +34,7 @@ export const Login = () => {
     };
 
     try {
-      const response = await fetch('https://localhost:7129/api/Authentication/Login', {
+      const response = await fetchWithoutAuth('Authentication/Login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -7,6 +7,7 @@ import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstr
 import modalAvatar from '../assets/img/modalAvatar.png';
 import { toast } from 'react-toastify';
 import { Department, Employee, ExternalEntity, Group, Profession, Zone } from '../helpers/Types';
+import { fi } from 'date-fns/locale';
 
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
@@ -57,7 +58,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     };
 
     const fetchEmployeesAndSetNextEnrollNumber = async () => {
-        const response = await fetchWithAuth('https://localhost:7129/api/Employees/GetAllEmployees');
+        const response = await fetchWithAuth('Employees/GetAllEmployees');
         if (response.ok) {
             const employees: Employee[] = await response.json();
             const maxEnrollNumber = employees.reduce((max: number, employee: Employee) => Math.max(max, employee.enrollNumber), 0);
@@ -72,11 +73,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     const fetchDropdownOptions = async () => {
         try {
-            const departmentsResponse = await fetchWithAuth('https://localhost:7129/api/Departaments');
-            const groupsResponse = await fetchWithAuth('https://localhost:7129/api/Groups');
-            const professionsResponse = await fetchWithAuth('https://localhost:7129/api/Professions');
-            const zonesResponse = await fetchWithAuth('https://localhost:7129/api/Zones');
-            const externalEntitiesResponse = await fetchWithAuth('https://localhost:7129/api/ExternalEntities');
+            const departmentsResponse = await fetchWithAuth('Departaments');
+            const groupsResponse = await fetchWithAuth('Groups');
+            const professionsResponse = await fetchWithAuth('Professions');
+            const zonesResponse = await fetchWithAuth('Zones');
+            const externalEntitiesResponse = await fetchWithAuth('ExternalEntities');
             if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
                 const departmentsData: Department[] = await departmentsResponse.json();
                 const groupsData: Group[] = await groupsResponse.json();
@@ -130,7 +131,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: ChangeEvent<FormControlElement>) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
             ...prevState,
@@ -154,13 +155,14 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         validateForm();
     };
 
-    const handleDropdownChange = (e: React.ChangeEvent<FormControlElement>) => {
-        const { name, value } = e.target as HTMLSelectElement;
+    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+        console.log('key', key);
+        const { value } = e.target;
         setFormData(prevState => ({
-            ...prevState,
-            [name]: value
+          ...prevState,
+          [key]: value
         }));
-    };
+      };
 
     const handleSaveClick = () => {
         if (!isFormValid) {
@@ -404,8 +406,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                                         as="select"
                                                         className="custom-input-height custom-select-font-size"
                                                         value={formData[field.key] || ''}
-                                                        onChange={handleDropdownChange}
-                                                        name={field.key}
+                                                        onChange={(e) => handleDropdownChange(formData[field.key] || '', e)}
                                                     >
                                                         <option value="">Selecione...</option>
                                                         {dropdownData[field.key]?.map((option) => (
