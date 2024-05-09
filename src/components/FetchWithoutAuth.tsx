@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 
 const BASE_URL = 'https://localhost:7129/api/';
+const REDIRECT_DELAY = 3000;
 
 interface FetchOptions extends RequestInit {
     headers?: HeadersInit;
@@ -28,18 +29,24 @@ export const fetchWithoutAuth = async (endpoint: string, options: FetchOptions =
 const handleHTTPError = async (response: Response) => {
     switch (response.status) {
         case 401:
-            window.location.href = '/unauthorized';
             toast.error('Você não tem permissão para acessar esta página');
+            setTimeout(() => {
+                window.location.href = '/unauthorized';
+            }, REDIRECT_DELAY);
             break;
         case 404:
-            window.location.href = '/notfound';
             toast.error('Página não encontrada');
+            setTimeout(() => {
+                window.location.href = '/notfound';
+            }, REDIRECT_DELAY);
             break;
         case 502:
         case 503:
         case 504:
-            window.location.href = '/notfound';
             toast.error('Página não encontrada');
+            setTimeout(() => {
+                window.location.href = '/notfound';
+            }, REDIRECT_DELAY);
             break;
         default:
             toast.error(`Erro ao tentar executar a operação. Código de erro: ${response.status}`);

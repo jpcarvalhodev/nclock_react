@@ -1,7 +1,7 @@
 import { employeeFields, externalEntityFields, zoneFields } from "../helpers/Fields";
 import { Employee, ExternalEntity, Zone } from "../helpers/Types";
 import '../css/Expanded.css';
-import modalAvatar from '../assets/img/modalAvatar.png';
+import modalAvatar from '../assets/img/navbar/modalAvatar.png';
 
 interface Field {
     key: string;

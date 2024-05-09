@@ -109,15 +109,11 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         }
     }
 
-    const memoizedFilteredEmployees = useCallback(filteredEmployees, []);
+    const memorizedFilteredEmployees = useCallback(filteredEmployees, []);
 
     useEffect(() => {
         let filteredByIDs = selectedEmployeeIds.length > 0
-            ? allEmployees.filter((emp) =>
-                selectedEmployeeIds.includes(emp.employeeID) ||
-                !emp.departmentId ||
-                !emp.groupId
-            )
+            ? allEmployees.filter((emp) => selectedEmployeeIds.includes(emp.employeeID))
             : allEmployees;
 
         let filteredBySearchText = filteredByIDs.filter((employee) =>
@@ -127,8 +123,8 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         );
 
         setEmployees(filteredBySearchText);
-        memoizedFilteredEmployees(filteredBySearchText);
-    }, [selectedEmployeeIds, filterText, allEmployees, memoizedFilteredEmployees]);
+        memorizedFilteredEmployees(filteredBySearchText);
+    }, [selectedEmployeeIds, filterText, allEmployees, memorizedFilteredEmployees]);
 
     useEffect(() => {
         if (resetSelection) {

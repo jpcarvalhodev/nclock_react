@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
+import { NClockDashboard } from './pages/NClockDashboard';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { Employees } from './pages/Employees';
 import { Departments } from './pages/Departments';
@@ -27,38 +28,44 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import './App.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { useRef } from 'react';
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const nodeRef = useRef(null);
 
   return (
     <TransitionGroup>
       <CSSTransition
         key={location.key}
+        nodeRef={nodeRef}
         timeout={500}
         classNames="fade"
       >
-        <Routes location={location}>
-          <Route path="/" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path='/reset-password' element={<ResetPassword />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
-          <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
-          <Route path="/persons" element={<PageProtection><Persons /></PageProtection>} />
-          <Route path="/employees" element={<PageProtection><Employees /></PageProtection>} />
-          <Route path="/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
-          <Route path="/user" element={<PageProtection><User /></PageProtection>} />
-          <Route path="/visitors" element={<PageProtection><Visitors /></PageProtection>} />
-          <Route path="/contacts" element={<PageProtection><Contacts /></PageProtection>} />
-          <Route path="/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
-          <Route path="/departments" element={<PageProtection><Departments /></PageProtection>} />
-          <Route path="/categories" element={<PageProtection><Categories /></PageProtection>} />
-          <Route path="/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />
-          <Route path="/groups" element={<PageProtection><Groups /></PageProtection>} />
-          <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
-          <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div ref={nodeRef}>
+          <Routes location={location}>
+            <Route path="/" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
+            <Route path="/persons" element={<PageProtection><Persons /></PageProtection>} />
+            <Route path="/employees" element={<PageProtection><Employees /></PageProtection>} />
+            <Route path="/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
+            <Route path="/user" element={<PageProtection><User /></PageProtection>} />
+            <Route path="/visitors" element={<PageProtection><Visitors /></PageProtection>} />
+            <Route path="/contacts" element={<PageProtection><Contacts /></PageProtection>} />
+            <Route path="/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
+            <Route path="/departments" element={<PageProtection><Departments /></PageProtection>} />
+            <Route path="/categories" element={<PageProtection><Categories /></PageProtection>} />
+            <Route path="/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />
+            <Route path="/groups" element={<PageProtection><Groups /></PageProtection>} />
+            <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
+            <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
+            <Route path="/nclockdashboard" element={<PageProtection><NClockDashboard /></PageProtection>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </CSSTransition>
     </TransitionGroup>
   );

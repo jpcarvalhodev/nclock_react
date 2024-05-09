@@ -66,7 +66,7 @@ export const Login = () => {
           localStorage.removeItem('rememberMePassword');
         }
 
-        toast('Usuário logado com sucesso!', {progressClassName: 'custom-progress-bar'});
+        toast(`Seja bem vindo ${username}!`, {progressClassName: 'custom-progress-bar'});
         navigate('/dashboard');
       }
     } catch (error) {

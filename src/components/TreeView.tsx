@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { fetchWithAuth } from './FetchWithAuth';
@@ -140,17 +140,18 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     fetchData();
   }, []);
 
-  const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
+  const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {
     setExpandedIds(nodeIds);
   };
 
-  const handleSelectedItemsChange = (event: React.SyntheticEvent, itemIds: string[]) => {
+  const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
     const employeeIds = itemIds
       .filter(id => id.includes('-emp-'))
       .map(id => id.substring(id.lastIndexOf('-emp-') + 5));
-    setSelectedEmployeeIds(employeeIds);
-    selectionChangedRef.current = true;
-    onSelectEmployees(employeeIds);
+
+    const newSelectedEmployeeIds = [...new Set([...selectedEmployeeIds, ...employeeIds])];
+    setSelectedEmployeeIds(newSelectedEmployeeIds);
+    onSelectEmployees(newSelectedEmployeeIds);
   };
 
   useEffect(() => {

@@ -7,17 +7,9 @@ import { fetchWithAuth } from "../components/FetchWithAuth";
 import { toast } from "react-toastify";
 import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, PieController, Tooltip, Legend, BarElement, BarController, CategoryScale, LinearScale } from 'chart.js';
-import { Carousel } from 'react-responsive-carousel';
-import banner_1 from '../assets/img/carousel/banner_1.jpg';
-import banner_2 from '../assets/img/carousel/banner_2.jpg';
-import banner_3 from '../assets/img/carousel/banner_3.jpg';
-import banner_4 from '../assets/img/carousel/banner_4.jpg';
-import banner_5 from '../assets/img/carousel/banner_5.jpg';
-import banner_6 from '../assets/img/carousel/banner_6.jpg';
-import banner_7 from '../assets/img/carousel/banner_7.jpg';
-import banner_8 from '../assets/img/carousel/banner_8.jpg';
-import banner_9 from '../assets/img/carousel/banner_9.jpg';
+import { Bar } from "react-chartjs-2";
 
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -57,7 +49,7 @@ const messages = {
     showMore: (total: number) => `+ Ver mais (${total})`
 };
 
-export const Dashboard = () => {
+export const NClockDashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [totalDepartments, setTotalDepartments] = useState<number>(0);
@@ -121,6 +113,32 @@ export const Dashboard = () => {
         }
     };
 
+    const chartData = {
+        labels: ['Total de Funcionários'],
+        datasets: [{
+            label: 'Contagem de Funcionários',
+            data: [totalEmployees],
+            backgroundColor: [
+                '#0050a0'
+            ],
+            borderColor: [
+                '#0080ff'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const chartDataDepartmentsGroups = {
+        labels: ['Departamentos', 'Grupos'],
+        datasets: [{
+            label: 'Contagem de Departamentos e Grupos',
+            data: [totalDepartments, totalGroups],
+            backgroundColor: ['#0050a0'],
+            borderColor: ['#0080ff'],
+            borderWidth: 1
+        }]
+    };
+
     useEffect(() => {
         loadData();
     }, []);
@@ -140,37 +158,6 @@ export const Dashboard = () => {
         <div className="dashboard-container">
             <NavBar />
             <div className="dashboard-content">
-                <div className="carousel-container" style={{ flex: 1 }}>
-                    <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false}>
-                        <div>
-                            <img className="img-carousel" src={banner_1} alt="Imagem 1" />
-                        </div>
-                        <div>
-                            <img className="img-carousel" src={banner_2} alt="Imagem 2" />
-                        </div>
-                        <div>
-                            <img className="img-carousel" src={banner_3} alt="Imagem 3" />
-                        </div>
-                        <div>
-                            <img className="img-carousel" src={banner_4} alt="Imagem 4" />
-                        </div>
-                        <div>
-                            <img className="img-carousel" src={banner_5} alt="Imagem 5" />
-                        </div>
-                        <div>
-                            <img className="img-carousel" src={banner_6} alt="Imagem 6" />
-                        </div>
-                        <div>
-                            <img className="img-carousel" src={banner_7} alt="Imagem 7" />
-                        </div>
-                        <div>
-                            <img className="img-carousel" src={banner_8} alt="Imagem 8" />
-                        </div>
-                        <div>
-                            <img className="img-carousel" src={banner_9} alt="Imagem 9" />
-                        </div>
-                    </Carousel>
-                </div>
                 <div className="calendar-container">
                     <div className="dashboard-calendar" style={{ flex: 1 }}>
                         <Calendar
@@ -182,6 +169,20 @@ export const Dashboard = () => {
                             messages={messages}
                             culture="pt"
                         />
+                    </div>
+                </div>
+            </div>
+            <div className="dashboard-content">
+                <div className="chart-container">
+                    <div className="employee-pie-chart" style={{ flex: 1 }}>
+                        <h2 className="employee-pie-chart-text">Total de Funcionários: {totalEmployees}</h2>
+                        <Pie data={chartData} />
+                    </div>
+                </div>
+                <div className="chart-container">
+                    <div className="departments-groups-chart" style={{ flex: 1 }}>
+                        <h2 className="departments-groups-chart-text">Departamentos e Grupos</h2>
+                        <Bar data={chartDataDepartmentsGroups} />
                     </div>
                 </div>
             </div>

@@ -7,7 +7,7 @@
 
 .logo {
     font-weight: bold;
-    font-size: 25px;
+    font-size: 15px;
     padding: 10px;
     line-height: 0;
     color: white;
@@ -219,11 +219,28 @@
 .user-section {
     margin-left: auto;
     background-color: transparent;
+    display: flex;
 }
 
 .user-info {
-    font-size: 18px;
+    font-size: 14px;
     color: white;
+}
+
+.image-text {
+    display: flex;
+    align-items: center;
+    margin-left: 32px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.image-text img {
+    margin-right: 5px;
+}
+
+.image-text span {
+    color: #0050a0;
 }
 
 .dropdown-icon {
@@ -242,6 +259,11 @@
     top: 45px;
     width: 30px;
     height: 30px;
+}
+
+#dropdown-basic::after,
+#dropdown-basic-2::after {
+    display: none !important;
 }
 
 .nav-item.active .nav-link,
@@ -271,7 +293,7 @@
     }
 
     .logo {
-        font-size: 20px;
+        font-size: 15px;
         margin-top: 5px;
         margin-bottom: 5px;
     }
@@ -302,10 +324,6 @@
         font-size: 10px;
     }
 
-    .user-info {
-        font-size: 14px;
-    }
-
     .ribbon-icon {
         right: 0px;
         top: 120px;
@@ -313,10 +331,10 @@
 
 }
 
-@media (min-width: 501px) and (max-width: 900px) {
+@media (min-width: 501px) and (max-width: 1000px) {
 
     .logo {
-        font-size: 20px;
+        font-size: 15px;
     }
 
     .section {
@@ -344,8 +362,7 @@
     .ribbon-button-ent .text,
     .ribbon-button-entidades .text,
     .ribbon-button-funcext .text,
-    .ribbon-button-informacoes .text,
-    .user-info {
+    .ribbon-button-informacoes .text {
         font-size: 14px;
     }
 }

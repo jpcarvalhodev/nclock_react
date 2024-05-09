@@ -36,20 +36,11 @@ body {
 }
 
 .dashboard-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     flex-wrap: wrap;
-    margin-top: 20px;
 }
 
 .dashboard-calendar {
-    height: 610px;
-    width: calc(100% - 40px);
-    margin-top: 20px;
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-bottom: 100px;
+    height: 600px;
 }
 
 .employee-pie-chart {
@@ -143,7 +134,6 @@ body {
 }
 
 .treeview-container {
-    height: 92%;
     overflow: auto;
     min-width: 100px;
 }
@@ -194,7 +184,6 @@ body {
     background-color: #eee;
     background-repeat: no-repeat;
     background-position: 50%;
-    height: 93%;
 }
 
 .gutter.gutter-horizontal {
@@ -298,18 +287,21 @@ body {
         gap: 0;
     }
 
-    .split .gutter {
-        height: 92%;
+    .dashboard-container {
+        flex-direction: column;
     }
 
-    .dashboard-content {
-        flex-direction: column;
-        margin-top: 20px;
-        margin-bottom: 20px;
+    .departments-groups-chart-text {
+        margin-bottom: 100px;
+    }
+
+    .dashboard-calendar {
+        height: 400px;
+        width: 300px;    
     }
 }
 
-@media (min-width: 501) and (max-width: 900px) {
+@media (min-width: 501) and (max-width: 1000px) {
 
     .profile-avatar {
         max-width: 30px;
@@ -324,13 +316,14 @@ body {
         flex: 2;
     }
 
-    .split .gutter {
-        height: 92%;
+    .departments-groups-chart-text {
+        margin-bottom: 100px;
     }
+}
+
+@media (min-width: 1001px) {
 
     .dashboard-content {
-        flex-direction: column;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        display: flex;
     }
 }
