@@ -18,6 +18,15 @@ import banner_6 from '../assets/img/carousel/banner_6.jpg';
 import banner_7 from '../assets/img/carousel/banner_7.jpg';
 import banner_8 from '../assets/img/carousel/banner_8.jpg';
 import banner_9 from '../assets/img/carousel/banner_9.jpg';
+import nclock from '../assets/img/navbar/navbar/nclock.webp';
+import naccess from '../assets/img/navbar/navbar/naccess.webp';
+import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
+import npark from '../assets/img/navbar/navbar/npark.webp';
+import ndoor from '../assets/img/navbar/navbar/ndoor.webp';
+import npatrol from '../assets/img/navbar/navbar/npatrol.webp';
+import ncard from '../assets/img/navbar/navbar/ncard.webp';
+import nview from '../assets/img/navbar/navbar/nview.webp';
+import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
 
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -56,6 +65,18 @@ const messages = {
     noEventsInRange: 'Não há eventos neste intervalo',
     showMore: (total: number) => `+ Ver mais (${total})`
 };
+
+const cardData = [
+    { id: 1, title: 'Nclock', img: nclock, link: '/nclockdashboard' },
+    { id: 2, title: 'Naccess', img: naccess, link: '/naccessdashboard' },
+    { id: 3, title: 'Nvisitor', img: nvisitor, link: '#' },
+    { id: 4, title: 'Npark', img: npark, link: '#' },
+    { id: 5, title: 'Ndoor', img: ndoor, link: '#' },
+    { id: 6, title: 'Npatrol', img: npatrol, link: '#' },
+    { id: 7, title: 'Ncard', img: ncard, link: '#' },
+    { id: 8, title: 'Nview', img: nview, link: '#' },
+    { id: 9, title: 'Nsecur', img: nsecur, link: '#' },
+];
 
 export const Dashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);

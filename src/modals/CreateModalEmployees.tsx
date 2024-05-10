@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
 import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import modalAvatar from '../assets/img/navbar/modalAvatar.png';
+import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import { Department, Employee, ExternalEntity, Group, Profession, Zone } from '../helpers/Types';
 

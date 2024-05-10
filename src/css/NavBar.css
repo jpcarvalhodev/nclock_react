@@ -17,7 +17,16 @@
 .pessoas-tab,
 .dispositivos-tab,
 .configuracao-tab,
-.ajuda-tab {
+.ajuda-tab,
+.nclock-tab,
+.naccess-tab,
+.nvisitor-tab,
+.npark-tab,
+.ndoor-tab,
+.npatrol-tab,
+.ncard-tab,
+.nview-tab,
+.nsecur-tab {
     margin-right: 5px;
     color: white;
 }
@@ -35,19 +44,10 @@
     border-right: 1px solid #ccc;
 }
 
-.grid-container,
-.grid-container-organizacao {
+.grid-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    margin-left: 5px;
     height: 100%;
-}
-
-.grid-container-entidades {
-    display: grid;
-    margin-left: 5px;
-    margin-bottom: 5px;
-    margin-top: 5px;
 }
 
 .icon img {
@@ -62,7 +62,7 @@
 }
 
 .title {
-    font-size: 14px;
+    font-size: 11px;
 }
 
 .ribbon-button-pessoas,
@@ -116,8 +116,7 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 14px;
-    margin-right: 5px;
+    font-size: 11px;
 }
 
 .ribbon-button-entidades .icon {
@@ -134,7 +133,7 @@
 .ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .icon-text-entidades {
@@ -152,31 +151,14 @@
 
 .ribbon-button,
 .ribbon-icon-button {
-    margin: 0 5px;
     display: flex;
     align-items: center;
     justify-content: start;
-}
-
-.ribbon-button-funcext {
-    display: flex;
-    font-size: 12px;
-    align-items: center;
-    justify-content: start;
-    white-space: nowrap;
-    margin-left: 5px;
-    background-color: transparent;
-    border-color: transparent;
-}
-
-.ribbon-button-funcext .text {
-    margin-left: 8px;
-    padding-right: 8px;
 }
 
 .ribbon-button .icon,
 .ribbon-icon-button .icon {
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .ribbon-button-pessoas .icon,
@@ -186,7 +168,7 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 14px;
+    font-size: 11px;
     margin-right: 5px;
 }
 
@@ -199,7 +181,7 @@
 .ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .icon-text-informacoes {
@@ -223,20 +205,21 @@
 }
 
 .user-info {
-    font-size: 14px;
+    font-size: 15px;
     color: white;
 }
 
 .image-text {
-    display: flex;
     align-items: center;
-    margin-left: 32px;
+    margin-left: 30px;
+    margin-right: 30px;
     margin-top: 5px;
     margin-bottom: 5px;
+    cursor: pointer;
 }
 
 .image-text img {
-    margin-right: 5px;
+    margin-right: 15px;
 }
 
 .image-text span {
@@ -314,16 +297,6 @@
         height: 40px;
     }
 
-    .ribbon-button .text,
-    .ribbon-button-ent .text,
-    .ribbon-button-entidades .text,
-    .ribbon-button-funcext .text,
-    .ribbon-button-informacoes .text,
-    .ribbon-button,
-    .ribbon-icon-button {
-        font-size: 10px;
-    }
-
     .ribbon-icon {
         right: 0px;
         top: 120px;
@@ -356,13 +329,5 @@
     .ribbon-button,
     .ribbon-icon-button {
         font-size: 10px;
-    }
-
-    .ribbon-button .text,
-    .ribbon-button-ent .text,
-    .ribbon-button-entidades .text,
-    .ribbon-button-funcext .text,
-    .ribbon-button-informacoes .text {
-        font-size: 14px;
     }
 }

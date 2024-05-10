@@ -6,8 +6,14 @@ body {
 }
 
 .profile-avatar {
-    max-width: 40px;
-    max-height: 40px;
+    width: 40px !important;
+    height: 40px !important;
+    margin-bottom: 10px;
+}
+
+.dropdown-content {
+    display: flex;
+    flex-direction: column;
 }
 
 .dashboard-container {
@@ -100,7 +106,7 @@ body {
     width: 100%;
     background-color: #0050a0;
     color: #fff;
-    padding: 15px;
+    padding: 10px;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -109,6 +115,7 @@ body {
 
 .footer p {
     margin: 0;
+    font-size: 14px;
 }
 
 .modal-scrollable .modal-dialog {
