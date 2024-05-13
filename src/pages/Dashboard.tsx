@@ -27,6 +27,8 @@ import npatrol from '../assets/img/navbar/navbar/npatrol.webp';
 import ncard from '../assets/img/navbar/navbar/ncard.webp';
 import nview from '../assets/img/navbar/navbar/nview.webp';
 import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
+import { Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -65,18 +67,6 @@ const messages = {
     noEventsInRange: 'Não há eventos neste intervalo',
     showMore: (total: number) => `+ Ver mais (${total})`
 };
-
-const cardData = [
-    { id: 1, title: 'Nclock', img: nclock, link: '/nclockdashboard' },
-    { id: 2, title: 'Naccess', img: naccess, link: '/naccessdashboard' },
-    { id: 3, title: 'Nvisitor', img: nvisitor, link: '#' },
-    { id: 4, title: 'Npark', img: npark, link: '#' },
-    { id: 5, title: 'Ndoor', img: ndoor, link: '#' },
-    { id: 6, title: 'Npatrol', img: npatrol, link: '#' },
-    { id: 7, title: 'Ncard', img: ncard, link: '#' },
-    { id: 8, title: 'Nview', img: nview, link: '#' },
-    { id: 9, title: 'Nsecur', img: nsecur, link: '#' },
-];
 
 export const Dashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -160,6 +150,82 @@ export const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar />
+            <div className="dashboard-content">
+                <div className="cards-container">
+                    <Link to="/nclockdashboard" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={nclock} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Nclock</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                    <Link to="/naccessdashboard" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={naccess} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Naccess</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                    <Link to="#" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={nvisitor} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Nvisitor</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                    <Link to="#" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={npark} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Npark</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                    <Link to="#" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={ndoor} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Ndoor</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                    <Link to="#" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={npatrol} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Npatrol</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                    <Link to="#" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={ncard} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Ncard</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                    <Link to="#" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={nview} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Nview</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                    <Link to="#" className="card-link">
+                        <Card className="card">
+                            <Card.Img variant="top" src={nsecur} className="card-img" />
+                            <Card.Body>
+                                <Card.Title className="card-title">Nsecur</Card.Title>
+                            </Card.Body>
+                        </Card>
+                    </Link>
+                </div>
+            </div>
             <div className="dashboard-content">
                 <div className="carousel-container" style={{ flex: 1 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false}>

@@ -28,12 +28,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import './App.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { NAccessDashboard } from './pages/NAccessDashboard';
 
 function AnimatedRoutes() {
   const location = useLocation();
   const nodeRef = useRef(null);
+  const [showContent, setShowContent] = useState(false);
 
   return (
     <TransitionGroup>
@@ -42,6 +43,8 @@ function AnimatedRoutes() {
         nodeRef={nodeRef}
         timeout={500}
         classNames="fade"
+        onEntered={() => setShowContent(true)}
+        onExited={() => setShowContent(false)}
       >
         <div ref={nodeRef}>
           <Routes location={location}>

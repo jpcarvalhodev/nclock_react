@@ -24,15 +24,50 @@ body {
 
 .chart-container,
 .calendar-container,
-.carousel-container {
+.carousel-container,
+.cards-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     flex: 1;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background: white;
     margin: 10px;
+}
+
+.card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    margin: 10px;
+}
+
+.card-img {
+    height: 120px;
+    width: 120px !important; 
+    object-fit: cover;
+}
+
+.card-title {
+    text-align: center;
+    color: #0050a0;
+    font-size: 24px !important;
+    margin-bottom: 0 !important;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    margin-left: 0 !important;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
 }
 
 .img-carousel {
@@ -286,16 +321,13 @@ body {
         flex: 2;
     }
 
-    .datatable-header {
+    .datatable-header,
+    .dashboard-container  {
         flex-direction: column;
     }
 
     .buttons-container {
         gap: 0;
-    }
-
-    .dashboard-container {
-        flex-direction: column;
     }
 
     .departments-groups-chart-text {
@@ -305,6 +337,11 @@ body {
     .dashboard-calendar {
         height: 400px;
         width: 300px;    
+    }
+
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -325,6 +362,11 @@ body {
 
     .departments-groups-chart-text {
         margin-bottom: 100px;
+    }
+
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 

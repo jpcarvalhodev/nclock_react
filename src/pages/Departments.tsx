@@ -13,8 +13,8 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { departmentFields } from '../helpers/Fields';
 import { ExportButton } from '../components/ExportButton';
 import { toast } from 'react-toastify';
-import { ExpandedComponentGeneric } from '../components/ExpandedComponentGeneric';
 import '../css/PagesStyles.css';
+import { ExpandedComponentDept } from '../components/ExpandedComponentDept';
 
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -32,11 +32,40 @@ export const Departments = () => {
             const response = await fetchWithAuth('Departaments');
             if (!response.ok) {
                 toast.error('Erro ao buscar dados dos departamentos');
+                return;
             }
-            const data = await response.json();
-            setDepartments(data);
+            const allDepartments: Department[] = await response.json();
+
+            const departmentMap = new Map<number, Department>(allDepartments.map((dept: Department) => [dept.code, { ...dept, subdepartments: [] }]));
+
+            allDepartments.forEach((dept: Department) => {
+                if (dept.paiId && departmentMap.has(dept.paiId)) {
+                    const parentDept = departmentMap.get(dept.paiId);
+                    if (parentDept) {
+                        parentDept.subdepartments.push(dept);
+                    }
+                }
+            });
+
+            const departmentsArray = Array.from(departmentMap.values());
+            setDepartments(departmentsArray);
         } catch (error) {
             console.error('Erro ao buscar dados dos departamentos:', error);
+        }
+    };
+
+    const fetchSubdepartments = async (parentId: number): Promise<Department[]> => {
+        try {
+            const response = await fetchWithAuth(`Departaments?parentId=${parentId}`);
+            if (!response.ok) {
+                toast.error('Erro ao buscar dados dos subdepartamentos');
+                return [];
+            }
+            const subdepartments: Department[] = await response.json();
+            return subdepartments;
+        } catch (error) {
+            console.error('Erro ao buscar dados dos subdepartamentos:', error);
+            return [];
         }
     };
 
@@ -151,15 +180,6 @@ export const Departments = () => {
         }
     };
 
-    const handleSelectFromTreeView = (selectedIds: string[]) => {
-        if (selectedIds.length === 0) {
-            setDepartments(departments);
-        } else {
-            const filtered = departments.filter(departments => selectedIds.includes(departments.employeeID));
-            setDepartments(filtered);
-        }
-    };
-
     const resetColumns = () => {
         setSelectedColumns(['code', 'name']);
     };
@@ -265,7 +285,9 @@ export const Departments = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={departmentFields} />}
+                        expandableRowsComponent={(props) => (
+                            <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchSubdepartments} isRoot={true} />
+                        )}
                         noDataComponent="Não há dados disponíveis para exibir."
                     />
                 </div>
