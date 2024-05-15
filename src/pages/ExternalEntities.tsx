@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
 import { CreateModalExtEnt } from "../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../modals/UpdateModalExtEnt";
+import { customStyles } from "../components/CustomStylesDataTable";
 
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -215,6 +216,9 @@ export const ExternalEntities = () => {
         <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
+                <div className="datatable-title-text">
+                    <span>Entidades Externas</span>
+                </div>
                 <div className="datatable-header">
                     <div className="search-box">
                         <input
@@ -268,6 +272,7 @@ export const ExternalEntities = () => {
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não há dados disponíveis para exibir."
+                        customStyles={customStyles}
                     />
                 </div>
             </div>

@@ -41,7 +41,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    border-right: 1px solid #ccc;
+    border-right: 1px solid #a1a1a1;
 }
 
 .grid-container {
@@ -62,7 +62,7 @@
 }
 
 .title {
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .ribbon-button-pessoas,
@@ -116,7 +116,7 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .ribbon-button-entidades .icon {
@@ -133,7 +133,7 @@
 .ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .icon-text-entidades {
@@ -168,7 +168,7 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 12px;
+    font-size: 11px;
     margin-right: 5px;
 }
 
@@ -181,7 +181,7 @@
 .ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
-    font-size: 11px;
+    font-size: 10px;
 }
 
 .icon-text-informacoes {

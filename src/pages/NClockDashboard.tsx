@@ -157,6 +157,9 @@ export const NClockDashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar />
+            <div className="datatable-title-text-dashboard">
+                <span>Nclock dashboard</span>
+            </div>
             <div>
                 <div className="calendar-container">
                     <div className="dashboard-calendar" style={{ width: 1800 }}>

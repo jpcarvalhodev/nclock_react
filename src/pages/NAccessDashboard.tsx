@@ -5,7 +5,9 @@ export const NAccessDashboard = () => {
     return (
         <div>
             <NavBar />
-            <p>Aqui vai o conteúdo</p>
+            <div className="datatable-title-text-dashboard">
+                <span>Naccess dashboard</span>
+            </div>
             <Footer />
         </div>
     );

@@ -120,6 +120,9 @@ export const Persons = () => {
                         <TreeViewData onSelectEmployees={handleSelectEmployees} />
                     </div>
                     <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span>Pessoas</span>
+                        </div>
                         <div className="datatable-header">
                             <div className="search-box">
                                 <input

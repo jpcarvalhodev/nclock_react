@@ -10,6 +10,7 @@ import { Button } from 'react-bootstrap';
 import { DeleteModal } from '../modals/DeleteModal';
 import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { customStyles } from './CustomStylesDataTable';
 
 interface PersonsDataTableProps {
     selectedEmployeeIds: string[];
@@ -253,6 +254,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         selectableRowsHighlight
                         clearSelectedRows={resetSelectionInternal}
                         noDataComponent="Não há dados disponíveis para exibir."
+                        customStyles={customStyles}
                     />
                     {selectedEmployee && (
                         <UpdateModalEmployees

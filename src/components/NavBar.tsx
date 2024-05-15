@@ -165,10 +165,7 @@ export const NavBar = () => {
 
 	const loadRibbonState = () => {
 		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
-		const pessoasShown = localStorage.getItem('showPessoasRibbon') === 'true';
-		const dispositivosShown = localStorage.getItem('showDispositivosRibbon') === 'true';
-		const configuracaoShown = localStorage.getItem('showConfiguracaoRibbon') === 'true';
-		const ajudaShown = localStorage.getItem('showAjudaRibbon') === 'true';
+	
 		const nclockShown = localStorage.getItem('showNclockTab') === 'true';
 		const naccessShown = localStorage.getItem('showNaccessTab') === 'true';
 		const nvisitorShown = localStorage.getItem('showNvisitorTab') === 'true';
@@ -178,10 +175,7 @@ export const NavBar = () => {
 		const ncardShown = localStorage.getItem('showNcardTab') === 'true';
 		const nviewShown = localStorage.getItem('showNviewTab') === 'true';
 		const nsecurShown = localStorage.getItem('showNsecurTab') === 'true';
-		setShowPessoasRibbon(ribbonPinned || pessoasShown);
-		setShowDispositivosRibbon(ribbonPinned || dispositivosShown);
-		setShowConfiguracaoRibbon(ribbonPinned || configuracaoShown);
-		setShowAjudaRibbon(ribbonPinned || ajudaShown);
+	
 		setShowNclockTab(nclockShown);
 		setShowNaccessTab(naccessShown);
 		setShowNvisitorTab(nvisitorShown);
@@ -191,8 +185,44 @@ export const NavBar = () => {
 		setShowNcardTab(ncardShown);
 		setShowNviewTab(nviewShown);
 		setShowNsecurTab(nsecurShown);
+	
+		if (!ribbonPinned) {
+			setShowPessoasRibbon(false);
+			setShowDispositivosRibbon(false);
+			setShowConfiguracaoRibbon(false);
+			setShowAjudaRibbon(false);
+			setShowNclockRibbon(false);
+			setShowNaccessRibbon(false);
+			setShowNvisitorRibbon(false);
+			setShowNparkRibbon(false);
+			setShowNdoorRibbon(false);
+			setShowNpatrolRibbon(false);
+			setShowNcardRibbon(false);
+			setShowNviewRibbon(false);
+			setShowNsecurRibbon(false);
+		} else {
+			const pessoasShown = localStorage.getItem('showPessoasRibbon') === 'true';
+			const dispositivosShown = localStorage.getItem('showDispositivosRibbon') === 'true';
+			const configuracaoShown = localStorage.getItem('showConfiguracaoRibbon') === 'true';
+			const ajudaShown = localStorage.getItem('showAjudaRibbon') === 'true';
+	
+			setShowPessoasRibbon(pessoasShown);
+			setShowDispositivosRibbon(dispositivosShown);
+			setShowConfiguracaoRibbon(configuracaoShown);
+			setShowAjudaRibbon(ajudaShown);
+			setShowNclockRibbon(nclockShown);
+			setShowNaccessRibbon(naccessShown);
+			setShowNvisitorRibbon(nvisitorShown);
+			setShowNparkRibbon(nparkShown);
+			setShowNdoorRibbon(ndoorShown);
+			setShowNpatrolRibbon(npatrolShown);
+			setShowNcardRibbon(ncardShown);
+			setShowNviewRibbon(nviewShown);
+			setShowNsecurRibbon(nsecurShown);
+		}
+	
 		setIsRibbonPinned(ribbonPinned);
-	};
+	};		
 
 	const ribbons: Record<RibbonName, [React.Dispatch<React.SetStateAction<boolean>>, string]> = {
 		'pessoas': [setShowPessoasRibbon, 'pessoas'],
@@ -375,7 +405,7 @@ export const NavBar = () => {
 			<div className="nav-container">
 				<Dropdown className='dropdown-icon'>
 					<Dropdown.Toggle variant="basic" id="dropdown-basic">
-						<span className="logo">NID Software</span>
+						<span className="logo">Softwares NID</span>
 					</Dropdown.Toggle>
 					<Dropdown.Menu>
 						<div>
@@ -534,7 +564,7 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+										<Link to="/pages/movement" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={movement} alt="botão assiduidade movimentos" />
 											</span>
@@ -569,13 +599,13 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className="grid-container-entidades">
-										<Link to="#" type="button" className="btn btn-light ribbon-button-ent">
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={movement} alt="botão acessos movimentos" />
 											</span>
 											<span className="text">Movimentos</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button-ent">
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={presence} alt="botão acessos presenças" />
 											</span>
@@ -643,13 +673,13 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className="grid-container-entidades">
-										<Link to="#" type="button" className="btn btn-light ribbon-button-ent">
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={time} alt="botão horários" />
 											</span>
 											<span className="text">Horários</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button-ent">
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={workPlan} alt="botão planos de trabalho" />
 											</span>
@@ -805,7 +835,7 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className="grid-container-entidades">
-										<Link to="#" type="button" className="btn btn-light ribbon-button-ent">
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={settings} alt="botão opções" />
 											</span>
@@ -1051,13 +1081,13 @@ export const NavBar = () => {
 										</Link>
 									</div>
 									<div>
-										<Link to="/Employees" type="button" className="btn btn-light ribbon-button-ent">
+										<Link to="/Employees" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={types} alt="botão tipos" />
 											</span>
 											<span className="text">Tipos</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button-ent">
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={fonts} alt="botão fontes" />
 											</span>

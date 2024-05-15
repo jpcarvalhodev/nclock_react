@@ -188,6 +188,24 @@ body {
     margin-left: 8px;
 }
 
+.datatable-title-text {
+    font-size: 20px;
+    color: #0050a0;
+    font-weight: bold;
+    margin-left: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.datatable-title-text-dashboard {
+    font-size: 20px;
+    color: #0050a0;
+    font-weight: bold;
+    margin-left: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    margin-top: 10px;
+}
+
 .datatable-header {
     display: flex;
     margin-top: 10px;
@@ -294,10 +312,6 @@ body {
 
 .btn-selector-modal-close:hover {
     background-color: #00366d !important;
-}
-
-.kgOwiN {
-    min-height: 35px !important;
 }
 
 @media (max-width: 500px) {

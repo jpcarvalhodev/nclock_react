@@ -15,6 +15,7 @@ import { ExportButton } from '../components/ExportButton';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { ExpandedComponentDept } from '../components/ExpandedComponentDept';
+import { customStyles } from '../components/CustomStylesDataTable';
 
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -233,6 +234,9 @@ export const Departments = () => {
         <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
+                <div className="datatable-title-text">
+                    <span>Departamentos</span>
+                </div>
                 <div className="datatable-header">
                     <div className="search-box">
                         <input
@@ -289,6 +293,7 @@ export const Departments = () => {
                             <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchSubdepartments} isRoot={true} />
                         )}
                         noDataComponent="Não há dados disponíveis para exibir."
+                        customStyles={customStyles}
                     />
                 </div>
             </div>

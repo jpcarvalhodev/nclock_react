@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { CreateModalZones } from "../modals/CreateModalZones";
 import { UpdateModalZones } from "../modals/UpdateModalZones";
 import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
+import { customStyles } from "../components/CustomStylesDataTable";
 
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
@@ -217,6 +218,9 @@ export const Zones = () => {
         <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
+                <div className="datatable-title-text">
+                    <span>Zonas</span>
+                </div>
                 <div className="datatable-header">
                     <div className="search-box">
                         <input
@@ -270,6 +274,7 @@ export const Zones = () => {
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não há dados disponíveis para exibir."
+                        customStyles={customStyles}
                     />
                 </div>
             </div>

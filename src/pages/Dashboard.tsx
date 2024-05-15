@@ -175,6 +175,9 @@ export const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar />
+            <div className="datatable-title-text-dashboard">
+                <span>Seja bem vindo aos softwares do grupo NID</span>
+            </div>
             <div className="dashboard-content">
                 <div className="cards-container">
                     <div onClick={() => handleCardClick('nclock')} className="card-link">

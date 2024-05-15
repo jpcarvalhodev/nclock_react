@@ -42,7 +42,6 @@ const handleHTTPError = async (response: Response) => {
             window.location.href = '/notfound';
             break;
         default:
-            toast.error(`Erro ao tentar executar a operação. Código de erro: ${response.status}`);
             break;
     }
 };

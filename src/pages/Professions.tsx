@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
 import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
 import { CreateModalCatProf } from "../modals/CreateModalCatProf";
+import { customStyles } from "../components/CustomStylesDataTable";
 
 export const Professions = () => {
     const [professions, setProfessions] = useState<Profession[]>([]);
@@ -81,12 +82,12 @@ export const Professions = () => {
                 },
                 body: JSON.stringify(profession)
             });
-    
+
             if (!response.ok) {
                 toast.error(`Erro ao atualizar a profissão`);
                 return;
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedProfession = await response.json();
@@ -103,7 +104,7 @@ export const Professions = () => {
             handleCloseUpdateModal();
             refreshProfessions();
         }
-    };    
+    };
 
     const handleDeleteProfessions = async (professionID: string) => {
         try {
@@ -199,7 +200,7 @@ export const Professions = () => {
         name: 'Ações',
         cell: (row: Profession) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditProfession(row)}/>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditProfession(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
@@ -213,6 +214,9 @@ export const Professions = () => {
         <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
+                <div className="datatable-title-text">
+                    <span>Profissões</span>
+                </div>
                 <div className="datatable-header">
                     <div className="search-box">
                         <input
@@ -267,6 +271,7 @@ export const Professions = () => {
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
+                        customStyles={customStyles}
                     />
                 </div>
             </div>

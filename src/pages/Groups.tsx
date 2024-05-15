@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
 import { CreateModalDeptGrp } from "../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../modals/UpdateModalDeptGrp";
+import { customStyles } from "../components/CustomStylesDataTable";
 
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
@@ -81,12 +82,12 @@ export const Groups = () => {
                 },
                 body: JSON.stringify(group)
             });
-    
+
             if (!response.ok) {
                 toast.error(`Erro ao atualizar grupo`);
                 return;
             }
-    
+
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedGroup = await response.json();
@@ -103,7 +104,7 @@ export const Groups = () => {
             handleCloseUpdateModal();
             refreshGroups();
         }
-    };    
+    };
 
     const handleDeleteGroup = async (groupID: string) => {
         try {
@@ -199,7 +200,7 @@ export const Groups = () => {
         name: 'Ações',
         cell: (row: Group) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)}/>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
@@ -213,6 +214,9 @@ export const Groups = () => {
         <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
+                <div className="datatable-title-text">
+                    <span>Grupos</span>
+                </div>
                 <div className="datatable-header">
                     <div className="search-box">
                         <input
@@ -267,6 +271,7 @@ export const Groups = () => {
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
+                        customStyles={customStyles}
                     />
                 </div>
             </div>

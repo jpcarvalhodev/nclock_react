@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
 import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
 import { CreateModalCatProf } from "../modals/CreateModalCatProf";
+import { customStyles } from "../components/CustomStylesDataTable";
 
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -199,7 +200,7 @@ export const Categories = () => {
         name: 'Ações',
         cell: (row: Category) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCategory(row)}/>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCategory(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
@@ -213,6 +214,9 @@ export const Categories = () => {
         <div className="main-container">
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
+                <div className="datatable-title-text">
+                    <span>Categorias</span>
+                </div>
                 <div className="datatable-header">
                     <div className="search-box">
                         <input
@@ -267,6 +271,7 @@ export const Categories = () => {
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
+                        customStyles={customStyles}
                     />
                 </div>
             </div>

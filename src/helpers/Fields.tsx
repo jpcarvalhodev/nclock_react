@@ -95,3 +95,17 @@ export const zoneFields = [
     { key: 'Mobile', label: 'Telemóvel', type: 'number' },
     { key: 'Email', label: 'E-Mail', type: 'string' },
 ];
+
+export const EmployeeAttendanceTimesFields = [
+    { key: 'attendanceTimeId', label: 'ID do horário de presença', type: 'string' },
+    { key: 'deviceId', label: 'ID do dispositivo', type: 'string' },
+    { key: 'deviceNumber', label: 'Número do dispositivo', type: 'number' },
+    { key: 'employeeId', label: 'ID do funcionário', type: 'string' },
+    { key: 'enrollNumber', label: 'Número de matrícula', type: 'number' },
+    { key: 'employeeName', label: 'Nome do funcionário', type: 'string' },
+    { key: 'verifyMode', label: 'Modo de verificação', type: 'number' },
+    { key: 'inOutMode', label: 'Modo de entrada/saída', type: 'number' },
+    { key: 'workCode', label: 'Código de trabalho', type: 'number' },
+    { key: 'type', label: 'Tipo', type: 'number' },
+    { key: 'attendanceTime', label: 'Horário de presença', type: 'date' },
+];

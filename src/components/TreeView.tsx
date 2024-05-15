@@ -32,7 +32,7 @@ function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem
   let expandedIds = new Set<string>();
 
   function filterRecursively(item: TreeViewBaseItem): TreeViewBaseItem | null {
-    const matchesSearch = item.label.toLowerCase().includes(term.toLowerCase());
+    const matchesSearch = item.label?.toLowerCase().includes(term.toLowerCase());
     const children = item.children || [];
     const filteredChildren = children.map(filterRecursively).filter((child): child is TreeViewBaseItem => child !== null);
 
@@ -74,6 +74,9 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           employeesResponse.json(),
         ]);
 
+        console.log('Departamentos:', departments);
+        console.log('Grupos:', groups);
+
         const unassignedDept = allEmployees.filter((emp: Employee) =>
           emp.departmentId === null
         );
@@ -84,30 +87,30 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
 
         const departmentItems = departments.map((dept: Department) => ({
           id: `department-${dept.departmentID}`,
-          label: dept.name,
+          label: dept.name || 'Sem Nome',
           children: dept.employees.map((emp: Employee) => ({
             id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
-            label: emp.name,
+            label: emp.name || 'Sem Nome',
           })),
         }));
 
         const groupItems = groups.map((group: Group) => ({
           id: `group-${group.groupID}`,
-          label: group.name,
+          label: group.name || 'Sem Nome',
           children: group.employees.map((emp: Employee) => ({
             id: `group-${group.groupID}-emp-${emp.employeeID}`,
-            label: emp.name,
+            label: emp.name || 'Sem Nome',
           })),
         }));
 
         const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
           id: `unassigned-empdept-${emp.employeeID}`,
-          label: emp.name,
+          label: emp.name || 'Sem Nome',
         }));
 
         const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
           id: `unassigned-empgrp-${emp.employeeID}`,
-          label: emp.name,
+          label: emp.name || 'Sem Nome',
         }));
 
         const treeItems = [
@@ -148,11 +151,18 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     const employeeIds = itemIds
       .filter(id => id.includes('-emp-'))
       .map(id => id.substring(id.lastIndexOf('-emp-') + 5));
-
-    const newSelectedEmployeeIds = [...new Set([...selectedEmployeeIds, ...employeeIds])];
+  
+    const newSelectedEmployeeIds = selectedEmployeeIds.filter(id => !employeeIds.includes(id));
+    
+    employeeIds.forEach(id => {
+      if (!selectedEmployeeIds.includes(id)) {
+        newSelectedEmployeeIds.push(id);
+      }
+    });
+  
     setSelectedEmployeeIds(newSelectedEmployeeIds);
     onSelectEmployees(newSelectedEmployeeIds);
-  };
+  };  
 
   useEffect(() => {
     const [newFilteredItems, newExpandedIds] = filterItems(items, searchTerm.toLowerCase());

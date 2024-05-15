@@ -30,6 +30,7 @@ import './App.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { useRef, useState } from 'react';
 import { NAccessDashboard } from './pages/NAccessDashboard';
+import { Movement } from './pages/nclock/Movement';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -67,6 +68,7 @@ function AnimatedRoutes() {
             <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
             <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
             <Route path="/nclockdashboard" element={<PageProtection><NClockDashboard /></PageProtection>} />
+            <Route path="/pages/movement" element={<PageProtection><Movement /></PageProtection>} />
             <Route path="/naccessdashboard" element={<PageProtection><NAccessDashboard /></PageProtection>} />
             <Route path="*" element={<NotFound />} />
           </Routes>

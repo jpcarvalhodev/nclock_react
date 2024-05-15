@@ -114,3 +114,18 @@ export type Zone = {
     mobile: number,
     email: string,
 };
+
+export type EmployeeAttendanceTimes = {
+    [key: string]: any;
+    attendanceTimeId: string;
+    deviceId: string;
+    deviceNumber: number;
+    employeeId: string;
+    enrollNumber: number;
+    employeeName: string;
+    verifyMode: number;
+    inOutMode: number;
+    workCode: number;
+    type: number;
+    attendanceTime: Date;
+};

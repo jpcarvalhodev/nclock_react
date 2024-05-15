@@ -17,6 +17,7 @@ import { toast } from 'react-toastify';
 import Split from 'react-split';
 import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
+import { customStyles } from '../components/CustomStylesDataTable';
 
 export const Visitors = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -46,7 +47,7 @@ export const Visitors = () => {
         } catch (error) {
             console.error('Erro ao buscar os dados dos funcionários:', error);
         }
-    };    
+    };
 
     const handleAddEmployee = async (employee: Employee) => {
         try {
@@ -253,7 +254,7 @@ export const Visitors = () => {
         name: 'Ações',
         cell: (row: Employee) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)}/>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
@@ -272,6 +273,9 @@ export const Visitors = () => {
                         <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span>Visitantes</span>
+                        </div>
                         <div className="datatable-header">
                             <div className="search-box">
                                 <input
@@ -303,6 +307,7 @@ export const Visitors = () => {
                             clearSelectedRows={clearSelectionToggle}
                             selectableRowsHighlight
                             noDataComponent="Não há dados disponíveis para exibir."
+                            customStyles={customStyles}
                         />
                     </div>
                 </Split>
