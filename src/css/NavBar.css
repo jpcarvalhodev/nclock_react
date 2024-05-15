@@ -62,7 +62,7 @@
 }
 
 .title {
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .ribbon-button-pessoas,
@@ -116,7 +116,7 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .ribbon-button-entidades .icon {
@@ -133,7 +133,7 @@
 .ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
-    font-size: 10px;
+    font-size: 12px;
 }
 
 .icon-text-entidades {
@@ -168,7 +168,7 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 11px;
+    font-size: 12px;
     margin-right: 5px;
 }
 
@@ -181,7 +181,7 @@
 .ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .icon-text-informacoes {
@@ -304,7 +304,7 @@
 
 }
 
-@media (min-width: 501px) and (max-width: 1000px) {
+@media (min-width: 501px) and (max-width: 1200px) {
 
     .logo {
         font-size: 15px;
@@ -324,10 +324,5 @@
     .dropdown-content img {
         width: 40px;
         height: 40px;
-    }
-
-    .ribbon-button,
-    .ribbon-icon-button {
-        font-size: 10px;
     }
 }

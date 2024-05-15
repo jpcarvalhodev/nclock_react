@@ -194,10 +194,6 @@ export const NavBar = () => {
 		setIsRibbonPinned(ribbonPinned);
 	};
 
-	const toggleRibbon = (setterFunction: React.Dispatch<React.SetStateAction<boolean>>) => {
-		setterFunction(prevState => !prevState);
-	};
-
 	const ribbons: Record<RibbonName, [React.Dispatch<React.SetStateAction<boolean>>, string]> = {
 		'pessoas': [setShowPessoasRibbon, 'pessoas'],
 		'dispositivos': [setShowDispositivosRibbon, 'dispositivos'],

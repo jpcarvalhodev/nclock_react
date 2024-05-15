@@ -28,7 +28,7 @@ import ncard from '../assets/img/navbar/navbar/ncard.webp';
 import nview from '../assets/img/navbar/navbar/nview.webp';
 import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
 import { Card } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -68,11 +68,14 @@ const messages = {
     showMore: (total: number) => `+ Ver mais (${total})`
 };
 
+type TabName = 'nclock' | 'naccess' | 'nvisitor' | 'npark' | 'ndoor' | 'npatrol' | 'ncard' | 'nview' | 'nsecur';
+
 export const Dashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [totalDepartments, setTotalDepartments] = useState<number>(0);
     const [totalGroups, setTotalGroups] = useState<number>(0);
+    const navigate = useNavigate();
 
     const fetchEvents = async (): Promise<CalendarEvent[]> => {
         try {
@@ -147,83 +150,105 @@ export const Dashboard = () => {
         }
     };
 
+    const handleCardClick = (tabName: TabName) => {
+        const tabData = {
+            nclock: { route: '/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon' },
+            naccess: { route: '/naccessdashboard', tabKey: 'showNaccessTab', ribbonKey: 'showNaccessRibbon' },
+            nvisitor: { route: '#', tabKey: 'showNvisitorTab', ribbonKey: 'showNvisitorRibbon' },
+            npark: { route: '#', tabKey: 'showNparkTab', ribbonKey: 'showNparkRibbon' },
+            ndoor: { route: '#', tabKey: 'showNdoorTab', ribbonKey: 'showNdoorRibbon' },
+            npatrol: { route: '#', tabKey: 'showNpatrolTab', ribbonKey: 'showNpatrolRibbon' },
+            ncard: { route: '#', tabKey: 'showNcardTab', ribbonKey: 'showNcardRibbon' },
+            nview: { route: '#', tabKey: 'showNviewTab', ribbonKey: 'showNviewRibbon' },
+            nsecur: { route: '#', tabKey: 'showNsecurTab', ribbonKey: 'showNsecurRibbon' },
+        };
+
+        const tab = tabData[tabName];
+
+        if (tab) {
+            localStorage.setItem(tab.tabKey, 'true');
+            localStorage.setItem(tab.ribbonKey, 'true');
+            navigate(tab.route);
+        }
+    };
+
     return (
         <div className="dashboard-container">
             <NavBar />
             <div className="dashboard-content">
                 <div className="cards-container">
-                    <Link to="/nclockdashboard" className="card-link">
+                    <div onClick={() => handleCardClick('nclock')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={nclock} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Nclock</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
-                    <Link to="/naccessdashboard" className="card-link">
+                    </div>
+                    <div onClick={() => handleCardClick('naccess')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={naccess} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Naccess</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
-                    <Link to="#" className="card-link">
+                    </div>
+                    <div onClick={() => handleCardClick('nvisitor')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={nvisitor} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Nvisitor</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
-                    <Link to="#" className="card-link">
+                    </div>
+                    <div onClick={() => handleCardClick('npark')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={npark} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Npark</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
-                    <Link to="#" className="card-link">
+                    </div>
+                    <div onClick={() => handleCardClick('ndoor')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={ndoor} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Ndoor</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
-                    <Link to="#" className="card-link">
+                    </div>
+                    <div onClick={() => handleCardClick('npatrol')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={npatrol} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Npatrol</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
-                    <Link to="#" className="card-link">
+                    </div>
+                    <div onClick={() => handleCardClick('ncard')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={ncard} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Ncard</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
-                    <Link to="#" className="card-link">
+                    </div>
+                    <div onClick={() => handleCardClick('nview')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={nview} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Nview</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
-                    <Link to="#" className="card-link">
+                    </div>
+                    <div onClick={() => handleCardClick('nsecur')} className="card-link">
                         <Card className="card">
                             <Card.Img variant="top" src={nsecur} className="card-img" />
                             <Card.Body>
                                 <Card.Title className="card-title">Nsecur</Card.Title>
                             </Card.Body>
                         </Card>
-                    </Link>
+                    </div>
                 </div>
             </div>
             <div className="dashboard-content">

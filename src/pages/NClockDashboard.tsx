@@ -157,9 +157,9 @@ export const NClockDashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar />
-            <div className="dashboard-content">
+            <div>
                 <div className="calendar-container">
-                    <div className="dashboard-calendar" style={{ flex: 1 }}>
+                    <div className="dashboard-calendar" style={{ width: 1800 }}>
                         <Calendar
                             localizer={localizer}
                             events={events}
