@@ -165,7 +165,7 @@ export const NavBar = () => {
 
 	const loadRibbonState = () => {
 		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
-	
+
 		const nclockShown = localStorage.getItem('showNclockTab') === 'true';
 		const naccessShown = localStorage.getItem('showNaccessTab') === 'true';
 		const nvisitorShown = localStorage.getItem('showNvisitorTab') === 'true';
@@ -175,7 +175,7 @@ export const NavBar = () => {
 		const ncardShown = localStorage.getItem('showNcardTab') === 'true';
 		const nviewShown = localStorage.getItem('showNviewTab') === 'true';
 		const nsecurShown = localStorage.getItem('showNsecurTab') === 'true';
-	
+
 		setShowNclockTab(nclockShown);
 		setShowNaccessTab(naccessShown);
 		setShowNvisitorTab(nvisitorShown);
@@ -185,7 +185,7 @@ export const NavBar = () => {
 		setShowNcardTab(ncardShown);
 		setShowNviewTab(nviewShown);
 		setShowNsecurTab(nsecurShown);
-	
+
 		if (!ribbonPinned) {
 			setShowPessoasRibbon(false);
 			setShowDispositivosRibbon(false);
@@ -205,7 +205,7 @@ export const NavBar = () => {
 			const dispositivosShown = localStorage.getItem('showDispositivosRibbon') === 'true';
 			const configuracaoShown = localStorage.getItem('showConfiguracaoRibbon') === 'true';
 			const ajudaShown = localStorage.getItem('showAjudaRibbon') === 'true';
-	
+
 			setShowPessoasRibbon(pessoasShown);
 			setShowDispositivosRibbon(dispositivosShown);
 			setShowConfiguracaoRibbon(configuracaoShown);
@@ -220,9 +220,9 @@ export const NavBar = () => {
 			setShowNviewRibbon(nviewShown);
 			setShowNsecurRibbon(nsecurShown);
 		}
-	
+
 		setIsRibbonPinned(ribbonPinned);
-	};		
+	};
 
 	const ribbons: Record<RibbonName, [React.Dispatch<React.SetStateAction<boolean>>, string]> = {
 		'pessoas': [setShowPessoasRibbon, 'pessoas'],
@@ -241,19 +241,23 @@ export const NavBar = () => {
 	};
 
 	const handleRibbonClick = (tabName: string) => {
+		if (isRibbonPinned) {
+			return;
+		}
+
 		if (tabName in ribbons) {
 			const [setRibbon, ribbonName] = ribbons[tabName as RibbonName];
-	
+
 			if (activeTab === ribbonName) {
 				setRibbon(false);
 				setActiveTab('');
 			} else {
 				Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
-				setRibbon(true);
 				setActiveTab(ribbonName);
+				setRibbon(true);
 			}
 		}
-	};	
+	};
 
 	const tabData: Record<string, TabInfo> = {
 		'nclock': {
@@ -338,7 +342,7 @@ export const NavBar = () => {
 			navigate('/dashboard');
 		} else if (tabData[tabName]) {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
-	
+
 			if (activeTab === tabName) {
 				setTab(false);
 				setRibbon(false);
@@ -358,6 +362,15 @@ export const NavBar = () => {
 
 	const logout = () => {
 		localStorage.removeItem('token');
+		localStorage.removeItem('showNclockTab');
+		localStorage.removeItem('showNaccessTab');
+		localStorage.removeItem('showNvisitorTab');
+		localStorage.removeItem('showNparkTab');
+		localStorage.removeItem('showNdoorTab');
+		localStorage.removeItem('showNpatrolTab');
+		localStorage.removeItem('showNcardTab');
+		localStorage.removeItem('showNviewTab');
+		localStorage.removeItem('showNsecurTab');
 		navigate('/');
 	};
 
@@ -367,6 +380,15 @@ export const NavBar = () => {
 			localStorage.setItem('showDispositivosRibbon', String(showDispositivosRibbon));
 			localStorage.setItem('showConfiguracaoRibbon', String(showConfiguracaoRibbon));
 			localStorage.setItem('showAjudaRibbon', String(showAjudaRibbon));
+			localStorage.setItem('showNclockRibbon', String(showNclockRibbon));
+			localStorage.setItem('showNaccessRibbon', String(showNaccessRibbon));
+			localStorage.setItem('showNvisitorRibbon', String(showNvisitorRibbon));
+			localStorage.setItem('showNparkRibbon', String(showNparkRibbon));
+			localStorage.setItem('showNdoorRibbon', String(showNdoorRibbon));
+			localStorage.setItem('showNpatrolRibbon', String(showNpatrolRibbon));
+			localStorage.setItem('showNcardRibbon', String(showNcardRibbon));
+			localStorage.setItem('showNviewRibbon', String(showNviewRibbon));
+			localStorage.setItem('showNsecurRibbon', String(showNsecurRibbon));
 			localStorage.setItem('ribbonPinned', String(isRibbonPinned));
 		};
 
@@ -378,18 +400,21 @@ export const NavBar = () => {
 	const togglePinRibbon = () => {
 		const newState = !isRibbonPinned;
 		setIsRibbonPinned(newState);
-	
-		if (newState) {
+
+		if (!newState) {
+			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
+			setActiveTab('');
+		} else {
 			if (activeTab in ribbons) {
 				const [setRibbon] = ribbons[activeTab as RibbonName];
 				setRibbon(true);
 			}
-		} else {
-			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
 		}
-	};	
 
-	const MenuItem: React.FC<MenuItemProps> = ({ active, onClick, image, alt, label }) => (
+		localStorage.setItem('ribbonPinned', String(newState));
+	};
+
+	const MenuItem = ({ active, onClick, image, alt, label }: MenuItemProps) => (
 		<li
 			className={`image-text ${active ? 'active' : ''}`}
 			onClick={onClick}
@@ -834,8 +859,8 @@ export const NavBar = () => {
 							</div>
 							<div className="group">
 								<div className="btn-group" role="group">
-									<div className="grid-container-entidades">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
+									<div className='icon-text-pessoas'>
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={settings} alt="botão opções" />
 											</span>

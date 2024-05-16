@@ -95,7 +95,7 @@ export const Professions = () => {
                 toast.success('Profissão atualizada com sucesso!');
             } else {
                 await response.text();
-                toast.success('Profissão atualizada com sucesso!');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
         } catch (error) {
             console.error('Erro ao atualizar a profissão:', error);
@@ -247,7 +247,7 @@ export const Professions = () => {
                     <UpdateModalCatProf
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={() => handleUpdateProfession(selectedProfession)}
+                        onUpdate={handleUpdateProfession}
                         entity={selectedProfession}
                         fields={professionFields}
                         title="Atualizar Profissão"

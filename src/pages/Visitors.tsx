@@ -92,9 +92,10 @@ export const Visitors = () => {
             if (contentType && contentType.includes('application/json')) {
                 const updatedEmployee = await response.json();
                 setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
+                toast.success('Funcionário atualizado com sucesso');
             } else {
                 await response.text();
-                toast.success('Funcionário atualizado com sucesso');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
 
         } catch (error) {

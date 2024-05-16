@@ -28,7 +28,7 @@ interface Props<T> {
 }
 
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>(initialValues);
+    const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
@@ -172,7 +172,6 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     };
 
     const handleSave = () => {
-        console.log('Saving data:', formData);
         onSave(formData as T);
     };
 
@@ -391,6 +390,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                         { key: 'biIssuance', label: 'Emissão de BI', type: 'date' },
                                         { key: 'biValidity', label: 'Validade de BI', type: 'date' },
                                         { key: 'admissionDate', label: 'Data de Admissão', type: 'date' },
+                                        { key: 'exitDate', label: 'Data de Saída', type: 'date' },
                                         { key: 'departmentId', label: 'Departamento', type: 'dropdown' },
                                         { key: 'professionId', label: 'Profissão', type: 'dropdown' },
                                         { key: 'groupId', label: 'Grupo', type: 'dropdown' },

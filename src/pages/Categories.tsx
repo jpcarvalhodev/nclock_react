@@ -95,7 +95,7 @@ export const Categories = () => {
                 toast.success('Categoria atualizada com sucesso!');
             } else {
                 await response.text();
-                toast.success('Categoria atualizada com sucesso!');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
         } catch (error) {
             console.error('Erro ao atualizar categoria:', error);
@@ -247,7 +247,7 @@ export const Categories = () => {
                     <UpdateModalCatProf
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={() => handleUpdateCategory(selectedCategory)}
+                        onUpdate={handleUpdateCategory}
                         entity={selectedCategory}
                         fields={categoryFields}
                         title="Atualizar Categoria"

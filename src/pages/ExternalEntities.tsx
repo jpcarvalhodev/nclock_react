@@ -95,7 +95,7 @@ export const ExternalEntities = () => {
                 toast.success('Entidade externa atualizada com sucesso!');
             } else {
                 await response.text();
-                toast.success('Entidade externa atualizada com sucesso!');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);
@@ -248,7 +248,7 @@ export const ExternalEntities = () => {
                     <UpdateModalExtEnt
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={() => handleUpdateExternalEntity(selectedExternalEntity)}
+                        onUpdate={handleUpdateExternalEntity}
                         entity={selectedExternalEntity}
                         fields={externalEntityFields}
                         title="Atualizar Entidade Externa"

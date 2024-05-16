@@ -95,7 +95,7 @@ export const Departments = () => {
 
     const handleUpdateDepartment = async (department: Department) => {
         try {
-            const response = await fetchWithAuth(`Departments/${department.departmentID}`, {
+            const response = await fetchWithAuth(`Departaments/${department.departmentID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export const Departments = () => {
                 toast.success('Departamento atualizado com sucesso');
             } else {
                 await response.text();
-                toast.success('Departamento atualizado com sucesso');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
         } catch (error) {
             console.error('Erro ao atualizar departamento:', error);
@@ -267,7 +267,7 @@ export const Departments = () => {
                     <UpdateModalDeptGrp
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={() => handleUpdateDepartment(selectedDepartment)}
+                        onUpdate={handleUpdateDepartment}
                         entity={selectedDepartment}
                         entityType='department'
                         title="Atualizar Departamento"

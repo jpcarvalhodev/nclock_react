@@ -95,7 +95,7 @@ export const Zones = () => {
                 toast.success('Zona atualizada com sucesso!');
             } else {
                 await response.text();
-                toast.success('Zona atualizada com sucesso!');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
         } catch (error) {
             console.error('Erro ao atualizar zona:', error);
@@ -250,7 +250,7 @@ export const Zones = () => {
                     <UpdateModalZones
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={() => handleUpdateZone(selectedZone)}
+                        onUpdate={handleUpdateZone}
                         entity={selectedZone}
                         fields={zoneFields}
                         title="Atualizar Zona"

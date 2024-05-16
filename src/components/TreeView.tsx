@@ -74,9 +74,6 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           employeesResponse.json(),
         ]);
 
-        console.log('Departamentos:', departments);
-        console.log('Grupos:', groups);
-
         const unassignedDept = allEmployees.filter((emp: Employee) =>
           emp.departmentId === null
         );

@@ -118,7 +118,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                 setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
             } else {
                 await response.text();
-                toast.success('Funcionário atualizado com sucesso');
+                toast.success(response.statusText);
             }
 
         } catch (error) {
@@ -184,6 +184,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     };
 
     const handleSubmit = async () => {
+        console.log('formData', formData);
         await onUpdate(formData);
         onClose();
     };
@@ -270,12 +271,12 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     </Form.Group>
                                 </Col>
                                 <Col md={6}>
-                                    <Form.Group controlId="formParentId">
+                                    <Form.Group controlId="formPaiId">
                                         <Form.Label>ID de Parente</Form.Label>
                                         <Form.Control
                                             type="number"
-                                            name="parentId"
-                                            value={formData['parentId'] || ''}
+                                            name="paiId"
+                                            value={formData['paiId'] || ''}
                                             onChange={handleChange}
                                             className="custom-input-height custom-select-font-size"
                                         />

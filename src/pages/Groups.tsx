@@ -95,7 +95,7 @@ export const Groups = () => {
                 toast.success('Grupo atualizado com sucesso!');
             } else {
                 await response.text();
-                toast.success('Grupo atualizado com sucesso!');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
         } catch (error) {
             console.error('Erro ao atualizar grupo:', error);
@@ -247,7 +247,7 @@ export const Groups = () => {
                     <UpdateModalDeptGrp
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={() => handleUpdateGroup(selectedGroup)}
+                        onUpdate={handleUpdateGroup}
                         entity={selectedGroup}
                         entityType='group'
                         title="Atualizar Grupo"

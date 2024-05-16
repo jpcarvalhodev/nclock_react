@@ -19,11 +19,11 @@ interface PersonsDataTableProps {
     filterText: string;
     filteredEmployees: (filtered: Employee[]) => void;
     resetSelection: boolean;
+    employees: Employee[];
 }
 
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection }: PersonsDataTableProps) => {
-    const [allEmployees, setAllEmployees] = useState<Employee[]>([]);
-    const [employees, setEmployees] = useState<Employee[]>([]);
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, employees: propEmployees }: PersonsDataTableProps) => {
+    const [employees, setEmployees] = useState<Employee[]>(propEmployees); // Inicializar com prop
     const [isLoading, setIsLoading] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -32,29 +32,26 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
 
+    useEffect(() => {
+        setEmployees(propEmployees);
+    }, [propEmployees]);
+
     const fetchAllEmployees = async () => {
         setIsLoading(true);
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Falha ao carregar dados dos funcionários');
-                console.error('Erro ao carregar todos os funcionários:', response.status);
+                toast.error('Erro ao buscar funcionários');
                 return;
             }
             const employeesData = await response.json();
-            setAllEmployees(employeesData);
             setEmployees(employeesData);
         } catch (error) {
-            toast.error('Erro ao buscar dados dos funcionários');
-            console.error('Erro da API:', error);
+            console.error('Erro ao buscar funcionários:', error);
         } finally {
             setIsLoading(false);
         }
-    };
-
-    useEffect(() => {
-        fetchAllEmployees();
-    }, []);
+    }
 
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
@@ -75,17 +72,18 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             if (contentType && contentType.includes('application/json')) {
                 const updatedEmployee = await response.json();
                 setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
+                toast.success('Funcionário atualizado com sucesso');
             } else {
                 await response.text();
-                toast.success('Funcionário atualizado com sucesso');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Falha ao conectar ao servidor');
+            toast.error('Erro ao conectar ao servidor');
         } finally {
             handleCloseUpdateModal();
-            fetchAllEmployees();
+            refreshEmployees();
         }
     };
 
@@ -104,18 +102,23 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             toast.success('Funcionário excluído com sucesso');
         } catch (error) {
             console.error('Erro ao excluir funcionário:', error);
-            toast.error('Falha ao conectar ao servidor');
+            toast.error('Erro ao conectar ao servidor');
         } finally {
-            fetchAllEmployees();
+            handleCloseDeleteModal();
+            refreshEmployees();
         }
+    }
+
+    const refreshEmployees = () => {
+        fetchAllEmployees();
     }
 
     const memorizedFilteredEmployees = useCallback(filteredEmployees, []);
 
     useEffect(() => {
         let filteredByIDs = selectedEmployeeIds.length > 0
-            ? allEmployees.filter((emp) => selectedEmployeeIds.includes(emp.employeeID))
-            : allEmployees;
+            ? propEmployees.filter((emp) => selectedEmployeeIds.includes(emp.employeeID))
+            : propEmployees;
 
         let filteredBySearchText = filteredByIDs.filter((employee) =>
             Object.values(employee).some((value) =>
@@ -125,7 +128,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
         setEmployees(filteredBySearchText);
         memorizedFilteredEmployees(filteredBySearchText);
-    }, [selectedEmployeeIds, filterText, allEmployees, memorizedFilteredEmployees]);
+    }, [selectedEmployeeIds, filterText, propEmployees, memorizedFilteredEmployees]);
 
     useEffect(() => {
         if (resetSelection) {

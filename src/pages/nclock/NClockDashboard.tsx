@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { Department, Employee, Group } from "../helpers/Types";
-import { fetchWithAuth } from "../components/FetchWithAuth";
 import { toast } from "react-toastify";
 import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, PieController, Tooltip, Legend, BarElement, BarController, CategoryScale, LinearScale } from 'chart.js';
 import { Bar } from "react-chartjs-2";
+import { fetchWithAuth } from "../../components/FetchWithAuth";
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import { Employee, Department, Group } from "../../helpers/Types";
 
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 

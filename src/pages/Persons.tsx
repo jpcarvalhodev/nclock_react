@@ -40,6 +40,10 @@ export const Persons = () => {
         }
     }
 
+    useEffect(() => {
+        fetchAllEmployees();
+    }, []);   
+
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -61,15 +65,15 @@ export const Persons = () => {
             console.error('Erro ao adicionar novo funcionário:', error);
         }
         setShowAddModal(false);
-        fetchAllEmployees();
-    };
+        refreshEmployees();
+    }; 
 
     const handleSelectEmployees = (employeeIds: string[]) => {
         setSelectedEmployeeIds(employeeIds);
         setShowAllEmployees(employeeIds.length === 0);
     };
 
-    const refreshEmployeeData = () => {
+    const refreshEmployees = () => {
         fetchAllEmployees();
     }
 
@@ -134,7 +138,7 @@ export const Persons = () => {
                                 />
                             </div>
                             <div className="buttons-container">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployeeData} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-plus" onClick={openAddModal} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={openColumnSelector} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
@@ -148,6 +152,7 @@ export const Persons = () => {
                             filterText={filterText}
                             filteredEmployees={handleFilteredEmployees}
                             resetSelection={resetSelection}
+                            employees={employees}
                         />
                     </div>
 

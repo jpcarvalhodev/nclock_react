@@ -94,7 +94,7 @@ export const Contacts = () => {
                 setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
             } else {
                 await response.text();
-                toast.success('Funcionário atualizado com sucesso');
+                toast.success(response.statusText || 'Atualização realizada com sucesso');
             }
 
         } catch (error) {
