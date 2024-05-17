@@ -434,7 +434,7 @@ export const NavBar = () => {
 			<div className="nav-container">
 				<Dropdown className='dropdown-icon'>
 					<Dropdown.Toggle variant="basic" id="dropdown-basic">
-						<span className="logo">Softwares NID</span>
+						<span className="logo">Nsoftwares</span>
 					</Dropdown.Toggle>
 					<Dropdown.Menu>
 						<div>

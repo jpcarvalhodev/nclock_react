@@ -189,7 +189,7 @@ export const Dashboard = () => {
         <div className="dashboard-container">
             <NavBar />
             <div className="datatable-title-text-dashboard">
-                <span>Seja bem vindo aos softwares do grupo NID</span>
+                <span>Seja bem vindo aos softwares do NIDGROUP</span>
             </div>
             <div className="dashboard-content">
                 <div className="cards-container">
