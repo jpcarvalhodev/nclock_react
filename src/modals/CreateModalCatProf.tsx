@@ -6,13 +6,17 @@ import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 import { fetchWithAuth } from '../components/FetchWithAuth';
 
+// Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
     label: string;
     key: string;
     type: string;
     required?: boolean;
+    validate?: (value: any) => boolean;
+    errorMessage?: string;
 }
 
+// Define a interface para as propriedades do componente CreateModalCatProf
 interface Props<T> {
     title: string;
     open: boolean;
@@ -23,32 +27,45 @@ interface Props<T> {
     entityType: 'categorias' | 'profissões';
 }
 
+// Define a interface para os itens de código
 interface CodeItem {
     code: number;
 }
 
+// Define o componente
 export const CreateModalCatProf = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [isFormValid, setIsFormValid] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Usa useEffect para validar o formulário
     useEffect(() => {
+        const newErrors: Record<string, string> = {};
+
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
-            if (typeof fieldValue === 'string') {
-                return !field.required || fieldValue.trim() !== '';
-            } else {
-                return !field.required || fieldValue != null;
+            let valid = true;
+
+            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
             }
+
+            return valid;
         });
+
+        setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
 
+    // Usa useEffect para buscar os dados de categoria/profissão
     useEffect(() => {
         if (open) {
             fetchCategoryOrProfessionData();
         }
     }, [open]);
 
+    // Função para buscar os dados de categoria/profissão
     const fetchCategoryOrProfessionData = async () => {
         const url = entityType === 'categorias' ? 'Categories' : 'Professions';
         try {
@@ -67,16 +84,19 @@ export const CreateModalCatProf = <T extends Record<string, any>>({ title, open,
             console.error(`Erro ao buscar dados de ${entityType}:`, error);
             toast.error(`Erro ao conectar ao servidor para ${entityType}`);
         }
-    };    
+    };
 
+    // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: parsedValue
         }));
     };
 
+    // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
@@ -110,13 +130,14 @@ export const CreateModalCatProf = <T extends Record<string, any>>({ title, open,
                                 value={formData[field.key] || ''}
                                 onChange={handleChange}
                             />
+                            {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
                         </div>
                     ))}
                 </form>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button variant="primary" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

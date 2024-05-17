@@ -12,6 +12,7 @@ import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { customStyles } from './CustomStylesDataTable';
 
+// Define as propriedades da tabela de pessoas
 interface PersonsDataTableProps {
     selectedEmployeeIds: string[];
     selectedColumns: string[];
@@ -22,6 +23,7 @@ interface PersonsDataTableProps {
     employees: Employee[];
 }
 
+// Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, employees: propEmployees }: PersonsDataTableProps) => {
     const [employees, setEmployees] = useState<Employee[]>(propEmployees); // Inicializar com prop
     const [isLoading, setIsLoading] = useState(false);
@@ -32,10 +34,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
 
+    // Atualiza a lista de funcionários quando a propriedade employees é alterada
     useEffect(() => {
         setEmployees(propEmployees);
     }, [propEmployees]);
 
+    // Função para buscar todos os funcionários
     const fetchAllEmployees = async () => {
         setIsLoading(true);
         try {
@@ -53,6 +57,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         }
     }
 
+    // Atualiza um funcionário
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -87,6 +92,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         }
     };
 
+    // Exclui um funcionário
     const handleDeleteEmployee = async (employeeID: string) => {
         try {
             const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
@@ -113,8 +119,10 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         fetchAllEmployees();
     }
 
+    // Memoriza a função de filtragem de funcionários
     const memorizedFilteredEmployees = useCallback(filteredEmployees, []);
 
+    // Filtra os funcionários
     useEffect(() => {
         let filteredByIDs = selectedEmployeeIds.length > 0
             ? propEmployees.filter((emp) => selectedEmployeeIds.includes(emp.employeeID))
@@ -130,12 +138,14 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         memorizedFilteredEmployees(filteredBySearchText);
     }, [selectedEmployeeIds, filterText, propEmployees, memorizedFilteredEmployees]);
 
+    // Reseta a seleção de funcionários
     useEffect(() => {
         if (resetSelection) {
             setResetSelectionInternal(true);
         }
     }, [resetSelection]);
 
+    // Reseta a seleção interna de funcionários
     useEffect(() => {
         if (resetSelectionInternal) {
             setResetSelectionInternal(false);
@@ -143,31 +153,37 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         }
     }, [resetSelectionInternal]);
 
+    // Abre o modal de exclusão de funcionário
     const handleOpenDeleteModal = (employee: Employee) => {
         setSelectedEmployeeToDelete(employee);
         setShowDeleteModal(true);
     };
 
+    // Fecha o modal de exclusão de funcionário
     const handleCloseDeleteModal = () => {
         setShowDeleteModal(false);
         setSelectedEmployeeToDelete(null);
     };
 
+    // Abre o modal de edição de funcionário
     const handleRowDoubleClicked = (row: Employee) => {
         setSelectedEmployee(row);
         setShowUpdateModal(true);
     };
 
+    // Fecha o modal de edição de funcionário
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedEmployee(null);
     };
 
+    // Abre o modal de edição de funcionário
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     }
 
+    // Seleciona as linhas da tabela
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -177,11 +193,13 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         filteredEmployees(state.selectedRows);
     };
 
+    // Define as opções de paginação
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Define as colunas da tabela
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
@@ -217,10 +235,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             };
         });
 
+    // Define o componente de linha expandida
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
 
+    // Define a coluna de ações
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (

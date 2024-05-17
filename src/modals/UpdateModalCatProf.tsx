@@ -4,19 +4,24 @@ import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+// Define a interface Entity
 export interface Entity {
     id: string;
     [key: string]: any;
 }
 
+// Define a interface Field
 interface Field {
     key: string;
     label: string;
     type: string;
     required?: boolean;
     optionsUrl?: string;
+    validate?: (value: any) => boolean;
+    errorMessage?: string;
 }
 
+// Define a propriedade do componente
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
@@ -26,30 +31,43 @@ interface UpdateModalProps<T extends Entity> {
     title: string;
 }
 
+// Exporta o componente
 export const UpdateModalCatProf = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Atualiza o estado do formulário com as validações
     useEffect(() => {
+        const newErrors: Record<string, string> = {};
+
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
-            if (typeof fieldValue === 'string') {
-                return !field.required || fieldValue.trim() !== '';
-            } else {
-                return !field.required || fieldValue != null;
+            let valid = true;
+
+            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
             }
+
+            return valid;
         });
+
+        setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
 
+    // Função para lidar com a mudança de entrada
     const handleInputChange = (key: string, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const value = e.target.value;
+        const { value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prevFormData => ({
             ...prevFormData,
-            [key]: value
+            [key]: parsedValue
         }));
     };
 
+    // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
@@ -58,6 +76,7 @@ export const UpdateModalCatProf = <T extends Entity>({ open, onClose, onUpdate, 
         handleSubmit();
     };
 
+    // Função para submeter o formulário
     const handleSubmit = async () => {
         await onUpdate(formData);
         onClose();
@@ -88,6 +107,7 @@ export const UpdateModalCatProf = <T extends Entity>({ open, onClose, onUpdate, 
                                 value={formData[field.key] || ''}
                                 onChange={e => handleInputChange(field.key, e)}
                             />
+                            {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
                         </div>
                     ))}
                 </form>

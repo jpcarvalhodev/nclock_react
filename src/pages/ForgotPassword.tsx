@@ -4,15 +4,18 @@ import '../css/ForgotPassword.css';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
+// Define a página de recuperação de password
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
+  // Função para validar o email
   const isEmailValid = (email: string): boolean => {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email.toLowerCase());
   };
 
+  // Função para submeter o formulário
   const handleForgotPasswordFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 

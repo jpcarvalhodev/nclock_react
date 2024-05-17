@@ -1,3 +1,5 @@
+//*** campos de todos os modelos para usar no programa todo ***
+
 export const employeeFields = [
     { label: 'Número de Matrícula', key: 'enrollNumber', type: 'number', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
@@ -10,13 +12,13 @@ export const employeeFields = [
     { label: 'Localidade', key: 'locality', type: 'string' },
     { label: 'Freguesia', key: 'village', type: 'string' },
     { label: 'Distrito', key: 'district', type: 'string' },
-    { label: 'Telefone', key: 'phone', type: 'number' },
-    { label: 'Telemóvel', key: 'mobile', type: 'number' },
+    { label: 'Telefone', key: 'phone', type: 'string' },
+    { label: 'Telemóvel', key: 'mobile', type: 'string' },
     { label: 'E-Mail', key: 'email', type: 'string' },
     { label: 'Data de Nascimento', key: 'birthday', type: 'date' },
     { label: 'Nacionalidade', key: 'nacionality', type: 'string' },
     { label: 'Gênero', key: 'gender', type: 'string' },
-    { label: 'Número de BI', key: 'biNumber', type: 'number' },
+    { label: 'Número de BI', key: 'biNumber', type: 'string' },
     { label: 'Emissão de BI', key: 'biIssuance', type: 'date' },
     { label: 'Validade de BI', key: 'biValidity', type: 'date' },
     { label: 'NIF', key: 'nif', type: 'number' },
@@ -75,7 +77,7 @@ export const groupFields = [
 ];
 
 export const professionFields = [
-    { key: 'code', label: 'Código', type: 'string', required: true },
+    { key: 'code', label: 'Código', type: 'number', required: true },
     { key: 'description', label: 'Descrição', type: 'string', required: true },
     { key: 'acronym', label: 'Acrônimo', type: 'string' },
 ];
@@ -91,8 +93,8 @@ export const zoneFields = [
     { key: 'locality', label: 'Localidade', type: 'string' },
     { key: 'village', label: 'Freguesia', type: 'string' },
     { key: 'District', label: 'Distrito', type: 'string' },
-    { key: 'Phone', label: 'Telefone', type: 'number' },
-    { key: 'Mobile', label: 'Telemóvel', type: 'number' },
+    { key: 'Phone', label: 'Telefone', type: 'string' },
+    { key: 'Mobile', label: 'Telemóvel', type: 'string' },
     { key: 'Email', label: 'E-Mail', type: 'string' },
 ];
 

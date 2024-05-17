@@ -6,19 +6,24 @@ import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 
+// Define a interface Entity
 export interface Entity {
     id: string;
     [key: string]: any;
 }
 
+// Define a interface Field
 interface Field {
     key: string;
     label: string;
     type: string;
     required?: boolean;
     optionsUrl?: string;
+    validate?: (value: any) => boolean;
+    errorMessage?: string;
 }
 
+// Define a propriedade do componente
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
@@ -28,22 +33,36 @@ interface UpdateModalProps<T extends Entity> {
     title: string;
 }
 
+// Exporta o componente
 export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Atualiza o estado do formulário com as validações
     useEffect(() => {
+        const newErrors: Record<string, string> = {};
+
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
-            const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
-            return !field.required || (field.required && valueAsString !== '');
+            let valid = true;
+
+            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
+            }
+
+            return valid;
         });
+
+        setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
 
+    // Atualiza o estado do formulário com as opções do dropdown
     useEffect(() => {
         const fetchDropdownOptions = async (field: Field) => {
             if (field.optionsUrl) {
@@ -62,6 +81,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
         });
     }, [fields]);
 
+    // Função para lidar com a mudança de foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -74,21 +94,26 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
         }
     };
 
+    // Função para resetar a foto de perfil para o avatar padrão
     const resetToDefaultAvatar = () => {
         setProfileImage(modalAvatar);
         setFormData({ ...formData, photo: '' });
       };
 
+    // Função para abrir o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
+    // Função para lidar com a mudança dos campos
     const handleChange = (e: React.ChangeEvent<any>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: parsedValue
         }));
     };
 
+    // Função para lidar com os dados dos campos
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
@@ -97,6 +122,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
         handleSubmit();
     };
 
+    // Função para submeter o formulário
     const handleSubmit = async () => {
         await onUpdate(formData);
         onClose();
@@ -119,7 +145,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="string"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
@@ -133,7 +159,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                         <Form.Group controlId="formCommercialName">
                             <Form.Label>Nome Comercial</Form.Label>
                             <Form.Control
-                                type="text"
+                                type="string"
                                 className="custom-input-height custom-select-font-size"
                                 value={formData.commercialName || ''}
                                 onChange={handleChange}
@@ -148,10 +174,10 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-nameAcronym">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-nif">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="number"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.nif || ''}
                                     onChange={handleChange}
@@ -159,13 +185,14 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors['nif'] && <Form.Text className="text-danger">{errors['nif']}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formType">
                             <Form.Label>Tipo</Form.Label>
                             <Form.Control
-                                type="text"
+                                type="string"
                                 className="custom-input-height custom-select-font-size"
                                 value={formData.type || ''}
                                 onChange={handleChange}
@@ -191,7 +218,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formResponsibleName">
                                             <Form.Label>Nome do Responsável</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.responsibleName || ''}
                                                 onChange={handleChange}
@@ -201,7 +228,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formPhone">
                                             <Form.Label>Telefone</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.phone || ''}
                                                 onChange={handleChange}
@@ -211,7 +238,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formEmail">
                                             <Form.Label>E-Mail</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.email || ''}
                                                 onChange={handleChange}
@@ -233,7 +260,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formMobile">
                                             <Form.Label>Telemóvel</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.mobile || ''}
                                                 onChange={handleChange}
@@ -243,7 +270,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formWww">
                                             <Form.Label>WWW</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.www || ''}
                                                 onChange={handleChange}
@@ -255,7 +282,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formFont">
                                             <Form.Label>Fonte</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.font || ''}
                                                 onChange={handleChange}
@@ -265,7 +292,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formFax">
                                             <Form.Label>Fax</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.fax || ''}
                                                 onChange={handleChange}
@@ -275,7 +302,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formComments">
                                             <Form.Label>Comentários</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.comments || ''}
                                                 onChange={handleChange}

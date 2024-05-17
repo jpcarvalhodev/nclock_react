@@ -17,6 +17,7 @@ import { CreateModalExtEnt } from "../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../modals/UpdateModalExtEnt";
 import { customStyles } from "../components/CustomStylesDataTable";
 
+// Define a página de Entidades Externas
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -28,6 +29,7 @@ export const ExternalEntities = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
 
+    // Função para buscar as entidades externas
     const fetchExternalEntities = async () => {
         try {
             const response = await fetchWithAuth('ExternalEntities', {
@@ -48,6 +50,7 @@ export const ExternalEntities = () => {
         }
     };
 
+    // Função para adicionar uma nova entidade externa
     const handleAddExternalEntity = async (externalEntity: ExternalEntity) => {
         try {
             const response = await fetchWithAuth('ExternalEntities', {
@@ -73,6 +76,7 @@ export const ExternalEntities = () => {
         refreshExternalEntities();
     };
 
+    // Função para atualizar uma entidade externa
     const handleUpdateExternalEntity = async (externalEntity: ExternalEntity) => {
         try {
             const response = await fetchWithAuth(`ExternalEntities/${externalEntity.externalEntityID}`, {
@@ -106,6 +110,7 @@ export const ExternalEntities = () => {
         }
     };
 
+    // Função para apagar uma entidade externa
     const handleDeleteExternalEntity = async (externalEntityID: string) => {
         try {
             const response = await fetchWithAuth(`ExternalEntities/${externalEntityID}`, {
@@ -126,42 +131,51 @@ export const ExternalEntities = () => {
         refreshExternalEntities();
     };
 
+    // Atualiza as entidades externas
     useEffect(() => {
         fetchExternalEntities();
     }, []);
 
+    // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {
         fetchExternalEntities();
     };
 
+    // Função para abrir o modal de adicionar entidade externa
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Função para fechar o modal de adicionar entidade externa
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Função para abrir o modal de editar entidade externa
     const handleEditExternalEntity = (externalEntity: ExternalEntity) => {
         setSelectedExternalEntity(externalEntity);
         setShowUpdateModal(true);
     };
 
+    // Função para fechar o modal de editar entidade externa
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
     };
 
+    // Função para abrir o modal de apagar entidade externa
     const handleOpenDeleteModal = (externalEntityID: string) => {
         setSelectedExternalEntityForDelete(externalEntityID);
         setShowDeleteModal(true);
     };
 
+    // Filtra as entidades externas
     const filteredItems = externalEntities.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -170,23 +184,28 @@ export const ExternalEntities = () => {
         }
     };
 
+    // Função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['name', 'nif']);
     };
 
+    // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define as opções de paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página'
     };
 
+    // Mapeia os nomes das colunas
     const columnNamesMap = externalEntityFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
 
+    // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
             name: columnNamesMap[columnKey] || columnKey,
@@ -194,10 +213,12 @@ export const ExternalEntities = () => {
             sortable: true,
         }));
 
+    // Define o componente de linha expandida
     const expandableRowComponent = (row: ExternalEntity) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={externalEntityFields} />
     );
 
+    // Define a coluna de ações
     const actionColumn: TableColumn<ExternalEntity> = {
         name: 'Ações',
         cell: (row: ExternalEntity) => (

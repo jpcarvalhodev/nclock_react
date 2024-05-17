@@ -17,6 +17,7 @@ import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
 import { CreateModalCatProf } from "../modals/CreateModalCatProf";
 import { customStyles } from "../components/CustomStylesDataTable";
 
+// Define a página de categorias
 export const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -28,6 +29,7 @@ export const Categories = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<string | null>(null);
 
+    // Função para buscar as categorias
     const fetchCategories = async () => {
         try {
             const response = await fetchWithAuth('Categories', {
@@ -48,6 +50,7 @@ export const Categories = () => {
         }
     };
 
+    // Função para adicionar uma categoria
     const handleAddCategory = async (category: Category) => {
         try {
             const response = await fetchWithAuth('Categories', {
@@ -73,6 +76,7 @@ export const Categories = () => {
         refreshCategories();
     };
 
+    // Função para atualizar uma categoria
     const handleUpdateCategory = async (category: Category) => {
         try {
             const response = await fetchWithAuth(`Categories/${category.categoryID}`, {
@@ -106,6 +110,7 @@ export const Categories = () => {
         }
     };
 
+    // Função para apagar uma categoria
     const handleDeleteCategory = async (categoryID: string) => {
         try {
             const response = await fetchWithAuth(`Categories/${categoryID}`, {
@@ -126,43 +131,52 @@ export const Categories = () => {
         refreshCategories();
     };
 
+    // Busca as categorias ao carregar a página
     useEffect(() => {
         fetchCategories();
     }, []);
 
+    // Função para atualizar as categorias
     const refreshCategories = () => {
         fetchCategories();
     };
 
+    // Função para abrir o modal de adicionar categoria
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Função para fechar o modal de adicionar categoria
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Função para fechar o modal de atualizar categoria
     const handleCloseUpdateModal = () => {
         setSelectedCategory(null);
         setShowUpdateModal(false);
     };
 
+    // Função para editar uma categoria
     const handleEditCategory = (category: Category) => {
         setSelectedCategory(category);
         setShowUpdateModal(true);
     };
 
+    // Função para abrir o modal de apagar categoria
     const handleOpenDeleteModal = (categoryID: string) => {
         setSelectedCategoryForDelete(categoryID);
         setShowDeleteModal(true);
     };
 
+    // Filtra as categorias
     const filteredItems = categories.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -171,24 +185,29 @@ export const Categories = () => {
         }
     };
 
+    // Função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['code', 'description']);
     };
 
+    // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Mapeia os nomes das colunas
     const columnNamesMap = categoryFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
 
+    // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
             name: columnNamesMap[columnKey] || columnKey,
@@ -196,6 +215,7 @@ export const Categories = () => {
             sortable: true,
         }));
 
+    // Define a coluna de ações
     const actionColumn: TableColumn<Category> = {
         name: 'Ações',
         cell: (row: Category) => (

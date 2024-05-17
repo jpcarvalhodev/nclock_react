@@ -7,21 +7,27 @@ import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import { Department, ExternalEntity, Group, Profession, Zone } from '../helpers/Types';
 
+// Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
+// Define a interface Entity
 export interface Entity {
   id: string;
   [key: string]: any;
 }
 
+// Define a interface Field	
 interface Field {
   key: string;
   label: string;
   type: string;
   required?: boolean;
   optionsUrl?: string;
+  validate?: (value: any) => boolean;
+  errorMessage?: string;
 }
 
+// Define as propriedades do componente
 interface UpdateModalProps<T extends Entity> {
   open: boolean;
   onClose: () => void;
@@ -31,6 +37,7 @@ interface UpdateModalProps<T extends Entity> {
   title: string;
 }
 
+// Define o componente
 export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
   const [formData, setFormData] = useState<T>({ ...entity });
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -42,7 +49,30 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
   const [professions, setProfessions] = useState<Profession[]>([]);
   const [zones, setZones] = useState<Zone[]>([]);
   const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Atualiza o estado do componente com parte das validações dos campos
+  useEffect(() => {
+    const newErrors: Record<string, string> = {};
+
+    const isValid = fields.every(field => {
+      const fieldValue = formData[field.key];
+      let valid = true;
+
+      if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+        valid = false;
+        newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
+      }
+
+      return valid;
+    });
+
+    setErrors(newErrors);
+    setIsFormValid(isValid);
+    validateForm();
+  }, [formData, fields]);
+
+  // Valida o formulário
   const validateForm = () => {
     const isValid = fields.every(field => {
       const fieldValue = formData[field.key];
@@ -52,6 +82,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
     setIsFormValid(isValid);
   }
 
+  // Busca as opções dos dropdowns
   const fetchDropdownOptions = async () => {
     try {
       const departmentsResponse = await fetchWithAuth('Departaments');
@@ -86,17 +117,14 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    validateForm();
-  }, [formData, fields]);
-
+  // Atualiza o estado do componente
   useEffect(() => {
     if (open) {
       fetchDropdownOptions();
     }
   }, [open]);
 
+  // Define a mudança de foto
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -109,13 +137,16 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
     }
   };
 
+  // Define a função para resetar a foto de perfil
   const resetToDefaultAvatar = () => {
     setProfileImage(modalAvatar);
     setFormData({ ...formData, photo: '' });
   };
 
+  // Define a função para acionar o popup de seleção de arquivo
   const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
+  // Define a função para mudar o dropdown
   const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
     const { value } = e.target;
     setFormData(prevState => ({
@@ -124,14 +155,17 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
     }));
   };
 
+  // Define a função para mudar o campo
   const handleChange = (e: React.ChangeEvent<any>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    const parsedValue = type === 'number' ? Number(value) : value;
     setFormData(prevState => ({
       ...prevState,
-      [name]: value
+      [name]: parsedValue
     }));
   };
 
+  // Define a função para salvar
   const handleSaveClick = () => {
     if (!isFormValid) {
       toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
@@ -140,11 +174,13 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
     handleSubmit();
   };
 
+  // Define a função para enviar
   const handleSubmit = async () => {
     await onUpdate(formData);
     onClose();
   };
 
+  // Define as opções de tipo
   const typeOptions = [
     { value: 'Funcionário', label: 'Funcionário' },
     { value: 'Funcionário Externo', label: 'Funcionário Externo' },
@@ -201,6 +237,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                   required
                 />
               </OverlayTrigger>
+              {errors.enrollNumber && <Form.Text className="text-danger">{errors.enrollNumber}</Form.Text>}
             </Form.Group>
             <Form.Group controlId="formName">
               <Form.Label>
@@ -211,7 +248,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
               >
                 <Form.Control
-                  type="text"
+                  type="string"
                   className="custom-input-height custom-select-font-size"
                   value={formData.name || ''}
                   onChange={handleChange}
@@ -229,7 +266,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                 overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
               >
                 <Form.Control
-                  type="text"
+                  type="string"
                   className="custom-input-height custom-select-font-size"
                   value={formData.shortName || ''}
                   onChange={handleChange}
@@ -243,7 +280,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
             <Form.Group controlId="formNameAcronym">
               <Form.Label>Acrônimo do Nome</Form.Label>
               <Form.Control
-                type="text"
+                type="string"
                 className="custom-input-height custom-select-font-size"
                 value={formData.nameAcronym || ''}
                 onChange={handleChange}
@@ -253,7 +290,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
             <Form.Group controlId="formComments">
               <Form.Label>Comentários</Form.Label>
               <Form.Control
-                type="text"
+                type="string"
                 className="custom-input-height custom-select-font-size"
                 value={formData.comments || ''}
                 onChange={handleChange}
@@ -330,17 +367,17 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                 <Row>
                   {[
                     { key: 'nif', label: 'NIF', type: 'number' },
-                    { key: 'address', label: 'Morada', type: 'text' },
-                    { key: 'zipcode', label: 'Código Postal', type: 'text' },
-                    { key: 'locality', label: 'Localidade', type: 'text' },
-                    { key: 'village', label: 'Freguesia', type: 'text' },
-                    { key: 'district', label: 'Distrito', type: 'text' },
-                    { key: 'phone', label: 'Telefone', type: 'number' },
-                    { key: 'mobile', label: 'Telemóvel', type: 'number' },
+                    { key: 'address', label: 'Morada', type: 'string' },
+                    { key: 'zipcode', label: 'Código Postal', type: 'string' },
+                    { key: 'locality', label: 'Localidade', type: 'string' },
+                    { key: 'village', label: 'Freguesia', type: 'string' },
+                    { key: 'district', label: 'Distrito', type: 'string' },
+                    { key: 'phone', label: 'Telefone', type: 'string' },
+                    { key: 'mobile', label: 'Telemóvel', type: 'string' },
                     { key: 'email', label: 'E-Mail', type: 'email' },
                     { key: 'birthday', label: 'Data de Nascimento', type: 'date' },
-                    { key: 'nacionality', label: 'Nacionalidade', type: 'text' },
-                    { key: 'gender', label: 'Gênero', type: 'text' }
+                    { key: 'nacionality', label: 'Nacionalidade', type: 'string' },
+                    { key: 'gender', label: 'Gênero', type: 'string' }
                   ].map((field) => (
                     <Col md={3}>
                       <Form.Group controlId={`form${field.key}`}>
@@ -352,6 +389,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
                           onChange={handleChange}
                           name={field.key}
                         />
+                        {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
                       </Form.Group>
                     </Col>
                   ))}
@@ -362,7 +400,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
               <Form style={{ marginTop: 10, marginBottom: 10 }}>
                 <Row>
                   {[
-                    { key: 'biNumber', label: 'Número de BI', type: 'text' },
+                    { key: 'biNumber', label: 'Número de BI', type: 'string' },
                     { key: 'biIssuance', label: 'Emissão de BI', type: 'date' },
                     { key: 'biValidity', label: 'Validade de BI', type: 'date' },
                     { key: 'admissionDate', label: 'Data de Admissão', type: 'date' },

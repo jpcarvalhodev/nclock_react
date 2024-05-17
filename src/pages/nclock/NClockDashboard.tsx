@@ -11,12 +11,15 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { Employee, Department, Group } from "../../helpers/Types";
 
+// Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 
+// Define a linguagem do calendário
 const locales = {
     'pt': ptBR,
 };
 
+// Define o localizador de datas
 const localizer = dateFnsLocalizer({
     format,
     parse,
@@ -25,6 +28,7 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
+// Define a interface CalendarEvent
 interface CalendarEvent {
     id: string;
     title: string;
@@ -33,6 +37,7 @@ interface CalendarEvent {
     allDay: boolean;
 }
 
+// Define as mensagens do calendário em português
 const messages = {
     allDay: 'Todo o dia',
     previous: '<',
@@ -49,12 +54,14 @@ const messages = {
     showMore: (total: number) => `+ Ver mais (${total})`
 };
 
+// Define a página principal
 export const NClockDashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [totalDepartments, setTotalDepartments] = useState<number>(0);
     const [totalGroups, setTotalGroups] = useState<number>(0);
 
+    // Função para buscar os eventos dos funcionários
     const fetchEvents = async (): Promise<CalendarEvent[]> => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees', {
@@ -83,6 +90,7 @@ export const NClockDashboard = () => {
         }
     };
 
+    // Função para buscar os departamentos
     const fetchDepartments = async (): Promise<void> => {
         try {
             const response = await fetchWithAuth('Departaments', {
@@ -98,6 +106,7 @@ export const NClockDashboard = () => {
         }
     };
 
+    // Função para buscar os grupos
     const fetchGroups = async (): Promise<void> => {
         try {
             const response = await fetchWithAuth('Groups', {
@@ -113,6 +122,7 @@ export const NClockDashboard = () => {
         }
     };
 
+    // Define os dados do gráfico circular
     const chartData = {
         labels: ['Total de Funcionários'],
         datasets: [{
@@ -128,6 +138,7 @@ export const NClockDashboard = () => {
         }]
     };
 
+    // Define os dados do gráfico de barras
     const chartDataDepartmentsGroups = {
         labels: ['Departamentos', 'Grupos'],
         datasets: [{
@@ -139,10 +150,12 @@ export const NClockDashboard = () => {
         }]
     };
 
+    // Carrega os dados
     useEffect(() => {
         loadData();
     }, []);
 
+    // Função para carregar os dados
     const loadData = async () => {
         try {
             const employeeEvents = await fetchEvents();

@@ -3,24 +3,29 @@ import { Employee, ExternalEntity, Zone } from "../helpers/Types";
 import '../css/Expanded.css';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 
+// Define a interface para os campos
 interface Field {
     key: string;
     label: string;
     type: string;
 }
 
+// Função para mapear os nomes das colunas
 const columnNamesMap = (fields: Field[]) => fields.reduce((map, field) => {
     map[field.key] = field.label;
     return map;
 }, {} as Record<string, string>);
 
+// Define um tipo para os campos possíveis
 type FieldsType = typeof employeeFields | typeof zoneFields | typeof externalEntityFields;
 
+// Define a interface para as propriedades do componente
 interface ExpandedComponentProps<T> {
     data: T;
     fields: FieldsType;
 }
 
+// Define o componente
 export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | ExternalEntity>({
     data,
     fields

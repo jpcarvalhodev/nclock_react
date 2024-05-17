@@ -1,5 +1,6 @@
 import '../css/PagesStyles.css';
 
+// Define o componente
 export const Footer = () => {
   return (
     <footer className="footer">

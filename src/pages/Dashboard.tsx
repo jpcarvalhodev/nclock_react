@@ -28,14 +28,17 @@ import ncard from '../assets/img/navbar/navbar/ncard.webp';
 import nview from '../assets/img/navbar/navbar/nview.webp';
 import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
 import { Card } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
+// Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 
+// Define a linguagem do calendário
 const locales = {
     'pt': ptBR,
 };
 
+// Define o localizador de datas
 const localizer = dateFnsLocalizer({
     format,
     parse,
@@ -44,6 +47,7 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
+// Define a interface CalendarEvent
 interface CalendarEvent {
     id: string;
     title: string;
@@ -52,6 +56,7 @@ interface CalendarEvent {
     allDay: boolean;
 }
 
+// Define as mensagens do calendário em português
 const messages = {
     allDay: 'Todo o dia',
     previous: '<',
@@ -68,8 +73,10 @@ const messages = {
     showMore: (total: number) => `+ Ver mais (${total})`
 };
 
+// Define o tipo TabName
 type TabName = 'nclock' | 'naccess' | 'nvisitor' | 'npark' | 'ndoor' | 'npatrol' | 'ncard' | 'nview' | 'nsecur';
 
+// Define a página principal
 export const Dashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
@@ -77,6 +84,7 @@ export const Dashboard = () => {
     const [totalGroups, setTotalGroups] = useState<number>(0);
     const navigate = useNavigate();
 
+    // Define a função de busca de eventos
     const fetchEvents = async (): Promise<CalendarEvent[]> => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees', {
@@ -105,6 +113,7 @@ export const Dashboard = () => {
         }
     };
 
+    // Define a função de busca de departamentos
     const fetchDepartments = async (): Promise<void> => {
         try {
             const response = await fetchWithAuth('Departaments', {
@@ -120,6 +129,7 @@ export const Dashboard = () => {
         }
     };
 
+    // Define a função de busca de grupos
     const fetchGroups = async (): Promise<void> => {
         try {
             const response = await fetchWithAuth('Groups', {
@@ -135,10 +145,12 @@ export const Dashboard = () => {
         }
     };
 
+    // Carrega os dados
     useEffect(() => {
         loadData();
     }, []);
 
+    // Define a função de carregamento de dados
     const loadData = async () => {
         try {
             const employeeEvents = await fetchEvents();
@@ -150,6 +162,7 @@ export const Dashboard = () => {
         }
     };
 
+    // Define a função de clique nos cards
     const handleCardClick = (tabName: TabName) => {
         const tabData = {
             nclock: { route: '/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon' },

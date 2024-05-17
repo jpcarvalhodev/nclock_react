@@ -1,8 +1,10 @@
+// Define as propriedades do componente
 interface ExpandedComponentProps {
     data: Record<string, any>;
     fields: { key: string; label: string }[];
 }
 
+// Define o componente
 export const ExpandedComponentGeneric = ({ data, fields }: ExpandedComponentProps) => {
     const formatDisplayValue = (value: any): string => {
         if (typeof value === 'object' && value !== null) {

@@ -19,6 +19,7 @@ import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../components/CustomStylesDataTable';
 
+// Define a página funcionários
 export const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -33,6 +34,7 @@ export const Employees = () => {
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
+    // Define a função de busca dos funcionários
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
@@ -49,6 +51,7 @@ export const Employees = () => {
         }
     };
 
+    // Define a função de adição de funcionários
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -73,6 +76,7 @@ export const Employees = () => {
         refreshEmployees();
     };
 
+    // Define a função de atualização de funcionários
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -107,6 +111,7 @@ export const Employees = () => {
         }
     };
 
+    // Define a função de apagar funcionários
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -128,14 +133,17 @@ export const Employees = () => {
         refreshEmployees();
     };
 
+    // Busca os funcionários
     useEffect(() => {
         fetchEmployees();
     }, []);
 
+    // Atualiza os funcionários
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
+    // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -145,34 +153,41 @@ export const Employees = () => {
         }
     };
 
+    // Atualiza os funcionários filtrados
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
+    // Define a abertura do modal de adição
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Define o fechamento do modal de adição
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Define o fechamento do modal de atualização
     const handleCloseUpdateModal = () => {
         setSelectedEmployee(null);
         setShowUpdateModal(false);
     };
 
+    // Define a abertura do modal de atualização
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
+    // Define a função de filtragem dos funcionários
     const filteredItems = filteredEmployees.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Define a função de seleção de colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -181,14 +196,17 @@ export const Employees = () => {
         }
     };
 
+    // Define a função de resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
 
+    // Define a função de seleção de todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a função de seleção de linhas
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -197,11 +215,13 @@ export const Employees = () => {
         setSelectedRows(state.selectedRows);
     };
 
+    // Define a função de limpar a seleção
     const handleClearSelection = () => {
         setClearSelectionToggle(!clearSelectionToggle);
         setSelectedRows([]);
     };
 
+    // Define as colunas
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
@@ -237,20 +257,24 @@ export const Employees = () => {
             };
         });
 
+    // Define a função de edição de funcionários
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
+    // Define as opções de paginação de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Define o componente de linha expandida
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
 
+    // Define as colunas de ação
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, FormCheck } from 'react-bootstrap';
 
+// Define a interface para as propriedades do componente ColumnSelectorModal
 interface ColumnSelectorModalProps {
     columns: { label: string; key: string; isBoolean?: boolean }[];
     selectedColumns: string[];
@@ -10,6 +11,7 @@ interface ColumnSelectorModalProps {
     onSelectAllColumns: (allColumnNames: string[]) => void;
 }
 
+// Define o componente
 export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
     columns,
     selectedColumns,
@@ -20,10 +22,12 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
 }) => {
     const [selectAll, setSelectAll] = useState(false);
 
+    // Atualiza o estado de seleção de todas as colunas
     useEffect(() => {
         setSelectAll(columns.length === selectedColumns.length);
     }, [columns, selectedColumns]);
 
+    // Função para alternar a seleção de todas as colunas
     const handleSelectAllToggle = () => {
         if (selectAll) {
             onResetColumns();
@@ -34,6 +38,7 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
         setSelectAll(!selectAll);
     };
 
+    // Filtra as colunas para remover a coluna de fotos
     const filteredColumns = columns.filter((column) => column.key !== 'photo');
 
     return (

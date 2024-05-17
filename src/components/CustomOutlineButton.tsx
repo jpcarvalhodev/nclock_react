@@ -1,7 +1,7 @@
 import { forwardRef, useState } from 'react';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Button } from 'react-bootstrap';
 
+// Define a interface para as propriedades do CustomOutlineButton
 interface CustomOutlineButtonProps {
   onClick?: () => void;
   icon?: string;
@@ -12,6 +12,7 @@ export const CustomOutlineButton = forwardRef<HTMLButtonElement, CustomOutlineBu
   ({ onClick, icon, iconSize }, ref) => {
     const [isHovered, setIsHovered] = useState(false);
 
+    // Define o estilo base para o botão
     const baseStyle = {
       borderColor: '#0050a0',
       color: '#0050a0',
@@ -24,12 +25,14 @@ export const CustomOutlineButton = forwardRef<HTMLButtonElement, CustomOutlineBu
       alignItems: 'center',
     };
 
+    // Define o estilo do botão ao passar o mouse
     const hoverStyle = {
       ...baseStyle,
       backgroundColor: '#0050a0',
       color: '#ffffff',
     };
 
+    // Define o estilo do ícone
     const iconStyle = {
       fontSize: iconSize,
     };

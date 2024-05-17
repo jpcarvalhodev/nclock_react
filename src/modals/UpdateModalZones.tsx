@@ -6,11 +6,13 @@ import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 
+// Define a interface Entity
 export interface Entity {
     id: string;
     [key: string]: any;
 }
 
+// Define a interface Field
 interface Field {
     key: string;
     label: string;
@@ -19,6 +21,7 @@ interface Field {
     optionsUrl?: string;
 }
 
+// Define as propriedades do componente
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
@@ -28,6 +31,7 @@ interface UpdateModalProps<T extends Entity> {
     title: string;
 }
 
+// Define o componente
 export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -35,6 +39,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
     const [isFormValid, setIsFormValid] = useState(false);
     const fileInputRef = React.createRef<HTMLInputElement>();
 
+    // Atualiza o estado do componente com as validações dos campos
     useEffect(() => {
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -44,6 +49,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
         setIsFormValid(isValid);
     }, [formData, fields]);
 
+    // Atualiza o estado do componente com os dados do dropdown
     useEffect(() => {
         const fetchDropdownOptions = async (field: Field) => {
             if (field.optionsUrl) {
@@ -62,6 +68,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
         });
     }, [fields]);
 
+    // Atualiza o estado do componente com a foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -74,13 +81,16 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
         }
     };
 
+    // Atualiza o estado do componente com o reset de foto
     const resetToDefaultAvatar = () => {
         setProfileImage(modalAvatar);
         setFormData({ ...formData, photo: '' });
     };
 
+    // Atualiza o estado do componente com o evento de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
+    // Atualiza o estado do componente com a mudança de campo
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
@@ -89,6 +99,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
         }));
     };
 
+    // Atualiza o estado do componente com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
@@ -97,11 +108,13 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
         handleSubmit();
     };
 
+    // Atualiza o estado do componente com o envio do formulário
     const handleSubmit = async () => {
         await onUpdate(formData);
         onClose();
     };
 
+    // Define as opções de tipo
     const typeOptions = [
         { value: 'zona', label: 'Zona' },
         { value: 'local_de_trabalho', label: 'Local de Trabalho' },
@@ -125,7 +138,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="string"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
@@ -145,7 +158,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                 overlay={<Tooltip id="tooltip-acronym">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="string"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.acronym || ''}
                                     onChange={handleChange}
@@ -232,8 +245,8 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                         { key: 'locality', label: 'Localidade', type: 'string' },
                                         { key: 'village', label: 'Freguesia', type: 'string' },
                                         { key: 'District', label: 'Distrito', type: 'string' },
-                                        { key: 'Phone', label: 'Telefone', type: 'number' },
-                                        { key: 'Mobile', label: 'Telemóvel', type: 'number' },
+                                        { key: 'Phone', label: 'Telefone', type: 'string' },
+                                        { key: 'Mobile', label: 'Telemóvel', type: 'string' },
                                         { key: 'Email', label: 'E-Mail', type: 'string' },
                                     ].map((field) => (
                                         <Col md={3}>

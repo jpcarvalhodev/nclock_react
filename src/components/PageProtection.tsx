@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
+// Define as propriedades do componente
 interface PageProtectionProps {
   children: React.ReactNode;
 }
 
+// Define o componente
 export const PageProtection: React.FC<PageProtectionProps> = ({ children }) => {
   const [redirectTo, setRedirectTo] = useState('');
 
+  // Verifica se o usuário está autenticado
   useEffect(() => {
     function isAuthenticated() {
       const token = localStorage.getItem('token');

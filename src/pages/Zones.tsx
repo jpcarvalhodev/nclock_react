@@ -17,6 +17,7 @@ import { UpdateModalZones } from "../modals/UpdateModalZones";
 import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
 import { customStyles } from "../components/CustomStylesDataTable";
 
+// Define a página de Zonas
 export const Zones = () => {
     const [zones, setZones] = useState<Zone[]>([]);
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
@@ -28,6 +29,7 @@ export const Zones = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<string | null>(null);
 
+    // Função para buscar as zonas
     const fetchZones = async () => {
         try {
             const response = await fetchWithAuth('Zones', {
@@ -48,6 +50,7 @@ export const Zones = () => {
         }
     };
 
+    // Função para adicionar uma zona
     const handleAddZone = async (zone: Zone) => {
         try {
             const response = await fetchWithAuth('Zones', {
@@ -73,6 +76,7 @@ export const Zones = () => {
         refreshZones();
     };
 
+    // Função para atualizar uma zona
     const handleUpdateZone = async (zone: Zone) => {
         try {
             const response = await fetchWithAuth(`Zones/${zone.zoneID}`, {
@@ -106,6 +110,7 @@ export const Zones = () => {
         }
     };
 
+    // Função para apagar uma zona
     const handleDeleteZone = async (zoneID: string) => {
         try {
             const response = await fetchWithAuth(`Zones/${zoneID}`, {
@@ -126,43 +131,52 @@ export const Zones = () => {
         refreshZones();
     };
 
+    // Atualiza a lista de zonas ao carregar a página
     useEffect(() => {
         fetchZones();
     }, []);
 
+    // Função para atualizar as zonas
     const refreshZones = () => {
         fetchZones();
     };
 
+    // Função para abrir o modal de adicionar zona
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Função para fechar o modal de adicionar zona
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Função para abrir o modal de editar zona
     const handleEditZone = (zone: Zone) => {
         setSelectedZone(zone);
         setShowUpdateModal(true);
     };
 
+    // Função para fechar o modal de editar zona
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedZone(null);
     };
 
+    // Função para abrir o modal de apagar zona
     const handleOpenDeleteModal = (zoneID: string) => {
         setSelectedZoneForDelete(zoneID);
         setShowDeleteModal(true);
     };
 
+    // Filtra as zonas
     const filteredItems = zones.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Função para alternar a visibilidade das colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -171,24 +185,29 @@ export const Zones = () => {
         }
     };
 
+    // Função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['name', 'acronym']);
     };
 
+    // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Opções de paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Mapeia os nomes das colunas
     const columnNamesMap = zoneFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
 
+    // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
             name: columnNamesMap[columnKey] || columnKey,
@@ -196,10 +215,12 @@ export const Zones = () => {
             sortable: true,
         }));
 
+    // Componente de linha expandida
     const expandableRowComponent = (row: Zone) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={zoneFields} />
     );
 
+    // Coluna de ações
     const actionColumn: TableColumn<Zone> = {
         name: 'Ações',
         cell: (row: Zone) => (

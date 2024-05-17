@@ -7,6 +7,7 @@ import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 
+// Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
     label: string;
     key: string;
@@ -15,6 +16,7 @@ interface FieldConfig {
     optionsUrl?: string;
 }
 
+// Define a interface para as propriedades do componente
 interface Props<T> {
     title: string;
     open: boolean;
@@ -24,6 +26,7 @@ interface Props<T> {
     initialValues: Partial<T>;
 }
 
+// Define o componente
 export const CreateModalZones = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -31,6 +34,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false);
 
+    // Valida o formulário
     const validateForm = () => {
         const isValid = fields.every(field => {
             if (field.required) {
@@ -42,10 +46,12 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
         setIsFormValid(isValid);
     };
 
+    // Atualiza a validação do formulário
     useEffect(() => {
         validateForm();
     }, [formData, fields]);
 
+    // Carregar as opções dos dropdowns
     useEffect(() => {
         const fetchDropdownOptions = async (field: FieldConfig) => {
             if (field.optionsUrl) {
@@ -64,6 +70,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
         });
     }, [fields]);
 
+    // Atualiza o valor do campo da foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -76,8 +83,10 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
         }
     };
 
+    // Abre a busca de arquivo para selecionar a foto
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
+    // Atualiza o valor dos campos
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
@@ -86,6 +95,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
         }));
     };
 
+    // Verifica o formulário e chama a função de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
@@ -94,10 +104,12 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
         handleSave();
     };
 
+    // Salva os dados
     const handleSave = () => {
         onSave(formData as T);
     };
 
+    // Opções de tipo
     const typeOptions = [
         { value: 'zona', label: 'Zona' },
         { value: 'local_de_trabalho', label: 'Local de Trabalho' },
@@ -121,7 +133,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="string"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
@@ -141,7 +153,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                 overlay={<Tooltip id="tooltip-acronym">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="string"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.acronym || ''}
                                     onChange={handleChange}
@@ -223,8 +235,8 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                         { key: 'locality', label: 'Localidade', type: 'string' },
                                         { key: 'village', label: 'Freguesia', type: 'string' },
                                         { key: 'District', label: 'Distrito', type: 'string' },
-                                        { key: 'Phone', label: 'Telefone', type: 'number' },
-                                        { key: 'Mobile', label: 'Telemóvel', type: 'number' },
+                                        { key: 'Phone', label: 'Telefone', type: 'string' },
+                                        { key: 'Mobile', label: 'Telemóvel', type: 'string' },
                                         { key: 'Email', label: 'E-Mail', type: 'string' },
                                     ].map((field) => (
                                         <Col md={3}>

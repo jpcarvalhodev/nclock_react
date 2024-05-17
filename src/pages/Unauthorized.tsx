@@ -2,8 +2,8 @@ import { Container, Row, Col, Alert, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import '../css/ErrorPages.css';
 
+// Define a página de erro 401
 export const Unauthorized = () => {
-
   return (
     <div className='background'>
       <Container className="d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>

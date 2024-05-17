@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { departmentFields } from '../helpers/Fields';
 
+// Define a interface para os dados do departamento
 interface DepartmentData {
     [key: string]: any;
     code: number;
@@ -9,15 +10,18 @@ interface DepartmentData {
     subdepartments?: DepartmentData[];
 }
 
+// Define a interface para as propriedades do componente ExpandedComponentDept
 interface ExpandedComponentProps {
     data: DepartmentData;
     fetchSubdepartments: (parentId: number) => Promise<DepartmentData[]>;
     isRoot?: boolean;
 }
 
+// Define o componente
 export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: ExpandedComponentProps) => {
     const [subdepartments, setSubdepartments] = useState<DepartmentData[]>(data.subdepartments || []);
 
+    // Usa useEffect para buscar subdepartamentos quando o componente é montado ou data/fetchSubdepartments mudam
     useEffect(() => {
         if (data.paiId !== null && data.paiId !== undefined) {
             fetchSubdepartments(data.code)
@@ -29,6 +33,7 @@ export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: Exp
         }
     }, [data, fetchSubdepartments]);
 
+    // Função para formatar o valor a ser exibido com base no tipo
     const formatDisplayValue = (value: any, type: string): string => {
         if (value === null || value === undefined) {
             return 'N/A';

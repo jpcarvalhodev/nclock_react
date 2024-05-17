@@ -7,14 +7,18 @@ import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 
+// Define the FieldConfig interface
 interface FieldConfig {
     label: string;
     key: string;
     type: string;
     required?: boolean;
     optionsUrl?: string;
+    validate?: (value: any) => boolean;
+    errorMessage?: string;
 }
 
+// Define as propriedades do componente
 interface Props<T> {
     title: string;
     open: boolean;
@@ -24,28 +28,36 @@ interface Props<T> {
     initialValues: Partial<T>;
 }
 
+// Define o componente
 export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const validateForm = () => {
-        const isValid = fields.every(field => {
-            if (field.required) {
-                const fieldValue = formData?.[field.key];
-                return fieldValue !== null && fieldValue !== undefined && typeof fieldValue === 'string' && fieldValue.trim() !== '';
-            }
-            return true;
-        });
-        setIsFormValid(isValid);
-    };
-
+    // Atualiza com a validação do formulário
     useEffect(() => {
-        validateForm();
+        const newErrors: Record<string, string> = {};
+
+        const isValid = fields.every(field => {
+            const fieldValue = formData[field.key];
+            let valid = true;
+
+            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
+            }
+
+            return valid;
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
     }, [formData, fields]);
 
+    // Atualiza com a busca de funcionários
     useEffect(() => {
         const fetchEmployees = async () => {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
@@ -58,6 +70,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
         fetchEmployees();
     }, []);
 
+    // Define a mudança de foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -70,16 +83,20 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
         }
     };
 
+    // Define a abertura do seletor de arquivos
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
+    // Define a mudança de valor do formulário
     const handleChange = (e: React.ChangeEvent<any>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: parsedValue
         }));
     };
 
+    // Define o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
@@ -88,6 +105,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
         handleSave();
     };
 
+    // Define a função de salvar
     const handleSave = () => {
         onSave(formData as T);
     };
@@ -109,7 +127,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="string"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
@@ -123,7 +141,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                         <Form.Group controlId="formCommercialName">
                             <Form.Label>Nome Comercial</Form.Label>
                             <Form.Control
-                                type="text"
+                                type="string"
                                 className="custom-input-height custom-select-font-size"
                                 value={formData.commercialName || ''}
                                 onChange={handleChange}
@@ -138,10 +156,10 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-nameAcronym">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-nif">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="number"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.nif || ''}
                                     onChange={handleChange}
@@ -149,13 +167,14 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.nif && <Form.Text className="text-danger">{errors.nif}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formType">
                             <Form.Label>Tipo</Form.Label>
                             <Form.Control
-                                type="text"
+                                type="string"
                                 className="custom-input-height custom-select-font-size"
                                 value={formData.type || ''}
                                 onChange={handleChange}
@@ -192,7 +211,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                         <Form.Group controlId="formPhone">
                                             <Form.Label>Telefone</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.phone || ''}
                                                 onChange={handleChange}
@@ -202,7 +221,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                         <Form.Group controlId="formEmail">
                                             <Form.Label>E-Mail</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.email || ''}
                                                 onChange={handleChange}
@@ -224,7 +243,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                         <Form.Group controlId="formMobile">
                                             <Form.Label>Telemóvel</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.mobile || ''}
                                                 onChange={handleChange}
@@ -234,7 +253,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                         <Form.Group controlId="formWww">
                                             <Form.Label>WWW</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.www || ''}
                                                 onChange={handleChange}
@@ -246,7 +265,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                         <Form.Group controlId="formFont">
                                             <Form.Label>Fonte</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.font || ''}
                                                 onChange={handleChange}
@@ -256,7 +275,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                         <Form.Group controlId="formFax">
                                             <Form.Label>Fax</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.fax || ''}
                                                 onChange={handleChange}
@@ -266,7 +285,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                         <Form.Group controlId="formComments">
                                             <Form.Label>Comentários</Form.Label>
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.comments || ''}
                                                 onChange={handleChange}

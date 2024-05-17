@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
 import { ExportButton } from '../components/ExportButton';
 
+// Define a página de pessoas
 export const Persons = () => {
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -26,6 +27,7 @@ export const Persons = () => {
     const [filterText, setFilterText] = useState('');
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
 
+    // Função para buscar todos os funcionários
     const fetchAllEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
@@ -40,10 +42,12 @@ export const Persons = () => {
         }
     }
 
+    // Atualiza a lista de funcionários ao carregar a página
     useEffect(() => {
         fetchAllEmployees();
-    }, []);   
+    }, []);
 
+    // Função para adicionar um novo funcionário
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -66,29 +70,34 @@ export const Persons = () => {
         }
         setShowAddModal(false);
         refreshEmployees();
-    }; 
+    };
 
+    // Função para selecionar funcionários
     const handleSelectEmployees = (employeeIds: string[]) => {
         setSelectedEmployeeIds(employeeIds);
         setShowAllEmployees(employeeIds.length === 0);
     };
 
+    // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
         fetchAllEmployees();
     }
 
+    // Função para limpar a seleção
     const clearSelection = () => {
         setSelectedEmployeeIds([]);
         setResetSelection(prev => !prev);
         setShowAllEmployees(true);
     };
 
+    // Atualiza a seleção ao resetar
     useEffect(() => {
         if (resetSelection) {
             setResetSelection(false);
         }
     }, [resetSelection]);
 
+    // Função para alternar a visibilidade das colunas
     const handleColumnToggle = (columnKey: string) => {
         if (selectedColumns.includes(columnKey)) {
             setSelectedColumns(selectedColumns.filter(key => key !== columnKey));
@@ -97,19 +106,23 @@ export const Persons = () => {
         }
     };
 
+    // Função para resetar as colunas
     const handleResetColumns = () => {
         setSelectedColumns(defaultColumns);
     };
 
+    // Função para selecionar todas as colunas
     const handleSelectAllColumns = () => {
         const allColumnKeys = employeeFields.map(field => field.key);
         setSelectedColumns(allColumnKeys);
     };
 
+    // Função para filtrar funcionários
     const handleFilteredEmployees = (filtered: Employee[]) => {
         setFilteredEmployees(filtered);
     };
 
+    // Função para abrir e fechar o modal de adicionar pessoa
     const openAddModal = () => setShowAddModal(true);
     const closeAddModal = () => setShowAddModal(false);
     const openColumnSelector = () => setShowColumnSelector(true);
@@ -155,7 +168,6 @@ export const Persons = () => {
                             employees={employees}
                         />
                     </div>
-
                 </Split>
             </div>
             <Footer />

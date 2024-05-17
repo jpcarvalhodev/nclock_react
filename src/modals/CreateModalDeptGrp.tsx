@@ -8,26 +8,17 @@ import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { Department, Employee, Group } from '../helpers/Types';
 
+// Define a interface para os campos
 interface Field {
     key: string;
     label: string;
     type: string;
     required?: boolean;
+    validate?: (value: any) => boolean;
+    errorMessage?: string;
 }
 
-export const departmentFields: Field[] = [
-    { label: 'Código', key: 'code', type: 'number', required: true },
-    { label: 'Nome', key: 'name', type: 'string', required: true },
-    { label: 'Descrição', key: 'description', type: 'string' },
-    { label: 'ID de Parente', key: 'paiId', type: 'number' },
-];
-
-export const groupFields: Field[] = [
-    { label: 'Nome', key: 'name', type: 'string', required: true },
-    { label: 'Descrição', key: 'description', type: 'string' },
-    { label: 'ID de Parente', key: 'paiId', type: 'number' },
-];
-
+// Define as propriedades do componente
 interface Props<T> {
     title: string;
     open: boolean;
@@ -38,6 +29,7 @@ interface Props<T> {
     entityType: 'department' | 'group';
 }
 
+// Define o componente
 export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -49,19 +41,34 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     const [groups, setGroups] = useState<Group[]>([]);
     const [selectedGroup, setSelectedGroup] = useState<string>('');
     const [isFormValid, setIsFormValid] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Usa useEffect para validar o formulário
     useEffect(() => {
-        const isValid = fields.every(field => {
-            const fieldValue = formData[field.key] ?? '';
-            return !field.required || (field.required && String(fieldValue).trim() !== '');
-        });
-        setIsFormValid(isValid);
-    }, [formData, fields]);    
+        const newErrors: Record<string, string> = {};
 
+        const isValid = fields.every(field => {
+            const fieldValue = formData[field.key];
+            let valid = true;
+
+            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
+            }
+
+            return valid;
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+    }, [formData, fields]);
+
+    // Usa useEffect para buscar os dados de departamento/grupo
     useEffect(() => {
         fetchData();
     }, []);
 
+    // Função para buscar os dados de departamento/grupo
     const fetchData = async () => {
         const isDepartment = entityType === 'department';
         const url = isDepartment ? 'Departaments/Employees' : 'Groups/Employees';
@@ -76,21 +83,22 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 ...item,
                 code: (item.code)
             }));
-    
+
             if (isDepartment) {
                 setDepartments(items as Department[]);
             } else {
                 setGroups(items as Group[]);
             }
-    
+
             const nextCode = items.reduce((max: number, item: Department | Group) => Math.max(max, item.code), 0) + 1;
             setFormData(prev => ({ ...prev, code: nextCode }));
-    
+
         } catch (error) {
             console.error(`Erro ao buscar ${isDepartment ? 'departamentos' : 'grupos'}:`, error);
         }
-    };    
+    };
 
+    // Função para adicionar um funcionário
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -114,6 +122,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         handleCloseAddModal();
     };
 
+    // Função para atualizar um funcionário
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -147,11 +156,13 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         }
     };
 
+    // Função para lidar com a mudança de valor
     const handleEmployeeClick = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateEmployeeModal(true);
     };
 
+    // Função para lidar com a seleção de um departamento
     const handleDepartmentClick = (departmentID: string) => {
         setSelectedDepartment(departmentID);
         const selectedDept = departments.find(dept => dept.departmentID === departmentID);
@@ -160,6 +171,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         }
     };
 
+    // Função para lidar com a seleção de um grupo
     const handleGroupClick = (groupID: string) => {
         setSelectedGroup(groupID);
         const selectedGroup = groups.find(grp => grp.groupID === groupID);
@@ -168,26 +180,32 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         }
     };
 
+    // Função para abrir o modal de adicionar funcionário
     const handleOpenAddModal = () => {
         setShowEmployeeModal(true);
     };
 
+    // Função para fechar o modal de adicionar funcionário
     const handleCloseAddModal = () => {
         setShowEmployeeModal(false);
     };
 
+    // Função para fechar o modal de atualizar funcionário
     const handleCloseUpdateModal = () => {
         setShowUpdateEmployeeModal(false);
     };
 
+    // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: parsedValue
         }));
     };
 
+    // Função para lidar com o clique no botão de guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
@@ -196,6 +214,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         handleSave();
     };
 
+    // Função para guardar os dados
     const handleSave = () => {
         const payload = fields.reduce<Record<string, any>>((acc, field) => {
             if (formData[field.key] !== undefined) {
@@ -208,11 +227,13 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         onClose();
     };
 
+    // Define os campos required
     const deptFieldRequirements = {
         code: "Campo obrigatório",
         name: "Campo obrigatório",
     }
 
+    // Define os campos required
     const groupFieldRequirements = {
         name: "Campo obrigatório",
     }
@@ -249,6 +270,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                         required
                                                     />
                                                 </OverlayTrigger>
+                                                {errors['code'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['code']}</div>}
                                             </Form.Group>
                                         </Col>
                                     </>
@@ -265,7 +287,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                             }
                                         >
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 name="name"
                                                 value={formData['name'] || ''}
                                                 onChange={handleChange}
@@ -281,7 +303,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     <Form.Group controlId="formDescription">
                                         <Form.Label>Descrição</Form.Label>
                                         <Form.Control
-                                            type="text"
+                                            type="string"
                                             name="description"
                                             value={formData['description'] || ''}
                                             onChange={handleChange}
@@ -290,15 +312,16 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     </Form.Group>
                                 </Col>
                                 <Col md={6}>
-                                    <Form.Group controlId="formParentId">
+                                    <Form.Group controlId="formPaiId">
                                         <Form.Label>ID de Parente</Form.Label>
                                         <Form.Control
                                             type="number"
-                                            name="parentId"
-                                            value={formData['parentId'] || ''}
+                                            name="paiId"
+                                            value={formData['paiId'] || ''}
                                             onChange={handleChange}
                                             className="custom-input-height custom-select-font-size"
                                         />
+                                        {errors['paiId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['paiId']}</div>}
                                     </Form.Group>
                                 </Col>
                             </Row>

@@ -17,6 +17,7 @@ import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
 import { CreateModalCatProf } from "../modals/CreateModalCatProf";
 import { customStyles } from "../components/CustomStylesDataTable";
 
+// Define a página de profissões
 export const Professions = () => {
     const [professions, setProfessions] = useState<Profession[]>([]);
     const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
@@ -28,6 +29,7 @@ export const Professions = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
 
+    // Função para buscar as profissões
     const fetchProfessions = async () => {
         try {
             const response = await fetchWithAuth('Professions', {
@@ -48,6 +50,7 @@ export const Professions = () => {
         }
     };
 
+    // Função para adicionar uma nova profissão
     const handleAddProfession = async (profession: Profession) => {
         try {
             const response = await fetchWithAuth('Professions', {
@@ -73,6 +76,7 @@ export const Professions = () => {
         refreshProfessions();
     };
 
+    // Função para atualizar uma profissão
     const handleUpdateProfession = async (profession: Profession) => {
         try {
             const response = await fetchWithAuth(`Professions/${profession.professionID}`, {
@@ -106,6 +110,7 @@ export const Professions = () => {
         }
     };
 
+    // Função para apagar uma profissão
     const handleDeleteProfessions = async (professionID: string) => {
         try {
             const response = await fetchWithAuth(`Professions/${professionID}`, {
@@ -126,43 +131,52 @@ export const Professions = () => {
         refreshProfessions();
     };
 
+    // Atualiza a lista de profissões ao carregar a página
     useEffect(() => {
         fetchProfessions();
     }, []);
 
+    // Função para atualizar a lista de profissões
     const refreshProfessions = () => {
         fetchProfessions();
     };
 
+    // Função para abrir o modal de adicionar profissão
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Função para fechar o modal de adicionar profissão
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Função para abrir o modal de editar profissão
     const handleEditProfession = (profession: Profession) => {
         setSelectedProfession(profession);
         setShowUpdateModal(true);
     };
 
+    // Função para fechar o modal de editar profissão
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedProfession(null);
     };
 
+    // Função para abrir o modal de apagar profissão
     const handleOpenDeleteModal = (professionID: string) => {
         setSelectedProfessionForDelete(professionID);
         setShowDeleteModal(true);
     };
 
+    // Filtra as profissões
     const filteredItems = professions.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Função para alternar a visibilidade das colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -171,24 +185,29 @@ export const Professions = () => {
         }
     };
 
+    // Função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['code', 'description']);
     };
 
+    // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Opções de paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Mapeia os nomes das colunas
     const columnNamesMap = professionFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
 
+    // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
             name: columnNamesMap[columnKey] || columnKey,
@@ -196,6 +215,7 @@ export const Professions = () => {
             sortable: true,
         }));
 
+    // Define a coluna de ações
     const actionColumn: TableColumn<Profession> = {
         name: 'Ações',
         cell: (row: Profession) => (

@@ -17,6 +17,7 @@ import { CreateModalDeptGrp } from "../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../modals/UpdateModalDeptGrp";
 import { customStyles } from "../components/CustomStylesDataTable";
 
+// Define a página de grupos
 export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -28,6 +29,7 @@ export const Groups = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
 
+    // Função para buscar os grupos
     const fetchGroups = async () => {
         try {
             const response = await fetchWithAuth('Groups', {
@@ -48,6 +50,7 @@ export const Groups = () => {
         }
     };
 
+    // Função para adicionar um grupo
     const handleAddGroup = async (group: Group) => {
         try {
             const response = await fetchWithAuth('Groups', {
@@ -73,6 +76,7 @@ export const Groups = () => {
         refreshGroups();
     };
 
+    // Função para atualizar um grupo
     const handleUpdateGroup = async (group: Group) => {
         try {
             const response = await fetchWithAuth(`Groups/${group.groupID}`, {
@@ -106,6 +110,7 @@ export const Groups = () => {
         }
     };
 
+    // Função para apagar um grupo
     const handleDeleteGroup = async (groupID: string) => {
         try {
             const response = await fetchWithAuth(`Groups/${groupID}`, {
@@ -126,43 +131,52 @@ export const Groups = () => {
         refreshGroups();
     };
 
+    // Busca os grupos ao carregar a página
     useEffect(() => {
         fetchGroups();
     }, []);
 
+    // Função para atualizar os grupos
     const refreshGroups = () => {
         fetchGroups();
     };
 
+    // Função para abrir o modal de adicionar grupo
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Função para fechar o modal de adicionar grupo
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Função para abrir o modal de atualizar grupo
     const handleEditGroup = (group: Group) => {
         setSelectedGroup(group);
         setShowUpdateModal(true);
     };
 
+    // Função para fechar o modal de atualizar grupo
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedGroup(null);
     };
 
+    // Função para abrir o modal de apagar grupo
     const handleOpenDeleteModal = (groupID: string) => {
         setSelectedGroupForDelete(groupID);
         setShowDeleteModal(true);
     };
 
+    // Função para filtrar os grupos
     const filteredItems = groups.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -171,24 +185,29 @@ export const Groups = () => {
         }
     };
 
+    // Função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['name']);
     };
 
+    // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Opções de paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Mapeia os nomes das colunas
     const columnNamesMap = groupFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
 
+    // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
             name: columnNamesMap[columnKey] || columnKey,
@@ -196,6 +215,7 @@ export const Groups = () => {
             sortable: true,
         }));
 
+    // Coluna de ações
     const actionColumn: TableColumn<Group> = {
         name: 'Ações',
         cell: (row: Group) => (
@@ -251,6 +271,7 @@ export const Groups = () => {
                         entity={selectedGroup}
                         entityType='group'
                         title="Atualizar Grupo"
+                        fields={groupFields}
                     />
                 )}
                 <DeleteModal

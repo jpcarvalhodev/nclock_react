@@ -19,6 +19,7 @@ import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../components/CustomStylesDataTable';
 
+// Define a página de Contactos
 export const Contacts = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -33,6 +34,7 @@ export const Contacts = () => {
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
+    // Define a função para buscar os contactos
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
@@ -49,6 +51,7 @@ export const Contacts = () => {
         }
     };
 
+    // Define a função para adicionar um contacto
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -73,6 +76,7 @@ export const Contacts = () => {
         refreshEmployees();
     };
 
+    // Define a função para atualizar um contacto
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -106,6 +110,7 @@ export const Contacts = () => {
         }
     };
 
+    // Define a função para apagar um contacto
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -127,14 +132,17 @@ export const Contacts = () => {
         refreshEmployees();
     };
 
+    // Busca os contactos
     useEffect(() => {
         fetchEmployees();
     }, []);
 
+    // Atualiza os contactos
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
+    // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -144,34 +152,41 @@ export const Contacts = () => {
         }
     };
 
+    // Atualiza os contactos filtrados
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
+    // Define a função para abrir o modal de adicionar contacto
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Define a função para fechar o modal de adicionar contacto
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Define a função para fechar o modal de atualizar contacto
     const handleCloseUpdateModal = () => {
         setSelectedEmployee(null);
         setShowUpdateModal(false);
     };
 
+    // Define a função para abrir o modal de apagar contacto
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
+    // Define a função para filtrar os contactos
     const filteredItems = filteredEmployees.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Define a função para abrir o modal de atualizar contacto
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -180,14 +195,17 @@ export const Contacts = () => {
         }
     };
 
+    // Define a função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
 
+    // Define a função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a função selecionar uma linha
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -196,11 +214,13 @@ export const Contacts = () => {
         setSelectedRows(state.selectedRows);
     };
 
+    // Define a função para limpar a seleção	
     const handleClearSelection = () => {
         setClearSelectionToggle(!clearSelectionToggle);
         setSelectedRows([]);
     };
 
+    // Define as colunas
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
@@ -236,20 +256,24 @@ export const Contacts = () => {
             };
         });
 
+    // Define a função para editar um contacto
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
+    // Define o componente de paginação para troca de EN por PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Define o componente de linha expandida
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
 
+    // Define a coluna de ações
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (

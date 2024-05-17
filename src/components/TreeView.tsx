@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 
+// Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
   return (
     <TextField
@@ -24,10 +25,12 @@ function CustomSearchBox(props: TextFieldProps) {
   );
 }
 
+// Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataProps {
   onSelectEmployees: (employeeIds: string[]) => void;
 }
 
+// Função para filtrar os itens
 function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem[], Set<string>] {
   let expandedIds = new Set<string>();
 
@@ -48,6 +51,7 @@ function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem
   return [filteredItems, expandedIds];
 }
 
+// Define o componente
 export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,6 +60,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
 
+  // Busca os dados dos departamentos, grupos e funcionários ao montar o componente e listar os itens
   useEffect(() => {
     async function fetchData() {
       try {
@@ -140,10 +145,12 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     fetchData();
   }, []);
 
+  // Função para lidar com a expansão dos itens
   const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {
     setExpandedIds(nodeIds);
   };
 
+  // Função para lidar com a mudança de seleção dos itens
   const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
     const employeeIds = itemIds
       .filter(id => id.includes('-emp-'))
@@ -161,6 +168,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     onSelectEmployees(newSelectedEmployeeIds);
   };  
 
+  // Filtra os itens ao mudar o termo de pesquisa
   useEffect(() => {
     const [newFilteredItems, newExpandedIds] = filterItems(items, searchTerm.toLowerCase());
     if (searchTerm.trim() === '') {

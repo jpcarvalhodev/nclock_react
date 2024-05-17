@@ -5,6 +5,7 @@ import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { fetchWithoutAuth } from '../components/FetchWithoutAuth';
 
+// Define a página de redefinição de senha
 export const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,20 +15,24 @@ export const ResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Atualiza os estados de email e token
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     setEmail(query.get('email') || '');
     setToken(query.get('token') || '');
   }, [location]);
 
+  // Verifica se a senha é válida
   const isPasswordValid = (password: string): boolean => {
     return password.length >= 8;
   };
 
+  // Verifica se as senhas coincidem
   const doPasswordsMatch = (password: string, confirmPassword: string): boolean => {
     return password === confirmPassword;
   };
 
+  // Função para enviar o formulário de redefinição de senha
   const handleResetPasswordFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 

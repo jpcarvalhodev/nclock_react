@@ -6,11 +6,13 @@ import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { fetchWithoutAuth } from '../components/FetchWithoutAuth';
 
+// Interface para o usuário
 type User = {
   username: string;
   password: string;
 };
 
+// Define a página de login
 export const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -18,6 +20,7 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+  // Verifica se o usuário já está logado
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -25,6 +28,7 @@ export const Login = () => {
     }
   }, [navigate]);
 
+  // Função para fazer login
   const handleLoginFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 

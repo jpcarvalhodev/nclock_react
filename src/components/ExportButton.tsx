@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { CustomOutlineButton } from './CustomOutlineButton';
 
+// Define os estilos para o PDF
 const styles = StyleSheet.create({
     page: {
         flexDirection: 'column',
@@ -30,21 +31,25 @@ const styles = StyleSheet.create({
     }
 });
 
+// Define a interface para os itens de dados
 interface DataItem {
     [key: string]: any;
 }
 
+// Define a interface para os campos
 interface Field {
     label: string;
     key: string;
 }
 
+// Define as propriedades do botão de exportação
 interface ExportButtonProps {
     allData: DataItem[];
     selectedData: DataItem[];
     fields: Field[];
 }
 
+// Função para exportar os dados para CSV
 const exportToCSV = (data: DataItem[], fileName: string, fields: Field[]): void => {
     const fileExtension = '.csv';
     const fileType = 'text/csv;charset=utf-8;';
@@ -85,6 +90,7 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[]): void 
     saveAs(blob, fileName + fileExtension);
 };
 
+// Função para exportar os dados para XLSX
 const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void => {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
@@ -111,6 +117,7 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void
     saveAs(blob, fileName + fileExtension);
 };
 
+// Define o componente PDFDocument
 const PDFDocument = ({ data, fields }: { data: DataItem[], fields: Field[] }) => (
     <Document>
         <Page size="A4" style={styles.page}>
@@ -138,6 +145,7 @@ const PDFDocument = ({ data, fields }: { data: DataItem[], fields: Field[] }) =>
     </Document>
 );
 
+// Função para exportar os dados para TXT
 const exportToTXT = (data: DataItem[], fileName: string): void => {
     const fileExtension = '.txt';
     
@@ -160,6 +168,7 @@ const exportToTXT = (data: DataItem[], fileName: string): void => {
     saveAs(blob, fileName + fileExtension);
 };
 
+// Define o componente
 export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProps) => {
     const fileName = 'data_export';
     const dataToExport = selectedData.length > 0 ? selectedData : allData;

@@ -80,11 +80,13 @@ import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
 import about from '../assets/img/navbar/ajuda/about.png';
 import manual from '../assets/img/navbar/ajuda/manual.png';
 
+// Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
 	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
 	'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': string;
 }
 
+// Define os nomes das abas
 type RibbonName =
 	| 'pessoas'
 	| 'dispositivos'
@@ -100,6 +102,7 @@ type RibbonName =
 	| 'nview'
 	| 'nsecur';
 
+// Define a interface para as informações da aba
 type TabInfo = {
 	setTab: React.Dispatch<React.SetStateAction<boolean>>;
 	setRibbon: React.Dispatch<React.SetStateAction<boolean>>;
@@ -108,6 +111,7 @@ type TabInfo = {
 	route: string;
 };
 
+// Define as propriedades de um item de menu
 type MenuItemProps = {
 	active: boolean;
 	onClick: () => void;
@@ -116,6 +120,7 @@ type MenuItemProps = {
 	label: string;
 };
 
+// Define as propriedades do componente
 export const NavBar = () => {
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
@@ -145,11 +150,13 @@ export const NavBar = () => {
 	const [showNviewTab, setShowNviewTab] = useState(false);
 	const [showNsecurTab, setShowNsecurTab] = useState(false);
 
+	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
 		loadInitialToken();
 		loadRibbonState();
 	}, []);
 
+	// Função para carregar o token inicial
 	const loadInitialToken = () => {
 		const token = localStorage.getItem('token');
 
@@ -163,6 +170,7 @@ export const NavBar = () => {
 		}
 	};
 
+	// Função para carregar o estado do ribbon
 	const loadRibbonState = () => {
 		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
 
@@ -210,20 +218,12 @@ export const NavBar = () => {
 			setShowDispositivosRibbon(dispositivosShown);
 			setShowConfiguracaoRibbon(configuracaoShown);
 			setShowAjudaRibbon(ajudaShown);
-			setShowNclockRibbon(nclockShown);
-			setShowNaccessRibbon(naccessShown);
-			setShowNvisitorRibbon(nvisitorShown);
-			setShowNparkRibbon(nparkShown);
-			setShowNdoorRibbon(ndoorShown);
-			setShowNpatrolRibbon(npatrolShown);
-			setShowNcardRibbon(ncardShown);
-			setShowNviewRibbon(nviewShown);
-			setShowNsecurRibbon(nsecurShown);
 		}
 
 		setIsRibbonPinned(ribbonPinned);
 	};
 
+	// Define os itens do menu
 	const ribbons: Record<RibbonName, [React.Dispatch<React.SetStateAction<boolean>>, string]> = {
 		'pessoas': [setShowPessoasRibbon, 'pessoas'],
 		'dispositivos': [setShowDispositivosRibbon, 'dispositivos'],
@@ -240,11 +240,8 @@ export const NavBar = () => {
 		'nsecur': [setShowNsecurRibbon, 'nsecur'],
 	};
 
+	// Função para lidar com o clique no ribbon
 	const handleRibbonClick = (tabName: string) => {
-		if (isRibbonPinned) {
-			return;
-		}
-
 		if (tabName in ribbons) {
 			const [setRibbon, ribbonName] = ribbons[tabName as RibbonName];
 
@@ -259,6 +256,7 @@ export const NavBar = () => {
 		}
 	};
 
+	// Define os dados das abas
 	const tabData: Record<string, TabInfo> = {
 		'nclock': {
 			setTab: setShowNclockTab,
@@ -325,6 +323,7 @@ export const NavBar = () => {
 		},
 	};
 
+	// Função para limpar todas as abas
 	const clearAllTabs = () => {
 		Object.values(tabData).forEach(({ setTab, setRibbon, localStorageTabKey, localStorageRibbonKey }) => {
 			setTab(false);
@@ -335,6 +334,7 @@ export const NavBar = () => {
 		setActiveTab('');
 	};
 
+	// Função para lidar com a aba
 	const handleTab = (tabName: string) => {
 		clearAllTabs();
 		if (tabName === 'dashboard') {
@@ -360,6 +360,7 @@ export const NavBar = () => {
 		}
 	};
 
+	// Função para fazer logout
 	const logout = () => {
 		localStorage.removeItem('token');
 		localStorage.removeItem('showNclockTab');
@@ -374,6 +375,7 @@ export const NavBar = () => {
 		navigate('/');
 	};
 
+	// Atualiza o estado do ribbon no localStorage
 	useEffect(() => {
 		const handleStateChange = () => {
 			localStorage.setItem('showPessoasRibbon', String(showPessoasRibbon));
@@ -397,6 +399,7 @@ export const NavBar = () => {
 		return () => clearTimeout(timer);
 	}, [isRibbonPinned, showPessoasRibbon, showDispositivosRibbon, showConfiguracaoRibbon, showAjudaRibbon]);
 
+	// Função para alternar o estado do ribbon
 	const togglePinRibbon = () => {
 		const newState = !isRibbonPinned;
 		setIsRibbonPinned(newState);
@@ -414,6 +417,7 @@ export const NavBar = () => {
 		localStorage.setItem('ribbonPinned', String(newState));
 	};
 
+	// Define o componente do item de menu
 	const MenuItem = ({ active, onClick, image, alt, label }: MenuItemProps) => (
 		<li
 			className={`image-text ${active ? 'active' : ''}`}
@@ -874,6 +878,14 @@ export const NavBar = () => {
 							</div>
 						</div>
 					</div>
+					<div className="ribbon-toggle">
+						<img
+							src={isRibbonPinned ? unpin : pin}
+							alt="Lock/Unlock Ribbon"
+							onClick={togglePinRibbon}
+							className='ribbon-icon'
+						/>
+					</div>
 				</div>
 			)}
 			{showNaccessRibbon && (
@@ -990,6 +1002,14 @@ export const NavBar = () => {
 								</div>
 							</div>
 						</div>
+					</div>
+					<div className="ribbon-toggle">
+						<img
+							src={isRibbonPinned ? unpin : pin}
+							alt="Lock/Unlock Ribbon"
+							onClick={togglePinRibbon}
+							className='ribbon-icon'
+						/>
 					</div>
 				</div>
 			)}

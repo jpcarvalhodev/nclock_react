@@ -34,14 +34,17 @@ import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
+// Define a função de rotas com animação
 function AnimatedRoutes() {
   const location = useLocation();
   const nodeRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
+  // Carrega a página com delay e mostra o conteúdo
   useEffect(() => {
     const loadPage = async () => {
       setLoading(true);

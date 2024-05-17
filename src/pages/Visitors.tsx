@@ -19,6 +19,7 @@ import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../components/CustomStylesDataTable';
 
+// Define a página de visitantes
 export const Visitors = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -33,6 +34,7 @@ export const Visitors = () => {
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
+    // Função para buscar todos os funcionários
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
@@ -49,6 +51,7 @@ export const Visitors = () => {
         }
     };
 
+    // Função para adicionar um novo funcionário
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -73,6 +76,7 @@ export const Visitors = () => {
         refreshEmployees();
     };
 
+    // Função para atualizar um funcionário
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -107,6 +111,7 @@ export const Visitors = () => {
         }
     };
 
+    // Função para apagar um funcionário
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -128,14 +133,17 @@ export const Visitors = () => {
         refreshEmployees();
     };
 
+    // Busca os funcionários ao carregar a página
     useEffect(() => {
         fetchEmployees();
     }, []);
 
+    // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
+    // Função para filtrar os funcionários selecionados na TreeView
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -145,34 +153,41 @@ export const Visitors = () => {
         }
     };
 
+    // Atualiza a lista de funcionários filtrados ao mudar a lista de funcionários
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
+    // Função para abrir o modal de adicionar funcionário
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Função para fechar o modal de adicionar funcionário
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Função para fechar o modal de atualizar funcionário
     const handleCloseUpdateModal = () => {
         setSelectedEmployee(null);
         setShowUpdateModal(false);
     };
 
+    // Função para abrir o modal de deletar funcionário
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
+    // Filtra os funcionários de acordo com o texto digitado
     const filteredItems = filteredEmployees.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Função para selecionar as colunas a serem exibidas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -181,14 +196,17 @@ export const Visitors = () => {
         }
     };
 
+    // Função para resetar as colunas exibidas
     const resetColumns = () => {
         setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
 
+    // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Função para lidar com a seleção de linhas
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -197,11 +215,13 @@ export const Visitors = () => {
         setSelectedRows(state.selectedRows);
     };
 
+    // Função para limpar a seleção de linhas
     const handleClearSelection = () => {
         setClearSelectionToggle(!clearSelectionToggle);
         setSelectedRows([]);
     };
 
+    // Colunas a serem exibidas na tabela
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
@@ -237,20 +257,24 @@ export const Visitors = () => {
             };
         });
 
+    // Função para editar um funcionário
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
+    // Função de paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Componente expandido da tabela
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
 
+    // Coluna de ações
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (

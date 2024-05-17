@@ -10,21 +10,35 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Department, Employee, Group } from '../helpers/Types';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
 
+// Define a interface Entity
 export interface Entity {
     id: string;
     [key: string]: any;
 }
 
+// Define a interface Field
+interface Field {
+    key: string;
+    label: string;
+    type: string;
+    required?: boolean;
+    validate?: (value: any) => boolean;
+    errorMessage?: string;
+}
+
+// Define a propriedade do componente
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
+    fields: Field[];
     entityType: 'department' | 'group';
     title: string;
 }
 
-export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, entity, entityType }: UpdateModalProps<T>) => {
+// Exporta o componente
+export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, entity, entityType, fields }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [departments, setDepartments] = useState<Department[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -34,26 +48,39 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [groups, setGroups] = useState<Group[]>([]);
     const [isFormValid, setIsFormValid] = useState(false);
-    
-    const fields = entityType === 'department' ? departmentFields : groupFields;
-    
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Atualiza o estado do formulário com as validações
     useEffect(() => {
+        const newErrors: Record<string, string> = {};
+
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
-            const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
-            return !field.required || (field.required && valueAsString !== '');
+            let valid = true;
+
+            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
+            }
+
+            return valid;
         });
+
+        setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
-       
+
+    // Atualiza o estado do formulário com a entidade
     useEffect(() => {
         setFormData(entity);
     }, [entity, open]);
 
+    // Função para buscar as entidades
     useEffect(() => {
         fetchEntities();
     }, []);
 
+    // Função para buscar as entidades
     const fetchEntities = async () => {
         const url = entityType === 'department' ? 'Departaments/Employees' : 'Groups/Employees';
         try {
@@ -73,6 +100,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }
     }
 
+    // Função para adicionar um funcionário
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -96,6 +124,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         handleCloseEmployeeModal();
     };
 
+    // Função para atualizar um funcionário
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -129,11 +158,13 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }
     };
 
+    // Função para lidar com o clique em um funcionário
     const handleEmployeeClick = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowEmployeeModal(true);
     };
 
+    // Função para lidar com o clique em um departamento
     const handleDepartmentClick = (departmentID: string) => {
         setSelectedDepartment(departmentID);
         const selectedDept = departments.find(dept => dept.departmentID === departmentID);
@@ -142,6 +173,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }
     };
 
+    // Função para lidar com o clique em um grupo
     const handleGroupClick = (groupID: string) => {
         const selectedGroup = groups.find(group => group.groupID === groupID);
         if (selectedGroup && selectedGroup.employees) {
@@ -149,32 +181,39 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }
     };
 
+    // Função para abrir o modal de funcionário
     const handleCloseEmployeeModal = () => {
         setShowEmployeeModal(false);
         setSelectedEmployee(null);
     };
 
+    // Função para abrir o modal de atualizar funcionário
     const handleOpenAddModal = () => {
         setShowEmployeeModal(true);
     };
 
+    // Função para abrir o modal de atualizar funcionário
     const handleCloseAddModal = () => {
         setShowEmployeeModal(false);
     };
 
+    // Função para abrir o modal de atualizar funcionário
     const handleCloseUpdateModal = () => {
         setShowUpdateEmployeeModal(false);
         setSelectedEmployee(null);
     };
 
+    // função para modificar o estado do formulário
     const handleChange = (e: React.ChangeEvent<any>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: parsedValue
         }));
     };
 
+    // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
@@ -183,17 +222,20 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         handleSubmit();
     };
 
+    // Função para submeter o formulário
     const handleSubmit = async () => {
         console.log('formData', formData);
         await onUpdate(formData);
         onClose();
     };
 
+    // Define os campos required
     const deptFieldRequirements = {
         code: "Campo obrigatório",
         name: "Campo obrigatório",
     }
 
+    // Define os campos required
     const groupFieldRequirements = {
         name: "Campo obrigatório",
     }
@@ -230,6 +272,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                         required
                                                     />
                                                 </OverlayTrigger>
+                                                {errors['code'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['code']}</div>}
                                             </Form.Group>
                                         </Col>
                                     </>
@@ -246,7 +289,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                             }
                                         >
                                             <Form.Control
-                                                type="text"
+                                                type="string"
                                                 name="name"
                                                 value={formData['name'] || ''}
                                                 onChange={handleChange}
@@ -262,7 +305,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     <Form.Group controlId="formDescription">
                                         <Form.Label>Descrição</Form.Label>
                                         <Form.Control
-                                            type="text"
+                                            type="string"
                                             name="description"
                                             value={formData['description'] || ''}
                                             onChange={handleChange}
@@ -280,6 +323,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                             onChange={handleChange}
                                             className="custom-input-height custom-select-font-size"
                                         />
+                                        {errors['paiId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['paiId']}</div>}
                                     </Form.Group>
                                 </Col>
                             </Row>

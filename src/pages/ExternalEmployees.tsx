@@ -19,6 +19,7 @@ import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../components/CustomStylesDataTable';
 
+// Define a página de Funcionários Externos
 export const ExternalEmployees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -33,6 +34,7 @@ export const ExternalEmployees = () => {
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
+    // Função para buscar os dados dos funcionários
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
@@ -49,6 +51,7 @@ export const ExternalEmployees = () => {
         }
     };
 
+    // Função para adicionar um novo funcionário
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -73,6 +76,7 @@ export const ExternalEmployees = () => {
         refreshEmployees();
     };
 
+    // Função para atualizar um funcionário
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -106,6 +110,7 @@ export const ExternalEmployees = () => {
         }
     };
 
+    // Função para apagar um funcionário
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -127,14 +132,17 @@ export const ExternalEmployees = () => {
         refreshEmployees();
     };
 
+    // Função para buscar os dados dos funcionários
     useEffect(() => {
         fetchEmployees();
     }, []);
 
+    // Função para atualizar os dados dos funcionários
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
+    // Função para filtrar os funcionários
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -144,34 +152,41 @@ export const ExternalEmployees = () => {
         }
     };
 
+    // Função para filtrar os funcionários
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
+    // Função para abrir o modal de adicionar funcionário
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Função para fechar o modal de adicionar funcionário
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Função para fechar o modal de atualizar funcionário
     const handleCloseUpdateModal = () => {
         setSelectedEmployee(null);
         setShowUpdateModal(false);
     };
 
+    // Função para abrir o modal de deletar funcionário
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
+    // Função para filtrar os funcionários
     const filteredItems = filteredEmployees.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -180,14 +195,17 @@ export const ExternalEmployees = () => {
         }
     };
 
+    // Função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
 
+    // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Função para selecionar a linha
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -196,11 +214,13 @@ export const ExternalEmployees = () => {
         setSelectedRows(state.selectedRows);
     };
 
+    // Função para limpar a seleção
     const handleClearSelection = () => {
         setClearSelectionToggle(!clearSelectionToggle);
         setSelectedRows([]);
     };
 
+    // Define as colunas
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
@@ -236,20 +256,24 @@ export const ExternalEmployees = () => {
             };
         });
 
+    // Função para editar um funcionário
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
+    // Define as opções de paginação em EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Define o componente de linha expandida
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
 
+    // Define a coluna de ações
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (

@@ -1,3 +1,4 @@
+// Define estilização customizada para o DataTable
 export const customStyles = {
     rows: {
         style: {

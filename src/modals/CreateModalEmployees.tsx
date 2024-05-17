@@ -8,16 +8,21 @@ import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import { Department, Employee, ExternalEntity, Group, Profession, Zone } from '../helpers/Types';
 
+// Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
+// Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
     label: string;
     key: string;
     type: string;
     required?: boolean;
     optionsUrl?: string;
+    validate?: (value: any) => boolean;
+    errorMessage?: string;
 }
 
+// Define as propriedades do componente
 interface Props<T> {
     title: string;
     open: boolean;
@@ -27,6 +32,7 @@ interface Props<T> {
     initialValues: Partial<T>;
 }
 
+// Define o componente
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -38,7 +44,30 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     const [professions, setProfessions] = useState<Profession[]>([]);
     const [zones, setZones] = useState<Zone[]>([]);
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Atualiza o estado do componente com uma parte das validações
+    useEffect(() => {
+        const newErrors: Record<string, string> = {};
+
+        const isValid = fields.every(field => {
+            const fieldValue = formData[field.key];
+            let valid = true;
+
+            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
+            }
+
+            return valid;
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        validateForm();
+    }, [formData, fields]);
+
+    // Função para validar o formulário
     const validateForm = () => {
         const isValid = fields.every(field => {
             const fieldValue = formData?.[field.key];
@@ -56,6 +85,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         setIsFormValid(isValid && enrollNumberValid);
     };
 
+    // Função para buscar os funcionários e definir o próximo número de matrícula
     const fetchEmployeesAndSetNextEnrollNumber = async () => {
         const response = await fetchWithAuth('Employees/GetAllEmployees');
         if (response.ok) {
@@ -70,6 +100,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }
     };
 
+    // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
             const departmentsResponse = await fetchWithAuth('Departaments');
@@ -105,10 +136,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }
     };
 
-    useEffect(() => {
-        validateForm();
-    }, [formData, fields]);
-
+    // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
         if (open) {
             fetchEmployeesAndSetNextEnrollNumber();
@@ -116,6 +144,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }
     }, [open]);
 
+    // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -128,13 +157,16 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }
     };
 
+    // Função para acionar o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
+    // Função para lidar com a mudança de campo
     const handleChange = (e: ChangeEvent<FormControlElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prevState => ({
             ...prevState,
-            [name]: value
+            [name]: parsedValue
         }));
 
         if (name === 'name') {
@@ -154,6 +186,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         validateForm();
     };
 
+    // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
         console.log('key', key);
         const { value } = e.target;
@@ -163,6 +196,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }));
       };
 
+    // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
@@ -171,10 +205,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         handleSave();
     };
 
+    // Função para lidar com o salvamento
     const handleSave = () => {
         onSave(formData as T);
     };
 
+    // Opções do tipo
     const typeOptions = [
         { value: 'Funcionário', label: 'Funcionário' },
         { value: 'Funcionário Externo', label: 'Funcionário Externo' },
@@ -225,6 +261,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                     name="enrollNumber"
                                 />
                             </OverlayTrigger>
+                            {errors.enrollNumber && <Form.Text className="text-danger">{errors.enrollNumber}</Form.Text>}
                         </Form.Group>
                         <Form.Group controlId="formName">
                             <Form.Label>
@@ -235,7 +272,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="string"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.name || ''}
                                     onChange={handleChange}
@@ -253,7 +290,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="text"
+                                    type="string"
                                     className="custom-input-height custom-select-font-size"
                                     value={formData.shortName || ''}
                                     onChange={handleChange}
@@ -267,7 +304,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                         <Form.Group controlId="formNameAcronym">
                             <Form.Label>Acrônimo do Nome</Form.Label>
                             <Form.Control
-                                type="text"
+                                type="string"
                                 className="custom-input-height custom-select-font-size"
                                 value={formData.nameAcronym || ''}
                                 onChange={handleChange}
@@ -277,7 +314,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                         <Form.Group controlId="formComments">
                             <Form.Label>Comentários</Form.Label>
                             <Form.Control
-                                type="text"
+                                type="string"
                                 className="custom-input-height custom-select-font-size"
                                 value={formData.comments || ''}
                                 onChange={handleChange}
@@ -354,17 +391,17 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 <Row>
                                     {[
                                         { key: 'nif', label: 'NIF', type: 'number' },
-                                        { key: 'address', label: 'Morada', type: 'text' },
-                                        { key: 'zipcode', label: 'Código Postal', type: 'text' },
-                                        { key: 'locality', label: 'Localidade', type: 'text' },
-                                        { key: 'village', label: 'Freguesia', type: 'text' },
-                                        { key: 'district', label: 'Distrito', type: 'text' },
+                                        { key: 'address', label: 'Morada', type: 'string' },
+                                        { key: 'zipcode', label: 'Código Postal', type: 'string' },
+                                        { key: 'locality', label: 'Localidade', type: 'string' },
+                                        { key: 'village', label: 'Freguesia', type: 'string' },
+                                        { key: 'district', label: 'Distrito', type: 'string' },
                                         { key: 'phone', label: 'Telefone', type: 'number' },
                                         { key: 'mobile', label: 'Telemóvel', type: 'number' },
                                         { key: 'email', label: 'E-Mail', type: 'email' },
                                         { key: 'birthday', label: 'Data de Nascimento', type: 'date' },
-                                        { key: 'nacionality', label: 'Nacionalidade', type: 'text' },
-                                        { key: 'gender', label: 'Gênero', type: 'text' }
+                                        { key: 'nacionality', label: 'Nacionalidade', type: 'string' },
+                                        { key: 'gender', label: 'Gênero', type: 'string' }
                                     ].map((field) => (
                                         <Col md={3}>
                                             <Form.Group controlId={`form${field.key}`}>
@@ -376,6 +413,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                                     onChange={handleChange}
                                                     name={field.key}
                                                 />
+                                                {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                     ))}
@@ -386,7 +424,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                 <Row>
                                     {[
-                                        { key: 'biNumber', label: 'Número de BI', type: 'text' },
+                                        { key: 'biNumber', label: 'Número de BI', type: 'string' },
                                         { key: 'biIssuance', label: 'Emissão de BI', type: 'date' },
                                         { key: 'biValidity', label: 'Validade de BI', type: 'date' },
                                         { key: 'admissionDate', label: 'Data de Admissão', type: 'date' },

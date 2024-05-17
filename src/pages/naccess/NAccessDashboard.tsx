@@ -1,6 +1,7 @@
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 
+// Define a página principal
 export const NAccessDashboard = () => {
     return (
         <div>

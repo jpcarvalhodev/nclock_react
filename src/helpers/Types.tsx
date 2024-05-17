@@ -1,3 +1,5 @@
+//*** todos os tipos dos modelos para usar no programa todo *** 
+
 export type Employee = {
     [key: string]: any;
     id: string;

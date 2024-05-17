@@ -1,11 +1,14 @@
 import { toast } from "react-toastify";
 
+// Define a URL base da API
 const BASE_URL = 'https://localhost:7129/api/';
 
+// Define as opções de requisição
 interface FetchOptions extends RequestInit {
     headers?: HeadersInit;
 }
 
+// Função para fazer requisições à API com autenticação
 export const fetchWithAuth = async (endpoint: string, options: FetchOptions = {}): Promise<Response> => {
     const url = `${BASE_URL}${endpoint}`;
     const token = localStorage.getItem('token');
@@ -33,6 +36,7 @@ export const fetchWithAuth = async (endpoint: string, options: FetchOptions = {}
     }
 };
 
+// Função para lidar com erros HTTP
 const handleHTTPError = async (response: Response) => {
     switch (response.status) {
         case 401:
@@ -46,10 +50,11 @@ const handleHTTPError = async (response: Response) => {
         case 502:
         case 503:
         case 504:
-            toast.error('Página não encontrada');
+            toast.error('Serviço indisponível. Tente novamente mais tarde.');
             window.location.href = '/notfound';
             break;
         default:
+            toast.error('Ocorreu um erro inesperado');
             break;
     }
 };

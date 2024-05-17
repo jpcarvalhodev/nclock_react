@@ -17,6 +17,7 @@ import '../css/PagesStyles.css';
 import { ExpandedComponentDept } from '../components/ExpandedComponentDept';
 import { customStyles } from '../components/CustomStylesDataTable';
 
+// Define a página de departamentos
 export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -28,6 +29,7 @@ export const Departments = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedDepartmentForDelete, setSelectedDepartmentForDelete] = useState<string | null>(null);
 
+    // Busca os departamentos
     const fetchDepartments = async () => {
         try {
             const response = await fetchWithAuth('Departaments');
@@ -55,6 +57,7 @@ export const Departments = () => {
         }
     };
 
+    // Busca os subdepartamentos
     const fetchSubdepartments = async (parentId: number): Promise<Department[]> => {
         try {
             const response = await fetchWithAuth(`Departaments?parentId=${parentId}`);
@@ -70,6 +73,7 @@ export const Departments = () => {
         }
     };
 
+    // Adiciona um departamento
     const handleAddDepartment = async (department: Department) => {
         try {
             const response = await fetchWithAuth('Departaments', {
@@ -93,6 +97,7 @@ export const Departments = () => {
         refreshDepartments();
     };
 
+    // Atualiza um departamento
     const handleUpdateDepartment = async (department: Department) => {
         try {
             const response = await fetchWithAuth(`Departaments/${department.departmentID}`, {
@@ -126,6 +131,7 @@ export const Departments = () => {
         }
     };
 
+    // Apaga um departamento
     const handleDeleteDepartment = async (departmentID: string) => {
         try {
             const response = await fetchWithAuth(`Departaments/${departmentID}`, {
@@ -146,33 +152,40 @@ export const Departments = () => {
         refreshDepartments();
     };
 
+    // Atualiza os departamentos
     useEffect(() => {
         fetchDepartments();
     }, []);
 
+    // função de atualizar os departamentos
     const refreshDepartments = () => {
         fetchDepartments();
     };
 
+    // Abre o modal de adicionar
     const handleOpenAddModal = () => {
         setShowAddModal(true);
     };
 
+    // Fecha o modal de adicionar
     const handleCloseAddModal = () => {
         setShowAddModal(false);
     };
 
+    // Abre o modal de atualizar
     const handleCloseUpdateModal = () => {
         setSelectedDepartment(null);
         setShowUpdateModal(false);
     };
 
+    // Filtra os departamentos
     const filteredItems = departments.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
+    // Seleciona as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -181,19 +194,23 @@ export const Departments = () => {
         }
     };
 
+    // Reseta as colunas
     const resetColumns = () => {
         setSelectedColumns(['code', 'name']);
     };
 
+    // Seleciona todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Mapeia os nomes das colunas
     const columnNamesMap = departmentFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
 
+    // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
             name: columnNamesMap[columnKey] || columnKey,
@@ -201,21 +218,25 @@ export const Departments = () => {
             sortable: true,
         }));
 
+    // Abre o modal de edição
     const handleEditDepartment = (department: Department) => {
         setSelectedDepartment(department);
         setShowUpdateModal(true);
     };
 
+    // Abre o modal de deletar
     const handleOpenDeleteModal = (departmentID: string) => {
         setSelectedDepartmentForDelete(departmentID);
         setShowDeleteModal(true);
     };
 
+    // Define as opções de paginação de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
+    // Define a coluna de ações
     const actionColumn: TableColumn<Department> = {
         name: 'Ações',
         cell: (row: Department) => (
@@ -271,6 +292,7 @@ export const Departments = () => {
                         entity={selectedDepartment}
                         entityType='department'
                         title="Atualizar Departamento"
+                        fields={departmentFields}
                     />
                 )}
                 <DeleteModal

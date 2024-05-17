@@ -1,6 +1,7 @@
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
+// Define a propriedade da interface
 interface DeleteModalProps {
     open: boolean;
     onClose: () => void;
@@ -8,8 +9,10 @@ interface DeleteModalProps {
     entityId: string | null;
 }
 
+// Exporta o componente
 export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalProps) => {
 
+    // Função para apagar a entidade
     const handleDelete = () => {
         if (entityId) {
             onDelete(entityId);
