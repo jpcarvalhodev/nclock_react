@@ -3,136 +3,128 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar"
 import { TreeViewData } from "../../components/TreeView";
 import { useEffect, useState } from "react";
-import { Employee } from "../../helpers/Types";
+import { EmployeeAttendanceTimes } from "../../helpers/Types";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
-import { employeeFields } from "../../helpers/Fields";
+import { employeeAttendanceTimesFields } from "../../helpers/Fields";
 import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { toast } from "react-toastify";
-import { PersonsDataTable } from "../../components/PersonsDataTable";
-import { CreateModalEmployees } from "../../modals/CreateModalEmployees";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { UpdateModalEmployees } from "../../modals/UpdateModalEmployees";
 import { DeleteModal } from "../../modals/DeleteModal";
+import DataTable from 'react-data-table-component';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { CreateModalAttendance } from '../../modals/CreateModalAttendance';
+import { UpdateModalAttendance } from '../../modals/UpdateModalAttendance';
 
 // Define a página movimentos
 export const Movement = () => {
-    const [employees, setEmployees] = useState<Employee[]>([]);
-    const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
-    const [filterText, setFilterText] = useState('');
-    const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [showColumnSelector, setShowColumnSelector] = useState(false);
-    const [showAllEmployees, setShowAllEmployees] = useState(true);
-    const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName']);
-    const [resetSelection, setResetSelection] = useState(false);
-    const defaultColumns = ['enrollNumber', 'name', 'shortName'];
-    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
+    const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
+    const [selectedAttendance, setSelectedAttendance] = useState<EmployeeAttendanceTimes | null>(null);
+    const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
+    const [showUpdateAttendanceModal, setShowUpdateAttendanceModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-    const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<Employee | null>(null);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['enrollNumber', 'employeeName', 'inOutMode']);
+    const [showColumnSelector, setShowColumnSelector] = useState(false);
+    const [resetSelection, setResetSelection] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>([]);
+    const [filterText, setFilterText] = useState('');
+    const [selectedAttendanceToDelete, setSelectedAttendanceToDelete] = useState<EmployeeAttendanceTimes | null>(null);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
-    // Função para buscar todos os funcionários
-    const fetchAllEmployees = async () => {
+    // Função para buscar todos as assiduidades
+    const fetchAllAttendances = async () => {
         try {
-            const response = await fetchWithAuth('Employees/GetAllEmployees');
+            const response = await fetchWithAuth('Attendances/GetAllAttendances');
             if (!response.ok) {
-                toast.error('Erro ao buscar funcionários');
+                toast.error('Erro ao buscar assiduidades');
                 return;
             }
-            const employeesData = await response.json();
-            setEmployees(employeesData);
+            const attendanceData = await response.json();
+            setAttendance(attendanceData);
         } catch (error) {
-            console.error('Erro ao buscar funcionários:', error);
+            console.error('Erro ao buscar assiduidades:', error);
         }
     }
 
-    // Função para adicionar um novo funcionário
-    const handleAddEmployee = async (employee: Employee) => {
+    // Função para adicionar uma nova assiduidade
+    const handleAddAttendance = async () => {
         try {
-            const response = await fetchWithAuth('Employees/CreateEmployee', {
+            const response = await fetchWithAuth('Attendances/CreatedAttendanceTime', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(employee)
+                body: JSON.stringify(Response)
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
+                toast.error('Erro ao adicionar nova assiduidade');
                 return;
             }
-            const data = await response.json();
-            setEmployees([...employees, data]);
-            toast.success('Funcionário adicionado com sucesso');
+
+            const newAttendance = await response.json();
+            setAttendance([...attendance, newAttendance]);
+            toast.success('assiduidade adicionada com sucesso');
         } catch (error) {
-            console.error('Erro ao adicionar novo funcionário:', error);
+            console.error('Erro ao adicionar nova assiduidade:', error);
         }
-        setShowAddModal(false);
-        refreshEmployees();
+        setShowAddAttendanceModal(false);
+        refreshAttendance();
     };
 
-    // Atualiza um funcionário
-    const handleUpdateEmployee = async (employee: Employee) => {
+    // Função para atualizar uma assiduidade
+    const handleUpdateAttendance = async () => {
         try {
-            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
+            const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(employee)
+                body: JSON.stringify(Response)
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar funcionário`);
+                toast.error('Erro ao atualizar assiduidade');
                 return;
             }
 
-            const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedEmployee = await response.json();
-                setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
-                toast.success('Funcionário atualizado com sucesso');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
-
+            const updatedAttendance = await response.json();
+            setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
+            toast.success('assiduidade atualizada com sucesso');
         } catch (error) {
-            console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Erro ao conectar ao servidor');
-        } finally {
-            handleCloseUpdateModal();
-            refreshEmployees();
+            console.error('Erro ao atualizar assiduidade:', error);
         }
+        setShowUpdateAttendanceModal(false);
+        refreshAttendance();
     };
 
-    // Exclui um funcionário
-    const handleDeleteEmployee = async (employeeID: string) => {
+    // Função para deletar uma assiduidade
+    const handleDeleteAttendance = async () => {
+
         try {
-            const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
+            const response = await fetchWithAuth(`Attendances/DeleteAttendanceTime`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao excluir funcionário`);
-                return;
+                toast.error('Erro ao apagar assiduidade');
             }
 
-            setEmployees(prevEmployees => prevEmployees.filter(emp => emp.employeeID !== employeeID));
-            toast.success('Funcionário excluído com sucesso');
+            toast.success('assiduidade apagada com sucesso');
         } catch (error) {
-            console.error('Erro ao excluir funcionário:', error);
-            toast.error('Erro ao conectar ao servidor');
-        } finally {
-            handleCloseDeleteModal();
-            refreshEmployees();
+            console.error('Erro ao apagar assiduidade:', error);
         }
-    }
+        setShowDeleteModal(false);
+        refreshAttendance();
+    };
 
     // Atualiza a lista de funcionários ao carregar a página
     useEffect(() => {
-        fetchAllEmployees();
+        fetchAllAttendances();
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -143,12 +135,22 @@ export const Movement = () => {
     }, [resetSelection]);
 
     // Define a seleção da árvore
-    const handleSelectFromTreeView = (selectedIds: string[]) => {
+    const handleSelectFromTreeView = async (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
-            setFilteredEmployees(employees);
+            setFilteredAttendances([]);
         } else {
-            const filtered = employees.filter(employee => selectedIds.includes(employee.employeeID));
-            setFilteredEmployees(filtered);
+            const employeeId = selectedIds[0];
+            try {
+                const response = await fetchWithAuth(`Attendances/GetAllAttendancesByEmployeeId/${employeeId}`);
+                if (!response.ok) {
+                    toast.error('Erro ao buscar assiduidades do funcionário');
+                    return;
+                }
+                const attendancesData = await response.json();
+                setFilteredAttendances(attendancesData);
+            } catch (error) {
+                console.error('Erro ao buscar assiduidades do funcionário:', error);
+            }
         }
     };
 
@@ -163,59 +165,53 @@ export const Movement = () => {
 
     // Função para selecionar todas as colunas
     const handleSelectAllColumns = () => {
-        const allColumnKeys = employeeFields.map(field => field.key);
+        const allColumnKeys = employeeAttendanceTimesFields.map(field => field.key);
         setSelectedColumns(allColumnKeys);
     };
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(defaultColumns);
+        setSelectedColumns(['enrollNumber', 'employeeName', 'inOutMode']);
     };
 
     // Função para atualizar os funcionários
-    const refreshEmployees = () => {
-        setFilteredEmployees(employees);
-    };
-
-    // Função para abrir o modal de adicionar
-    const openAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    // Função para fechar o modal de adicionar
-    const closeAddModal = () => {
-        setShowAddModal(false);
-    };
-
-    // Função para abrir o modal de atualizar
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-    };
-
-    // Função para abrir o modal de excluir
-    const handleCloseDeleteModal = () => {
-        setShowDeleteModal(false);
-    };
-
-    // Função para abrir o modal de seleção de colunas
-    const openColumnSelector = () => {
-        setShowColumnSelector(true);
-    };
-
-    // Função para fechar o modal de seleção de colunas
-    const closeColumnSelector = () => {
-        setShowColumnSelector(false);
+    const refreshAttendance = () => {
+        fetchAllAttendances();
     };
 
     // Função para limpar a seleção
     const clearSelection = () => {
-        setSelectedEmployeeIds([]);
-        setFilteredEmployees(employees);
+        setResetSelection(true);
+        setSelectedAttendance(null);
     };
 
-    // Função para filtrar os funcionários
-    const handleFilteredEmployees = (filtered: Employee[]) => {
-        setFilteredEmployees(filtered);
+    // Função para retornar o nome das colunas
+    const columnNamesMap = employeeAttendanceTimesFields.reduce<Record<string, string>>((acc, field) => {
+        acc[field.key] = field.label;
+        return acc;
+    }, {});
+
+    // Função para selecionar uma linha
+    const tableColumns = selectedColumns
+        .map(columnKey => ({
+            name: columnNamesMap[columnKey] || columnKey,
+            selector: (row: Record<string, any>) => row[columnKey],
+            sortable: true,
+        }));
+
+    // Define as opções de paginação de EN para PT
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
+    };
+
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: EmployeeAttendanceTimes[];
+    }) => {
+        setSelectedRows(state.selectedRows);
     };
 
     return (
@@ -241,59 +237,66 @@ export const Movement = () => {
                                 />
                             </div>
                             <div className="buttons-container">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-plus" onClick={openAddModal} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={openColumnSelector} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddAttendanceModal(true)} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
-                                <ExportButton allData={employees} selectedData={filteredEmployees} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                                <ExportButton allData={attendance} selectedData={filteredAttendances} fields={employeeAttendanceTimesFields.map(field => ({ key: field.key, label: field.label }))} />
                             </div>
                         </div>
-                        <PersonsDataTable
-                            selectedEmployeeIds={selectedEmployeeIds}
-                            selectedColumns={selectedColumns}
-                            showAllEmployees={showAllEmployees}
-                            filterText={filterText}
-                            filteredEmployees={handleFilteredEmployees}
-                            resetSelection={resetSelection}
-                            employees={employees}
+                        <DataTable
+                            columns={tableColumns}
+                            data={filteredAttendances}
+                            onRowDoubleClicked={(row) => {
+                                setSelectedAttendance(row);
+                                setShowUpdateAttendanceModal(true);
+                            }}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
+                            noDataComponent="Não há dados disponíveis para exibir."
+                            customStyles={customStyles}
                         />
                     </div>
                 </Split>
             </div>
             <Footer />
-            {showAddModal && (
-                <CreateModalEmployees
-                    title="Adicionar Pessoa"
-                    open={showAddModal}
-                    onClose={closeAddModal}
-                    onSave={handleAddEmployee}
-                    fields={employeeFields}
+            {showAddAttendanceModal && (
+                <CreateModalAttendance
+                    open={showAddAttendanceModal}
+                    onClose={() => setShowAddAttendanceModal(false)}
+                    onSave={handleAddAttendance}
+                    title='Adicionar Assiduidade'
+                    fields={employeeAttendanceTimesFields}
                     initialValues={{}}
                 />
             )}
-            {selectedEmployee && (
-                <UpdateModalEmployees
-                    open={showUpdateModal}
-                    onClose={handleCloseUpdateModal}
-                    onUpdate={handleUpdateEmployee}
-                    entity={selectedEmployee}
-                    fields={employeeFields}
-                    title="Atualizar Pessoa"
+            {selectedAttendance && showUpdateAttendanceModal && (
+                <UpdateModalAttendance
+                    open={showUpdateAttendanceModal}
+                    onClose={() => setShowUpdateAttendanceModal(false)}
+                    onUpdate={handleUpdateAttendance}
+                    entity={selectedAttendance}
+                    fields={employeeAttendanceTimesFields}
+                    title='Atualizar Assiduidade'
                 />
             )}
-            {showDeleteModal && (
+            {selectedAttendanceToDelete && showDeleteModal && (
                 <DeleteModal
                     open={showDeleteModal}
-                    onClose={handleCloseDeleteModal}
-                    onDelete={handleDeleteEmployee}
-                    entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={handleDeleteAttendance}
+                    entityId={selectedAttendanceToDelete ? selectedAttendanceToDelete.employeeID : ''}
                 />
             )}
             {showColumnSelector && (
                 <ColumnSelectorModal
-                    columns={employeeFields}
+                    columns={employeeAttendanceTimesFields}
                     selectedColumns={selectedColumns}
-                    onClose={closeColumnSelector}
+                    onClose={() => setShowColumnSelector(false)}
                     onColumnToggle={handleColumnToggle}
                     onResetColumns={handleResetColumns}
                     onSelectAllColumns={handleSelectAllColumns}

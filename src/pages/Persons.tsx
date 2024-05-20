@@ -13,6 +13,7 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { toast } from 'react-toastify';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
 import { ExportButton } from '../components/ExportButton';
+import { set } from 'date-fns';
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -122,12 +123,6 @@ export const Persons = () => {
         setFilteredEmployees(filtered);
     };
 
-    // Função para abrir e fechar o modal de adicionar pessoa
-    const openAddModal = () => setShowAddModal(true);
-    const closeAddModal = () => setShowAddModal(false);
-    const openColumnSelector = () => setShowColumnSelector(true);
-    const closeColumnSelector = () => setShowColumnSelector(false);
-
     return (
         <div className="main-container">
             <NavBar />
@@ -152,8 +147,8 @@ export const Persons = () => {
                             </div>
                             <div className="buttons-container">
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-plus" onClick={openAddModal} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={openColumnSelector} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
                                 <ExportButton allData={employees} selectedData={filteredEmployees} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
                             </div>
@@ -175,7 +170,7 @@ export const Persons = () => {
                 <CreateModalEmployees
                     title="Adicionar Pessoa"
                     open={showAddModal}
-                    onClose={closeAddModal}
+                    onClose={() => setShowAddModal(false)}
                     onSave={handleAddEmployee}
                     fields={employeeFields}
                     initialValues={{}}
@@ -185,7 +180,7 @@ export const Persons = () => {
                 <ColumnSelectorModal
                     columns={employeeFields}
                     selectedColumns={selectedColumns}
-                    onClose={closeColumnSelector}
+                    onClose={() => setShowColumnSelector(false)}
                     onColumnToggle={handleColumnToggle}
                     onResetColumns={handleResetColumns}
                     onSelectAllColumns={handleSelectAllColumns}

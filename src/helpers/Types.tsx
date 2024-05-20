@@ -119,7 +119,7 @@ export type Zone = {
 
 export type EmployeeAttendanceTimes = {
     [key: string]: any;
-    attendanceTimeId: string;
+    id: string;
     deviceId: string;
     deviceNumber: number;
     employeeId: string;

@@ -71,8 +71,7 @@ export const ExternalEntities = () => {
         } catch (error) {
             console.error('Erro ao adicionar nova entidade externa:', error);
         }
-
-        handleCloseAddModal();
+        setShowAddModal(false);
         refreshExternalEntities();
     };
 
@@ -105,7 +104,7 @@ export const ExternalEntities = () => {
             console.error('Erro ao atualizar entidade externa:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateModal(false);
             refreshExternalEntities();
         }
     };
@@ -141,25 +140,10 @@ export const ExternalEntities = () => {
         fetchExternalEntities();
     };
 
-    // Função para abrir o modal de adicionar entidade externa
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    // Função para fechar o modal de adicionar entidade externa
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
-    };
-
     // Função para abrir o modal de editar entidade externa
     const handleEditExternalEntity = (externalEntity: ExternalEntity) => {
         setSelectedExternalEntity(externalEntity);
         setShowUpdateModal(true);
-    };
-
-    // Função para fechar o modal de editar entidade externa
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
     };
 
     // Função para abrir o modal de apagar entidade externa
@@ -252,7 +236,7 @@ export const ExternalEntities = () => {
                     </div>
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntities} />
-                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={externalEntities} selectedData={filteredItems} fields={externalEntityFields} />
                     </div>
@@ -260,7 +244,7 @@ export const ExternalEntities = () => {
                 <CreateModalExtEnt
                     title="Adicionar Entidade Externa"
                     open={showAddModal}
-                    onClose={handleCloseAddModal}
+                    onClose={() => setShowAddModal(false)}
                     onSave={handleAddExternalEntity}
                     fields={externalEntityFields}
                     initialValues={{}}
@@ -268,7 +252,7 @@ export const ExternalEntities = () => {
                 {selectedExternalEntity && (
                     <UpdateModalExtEnt
                         open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
                         onUpdate={handleUpdateExternalEntity}
                         entity={selectedExternalEntity}
                         fields={externalEntityFields}

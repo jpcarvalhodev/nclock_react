@@ -71,8 +71,7 @@ export const Visitors = () => {
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         }
-
-        handleCloseAddModal();
+        setShowAddModal(false);
         refreshEmployees();
     };
 
@@ -106,7 +105,7 @@ export const Visitors = () => {
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateModal(false);
             refreshEmployees();
         }
     };
@@ -157,22 +156,6 @@ export const Visitors = () => {
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
-
-    // Função para abrir o modal de adicionar funcionário
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    // Função para fechar o modal de adicionar funcionário
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
-    };
-
-    // Função para fechar o modal de atualizar funcionário
-    const handleCloseUpdateModal = () => {
-        setSelectedEmployee(null);
-        setShowUpdateModal(false);
-    };
 
     // Função para abrir o modal de deletar funcionário
     const handleOpenDeleteModal = (employeeID: string) => {
@@ -313,7 +296,7 @@ export const Visitors = () => {
                             </div>
                             <div className="buttons-container">
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={handleClearSelection} iconSize='1.1em' />
                                 <ExportButton allData={employees} selectedData={selectedRows} fields={employeeFields} />
@@ -341,7 +324,7 @@ export const Visitors = () => {
             <CreateModalEmployees
                 title="Adicionar Visitante"
                 open={showAddModal}
-                onClose={handleCloseAddModal}
+                onClose={() => setShowAddModal(false)}
                 onSave={handleAddEmployee}
                 fields={employeeFields}
                 initialValues={{}}
@@ -349,7 +332,7 @@ export const Visitors = () => {
             {selectedEmployee && (
                 <UpdateModalEmployees
                     open={showUpdateModal}
-                    onClose={handleCloseUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}

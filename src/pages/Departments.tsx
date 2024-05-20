@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { ExpandedComponentDept } from '../components/ExpandedComponentDept';
 import { customStyles } from '../components/CustomStylesDataTable';
+import { set } from 'date-fns';
 
 // Define a página de departamentos
 export const Departments = () => {
@@ -90,7 +91,7 @@ export const Departments = () => {
             const data = await response.json();
             setDepartments(deps => [...deps, data]);
             toast.success('Departamento adicionado com sucesso');
-            handleCloseAddModal();
+            setShowAddModal(false);
         } catch (error) {
             console.error('Erro ao adicionar novo departamento:', error);
         }
@@ -126,7 +127,7 @@ export const Departments = () => {
             console.error('Erro ao atualizar departamento:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateModal(false);
             refreshDepartments();
         }
     };
@@ -160,22 +161,6 @@ export const Departments = () => {
     // função de atualizar os departamentos
     const refreshDepartments = () => {
         fetchDepartments();
-    };
-
-    // Abre o modal de adicionar
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    // Fecha o modal de adicionar
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
-    };
-
-    // Abre o modal de atualizar
-    const handleCloseUpdateModal = () => {
-        setSelectedDepartment(null);
-        setShowUpdateModal(false);
     };
 
     // Filtra os departamentos
@@ -270,7 +255,7 @@ export const Departments = () => {
                     </div>
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshDepartments} />
-                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={departments} selectedData={filteredItems} fields={departmentFields} />
                     </div>
@@ -278,7 +263,7 @@ export const Departments = () => {
                 <CreateModalDeptGrp
                     title="Adicionar Departamento"
                     open={showAddModal}
-                    onClose={handleCloseAddModal}
+                    onClose={() => setShowAddModal(false)}
                     onSave={handleAddDepartment}
                     fields={departmentFields}
                     initialValues={{}}
@@ -287,7 +272,7 @@ export const Departments = () => {
                 {selectedDepartment && (
                     <UpdateModalDeptGrp
                         open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
                         onUpdate={handleUpdateDepartment}
                         entity={selectedDepartment}
                         entityType='department'

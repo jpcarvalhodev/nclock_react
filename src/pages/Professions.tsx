@@ -71,7 +71,6 @@ export const Professions = () => {
         } catch (error) {
             console.error('Erro ao adicionar nova profissão:', error);
         }
-
         setShowAddModal(false);
         refreshProfessions();
     };
@@ -105,7 +104,7 @@ export const Professions = () => {
             console.error('Erro ao atualizar a profissão:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateModal(false);
             refreshProfessions();
         }
     };
@@ -141,26 +140,10 @@ export const Professions = () => {
         fetchProfessions();
     };
 
-    // Função para abrir o modal de adicionar profissão
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    // Função para fechar o modal de adicionar profissão
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
-    };
-
     // Função para abrir o modal de editar profissão
     const handleEditProfession = (profession: Profession) => {
         setSelectedProfession(profession);
         setShowUpdateModal(true);
-    };
-
-    // Função para fechar o modal de editar profissão
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-        setSelectedProfession(null);
     };
 
     // Função para abrir o modal de apagar profissão
@@ -249,7 +232,7 @@ export const Professions = () => {
                     </div>
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
-                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={professions} selectedData={filteredItems} fields={professionFields} />
                     </div>
@@ -257,7 +240,7 @@ export const Professions = () => {
                 <CreateModalCatProf
                     title="Adicionar Profissão"
                     open={showAddModal}
-                    onClose={handleCloseAddModal}
+                    onClose={() => setShowAddModal(false)}
                     onSave={handleAddProfession}
                     fields={professionFields}
                     initialValues={{}}
@@ -266,7 +249,7 @@ export const Professions = () => {
                 {selectedProfession && (
                     <UpdateModalCatProf
                         open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
                         onUpdate={handleUpdateProfession}
                         entity={selectedProfession}
                         fields={professionFields}

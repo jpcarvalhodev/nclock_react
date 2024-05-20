@@ -28,19 +28,19 @@ export const employeeFields = [
     { label: 'Status', key: 'status', type: 'boolean' },
     { label: 'Status de E-Mail', key: 'statusEmail', type: 'boolean' },
     { label: 'Tipo', key: 'type', type: 'string' },
-    { label: 'Departamento', key: 'departmentId', type: 'dropdown', optionsUrl: 'Departaments' },
-    { label: 'Profissão', key: 'professionId', type: 'dropdown', optionsUrl: 'Professions', showCodeInsteadOfName: true },
-    { label: 'Categoria', key: 'categoryId', type: 'dropdown', optionsUrl: 'Categories', showCodeInsteadOfName: true },
-    { label: 'Grupo', key: 'groupId', type: 'dropdown', optionsUrl: 'Groups' },
-    { label: 'Zona', key: 'zoneId', type: 'dropdown', optionsUrl: 'Zones' },
-    { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', optionsUrl: 'ExternalEntities' },
+    { label: 'Departamento', key: 'departmentId', type: 'dropdown' },
+    { label: 'Profissão', key: 'professionId', type: 'dropdown', showCodeInsteadOfName: true },
+    { label: 'Categoria', key: 'categoryId', type: 'dropdown', showCodeInsteadOfName: true },
+    { label: 'Grupo', key: 'groupId', type: 'dropdown', },
+    { label: 'Zona', key: 'zoneId', type: 'dropdown', },
+    { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', },
 ];
 
 export const departmentFields = [
     { label: 'Código', key: 'code', type: 'number', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Descrição', key: 'description', type: 'string' },
-    { label: 'ID de Parente', key: 'paiId', type: 'number' },
+    { label: 'ID de Parente', key: 'paiId', type: 'dropdown' },
 ];
 
 export const categoryFields = [
@@ -73,7 +73,7 @@ export const externalEntityFields = [
 export const groupFields = [
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'description', label: 'Descrição', type: 'string' },
-    { key: 'paiId', label: 'ID de Parente', type: 'number' },
+    { key: 'paiId', label: 'ID de Parente', type: 'dropdown' },
 ];
 
 export const professionFields = [
@@ -98,16 +98,15 @@ export const zoneFields = [
     { key: 'Email', label: 'E-Mail', type: 'string' },
 ];
 
-export const EmployeeAttendanceTimesFields = [
-    { key: 'attendanceTimeId', label: 'ID do horário de presença', type: 'string' },
-    { key: 'deviceId', label: 'ID do dispositivo', type: 'string' },
+export const employeeAttendanceTimesFields = [
+    { label: 'Dispositivo', key: 'deviceId', type: 'dropdown' },
     { key: 'deviceNumber', label: 'Número do dispositivo', type: 'number' },
-    { key: 'employeeId', label: 'ID do funcionário', type: 'string' },
+    { label: 'Funcionário', key: 'employeeId', type: 'dropdown' },
     { key: 'enrollNumber', label: 'Número de matrícula', type: 'number' },
     { key: 'employeeName', label: 'Nome do funcionário', type: 'string' },
     { key: 'verifyMode', label: 'Modo de verificação', type: 'number' },
     { key: 'inOutMode', label: 'Modo de entrada/saída', type: 'number' },
     { key: 'workCode', label: 'Código de trabalho', type: 'number' },
     { key: 'type', label: 'Tipo', type: 'number' },
-    { key: 'attendanceTime', label: 'Horário de presença', type: 'date' },
+    { key: 'attendanceTime', label: 'Horário de presença', type: 'datetime-local' },
 ];

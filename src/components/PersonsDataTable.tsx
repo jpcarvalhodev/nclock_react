@@ -87,7 +87,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Erro ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateModal(false);
             refreshEmployees();
         }
     };
@@ -110,7 +110,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             console.error('Erro ao excluir funcionário:', error);
             toast.error('Erro ao conectar ao servidor');
         } finally {
-            handleCloseDeleteModal();
+            setShowDeleteModal(false);
             refreshEmployees();
         }
     }
@@ -159,22 +159,10 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         setShowDeleteModal(true);
     };
 
-    // Fecha o modal de exclusão de funcionário
-    const handleCloseDeleteModal = () => {
-        setShowDeleteModal(false);
-        setSelectedEmployeeToDelete(null);
-    };
-
     // Abre o modal de edição de funcionário
     const handleRowDoubleClicked = (row: Employee) => {
         setSelectedEmployee(row);
         setShowUpdateModal(true);
-    };
-
-    // Fecha o modal de edição de funcionário
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-        setSelectedEmployee(null);
     };
 
     // Abre o modal de edição de funcionário
@@ -282,7 +270,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                     {selectedEmployee && (
                         <UpdateModalEmployees
                             open={showUpdateModal}
-                            onClose={handleCloseUpdateModal}
+                            onClose={() => setShowUpdateModal(false)}
                             onUpdate={handleUpdateEmployee}
                             entity={selectedEmployee}
                             fields={employeeFields}
@@ -292,7 +280,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                     {showDeleteModal && (
                         <DeleteModal
                             open={showDeleteModal}
-                            onClose={handleCloseDeleteModal}
+                            onClose={() => setShowDeleteModal(false)}
                             onDelete={handleDeleteEmployee}
                             entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
                         />

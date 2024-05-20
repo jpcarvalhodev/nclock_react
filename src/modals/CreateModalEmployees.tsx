@@ -109,24 +109,18 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             const zonesResponse = await fetchWithAuth('Zones');
             const externalEntitiesResponse = await fetchWithAuth('ExternalEntities');
             if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
-                const departmentsData: Department[] = await departmentsResponse.json();
-                const groupsData: Group[] = await groupsResponse.json();
-                const professionsData: Profession[] = await professionsResponse.json();
-                const zonesData: Zone[] = await zonesResponse.json();
-                const externalEntitiesData: ExternalEntity[] = await externalEntitiesResponse.json();
-                setDepartments(departmentsData);
-                setGroups(groupsData);
-                setProfessions(professionsData);
-                setZones(zonesData);
-                setExternalEntities(externalEntitiesData);
-                setDropdownData(prev => ({
-                    ...prev,
-                    departmentId: departmentsData.map(department => ({ id: department.id, name: department.name })),
-                    groupId: groupsData.map(group => ({ id: group.id, name: group.name })),
-                    professionId: professionsData.map(profession => ({ id: profession.id, description: profession.description })),
-                    zoneId: zonesData.map(zone => ({ id: zone.id, name: zone.name })),
-                    externalEntityId: externalEntitiesData.map(externalEntity => ({ id: externalEntity.id, name: externalEntity.name }))
-                }));
+                const departments = await departmentsResponse.json();
+                const groups = await groupsResponse.json();
+                const professions = await professionsResponse.json();
+                const zones = await zonesResponse.json();
+                const externalEntities = await externalEntitiesResponse.json();
+                setDropdownData({
+                    departmentId: departments,
+                    groupId: groups,
+                    professionId: professions,
+                    zoneId: zones,
+                    externalEntityId: externalEntities
+                });
             } else {
                 toast.error('Erro ao buscar os dados de departamentos e grupos.');
             }
@@ -188,13 +182,37 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
-        console.log('key', key);
         const { value } = e.target;
-        setFormData(prevState => ({
-          ...prevState,
-          [key]: value
-        }));
-      };
+        const selectedOption = dropdownData[key]?.find((option: any) => {
+            switch (key) {
+                case 'departmentId':
+                    return option.departmentID === value;
+                case 'groupId':
+                    return option.groupID === value;
+                case 'professionId':
+                    return option.professionID === value;
+                case 'zoneId':
+                    return option.zoneID === value;
+                case 'externalEntityId':
+                    return option.externalEntityID === value;
+                default:
+                    return false;
+            }
+        });
+
+        if (selectedOption) {
+            const idKey = key;
+            setFormData(prevState => ({
+                ...prevState,
+                [idKey]: value
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                [key]: value
+            }));
+        }
+    };
 
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
@@ -443,14 +461,43 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                                         as="select"
                                                         className="custom-input-height custom-select-font-size"
                                                         value={formData[field.key] || ''}
-                                                        onChange={(e) => handleDropdownChange(formData[field.key] || '', e)}
+                                                        onChange={(e) => handleDropdownChange(field.key, e)}
                                                     >
                                                         <option value="">Selecione...</option>
-                                                        {dropdownData[field.key]?.map((option) => (
-                                                            <option key={option.id} value={option.id}>
-                                                                {option.name || option.description}
-                                                            </option>
-                                                        ))}
+                                                        {dropdownData[field.key]?.map((option: any) => {
+                                                            let optionId, optionName;
+                                                            switch (field.key) {
+                                                                case 'departmentId':
+                                                                    optionId = option.departmentID;
+                                                                    optionName = option.name;
+                                                                    break;
+                                                                case 'groupId':
+                                                                    optionId = option.groupID;
+                                                                    optionName = option.name;
+                                                                    break;
+                                                                case 'professionId':
+                                                                    optionId = option.professionID;
+                                                                    optionName = option.description;
+                                                                    break;
+                                                                case 'zoneId':
+                                                                    optionId = option.zoneID;
+                                                                    optionName = option.name;
+                                                                    break;
+                                                                case 'externalEntityId':
+                                                                    optionId = option.externalEntityID;
+                                                                    optionName = option.name;
+                                                                    break;
+                                                                default:
+                                                                    optionId = option.id;
+                                                                    optionName = option.name || option.description;
+                                                                    break;
+                                                            }
+                                                            return (
+                                                                <option key={optionId} value={optionId}>
+                                                                    {optionName}
+                                                                </option>
+                                                            );
+                                                        })}
                                                     </Form.Control>
                                                 ) : (
                                                     <Form.Control

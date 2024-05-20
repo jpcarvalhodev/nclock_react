@@ -105,7 +105,7 @@ export const Categories = () => {
             console.error('Erro ao atualizar categoria:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateModal(false);
             refreshCategories();
         }
     };
@@ -139,22 +139,6 @@ export const Categories = () => {
     // Função para atualizar as categorias
     const refreshCategories = () => {
         fetchCategories();
-    };
-
-    // Função para abrir o modal de adicionar categoria
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    // Função para fechar o modal de adicionar categoria
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
-    };
-
-    // Função para fechar o modal de atualizar categoria
-    const handleCloseUpdateModal = () => {
-        setSelectedCategory(null);
-        setShowUpdateModal(false);
     };
 
     // Função para editar uma categoria
@@ -249,7 +233,7 @@ export const Categories = () => {
                     </div>
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
-                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={categories} selectedData={filteredItems} fields={categoryFields} />
                     </div>
@@ -257,7 +241,7 @@ export const Categories = () => {
                 <CreateModalCatProf
                     title="Adicionar Categoria"
                     open={showAddModal}
-                    onClose={handleCloseAddModal}
+                    onClose={() => setShowAddModal(false)}
                     onSave={handleAddCategory}
                     fields={categoryFields}
                     initialValues={{}}
@@ -266,7 +250,7 @@ export const Categories = () => {
                 {selectedCategory && (
                     <UpdateModalCatProf
                         open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
                         onUpdate={handleUpdateCategory}
                         entity={selectedCategory}
                         fields={categoryFields}

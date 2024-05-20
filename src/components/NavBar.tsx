@@ -79,6 +79,7 @@ import consult from '../assets/img/navbar/configuracao/consult.png';
 import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
 import about from '../assets/img/navbar/ajuda/about.png';
 import manual from '../assets/img/navbar/ajuda/manual.png';
+import helpdesk from '../assets/img/navbar/ajuda/helpdesk.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -588,7 +589,7 @@ export const NavBar = () => {
 			</div>
 			{showNclockRibbon && (
 				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="pessoas" role="tabpanel" aria-labelledby="pessoas-tab">
+					<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
 						<div className="section" id="section-group">
 							<div className="group">
 								<div className="btn-group" role="group">
@@ -863,8 +864,8 @@ export const NavBar = () => {
 							</div>
 							<div className="group">
 								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+									<div className='icon-text-informacoes'>
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
 											<span className="icon">
 												<img src={settings} alt="botão opções" />
 											</span>
@@ -873,7 +874,7 @@ export const NavBar = () => {
 									</div>
 								</div>
 								<div className="title-container">
-									<span className="title">Configuração</span>
+									<span className="title">Configurações</span>
 								</div>
 							</div>
 						</div>
@@ -890,7 +891,7 @@ export const NavBar = () => {
 			)}
 			{showNaccessRibbon && (
 				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="pessoas" role="tabpanel" aria-labelledby="pessoas-tab">
+					<div className="tab-pane fade show active" id="naccess" role="tabpanel" aria-labelledby="naccess-tab">
 						<div className="section" id="section-group">
 							<div className="group">
 								<div className="btn-group" role="group">
@@ -1117,7 +1118,7 @@ export const NavBar = () => {
 							</div>
 							<div className="group">
 								<div className="btn-group" role="group">
-									<div className='icon-text-entidades'>
+									<div className='icon-text-informacoes'>
 										<Link to="/externalentities" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
 											<span className="icon">
 												<img src={externalEntities} alt="botão entidades externas" />
@@ -1139,7 +1140,7 @@ export const NavBar = () => {
 											<span className="text">Fontes</span>
 										</Link>
 									</div>
-									<div className='icon-text-entidades'>
+									<div className='icon-text-informacoes'>
 										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
 											<span className="icon">
 												<img src={interventionAreas} alt="botão áreas de intervenção" />
@@ -1147,7 +1148,7 @@ export const NavBar = () => {
 											<span className="text">Áreas de Intervenção</span>
 										</Link>
 									</div>
-									<div className='icon-text-entidades'>
+									<div className='icon-text-informacoes'>
 										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
 											<span className="icon">
 												<img src={businessAreas} alt="botão áreas de negócios" />
@@ -1448,6 +1449,14 @@ export const NavBar = () => {
 												<img src={manual} alt="botão manual" />
 											</span>
 											<span className="text">Manual</span>
+										</Link>
+									</div>
+									<div className='icon-text-pessoas'>
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<span className="icon">
+												<img src={helpdesk} alt="botão helpdesk" />
+											</span>
+											<span className="text">Helpdesk</span>
 										</Link>
 									</div>
 								</div>

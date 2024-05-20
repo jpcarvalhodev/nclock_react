@@ -71,7 +71,6 @@ export const Zones = () => {
         } catch (error) {
             console.error('Erro ao adicionar nova zona:', error);
         }
-
         setShowAddModal(false);
         refreshZones();
     };
@@ -105,7 +104,7 @@ export const Zones = () => {
             console.error('Erro ao atualizar zona:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateModal(false);
             refreshZones();
         }
     };
@@ -141,26 +140,10 @@ export const Zones = () => {
         fetchZones();
     };
 
-    // Função para abrir o modal de adicionar zona
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    // Função para fechar o modal de adicionar zona
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
-    };
-
     // Função para abrir o modal de editar zona
     const handleEditZone = (zone: Zone) => {
         setSelectedZone(zone);
         setShowUpdateModal(true);
-    };
-
-    // Função para fechar o modal de editar zona
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-        setSelectedZone(null);
     };
 
     // Função para abrir o modal de apagar zona
@@ -254,7 +237,7 @@ export const Zones = () => {
                     </div>
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} />
-                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={zones} selectedData={filteredItems} fields={zoneFields} />
                     </div>
@@ -262,7 +245,7 @@ export const Zones = () => {
                 <CreateModalZones
                     title="Adicionar Zona"
                     open={showAddModal}
-                    onClose={handleCloseAddModal}
+                    onClose={() => setShowAddModal(false)}
                     onSave={handleAddZone}
                     fields={zoneFields}
                     initialValues={{}}
@@ -270,7 +253,7 @@ export const Zones = () => {
                 {selectedZone && (
                     <UpdateModalZones
                         open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
                         onUpdate={handleUpdateZone}
                         entity={selectedZone}
                         fields={zoneFields}

@@ -27,7 +27,6 @@
 .ncard-tab,
 .nview-tab,
 .nsecur-tab {
-    margin-right: 5px;
     color: white;
 }
 
@@ -62,7 +61,7 @@
 }
 
 .title {
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .ribbon-button-pessoas,
@@ -116,11 +115,7 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 11px;
-}
-
-.ribbon-button-entidades .icon {
-    margin-bottom: 5px;
+    font-size: 12px;
 }
 
 .ribbon-button-pessoas .icon img,
@@ -133,7 +128,7 @@
 .ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .icon-text-entidades {
@@ -168,7 +163,7 @@
     display: flex;
     flex-direction: column;
     text-align: center;
-    font-size: 11px;
+    font-size: 12px;
     margin-right: 5px;
 }
 
@@ -181,7 +176,7 @@
 .ribbon-icon-button {
     background-color: transparent;
     border-color: transparent;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .icon-text-informacoes {
@@ -189,7 +184,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .ribbon-button-informacoes .icon img,
@@ -206,6 +201,7 @@
 
 .user-info {
     font-size: 15px;
+    padding: .375rem;
     color: white;
 }
 
@@ -242,6 +238,14 @@
     top: 45px;
     width: 30px;
     height: 30px;
+}
+
+.nav-tabs {
+    border-bottom: 0px !important;
+}
+
+.btn {
+    padding: .25rem !important;
 }
 
 #dropdown-basic::after,
@@ -299,7 +303,16 @@
 
     .ribbon-icon {
         right: 0px;
-        top: 120px;
+        top: 150px;
+    }
+
+    .icon-text-informacoes,
+    .icon-text-entidades {
+        margin-bottom: 10px;
+    }
+
+    .cards-container {
+        padding: 0px;
     }
 
 }
@@ -324,5 +337,10 @@
     .dropdown-content img {
         width: 40px;
         height: 40px;
+    }
+
+    .icon-text-informacoes,
+    .icon-text-entidades {
+        margin-bottom: 10px;
     }
 }

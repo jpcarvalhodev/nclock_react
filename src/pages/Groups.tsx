@@ -71,8 +71,7 @@ export const Groups = () => {
         } catch (error) {
             console.error('Erro ao adicionar novo grupo:', error);
         }
-
-        handleCloseAddModal();
+        setShowAddModal(false);
         refreshGroups();
     };
 
@@ -105,7 +104,7 @@ export const Groups = () => {
             console.error('Erro ao atualizar grupo:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateModal(false);
             refreshGroups();
         }
     };
@@ -249,7 +248,7 @@ export const Groups = () => {
                     </div>
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
-                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} iconSize='1.1em' />
+                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={groups} selectedData={filteredItems} fields={groupFields} />
                     </div>
@@ -257,7 +256,7 @@ export const Groups = () => {
                 <CreateModalDeptGrp
                     title="Adicionar Grupo"
                     open={showAddModal}
-                    onClose={handleCloseAddModal}
+                    onClose={() => setShowAddModal(false)}
                     onSave={handleAddGroup}
                     fields={groupFields}
                     initialValues={{}}
@@ -266,7 +265,7 @@ export const Groups = () => {
                 {selectedGroup && (
                     <UpdateModalDeptGrp
                         open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
                         onUpdate={handleUpdateGroup}
                         entity={selectedGroup}
                         entityType='group'

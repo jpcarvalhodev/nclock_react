@@ -8,6 +8,9 @@ import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { Department, Employee, Group } from '../helpers/Types';
 
+// Define a interface para os itens de campo
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
 // Define a interface para os campos
 interface Field {
     key: string;
@@ -42,8 +45,9 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     const [selectedGroup, setSelectedGroup] = useState<string>('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [dropdownData, setDropdownData] = useState<Record<string, any>>({});
 
-    // Usa useEffect para validar o formulário
+    // UseEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
 
@@ -195,6 +199,58 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         setShowUpdateEmployeeModal(false);
     };
 
+    // Função para buscar as opções do dropdown
+    const fetchDropdownOptions = async () => {
+        try {
+            const departmentResponse = await fetchWithAuth('Departaments');
+            const groupResponse = await fetchWithAuth('Groups');
+
+            if (departmentResponse.ok && groupResponse.ok) {
+                const departments = await departmentResponse.json();
+                const groups = await groupResponse.json();
+
+                setDropdownData({
+                    departments: departments,
+                    groups: groups
+                });
+            } else {
+                toast.error('Erro ao buscar os dados de departamentos e grupos.');
+            }
+        } catch (error) {
+            toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
+            console.error(error);
+        }
+    };
+
+    // Atualiza o estado do componente ao abrir o modal
+    useEffect(() => {
+        if (open) {
+            fetchDropdownOptions();
+        }
+    }, [open]);
+
+    // Função para lidar com a mudança do dropdown
+    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+        const { value } = e.target;
+
+        let selectedOption = null;
+        if (value.startsWith('department-')) {
+            const departmentID = value.replace('department-', '');
+            selectedOption = dropdownData.departments?.find((dep: Department) => dep.departmentID === departmentID);
+        } else if (value.startsWith('group-')) {
+            const groupID = value.replace('group-', '');
+            selectedOption = dropdownData.groups?.find((grp: Group) => grp.groupID === groupID);
+        }
+
+        if (selectedOption) {
+            setFormData(prevState => ({
+                ...prevState,
+                [key]: selectedOption.id,
+                [`${key}Name`]: selectedOption.name
+            }));
+        }
+    };
+
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -315,13 +371,19 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     <Form.Group controlId="formPaiId">
                                         <Form.Label>ID de Parente</Form.Label>
                                         <Form.Control
-                                            type="number"
+                                            as="select"
                                             name="paiId"
                                             value={formData['paiId'] || ''}
-                                            onChange={handleChange}
+                                            onChange={(e) => handleDropdownChange(field.key, e)}
                                             className="custom-input-height custom-select-font-size"
-                                        />
-                                        {errors['paiId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['paiId']}</div>}
+                                        >
+                                            <option value="">Selecione...</option>
+                                            {dropdownData[field.key]?.map((option: any) => (
+                                                <option key={option.paiId} value={option.paiId}>
+                                                    {option.name}
+                                                </option>
+                                            ))}
+                                        </Form.Control>
                                     </Form.Group>
                                 </Col>
                             </Row>
