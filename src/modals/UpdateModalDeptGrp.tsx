@@ -4,11 +4,14 @@ import Button from 'react-bootstrap/Button';
 import { Row, Col, Form, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { CreateModalEmployees } from './CreateModalEmployees';
-import { departmentFields, employeeFields, groupFields } from '../helpers/Fields';
+import { employeeFields } from '../helpers/Fields';
 import { toast } from 'react-toastify';
 import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Department, Employee, Group } from '../helpers/Types';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
+
+// Define a interface para os itens de campo
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 // Define a interface Entity
 export interface Entity {
@@ -49,6 +52,10 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [groups, setGroups] = useState<Group[]>([]);
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
+        departments: [],
+        groups: []
+    });
 
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
@@ -121,7 +128,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             console.error('Erro ao adicionar novo funcionário:', error);
         }
 
-        handleCloseEmployeeModal();
+        setShowEmployeeModal(false);
     };
 
     // Função para atualizar um funcionário
@@ -154,7 +161,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateEmployeeModal(false);
         }
     };
 
@@ -181,26 +188,54 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }
     };
 
-    // Função para abrir o modal de funcionário
-    const handleCloseEmployeeModal = () => {
-        setShowEmployeeModal(false);
-        setSelectedEmployee(null);
+    // Função para buscar as opções do dropdown
+    const fetchDropdownOptions = async () => {
+        try {
+            const departmentResponse = await fetchWithAuth('Departaments');
+            const groupResponse = await fetchWithAuth('Groups');
+
+            if (departmentResponse.ok && groupResponse.ok) {
+                const departments = await departmentResponse.json();
+                const groups = await groupResponse.json();
+
+                setDropdownData({
+                    departments: departments,
+                    groups: groups
+                });
+            } else {
+                toast.error('Erro ao buscar os dados de departamentos e grupos.');
+            }
+        } catch (error) {
+            toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
+            console.error(error);
+        }
     };
 
-    // Função para abrir o modal de atualizar funcionário
-    const handleOpenAddModal = () => {
-        setShowEmployeeModal(true);
-    };
+    // Atualiza o estado do componente ao abrir o modal
+    useEffect(() => {
+        if (open) {
+            fetchDropdownOptions();
+        }
+    }, [open]);
 
-    // Função para abrir o modal de atualizar funcionário
-    const handleCloseAddModal = () => {
-        setShowEmployeeModal(false);
-    };
+    // Função para lidar com a mudança do dropdown
+    const handleDropdownChange = (e: React.ChangeEvent<FormControlElement>) => {
+        const { value } = e.target;
+        const selectedPai = dropdownData.departments.find(dept => dept.departmentID === value) ||
+            dropdownData.groups.find(grp => grp.groupID === value);
 
-    // Função para abrir o modal de atualizar funcionário
-    const handleCloseUpdateModal = () => {
-        setShowUpdateEmployeeModal(false);
-        setSelectedEmployee(null);
+        if (selectedPai) {
+            setFormData(prevState => ({
+                ...prevState,
+                paiId: selectedPai.code,
+                paiName: selectedPai.name
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                paiId: value
+            }));
+        }
     };
 
     // função para modificar o estado do formulário
@@ -224,7 +259,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     // Função para submeter o formulário
     const handleSubmit = async () => {
-        console.log('formData', formData);
         await onUpdate(formData);
         onClose();
     };
@@ -320,10 +354,20 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                             type="number"
                                             name="paiId"
                                             value={formData['paiId'] || ''}
-                                            onChange={handleChange}
+                                            onChange={handleDropdownChange}
                                             className="custom-input-height custom-select-font-size"
                                         />
-                                        {errors['paiId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['paiId']}</div>}
+                                        <option value="">Selecione...</option>
+                                        {entityType === 'department' && dropdownData.departments.map(option => (
+                                            <option key={option.code} value={option.code}>
+                                                {option.name}
+                                            </option>
+                                        ))}
+                                        {entityType === 'group' && dropdownData.groups.map(option => (
+                                            <option key={option.code} value={option.code}>
+                                                {option.name}
+                                            </option>
+                                        ))}
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -367,7 +411,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     </tbody>
                                 </Table>
                             </div>
-                            <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} />
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
                         </Col>
                     </Row>
                 </Form>
@@ -380,7 +424,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                 <CreateModalEmployees
                     title='Adicionar Funcionário'
                     open={showEmployeeModal}
-                    onClose={handleCloseAddModal}
+                    onClose={() => setShowEmployeeModal(false)}
                     onSave={handleAddEmployee}
                     fields={employeeFields}
                     initialValues={{}}
@@ -390,7 +434,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                 <UpdateModalEmployees
                     title='Atualizar Funcionário'
                     open={showUpdateEmployeeModal}
-                    onClose={handleCloseUpdateModal}
+                    onClose={() => setShowUpdateEmployeeModal(false)}
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}

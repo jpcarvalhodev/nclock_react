@@ -48,21 +48,20 @@ export const Movement = () => {
     }
 
     // Função para adicionar uma nova assiduidade
-    const handleAddAttendance = async () => {
+    const handleAddAttendance = async (attendances: EmployeeAttendanceTimes) => {
         try {
             const response = await fetchWithAuth('Attendances/CreatedAttendanceTime', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(Response)
+                body: JSON.stringify(attendances)
             });
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar nova assiduidade');
                 return;
             }
-
             const newAttendance = await response.json();
             setAttendance([...attendance, newAttendance]);
             toast.success('assiduidade adicionada com sucesso');
@@ -74,14 +73,14 @@ export const Movement = () => {
     };
 
     // Função para atualizar uma assiduidade
-    const handleUpdateAttendance = async () => {
+    const handleUpdateAttendance = async (attendances: EmployeeAttendanceTimes) => {
         try {
             const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(Response)
+                body: JSON.stringify(attendances)
             });
 
             if (!response.ok) {

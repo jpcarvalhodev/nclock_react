@@ -7,6 +7,7 @@ import { CreateModalEmployees } from './CreateModalEmployees';
 import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { Department, Employee, Group } from '../helpers/Types';
+import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -45,7 +46,10 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     const [selectedGroup, setSelectedGroup] = useState<string>('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [dropdownData, setDropdownData] = useState<Record<string, any>>({});
+    const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
+        departments: [],
+        groups: []
+    });
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -122,8 +126,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         }
-
-        handleCloseAddModal();
+        setShowEmployeeModal(false);
     };
 
     // Função para atualizar um funcionário
@@ -156,7 +159,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Falha ao conectar ao servidor');
         } finally {
-            handleCloseUpdateModal();
+            setShowUpdateEmployeeModal(false);
         }
     };
 
@@ -182,21 +185,6 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         if (selectedGroup && selectedGroup.employees) {
             setEmployees(selectedGroup.employees);
         }
-    };
-
-    // Função para abrir o modal de adicionar funcionário
-    const handleOpenAddModal = () => {
-        setShowEmployeeModal(true);
-    };
-
-    // Função para fechar o modal de adicionar funcionário
-    const handleCloseAddModal = () => {
-        setShowEmployeeModal(false);
-    };
-
-    // Função para fechar o modal de atualizar funcionário
-    const handleCloseUpdateModal = () => {
-        setShowUpdateEmployeeModal(false);
     };
 
     // Função para buscar as opções do dropdown
@@ -230,23 +218,21 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     }, [open]);
 
     // Função para lidar com a mudança do dropdown
-    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+    const handleDropdownChange = (e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
+        const selectedPai = dropdownData.departments.find(dept => dept.departmentID === value) ||
+            dropdownData.groups.find(grp => grp.groupID === value);
 
-        let selectedOption = null;
-        if (value.startsWith('department-')) {
-            const departmentID = value.replace('department-', '');
-            selectedOption = dropdownData.departments?.find((dep: Department) => dep.departmentID === departmentID);
-        } else if (value.startsWith('group-')) {
-            const groupID = value.replace('group-', '');
-            selectedOption = dropdownData.groups?.find((grp: Group) => grp.groupID === groupID);
-        }
-
-        if (selectedOption) {
+        if (selectedPai) {
             setFormData(prevState => ({
                 ...prevState,
-                [key]: selectedOption.id,
-                [`${key}Name`]: selectedOption.name
+                paiId: selectedPai.code,
+                paiName: selectedPai.name
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                paiId: value
             }));
         }
     };
@@ -278,7 +264,6 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             }
             return acc;
         }, {});
-
         onSave(payload as T);
         onClose();
     };
@@ -374,12 +359,17 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                             as="select"
                                             name="paiId"
                                             value={formData['paiId'] || ''}
-                                            onChange={(e) => handleDropdownChange(field.key, e)}
+                                            onChange={handleDropdownChange}
                                             className="custom-input-height custom-select-font-size"
                                         >
                                             <option value="">Selecione...</option>
-                                            {dropdownData[field.key]?.map((option: any) => (
-                                                <option key={option.paiId} value={option.paiId}>
+                                            {entityType === 'department' && dropdownData.departments.map(option => (
+                                                <option key={option.code} value={option.code}>
+                                                    {option.name}
+                                                </option>
+                                            ))}
+                                            {entityType === 'group' && dropdownData.groups.map(option => (
+                                                <option key={option.code} value={option.code}>
                                                     {option.name}
                                                 </option>
                                             ))}
@@ -427,7 +417,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     </tbody>
                                 </Table>
                             </div>
-                            <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddModal} />
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
                         </Col>
                     </Row>
                 </Form>
@@ -440,7 +430,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 <CreateModalEmployees
                     title='Adicionar Funcionário'
                     open={showEmployeeModal}
-                    onClose={handleCloseAddModal}
+                    onClose={() => setShowEmployeeModal(false)}
                     onSave={handleAddEmployee}
                     fields={employeeFields}
                     initialValues={{}}
@@ -450,7 +440,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 <UpdateModalEmployees
                     title='Atualizar Funcionário'
                     open={showUpdateEmployeeModal}
-                    onClose={handleCloseUpdateModal}
+                    onClose={() => setShowUpdateEmployeeModal(false)}
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}

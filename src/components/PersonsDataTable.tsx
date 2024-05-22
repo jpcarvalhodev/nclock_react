@@ -202,9 +202,9 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                     case 'departmentId':
                         return row.departmentName || '';
                     case 'professionId':
-                        return row.professionCode || '';
+                        return row.professionName || '';
                     case 'categoryId':
-                        return row.categoryCode || '';
+                        return row.categoryName || '';
                     case 'groupId':
                         return row.groupName || '';
                     case 'zoneId':

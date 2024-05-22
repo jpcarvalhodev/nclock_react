@@ -244,7 +244,7 @@
     border-bottom: 0px !important;
 }
 
-.btn {
+.btn-light {
     padding: .25rem !important;
 }
 
@@ -317,7 +317,7 @@
 
 }
 
-@media (min-width: 501px) and (max-width: 1200px) {
+@media (min-width: 501px) and (max-width: 1300px) {
 
     .logo {
         font-size: 15px;

@@ -196,7 +196,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
 
   // Define a função para enviar
   const handleSubmit = async () => {
-    console.log(formData);
     await onUpdate(formData);
     onClose();
   };

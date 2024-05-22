@@ -60,13 +60,13 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     const fetchDropdownOptions = async () => {
         try {
             const employeeResponse = await fetchWithAuth('Employees/GetAllEmployees');
-            //const deviceResponse = await fetchWithAuth('Devices');
-            if (employeeResponse.ok /* && deviceResponse.ok */) {
+            const deviceResponse = await fetchWithAuth('Devices');
+            if (employeeResponse.ok && deviceResponse.ok) {
                 const employees = await employeeResponse.json();
-                //const devices = await deviceResponse.json();
+                const devices = await deviceResponse.json();
                 setDropdownData({
                     employeeId: employees,
-                    //deviceId: devices
+                    deviceId: devices
                 });
             } else {
                 toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
