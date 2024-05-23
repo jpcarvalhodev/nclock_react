@@ -287,7 +287,7 @@ export const Departments = () => {
                     entityId={selectedDepartmentForDelete}
                 />
             </div>
-            <div>
+            <div className='content-wrapper'>
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}

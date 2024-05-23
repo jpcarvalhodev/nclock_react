@@ -280,7 +280,7 @@ export const Groups = () => {
                     entityId={selectedGroupForDelete}
                 />
             </div>
-            <div>
+            <div className='content-wrapper'>
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}

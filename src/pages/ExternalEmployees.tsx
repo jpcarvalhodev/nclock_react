@@ -5,7 +5,7 @@ import '../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Employee } from '../helpers/Types';
+import { Department, Employee, Group } from '../helpers/Types';
 import { CreateModalEmployees } from '../modals/CreateModalEmployees';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { DeleteModal } from '../modals/DeleteModal';
@@ -18,6 +18,13 @@ import Split from 'react-split';
 import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../components/CustomStylesDataTable';
+
+// Define a interface para o estado de dados
+interface DataState {
+    departments: Department[];
+    groups: Group[];
+    employees: Employee[];
+}
 
 // Define a página de Funcionários Externos
 export const ExternalEmployees = () => {
@@ -33,6 +40,47 @@ export const ExternalEmployees = () => {
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [data, setData] = useState<DataState>({
+        departments: [],
+        groups: [],
+        employees: []
+    });
+
+    // Busca os departamentos, grupos e funcionários
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const deptResponse = await fetchWithAuth('Departaments/Employees');
+                const groupResponse = await fetchWithAuth('Groups/Employees');
+                const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
+
+                if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
+                    toast.error('Falha ao buscar dados');
+                    return;
+                }
+
+                const [departments, groups, allEmployees] = await Promise.all([
+                    deptResponse.json(),
+                    groupResponse.json(),
+                    employeesResponse.json(),
+                ]);
+
+                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Funcionário Externo');
+
+                setData({
+                    departments,
+                    groups,
+                    employees: filteredEmployees
+                });
+                setEmployees(filteredEmployees);
+                setFilteredEmployees(filteredEmployees);
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                toast.error('Falha ao buscar dados');
+            }
+        }
+        fetchData();
+    }, []);
 
     // Função para buscar os dados dos funcionários
     const fetchEmployees = async () => {
@@ -46,6 +94,10 @@ export const ExternalEmployees = () => {
             const filteredData = data.filter((emp: Employee) => emp.type === 'Funcionário Externo');
             setEmployees(filteredData);
             setFilteredEmployees(filteredData);
+            setData(prevData => ({
+                ...prevData,
+                employees: filteredData
+            }));
         } catch (error) {
             console.error('Erro ao buscar os dados dos funcionários:', error);
         }
@@ -65,8 +117,12 @@ export const ExternalEmployees = () => {
             if (!response.ok) {
                 toast.error('Erro ao adicionar novo funcionário');
             }
-            const data = await response.json();
-            setEmployees([...employees, data]);
+            const employeesData = await response.json();
+            setEmployees([...employees, employeesData]);
+            setData(prevData => ({
+                ...prevData,
+                employees: [...prevData.employees, employeesData]
+            }));
             toast.success('Funcionário adicionado com sucesso');
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
@@ -94,7 +150,11 @@ export const ExternalEmployees = () => {
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedEmployee = await response.json();
-                setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
+                const updatedEmployees = employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
+                setData(prevData => ({
+                    ...prevData,
+                    employees: updatedEmployees
+                }));
             } else {
                 await response.text();
                 toast.success(response.statusText || 'Atualização realizada com sucesso');
@@ -123,7 +183,11 @@ export const ExternalEmployees = () => {
             if (!response.ok) {
                 toast.error('Erro ao apagar funcionário');
             }
-
+            const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
+            setData(prevData => ({
+                ...prevData,
+                employees: deletedEmployee
+            }));
             toast.success('Funcionário apagado com sucesso');
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
@@ -277,7 +341,7 @@ export const ExternalEmployees = () => {
             <div className="content-container">
                 <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
+                        <TreeViewData onSelectEmployees={handleSelectFromTreeView} data={data} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">

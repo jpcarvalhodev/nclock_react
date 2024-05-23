@@ -3,7 +3,7 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import { fetchWithAuth } from './FetchWithAuth';
 import { toast } from 'react-toastify';
 import { CircularProgress } from '@mui/material';
-import { Employee } from '../helpers/Types';
+import { Department, Employee, Group } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { Button } from 'react-bootstrap';
@@ -11,6 +11,13 @@ import { DeleteModal } from '../modals/DeleteModal';
 import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { customStyles } from './CustomStylesDataTable';
+
+// Define a interface para o estado dos dados
+interface DataState {
+    departments: Department[];
+    groups: Group[];
+    employees: Employee[];
+}
 
 // Define as propriedades da tabela de pessoas
 interface PersonsDataTableProps {
@@ -20,12 +27,12 @@ interface PersonsDataTableProps {
     filterText: string;
     filteredEmployees: (filtered: Employee[]) => void;
     resetSelection: boolean;
-    employees: Employee[];
+    data: DataState;
+    onRefreshData: (data: DataState) => void;
 }
 
 // Define o componente
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, employees: propEmployees }: PersonsDataTableProps) => {
-    const [employees, setEmployees] = useState<Employee[]>(propEmployees); // Inicializar com prop
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData }: PersonsDataTableProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -33,11 +40,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<Employee | null>(null);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
-
-    // Atualiza a lista de funcionários quando a propriedade employees é alterada
-    useEffect(() => {
-        setEmployees(propEmployees);
-    }, [propEmployees]);
 
     // Função para buscar todos os funcionários
     const fetchAllEmployees = async () => {
@@ -49,7 +51,10 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 return;
             }
             const employeesData = await response.json();
-            setEmployees(employeesData);
+            onRefreshData({
+                ...data,
+                employees: employeesData
+            });
         } catch (error) {
             console.error('Erro ao buscar funcionários:', error);
         } finally {
@@ -76,7 +81,11 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             const contentType = response.headers.get('Content-Type');
             if (contentType && contentType.includes('application/json')) {
                 const updatedEmployee = await response.json();
-                setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
+                const updatedEmployees = data.employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
+                onRefreshData({
+                    ...data,
+                    employees: updatedEmployees
+                });
                 toast.success('Funcionário atualizado com sucesso');
             } else {
                 await response.text();
@@ -103,8 +112,11 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 toast.error(`Erro ao excluir funcionário`);
                 return;
             }
-
-            setEmployees(prevEmployees => prevEmployees.filter(emp => emp.employeeID !== employeeID));
+            const updatedEmployees = data.employees.filter(emp => emp.employeeID !== employeeID);
+            onRefreshData({
+                ...data,
+                employees: updatedEmployees,
+            });
             toast.success('Funcionário excluído com sucesso');
         } catch (error) {
             console.error('Erro ao excluir funcionário:', error);
@@ -115,6 +127,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         }
     }
 
+    // Atualiza a lista de funcionários
     const refreshEmployees = () => {
         fetchAllEmployees();
     }
@@ -125,18 +138,16 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     // Filtra os funcionários
     useEffect(() => {
         let filteredByIDs = selectedEmployeeIds.length > 0
-            ? propEmployees.filter((emp) => selectedEmployeeIds.includes(emp.employeeID))
-            : propEmployees;
+            ? data.employees.filter((emp: Employee) => selectedEmployeeIds.includes(emp.employeeID))
+            : data.employees;
 
         let filteredBySearchText = filteredByIDs.filter((employee) =>
             Object.values(employee).some((value) =>
                 String(value).toLowerCase().includes(filterText.toLowerCase())
             )
         );
-
-        setEmployees(filteredBySearchText);
         memorizedFilteredEmployees(filteredBySearchText);
-    }, [selectedEmployeeIds, filterText, propEmployees, memorizedFilteredEmployees]);
+    }, [selectedEmployeeIds, filterText, data.employees, memorizedFilteredEmployees]);
 
     // Reseta a seleção de funcionários
     useEffect(() => {
@@ -253,7 +264,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 <>
                     <DataTable
                         columns={[...columns, actionColumn]}
-                        data={employees}
+                        data={data.employees}
                         highlightOnHover
                         pagination
                         paginationComponentOptions={paginationOptions}

@@ -264,7 +264,7 @@ export const Categories = () => {
                     entityId={selectedCategoryForDelete}
                 />
             </div>
-            <div>
+            <div className='content-wrapper'>
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}

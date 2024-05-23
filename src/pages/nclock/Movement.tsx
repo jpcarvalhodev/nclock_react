@@ -3,7 +3,7 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar"
 import { TreeViewData } from "../../components/TreeView";
 import { useEffect, useState } from "react";
-import { EmployeeAttendanceTimes } from "../../helpers/Types";
+import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
 import { employeeAttendanceTimesFields } from "../../helpers/Fields";
@@ -15,6 +15,13 @@ import DataTable from 'react-data-table-component';
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { CreateModalAttendance } from '../../modals/CreateModalAttendance';
 import { UpdateModalAttendance } from '../../modals/UpdateModalAttendance';
+
+// Define a interface para o estado de dados
+interface DataState {
+    departments: Department[];
+    groups: Group[];
+    employees: Employee[];
+}
 
 // Define a página movimentos
 export const Movement = () => {
@@ -31,6 +38,11 @@ export const Movement = () => {
     const [filterText, setFilterText] = useState('');
     const [selectedAttendanceToDelete, setSelectedAttendanceToDelete] = useState<EmployeeAttendanceTimes | null>(null);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [data, setData] = useState<DataState>({
+        departments: [],
+        groups: [],
+        employees: []
+      });
 
     // Função para buscar todos as assiduidades
     const fetchAllAttendances = async () => {
@@ -42,6 +54,7 @@ export const Movement = () => {
             }
             const attendanceData = await response.json();
             setAttendance(attendanceData);
+            setFilteredAttendances(attendanceData);
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -219,7 +232,7 @@ export const Movement = () => {
             <div className="content-container">
                 <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
+                        <TreeViewData onSelectEmployees={handleSelectFromTreeView} data={data} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">

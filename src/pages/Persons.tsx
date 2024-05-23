@@ -8,12 +8,18 @@ import Split from 'react-split';
 import '../css/PagesStyles.css';
 import { CreateModalEmployees } from '../modals/CreateModalEmployees';
 import { employeeFields } from '../helpers/Fields';
-import { Employee } from '../helpers/Types';
+import { Department, Employee, Group } from '../helpers/Types';
 import { fetchWithAuth } from '../components/FetchWithAuth';
 import { toast } from 'react-toastify';
 import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
 import { ExportButton } from '../components/ExportButton';
-import { set } from 'date-fns';
+
+// Define a interface para o estado de dados
+interface DataState {
+    departments: Department[];
+    groups: Group[];
+    employees: Employee[];
+}
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -27,6 +33,42 @@ export const Persons = () => {
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
+    const [data, setData] = useState<DataState>({
+        departments: [],
+        groups: [],
+        employees: []
+    });
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const deptResponse = await fetchWithAuth('Departaments/Employees');
+                const groupResponse = await fetchWithAuth('Groups/Employees');
+                const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
+
+                if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
+                    toast.error('Falha ao buscar dados');
+                    return;
+                }
+
+                const [departments, groups, allEmployees] = await Promise.all([
+                    deptResponse.json(),
+                    groupResponse.json(),
+                    employeesResponse.json(),
+                ]);
+
+                setData({
+                    departments,
+                    groups,
+                    employees: allEmployees
+                });
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                toast.error('Falha ao buscar dados');
+            }
+        }
+        fetchData();
+    }, []);
 
     // Função para buscar todos os funcionários
     const fetchAllEmployees = async () => {
@@ -38,6 +80,10 @@ export const Persons = () => {
             }
             const employeesData = await response.json();
             setEmployees(employeesData);
+            setData(prevData => ({
+                ...prevData,
+                employees: employeesData
+            }));
         } catch (error) {
             console.error('Erro ao buscar funcionários:', error);
         }
@@ -63,8 +109,12 @@ export const Persons = () => {
                 toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
-            const data = await response.json();
-            setEmployees([...employees, data]);
+            const employeesData = await response.json();
+            setEmployees([...employees, employeesData]);
+            setData(prevData => ({
+                ...prevData,
+                employees: [...prevData.employees, employeesData]
+              }));
             toast.success('Funcionário adicionado com sucesso');
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
@@ -129,7 +179,7 @@ export const Persons = () => {
             <div className="content-container">
                 <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewData onSelectEmployees={handleSelectEmployees} />
+                        <TreeViewData onSelectEmployees={handleSelectEmployees} data={data} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
@@ -160,7 +210,8 @@ export const Persons = () => {
                             filterText={filterText}
                             filteredEmployees={handleFilteredEmployees}
                             resetSelection={resetSelection}
-                            employees={employees}
+                            data={data}
+                            onRefreshData={setData}
                         />
                     </div>
                 </Split>

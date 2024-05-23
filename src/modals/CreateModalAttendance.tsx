@@ -60,13 +60,13 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     const fetchDropdownOptions = async () => {
         try {
             const employeeResponse = await fetchWithAuth('Employees/GetAllEmployees');
-            const deviceResponse = await fetchWithAuth('Devices');
-            if (employeeResponse.ok && deviceResponse.ok) {
+            /* const deviceResponse = await fetchWithAuth('Devices'); */
+            if (employeeResponse.ok /* && deviceResponse.ok */) {
                 const employees = await employeeResponse.json();
-                const devices = await deviceResponse.json();
+                /* const devices = await deviceResponse.json(); */
                 setDropdownData({
                     employeeId: employees,
-                    deviceId: devices
+                    /* deviceId: devices */
                 });
             } else {
                 toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
@@ -151,7 +151,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             <Modal.Body className="modal-body-scrollable">
                 <Row>
                     {fields.map((field) => (
-                        <Col md={3} key={field.key}>
+                        <Col md={4} key={field.key}>
                             <Form.Group controlId={`form${field.key}`}>
                                 <Form.Label>{field.label}</Form.Label>
                                 {field.type === 'dropdown' ? (

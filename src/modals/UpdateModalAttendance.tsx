@@ -64,13 +64,13 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     const fetchDropdownOptions = async () => {
         try {
             const employeeResponse = await fetchWithAuth('Employees/GetAllEmployees');
-            const deviceResponse = await fetchWithAuth('Devices');
-            if (employeeResponse.ok && deviceResponse.ok) {
+            /* const deviceResponse = await fetchWithAuth('Devices'); */
+            if (employeeResponse.ok /* && deviceResponse.ok */) {
                 const employees = await employeeResponse.json();
-                const devices = await deviceResponse.json();
+                /* const devices = await deviceResponse.json(); */
                 setDropdownData({
                     employeeId: employees,
-                    deviceId: devices
+                    /* deviceId: devices */
                 });
             } else {
                 toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
@@ -106,7 +106,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                     [key]: value
                 }));
             }
-        } else if (key === 'deviceId') {
+        } /* else if (key === 'deviceId') {
             const selectedDevice = dropdownData.deviceId?.find(dev => dev.deviceID === value);
             if (selectedDevice) {
                 setFormData(prevState => ({
@@ -120,7 +120,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                     [key]: value
                 }));
             }
-        }
+        } */
     };
 
     // Função para lidar com a mudança de valor
@@ -156,7 +156,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
             <Modal.Body className="modal-body-scrollable">
                 <Row>
                     {fields.map((field) => (
-                        <Col md={3} key={field.key}>
+                        <Col md={4} key={field.key}>
                             <Form.Group controlId={`form${field.key}`}>
                                 <Form.Label>{field.label}</Form.Label>
                                 {field.type === 'dropdown' ? (

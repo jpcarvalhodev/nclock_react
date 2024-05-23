@@ -1,7 +1,7 @@
 //*** campos de todos os modelos para usar no programa todo ***
 
 export const employeeFields = [
-    { label: 'Número de Matrícula', key: 'enrollNumber', type: 'number', required: true },
+    { label: 'Número', key: 'enrollNumber', type: 'number', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
     { label: 'Acrônimo do Nome', key: 'nameAcronym', type: 'string' },
@@ -102,11 +102,10 @@ export const employeeAttendanceTimesFields = [
     { label: 'Dispositivo', key: 'deviceId', type: 'dropdown' },
     { key: 'deviceNumber', label: 'Número do dispositivo', type: 'number' },
     { label: 'Funcionário', key: 'employeeId', type: 'dropdown' },
-    { key: 'enrollNumber', label: 'Número de matrícula', type: 'number' },
+    { key: 'enrollNumber', label: 'Número', type: 'number' },
     { key: 'employeeName', label: 'Nome do funcionário', type: 'string' },
     { key: 'verifyMode', label: 'Modo de verificação', type: 'number' },
     { key: 'inOutMode', label: 'Modo de entrada/saída', type: 'number' },
     { key: 'workCode', label: 'Código de trabalho', type: 'number' },
-    { key: 'type', label: 'Tipo', type: 'number' },
     { key: 'attendanceTime', label: 'Horário de presença', type: 'datetime-local' },
 ];
