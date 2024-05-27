@@ -1,7 +1,6 @@
 import Split from 'react-split';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar"
-import { TreeViewData } from "../../components/TreeView";
 import { useEffect, useState } from "react";
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
@@ -15,19 +14,21 @@ import DataTable from 'react-data-table-component';
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { CreateModalAttendance } from '../../modals/CreateModalAttendance';
 import { UpdateModalAttendance } from '../../modals/UpdateModalAttendance';
+import { TreeViewDataNclock } from '../../components/TreeViewNclock';
 
 // Define a interface para o estado de dados
 interface DataState {
     departments: Department[];
     groups: Group[];
     employees: Employee[];
+    attendance: EmployeeAttendanceTimes[];
 }
 
 // Define a página movimentos
 export const Movement = () => {
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
-    const [selectedAttendance, setSelectedAttendance] = useState<EmployeeAttendanceTimes | null>(null);
+    const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
     const [showUpdateAttendanceModal, setShowUpdateAttendanceModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -38,11 +39,13 @@ export const Movement = () => {
     const [filterText, setFilterText] = useState('');
     const [selectedAttendanceToDelete, setSelectedAttendanceToDelete] = useState<EmployeeAttendanceTimes | null>(null);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<EmployeeAttendanceTimes | null>(null);
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
-        employees: []
-      });
+        employees: [],
+        attendance: [],
+    });
 
     // Função para buscar todos as assiduidades
     const fetchAllAttendances = async () => {
@@ -54,7 +57,6 @@ export const Movement = () => {
             }
             const attendanceData = await response.json();
             setAttendance(attendanceData);
-            setFilteredAttendances(attendanceData);
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -146,24 +148,28 @@ export const Movement = () => {
         }
     }, [resetSelection]);
 
-    // Define a seleção da árvore
-    const handleSelectFromTreeView = async (selectedIds: string[]) => {
-        if (selectedIds.length === 0) {
-            setFilteredAttendances([]);
+    useEffect(() => {
+        console.log("Dados de assiduidade completos: ", attendance);
+    }, [attendance]);
+
+    useEffect(() => {
+        console.log("Funcionário selecionado: ", selectedEmployee);
+    }, [selectedEmployee]);
+
+    // Atualiza a seleção ao mudar o filtro
+    useEffect(() => {
+        if (selectedEmployee) {
+            const newFilteredAttendances = attendance.filter(att => att.employeeId === selectedEmployee.employeeId);
+            setFilteredAttendances(newFilteredAttendances);
         } else {
-            const employeeId = selectedIds[0];
-            try {
-                const response = await fetchWithAuth(`Attendances/GetAllAttendancesByEmployeeId/${employeeId}`);
-                if (!response.ok) {
-                    toast.error('Erro ao buscar assiduidades do funcionário');
-                    return;
-                }
-                const attendancesData = await response.json();
-                setFilteredAttendances(attendancesData);
-            } catch (error) {
-                console.error('Erro ao buscar assiduidades do funcionário:', error);
-            }
+            setFilteredAttendances([]);
         }
+    }, [attendance, selectedEmployee]);
+
+    // Define a seleção de funcionários
+    const handleSelectFromTreeView = (selectedEmployeeIds: string[]) => {
+        const employeeAttendance = attendance.find(att => att.employeeId === selectedEmployeeIds[0]);
+        setSelectedEmployee(employeeAttendance || null);
     };
 
     // Função para alternar a visibilidade das colunas
@@ -194,7 +200,7 @@ export const Movement = () => {
     // Função para limpar a seleção
     const clearSelection = () => {
         setResetSelection(true);
-        setSelectedAttendance(null);
+        setSelectedAttendances([]);
     };
 
     // Função para retornar o nome das colunas
@@ -232,7 +238,7 @@ export const Movement = () => {
             <div className="content-container">
                 <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewData onSelectEmployees={handleSelectFromTreeView} data={data} />
+                        <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} data={data} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
@@ -260,7 +266,7 @@ export const Movement = () => {
                             columns={tableColumns}
                             data={filteredAttendances}
                             onRowDoubleClicked={(row) => {
-                                setSelectedAttendance(row);
+                                setSelectedAttendances([row]);
                                 setShowUpdateAttendanceModal(true);
                             }}
                             pagination
@@ -272,6 +278,7 @@ export const Movement = () => {
                             noDataComponent="Não há dados disponíveis para exibir."
                             customStyles={customStyles}
                         />
+
                     </div>
                 </Split>
             </div>
@@ -286,12 +293,12 @@ export const Movement = () => {
                     initialValues={{}}
                 />
             )}
-            {selectedAttendance && showUpdateAttendanceModal && (
+            {selectedAttendances.length > 0 && showUpdateAttendanceModal && (
                 <UpdateModalAttendance
                     open={showUpdateAttendanceModal}
                     onClose={() => setShowUpdateAttendanceModal(false)}
                     onUpdate={handleUpdateAttendance}
-                    entity={selectedAttendance}
+                    entity={selectedAttendances[0]}
                     fields={employeeAttendanceTimesFields}
                     title='Atualizar Assiduidade'
                 />
@@ -301,7 +308,7 @@ export const Movement = () => {
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
                     onDelete={handleDeleteAttendance}
-                    entityId={selectedAttendanceToDelete ? selectedAttendanceToDelete.employeeID : ''}
+                    entityId={selectedAttendanceToDelete.employeeId}
                 />
             )}
             {showColumnSelector && (

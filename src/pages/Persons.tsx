@@ -30,7 +30,7 @@ export const Persons = () => {
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [showAllEmployees, setShowAllEmployees] = useState(true);
-    const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
+    const [filteredData, setFilteredData] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
     const [data, setData] = useState<DataState>({
@@ -169,8 +169,8 @@ export const Persons = () => {
     };
 
     // Função para filtrar funcionários
-    const handleFilteredEmployees = (filtered: Employee[]) => {
-        setFilteredEmployees(filtered);
+    const handleFilteredEmployees = (employees: Employee[]) => {
+        setFilteredData(employees);
     };
 
     return (
@@ -200,7 +200,7 @@ export const Persons = () => {
                                 <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
-                                <ExportButton allData={employees} selectedData={filteredEmployees} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                                <ExportButton allData={employees} selectedData={filteredData} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
                             </div>
                         </div>
                         <PersonsDataTable
@@ -212,6 +212,7 @@ export const Persons = () => {
                             resetSelection={resetSelection}
                             data={data}
                             onRefreshData={setData}
+                            filteredData={filteredData}
                         />
                     </div>
                 </Split>

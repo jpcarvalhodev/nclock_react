@@ -29,10 +29,11 @@ interface PersonsDataTableProps {
     resetSelection: boolean;
     data: DataState;
     onRefreshData: (data: DataState) => void;
+    filteredData: Employee[];
 }
 
 // Define o componente
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData }: PersonsDataTableProps) => {
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData }: PersonsDataTableProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -132,8 +133,10 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         fetchAllEmployees();
     }
 
-    // Memoriza a função de filtragem de funcionários
-    const memorizedFilteredEmployees = useCallback(filteredEmployees, []);
+    // Filtra os funcionários
+    const handleFilteredEmployees = (employees: Employee[]) => {
+        filteredEmployees(employees);
+    }
 
     // Filtra os funcionários
     useEffect(() => {
@@ -146,8 +149,8 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 String(value).toLowerCase().includes(filterText.toLowerCase())
             )
         );
-        memorizedFilteredEmployees(filteredBySearchText);
-    }, [selectedEmployeeIds, filterText, data.employees, memorizedFilteredEmployees]);
+        handleFilteredEmployees(filteredBySearchText);
+    }, [selectedEmployeeIds, filterText, data.employees]);
 
     // Reseta a seleção de funcionários
     useEffect(() => {
@@ -264,7 +267,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 <>
                     <DataTable
                         columns={[...columns, actionColumn]}
-                        data={data.employees}
+                        data={filteredData}
                         highlightOnHover
                         pagination
                         paginationComponentOptions={paginationOptions}
