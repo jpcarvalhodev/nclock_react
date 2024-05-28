@@ -23,7 +23,7 @@ import { Visitors } from './pages/Visitors';
 import { Contacts } from './pages/Contacts';
 import { Temporaries } from './pages/Temporaries';
 import { NAccessDashboard } from './pages/naccess/NAccessDashboard';
-import { Movement } from './pages/nclock/Movement';
+import { AssiduityMovement } from './pages/nclock/AssiduityMovement';
 import { PageProtection } from './components/PageProtection';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -33,6 +33,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AssiduityPresence } from './pages/nclock/AssiduityPresence';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -93,9 +94,10 @@ function AnimatedRoutes() {
               <Route path="/groups" element={<PageProtection><Groups /></PageProtection>} />
               <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
               <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
-              <Route path="/nclockdashboard" element={<PageProtection><NClockDashboard /></PageProtection>} />
-              <Route path="/pages/movement" element={<PageProtection><Movement /></PageProtection>} />
-              <Route path="/naccessdashboard" element={<PageProtection><NAccessDashboard /></PageProtection>} />
+              <Route path="/nclock/nclockdashboard" element={<PageProtection><NClockDashboard /></PageProtection>} />
+              <Route path="/nclock/assiduitymovement" element={<PageProtection><AssiduityMovement /></PageProtection>} />
+              <Route path="/nclock/assiduitypresence" element={<PageProtection><AssiduityPresence /></PageProtection>} />
+              <Route path="/naccess/naccessdashboard" element={<PageProtection><NAccessDashboard /></PageProtection>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

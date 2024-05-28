@@ -122,6 +122,7 @@ export type EmployeeAttendanceTimes = {
     id: string;
     deviceId: string;
     deviceNumber: number;
+    deviceName: string;
     employeeId: string;
     enrollNumber: number;
     employeeName: string;

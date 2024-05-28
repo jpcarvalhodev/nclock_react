@@ -10,11 +10,13 @@ import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { toast } from "react-toastify";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
-import DataTable from 'react-data-table-component';
+import DataTable, { TableColumn } from 'react-data-table-component';
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { CreateModalAttendance } from '../../modals/CreateModalAttendance';
 import { UpdateModalAttendance } from '../../modals/UpdateModalAttendance';
 import { TreeViewDataNclock } from '../../components/TreeViewNclock';
+import "../../css/PagesStyles.css";
+import { Button } from 'react-bootstrap';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -25,7 +27,7 @@ interface DataState {
 }
 
 // Define a página movimentos
-export const Movement = () => {
+export const AssiduityMovement = () => {
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
@@ -37,9 +39,10 @@ export const Movement = () => {
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>([]);
     const [filterText, setFilterText] = useState('');
-    const [selectedAttendanceToDelete, setSelectedAttendanceToDelete] = useState<EmployeeAttendanceTimes | null>(null);
+    const [selectedAttendanceToDelete, setSelectedAttendanceToDelete] = useState<string | null>(null);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeAttendanceTimes | null>(null);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -102,7 +105,6 @@ export const Movement = () => {
                 toast.error('Erro ao atualizar assiduidade');
                 return;
             }
-
             const updatedAttendance = await response.json();
             setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
             toast.success('assiduidade atualizada com sucesso');
@@ -115,7 +117,6 @@ export const Movement = () => {
 
     // Função para deletar uma assiduidade
     const handleDeleteAttendance = async () => {
-
         try {
             const response = await fetchWithAuth(`Attendances/DeleteAttendanceTime`, {
                 method: 'DELETE',
@@ -127,7 +128,6 @@ export const Movement = () => {
             if (!response.ok) {
                 toast.error('Erro ao apagar assiduidade');
             }
-
             toast.success('assiduidade apagada com sucesso');
         } catch (error) {
             console.error('Erro ao apagar assiduidade:', error);
@@ -148,14 +148,6 @@ export const Movement = () => {
         }
     }, [resetSelection]);
 
-    useEffect(() => {
-        console.log("Dados de assiduidade completos: ", attendance);
-    }, [attendance]);
-
-    useEffect(() => {
-        console.log("Funcionário selecionado: ", selectedEmployee);
-    }, [selectedEmployee]);
-
     // Atualiza a seleção ao mudar o filtro
     useEffect(() => {
         if (selectedEmployee) {
@@ -168,8 +160,14 @@ export const Movement = () => {
 
     // Define a seleção de funcionários
     const handleSelectFromTreeView = (selectedEmployeeIds: string[]) => {
-        const employeeAttendance = attendance.find(att => att.employeeId === selectedEmployeeIds[0]);
-        setSelectedEmployee(employeeAttendance || null);
+        if (selectedEmployeeIds.length > 0) {
+            const employeeId = selectedEmployeeIds[0];
+            setSelectedEmployeeId(employeeId);
+            const employeeAttendance = attendance.find(att => att.employeeId === employeeId);
+            setSelectedEmployee(employeeAttendance || null);
+        } else {
+            setSelectedEmployee(null);
+        }
     };
 
     // Função para alternar a visibilidade das colunas
@@ -200,22 +198,44 @@ export const Movement = () => {
     // Função para limpar a seleção
     const clearSelection = () => {
         setResetSelection(true);
-        setSelectedAttendances([]);
+        setFilteredAttendances([]);
+        setSelectedEmployee(null);
     };
 
-    // Função para retornar o nome das colunas
-    const columnNamesMap = employeeAttendanceTimesFields.reduce<Record<string, string>>((acc, field) => {
-        acc[field.key] = field.label;
-        return acc;
-    }, {});
+    // Função para abrir o modal de adição de assiduidade
+    const handleOpenAddAttendanceModal = () => {
+        if (selectedEmployeeId) {
+            setShowAddAttendanceModal(true);
+        } else {
+            toast.error('Selecione um funcionário para adicionar uma assiduidade');
+        }
+    }
 
-    // Função para selecionar uma linha
-    const tableColumns = selectedColumns
-        .map(columnKey => ({
-            name: columnNamesMap[columnKey] || columnKey,
-            selector: (row: Record<string, any>) => row[columnKey],
-            sortable: true,
-        }));
+    // Função para formatar a data e a hora
+    function formatDateAndTime(input: string | Date): string {
+        const date = typeof input === 'string' ? new Date(input) : input;
+        const options: Intl.DateTimeFormatOptions = {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        };
+        return new Intl.DateTimeFormat('pt-PT', options).format(date);
+    }
+
+    // Define as colunas
+    const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
+        .filter(field => selectedColumns.includes(field.key))
+        .map(field => {
+            return {
+                name: field.label,
+                selector: row => field.key === 'attendanceTime' ? formatDateAndTime(row.attendanceTime) : row[field.key] || '',
+                sortable: true,
+            };
+        });
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -230,6 +250,33 @@ export const Movement = () => {
         selectedRows: EmployeeAttendanceTimes[];
     }) => {
         setSelectedRows(state.selectedRows);
+    };
+
+    // Define a função de abertura do modal de edição
+    const handleEditAssiduity = (row: EmployeeAttendanceTimes[]) => {
+        setSelectedAttendances(row);
+        setShowUpdateAttendanceModal(true);
+    };
+
+    // Define a função de abertura do modal de exclusão
+    const handleOpenDeleteModal = (employeeId: string) => {
+        setSelectedAttendanceToDelete(employeeId);
+        setShowDeleteModal(true);
+    };
+
+    // Define as colunas de ação
+    const actionColumn: TableColumn<EmployeeAttendanceTimes> = {
+        name: 'Ações',
+        cell: (row: EmployeeAttendanceTimes) => (
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAssiduity([row])} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.attendanceTimeId)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
+            </div>
+        ),
+        selector: (row: EmployeeAttendanceTimes) => row.employeeID,
+        ignoreRowClick: true,
     };
 
     return (
@@ -252,18 +299,19 @@ export const Movement = () => {
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
                                     className='search-input'
+                                    disabled={!selectedEmployee}
                                 />
                             </div>
                             <div className="buttons-container">
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddAttendanceModal(true)} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
                                 <ExportButton allData={attendance} selectedData={filteredAttendances} fields={employeeAttendanceTimesFields.map(field => ({ key: field.key, label: field.label }))} />
                             </div>
                         </div>
                         <DataTable
-                            columns={tableColumns}
+                            columns={[...columns, actionColumn]}
                             data={filteredAttendances}
                             onRowDoubleClicked={(row) => {
                                 setSelectedAttendances([row]);
@@ -278,7 +326,6 @@ export const Movement = () => {
                             noDataComponent="Não há dados disponíveis para exibir."
                             customStyles={customStyles}
                         />
-
                     </div>
                 </Split>
             </div>
@@ -308,7 +355,7 @@ export const Movement = () => {
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
                     onDelete={handleDeleteAttendance}
-                    entityId={selectedAttendanceToDelete.employeeId}
+                    entityId={selectedAttendanceToDelete}
                 />
             )}
             {showColumnSelector && (

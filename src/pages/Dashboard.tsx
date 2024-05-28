@@ -165,8 +165,8 @@ export const Dashboard = () => {
     // Define a função de clique nos cards
     const handleCardClick = (tabName: TabName) => {
         const tabData = {
-            nclock: { route: '/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon' },
-            naccess: { route: '/naccessdashboard', tabKey: 'showNaccessTab', ribbonKey: 'showNaccessRibbon' },
+            nclock: { route: '/nclock/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon' },
+            naccess: { route: '/naccess/naccessdashboard', tabKey: 'showNaccessTab', ribbonKey: 'showNaccessRibbon' },
             nvisitor: { route: '#', tabKey: 'showNvisitorTab', ribbonKey: 'showNvisitorRibbon' },
             npark: { route: '#', tabKey: 'showNparkTab', ribbonKey: 'showNparkRibbon' },
             ndoor: { route: '#', tabKey: 'showNdoorTab', ribbonKey: 'showNdoorRibbon' },

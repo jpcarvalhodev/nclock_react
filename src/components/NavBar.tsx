@@ -264,14 +264,14 @@ export const NavBar = () => {
 			setRibbon: setShowNclockRibbon,
 			localStorageTabKey: 'showNclockTab',
 			localStorageRibbonKey: 'showNclockRibbon',
-			route: '/nclockdashboard',
+			route: '/nclock/nclockdashboard',
 		},
 		'naccess': {
 			setTab: setShowNaccessTab,
 			setRibbon: setShowNaccessRibbon,
 			localStorageTabKey: 'showNaccessTab',
 			localStorageRibbonKey: 'showNaccessRibbon',
-			route: '/naccessdashboard',
+			route: '/naccess/naccessdashboard',
 		},
 		'nvisitor': {
 			setTab: setShowNvisitorTab,
@@ -594,7 +594,7 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className='icon-text-pessoas'>
-										<Link to="/pages/movement" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+										<Link to="/nclock/assiduitymovement" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={movement} alt="botão assiduidade movimentos" />
 											</span>
@@ -602,7 +602,7 @@ export const NavBar = () => {
 										</Link>
 									</div>
 									<div>
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
+										<Link to="/nclock/assiduitypresence" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={presence} alt="botão assiduidade presenças" />
 											</span>
