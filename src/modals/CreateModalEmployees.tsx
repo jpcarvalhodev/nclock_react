@@ -38,12 +38,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
-    const [isFormValid, setIsFormValid] = useState(false);
-    const [departments, setDepartments] = useState<Department[]>([]);
-    const [groups, setGroups] = useState<Group[]>([]);
-    const [professions, setProfessions] = useState<Profession[]>([]);
-    const [zones, setZones] = useState<Zone[]>([]);
-    const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
+    const [isFormValid, setIsFormValid] = useState(false)
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Atualiza o estado do componente com uma parte das validações

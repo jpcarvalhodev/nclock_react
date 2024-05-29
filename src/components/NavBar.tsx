@@ -608,7 +608,7 @@ export const NavBar = () => {
 											</span>
 											<span className="text">Presenças</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
+										<Link to='/nclock/assiduityrequests' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={request} alt="botão pedidos" />
 											</span>

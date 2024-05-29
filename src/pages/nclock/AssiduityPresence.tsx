@@ -46,7 +46,7 @@ export const AssiduityPresence = () => {
     // Função para atualizar uma assiduidade
     const handleUpdateAttendance = async (attendances: EmployeeAttendanceTimes) => {
         try {
-            const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime`, {
+            const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime?attendanceTimeId=${attendances.attendanceTimeId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,9 +117,26 @@ export const AssiduityPresence = () => {
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
+            const formatField = (row: EmployeeAttendanceTimes) => {
+                switch (field.key) {
+                    case 'attendanceTime':
+                        return formatDateAndTime(row[field.key]);
+                    case 'employeeId':
+                        return row.employeeName;
+                    case 'inOutMode':
+                        return row[field.key] === 0 ? 'Entrada'
+                            : row[field.key] === 1 ? 'Saída'
+                                : row[field.key] === 2 ? 'Pausa - Entrada'
+                                    : row[field.key] === 3 ? 'Pausa - Saída'
+                                        : row[field.key] === 4 ? 'Hora Extra - Entrada'
+                                            : row[field.key] === 5 ? 'Hora Extra - Saída' : '';
+                    default:
+                        return row[field.key];
+                }
+            };
             return {
                 name: field.label,
-                selector: row => field.key === 'attendanceTime' ? formatDateAndTime(row.attendanceTime) : row[field.key] || '',
+                selector: row => formatField(row),
                 sortable: true,
             };
         });
@@ -144,7 +161,7 @@ export const AssiduityPresence = () => {
             <NavBar />
             <div className="datatable-container">
                 <div className="datatable-title-text">
-                    <span>Presenças</span>
+                    <span>Presenças de Assiduidade</span>
                 </div>
                 <div className="datatable-header">
                     <div className="search-box">

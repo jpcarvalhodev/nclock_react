@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
 import { fetchWithAuth } from '../components/FetchWithAuth';
-import { Row, Col, Form } from 'react-bootstrap';
+import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { Employee } from '../helpers/Types';
 
@@ -44,9 +44,9 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             const fieldValue = formData[field.key];
             let valid = true;
 
-            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+            if (field.required && !fieldValue) {
+                newErrors[field.key] = 'Campo obrigatório.';
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
             }
 
             return valid;
@@ -60,13 +60,10 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     const fetchDropdownOptions = async () => {
         try {
             const employeeResponse = await fetchWithAuth('Employees/GetAllEmployees');
-            /* const deviceResponse = await fetchWithAuth('Devices'); */
-            if (employeeResponse.ok /* && deviceResponse.ok */) {
+            if (employeeResponse.ok) {
                 const employees = await employeeResponse.json();
-                /* const devices = await deviceResponse.json(); */
                 setDropdownData({
                     employeeId: employees,
-                    /* deviceId: devices */
                 });
             } else {
                 toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
@@ -75,7 +72,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
             console.error(error);
         }
-    };    
+    };
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
@@ -102,30 +99,15 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                     [key]: value
                 }));
             }
-        } else if (key === 'deviceId') {
-            const selectedDevice = dropdownData.deviceId?.find(dev => dev.deviceID === value);
-            if (selectedDevice) {
-                setFormData(prevState => ({
-                    ...prevState,
-                    [key]: selectedDevice.deviceID,
-                    deviceName: selectedDevice.name
-                }));
-            } else {
-                setFormData(prevState => ({
-                    ...prevState,
-                    [key]: value
-                }));
-            }
         }
     };
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: ChangeEvent<FormControlElement>) => {
-        const { name, value, type } = e.target;
-        const parsedValue = type === 'number' ? Number(value) : value;
+        const { name, value } = e.target;
         setFormData(prevState => ({
             ...prevState,
-            [name]: parsedValue
+            [name]: value
         }));
     };
 
@@ -143,18 +125,48 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
         onSave(formData as T);
     };
 
+    // Opções do tipo
+    const typeOptions = [
+        { value: 0, label: 'Entrada' },
+        { value: 1, label: 'Saída' },
+        { value: 2, label: 'Pausa - Entrada' },
+        { value: 3, label: 'Pausa - Saída' },
+        { value: 4, label: 'Hora Extra - Entrada' },
+        { value: 5, label: 'Hora Extra - Saída' }
+    ];
+
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="sm">
             <Modal.Header closeButton>
-                <Modal.Title>{title}</Modal.Title>
+                <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <Row>
-                    {fields.map((field) => (
-                        <Col md={4} key={field.key}>
-                            <Form.Group controlId={`form${field.key}`}>
-                                <Form.Label>{field.label}</Form.Label>
-                                {field.type === 'dropdown' ? (
+                {fields.map((field) => {
+                    if (field.key === 'enrollNumber' || field.key === 'employeeName') {
+                        return (
+                            <Form.Control
+                                key={field.key}
+                                type="hidden"
+                                value={formData[field.key] || ''}
+                                name={field.key}
+                            />
+                        );
+                    }
+                    return (
+                        <Form.Group controlId={`form${field.key}`} key={field.key}>
+                            <Form.Label>
+                                {field.label}
+                                {field.required && <span style={{ color: 'red' }}> *</span>}
+                            </Form.Label>
+                            {field.type === 'dropdown' ? (
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={
+                                        <Tooltip id={`tooltip-${field.key}`}>
+                                            {`Campo obrigatório`}
+                                        </Tooltip>
+                                    }
+                                >
                                     <Form.Control
                                         as="select"
                                         className="custom-input-height custom-select-font-size"
@@ -162,31 +174,64 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                                         onChange={(e) => handleDropdownChange(field.key, e)}
                                     >
                                         <option value="">Selecione...</option>
-                                        {dropdownData[field.key]?.map((option: any) => (
-                                            <option key={option.employeeID || option.deviceID} value={option.employeeID || option.deviceID}>
+                                        {dropdownData[field.key]?.map((option) => (
+                                            <option key={option.employeeID} value={option.employeeID}>
                                                 {option.name}
                                             </option>
                                         ))}
                                     </Form.Control>
+                                </OverlayTrigger>
+                            ) : (
+                                field.key === 'attendanceTime' ? (
+                                    <OverlayTrigger
+                                        placement="right"
+                                        overlay={
+                                            <Tooltip id={`tooltip-${field.key}`}>
+                                                {`Campo obrigatório`}
+                                            </Tooltip>
+                                        }
+                                    >
+                                        <Form.Control
+                                            type={field.type}
+                                            className="custom-input-height custom-select-font-size"
+                                            value={formData[field.key] || ''}
+                                            onChange={handleChange}
+                                            name={field.key}
+                                        />
+                                    </OverlayTrigger>
                                 ) : (
-                                    <Form.Control
-                                        type={field.type}
-                                        className="custom-input-height custom-select-font-size"
-                                        value={formData[field.key] || ''}
-                                        onChange={handleChange}
-                                        name={field.key}
-                                    />
-                                )}
-                                {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
-                            </Form.Group>
-                        </Col>
-                    ))}
-                </Row>
+                                    field.key === 'inOutMode' ? (
+                                        <Form.Control
+                                            as="select"
+                                            type={field.type}
+                                            className="custom-input-height custom-select-font-size"
+                                            value={formData[field.key] || ''}
+                                            onChange={handleChange}
+                                            name={field.key}
+                                        >
+                                            <option value="">Selecione...</option>
+                                            {typeOptions.map(option => (
+                                                <option key={option.value} value={option.value}>{option.label}</option>
+                                            ))}
+                                        </Form.Control>
+                                    ) : (
+                                        <Form.Control
+                                            type={field.type}
+                                            className="custom-input-height custom-select-font-size"
+                                            value={formData[field.key] || ''}
+                                            onChange={handleChange}
+                                            name={field.key}
+                                        />
+                                    )
+                                ))}
+                        </Form.Group>
+                    )
+                })}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
-    );    
+    );
 };

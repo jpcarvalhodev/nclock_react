@@ -1,7 +1,7 @@
 import Split from 'react-split';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar"
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
@@ -26,15 +26,26 @@ interface DataState {
     attendance: EmployeeAttendanceTimes[];
 }
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
+
 // Define a página movimentos
 export const AssiduityMovement = () => {
+    const currentDate = new Date();
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
     const [showUpdateAttendanceModal, setShowUpdateAttendanceModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['enrollNumber', 'employeeName', 'inOutMode']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeId', 'inOutMode', 'attendanceTime']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>([]);
@@ -43,6 +54,9 @@ export const AssiduityMovement = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeAttendanceTimes | null>(null);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+    const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -52,14 +66,29 @@ export const AssiduityMovement = () => {
 
     // Função para buscar todos as assiduidades
     const fetchAllAttendances = async () => {
+        const response = await fetchWithAuth('Attendances/GetAllAttendances');
+        if (!response.ok) {
+            toast.error('Erro ao buscar assiduidades');
+            return;
+        }
+        const attendanceData = await response.json();
+        setAttendance(attendanceData);
+        filterAttendanceDataForToday(attendanceData);
+    };
+    if (!attendance.length) {
+        fetchAllAttendances();
+    }
+
+    // Função para buscar as assiduidades entre datas
+    const fetchAllAttendancesBetweenDates = async () => {
         try {
-            const response = await fetchWithAuth('Attendances/GetAllAttendances');
+            const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
             if (!response.ok) {
                 toast.error('Erro ao buscar assiduidades');
                 return;
             }
-            const attendanceData = await response.json();
-            setAttendance(attendanceData);
+            const data = await response.json();
+            setFilteredAttendances(data);
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -75,7 +104,6 @@ export const AssiduityMovement = () => {
                 },
                 body: JSON.stringify(attendances)
             });
-
             if (!response.ok) {
                 toast.error('Erro ao adicionar nova assiduidade');
                 return;
@@ -93,7 +121,7 @@ export const AssiduityMovement = () => {
     // Função para atualizar uma assiduidade
     const handleUpdateAttendance = async (attendances: EmployeeAttendanceTimes) => {
         try {
-            const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime`, {
+            const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime?attendanceTimeId=${attendances.attendanceTimeId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -136,10 +164,10 @@ export const AssiduityMovement = () => {
         refreshAttendance();
     };
 
-    // Atualiza a lista de funcionários ao carregar a página
+    // Atualiza os dados de renderização
     useEffect(() => {
         fetchAllAttendances();
-    }, []);
+    } , [attendance]);
 
     // Atualiza a seleção ao resetar
     useEffect(() => {
@@ -150,24 +178,35 @@ export const AssiduityMovement = () => {
 
     // Atualiza a seleção ao mudar o filtro
     useEffect(() => {
-        if (selectedEmployee) {
-            const newFilteredAttendances = attendance.filter(att => att.employeeId === selectedEmployee.employeeId);
+        if (selectedEmployeeIds.length > 0) {
+            const newFilteredAttendances = attendance.filter(att => selectedEmployeeIds.includes(att.employeeId));
             setFilteredAttendances(newFilteredAttendances);
-        } else {
-            setFilteredAttendances([]);
+        } else if (attendance.length > 0) {
+            setFilteredAttendances(attendance);
         }
-    }, [attendance, selectedEmployee]);
+    }, [selectedEmployeeId]);
+
+    // Filtragem de dados de assiduidade para hoje
+    const filterAttendanceDataForToday = (attendanceData: EmployeeAttendanceTimes[]) => {
+        console.log(attendanceData);
+        const today = new Date();
+        const startOfDay = formatDateToStartOfDay(today);
+        const endOfDay = formatDateToEndOfDay(today);
+
+        const filteredData = attendanceData.filter(att => {
+            const attDate = new Date(att.attendanceTime);
+            return attDate >= new Date(startOfDay) && attDate <= new Date(endOfDay);
+        });
+        console.log(filteredData);
+        if (filteredAttendances.length !== filteredData.length) {
+            setFilteredAttendances(filteredData);
+        }
+    }
 
     // Define a seleção de funcionários
-    const handleSelectFromTreeView = (selectedEmployeeIds: string[]) => {
-        if (selectedEmployeeIds.length > 0) {
-            const employeeId = selectedEmployeeIds[0];
-            setSelectedEmployeeId(employeeId);
-            const employeeAttendance = attendance.find(att => att.employeeId === employeeId);
-            setSelectedEmployee(employeeAttendance || null);
-        } else {
-            setSelectedEmployee(null);
-        }
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedEmployeeIds(selectedIds);
+        setSelectedEmployeeId(selectedIds[0]);
     };
 
     // Função para alternar a visibilidade das colunas
@@ -187,12 +226,12 @@ export const AssiduityMovement = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['enrollNumber', 'employeeName', 'inOutMode']);
+        setSelectedColumns(['employeeId', 'inOutMode', 'attendanceTime']);
     };
 
     // Função para atualizar os funcionários
     const refreshAttendance = () => {
-        fetchAllAttendances();
+
     };
 
     // Função para limpar a seleção
@@ -200,6 +239,7 @@ export const AssiduityMovement = () => {
         setResetSelection(true);
         setFilteredAttendances([]);
         setSelectedEmployee(null);
+        setSelectedEmployeeId(null);
     };
 
     // Função para abrir o modal de adição de assiduidade
@@ -230,9 +270,26 @@ export const AssiduityMovement = () => {
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
+            const formatField = (row: EmployeeAttendanceTimes) => {
+                switch (field.key) {
+                    case 'attendanceTime':
+                        return formatDateAndTime(row[field.key]);
+                    case 'employeeId':
+                        return row.employeeName;
+                    case 'inOutMode':
+                        return row[field.key] === 0 ? 'Entrada'
+                            : row[field.key] === 1 ? 'Saída'
+                                : row[field.key] === 2 ? 'Pausa - Entrada'
+                                    : row[field.key] === 3 ? 'Pausa - Saída'
+                                        : row[field.key] === 4 ? 'Hora Extra - Entrada'
+                                            : row[field.key] === 5 ? 'Hora Extra - Saída' : '';
+                    default:
+                        return row[field.key];
+                }
+            };
             return {
                 name: field.label,
-                selector: row => field.key === 'attendanceTime' ? formatDateAndTime(row.attendanceTime) : row[field.key] || '',
+                selector: row => formatField(row),
                 sortable: true,
             };
         });
@@ -299,7 +356,7 @@ export const AssiduityMovement = () => {
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
                                     className='search-input'
-                                    disabled={!selectedEmployee}
+                                    disabled={!selectedEmployeeId}
                                 />
                             </div>
                             <div className="buttons-container">
@@ -308,6 +365,22 @@ export const AssiduityMovement = () => {
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
                                 <ExportButton allData={attendance} selectedData={filteredAttendances} fields={employeeAttendanceTimesFields.map(field => ({ key: field.key, label: field.label }))} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <CustomOutlineButton icon="bi-search" onClick={fetchAllAttendancesBetweenDates} iconSize='1.1em' />
                             </div>
                         </div>
                         <DataTable

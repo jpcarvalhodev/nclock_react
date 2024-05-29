@@ -34,6 +34,7 @@ import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AssiduityPresence } from './pages/nclock/AssiduityPresence';
+import { AssiduityRequests } from './pages/nclock/AssiduityRequests';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -97,6 +98,7 @@ function AnimatedRoutes() {
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NClockDashboard /></PageProtection>} />
               <Route path="/nclock/assiduitymovement" element={<PageProtection><AssiduityMovement /></PageProtection>} />
               <Route path="/nclock/assiduitypresence" element={<PageProtection><AssiduityPresence /></PageProtection>} />
+              <Route path="/nclock/assiduityrequests" element={<PageProtection><AssiduityRequests /></PageProtection>} />
               <Route path="/naccess/naccessdashboard" element={<PageProtection><NAccessDashboard /></PageProtection>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
