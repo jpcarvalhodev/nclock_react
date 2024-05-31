@@ -4,7 +4,6 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Spinner } from 'react-bootstrap';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
-import { NClockDashboard } from './pages/nclock/NClockDashboard';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { Employees } from './pages/Employees';
 import { Departments } from './pages/Departments';
@@ -22,8 +21,8 @@ import { User } from './pages/User';
 import { Visitors } from './pages/Visitors';
 import { Contacts } from './pages/Contacts';
 import { Temporaries } from './pages/Temporaries';
-import { NAccessDashboard } from './pages/naccess/NAccessDashboard';
-import { AssiduityMovement } from './pages/nclock/AssiduityMovement';
+import { NaccessDashboard } from './pages/naccess/NaccessDashboard';
+import { NclockMovement } from './pages/nclock/NclockMovement';
 import { PageProtection } from './components/PageProtection';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -33,8 +32,10 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AssiduityPresence } from './pages/nclock/AssiduityPresence';
-import { AssiduityRequests } from './pages/nclock/AssiduityRequests';
+import { NclockRequests } from './pages/nclock/NclockRequests';
+import { NclockPresence } from './pages/nclock/NclockPresence';
+import { NclockDashboard } from './pages/nclock/NclockDashboard';
+import { NclockAll } from './pages/nclock/NclockAll';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -95,11 +96,12 @@ function AnimatedRoutes() {
               <Route path="/groups" element={<PageProtection><Groups /></PageProtection>} />
               <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
               <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
-              <Route path="/nclock/nclockdashboard" element={<PageProtection><NClockDashboard /></PageProtection>} />
-              <Route path="/nclock/assiduitymovement" element={<PageProtection><AssiduityMovement /></PageProtection>} />
-              <Route path="/nclock/assiduitypresence" element={<PageProtection><AssiduityPresence /></PageProtection>} />
-              <Route path="/nclock/assiduityrequests" element={<PageProtection><AssiduityRequests /></PageProtection>} />
-              <Route path="/naccess/naccessdashboard" element={<PageProtection><NAccessDashboard /></PageProtection>} />
+              <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
+              <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />
+              <Route path="/nclock/nclockpresence" element={<PageProtection><NclockPresence /></PageProtection>} />
+              <Route path="/nclock/nclockrequests" element={<PageProtection><NclockRequests /></PageProtection>} />
+              <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
+              <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

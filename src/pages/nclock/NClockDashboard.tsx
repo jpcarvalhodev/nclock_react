@@ -55,7 +55,7 @@ const messages = {
 };
 
 // Define a página principal
-export const NClockDashboard = () => {
+export const NclockDashboard = () => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [totalDepartments, setTotalDepartments] = useState<number>(0);

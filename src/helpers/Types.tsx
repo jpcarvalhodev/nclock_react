@@ -131,4 +131,5 @@ export type EmployeeAttendanceTimes = {
     workCode: number;
     type: number;
     attendanceTime: Date;
+    observation: string;
 };

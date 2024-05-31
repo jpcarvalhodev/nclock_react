@@ -594,7 +594,7 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className='icon-text-pessoas'>
-										<Link to="/nclock/assiduitymovement" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+										<Link to="/nclock/nclockmovement" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={movement} alt="botão assiduidade movimentos" />
 											</span>
@@ -602,19 +602,19 @@ export const NavBar = () => {
 										</Link>
 									</div>
 									<div>
-										<Link to="/nclock/assiduitypresence" type="button" className="btn btn-light ribbon-button">
+										<Link to="/nclock/nclockpresence" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={presence} alt="botão assiduidade presenças" />
 											</span>
 											<span className="text">Presenças</span>
 										</Link>
-										<Link to='/nclock/assiduityrequests' type="button" className="btn btn-light ribbon-button">
+										<Link to='/nclock/nclockrequests' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={request} alt="botão pedidos" />
 											</span>
 											<span className="text">Pedidos</span>
 										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
+										<Link to='/nclock/nclockall' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={all} alt="botão todos" />
 											</span>

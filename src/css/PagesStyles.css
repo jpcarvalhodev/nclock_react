@@ -250,7 +250,7 @@ body {
     display: flex;
     flex-grow: 1;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .gutter {
@@ -340,14 +340,6 @@ body {
 
     .table-css {
         margin-bottom: 150px;
-    }
-
-    .treeview-container {
-        flex: 1;
-    }
-
-    .datatable-container {
-        flex: 2;
     }
 
     .datatable-header,

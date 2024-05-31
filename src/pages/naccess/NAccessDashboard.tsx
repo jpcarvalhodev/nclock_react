@@ -8,7 +8,7 @@ import { EmployeeAttendanceTimes } from "../../helpers/Types";
 import '../../css/PagesStyles.css';
 
 // Define a página principal
-export const NAccessDashboard = () => {
+export const NaccessDashboard = () => {
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
 
     // Função para buscar os departamentos
