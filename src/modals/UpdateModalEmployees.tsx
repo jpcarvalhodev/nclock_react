@@ -44,11 +44,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const fileInputRef = React.createRef<HTMLInputElement>();
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [professions, setProfessions] = useState<Profession[]>([]);
-  const [zones, setZones] = useState<Zone[]>([]);
-  const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Atualiza o estado do componente com parte das validações dos campos

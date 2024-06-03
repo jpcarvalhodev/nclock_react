@@ -269,12 +269,29 @@ export const Employees = () => {
         setSelectedRows([]);
     };
 
+    // Função para formatar a data e a hora
+    function formatDateAndTime(input: string | Date): string {
+        const date = typeof input === 'string' ? new Date(input) : input;
+        const options: Intl.DateTimeFormatOptions = {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        };
+        return new Intl.DateTimeFormat('pt-PT', options).format(date);
+    }
+
     // Define as colunas
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
             const formatField = (row: Employee) => {
                 switch (field.key) {
+                    case 'birthday':
+                        return row.birthday ? formatDateAndTime(row[field.key]) : '';
                     case 'status':
                         return row.status ? 'Activo' : 'Inactivo';
                     case 'statusEmail':
@@ -309,6 +326,12 @@ export const Employees = () => {
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
+    };
+
+    // Fecha o modal de edição de funcionário
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedEmployee(null);
     };
 
     // Define as opções de paginação de EN para PT
@@ -397,7 +420,7 @@ export const Employees = () => {
             {selectedEmployee && (
                 <UpdateModalEmployees
                     open={showUpdateModal}
-                    onClose={() => setShowUpdateModal(false)}
+                    onClose={handleCloseUpdateModal}
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}

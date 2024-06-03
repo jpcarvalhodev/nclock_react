@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { fetchWithAuth } from './FetchWithAuth';
 import { toast } from 'react-toastify';
-import { CircularProgress } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
@@ -34,7 +33,6 @@ interface PersonsDataTableProps {
 
 // Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData }: PersonsDataTableProps) => {
-    const [isLoading, setIsLoading] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -44,7 +42,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
     // Função para buscar todos os funcionários
     const fetchAllEmployees = async () => {
-        setIsLoading(true);
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
@@ -58,8 +55,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             });
         } catch (error) {
             console.error('Erro ao buscar funcionários:', error);
-        } finally {
-            setIsLoading(false);
         }
     }
 
@@ -128,6 +123,11 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         }
     }
 
+    // Busca os funcionários
+    useEffect(() => {
+        fetchAllEmployees();
+    }, []);
+
     // Atualiza a lista de funcionários
     const refreshEmployees = () => {
         fetchAllEmployees();
@@ -185,6 +185,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         setShowUpdateModal(true);
     }
 
+    // Fecha o modal de edição de funcionário
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedEmployee(null);
+    };
+
     // Seleciona as linhas da tabela
     const handleRowSelected = (state: {
         allSelected: boolean;
@@ -201,12 +207,29 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         rangeSeparatorText: 'de',
     };
 
+    // Função para formatar a data e a hora
+    function formatDateAndTime(input: string | Date): string {
+        const date = typeof input === 'string' ? new Date(input) : input;
+        const options: Intl.DateTimeFormatOptions = {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        };
+        return new Intl.DateTimeFormat('pt-PT', options).format(date);
+    }
+
     // Define as colunas da tabela
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
             const formatField = (row: Employee) => {
                 switch (field.key) {
+                    case 'birthday':
+                        return row.birthday ? formatDateAndTime(row[field.key]) : '';
                     case 'status':
                         return row.status ? 'Activo' : 'Inactivo';
                     case 'statusEmail':
@@ -261,46 +284,42 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
     return (
         <div>
-            {isLoading ? (
-                <CircularProgress />
-            ) : (
-                <>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredData}
-                        highlightOnHover
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        onRowDoubleClicked={handleRowDoubleClicked}
-                        expandableRows
-                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        selectableRowsHighlight
-                        clearSelectedRows={resetSelectionInternal}
-                        noDataComponent="Não há dados disponíveis para exibir."
-                        customStyles={customStyles}
+            <>
+                <DataTable
+                    columns={[...columns, actionColumn]}
+                    data={filteredData}
+                    highlightOnHover
+                    pagination
+                    paginationComponentOptions={paginationOptions}
+                    onRowDoubleClicked={handleRowDoubleClicked}
+                    expandableRows
+                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                    selectableRows
+                    onSelectedRowsChange={handleRowSelected}
+                    selectableRowsHighlight
+                    clearSelectedRows={resetSelectionInternal}
+                    noDataComponent="Não há dados disponíveis para exibir."
+                    customStyles={customStyles}
+                />
+                {selectedEmployee && (
+                    <UpdateModalEmployees
+                        open={showUpdateModal}
+                        onClose={handleCloseUpdateModal}
+                        onUpdate={handleUpdateEmployee}
+                        entity={selectedEmployee}
+                        fields={employeeFields}
+                        title="Atualizar Pessoa"
                     />
-                    {selectedEmployee && (
-                        <UpdateModalEmployees
-                            open={showUpdateModal}
-                            onClose={() => setShowUpdateModal(false)}
-                            onUpdate={handleUpdateEmployee}
-                            entity={selectedEmployee}
-                            fields={employeeFields}
-                            title="Atualizar Pessoa"
-                        />
-                    )}
-                    {showDeleteModal && (
-                        <DeleteModal
-                            open={showDeleteModal}
-                            onClose={() => setShowDeleteModal(false)}
-                            onDelete={handleDeleteEmployee}
-                            entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
-                        />
-                    )}
-                </>
-            )}
+                )}
+                {showDeleteModal && (
+                    <DeleteModal
+                        open={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        onDelete={handleDeleteEmployee}
+                        entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
+                    />
+                )}
+            </>
         </div>
     );
 };

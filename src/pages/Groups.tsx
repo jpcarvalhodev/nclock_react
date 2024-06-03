@@ -140,16 +140,6 @@ export const Groups = () => {
         fetchGroups();
     };
 
-    // Função para abrir o modal de adicionar grupo
-    const handleOpenAddModal = () => {
-        setShowAddModal(true);
-    };
-
-    // Função para fechar o modal de adicionar grupo
-    const handleCloseAddModal = () => {
-        setShowAddModal(false);
-    };
-
     // Função para abrir o modal de atualizar grupo
     const handleEditGroup = (group: Group) => {
         setSelectedGroup(group);
@@ -265,7 +255,7 @@ export const Groups = () => {
                 {selectedGroup && (
                     <UpdateModalDeptGrp
                         open={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
+                        onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateGroup}
                         entity={selectedGroup}
                         entityType='group'

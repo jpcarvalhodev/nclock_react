@@ -147,6 +147,12 @@ export const Categories = () => {
         setShowUpdateModal(true);
     };
 
+    // Fecha o modal de edição de categoria
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedCategory(null);
+    };
+
     // Função para abrir o modal de apagar categoria
     const handleOpenDeleteModal = (categoryID: string) => {
         setSelectedCategoryForDelete(categoryID);
@@ -250,7 +256,7 @@ export const Categories = () => {
                 {selectedCategory && (
                     <UpdateModalCatProf
                         open={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
+                        onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateCategory}
                         entity={selectedCategory}
                         fields={categoryFields}

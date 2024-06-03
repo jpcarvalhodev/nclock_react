@@ -66,19 +66,21 @@ export const NclockRequests = () => {
 
     // Função para buscar todos as assiduidades
     const fetchAllAttendances = async () => {
-        const response = await fetchWithAuth('Attendances/GetAllAttendances');
-        if (!response.ok) {
-            toast.error('Erro ao buscar assiduidades');
-            return;
+        try {
+            const response = await fetchWithAuth('Attendances/GetAllAttendances');
+            if (!response.ok) {
+                toast.error('Erro ao buscar assiduidades');
+                return;
+            }
+            const data = await response.json();
+            const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.type === 3);
+            setAttendance(attendanceData);
+            filterAttendanceDataForToday(attendanceData);
         }
-        const data = await response.json();
-        const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.type === 3);
-        setAttendance(attendanceData);
-        filterAttendanceDataForToday(attendanceData);
+        catch (error) {
+            console.error('Erro ao buscar assiduidades:', error);
+        }
     };
-    if (!attendance.length) {
-        fetchAllAttendances();
-    }
 
     // Função para buscar as assiduidades entre datas
     const fetchAllAttendancesBetweenDates = async () => {
@@ -181,7 +183,7 @@ export const NclockRequests = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendance.filter(att => {
-            return att.employeeName.toLowerCase().includes(lowercasedFilter);
+            return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendance]);
@@ -247,10 +249,8 @@ export const NclockRequests = () => {
     // Função para limpar a seleção
     const clearSelection = () => {
         setResetSelection(true);
-        setFilteredAttendances([]);
         setSelectedEmployee(null);
         setSelectedEmployeeId(null);
-        setAttendance([]);
     };
 
     // Função para abrir o modal de adição de assiduidade
@@ -263,7 +263,7 @@ export const NclockRequests = () => {
     }
 
     // Remove o campo de observação
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'inOutMode');
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'inOutMode' && field.key !== 'type');
 
     // Função para formatar a data e a hora
     function formatDateAndTime(input: string | Date): string {

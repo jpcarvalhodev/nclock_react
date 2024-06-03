@@ -60,9 +60,9 @@ export const NclockPresence = () => {
                 return;
             }
             const allAttendanceData: EmployeeAttendanceTimes[] = await response.json();
+            const attendanceData = allAttendanceData.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
             const employeeStatusMap: EmployeeStatusMap = {};
-
-            allAttendanceData.forEach(att => {
+            attendanceData.forEach(att => {
                 const attendanceDate = new Date(att.attendanceTime);
                 if (attendanceDate.toLocaleDateString('pt-PT') === currentDate) {
                     employeeStatusMap[att.employeeId] = {
@@ -150,7 +150,7 @@ export const NclockPresence = () => {
     }
 
     // Remove o campo de observação
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation');
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'type');
 
     // Definindo a coluna de Presença primeiro
     const presenceColumn: TableColumn<EmployeeAttendanceTimes> = {

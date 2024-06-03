@@ -105,4 +105,5 @@ export const employeeAttendanceTimesFields = [
     { key: 'employeeName', label: 'Nome do Funcionário', type: 'string' },
     { key: 'inOutMode', label: 'Modo de entrada/saída', type: 'number' },
     { key: 'observation', label: 'Observação', type: 'string' },
+    { key: 'type', label: 'Tipo', type: 'number' },
 ];

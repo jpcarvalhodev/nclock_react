@@ -82,6 +82,22 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
         }
     }, [open]);
 
+    // Define o type 3 para pedidos
+    useEffect(() => {
+        if (entityType === 'pedidos') {
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                type: 3
+            }));
+        } else {
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                inOutMode: prevFormData.inOutMode || ''
+            }));
+        }
+    }, [open, entityType]);
+    
+
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
@@ -208,7 +224,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                     </>
                 )}
                 {entityType === 'movimentos' && fields.map((field) => {
-                    if (!['enrollNumber', 'employeeName', 'observation'].includes(field.key)) {
+                    if (!['enrollNumber', 'employeeName', 'observation', 'type'].includes(field.key)) {
                         return (
                             <Form.Group controlId={`form${field.key}`} key={field.key}>
                                 <Form.Label>

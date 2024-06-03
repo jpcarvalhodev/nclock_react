@@ -39,7 +39,7 @@ export const NclockAll = () => {
     const [filterText, setFilterText] = useState('');
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeName', 'inOutMode', 'attendanceTime']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeName', 'inOutMode', 'attendanceTime', 'observation']);
     const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>([]);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
@@ -55,17 +55,18 @@ export const NclockAll = () => {
 
     // Função para buscar todos as assiduidades
     const fetchAllAttendances = async () => {
-        const response = await fetchWithAuth('Attendances/GetAllAttendances');
-        if (!response.ok) {
-            toast.error('Erro ao buscar assiduidades');
-            return;
+        try {
+            const response = await fetchWithAuth('Attendances/GetAllAttendances');
+            if (!response.ok) {
+                toast.error('Erro ao buscar assiduidades');
+                return;
+            }
+            const attendanceData = await response.json();
+            setAttendance(attendanceData);
+        } catch (error) {
+            console.error('Erro ao buscar assiduidades:', error);
         }
-        const attendanceData = await response.json();
-        setAttendance(attendanceData);
     };
-    if (!attendance.length) {
-        fetchAllAttendances();
-    }
 
     // Função para buscar as assiduidades entre datas
     const fetchAllAttendancesBetweenDates = async () => {
@@ -96,7 +97,7 @@ export const NclockAll = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendance.filter(att => {
-            return att.employeeName.toLowerCase().includes(lowercasedFilter);
+            return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendance]);
@@ -134,7 +135,7 @@ export const NclockAll = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['employeeName', 'inOutMode', 'attendanceTime']);
+        setSelectedColumns(['employeeName', 'inOutMode', 'attendanceTime', 'observation']);
     };
 
     // Função para formatar a data e a hora

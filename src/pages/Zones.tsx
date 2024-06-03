@@ -146,6 +146,12 @@ export const Zones = () => {
         setShowUpdateModal(true);
     };
 
+    // Fecha o modal de edição de zona
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedZone(null);
+    };
+
     // Função para abrir o modal de apagar zona
     const handleOpenDeleteModal = (zoneID: string) => {
         setSelectedZoneForDelete(zoneID);
@@ -253,7 +259,7 @@ export const Zones = () => {
                 {selectedZone && (
                     <UpdateModalZones
                         open={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
+                        onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateZone}
                         entity={selectedZone}
                         fields={zoneFields}

@@ -146,6 +146,12 @@ export const Professions = () => {
         setShowUpdateModal(true);
     };
 
+    // Fecha o modal de edição de profissão
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedProfession(null);
+    };
+
     // Função para abrir o modal de apagar profissão
     const handleOpenDeleteModal = (professionID: string) => {
         setSelectedProfessionForDelete(professionID);
@@ -249,7 +255,7 @@ export const Professions = () => {
                 {selectedProfession && (
                     <UpdateModalCatProf
                         open={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
+                        onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateProfession}
                         entity={selectedProfession}
                         fields={professionFields}

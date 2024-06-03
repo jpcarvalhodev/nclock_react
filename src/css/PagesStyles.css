@@ -48,7 +48,7 @@ body {
 
 .card-img {
     height: 120px;
-    width: 120px !important; 
+    width: 120px !important;
     object-fit: cover;
 }
 
@@ -138,7 +138,7 @@ body {
     font-weight: bold;
 }
 
-.content-wrapper{
+.content-wrapper {
     flex: 1;
 }
 
@@ -303,10 +303,10 @@ body {
 
 .delete-button {
     display: flex !important;
-    margin-left: 5px; 
+    margin-left: 5px;
     width: 30px !important;
-    height: 30px !important; 
-    justify-content: center !important; 
+    height: 30px !important;
+    justify-content: center !important;
     align-items: center !important;
 }
 
@@ -343,12 +343,13 @@ body {
     }
 
     .datatable-header,
-    .dashboard-container  {
+    .dashboard-container {
         flex-direction: column;
     }
 
-    .buttons-container {
-        gap: 0;
+    .buttons-container,
+    .buttons-container-others {
+        justify-content: unset;
     }
 
     .departments-groups-chart-text {
@@ -356,7 +357,7 @@ body {
     }
 
     .dashboard-calendar {
-        width: 350px !important;  
+        width: 350px !important;
     }
 
     .cards-container {
@@ -366,6 +367,10 @@ body {
 
     .dashboard-content {
         flex-direction: column;
+    }
+
+    .treeview-container {
+        min-width: 100px;
     }
 }
 

@@ -209,6 +209,12 @@ export const Departments = () => {
         setShowUpdateModal(true);
     };
 
+    // Fecha o modal de edição
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedDepartment(null);
+    };
+
     // Abre o modal de deletar
     const handleOpenDeleteModal = (departmentID: string) => {
         setSelectedDepartmentForDelete(departmentID);
@@ -272,7 +278,7 @@ export const Departments = () => {
                 {selectedDepartment && (
                     <UpdateModalDeptGrp
                         open={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
+                        onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateDepartment}
                         entity={selectedDepartment}
                         entityType='department'

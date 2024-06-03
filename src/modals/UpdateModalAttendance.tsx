@@ -213,7 +213,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                     </>
                 )}
                 {entityType === 'movimentos' && fields.map((field) => {
-                    if (!['enrollNumber', 'employeeName', 'observation'].includes(field.key)) {
+                    if (!['enrollNumber', 'employeeName', 'observation', 'type'].includes(field.key)) {
                         return (
                             <Form.Group controlId={`form${field.key}`} key={field.key}>
                                 <Form.Label>

@@ -16,6 +16,7 @@ import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentE
 import { CreateModalExtEnt } from "../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../modals/UpdateModalExtEnt";
 import { customStyles } from "../components/CustomStylesDataTable";
+import { set } from "date-fns";
 
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
@@ -146,6 +147,12 @@ export const ExternalEntities = () => {
         setShowUpdateModal(true);
     };
 
+    // Fecha o modal de edição de entidade externa
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedExternalEntity(null);
+    };
+
     // Função para abrir o modal de apagar entidade externa
     const handleOpenDeleteModal = (externalEntityID: string) => {
         setSelectedExternalEntityForDelete(externalEntityID);
@@ -252,7 +259,7 @@ export const ExternalEntities = () => {
                 {selectedExternalEntity && (
                     <UpdateModalExtEnt
                         open={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
+                        onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateExternalEntity}
                         entity={selectedExternalEntity}
                         fields={externalEntityFields}

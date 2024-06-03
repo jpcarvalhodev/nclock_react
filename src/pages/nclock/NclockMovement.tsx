@@ -66,19 +66,20 @@ export const NclockMovement = () => {
 
     // Função para buscar todos as assiduidades
     const fetchAllAttendances = async () => {
-        const response = await fetchWithAuth('Attendances/GetAllAttendances');
-        if (!response.ok) {
-            toast.error('Erro ao buscar assiduidades');
-            return;
+        try {
+            const response = await fetchWithAuth('Attendances/GetAllAttendances');
+            if (!response.ok) {
+                toast.error('Erro ao buscar assiduidades');
+                return;
+            }
+            const data = await response.json();
+            const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
+            setAttendance(attendanceData);
+            filterAttendanceDataForToday(attendanceData);
+        } catch (error) {
+            console.error('Erro ao buscar assiduidades:', error);
         }
-        const data = await response.json();
-        const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
-        setAttendance(attendanceData);
-        filterAttendanceDataForToday(attendanceData);
     };
-    if (!attendance.length) {
-        fetchAllAttendances();
-    }
 
     // Função para buscar as assiduidades entre datas
     const fetchAllAttendancesBetweenDates = async () => {
@@ -94,7 +95,7 @@ export const NclockMovement = () => {
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
-    }
+    };
 
     // Função para adicionar uma nova assiduidade
     const handleAddAttendance = async (attendances: EmployeeAttendanceTimes) => {
@@ -169,7 +170,7 @@ export const NclockMovement = () => {
     // Atualiza os dados de renderização
     useEffect(() => {
         fetchAllAttendances();
-    } , []);
+    }, []);
 
     // Atualiza a seleção ao resetar
     useEffect(() => {
@@ -182,7 +183,7 @@ export const NclockMovement = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendance.filter(att => {
-            return att.employeeName.toLowerCase().includes(lowercasedFilter);
+            return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendance]);
@@ -246,10 +247,8 @@ export const NclockMovement = () => {
     // Função para limpar a seleção
     const clearSelection = () => {
         setResetSelection(true);
-        setFilteredAttendances([]);
         setSelectedEmployee(null);
         setSelectedEmployeeId(null);
-        setAttendance([]);
     };
 
     // Função para abrir o modal de adição de assiduidade
@@ -277,7 +276,7 @@ export const NclockMovement = () => {
     }
 
     // Remove o campo de observação
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName');
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type');
 
     // Define as colunas
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
@@ -353,7 +352,7 @@ export const NclockMovement = () => {
         <div className="main-container">
             <NavBar />
             <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                <Split className='split' sizes={[20, 80]} minSize={10} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} data={data} />
                     </div>
