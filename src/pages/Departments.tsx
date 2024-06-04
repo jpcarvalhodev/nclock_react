@@ -250,7 +250,7 @@ export const Departments = () => {
                     <span>Departamentos</span>
                 </div>
                 <div className="datatable-header">
-                    <div className="search-box">
+                    <div>
                         <input
                             className='search-input'
                             type="text"

@@ -82,7 +82,7 @@ export const Visitors = () => {
         fetchData();
     }, []);
 
-    // Função para buscar todos os funcionários
+    // Função para buscar todos os visitantes
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
@@ -103,7 +103,7 @@ export const Visitors = () => {
         }
     };
 
-    // Função para adicionar um novo funcionário
+    // Função para adicionar um novo visitante
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -131,7 +131,7 @@ export const Visitors = () => {
         refreshEmployees();
     };
 
-    // Função para atualizar um funcionário
+    // Função para atualizar um visitante
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -170,7 +170,7 @@ export const Visitors = () => {
         }
     };
 
-    // Função para apagar um funcionário
+    // Função para apagar um visitante
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -196,17 +196,17 @@ export const Visitors = () => {
         refreshEmployees();
     };
 
-    // Busca os funcionários ao carregar a página
+    // Busca os visitantes ao carregar a página
     useEffect(() => {
         fetchEmployees();
     }, []);
 
-    // Função para atualizar a lista de funcionários
+    // Função para atualizar a lista de visitantes
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
-    // Função para filtrar os funcionários selecionados na TreeView
+    // Função para filtrar os visitantes selecionados na TreeView
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -216,12 +216,12 @@ export const Visitors = () => {
         }
     };
 
-    // Atualiza a lista de funcionários filtrados ao mudar a lista de funcionários
+    // Atualiza a lista de visitantes filtrados ao mudar a lista de visitantes
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Função para abrir o modal de deletar funcionário
+    // Função para abrir o modal de deletar visitante
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
@@ -321,13 +321,13 @@ export const Visitors = () => {
             };
         });
 
-    // Função para editar um funcionário
+    // Função para editar um visitante
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de funcionário
+    // Fecha o modal de edição de visitante
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedEmployee(null);
@@ -363,7 +363,7 @@ export const Visitors = () => {
         <div className="main-container">
             <NavBar />
             <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewData onSelectEmployees={handleSelectFromTreeView} data={data} />
                     </div>
@@ -372,7 +372,7 @@ export const Visitors = () => {
                             <span>Visitantes</span>
                         </div>
                         <div className="datatable-header">
-                            <div className="search-box">
+                            <div>
                                 <input
                                     type="text"
                                     placeholder="Pesquisa"

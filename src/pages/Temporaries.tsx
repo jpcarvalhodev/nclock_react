@@ -82,7 +82,7 @@ export const Temporaries = () => {
         fetchData();
     }, []);
 
-    // Função para buscar todos os funcionários
+    // Função para buscar todos os funcionários provisórios
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
@@ -103,7 +103,7 @@ export const Temporaries = () => {
         }
     };
 
-    // Função para adicionar um novo funcionário
+    // Função para adicionar um novo funcionário provisório
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -131,7 +131,7 @@ export const Temporaries = () => {
         refreshEmployees();
     };
 
-    // Função para atualizar um funcionário
+    // Função para atualizar um funcionário provisório
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -170,7 +170,7 @@ export const Temporaries = () => {
         }
     };
 
-    // Função para apagar um funcionário
+    // Função para apagar um funcionário provisório
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -201,12 +201,12 @@ export const Temporaries = () => {
         fetchEmployees();
     }, []);
 
-    // Função para atualizar a lista de funcionários
+    // Função para atualizar a lista de funcionários provisórios
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
-    // Função para filtrar os funcionários da árvore
+    // Função para filtrar os funcionários provisórios da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -221,13 +221,13 @@ export const Temporaries = () => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Função para abrir o modal de deletar funcionário
+    // Função para abrir o modal de deletar funcionário provisório
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
-    // Filtra os funcionários
+    // Filtra os funcionários provisórios
     const filteredItems = filteredEmployees.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
@@ -321,13 +321,13 @@ export const Temporaries = () => {
             };
         });
 
-    // Função para editar um funcionário
+    // Função para editar um funcionário provisório
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de funcionário
+    // Fecha o modal de edição de funcionário provisório
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedEmployee(null);
@@ -363,7 +363,7 @@ export const Temporaries = () => {
         <div className="main-container">
             <NavBar />
             <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewData onSelectEmployees={handleSelectFromTreeView} data={data} />
                     </div>
@@ -372,7 +372,7 @@ export const Temporaries = () => {
                             <span>Provisórios</span>
                         </div>
                         <div className="datatable-header">
-                            <div className="search-box">
+                            <div>
                                 <input
                                     type="text"
                                     placeholder="Pesquisa"

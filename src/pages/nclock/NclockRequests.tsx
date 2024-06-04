@@ -347,7 +347,7 @@ export const NclockRequests = () => {
         <div className="main-container">
             <NavBar />
             <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={250} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} data={data} />
                     </div>
@@ -356,7 +356,7 @@ export const NclockRequests = () => {
                             <span>Pedidos</span>
                         </div>
                         <div className="datatable-header">
-                            <div className="search-box">
+                            <div>
                                 <input
                                     type="text"
                                     placeholder="Pesquisa"

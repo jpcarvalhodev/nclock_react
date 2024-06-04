@@ -217,10 +217,6 @@ body {
     gap: 10px;
 }
 
-.search-box {
-    margin-left: 3px;
-}
-
 .search-input {
     height: 30px;
 }
@@ -391,6 +387,20 @@ body {
 
     .departments-groups-chart-text {
         margin-bottom: 100px;
+    }
+
+    .datatable-header,
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .buttons-container,
+    .buttons-container-others {
+        justify-content: unset;
+    }
+
+    .date-range-search {
+        margin-left: 0;
     }
 
     .cards-container {
