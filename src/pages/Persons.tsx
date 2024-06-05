@@ -33,6 +33,7 @@ export const Persons = () => {
     const [filteredData, setFilteredData] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
+    const [initialData, setInitialData] = useState<Employee | null>(null);
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -114,7 +115,7 @@ export const Persons = () => {
             setData(prevData => ({
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
-              }));
+            }));
             toast.success('Funcionário adicionado com sucesso');
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
@@ -140,6 +141,12 @@ export const Persons = () => {
         setResetSelection(prev => !prev);
         setShowAllEmployees(true);
     };
+
+    // Define a função de duplicar funcionários
+    const handleDuplicate = (data: Employee) => {
+        setInitialData(data);
+        setShowAddModal(true);
+    }
 
     // Atualiza a seleção ao resetar
     useEffect(() => {
@@ -213,6 +220,7 @@ export const Persons = () => {
                             data={data}
                             onRefreshData={setData}
                             filteredData={filteredData}
+                            onDuplicate={handleDuplicate}
                         />
                     </div>
                 </Split>
@@ -225,7 +233,7 @@ export const Persons = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddEmployee}
                     fields={employeeFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                 />
             )}
             {showColumnSelector && (

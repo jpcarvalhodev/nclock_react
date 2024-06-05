@@ -79,6 +79,29 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
           employeesResponse.json(),
         ]);
 
+        const departmentMap = new Map();
+        departments.forEach((dept: Department) => {
+          departmentMap.set(dept.departmentID, {
+            ...dept,
+            children: []
+          });
+        });
+
+        allEmployees.forEach((emp: Employee) => {
+          if (emp.departmentId && departmentMap.has(emp.departmentId)) {
+            departmentMap.get(emp.departmentId).employees.push({
+              id: `emp-${emp.employeeID}`,
+              label: emp.name,
+            });
+          }
+        });
+
+        departments.forEach((dept: Department) => {
+          if (dept.paiID && departmentMap.has(dept.paiID)) {
+            departmentMap.get(dept.paiID).children.push(departmentMap.get(dept.departmentID));
+          }
+        });
+
         const unassignedDept = allEmployees.filter((emp: Employee) =>
           emp.departmentId === null
         );
@@ -87,14 +110,21 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
           emp.groupId === null
         );
 
-        const departmentItems = departments.map((dept: Department) => ({
+        const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiID);
+
+        const buildDepartmentTree = (dept: Department) => ({
           id: `department-${dept.departmentID}`,
           label: dept.name || 'Sem Nome',
-          children: allEmployees.filter((emp: Employee) => emp.departmentId === dept.departmentID).map((emp: Employee) => ({
-            id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
-            label: emp.name || 'Sem Nome',
-          })),
-        }));
+          children: [
+            ...dept.children.map(buildDepartmentTree),
+            ...allEmployees.filter((emp: Employee) => emp.departmentId === dept.departmentID).map((emp: Employee) => ({
+              id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
+              label: emp.name,
+            })),
+          ],
+        });
+
+        const departmentItems = topDepartments.map(buildDepartmentTree);
 
         const groupItems = groups.map((group: Group) => ({
           id: `group-${group.groupID}`,
@@ -155,18 +185,18 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     const employeeIds = itemIds
       .filter(id => id.includes('-emp-'))
       .map(id => id.substring(id.lastIndexOf('-emp-') + 5));
-  
+
     const newSelectedEmployeeIds = selectedEmployeeIds.filter(id => !employeeIds.includes(id));
-    
+
     employeeIds.forEach(id => {
       if (!selectedEmployeeIds.includes(id)) {
         newSelectedEmployeeIds.push(id);
       }
     });
-  
+
     setSelectedEmployeeIds(newSelectedEmployeeIds);
     onSelectEmployees(newSelectedEmployeeIds);
-  };  
+  };
 
   // Filtra os itens ao mudar o termo de pesquisa
   useEffect(() => {

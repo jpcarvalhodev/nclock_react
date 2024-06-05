@@ -29,10 +29,11 @@ interface PersonsDataTableProps {
     data: DataState;
     onRefreshData: (data: DataState) => void;
     filteredData: Employee[];
+    onDuplicate: (employee: Employee) => void;
 }
 
 // Define o componente
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData }: PersonsDataTableProps) => {
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate }: PersonsDataTableProps) => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -201,6 +202,14 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         filteredEmployees(state.selectedRows);
     };
 
+    // Função que manipula a duplicação e fecha o modal de atualização
+    const handleDuplicateAndClose = (employee: Employee) => {
+        if (onDuplicate) {
+            onDuplicate(employee);
+        }
+        setShowUpdateModal(false); 
+    };
+
     // Define as opções de paginação
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -305,6 +314,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                     <UpdateModalEmployees
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
+                        onDuplicate={handleDuplicateAndClose}
                         onUpdate={handleUpdateEmployee}
                         entity={selectedEmployee}
                         fields={employeeFields}

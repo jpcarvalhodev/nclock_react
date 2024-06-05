@@ -40,6 +40,7 @@ export const Employees = () => {
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [initialData, setInitialData] = useState<Employee | null>(null);
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -269,6 +270,13 @@ export const Employees = () => {
         setSelectedRows([]);
     };
 
+    // Define a função de duplicar funcionários
+    const handleDuplicate = (data: Employee) => {
+        setInitialData(data);
+        handleCloseUpdateModal();
+        setShowAddModal(true);
+    }
+
     // Função para formatar a data e a hora
     function formatDateAndTime(input: string | Date): string {
         const date = typeof input === 'string' ? new Date(input) : input;
@@ -415,12 +423,13 @@ export const Employees = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddEmployee}
                 fields={employeeFields}
-                initialValues={{}}
+                initialValues={initialData || {}}
             />
             {selectedEmployee && (
                 <UpdateModalEmployees
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
+                    onDuplicate={handleDuplicate}
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}

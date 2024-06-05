@@ -5,7 +5,6 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
-import { Department, ExternalEntity, Group, Profession, Zone } from '../helpers/Types';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -31,6 +30,7 @@ interface Field {
 interface UpdateModalProps<T extends Entity> {
   open: boolean;
   onClose: () => void;
+  onDuplicate?: (entity: T) => void;
   onUpdate: (entity: T) => Promise<void>;
   entity: T;
   fields: Field[];
@@ -38,7 +38,7 @@ interface UpdateModalProps<T extends Entity> {
 }
 
 // Define o componente
-export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
   const [formData, setFormData] = useState<T>({ ...entity });
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
@@ -491,6 +491,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onUpdate
         </Tab.Container>
       </Modal.Body>
       <Modal.Footer>
+        <Button variant="info" onClick={() => onDuplicate && onDuplicate(formData)}>Duplicar</Button>
         <Button variant="secondary" onClick={onClose}>Fechar</Button>
         <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
       </Modal.Footer>

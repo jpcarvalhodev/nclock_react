@@ -6,7 +6,7 @@ import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
-import { Department, Employee, ExternalEntity, Group, Profession, Zone } from '../helpers/Types';
+import { Employee } from '../helpers/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -40,6 +40,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false)
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Atualiza o estado do componente ao abrir o modal
+    useEffect(() => {
+        setFormData({ ...initialValues, status: true });
+    }, [initialValues]);    
 
     // Atualiza o estado do componente com uma parte das validações
     useEffect(() => {
