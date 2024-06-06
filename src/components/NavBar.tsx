@@ -1127,7 +1127,7 @@ export const NavBar = () => {
 										</Link>
 									</div>
 									<div>
-										<Link to="/Employees" type="button" className="btn btn-light ribbon-button">
+										<Link to="/types" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={types} alt="botão tipos" />
 											</span>

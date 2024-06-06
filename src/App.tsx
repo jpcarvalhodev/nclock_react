@@ -36,6 +36,7 @@ import { NclockRequests } from './pages/nclock/NclockRequests';
 import { NclockPresence } from './pages/nclock/NclockPresence';
 import { NclockDashboard } from './pages/nclock/NclockDashboard';
 import { NclockAll } from './pages/nclock/NclockAll';
+import { Types } from './pages/Types';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -96,6 +97,7 @@ function AnimatedRoutes() {
               <Route path="/groups" element={<PageProtection><Groups /></PageProtection>} />
               <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
               <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
+              <Route path="/types" element={<PageProtection><Types /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
               <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />
               <Route path="/nclock/nclockpresence" element={<PageProtection><NclockPresence /></PageProtection>} />

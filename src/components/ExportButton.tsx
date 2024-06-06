@@ -49,6 +49,70 @@ interface ExportButtonProps {
     fields: Field[];
 }
 
+// Define as propriedades do documento PDF
+interface PDFDocumentProps {
+    data: DataItem[];
+    fields: Field[];
+}
+
+// Define o tipo de campo para as exceções
+type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' |
+    'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | string;
+
+// Função para formatar a data e a hora
+function formatDateAndTime(input: string | Date): string {
+    const date = typeof input === 'string' ? new Date(input) : input;
+    const options: Intl.DateTimeFormatOptions = {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+    };
+    return new Intl.DateTimeFormat('pt-PT', options).format(date);
+}
+
+// Formata o campo com base no tipo de campo
+const formatField = (item: DataItem, fieldKey: FieldKey) => {
+    switch (fieldKey) {
+        case 'birthday':
+            return item.birthday ? formatDateAndTime(item.birthday) : '';
+        case 'status':
+        case 'statusEmail':
+            return item[fieldKey] ? 'Activo' : 'Inactivo';
+        case 'rgpdAut':
+            return item[fieldKey] ? 'Autorizado' : 'Não Autorizado';
+        case 'employeeId':
+            return item.employeeName;
+        case 'departmentId':
+            return item.departmentName || '';
+        case 'professionId':
+            return item.professionName || '';
+        case 'categoryId':
+            return item.categoryName || '';
+        case 'groupId':
+            return item.groupName || '';
+        case 'zoneId':
+            return item.zoneName || '';
+        case 'externalEntityId':
+            return item.externalEntityName || '';
+        case 'inOutMode':
+            switch (item[fieldKey]) {
+                case 0: return 'Entrada';
+                case 1: return 'Saída';
+                case 2: return 'Pausa - Entrada';
+                case 3: return 'Pausa - Saída';
+                case 4: return 'Hora Extra - Entrada';
+                case 5: return 'Hora Extra - Saída';
+                default: return '';
+            }
+        default:
+            return item[fieldKey] || '';
+    }
+};
+
 // Função para exportar os dados para CSV
 const exportToCSV = (data: DataItem[], fileName: string, fields: Field[]): void => {
     const fileExtension = '.csv';
@@ -71,14 +135,9 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[]): void 
     const csvContent = data.map(item => {
         return fields.map(field => {
             if (!validFields.has(field.key)) return '';
-            let value = item[field.key];
-            if (field.key === 'status' || field.key === 'statusEmail') {
-                value = value ? 'Activo' : 'Inactivo';
-            } else if (field.key === 'rgpdAut') {
-                value = value ? 'Autorizado' : 'Não Autorizado';
-            }
+            const value = formatField(item, field.key);
             if (typeof value === 'string') {
-                value = `"${value.replace(/"/g, '""')}"`;
+                return `"${value.replace(/"/g, '""')}"`;
             }
             return value;
         }).filter(v => v !== '').join(delimiter);
@@ -96,13 +155,8 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void
     const fileExtension = '.xlsx';
 
     const output = data.map(item => {
-        return fields.reduce((result: Record<string, any>, field: Field) => {
-            let value = item[field.key];
-            if (field.key === 'status' || field.key === 'statusEmail') {
-                value = value ? 'Activo' : 'Inactivo';
-            } else if (field.key === 'rgpdAut') {
-                value = value ? 'Autorizado' : 'Não Autorizado';
-            }
+        return fields.reduce((result: Record<string, any>, field) => {
+            const value = formatField(item, field.key);
             if (value !== undefined && value !== null && value !== '') {
                 result[field.label] = value;
             }
@@ -118,18 +172,13 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void
 };
 
 // Define o componente PDFDocument
-const PDFDocument = ({ data, fields }: { data: DataItem[], fields: Field[] }) => (
+const PDFDocument = ({ data, fields }: PDFDocumentProps) => (
     <Document>
         <Page size="A4" style={styles.page}>
             {data.map((item, index) => (
                 <View key={index} style={styles.section}>
-                    {fields.map((field: Field) => {
-                        let value = item[field.key];
-                        if (field.key === 'status' || field.key === 'statusEmail') {
-                            value = value ? 'Activo' : 'Inactivo';
-                        } else if (field.key === 'rgpdAut') {
-                value = value ? 'Autorizado' : 'Não Autorizado';
-                        }
+                    {fields.map((field) => {
+                        const value = formatField(item, field.key);
                         if (value !== undefined && value !== null && value !== '') {
                             return (
                                 <View key={field.key} style={styles.tableRow}>
@@ -148,20 +197,16 @@ const PDFDocument = ({ data, fields }: { data: DataItem[], fields: Field[] }) =>
 // Função para exportar os dados para TXT
 const exportToTXT = (data: DataItem[], fileName: string): void => {
     const fileExtension = '.txt';
-    
+
     const filteredData = data.map(item => {
-        return Object.keys(item).reduce((result, key) => {
-            let value = item[key];
-            if (key === 'status' || key === 'statusEmail') {
-                value = value ? 'Activo' : 'Inactivo';
-            } else if (key === 'rgpdAut') {
-                value = value ? 'Autorizado' : 'Não Autorizado';
-            }
-            if (value !== undefined && value !== null && value !== '') { 
+        const { employeeID, employeeId, departmentID, groupID, categoryID, professionID, zoneID, attendanceTimeId, ...rest } = item;
+        return Object.keys(item).reduce((result: Record<string, any>, key) => {
+            const value = formatField(rest, key);
+            if (value !== undefined && value !== null && value !== '') {
                 result[key] = value;
             }
             return result;
-        }, {} as Record<string, any>);
+        }, {});
     });
 
     const blob = new Blob([JSON.stringify(filteredData, null, 2)], { type: 'text/plain' });

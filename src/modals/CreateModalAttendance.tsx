@@ -139,6 +139,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
 
     // Função para lidar com o salvamento
     const handleSave = () => {
+        console.log(formData);
         onSave(formData as T);
     };
 

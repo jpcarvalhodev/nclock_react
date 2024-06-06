@@ -117,6 +117,10 @@ export type Zone = {
     email: string,
 };
 
+export type entityTypes = {
+    [key: string]: any;
+};
+
 export type EmployeeAttendanceTimes = {
     [key: string]: any;
     id: string;

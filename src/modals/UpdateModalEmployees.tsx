@@ -170,6 +170,13 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     }
   };
 
+  // Função para manipular o clique no botão Duplicar
+  const handleDuplicateClick = () => {
+    if (!onDuplicate) return;
+    const { employeeID, ...dataWithoutId } = formData;
+    onDuplicate(dataWithoutId as T);
+  };
+
   // Define a função para mudar o campo
   const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value, type } = e.target;
@@ -491,7 +498,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         </Tab.Container>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="info" onClick={() => onDuplicate && onDuplicate(formData)}>Duplicar</Button>
+        <Button variant="info" onClick={handleDuplicateClick}>Duplicar</Button>
         <Button variant="secondary" onClick={onClose}>Fechar</Button>
         <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
       </Modal.Footer>
