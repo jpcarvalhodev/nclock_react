@@ -3,6 +3,7 @@
     display: flex;
     align-items: center;
     background-color: #0050a0;
+    text-transform: uppercase;
 }
 
 .logo {
@@ -203,6 +204,7 @@
     font-size: 15px;
     padding: .375rem;
     color: white;
+    text-transform: uppercase;
 }
 
 .image-text {

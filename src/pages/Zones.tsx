@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
@@ -16,6 +16,12 @@ import { CreateModalZones } from "../modals/CreateModalZones";
 import { UpdateModalZones } from "../modals/UpdateModalZones";
 import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
 import { customStyles } from "../components/CustomStylesDataTable";
+import { SelectFilter } from "../components/SelectFilter";
+
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
+}
 
 // Define a página de Zonas
 export const Zones = () => {
@@ -28,6 +34,7 @@ export const Zones = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<string | null>(null);
+    const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as zonas
     const fetchZones = async () => {
@@ -199,10 +206,22 @@ export const Zones = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
-            name: columnNamesMap[columnKey] || columnKey,
+            name: (
+                <>
+                    {columnNamesMap[columnKey]}
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={zones} />
+                </>
+            ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
+
+    // Filtra os dados da tabela
+    const filteredDataTable = zones.filter(zone =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(zone[key]) === String(filters[key])
+        )
+    );
 
     // Componente de linha expandida
     const expandableRowComponent = (row: Zone) => (
@@ -277,7 +296,7 @@ export const Zones = () => {
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
-                        data={filteredItems}
+                        data={filteredDataTable}
                         onRowDoubleClicked={handleEditZone}
                         pagination
                         paginationComponentOptions={paginationOptions}

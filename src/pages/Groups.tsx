@@ -16,6 +16,12 @@ import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric
 import { CreateModalDeptGrp } from "../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../modals/UpdateModalDeptGrp";
 import { customStyles } from "../components/CustomStylesDataTable";
+import { SelectFilter } from "../components/SelectFilter";
+
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
+}
 
 // Define a página de grupos
 export const Groups = () => {
@@ -28,6 +34,7 @@ export const Groups = () => {
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
+    const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar os grupos
     const fetchGroups = async () => {
@@ -199,10 +206,22 @@ export const Groups = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
-            name: columnNamesMap[columnKey] || columnKey,
+            name: (
+                <>
+                    {columnNamesMap[columnKey]}
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={groups} />
+                </>
+            ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
+
+    // Filtra os dados da tabela
+    const filteredDataTable = groups.filter(group =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(group[key]) === String(filters[key])
+        )
+    );
 
     // Coluna de ações
     const actionColumn: TableColumn<Group> = {
@@ -274,7 +293,7 @@ export const Groups = () => {
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
-                        data={filteredItems}
+                        data={filteredDataTable}
                         onRowDoubleClicked={handleEditGroup}
                         pagination
                         paginationComponentOptions={paginationOptions}

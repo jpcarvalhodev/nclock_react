@@ -80,25 +80,32 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         ]);
 
         const departmentMap = new Map();
+        const deptIdToCodeMap = new Map();
+
         departments.forEach((dept: Department) => {
-          departmentMap.set(dept.departmentID, {
+          deptIdToCodeMap.set(dept.departmentID, dept.code);
+          departmentMap.set(dept.code, {
             ...dept,
-            children: []
+            children: [],
+            employees: []
           });
         });
 
         allEmployees.forEach((emp: Employee) => {
-          if (emp.departmentId && departmentMap.has(emp.departmentId)) {
-            departmentMap.get(emp.departmentId).employees.push({
-              id: `emp-${emp.employeeID}`,
-              label: emp.name,
-            });
+          if (emp.departmentId && deptIdToCodeMap.has(emp.departmentId)) {
+            const deptCode = deptIdToCodeMap.get(emp.departmentId);
+            if (departmentMap.has(deptCode)) {
+              departmentMap.get(deptCode).employees.push({
+                id: `emp-${emp.employeeID}`,
+                label: emp.name,
+              });
+            }
           }
         });
 
         departments.forEach((dept: Department) => {
-          if (dept.paiID && departmentMap.has(dept.paiID)) {
-            departmentMap.get(dept.paiID).children.push(departmentMap.get(dept.departmentID));
+          if (dept.paiId && departmentMap.has(dept.paiId)) {
+            departmentMap.get(dept.paiId).children.push(departmentMap.get(dept.code));
           }
         });
 
@@ -110,7 +117,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
           emp.groupId === null
         );
 
-        const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiID);
+        const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiId);
 
         const buildDepartmentTree = (dept: Department) => ({
           id: `department-${dept.departmentID}`,
@@ -193,9 +200,9 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         newSelectedEmployeeIds.push(id);
       }
     });
-
     setSelectedEmployeeIds(newSelectedEmployeeIds);
     onSelectEmployees(newSelectedEmployeeIds);
+    console.log('selectedEmployeeIds:', newSelectedEmployeeIds);
   };
 
   // Filtra os itens ao mudar o termo de pesquisa

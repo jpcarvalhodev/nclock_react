@@ -16,7 +16,12 @@ import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentE
 import { CreateModalExtEnt } from "../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../modals/UpdateModalExtEnt";
 import { customStyles } from "../components/CustomStylesDataTable";
-import { set } from "date-fns";
+import { SelectFilter } from "../components/SelectFilter";
+
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
+}
 
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
@@ -29,6 +34,7 @@ export const ExternalEntities = () => {
     const [selectedExternalEntity, setSelectedExternalEntity] = useState<ExternalEntity | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
+    const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as entidades externas
     const fetchExternalEntities = async () => {
@@ -199,10 +205,22 @@ export const ExternalEntities = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
-            name: columnNamesMap[columnKey] || columnKey,
+            name: (
+                <>
+                    {columnNamesMap[columnKey]}
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={externalEntities} />
+                </>
+            ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
+
+    // Filtra os dados da tabela
+    const filteredDataTable = externalEntities.filter(externalEntity =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(externalEntity[key]) === String(filters[key])
+        )
+    );
 
     // Define o componente de linha expandida
     const expandableRowComponent = (row: ExternalEntity) => (
@@ -277,7 +295,7 @@ export const ExternalEntities = () => {
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
-                        data={filteredItems}
+                        data={filteredDataTable}
                         onRowDoubleClicked={handleEditExternalEntity}
                         pagination
                         paginationComponentOptions={paginationOptions}

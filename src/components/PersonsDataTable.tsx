@@ -10,6 +10,7 @@ import { DeleteModal } from '../modals/DeleteModal';
 import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { customStyles } from './CustomStylesDataTable';
+import { SelectFilter } from './SelectFilter';
 
 // Define a interface para o estado dos dados
 interface DataState {
@@ -32,6 +33,11 @@ interface PersonsDataTableProps {
     onDuplicate: (employee: Employee) => void;
 }
 
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
+}
+
 // Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate }: PersonsDataTableProps) => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -40,6 +46,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<Employee | null>(null);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
+    const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar todos os funcionários
     const fetchAllEmployees = async () => {
@@ -207,7 +214,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         if (onDuplicate) {
             onDuplicate(employee);
         }
-        setShowUpdateModal(false); 
+        setShowUpdateModal(false);
     };
 
     // Define as opções de paginação
@@ -263,11 +270,23 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             };
 
             return {
-                name: field.label,
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={data.employees} />
+                    </>
+                ),
                 selector: row => formatField(row),
                 sortable: true,
             };
         });
+
+    // Filtra os dados da tabela
+    const filteredDataTable = data.employees.filter(employee =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(employee[key]) === String(filters[key])
+        )
+    );
 
     // Define o componente de linha expandida
     const expandableRowComponent = (row: Employee) => (
@@ -296,7 +315,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             <>
                 <DataTable
                     columns={[...columns, actionColumn]}
-                    data={filteredData}
+                    data={filteredDataTable}
                     highlightOnHover
                     pagination
                     paginationComponentOptions={paginationOptions}

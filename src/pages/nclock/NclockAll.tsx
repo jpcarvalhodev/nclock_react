@@ -13,6 +13,7 @@ import { employeeAttendanceTimesFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import Split from 'react-split';
 import { TreeViewDataNclock } from "../../components/TreeViewNclock";
+import { SelectFilter } from "../../components/SelectFilter";
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -32,6 +33,11 @@ const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
+}
+
 // Define a página de todas as assiduidades
 export const NclockAll = () => {
     const currentDate = new Date();
@@ -46,6 +52,7 @@ export const NclockAll = () => {
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [filters, setFilters] = useState<Filters>({});
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -164,22 +171,40 @@ export const NclockAll = () => {
                     case 'employeeId':
                         return row.employeeName;
                     case 'inOutMode':
-                        return row[field.key] === 0 ? 'Entrada'
-                            : row[field.key] === 1 ? 'Saída'
-                                : row[field.key] === 2 ? 'Pausa - Entrada'
-                                    : row[field.key] === 3 ? 'Pausa - Saída'
-                                        : row[field.key] === 4 ? 'Hora Extra - Entrada'
-                                            : row[field.key] === 5 ? 'Hora Extra - Saída' : '';
+                        switch (row[field.key]) {
+                            case 0: return 'Entrada';
+                            case 1: return 'Saída';
+                            case 2: return 'Pausa - Entrada';
+                            case 3: return 'Pausa - Saída';
+                            case 4: return 'Hora Extra - Entrada';
+                            case 5: return 'Hora Extra - Saída';
+                            default: return '';
+                        }
                     default:
                         return row[field.key];
                 }
             };
             return {
-                name: field.label,
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                    </>
+                ),
                 selector: row => formatField(row),
                 sortable: true,
             };
         });
+
+    // Atualização automática de filteredAttendances baseada nos filtros atuais
+    useEffect(() => {
+        const newFilteredAttendances = attendance.filter(att =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || String(att[key]) === String(filters[key])
+            )
+        );
+        setFilteredAttendances(newFilteredAttendances);
+    }, [attendance, filters]);
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {

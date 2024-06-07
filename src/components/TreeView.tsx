@@ -66,25 +66,32 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
     const allEmployees = data.employees;
 
     const departmentMap = new Map();
-    departments.forEach((dept) => {
-      departmentMap.set(dept.departmentID, {
+    const deptIdToCodeMap = new Map();
+
+    departments.forEach(dept => {
+      deptIdToCodeMap.set(dept.departmentID, dept.code);
+      departmentMap.set(dept.code, {
         ...dept,
-        children: []
+        children: [],
+        employees: []
       });
     });
 
     allEmployees.forEach(emp => {
-      if (emp.departmentId && departmentMap.has(emp.departmentId)) {
-        departmentMap.get(emp.departmentId).employees.push({
-          id: `emp-${emp.employeeID}`,
-          label: emp.name,
-        });
+      if (emp.departmentId && deptIdToCodeMap.has(emp.departmentId)) {
+        const deptCode = deptIdToCodeMap.get(emp.departmentId);
+        if (departmentMap.has(deptCode)) {
+          departmentMap.get(deptCode).employees.push({
+            id: `emp-${emp.employeeID}`,
+            label: emp.name,
+          });
+        }
       }
     });
 
     departments.forEach(dept => {
-      if (dept.paiID && departmentMap.has(dept.paiID)) {
-        departmentMap.get(dept.paiID).children.push(departmentMap.get(dept.departmentID));
+      if (dept.paiId && departmentMap.has(dept.paiId)) {
+        departmentMap.get(dept.paiId).children.push(departmentMap.get(dept.code));
       }
     });
 
@@ -96,14 +103,14 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
       emp.groupId === null
     );
 
-    const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiID);
+    const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiId);
 
     const buildDepartmentTree = (dept: Department) => ({
       id: `department-${dept.departmentID}`,
       label: dept.name || 'Sem Nome',
       children: [
         ...dept.children.map(buildDepartmentTree),
-        ...allEmployees.filter(emp => emp.departmentId === dept.departmentID).map(emp => ({
+        ...allEmployees.filter((emp: Employee) => emp.departmentId === dept.departmentID).map((emp: Employee) => ({
           id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
           label: emp.name,
         })),

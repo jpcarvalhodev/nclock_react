@@ -16,7 +16,12 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { ExpandedComponentDept } from '../components/ExpandedComponentDept';
 import { customStyles } from '../components/CustomStylesDataTable';
-import { set } from 'date-fns';
+import { SelectFilter } from '../components/SelectFilter';
+
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
+}
 
 // Define a página de departamentos
 export const Departments = () => {
@@ -29,6 +34,7 @@ export const Departments = () => {
     const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedDepartmentForDelete, setSelectedDepartmentForDelete] = useState<string | null>(null);
+    const [filters, setFilters] = useState<Filters>({});
 
     // Busca os departamentos
     const fetchDepartments = async () => {
@@ -198,10 +204,22 @@ export const Departments = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
-            name: columnNamesMap[columnKey] || columnKey,
+            name: (
+                <>
+                    {columnNamesMap[columnKey]}
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={departments} />
+                </>
+            ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
+
+    // Filtra os dados da tabela
+    const filteredDataTable = departments.filter(department =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(department[key]) === String(filters[key])
+        )
+    );
 
     // Abre o modal de edição
     const handleEditDepartment = (department: Department) => {
@@ -297,7 +315,7 @@ export const Departments = () => {
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
-                        data={filteredItems}
+                        data={filteredDataTable}
                         onRowDoubleClicked={handleEditDepartment}
                         pagination
                         paginationComponentOptions={paginationOptions}

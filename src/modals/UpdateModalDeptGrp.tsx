@@ -238,12 +238,12 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }
     };
 
-    // função para modificar o estado do formulário
-    const handleChange = (e: React.ChangeEvent<any>) => {
+    // Função para lidar com a mudança de valor
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
         const parsedValue = type === 'number' ? Number(value) : value;
-        setFormData(prevState => ({
-            ...prevState,
+        setFormData(prev => ({
+            ...prev,
             [name]: parsedValue
         }));
     };
@@ -351,23 +351,24 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     <Form.Group controlId="formPaiId">
                                         <Form.Label>ID de Parente</Form.Label>
                                         <Form.Control
-                                            type="number"
+                                            as="select"
                                             name="paiId"
                                             value={formData['paiId'] || ''}
                                             onChange={handleDropdownChange}
                                             className="custom-input-height custom-select-font-size"
-                                        />
-                                        <option value="">Selecione...</option>
-                                        {entityType === 'department' && dropdownData.departments.map(option => (
-                                            <option key={option.code} value={option.code}>
-                                                {option.name}
-                                            </option>
-                                        ))}
-                                        {entityType === 'group' && dropdownData.groups.map(option => (
-                                            <option key={option.code} value={option.code}>
-                                                {option.name}
-                                            </option>
-                                        ))}
+                                        >
+                                            <option value="">Selecione...</option>
+                                            {entityType === 'department' && dropdownData.departments.map(option => (
+                                                <option key={option.code} value={option.code}>
+                                                    {option.name}
+                                                </option>
+                                            ))}
+                                            {entityType === 'group' && dropdownData.groups.map(option => (
+                                                <option key={option.code} value={option.code}>
+                                                    {option.name}
+                                                </option>
+                                            ))}
+                                        </Form.Control>
                                     </Form.Group>
                                 </Col>
                             </Row>

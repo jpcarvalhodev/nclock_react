@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavBar } from "../components/NavBar";
 import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
@@ -16,6 +16,12 @@ import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric
 import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
 import { CreateModalCatProf } from "../modals/CreateModalCatProf";
 import { customStyles } from "../components/CustomStylesDataTable";
+import { SelectFilter } from "../components/SelectFilter";
+
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
+}
 
 // Define a página de profissões
 export const Professions = () => {
@@ -28,6 +34,7 @@ export const Professions = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
+    const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as profissões
     const fetchProfessions = async () => {
@@ -199,10 +206,22 @@ export const Professions = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
-            name: columnNamesMap[columnKey] || columnKey,
+            name: (
+                <>
+                    {columnNamesMap[columnKey]}
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={professions} />
+                </>
+            ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
+
+    // Filtra os dados da tabela
+    const filteredDataTable = professions.filter(profession =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(profession[key]) === String(filters[key])
+        )
+    );
 
     // Define a coluna de ações
     const actionColumn: TableColumn<Profession> = {
@@ -273,7 +292,7 @@ export const Professions = () => {
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
-                        data={filteredItems}
+                        data={filteredDataTable}
                         onRowDoubleClicked={handleEditProfession}
                         pagination
                         paginationComponentOptions={paginationOptions}

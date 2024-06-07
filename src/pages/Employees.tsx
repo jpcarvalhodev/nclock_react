@@ -18,12 +18,18 @@ import Split from 'react-split';
 import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../components/CustomStylesDataTable';
+import { SelectFilter } from '../components/SelectFilter';
 
 // Define a interface para o estado de dados
 interface DataState {
     departments: Department[];
     groups: Group[];
     employees: Employee[];
+}
+
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
 }
 
 // Define a página funcionários
@@ -41,6 +47,7 @@ export const Employees = () => {
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [initialData, setInitialData] = useState<Employee | null>(null);
+    const [filters, setFilters] = useState<Filters>({});
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -324,11 +331,23 @@ export const Employees = () => {
             };
 
             return {
-                name: field.label,
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={data.employees} />
+                    </>
+                ),
                 selector: row => formatField(row),
                 sortable: true,
             };
         });
+
+    // Filtra os dados da tabela
+    const filteredDataTable = data.employees.filter(employee =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(employee[key]) === String(filters[key])
+        )
+    );
 
     // Define a função de edição de funcionários
     const handleEditEmployee = (employee: Employee) => {
@@ -400,7 +419,7 @@ export const Employees = () => {
                         </div>
                         <DataTable
                             columns={[...columns, actionColumn]}
-                            data={filteredItems}
+                            data={filteredDataTable}
                             onRowDoubleClicked={handleEditEmployee}
                             pagination
                             paginationComponentOptions={paginationOptions}

@@ -13,6 +13,7 @@ import { employeeAttendanceTimesFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import Split from 'react-split';
 import { TreeViewDataNclock } from "../../components/TreeViewNclock";
+import { SelectFilter } from "../../components/SelectFilter";
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -22,15 +23,10 @@ interface DataState {
     attendance: EmployeeAttendanceTimes[];
 }
 
-// Define a interface para os dados de presença de funcionários
-interface EmployeeAttendanceWithPresence extends EmployeeAttendanceTimes {
-    isPresent: boolean;
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
 }
-
-// Este objeto mapeará IDs de funcionários para seus respectivos status de presença
-type EmployeeStatusMap = {
-    [employeeId: string]: EmployeeAttendanceWithPresence;
-};
 
 // Define a página de presença
 export const NclockPresence = () => {
@@ -43,6 +39,7 @@ export const NclockPresence = () => {
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
+    const [filters, setFilters] = useState<Filters>({});
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -52,7 +49,6 @@ export const NclockPresence = () => {
 
     // Função para buscar todos as assiduidades
     const fetchAllAttendances = async () => {
-        const currentDate = new Date().toLocaleDateString('pt-PT');
         try {
             const response = await fetchWithAuth('Attendances/GetAllAttendances');
             if (!response.ok) {
@@ -60,20 +56,17 @@ export const NclockPresence = () => {
                 return;
             }
             const allAttendanceData: EmployeeAttendanceTimes[] = await response.json();
-            const attendanceData = allAttendanceData.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
-            const employeeStatusMap: EmployeeStatusMap = {};
-            attendanceData.forEach(att => {
-                const attendanceDate = new Date(att.attendanceTime);
-                if (attendanceDate.toLocaleDateString('pt-PT') === currentDate) {
-                    employeeStatusMap[att.employeeId] = {
-                        ...att,
-                        isPresent: [0, 2, 4].includes(att.inOutMode)
-                    };
+            const filteredData = allAttendanceData.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
+            const employeeMap: { [key: string]: EmployeeAttendanceTimes } = {};
+            filteredData.forEach((att) => {
+                if (!employeeMap[att.employeeId.toString()] || (new Date(att.attendanceTime) > new Date(employeeMap[att.employeeId.toString()].attendanceTime))) {
+                    employeeMap[att.employeeId.toString()] = att;
                 }
             });
-            const attendances = Object.values(employeeStatusMap);
-            setAttendance(attendances);
-            setFilteredAttendances(attendances);
+            const uniqueAttendances: EmployeeAttendanceTimes[] = Object.values(employeeMap);
+            console.log(uniqueAttendances);
+            setAttendance(uniqueAttendances);
+            setFilteredAttendances(uniqueAttendances);
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -173,27 +166,49 @@ export const NclockPresence = () => {
     // Adicionando as outras colunas
     const otherColumns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
-        .map(field => ({
-            name: field.label,
-            selector: (row: EmployeeAttendanceTimes) => {
+        .map(field => {
+            const formatField = (row: EmployeeAttendanceTimes) => {
                 switch (field.key) {
                     case 'attendanceTime':
                         return formatDateAndTime(row[field.key]);
                     case 'employeeId':
                         return row.employeeName;
                     case 'inOutMode':
-                        return row[field.key] === 0 ? 'Entrada'
-                            : row[field.key] === 1 ? 'Saída'
-                                : row[field.key] === 2 ? 'Pausa - Entrada'
-                                    : row[field.key] === 3 ? 'Pausa - Saída'
-                                        : row[field.key] === 4 ? 'Hora Extra - Entrada'
-                                            : row[field.key] === 5 ? 'Hora Extra - Saída' : '';
+                        switch (row[field.key]) {
+                            case 0: return 'Entrada';
+                            case 1: return 'Saída';
+                            case 2: return 'Pausa - Entrada';
+                            case 3: return 'Pausa - Saída';
+                            case 4: return 'Hora Extra - Entrada';
+                            case 5: return 'Hora Extra - Saída';
+                            default: return '';
+                        }
                     default:
                         return row[field.key];
                 }
-            },
-            sortable: true,
-        }));
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                    </>
+                ),
+                selector: row => formatField(row),
+                sortable: true,
+                format: row => formatField(row),
+            };
+        });
+
+    // Atualização automática de filteredAttendances baseada nos filtros atuais
+    useEffect(() => {
+        const newFilteredAttendances = attendance.filter(att =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || String(att[key]) === String(filters[key])
+            )
+        );
+        setFilteredAttendances(newFilteredAttendances);
+    }, [attendance, filters]);
 
     // Combinando colunas, com a coluna de Presença primeiro
     const columns: TableColumn<EmployeeAttendanceTimes>[] = [presenceColumn, ...otherColumns];

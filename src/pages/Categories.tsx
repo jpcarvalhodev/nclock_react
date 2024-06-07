@@ -16,6 +16,12 @@ import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric
 import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
 import { CreateModalCatProf } from "../modals/CreateModalCatProf";
 import { customStyles } from "../components/CustomStylesDataTable";
+import { SelectFilter } from "../components/SelectFilter";
+
+// Define a interface para os filtros
+interface Filters {
+    [key: string]: string;
+}
 
 // Define a página de categorias
 export const Categories = () => {
@@ -28,6 +34,7 @@ export const Categories = () => {
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<string | null>(null);
+    const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as categorias
     const fetchCategories = async () => {
@@ -200,10 +207,22 @@ export const Categories = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
-            name: columnNamesMap[columnKey] || columnKey,
+            name: (
+                <>
+                    {columnNamesMap[columnKey]}
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={categories} />
+                </>
+            ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
+
+    // Filtra os dados da tabela
+    const filteredDataTable = categories.filter(category =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(category[key]) === String(filters[key])
+        )
+    );    
 
     // Define a coluna de ações
     const actionColumn: TableColumn<Category> = {
@@ -274,7 +293,7 @@ export const Categories = () => {
                 <div className='table-css'>
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
-                        data={filteredItems}
+                        data={filteredDataTable}
                         onRowDoubleClicked={handleEditCategory}
                         pagination
                         paginationComponentOptions={paginationOptions}
