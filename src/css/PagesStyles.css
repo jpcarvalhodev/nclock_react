@@ -80,6 +80,7 @@ body {
 .dashboard-content {
     display: flex;
     flex-wrap: wrap;
+    flex: 1;
 }
 
 .dashboard-calendar {

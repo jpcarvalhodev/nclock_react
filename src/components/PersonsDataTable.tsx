@@ -141,24 +141,24 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         fetchAllEmployees();
     }
 
-    // Filtra os funcionários
-    const handleFilteredEmployees = (employees: Employee[]) => {
-        filteredEmployees(employees);
-    }
-
-    // Filtra os funcionários
+    // Gerencia a aplicação de filtros e atualizar o estado no componente pai
     useEffect(() => {
         let filteredByIDs = selectedEmployeeIds.length > 0
-            ? data.employees.filter((emp: Employee) => selectedEmployeeIds.includes(emp.employeeID))
+            ? data.employees.filter(emp => selectedEmployeeIds.includes(emp.employeeID))
             : data.employees;
 
-        let filteredBySearchText = filteredByIDs.filter((employee) =>
-            Object.values(employee).some((value) =>
-                String(value).toLowerCase().includes(filterText.toLowerCase())
+        let filteredBySearchText = filteredByIDs.filter(emp =>
+            Object.values(emp).some(value => String(value).toLowerCase().includes(filterText.toLowerCase()))
+        );
+
+        const filteredByColumnFilters = filteredBySearchText.filter(employee =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || String(employee[key]).toLowerCase() === filters[key].toLowerCase()
             )
         );
-        handleFilteredEmployees(filteredBySearchText);
-    }, [selectedEmployeeIds, filterText, data.employees]);
+
+        filteredEmployees(filteredByColumnFilters); 
+    }, [selectedEmployeeIds, filterText, filters, data.employees]);
 
     // Reseta a seleção de funcionários
     useEffect(() => {
@@ -281,13 +281,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             };
         });
 
-    // Filtra os dados da tabela
-    const filteredDataTable = data.employees.filter(employee =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(employee[key]) === String(filters[key])
-        )
-    );
-
     // Define o componente de linha expandida
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
@@ -315,7 +308,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             <>
                 <DataTable
                     columns={[...columns, actionColumn]}
-                    data={filteredDataTable}
+                    data={filteredData}
                     highlightOnHover
                     pagination
                     paginationComponentOptions={paginationOptions}

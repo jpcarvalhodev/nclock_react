@@ -52,6 +52,19 @@ function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem
   return [filteredItems, expandedIds];
 }
 
+// Função para coletar todos os IDs expansíveis
+function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
+  let expandableIds: string[] = [];
+  function gatherIds(item: TreeViewBaseItem) {
+    if (item.children && item.children.length > 0) {
+      expandableIds.push(item.id);
+      item.children.forEach(gatherIds);
+    }
+  }
+  items.forEach(gatherIds);
+  return expandableIds;
+}
+
 // Define o componente
 export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProps) {
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
@@ -61,6 +74,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
 
+  // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   useEffect(() => {
     async function fetchData() {
       try {
@@ -174,6 +188,8 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         ];
         setItems(treeItems);
         setFilteredItems(treeItems);
+        const allExpandableIds = collectAllExpandableItemIds(treeItems);
+        setExpandedIds(allExpandableIds);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
         toast.error('Falha ao buscar dados');
@@ -184,7 +200,11 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
 
   // Função para lidar com a expansão dos itens
   const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {
-    setExpandedIds(nodeIds);
+    if (nodeIds.length < expandedIds.length) {
+      setExpandedIds(collectAllExpandableItemIds(items));
+    } else {
+      setExpandedIds(nodeIds);
+    }
   };
 
   // Função para lidar com a mudança de seleção dos itens
@@ -202,18 +222,17 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     });
     setSelectedEmployeeIds(newSelectedEmployeeIds);
     onSelectEmployees(newSelectedEmployeeIds);
-    console.log('selectedEmployeeIds:', newSelectedEmployeeIds);
   };
 
   // Filtra os itens ao mudar o termo de pesquisa
   useEffect(() => {
     const [newFilteredItems, newExpandedIds] = filterItems(items, searchTerm.toLowerCase());
-    if (searchTerm.trim() === '') {
-      setExpandedIds([]);
-    } else {
-      setExpandedIds([...newExpandedIds]);
-    }
     setFilteredItems(newFilteredItems);
+    if (searchTerm.trim()) {
+      setExpandedIds([...newExpandedIds]);
+    } else {
+      setExpandedIds(collectAllExpandableItemIds(items));
+    }
   }, [items, searchTerm]);
 
   useEffect(() => {

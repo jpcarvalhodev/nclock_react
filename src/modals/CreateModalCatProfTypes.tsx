@@ -24,7 +24,7 @@ interface Props<T> {
     onSave: (data: T) => void;
     fields: FieldConfig[];
     initialValues: Partial<T>;
-    entityType: 'categorias' | 'profissões';
+    entityType: 'categorias' | 'profissões' | 'tipos';
 }
 
 // Define a interface para os itens de código
@@ -33,7 +33,7 @@ interface CodeItem {
 }
 
 // Define o componente
-export const CreateModalCatProf = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
+export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -61,13 +61,27 @@ export const CreateModalCatProf = <T extends Record<string, any>>({ title, open,
     // Usa useEffect para buscar os dados de categoria/profissão
     useEffect(() => {
         if (open) {
-            fetchCategoryOrProfessionData();
+            fetchEntityData();
         }
     }, [open]);
 
-    // Função para buscar os dados de categoria/profissão
-    const fetchCategoryOrProfessionData = async () => {
-        const url = entityType === 'categorias' ? 'Categories' : 'Professions';
+    // Função para buscar os dados de categoria, profissão ou tipo
+    const fetchEntityData = async () => {
+        let url;
+        switch (entityType) {
+            case 'categorias':
+                url = 'Categories';
+                break;
+            case 'profissões':
+                url = 'Professions';
+                break;
+            case 'tipos':
+                url = 'ExternalEntityTypes';
+                break;
+            default:
+                toast.error(`Tipo de entidade '${entityType}' não suportado.`);
+                return;
+        }
         try {
             const response = await fetchWithAuth(url);
             if (response.ok) {

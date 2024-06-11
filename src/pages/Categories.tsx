@@ -13,8 +13,8 @@ import { categoryFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
-import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
-import { CreateModalCatProf } from "../modals/CreateModalCatProf";
+import { UpdateModalCatProfTypes } from "../modals/UpdateModalCatProfTypes";
+import { CreateModalCatProfTypes } from "../modals/CreateModalCatProfTypes";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
 
@@ -263,7 +263,7 @@ export const Categories = () => {
                         <ExportButton allData={categories} selectedData={filteredItems} fields={categoryFields} />
                     </div>
                 </div>
-                <CreateModalCatProf
+                <CreateModalCatProfTypes
                     title="Adicionar Categoria"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
@@ -273,7 +273,7 @@ export const Categories = () => {
                     entityType="categorias"
                 />
                 {selectedCategory && (
-                    <UpdateModalCatProf
+                    <UpdateModalCatProfTypes
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateCategory}

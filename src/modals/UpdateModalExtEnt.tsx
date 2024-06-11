@@ -6,6 +6,9 @@ import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 
+// Define a interface para os itens de campo
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
 // Define a interface Entity
 export interface Entity {
     id: string;
@@ -62,24 +65,41 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
         setIsFormValid(isValid);
     }, [formData, fields]);
 
-    // Atualiza o estado do formulário com as opções do dropdown
-    useEffect(() => {
-        const fetchDropdownOptions = async (field: Field) => {
-            if (field.optionsUrl) {
-                const response = await fetchWithAuth(field.optionsUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    setDropdownData(prev => ({ ...prev, [field.key]: data }));
-                }
-            }
-        };
+    // Função para buscar os funcionários
+    const fetchEmployees = async () => {
+        const response = await fetchWithAuth('Employees/GetAllEmployees');
+        if (response.ok) {
+            const employees = await response.json();
+            setDropdownData(prev => ({ ...prev, responsibleName: employees }));
+        } else {
+            toast.error('Erro ao buscar os funcionários.');
+        }
+        fetchEmployees();
+    };
 
-        fields.forEach(field => {
-            if (field.type === 'dropdown') {
-                fetchDropdownOptions(field);
+    // Função para buscar as opções do dropdown
+    const fetchDropdownOptions = async () => {
+        try {
+            const externalEntityTypesResponse = await fetchWithAuth('ExternalEntityTypes');
+            if (externalEntityTypesResponse.ok) {
+                const externalEntitiesType = await externalEntityTypesResponse.json();
+                setDropdownData({
+                    externalEntityTypeId: externalEntitiesType
+                });
+            } else {
+                toast.error('Erro ao buscar os dados de tipos.');
             }
-        });
-    }, [fields]);
+        } catch (error) {
+            toast.error('Erro ao buscar os dados de tipos.');
+            console.error(error);
+        }
+    };
+
+    // Atualiza com a busca de funcionários
+    useEffect(() => {
+        fetchEmployees();
+        fetchDropdownOptions();
+    }, []);
 
     // Função para lidar com a mudança de foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +118,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
     const resetToDefaultAvatar = () => {
         setProfileImage(modalAvatar);
         setFormData({ ...formData, photo: '' });
-      };
+    };
 
     // Função para abrir o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
@@ -110,6 +130,15 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
         setFormData(prevState => ({
             ...prevState,
             [name]: parsedValue
+        }));
+    };
+
+    // Função para lidar com a mudança do dropdown
+    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+        const { value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [key]: value
         }));
     };
 
@@ -189,15 +218,22 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                         </Form.Group>
                     </Col>
                     <Col md={3}>
-                        <Form.Group controlId="formType">
-                            <Form.Label>Tipo</Form.Label>
+                        <Form.Group controlId="formExternalEntityType">
+                            <Form.Label>Tipos de Entidade Externa</Form.Label>
                             <Form.Control
-                                type="string"
+                                as="select"
                                 className="custom-input-height custom-select-font-size"
-                                value={formData.type || ''}
-                                onChange={handleChange}
-                                name="type"
-                            />
+                                value={formData.externalEntityTypeId || ''}
+                                onChange={(e) => handleDropdownChange('externalEntityTypeId', e)}
+                                name="externalEntityTypeId"
+                            >
+                                <option value="">Selecione...</option>
+                                {dropdownData.externalEntityTypeId?.map((option) => (
+                                    <option key={option.externalEntityTypeID} value={option.externalEntityTypeID}>
+                                        {option.name}
+                                    </option>
+                                ))}
+                            </Form.Control>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -217,13 +253,14 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                     <Col md={3}>
                                         <Form.Group controlId="formResponsibleName">
                                             <Form.Label>Nome do Responsável</Form.Label>
-                                            <Form.Control
-                                                type="string"
-                                                className="custom-input-height custom-select-font-size"
-                                                value={formData.responsibleName || ''}
-                                                onChange={handleChange}
-                                                name="responsibleName"
-                                            />
+                                            <Form.Control as="select" value={formData.responsibleName || ''} onChange={handleChange} name="responsibleName" className="custom-input-height custom-select-font-size">
+                                                <option value="">Selecione...</option>
+                                                {dropdownData.responsibleName && dropdownData.responsibleName.map((employee) => (
+                                                    <option key={employee.id} value={employee.name}>
+                                                        {employee.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Control>
                                         </Form.Group>
                                         <Form.Group controlId="formPhone">
                                             <Form.Label>Telefone</Form.Label>

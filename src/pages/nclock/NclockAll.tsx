@@ -70,6 +70,7 @@ export const NclockAll = () => {
             }
             const attendanceData = await response.json();
             setAttendance(attendanceData);
+            setData(prevState => ({ ...prevState, attendance: attendanceData }));
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -85,6 +86,7 @@ export const NclockAll = () => {
             }
             const data = await response.json();
             setFilteredAttendances(data);
+            setData(prevState => ({ ...prevState, attendance: data }));
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -188,7 +190,7 @@ export const NclockAll = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} formatFunction={formatField} />
                     </>
                 ),
                 selector: row => formatField(row),

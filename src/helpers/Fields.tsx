@@ -68,6 +68,13 @@ export const externalEntityFields = [
     { label: 'NIF', key: 'nif', type: 'number', required: true },
     { label: 'Data Inserida', key: 'dateInserted', type: 'datetime-local' },
     { label: 'Data Atualizada', key: 'dateUpdated', type: 'datetime-local' },
+    { label: 'Tipo', key: 'externalEntityTypeId', type: 'dropdown' },
+];
+
+export const externalEntityTypeFields = [
+    { label: 'Ordem', key: 'order', type: 'number', required: true },
+    { label: 'Nome', key: 'name', type: 'string', required: true },
+    { label: 'Data de Inserção', key: 'dateInserted', type: 'datetime-local', required: true},
 ];
 
 export const groupFields = [

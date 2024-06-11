@@ -4,7 +4,7 @@ import { Footer } from "../components/Footer";
 import '../css/PagesStyles.css';
 import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ExternalEntity } from "../helpers/Types";
+import { ExternalEntity, ExternalEntityTypes } from "../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../modals/DeleteModal";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
@@ -23,6 +23,12 @@ interface Filters {
     [key: string]: string;
 }
 
+// Define a interface para o estado de dados
+interface DataState {
+    externalEntityTypes: ExternalEntityTypes[];
+    externalEntityTypeMap: { [key: string]: string };
+}
+
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
@@ -35,27 +41,44 @@ export const ExternalEntities = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [data, setData] = useState<DataState>({
+        externalEntityTypes: [],
+        externalEntityTypeMap: {}
+    });
 
-    // Função para buscar as entidades externas
-    const fetchExternalEntities = async () => {
+    // Busca as entidades externas e os tipos de entidades externas
+    const fetchData = async () => {
         try {
-            const response = await fetchWithAuth('ExternalEntities', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                toast.error('Erro ao buscar os dados das entidades externas');
+            const typesResponse = await fetchWithAuth('ExternalEntityTypes');
+            if (!typesResponse.ok) {
+                toast.error('Falha ao buscar dados dos tipos de entidades externas');
+                return;
             }
+            const types = await typesResponse.json();
+            const typeMap = types.reduce((acc: { [key: string]: string }, type: ExternalEntityTypes) => {
+                acc[type.externalEntityTypeID] = type.name;
+                return acc;
+            }, {});
 
-            const data = await response.json();
-            setExternalEntities(data);
+            const entitiesResponse = await fetchWithAuth('ExternalEntities');
+            if (!entitiesResponse.ok) {
+                toast.error('Erro ao buscar os dados das entidades externas');
+                return;
+            }
+            let externalEntities = await entitiesResponse.json();
+
+            externalEntities = externalEntities.map((entity: ExternalEntity) => ({
+                ...entity,
+                externalEntityTypeName: typeMap[entity.externalEntityTypeId]
+            }));
+            console.log('Entidades externas:', externalEntities);
+            setExternalEntities(externalEntities);
+            setData(prev => ({ ...prev, externalEntityType: types, externalEntityTypeMap: typeMap }));
         } catch (error) {
-            console.error('Erro ao buscar os dados das entidades externas:', error);
+            console.error('Erro ao buscar dados dos tipos:', error);
+            toast.error('Falha ao buscar dados dos tipos de entidades externas');
         }
-    };
+    }
 
     // Função para adicionar uma nova entidade externa
     const handleAddExternalEntity = async (externalEntity: ExternalEntity) => {
@@ -67,11 +90,9 @@ export const ExternalEntities = () => {
                 },
                 body: JSON.stringify(externalEntity)
             });
-
             if (!response.ok) {
                 toast.error('Erro ao adicionar nova entidade externa');
             }
-
             const data = await response.json();
             setExternalEntities([...externalEntities, data]);
             toast.success('Entidade externa adicionada com sucesso!');
@@ -139,12 +160,12 @@ export const ExternalEntities = () => {
 
     // Atualiza as entidades externas
     useEffect(() => {
-        fetchExternalEntities();
+        fetchData();
     }, []);
 
     // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {
-        fetchExternalEntities();
+        fetchData();
     };
 
     // Função para abrir o modal de editar entidade externa
@@ -196,24 +217,47 @@ export const ExternalEntities = () => {
         rowsPerPageText: 'Linhas por página'
     };
 
-    // Mapeia os nomes das colunas
-    const columnNamesMap = externalEntityFields.reduce<Record<string, string>>((acc, field) => {
-        acc[field.key] = field.label;
-        return acc;
-    }, {});
+    // Função para formatar a data e a hora
+    function formatDateAndTime(input: string | Date): string {
+        const date = typeof input === 'string' ? new Date(input) : input;
+        const options: Intl.DateTimeFormatOptions = {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        };
+        return new Intl.DateTimeFormat('pt-PT', options).format(date);
+    }
 
     // Define as colunas da tabela
-    const tableColumns = selectedColumns
-        .map(columnKey => ({
-            name: (
-                <>
-                    {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={externalEntities} />
-                </>
-            ),
-            selector: (row: Record<string, any>) => row[columnKey],
-            sortable: true,
-        }));
+    const columns: TableColumn<ExternalEntity>[] = externalEntityFields
+        .filter(field => selectedColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: ExternalEntity) => {
+                switch (field.key) {
+                    case 'dateInserted':
+                    case 'dateUpdated':
+                        return row[field.key] ? formatDateAndTime(row[field.key]) : '';
+                    case 'externalEntityTypeId':
+                        return data.externalEntityTypeMap[row.externalEntityTypesName] || '';
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={externalEntities} />
+                    </>
+                ),
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
 
     // Filtra os dados da tabela
     const filteredDataTable = externalEntities.filter(externalEntity =>
@@ -291,10 +335,10 @@ export const ExternalEntities = () => {
                     entityId={selectedExternalEntityForDelete}
                 />
             </div>
-            <div>
+            <div className='content-wrapper'>
                 <div className='table-css'>
                     <DataTable
-                        columns={[...tableColumns, actionColumn]}
+                        columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         onRowDoubleClicked={handleEditExternalEntity}
                         pagination

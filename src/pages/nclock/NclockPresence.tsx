@@ -28,6 +28,15 @@ interface Filters {
     [key: string]: string;
 }
 
+// Define a interface para os dados de presença de funcionários
+interface EmployeeAttendanceWithPresence extends EmployeeAttendanceTimes {
+    isPresent: boolean;
+}
+// Este objeto mapeará IDs de funcionários para seus respectivos status de presença
+type EmployeeStatusMap = {
+    [employeeId: string]: EmployeeAttendanceWithPresence;
+};
+
 // Define a página de presença
 export const NclockPresence = () => {
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
@@ -49,6 +58,7 @@ export const NclockPresence = () => {
 
     // Função para buscar todos as assiduidades
     const fetchAllAttendances = async () => {
+        const currentDate = new Date().toLocaleDateString('pt-PT');
         try {
             const response = await fetchWithAuth('Attendances/GetAllAttendances');
             if (!response.ok) {
@@ -56,17 +66,26 @@ export const NclockPresence = () => {
                 return;
             }
             const allAttendanceData: EmployeeAttendanceTimes[] = await response.json();
-            const filteredData = allAttendanceData.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
-            const employeeMap: { [key: string]: EmployeeAttendanceTimes } = {};
-            filteredData.forEach((att) => {
-                if (!employeeMap[att.employeeId.toString()] || (new Date(att.attendanceTime) > new Date(employeeMap[att.employeeId.toString()].attendanceTime))) {
-                    employeeMap[att.employeeId.toString()] = att;
+            const attendanceData = allAttendanceData.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
+            const employeeStatusMap: EmployeeStatusMap = {};
+            attendanceData.forEach(att => {
+                const attendanceDate = new Date(att.attendanceTime);
+                if (attendanceDate.toLocaleDateString('pt-PT') === currentDate) {
+                    employeeStatusMap[att.employeeId] = {
+                        ...att,
+                        isPresent: [0, 2, 4].includes(att.inOutMode)
+                    };
                 }
             });
-            const uniqueAttendances: EmployeeAttendanceTimes[] = Object.values(employeeMap);
-            console.log(uniqueAttendances);
-            setAttendance(uniqueAttendances);
-            setFilteredAttendances(uniqueAttendances);
+            const attendances = Object.values(employeeStatusMap);
+            setAttendance(attendances);
+            setFilteredAttendances(attendances);
+            setData({
+                departments: [],
+                groups: [],
+                employees: [],
+                attendance: attendances,
+            });
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -191,7 +210,7 @@ export const NclockPresence = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} formatFunction={formatField} />
                     </>
                 ),
                 selector: row => formatField(row),

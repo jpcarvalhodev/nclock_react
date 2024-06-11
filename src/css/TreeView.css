@@ -9,6 +9,7 @@
 .treeViewFlexItem {
   flex-grow: 1;
   overflow: auto;
+  font-size: 10px !important;
 }
 
 .SearchBox fieldset {
@@ -19,4 +20,8 @@
 
 .tree-view-checkbox {
   margin-right: 8px;
+}
+
+.MuiTreeItem-label {
+  font-size: 0.9rem !important;
 }

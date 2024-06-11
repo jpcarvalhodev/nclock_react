@@ -13,8 +13,8 @@ import { professionFields } from "../helpers/Fields";
 import { ExportButton } from "../components/ExportButton";
 import { toast } from "react-toastify";
 import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
-import { UpdateModalCatProf } from "../modals/UpdateModalCatProf";
-import { CreateModalCatProf } from "../modals/CreateModalCatProf";
+import { UpdateModalCatProfTypes } from "../modals/UpdateModalCatProfTypes";
+import { CreateModalCatProfTypes } from "../modals/CreateModalCatProfTypes";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
 
@@ -262,7 +262,7 @@ export const Professions = () => {
                         <ExportButton allData={professions} selectedData={filteredItems} fields={professionFields} />
                     </div>
                 </div>
-                <CreateModalCatProf
+                <CreateModalCatProfTypes
                     title="Adicionar Profissão"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
@@ -272,7 +272,7 @@ export const Professions = () => {
                     entityType="profissões"
                 />
                 {selectedProfession && (
-                    <UpdateModalCatProf
+                    <UpdateModalCatProfTypes
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateProfession}

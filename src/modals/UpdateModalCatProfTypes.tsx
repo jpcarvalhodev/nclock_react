@@ -32,7 +32,7 @@ interface UpdateModalProps<T extends Entity> {
 }
 
 // Exporta o componente
-export const UpdateModalCatProf = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});

@@ -219,7 +219,7 @@ export const Departments = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || String(department[key]) === String(filters[key])
         )
-    );
+    );  
 
     // Abre o modal de edição
     const handleEditDepartment = (department: Department) => {
@@ -235,8 +235,13 @@ export const Departments = () => {
 
     // Abre o modal de deletar
     const handleOpenDeleteModal = (departmentID: string) => {
-        setSelectedDepartmentForDelete(departmentID);
-        setShowDeleteModal(true);
+        const department = departments.find(dep => dep.departmentID === departmentID);
+        if (department && department.subdepartments && department.subdepartments.length > 0) {
+            toast.error('Este departamento possui subdepartamentos vinculados. Primeiro apague os subdepartamentos para poder apagar este departamento.');
+        } else {
+            setSelectedDepartmentForDelete(departmentID);
+            setShowDeleteModal(true);
+        }
     };
 
     // Define as opções de paginação de EN para PT

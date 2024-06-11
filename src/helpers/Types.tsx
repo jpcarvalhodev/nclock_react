@@ -65,23 +65,32 @@ export type ExternalEntity = {
     [key: string]: any;
     id: string,
     name: string,
-    Comments: string,
-    CommercialName: string,
-    ResponsibleName: string,
-    Photo: string,
-    Address: string,
-    ZIPCode: string,
-    Locality: string,
-    Village: string,
-    District: string,
-    Phone: number,
-    Mobile: number,
-    Email: string,
-    WWW: string,
-    Fax: number,
-    NIF: number,
-    DateInserted: Date,
-    DateUpdated: Date,
+    comments: string,
+    commercialName: string,
+    responsibleName: string,
+    photo: string,
+    address: string,
+    zipCode: string,
+    locality: string,
+    dillage: string,
+    district: string,
+    phone: number,
+    mobile: number,
+    email: string,
+    www: string,
+    fax: number,
+    nif: number,
+    dateInserted: Date,
+    dateUpdated: Date,
+    externalEntityTypeId: string,
+};
+
+export type ExternalEntityTypes = {
+    [key: string]: any;
+    id: string;
+    order: number;
+    name: string;
+    dateInserted: Date;
 };
 
 export type Group = {
@@ -117,23 +126,18 @@ export type Zone = {
     email: string,
 };
 
-export type entityTypes = {
-    [key: string]: any;
-};
-
 export type EmployeeAttendanceTimes = {
     [key: string]: any;
     id: string;
     deviceId: string;
     deviceNumber: number;
-    deviceName: string;
     employeeId: string;
     enrollNumber: number;
     employeeName: string;
     verifyMode: number;
     inOutMode: number;
     workCode: number;
+    observation: string;
     type: number;
     attendanceTime: Date;
-    observation: string;
 };

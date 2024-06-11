@@ -1,14 +1,15 @@
-import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes } from "../helpers/Types";
+import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes } from "../helpers/Types";
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
 import ReactDOM from "react-dom";
 
-type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | EmployeeAttendanceTimes;
+type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes;
 
 interface SelectFilterProps {
     column: string;
     setFilters: React.Dispatch<React.SetStateAction<Record<string, string>>>;
     data: DataItem[];
+    formatFunction?: (item: EmployeeAttendanceTimes) => string; 
 }
 
 export const SelectFilter = ({ column, setFilters, data }: SelectFilterProps) => {

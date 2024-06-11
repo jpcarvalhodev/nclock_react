@@ -236,13 +236,6 @@ export const Employees = () => {
         setShowDeleteModal(true);
     };
 
-    // Define a função de filtragem dos funcionários
-    const filteredItems = filteredEmployees.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
-
     // Define a função de seleção de colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -329,7 +322,6 @@ export const Employees = () => {
                         return row[field.key] || '';
                 }
             };
-
             return {
                 name: (
                     <>

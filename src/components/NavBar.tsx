@@ -515,37 +515,37 @@ export const NavBar = () => {
 				<ul className="nav nav-tabs">
 					{showNclockTab && (
 						<li className={`nav-item ${activeTab === 'nclock' ? 'active' : ''}`}>
-							<a className="nav-link nclock-tab" id="nclock-tab" onClick={() => handleRibbonClick('nclock')}>Nclock</a>
+							<a className="nav-link nclock-tab" id="nclock-tab" onClick={() => handleRibbonClick('nclock')}>NCLOCK</a>
 						</li>
 					)}
 					{showNaccessTab && (
 						<li className={`nav-item ${activeTab === 'naccess' ? 'active' : ''}`}>
-							<a className="nav-link naccess-tab" id="naccess-tab" onClick={() => handleRibbonClick('naccess')}>Naccess</a>
+							<a className="nav-link naccess-tab" id="naccess-tab" onClick={() => handleRibbonClick('naccess')}>NACCESS</a>
 						</li>
 					)}
 					{showNvisitorTab && (
 						<li className={`nav-item ${activeTab === 'nvisitor' ? 'active' : ''}`}>
-							<a className="nav-link nvisitor-tab" id="nvisitor-tab" onClick={() => handleRibbonClick('nvisitor')}>Nvisitor</a>
+							<a className="nav-link nvisitor-tab" id="nvisitor-tab" onClick={() => handleRibbonClick('nvisitor')}>NVISITOR</a>
 						</li>
 					)}
 					{showNparkTab && (
 						<li className={`nav-item ${activeTab === 'npark' ? 'active' : ''}`}>
-							<a className="nav-link npark-tab" id="npark-tab" onClick={() => handleRibbonClick('npark')}>Npark</a>
+							<a className="nav-link npark-tab" id="npark-tab" onClick={() => handleRibbonClick('npark')}>NPARK</a>
 						</li>
 					)}
 					{showNdoorTab && (
 						<li className={`nav-item ${activeTab === 'ndoor' ? 'active' : ''}`}>
-							<a className="nav-link ndoor-tab" id="ndoor-tab" onClick={() => handleRibbonClick('ndoor')}>Ndoor</a>
+							<a className="nav-link ndoor-tab" id="ndoor-tab" onClick={() => handleRibbonClick('ndoor')}>NDOOR</a>
 						</li>
 					)}
 					{showNpatrolTab && (
 						<li className={`nav-item ${activeTab === 'npatrol' ? 'active' : ''}`}>
-							<a className="nav-link npatrol-tab" id="npatrol-tab" onClick={() => handleRibbonClick('npatrol')}>Npatrol</a>
+							<a className="nav-link npatrol-tab" id="npatrol-tab" onClick={() => handleRibbonClick('npatrol')}>NPATROL</a>
 						</li>
 					)}
 					{showNcardTab && (
 						<li className={`nav-item ${activeTab === 'ncard' ? 'active' : ''}`}>
-							<a className="nav-link ncard-tab" id="ncard-tab" onClick={() => handleRibbonClick('ncard')}>Ncard</a>
+							<a className="nav-link ncard-tab" id="ncard-tab" onClick={() => handleRibbonClick('ncard')}>NCARD</a>
 						</li>
 					)}
 					{showNviewTab && (
@@ -555,20 +555,20 @@ export const NavBar = () => {
 					)}
 					{showNsecurTab && (
 						<li className={`nav-item ${activeTab === 'nsecur' ? 'active' : ''}`}>
-							<a className="nav-link nsecur-tab" id="nsecur-tab" onClick={() => handleRibbonClick('nsecur')}>Nsecur</a>
+							<a className="nav-link nsecur-tab" id="nsecur-tab" onClick={() => handleRibbonClick('nsecur')}>NSECUR</a>
 						</li>
 					)}
 					<li className={`nav-item ${activeTab === 'pessoas' ? 'active' : ''}`}>
-						<a className="nav-link pessoas-tab" id="pessoas-tab" onClick={() => handleRibbonClick('pessoas')}>Pessoas</a>
+						<a className="nav-link pessoas-tab" id="pessoas-tab" onClick={() => handleRibbonClick('pessoas')}>PESSOAS</a>
 					</li>
 					<li className={`nav-item ${activeTab === 'dispositivos' ? 'active' : ''}`}>
-						<a className="nav-link dispositivos-tab" id="dispositivos-tab" onClick={() => handleRibbonClick('dispositivos')}>Dispositivos</a>
+						<a className="nav-link dispositivos-tab" id="dispositivos-tab" onClick={() => handleRibbonClick('dispositivos')}>DISPOSITIVOS</a>
 					</li>
 					<li className={`nav-item ${activeTab === 'configuracao' ? 'active' : ''}`}>
-						<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={() => handleRibbonClick('configuracao')}>Configuração</a>
+						<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={() => handleRibbonClick('configuracao')}>CONFIGURAÇÃO</a>
 					</li>
 					<li className={`nav-item ${activeTab === 'ajuda' ? 'active' : ''}`}>
-						<a className="nav-link ajuda-tab" id="ajuda-tab" onClick={() => handleRibbonClick('ajuda')}>Ajuda</a>
+						<a className="nav-link ajuda-tab" id="ajuda-tab" onClick={() => handleRibbonClick('ajuda')}>AJUDA</a>
 					</li>
 				</ul>
 				<div className="user-section">

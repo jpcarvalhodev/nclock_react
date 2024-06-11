@@ -83,6 +83,7 @@ export const NclockMovement = () => {
             const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
             setAttendance(attendanceData);
             filterAttendanceDataForToday(attendanceData);
+            setData(prevData => ({ ...prevData, attendance: attendanceData }));
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -99,6 +100,7 @@ export const NclockMovement = () => {
             const data = await response.json();
             const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.typeDescription !== 3);
             setFilteredAttendances(attendanceData);
+            setData(prevData => ({ ...prevData, attendance: attendanceData }));
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -313,7 +315,7 @@ export const NclockMovement = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} formatFunction={formatField} />
                     </>
                 ),
                 selector: row => formatField(row),
