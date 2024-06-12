@@ -9,7 +9,6 @@ interface SelectFilterProps {
     column: string;
     setFilters: React.Dispatch<React.SetStateAction<Record<string, string>>>;
     data: DataItem[];
-    formatFunction?: (item: EmployeeAttendanceTimes) => string; 
 }
 
 export const SelectFilter = ({ column, setFilters, data }: SelectFilterProps) => {

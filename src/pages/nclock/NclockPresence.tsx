@@ -67,7 +67,13 @@ export const NclockPresence = () => {
             }
             const allAttendanceData: EmployeeAttendanceTimes[] = await response.json();
             const attendanceData = allAttendanceData.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
-            const employeeStatusMap: EmployeeStatusMap = {};
+            const employeeStatusMap: EmployeeStatusMap = attendanceData.reduce((acc, att) => {
+                acc[att.employeeId as string] = {
+                    ...att,
+                    isPresent: false
+                };
+                return acc;
+            }, {} as EmployeeStatusMap);
             attendanceData.forEach(att => {
                 const attendanceDate = new Date(att.attendanceTime);
                 if (attendanceDate.toLocaleDateString('pt-PT') === currentDate) {
@@ -161,7 +167,7 @@ export const NclockPresence = () => {
         return new Intl.DateTimeFormat('pt-PT', options).format(date);
     }
 
-    // Remove o campo de observação
+    // Remove o campo de observação e tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'type');
 
     // Definindo a coluna de Presença primeiro
@@ -210,24 +216,20 @@ export const NclockPresence = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} formatFunction={formatField} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
                     </>
                 ),
                 selector: row => formatField(row),
                 sortable: true,
-                format: row => formatField(row),
             };
         });
 
-    // Atualização automática de filteredAttendances baseada nos filtros atuais
-    useEffect(() => {
-        const newFilteredAttendances = attendance.filter(att =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || String(att[key]) === String(filters[key])
-            )
-        );
-        setFilteredAttendances(newFilteredAttendances);
-    }, [attendance, filters]);
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredAttendances.filter(attendances =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(attendances[key]) === String(filters[key])
+        )
+    );
 
     // Combinando colunas, com a coluna de Presença primeiro
     const columns: TableColumn<EmployeeAttendanceTimes>[] = [presenceColumn, ...otherColumns];
@@ -277,7 +279,7 @@ export const NclockPresence = () => {
                         </div>
                         <DataTable
                             columns={columns}
-                            data={filteredAttendances}
+                            data={filteredDataTable}
                             pagination
                             paginationComponentOptions={paginationOptions}
                             selectableRows

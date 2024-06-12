@@ -190,7 +190,7 @@ export const NclockAll = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} formatFunction={formatField} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -198,15 +198,12 @@ export const NclockAll = () => {
             };
         });
 
-    // Atualização automática de filteredAttendances baseada nos filtros atuais
-    useEffect(() => {
-        const newFilteredAttendances = attendance.filter(att =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || String(att[key]) === String(filters[key])
-            )
-        );
-        setFilteredAttendances(newFilteredAttendances);
-    }, [attendance, filters]);
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredAttendances.filter(attendances =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(attendances[key]) === String(filters[key])
+        )
+    );
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -269,7 +266,7 @@ export const NclockAll = () => {
                         </div>
                         <DataTable
                             columns={columns}
-                            data={filteredAttendances}
+                            data={filteredDataTable}
                             pagination
                             paginationComponentOptions={paginationOptions}
                             selectableRows

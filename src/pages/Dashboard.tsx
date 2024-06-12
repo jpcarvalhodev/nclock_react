@@ -92,7 +92,10 @@ export const Dashboard = () => {
                     'Content-Type': 'application/json',
                 },
             });
-            if (!response.ok) toast.error('Erro ao buscar eventos');
+            if (!response.ok) {
+                toast.error('Erro ao buscar eventos');
+                return [];
+            }
             const employees: Employee[] = await response.json();
             setTotalEmployees(employees.length);
             const currentYear = new Date().getFullYear();
@@ -121,7 +124,10 @@ export const Dashboard = () => {
                     'Content-Type': 'application/json',
                 },
             });
-            if (!response.ok) toast.error('Erro ao buscar departamentos');
+            if (!response.ok) {
+                toast.error('Erro ao buscar departamentos');
+                return;
+            }
             const departments: Department[] = await response.json();
             setTotalDepartments(departments.length);
         } catch (error) {
@@ -137,7 +143,10 @@ export const Dashboard = () => {
                     'Content-Type': 'application/json',
                 },
             });
-            if (!response.ok) toast.error('Erro ao buscar grupos');
+            if (!response.ok) {
+                toast.error('Erro ao buscar grupos');
+                return;
+            }
             const groups: Group[] = await response.json();
             setTotalGroups(groups.length);
         } catch (error) {

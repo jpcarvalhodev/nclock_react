@@ -19,6 +19,7 @@ import { TreeViewData } from '../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { SelectFilter } from '../components/SelectFilter';
+import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -124,6 +125,7 @@ export const Employees = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar novo funcionário');
+                return;
             }
             const employeesData = await response.json();
             setEmployees([...employees, employeesData]);
@@ -131,12 +133,14 @@ export const Employees = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success('Funcionário adicionado com sucesso');
+            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshEmployees();
         }
-        setShowAddModal(false);
-        refreshEmployees();
     };
 
     // Define a função de atualização de funcionários
@@ -156,19 +160,15 @@ export const Employees = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedEmployee = await response.json();
-                const updatedEmployees = employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
-                setData(prevData => ({
-                    ...prevData,
-                    employees: updatedEmployees
-                }));
-                setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
-                toast.success('Funcionário atualizado com sucesso');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedEmployee = await response.json();
+            const updatedEmployees = employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
+            setData(prevData => ({
+                ...prevData,
+                employees: updatedEmployees
+            }));
+            setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
+            toast.success(response.statusText || 'Funcionário atualizado com sucesso');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
@@ -192,17 +192,22 @@ export const Employees = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar funcionário');
+                return;
             }
             const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
             setData(prevData => ({
                 ...prevData,
                 employees: deletedEmployee
             }));
-            toast.success('Funcionário apagado com sucesso');
+            await response.text();
+            toast.success(response.statusText || 'Funcionário apagado com sucesso!')
+
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshEmployees();
         }
-        refreshEmployees();
     };
 
     // Busca os funcionários

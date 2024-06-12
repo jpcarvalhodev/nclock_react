@@ -48,6 +48,7 @@ export const Categories = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao buscar os dados das categorias');
+                return;
             }
 
             const data = await response.json();
@@ -70,17 +71,19 @@ export const Categories = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar nova categoria');
+                return;
             }
 
             const data = await response.json();
             setCategories([...categories, data]);
-            toast.success('Categoria adicionada com sucesso!');
+            toast.success(response.statusText || 'Categoria adicionada com sucesso!');
+            
         } catch (error) {
             console.error('Erro ao adicionar nova categoria:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshCategories();
         }
-
-        setShowAddModal(false);
-        refreshCategories();
     };
 
     // Função para atualizar uma categoria
@@ -100,14 +103,11 @@ export const Categories = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedCategory = await response.json();
-                setCategories(categories => categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
-                toast.success('Categoria atualizada com sucesso!');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedCategory = await response.json();
+            setCategories(categories => categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
+            toast.success(response.statusText || 'Categoria atualizada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar categoria:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -129,13 +129,17 @@ export const Categories = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar categoria');
+                return;
             }
+            await response.text();
+            toast.success(response.statusText || 'Categoria apagada com sucesso!');
 
-            toast.success('Categoria apagada com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar categoria:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshCategories();
         }
-        refreshCategories();
     };
 
     // Busca as categorias ao carregar a página
@@ -222,7 +226,7 @@ export const Categories = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || String(category[key]) === String(filters[key])
         )
-    );    
+    );
 
     // Define a coluna de ações
     const actionColumn: TableColumn<Category> = {

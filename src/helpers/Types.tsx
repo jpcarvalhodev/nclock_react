@@ -83,6 +83,7 @@ export type ExternalEntity = {
     dateInserted: Date,
     dateUpdated: Date,
     externalEntityTypeId: string,
+    externalEntityTypeName: string,
 };
 
 export type ExternalEntityTypes = {
@@ -98,7 +99,6 @@ export type Group = {
     id: string;
     name: string;
     description: string;
-    paiID: number;
 };
 
 export type Profession = {

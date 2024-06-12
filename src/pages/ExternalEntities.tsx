@@ -17,16 +17,16 @@ import { CreateModalExtEnt } from "../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../modals/UpdateModalExtEnt";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
+import { set } from "date-fns";
+
+interface DataState {
+    externalEntity: ExternalEntity[];
+    externalEntityTypes: ExternalEntityTypes[];
+}
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
-}
-
-// Define a interface para o estado de dados
-interface DataState {
-    externalEntityTypes: ExternalEntityTypes[];
-    externalEntityTypeMap: { [key: string]: string };
 }
 
 // Define a página de Entidades Externas
@@ -42,43 +42,40 @@ export const ExternalEntities = () => {
     const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [data, setData] = useState<DataState>({
+        externalEntity: [],
         externalEntityTypes: [],
-        externalEntityTypeMap: {}
     });
 
     // Busca as entidades externas e os tipos de entidades externas
     const fetchData = async () => {
         try {
-            const typesResponse = await fetchWithAuth('ExternalEntityTypes');
-            if (!typesResponse.ok) {
-                toast.error('Falha ao buscar dados dos tipos de entidades externas');
+            const typeResponsePromise = fetchWithAuth('ExternalEntityTypes');
+            const entityResponsePromise = fetchWithAuth('ExternalEntities', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const [typeResponse, entityResponse] = await Promise.all([typeResponsePromise, entityResponsePromise]);
+
+            if (!typeResponse.ok || !entityResponse.ok) {
+                toast.error('Erro ao buscar os dados');
                 return;
             }
-            const types = await typesResponse.json();
-            const typeMap = types.reduce((acc: { [key: string]: string }, type: ExternalEntityTypes) => {
-                acc[type.externalEntityTypeID] = type.name;
-                return acc;
-            }, {});
-
-            const entitiesResponse = await fetchWithAuth('ExternalEntities');
-            if (!entitiesResponse.ok) {
-                toast.error('Erro ao buscar os dados das entidades externas');
-                return;
-            }
-            let externalEntities = await entitiesResponse.json();
-
-            externalEntities = externalEntities.map((entity: ExternalEntity) => ({
-                ...entity,
-                externalEntityTypeName: typeMap[entity.externalEntityTypeId]
-            }));
-            console.log('Entidades externas:', externalEntities);
-            setExternalEntities(externalEntities);
-            setData(prev => ({ ...prev, externalEntityType: types, externalEntityTypeMap: typeMap }));
+            const [ExternalEntityTypes, ExternalEntities] = await Promise.all([
+                typeResponse.json(),
+                entityResponse.json()
+            ]);
+            setData({
+                externalEntity: ExternalEntities,
+                externalEntityTypes: ExternalEntityTypes,
+            });
         } catch (error) {
-            console.error('Erro ao buscar dados dos tipos:', error);
-            toast.error('Falha ao buscar dados dos tipos de entidades externas');
+            console.error('Erro ao buscar dados:', error);
+            toast.error('Falha ao buscar dados');
         }
-    }
+    };
 
     // Função para adicionar uma nova entidade externa
     const handleAddExternalEntity = async (externalEntity: ExternalEntity) => {
@@ -92,10 +89,12 @@ export const ExternalEntities = () => {
             });
             if (!response.ok) {
                 toast.error('Erro ao adicionar nova entidade externa');
+                return;
             }
             const data = await response.json();
             setExternalEntities([...externalEntities, data]);
-            toast.success('Entidade externa adicionada com sucesso!');
+            toast.success(response.statusText || 'Entidade externa adicionada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar nova entidade externa:', error);
         }
@@ -120,14 +119,11 @@ export const ExternalEntities = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedExternalEntity = await response.json();
-                setExternalEntities(externalEntities => externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
-                toast.success('Entidade externa atualizada com sucesso!');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedExternalEntity = await response.json();
+            setExternalEntities(externalEntities => externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
+            toast.success(response.statusText || 'Entidade Externa atualizada com sucesso');
+
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -149,13 +145,17 @@ export const ExternalEntities = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar entidade externa');
+                return;
             }
+            await response.text();
+            toast.success(response.statusText || 'Entidade externa apagada com sucesso!');
 
-            toast.success('Entidade externa apagada com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar entidade externa:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshExternalEntities();
         }
-        refreshExternalEntities();
     };
 
     // Atualiza as entidades externas
@@ -242,7 +242,8 @@ export const ExternalEntities = () => {
                     case 'dateUpdated':
                         return row[field.key] ? formatDateAndTime(row[field.key]) : '';
                     case 'externalEntityTypeId':
-                        return data.externalEntityTypeMap[row.externalEntityTypesName] || '';
+                        const typeName = data.externalEntityTypes.find(type => type.externalEntityTypeID === row.externalEntityTypeId)?.name;
+                        return typeName;
                     default:
                         return row[field.key] || '';
                 }
@@ -251,7 +252,7 @@ export const ExternalEntities = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={externalEntities} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={data.externalEntity} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -260,7 +261,7 @@ export const ExternalEntities = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = externalEntities.filter(externalEntity =>
+    const filteredDataTable = data.externalEntity.filter(externalEntity =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(externalEntity[key]) === String(filters[key])
         )

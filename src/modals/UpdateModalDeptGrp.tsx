@@ -120,15 +120,17 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar novo funcionário');
+                return;
             }
             const data = await response.json();
             setEmployees([...employees, data]);
             toast.success('Funcionário adicionado com sucesso');
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
+        } finally {
+            setShowEmployeeModal(false);
+            fetchEntities();
         }
-
-        setShowEmployeeModal(false);
     };
 
     // Função para atualizar um funcionário
@@ -162,6 +164,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateEmployeeModal(false);
+            fetchEntities();
         }
     };
 
@@ -221,8 +224,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
-        const selectedPai = dropdownData.departments.find(dept => dept.departmentID === value) ||
-            dropdownData.groups.find(grp => grp.groupID === value);
+        const selectedPai = dropdownData.departments.find(dept => dept.departmentID === value);
 
         if (selectedPai) {
             setFormData(prevState => ({
@@ -347,30 +349,27 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                         />
                                     </Form.Group>
                                 </Col>
-                                <Col md={6}>
-                                    <Form.Group controlId="formPaiId">
-                                        <Form.Label>ID de Parente</Form.Label>
-                                        <Form.Control
-                                            as="select"
-                                            name="paiId"
-                                            value={formData['paiId'] || ''}
-                                            onChange={handleDropdownChange}
-                                            className="custom-input-height custom-select-font-size"
-                                        >
-                                            <option value="">Selecione...</option>
-                                            {entityType === 'department' && dropdownData.departments.map(option => (
-                                                <option key={option.code} value={option.code}>
-                                                    {option.name}
-                                                </option>
-                                            ))}
-                                            {entityType === 'group' && dropdownData.groups.map(option => (
-                                                <option key={option.code} value={option.code}>
-                                                    {option.name}
-                                                </option>
-                                            ))}
-                                        </Form.Control>
-                                    </Form.Group>
-                                </Col>
+                                {entityType === 'department' && (
+                                    <Col md={6}>
+                                        <Form.Group controlId="formPaiId">
+                                            <Form.Label>ID de Parente</Form.Label>
+                                            <Form.Control
+                                                as="select"
+                                                name="paiId"
+                                                value={formData['paiId'] || ''}
+                                                onChange={handleDropdownChange}
+                                                className="custom-input-height custom-select-font-size"
+                                            >
+                                                <option value="">Selecione...</option>
+                                                {dropdownData.departments.map(option => (
+                                                    <option key={option.code} value={option.code}>
+                                                        {option.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Control>
+                                        </Form.Group>
+                                    </Col>
+                                )}
                             </Row>
                             <h5 style={{ marginTop: 20 }}>{entityType === 'department' ? 'Departamentos' : 'Grupos'}</h5>
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>

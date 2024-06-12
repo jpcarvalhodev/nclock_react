@@ -116,12 +116,14 @@ export const Persons = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success('Funcionário adicionado com sucesso');
+            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshEmployees();
         }
-        setShowAddModal(false);
-        refreshEmployees();
     };
 
     // Função para selecionar funcionários

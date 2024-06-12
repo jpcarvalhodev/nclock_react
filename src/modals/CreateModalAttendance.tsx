@@ -68,6 +68,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                 });
             } else {
                 toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
+                return;
             }
         } catch (error) {
             toast.error('Erro ao buscar os dados de funcionários e dispositivos.');

@@ -48,6 +48,7 @@ export const Zones = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao buscar os dados das zonas');
+                return;
             }
 
             const data = await response.json();
@@ -70,16 +71,19 @@ export const Zones = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar nova zona');
+                return;
             }
 
             const data = await response.json();
             setZones([...zones, data]);
-            toast.success('Zona adicionada com sucesso');
+            toast.success(response.statusText || 'Zona adicionada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar nova zona:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshZones();
         }
-        setShowAddModal(false);
-        refreshZones();
     };
 
     // Função para atualizar uma zona
@@ -99,14 +103,11 @@ export const Zones = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedZone = await response.json();
-                setZones(zones => zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
-                toast.success('Zona atualizada com sucesso!');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedZone = await response.json();
+            setZones(zones => zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
+            toast.success(response.statusText || 'Zona atualizada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar zona:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -128,13 +129,17 @@ export const Zones = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar zona');
+                return;
             }
+            await response.text();
+            toast.success(response.statusText || 'Zona apagada com sucesso!');
 
-            toast.success('Zona apagada com sucesso');
         } catch (error) {
             console.error('Erro ao apagar zona:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshZones();
         }
-        refreshZones();
     };
 
     // Atualiza a lista de zonas ao carregar a página

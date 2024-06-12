@@ -93,15 +93,18 @@ export const Departments = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar novo departamento');
+                return;
             }
             const data = await response.json();
             setDepartments(deps => [...deps, data]);
-            toast.success('Departamento adicionado com sucesso');
-            setShowAddModal(false);
+            toast.success(response.statusText || 'Departamento adicionado com sucesso!')
+
         } catch (error) {
             console.error('Erro ao adicionar novo departamento:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshDepartments();
         }
-        refreshDepartments();
     };
 
     // Atualiza um departamento
@@ -121,14 +124,11 @@ export const Departments = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedDepartment = await response.json();
-                setDepartments(deps => deps.map(dep => dep.departmentID === updatedDepartment.departmentID ? updatedDepartment : dep));
-                toast.success('Departamento atualizado com sucesso');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedDepartment = await response.json();
+            setDepartments(deps => deps.map(dep => dep.departmentID === updatedDepartment.departmentID ? updatedDepartment : dep));
+            toast.success(response.statusText || 'Departamento atualizado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar departamento:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -150,13 +150,18 @@ export const Departments = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar departamento');
+                return;
             }
 
-            toast.success('Departamento apagado com sucesso');
+            await response.json();
+            toast.success(response.statusText || 'Departamento apagado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao apagar departamento:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshDepartments();
         }
-        refreshDepartments();
     };
 
     // Atualiza os departamentos
@@ -219,7 +224,7 @@ export const Departments = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || String(department[key]) === String(filters[key])
         )
-    );  
+    );
 
     // Abre o modal de edição
     const handleEditDepartment = (department: Department) => {

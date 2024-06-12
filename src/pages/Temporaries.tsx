@@ -124,6 +124,7 @@ export const Temporaries = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar novo funcionário');
+                return;
             }
             const employeesData = await response.json();
             setEmployees([...employees, employeesData]);
@@ -131,12 +132,15 @@ export const Temporaries = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success('Funcionário adicionado com sucesso');
+            await response.text();
+            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshEmployees();
         }
-        setShowAddModal(false);
-        refreshEmployees();
     };
 
     // Função para atualizar um funcionário provisório
@@ -156,18 +160,15 @@ export const Temporaries = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedEmployee = await response.json();
-                const updatedEmployees = employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
-                setData(prevData => ({
-                    ...prevData,
-                    employees: updatedEmployees
-                }));
-                toast.success('Funcionário atualizado com sucesso');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedEmployee = await response.json();
+            const updatedEmployees = employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
+            setData(prevData => ({
+                ...prevData,
+                employees: updatedEmployees
+            }));
+            await response.text();
+            toast.success(response.statusText || 'Funcionário atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
@@ -191,17 +192,22 @@ export const Temporaries = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar funcionário');
+                return; 
             }
             const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
             setData(prevData => ({
                 ...prevData,
                 employees: deletedEmployee
             }));
-            toast.success('Funcionário apagado com sucesso');
+            await response.text();
+            toast.success(response.statusText || 'Funcionário apagado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshEmployees();
         }
-        refreshEmployees();
     };
 
     // Atualiza a lista de funcionários ao carregar a página
@@ -234,13 +240,6 @@ export const Temporaries = () => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
-
-    // Filtra os funcionários provisórios
-    const filteredItems = filteredEmployees.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {

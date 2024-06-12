@@ -80,7 +80,6 @@ export const externalEntityTypeFields = [
 export const groupFields = [
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'description', label: 'Descrição', type: 'string' },
-    { key: 'paiId', label: 'ID de Parente', type: 'dropdown' },
 ];
 
 export const professionFields = [
@@ -106,7 +105,7 @@ export const zoneFields = [
 ];
 
 export const employeeAttendanceTimesFields = [
-    { key: 'attendanceTime', label: 'Horário de presença', type: 'datetime-local', required: true},
+    { key: 'attendanceTime', label: 'Data e Hora de presença', type: 'datetime-local', required: true},
     { key: 'employeeId', label: 'Funcionário', type: 'dropdown', required: true},
     { key: 'enrollNumber', label: 'Número', type: 'number' },
     { key: 'employeeName', label: 'Nome do Funcionário', type: 'string' },

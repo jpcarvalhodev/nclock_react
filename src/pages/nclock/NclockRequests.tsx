@@ -18,6 +18,7 @@ import { TreeViewDataNclock } from '../../components/TreeViewNclock';
 import "../../css/PagesStyles.css";
 import { Button } from 'react-bootstrap';
 import { SelectFilter } from '../../components/SelectFilter';
+import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -122,12 +123,14 @@ export const NclockRequests = () => {
             }
             const newAttendance = await response.json();
             setAttendance([...attendance, newAttendance]);
-            toast.success('assiduidade adicionada com sucesso');
+            toast.success(response.statusText || 'Pedido de assiduidade adicionado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar nova assiduidade:', error);
+        } finally {
+            setShowAddAttendanceModal(false);
+            refreshAttendance();
         }
-        setShowAddAttendanceModal(false);
-        refreshAttendance();
     };
 
     // Função para atualizar uma assiduidade
@@ -147,12 +150,14 @@ export const NclockRequests = () => {
             }
             const updatedAttendance = await response.json();
             setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
-            toast.success('assiduidade atualizada com sucesso');
+            toast.success(response.statusText || 'Pedido de assiduidade atualizado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar assiduidade:', error);
+        } finally {
+            setShowUpdateAttendanceModal(false);
+            refreshAttendance();
         }
-        setShowUpdateAttendanceModal(false);
-        refreshAttendance();
     };
 
     // Função para deletar uma assiduidade
@@ -167,13 +172,17 @@ export const NclockRequests = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar assiduidade');
+                return;
             }
-            toast.success('assiduidade apagada com sucesso');
+            await response.json();
+            toast.success(response.statusText || 'Pedido de assiduidade apagado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao apagar assiduidade:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshAttendance();
         }
-        setShowDeleteModal(false);
-        refreshAttendance();
     };
 
     // Atualiza os dados de renderização
@@ -271,7 +280,7 @@ export const NclockRequests = () => {
         }
     }
 
-    // Remove o campo de observação
+    // Remove o campo de número, nome, modo de entrada/saída e tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'inOutMode' && field.key !== 'type');
 
     // Função para formatar a data e a hora
@@ -317,7 +326,7 @@ export const NclockRequests = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} formatFunction={formatField} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -325,15 +334,12 @@ export const NclockRequests = () => {
             };
         });
 
-    // Atualização automática de filteredAttendances baseada nos filtros atuais
-    useEffect(() => {
-        const newFilteredAttendances = attendance.filter(att =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || String(att[key]) === String(filters[key])
-            )
-        );
-        setFilteredAttendances(newFilteredAttendances);
-    }, [attendance, filters]);
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredAttendances.filter(attendances =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(attendances[key]) === String(filters[key])
+        )
+    );
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -425,7 +431,7 @@ export const NclockRequests = () => {
                         </div>
                         <DataTable
                             columns={[...columns, actionColumn]}
-                            data={filteredAttendances}
+                            data={filteredDataTable}
                             onRowDoubleClicked={(row) => {
                                 setSelectedAttendances([row]);
                                 setShowUpdateAttendanceModal(true);

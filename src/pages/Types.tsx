@@ -1,22 +1,21 @@
 import DataTable, { TableColumn } from "react-data-table-component";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
-import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
 import { ExportButton } from "../components/ExportButton";
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
-import { categoryFields, externalEntityFields, externalEntityTypeFields } from "../helpers/Fields";
+import { categoryFields, externalEntityTypeFields } from "../helpers/Fields";
 import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
 import { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
-import { ExternalEntity, ExternalEntityTypes } from "../helpers/Types";
+import { ExternalEntityTypes } from "../helpers/Types";
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
 import { SelectFilter } from "../components/SelectFilter";
 import { CreateModalCatProfTypes } from "../modals/CreateModalCatProfTypes";
 import { UpdateModalCatProfTypes } from "../modals/UpdateModalCatProfTypes";
 import { DeleteModal } from "../modals/DeleteModal";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -47,6 +46,7 @@ export const Types = () => {
             });
             if (!response.ok) {
                 toast.error('Erro ao buscar os dados das entidades externas');
+                return;
             }
             const data = await response.json();
             setexternalEntityTypes(data);
@@ -68,16 +68,19 @@ export const Types = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar nova entidade externa');
+                return;
             }
 
             const data = await response.json();
             setexternalEntityTypes([...externalEntityTypes, data]);
-            toast.success('Entidade externa adicionada com sucesso!');
+            toast.success(response.statusText || 'Tipo de entidade externa adicionada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar nova entidade externa:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshExternalEntitiesTypes();
         }
-        setShowAddModal(false);
-        refreshExternalEntitiesTypes();
     };
 
     // Função para atualizar uma entidade externa
@@ -97,14 +100,11 @@ export const Types = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedExternalEntityType = await response.json();
-                setexternalEntityTypes(externalEntitiesType => externalEntitiesType.map(entity => entity.externalEntityTypeID === updatedExternalEntityType.externalEntityTypeID ? updatedExternalEntityType : entity));
-                toast.success('Entidade externa atualizada com sucesso!');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedExternalEntityType = await response.json();
+            setexternalEntityTypes(externalEntitiesType => externalEntitiesType.map(entity => entity.externalEntityTypeID === updatedExternalEntityType.externalEntityTypeID ? updatedExternalEntityType : entity));
+            toast.success(response.statusText || 'Tipo de entidade externa atualizado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -126,13 +126,17 @@ export const Types = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar entidade externa');
+                return;
             }
+            await response.text();
+            toast.success('Tipo de entidade externa apagada com sucesso!');
 
-            toast.success('Entidade externa apagada com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar entidade externa:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshExternalEntitiesTypes();
         }
-        refreshExternalEntitiesTypes();
     };
 
     // Atualiza as entidades externas
@@ -235,7 +239,7 @@ export const Types = () => {
         selector: (row: ExternalEntityTypes) => row.categoryID,
         ignoreRowClick: true,
     };
-    
+
     return (
         <div className="main-container">
             <NavBar />
@@ -276,30 +280,30 @@ export const Types = () => {
             </div>
             <Footer />
             <CreateModalCatProfTypes
-                    title="Adicionar Tipo"
-                    open={showAddModal}
-                    onClose={() => setShowAddModal(false)}
-                    onSave={handleAddExternalEntityTypes}
+                title="Adicionar Tipo"
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={handleAddExternalEntityTypes}
+                fields={externalEntityTypeFields}
+                initialValues={{}}
+                entityType="tipos"
+            />
+            {selectedExternalEntityType && (
+                <UpdateModalCatProfTypes
+                    open={showUpdateModal}
+                    onClose={handleCloseUpdateModal}
+                    onUpdate={handleUpdateExternalEntityTypes}
+                    entity={selectedExternalEntityType}
                     fields={externalEntityTypeFields}
-                    initialValues={{}}
-                    entityType="tipos"
+                    title="Atualizar Tipo"
                 />
-                {selectedExternalEntityType && (
-                    <UpdateModalCatProfTypes
-                        open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateExternalEntityTypes}
-                        entity={selectedExternalEntityType}
-                        fields={externalEntityTypeFields}
-                        title="Atualizar Tipo"
-                    />
-                )}
-                <DeleteModal
-                    open={showDeleteModal}
-                    onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteExternalEntity}
-                    entityId={selectedExternalEntityTypeForDelete}
-                />
+            )}
+            <DeleteModal
+                open={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={handleDeleteExternalEntity}
+                entityId={selectedExternalEntityTypeForDelete}
+            />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={categoryFields}

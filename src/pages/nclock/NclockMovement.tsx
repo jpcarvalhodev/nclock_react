@@ -122,12 +122,14 @@ export const NclockMovement = () => {
             }
             const newAttendance = await response.json();
             setAttendance([...attendance, newAttendance]);
-            toast.success('assiduidade adicionada com sucesso');
+            toast.success(response.statusText || 'assiduidade adicionada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar nova assiduidade:', error);
+        } finally {
+            setShowAddAttendanceModal(false);
+            refreshAttendance();
         }
-        setShowAddAttendanceModal(false);
-        refreshAttendance();
     };
 
     // Função para atualizar uma assiduidade
@@ -147,18 +149,20 @@ export const NclockMovement = () => {
             }
             const updatedAttendance = await response.json();
             setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
-            toast.success('assiduidade atualizada com sucesso');
+            toast.success(response.statusText || 'assiduidade atualizada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar assiduidade:', error);
+        } finally {
+            setShowUpdateAttendanceModal(false);
+            refreshAttendance();
         }
-        setShowUpdateAttendanceModal(false);
-        refreshAttendance();
     };
 
     // Função para deletar uma assiduidade
-    const handleDeleteAttendance = async () => {
+    const handleDeleteAttendance = async (attendanceTimeId: string) => {
         try {
-            const response = await fetchWithAuth(`Attendances/DeleteAttendanceTime`, {
+            const response = await fetchWithAuth(`Attendances/DeleteAttendanceTime?attendanceTimeId=${attendanceTimeId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -167,13 +171,17 @@ export const NclockMovement = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar assiduidade');
+                return;
             }
-            toast.success('assiduidade apagada com sucesso');
+            await response.json();
+            toast.success(response.statusText || 'assiduidade apagada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao apagar assiduidade:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshAttendance();
         }
-        setShowDeleteModal(false);
-        refreshAttendance();
     };
 
     // Atualiza os dados de renderização
@@ -284,7 +292,7 @@ export const NclockMovement = () => {
         return new Intl.DateTimeFormat('pt-PT', options).format(date);
     }
 
-    // Remove o campo de observação
+    // Remove o campo de observação, número, nome do funcionário e o tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type');
 
     // Define as colunas
@@ -315,24 +323,20 @@ export const NclockMovement = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} formatFunction={formatField} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
                     </>
                 ),
                 selector: row => formatField(row),
                 sortable: true,
-                format: row => formatField(row),
             };
         });
 
-    // Atualização automática de filteredAttendances baseada nos filtros atuais
-    useEffect(() => {
-        const newFilteredAttendances = attendance.filter(att =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || String(att[key]) === String(filters[key])
-            )
-        );
-        setFilteredAttendances(newFilteredAttendances);
-    }, [attendance, filters]);
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredAttendances.filter(attendances =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(attendances[key]) === String(filters[key])
+        )
+    );
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -424,7 +428,7 @@ export const NclockMovement = () => {
                         </div>
                         <DataTable
                             columns={[...columns, actionColumn]}
-                            data={filteredAttendances}
+                            data={filteredDataTable}
                             onRowDoubleClicked={(row) => {
                                 setSelectedAttendances([row]);
                                 setShowUpdateAttendanceModal(true);

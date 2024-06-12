@@ -17,6 +17,7 @@ import { UpdateModalCatProfTypes } from "../modals/UpdateModalCatProfTypes";
 import { CreateModalCatProfTypes } from "../modals/CreateModalCatProfTypes";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -48,6 +49,7 @@ export const Professions = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao buscar os dados das profissões');
+                return;
             }
 
             const data = await response.json();
@@ -70,16 +72,19 @@ export const Professions = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar nova profissão');
+                return;
             }
 
             const data = await response.json();
             setProfessions([...professions, data]);
-            toast.success('Profissão adicionada com sucesso!');
+            toast.success(response.statusText || 'Profissão adicionada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar nova profissão:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshProfessions();
         }
-        setShowAddModal(false);
-        refreshProfessions();
     };
 
     // Função para atualizar uma profissão
@@ -99,14 +104,11 @@ export const Professions = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedProfession = await response.json();
-                setProfessions(professions => professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
-                toast.success('Profissão atualizada com sucesso!');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedProfession = await response.json();
+            setProfessions(professions => professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
+            toast.success(response.statusText || 'Profissão atualizada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar a profissão:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -128,13 +130,17 @@ export const Professions = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar a profissão');
+                return;
             }
+            await response.text();
+            toast.success(response.statusText || 'Profissão apagada com sucesso!');
 
-            toast.success('Profissão apagada com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar a profissão:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshProfessions();
         }
-        refreshProfessions();
     };
 
     // Atualiza a lista de profissões ao carregar a página

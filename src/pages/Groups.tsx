@@ -17,6 +17,7 @@ import { CreateModalDeptGrp } from "../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../modals/UpdateModalDeptGrp";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -48,6 +49,7 @@ export const Groups = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao buscar os dados dos grupos');
+                return;
             }
 
             const data = await response.json();
@@ -70,16 +72,19 @@ export const Groups = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao adicionar novo grupo');
+                return;
             }
 
             const data = await response.json();
             setGroups([...groups, data]);
-            toast.success('Grupo adicionado com sucesso!');
+            toast.success(response.statusText || 'Grupo adicionado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar novo grupo:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshGroups();
         }
-        setShowAddModal(false);
-        refreshGroups();
     };
 
     // Função para atualizar um grupo
@@ -99,14 +104,11 @@ export const Groups = () => {
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedGroup = await response.json();
-                setGroups(groups => groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
-                toast.success('Grupo atualizado com sucesso!');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedGroup = await response.json();
+            setGroups(groups => groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
+            toast.success(response.statusText || 'Grupo atualizado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar grupo:', error);
             toast.error('Falha ao conectar ao servidor');
@@ -128,13 +130,17 @@ export const Groups = () => {
 
             if (!response.ok) {
                 toast.error('Erro ao apagar grupo');
+                return;
             }
+            await response.text();
+            toast.success(response.statusText || 'Grupo apagado com sucesso!');
 
-            toast.success('Grupo apagado com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar grupo:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshGroups();
         }
-        refreshGroups();
     };
 
     // Busca os grupos ao carregar a página

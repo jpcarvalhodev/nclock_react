@@ -19,7 +19,10 @@ export const NaccessDashboard = () => {
                     'Content-Type': 'application/json',
                 },
             });
-            if (!response.ok) toast.error('Erro ao buscar departamentos');
+            if (!response.ok) {
+                toast.error('Erro ao buscar departamentos');
+                return;
+            }
             const employees: EmployeeAttendanceTimes[] = await response.json();
             setTotalEmployees(employees.length);
         } catch (error) {
