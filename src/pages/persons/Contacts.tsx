@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
-import '../css/PagesStyles.css';
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import '../../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Department, Employee, Group } from '../helpers/Types';
-import { CreateModalEmployees } from '../modals/CreateModalEmployees';
-import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
-import { DeleteModal } from '../modals/DeleteModal';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { fetchWithAuth } from '../components/FetchWithAuth';
-import { employeeFields } from '../helpers/Fields';
-import { ExportButton } from '../components/ExportButton';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { Department, Employee, Group } from '../../helpers/Types';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { fetchWithAuth } from '../../components/FetchWithAuth';
+import { employeeFields } from '../../helpers/Fields';
+import { ExportButton } from '../../components/ExportButton';
 import { toast } from 'react-toastify';
 import Split from 'react-split';
-import { TreeViewData } from '../components/TreeView';
-import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
-import { customStyles } from '../components/CustomStylesDataTable';
-import { SelectFilter } from '../components/SelectFilter';
+import { TreeViewData } from '../../components/TreeView';
+import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { SelectFilter } from '../../components/SelectFilter';
 import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
@@ -33,8 +33,8 @@ interface Filters {
     [key: string]: string;
 }
 
-// Define a página de Funcionários Externos
-export const ExternalEmployees = () => {
+// Define a página de Contactos
+export const Contacts = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -64,7 +64,6 @@ export const ExternalEmployees = () => {
                 const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
 
                 if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    toast.error('Falha ao buscar dados');
                     return;
                 }
 
@@ -74,7 +73,7 @@ export const ExternalEmployees = () => {
                     employeesResponse.json(),
                 ]);
 
-                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Funcionário Externo');
+                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Contactos');
 
                 setData({
                     departments,
@@ -85,22 +84,20 @@ export const ExternalEmployees = () => {
                 setFilteredEmployees(filteredEmployees);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
-                toast.error('Falha ao buscar dados');
             }
         }
         fetchData();
     }, []);
 
-    // Função para buscar os dados dos funcionários externos
+    // Define a função para buscar os contactos
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados dos funcionários');
                 return;
             }
             const data = await response.json();
-            const filteredData = data.filter((emp: Employee) => emp.type === 'Funcionário Externo');
+            const filteredData = data.filter((emp: Employee) => emp.type === 'Contacto');
             setEmployees(filteredData);
             setFilteredEmployees(filteredData);
             setData(prevData => ({
@@ -112,7 +109,7 @@ export const ExternalEmployees = () => {
         }
     };
 
-    // Função para adicionar um novo funcionário externo
+    // Define a função para adicionar um contacto
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -124,7 +121,6 @@ export const ExternalEmployees = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
             const employeesData = await response.json();
@@ -133,8 +129,8 @@ export const ExternalEmployees = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
-
+            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
+            
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         } finally {
@@ -143,7 +139,7 @@ export const ExternalEmployees = () => {
         }
     };
 
-    // Função para atualizar um funcionário externo
+    // Define a função para atualizar um contacto
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -167,7 +163,7 @@ export const ExternalEmployees = () => {
                 ...prevData,
                 employees: updatedEmployees
             }));
-            toast.success(response.statusText || 'Funcionário atualizado com sucesso!');
+            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
@@ -178,7 +174,7 @@ export const ExternalEmployees = () => {
         }
     };
 
-    // Função para apagar um funcionário externo
+    // Define a função para apagar um contacto
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -198,8 +194,8 @@ export const ExternalEmployees = () => {
                 ...prevData,
                 employees: deletedEmployee
             }));
-            await response.text();
-            toast.success(response.statusText || 'Funcionário apagado com sucesso!');
+            const deleteEmployee = await response.json();
+            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
@@ -209,17 +205,17 @@ export const ExternalEmployees = () => {
         }
     };
 
-    // Função para buscar os dados dos funcionários externos
+    // Busca os contactos
     useEffect(() => {
         fetchEmployees();
     }, []);
 
-    // Função para atualizar os dados dos funcionários externos
+    // Atualiza os contactos
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
-    // Função para filtrar os funcionários externos
+    // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -229,18 +225,18 @@ export const ExternalEmployees = () => {
         }
     };
 
-    // Função para filtrar os funcionários externos
+    // Atualiza os contactos filtrados
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Função para abrir o modal de deletar funcionário externo
+    // Define a função para abrir o modal de apagar contacto
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
-    // Função para selecionar as colunas
+    // Define a função para abrir o modal de atualizar contacto
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -249,17 +245,17 @@ export const ExternalEmployees = () => {
         }
     };
 
-    // Função para resetar as colunas
+    // Define a função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
 
-    // Função para selecionar todas as colunas
+    // Define a função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Função para selecionar a linha
+    // Define a função selecionar uma linha
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -268,13 +264,13 @@ export const ExternalEmployees = () => {
         setSelectedRows(state.selectedRows);
     };
 
-    // Função para limpar a seleção
+    // Define a função para limpar a seleção	
     const handleClearSelection = () => {
         setClearSelectionToggle(!clearSelectionToggle);
         setSelectedRows([]);
     };
 
-    // Define a função de duplicar funcionários externos
+    // Define a função de duplicar contactos
     const handleDuplicate = (data: Employee) => {
         setInitialData(data);
         handleCloseUpdateModal();
@@ -346,19 +342,19 @@ export const ExternalEmployees = () => {
         )
     );
 
-    // Função para editar um funcionário externo
+    // Define a função para editar um contacto
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de funcionário externo
+    // Fecha o modal de edição de contactos
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedEmployee(null);
     };
 
-    // Define as opções de paginação em EN para PT
+    // Define o componente de paginação para troca de EN por PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
@@ -394,7 +390,7 @@ export const ExternalEmployees = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span>Funcionários Externos</span>
+                            <span>Contactos</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -434,7 +430,7 @@ export const ExternalEmployees = () => {
             </div>
             <Footer />
             <CreateModalEmployees
-                title="Adicionar Funcionário Externo"
+                title="Adicionar Contacto"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddEmployee}
@@ -449,7 +445,7 @@ export const ExternalEmployees = () => {
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}
-                    title="Atualizar Funcionário Externo"
+                    title="Atualizar Contacto"
                 />
             )}
             <DeleteModal

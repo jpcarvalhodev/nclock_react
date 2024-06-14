@@ -1,6 +1,6 @@
 import { Container, Row, Col, Alert, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import '../css/ErrorPages.css';
+import '../../css/ErrorPages.css';
 
 // Define a página de erro 404
 export const NotFound = () => {
@@ -15,7 +15,7 @@ export const NotFound = () => {
               <p>
                 Você não pode acessar esta página ou o servidor está fora do ar. Se necessário, contacte o administrador do sistema.
               </p>
-              <Link to="/">
+              <Link to="/login&forgot/login">
                 <Button className='link-button'>Voltar para o login</Button>
               </Link>
             </Alert>

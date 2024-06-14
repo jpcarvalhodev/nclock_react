@@ -1,45 +1,45 @@
 import { useEffect, useState } from "react";
-import { NavBar } from "../components/NavBar";
-import { Footer } from "../components/Footer";
-import '../css/PagesStyles.css';
-import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
+import { NavBar } from "../../components/NavBar";
+import { Footer } from "../../components/Footer";
+import '../../css/PagesStyles.css';
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Zone } from "../helpers/Types";
+import { Group } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
-import { DeleteModal } from "../modals/DeleteModal";
-import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { fetchWithAuth } from "../components/FetchWithAuth";
-import { zoneFields } from "../helpers/Fields";
-import { ExportButton } from "../components/ExportButton";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { fetchWithAuth } from "../../components/FetchWithAuth";
+import { groupFields } from "../../helpers/Fields";
+import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
-import { CreateModalZones } from "../modals/CreateModalZones";
-import { UpdateModalZones } from "../modals/UpdateModalZones";
-import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
-import { customStyles } from "../components/CustomStylesDataTable";
-import { SelectFilter } from "../components/SelectFilter";
+import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
+import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
+import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { SelectFilter } from "../../components/SelectFilter";
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
 }
 
-// Define a página de Zonas
-export const Zones = () => {
-    const [zones, setZones] = useState<Zone[]>([]);
-    const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
+// Define a página de grupos
+export const Groups = () => {
+    const [groups, setGroups] = useState<Group[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'acronym']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<string | null>(null);
+    const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
 
-    // Função para buscar as zonas
-    const fetchZones = async () => {
+    // Função para buscar os grupos
+    const fetchGroups = async () => {
         try {
-            const response = await fetchWithAuth('Zones', {
+            const response = await fetchWithAuth('Groups', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,80 +47,76 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados das zonas');
                 return;
             }
 
             const data = await response.json();
-            setZones(data);
+            setGroups(data);
         } catch (error) {
-            console.error('Erro ao buscar os dados das zonas:', error);
+            console.error('Erro ao buscar os dados dos grupos:', error);
         }
     };
 
-    // Função para adicionar uma zona
-    const handleAddZone = async (zone: Zone) => {
+    // Função para adicionar um grupo
+    const handleAddGroup = async (group: Group) => {
         try {
-            const response = await fetchWithAuth('Zones', {
+            const response = await fetchWithAuth('Groups', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(zone)
+                body: JSON.stringify(group)
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar nova zona');
                 return;
             }
 
             const data = await response.json();
-            setZones([...zones, data]);
-            toast.success(response.statusText || 'Zona adicionada com sucesso!');
+            setGroups([...groups, data]);
+            toast.success(data.value || 'Grupo adicionado com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao adicionar nova zona:', error);
+            console.error('Erro ao adicionar novo grupo:', error);
         } finally {
             setShowAddModal(false);
-            refreshZones();
+            refreshGroups();
         }
     };
 
-    // Função para atualizar uma zona
-    const handleUpdateZone = async (zone: Zone) => {
+    // Função para atualizar um grupo
+    const handleUpdateGroup = async (group: Group) => {
         try {
-            const response = await fetchWithAuth(`Zones/${zone.zoneID}`, {
+            const response = await fetchWithAuth(`Groups/${group.groupID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(zone)
+                body: JSON.stringify(group)
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar zona`);
                 return;
             }
 
             const contentType = response.headers.get('Content-Type');
             (contentType && contentType.includes('application/json'))
-            const updatedZone = await response.json();
-            setZones(zones => zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
-            toast.success(response.statusText || 'Zona atualizada com sucesso!');
+            const updatedGroup = await response.json();
+            setGroups(groups => groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
+            toast.success(updatedGroup.value || 'Grupo atualizado com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao atualizar zona:', error);
-            toast.error('Falha ao conectar ao servidor');
+            console.error('Erro ao atualizar grupo:', error);
         } finally {
             setShowUpdateModal(false);
-            refreshZones();
+            refreshGroups();
         }
     };
 
-    // Função para apagar uma zona
-    const handleDeleteZone = async (zoneID: string) => {
+    // Função para apagar um grupo
+    const handleDeleteGroup = async (groupID: string) => {
         try {
-            const response = await fetchWithAuth(`Zones/${zoneID}`, {
+            const response = await fetchWithAuth(`Groups/${groupID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,56 +124,55 @@ export const Zones = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar zona');
                 return;
             }
-            await response.text();
-            toast.success(response.statusText || 'Zona apagada com sucesso!');
+            const deleteGroup = await response.json();
+            toast.success(deleteGroup.value || 'Grupo apagado com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao apagar zona:', error);
+            console.error('Erro ao apagar grupo:', error);
         } finally {
             setShowDeleteModal(false);
-            refreshZones();
+            refreshGroups();
         }
     };
 
-    // Atualiza a lista de zonas ao carregar a página
+    // Busca os grupos ao carregar a página
     useEffect(() => {
-        fetchZones();
+        fetchGroups();
     }, []);
 
-    // Função para atualizar as zonas
-    const refreshZones = () => {
-        fetchZones();
+    // Função para atualizar os grupos
+    const refreshGroups = () => {
+        fetchGroups();
     };
 
-    // Função para abrir o modal de editar zona
-    const handleEditZone = (zone: Zone) => {
-        setSelectedZone(zone);
+    // Função para abrir o modal de atualizar grupo
+    const handleEditGroup = (group: Group) => {
+        setSelectedGroup(group);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de zona
+    // Função para fechar o modal de atualizar grupo
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
-        setSelectedZone(null);
+        setSelectedGroup(null);
     };
 
-    // Função para abrir o modal de apagar zona
-    const handleOpenDeleteModal = (zoneID: string) => {
-        setSelectedZoneForDelete(zoneID);
+    // Função para abrir o modal de apagar grupo
+    const handleOpenDeleteModal = (groupID: string) => {
+        setSelectedGroupForDelete(groupID);
         setShowDeleteModal(true);
     };
 
-    // Filtra as zonas
-    const filteredItems = zones.filter(item =>
+    // Função para filtrar os grupos
+    const filteredItems = groups.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
-    // Função para alternar a visibilidade das colunas
+    // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -188,7 +183,7 @@ export const Zones = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['name', 'acronym']);
+        setSelectedColumns(['name']);
     };
 
     // Função para selecionar todas as colunas
@@ -203,7 +198,7 @@ export const Zones = () => {
     };
 
     // Mapeia os nomes das colunas
-    const columnNamesMap = zoneFields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = groupFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -214,7 +209,7 @@ export const Zones = () => {
             name: (
                 <>
                     {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={zones} />
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={groups} />
                 </>
             ),
             selector: (row: Record<string, any>) => row[columnKey],
@@ -222,29 +217,24 @@ export const Zones = () => {
         }));
 
     // Filtra os dados da tabela
-    const filteredDataTable = zones.filter(zone =>
+    const filteredDataTable = groups.filter(group =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(zone[key]) === String(filters[key])
+            filters[key] === "" || String(group[key]) === String(filters[key])
         )
     );
 
-    // Componente de linha expandida
-    const expandableRowComponent = (row: Zone) => (
-        <ExpandedComponentEmpZoneExtEnt data={row} fields={zoneFields} />
-    );
-
     // Coluna de ações
-    const actionColumn: TableColumn<Zone> = {
+    const actionColumn: TableColumn<Group> = {
         name: 'Ações',
-        cell: (row: Zone) => (
+        cell: (row: Group) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditZone(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneId)} >
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
-        selector: (row: Zone) => row.zoneID,
+        selector: (row: Group) => row.groupID,
         ignoreRowClick: true,
     };
 
@@ -253,7 +243,7 @@ export const Zones = () => {
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Zonas</span>
+                    <span>Grupos</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -266,35 +256,37 @@ export const Zones = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={zones} selectedData={filteredItems} fields={zoneFields} />
+                        <ExportButton allData={groups} selectedData={filteredItems} fields={groupFields} />
                     </div>
                 </div>
-                <CreateModalZones
-                    title="Adicionar Zona"
+                <CreateModalDeptGrp
+                    title="Adicionar Grupo"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddZone}
-                    fields={zoneFields}
+                    onSave={handleAddGroup}
+                    fields={groupFields}
                     initialValues={{}}
+                    entityType='group'
                 />
-                {selectedZone && (
-                    <UpdateModalZones
+                {selectedGroup && (
+                    <UpdateModalDeptGrp
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateZone}
-                        entity={selectedZone}
-                        fields={zoneFields}
-                        title="Atualizar Zona"
+                        onUpdate={handleUpdateGroup}
+                        entity={selectedGroup}
+                        entityType='group'
+                        title="Atualizar Grupo"
+                        fields={groupFields}
                     />
                 )}
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteZone}
-                    entityId={selectedZoneForDelete}
+                    onDelete={handleDeleteGroup}
+                    entityId={selectedGroupForDelete}
                 />
             </div>
             <div className='content-wrapper'>
@@ -302,11 +294,11 @@ export const Zones = () => {
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
                         data={filteredDataTable}
-                        onRowDoubleClicked={handleEditZone}
+                        onRowDoubleClicked={handleEditGroup}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
@@ -315,7 +307,7 @@ export const Zones = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={zoneFields}
+                    columns={groupFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
@@ -325,4 +317,4 @@ export const Zones = () => {
             )}
         </div >
     );
-};
+}

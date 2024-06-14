@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
-import '../css/PagesStyles.css';
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import '../../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Department, Employee, Group } from '../helpers/Types';
-import { CreateModalEmployees } from '../modals/CreateModalEmployees';
-import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
-import { DeleteModal } from '../modals/DeleteModal';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { fetchWithAuth } from '../components/FetchWithAuth';
-import { employeeFields } from '../helpers/Fields';
-import { ExportButton } from '../components/ExportButton';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { Department, Employee, Group } from '../../helpers/Types';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { fetchWithAuth } from '../../components/FetchWithAuth';
+import { employeeFields } from '../../helpers/Fields';
+import { ExportButton } from '../../components/ExportButton';
 import { toast } from 'react-toastify';
 import Split from 'react-split';
-import { TreeViewData } from '../components/TreeView';
-import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
-import { customStyles } from '../components/CustomStylesDataTable';
-import { SelectFilter } from '../components/SelectFilter';
+import { TreeViewData } from '../../components/TreeView';
+import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { SelectFilter } from '../../components/SelectFilter';
 import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
@@ -64,7 +64,6 @@ export const Employees = () => {
                 const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
 
                 if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    toast.error('Falha ao buscar dados');
                     return;
                 }
 
@@ -85,7 +84,6 @@ export const Employees = () => {
                 setFilteredEmployees(filteredEmployees);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
-                toast.error('Falha ao buscar dados');
             }
         }
         fetchData();
@@ -96,7 +94,6 @@ export const Employees = () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados dos funcionários');
                 return;
             }
             const data = await response.json();
@@ -124,7 +121,6 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
             const employeesData = await response.json();
@@ -133,7 +129,7 @@ export const Employees = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
+            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
@@ -155,7 +151,6 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao atualizar funcionário');
                 return;
             }
 
@@ -168,11 +163,10 @@ export const Employees = () => {
                 employees: updatedEmployees
             }));
             setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
-            toast.success(response.statusText || 'Funcionário atualizado com sucesso');
+            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateModal(false);
             refreshEmployees();
@@ -191,7 +185,6 @@ export const Employees = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar funcionário');
                 return;
             }
             const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
@@ -199,8 +192,8 @@ export const Employees = () => {
                 ...prevData,
                 employees: deletedEmployee
             }));
-            await response.text();
-            toast.success(response.statusText || 'Funcionário apagado com sucesso!')
+            const deleteEmployee = await response.json();
+            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!')
 
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);

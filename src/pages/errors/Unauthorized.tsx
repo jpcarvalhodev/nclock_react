@@ -1,6 +1,6 @@
 import { Container, Row, Col, Alert, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import '../css/ErrorPages.css';
+import '../../css/ErrorPages.css';
 
 // Define a página de erro 401
 export const Unauthorized = () => {
@@ -15,7 +15,7 @@ export const Unauthorized = () => {
               <p>
                 Seu acesso expirou, retorne e faça login novamente. Caso tenha problemas, contacte o administrador do sistema.
               </p>
-              <Link to="/">
+              <Link to="/login&forgot/login">
                 <Button className='link-button'>Voltar para o login</Button>
               </Link>
             </Alert>

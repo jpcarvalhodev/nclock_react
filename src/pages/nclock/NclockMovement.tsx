@@ -76,7 +76,6 @@ export const NclockMovement = () => {
         try {
             const response = await fetchWithAuth('Attendances/GetAllAttendances');
             if (!response.ok) {
-                toast.error('Erro ao buscar assiduidades');
                 return;
             }
             const data = await response.json();
@@ -94,7 +93,6 @@ export const NclockMovement = () => {
         try {
             const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
             if (!response.ok) {
-                toast.error('Erro ao buscar assiduidades');
                 return;
             }
             const data = await response.json();
@@ -117,12 +115,11 @@ export const NclockMovement = () => {
                 body: JSON.stringify(attendances)
             });
             if (!response.ok) {
-                toast.error('Erro ao adicionar nova assiduidade');
                 return;
             }
             const newAttendance = await response.json();
             setAttendance([...attendance, newAttendance]);
-            toast.success(response.statusText || 'assiduidade adicionada com sucesso!');
+            toast.success(newAttendance.value || 'assiduidade adicionada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar nova assiduidade:', error);
@@ -144,12 +141,12 @@ export const NclockMovement = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao atualizar assiduidade');
                 return;
             }
             const updatedAttendance = await response.json();
+            console.log(updatedAttendance);
             setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
-            toast.success(response.statusText || 'assiduidade atualizada com sucesso!');
+            toast.success(updatedAttendance.value || 'assiduidade atualizada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar assiduidade:', error);
@@ -170,11 +167,10 @@ export const NclockMovement = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar assiduidade');
                 return;
             }
-            await response.json();
-            toast.success(response.statusText || 'assiduidade apagada com sucesso!');
+            const deleteAttendance = await response.json();
+            toast.success(deleteAttendance.value || 'assiduidade apagada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar assiduidade:', error);
@@ -327,7 +323,6 @@ export const NclockMovement = () => {
                     </>
                 ),
                 selector: row => formatField(row),
-                sortable: true,
             };
         });
 

@@ -1,46 +1,45 @@
 import { useEffect, useState } from "react";
-import { NavBar } from "../components/NavBar";
-import { Footer } from "../components/Footer";
-import '../css/PagesStyles.css';
-import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
+import { NavBar } from "../../components/NavBar";
+import { Footer } from "../../components/Footer";
+import '../../css/PagesStyles.css';
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Group } from "../helpers/Types";
+import { Profession } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
-import { DeleteModal } from "../modals/DeleteModal";
-import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { fetchWithAuth } from "../components/FetchWithAuth";
-import { groupFields } from "../helpers/Fields";
-import { ExportButton } from "../components/ExportButton";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { fetchWithAuth } from "../../components/FetchWithAuth";
+import { professionFields } from "../../helpers/Fields";
+import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
-import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
-import { CreateModalDeptGrp } from "../modals/CreateModalDeptGrp";
-import { UpdateModalDeptGrp } from "../modals/UpdateModalDeptGrp";
-import { customStyles } from "../components/CustomStylesDataTable";
-import { SelectFilter } from "../components/SelectFilter";
-import { set } from "date-fns";
+import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
+import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
+import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { SelectFilter } from "../../components/SelectFilter";
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
 }
 
-// Define a página de grupos
-export const Groups = () => {
-    const [groups, setGroups] = useState<Group[]>([]);
+// Define a página de profissões
+export const Professions = () => {
+    const [professions, setProfessions] = useState<Profession[]>([]);
+    const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'description']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
+    const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
 
-    // Função para buscar os grupos
-    const fetchGroups = async () => {
+    // Função para buscar as profissões
+    const fetchProfessions = async () => {
         try {
-            const response = await fetchWithAuth('Groups', {
+            const response = await fetchWithAuth('Professions', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,80 +47,76 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados dos grupos');
                 return;
             }
 
             const data = await response.json();
-            setGroups(data);
+            setProfessions(data);
         } catch (error) {
-            console.error('Erro ao buscar os dados dos grupos:', error);
+            console.error('Erro ao buscar os dados das profissões:', error);
         }
     };
 
-    // Função para adicionar um grupo
-    const handleAddGroup = async (group: Group) => {
+    // Função para adicionar uma nova profissão
+    const handleAddProfession = async (profession: Profession) => {
         try {
-            const response = await fetchWithAuth('Groups', {
+            const response = await fetchWithAuth('Professions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(group)
+                body: JSON.stringify(profession)
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo grupo');
                 return;
             }
 
             const data = await response.json();
-            setGroups([...groups, data]);
-            toast.success(response.statusText || 'Grupo adicionado com sucesso!');
+            setProfessions([...professions, data]);
+            toast.success(data.value || 'Profissão adicionada com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao adicionar novo grupo:', error);
+            console.error('Erro ao adicionar nova profissão:', error);
         } finally {
             setShowAddModal(false);
-            refreshGroups();
+            refreshProfessions();
         }
     };
 
-    // Função para atualizar um grupo
-    const handleUpdateGroup = async (group: Group) => {
+    // Função para atualizar uma profissão
+    const handleUpdateProfession = async (profession: Profession) => {
         try {
-            const response = await fetchWithAuth(`Groups/${group.groupID}`, {
+            const response = await fetchWithAuth(`Professions/${profession.professionID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(group)
+                body: JSON.stringify(profession)
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar grupo`);
                 return;
             }
 
             const contentType = response.headers.get('Content-Type');
             (contentType && contentType.includes('application/json'))
-            const updatedGroup = await response.json();
-            setGroups(groups => groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
-            toast.success(response.statusText || 'Grupo atualizado com sucesso!');
+            const updatedProfession = await response.json();
+            setProfessions(professions => professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
+            toast.success(updatedProfession.value || 'Profissão atualizada com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao atualizar grupo:', error);
-            toast.error('Falha ao conectar ao servidor');
+            console.error('Erro ao atualizar a profissão:', error);
         } finally {
             setShowUpdateModal(false);
-            refreshGroups();
+            refreshProfessions();
         }
     };
 
-    // Função para apagar um grupo
-    const handleDeleteGroup = async (groupID: string) => {
+    // Função para apagar uma profissão
+    const handleDeleteProfessions = async (professionID: string) => {
         try {
-            const response = await fetchWithAuth(`Groups/${groupID}`, {
+            const response = await fetchWithAuth(`Professions/${professionID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -129,56 +124,55 @@ export const Groups = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar grupo');
                 return;
             }
-            await response.text();
-            toast.success(response.statusText || 'Grupo apagado com sucesso!');
+            const deleteProfession = await response.json();
+            toast.success(deleteProfession.value || 'Profissão apagada com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao apagar grupo:', error);
+            console.error('Erro ao apagar a profissão:', error);
         } finally {
             setShowDeleteModal(false);
-            refreshGroups();
+            refreshProfessions();
         }
     };
 
-    // Busca os grupos ao carregar a página
+    // Atualiza a lista de profissões ao carregar a página
     useEffect(() => {
-        fetchGroups();
+        fetchProfessions();
     }, []);
 
-    // Função para atualizar os grupos
-    const refreshGroups = () => {
-        fetchGroups();
+    // Função para atualizar a lista de profissões
+    const refreshProfessions = () => {
+        fetchProfessions();
     };
 
-    // Função para abrir o modal de atualizar grupo
-    const handleEditGroup = (group: Group) => {
-        setSelectedGroup(group);
+    // Função para abrir o modal de editar profissão
+    const handleEditProfession = (profession: Profession) => {
+        setSelectedProfession(profession);
         setShowUpdateModal(true);
     };
 
-    // Função para fechar o modal de atualizar grupo
+    // Fecha o modal de edição de profissão
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
-        setSelectedGroup(null);
+        setSelectedProfession(null);
     };
 
-    // Função para abrir o modal de apagar grupo
-    const handleOpenDeleteModal = (groupID: string) => {
-        setSelectedGroupForDelete(groupID);
+    // Função para abrir o modal de apagar profissão
+    const handleOpenDeleteModal = (professionID: string) => {
+        setSelectedProfessionForDelete(professionID);
         setShowDeleteModal(true);
     };
 
-    // Função para filtrar os grupos
-    const filteredItems = groups.filter(item =>
+    // Filtra as profissões
+    const filteredItems = professions.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
-    // Função para selecionar as colunas
+    // Função para alternar a visibilidade das colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -189,7 +183,7 @@ export const Groups = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['name']);
+        setSelectedColumns(['code', 'description']);
     };
 
     // Função para selecionar todas as colunas
@@ -204,7 +198,7 @@ export const Groups = () => {
     };
 
     // Mapeia os nomes das colunas
-    const columnNamesMap = groupFields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = professionFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -215,7 +209,7 @@ export const Groups = () => {
             name: (
                 <>
                     {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={groups} />
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={professions} />
                 </>
             ),
             selector: (row: Record<string, any>) => row[columnKey],
@@ -223,24 +217,24 @@ export const Groups = () => {
         }));
 
     // Filtra os dados da tabela
-    const filteredDataTable = groups.filter(group =>
+    const filteredDataTable = professions.filter(profession =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(group[key]) === String(filters[key])
+            filters[key] === "" || String(profession[key]) === String(filters[key])
         )
     );
 
-    // Coluna de ações
-    const actionColumn: TableColumn<Group> = {
+    // Define a coluna de ações
+    const actionColumn: TableColumn<Profession> = {
         name: 'Ações',
-        cell: (row: Group) => (
+        cell: (row: Profession) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)} >
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditProfession(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
-        selector: (row: Group) => row.groupID,
+        selector: (row: Profession) => row.professionID,
         ignoreRowClick: true,
     };
 
@@ -249,7 +243,7 @@ export const Groups = () => {
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Grupos</span>
+                    <span>Profissões</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -262,37 +256,36 @@ export const Groups = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={groups} selectedData={filteredItems} fields={groupFields} />
+                        <ExportButton allData={professions} selectedData={filteredItems} fields={professionFields} />
                     </div>
                 </div>
-                <CreateModalDeptGrp
-                    title="Adicionar Grupo"
+                <CreateModalCatProfTypes
+                    title="Adicionar Profissão"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddGroup}
-                    fields={groupFields}
+                    onSave={handleAddProfession}
+                    fields={professionFields}
                     initialValues={{}}
-                    entityType='group'
+                    entityType="profissões"
                 />
-                {selectedGroup && (
-                    <UpdateModalDeptGrp
+                {selectedProfession && (
+                    <UpdateModalCatProfTypes
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateGroup}
-                        entity={selectedGroup}
-                        entityType='group'
-                        title="Atualizar Grupo"
-                        fields={groupFields}
+                        onUpdate={handleUpdateProfession}
+                        entity={selectedProfession}
+                        fields={professionFields}
+                        title="Atualizar Profissão"
                     />
                 )}
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteGroup}
-                    entityId={selectedGroupForDelete}
+                    onDelete={handleDeleteProfessions}
+                    entityId={selectedProfessionForDelete}
                 />
             </div>
             <div className='content-wrapper'>
@@ -300,11 +293,11 @@ export const Groups = () => {
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
                         data={filteredDataTable}
-                        onRowDoubleClicked={handleEditGroup}
+                        onRowDoubleClicked={handleEditProfession}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
@@ -313,7 +306,7 @@ export const Groups = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={groupFields}
+                    columns={professionFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

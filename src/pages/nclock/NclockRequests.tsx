@@ -77,7 +77,6 @@ export const NclockRequests = () => {
         try {
             const response = await fetchWithAuth('Attendances/GetAllAttendances');
             if (!response.ok) {
-                toast.error('Erro ao buscar assiduidades');
                 return;
             }
             const data = await response.json();
@@ -96,7 +95,6 @@ export const NclockRequests = () => {
         try {
             const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
             if (!response.ok) {
-                toast.error('Erro ao buscar assiduidades');
                 return;
             }
             const data = await response.json();
@@ -118,12 +116,11 @@ export const NclockRequests = () => {
                 body: JSON.stringify(attendances)
             });
             if (!response.ok) {
-                toast.error('Erro ao adicionar nova assiduidade');
                 return;
             }
             const newAttendance = await response.json();
             setAttendance([...attendance, newAttendance]);
-            toast.success(response.statusText || 'Pedido de assiduidade adicionado com sucesso!');
+            toast.success(newAttendance.value || 'Pedido de assiduidade adicionado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar nova assiduidade:', error);
@@ -145,12 +142,11 @@ export const NclockRequests = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao atualizar assiduidade');
                 return;
             }
             const updatedAttendance = await response.json();
             setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
-            toast.success(response.statusText || 'Pedido de assiduidade atualizado com sucesso!');
+            toast.success(updatedAttendance.value || 'Pedido de assiduidade atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar assiduidade:', error);
@@ -171,11 +167,10 @@ export const NclockRequests = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar assiduidade');
                 return;
             }
-            await response.json();
-            toast.success(response.statusText || 'Pedido de assiduidade apagado com sucesso!');
+            const deleteAttendance = await response.json();
+            toast.success(deleteAttendance.value || 'Pedido de assiduidade apagado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar assiduidade:', error);

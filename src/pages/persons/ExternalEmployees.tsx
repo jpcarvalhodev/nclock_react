@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
-import '../css/PagesStyles.css';
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import '../../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Department, Employee, Group } from '../helpers/Types';
-import { CreateModalEmployees } from '../modals/CreateModalEmployees';
-import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
-import { DeleteModal } from '../modals/DeleteModal';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { fetchWithAuth } from '../components/FetchWithAuth';
-import { employeeFields } from '../helpers/Fields';
-import { ExportButton } from '../components/ExportButton';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { Department, Employee, Group } from '../../helpers/Types';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { fetchWithAuth } from '../../components/FetchWithAuth';
+import { employeeFields } from '../../helpers/Fields';
+import { ExportButton } from '../../components/ExportButton';
 import { toast } from 'react-toastify';
 import Split from 'react-split';
-import { TreeViewData } from '../components/TreeView';
-import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
-import { customStyles } from '../components/CustomStylesDataTable';
-import { SelectFilter } from '../components/SelectFilter';
+import { TreeViewData } from '../../components/TreeView';
+import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { SelectFilter } from '../../components/SelectFilter';
 import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
@@ -33,8 +33,8 @@ interface Filters {
     [key: string]: string;
 }
 
-// Define a página de visitantes
-export const Visitors = () => {
+// Define a página de Funcionários Externos
+export const ExternalEmployees = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -64,7 +64,6 @@ export const Visitors = () => {
                 const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
 
                 if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    toast.error('Falha ao buscar dados');
                     return;
                 }
 
@@ -74,7 +73,7 @@ export const Visitors = () => {
                     employeesResponse.json(),
                 ]);
 
-                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Visitante');
+                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Funcionário Externo');
 
                 setData({
                     departments,
@@ -85,22 +84,20 @@ export const Visitors = () => {
                 setFilteredEmployees(filteredEmployees);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
-                toast.error('Falha ao buscar dados');
             }
         }
         fetchData();
     }, []);
 
-    // Função para buscar todos os visitantes
+    // Função para buscar os dados dos funcionários externos
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados dos funcionários');
                 return;
             }
             const data = await response.json();
-            const filteredData = data.filter((emp: Employee) => emp.type === 'Visitante');
+            const filteredData = data.filter((emp: Employee) => emp.type === 'Funcionário Externo');
             setEmployees(filteredData);
             setFilteredEmployees(filteredData);
             setData(prevData => ({
@@ -112,7 +109,7 @@ export const Visitors = () => {
         }
     };
 
-    // Função para adicionar um novo visitante
+    // Função para adicionar um novo funcionário externo
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -124,7 +121,6 @@ export const Visitors = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
             const employeesData = await response.json();
@@ -133,7 +129,7 @@ export const Visitors = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
+            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
@@ -143,7 +139,7 @@ export const Visitors = () => {
         }
     };
 
-    // Função para atualizar um visitante
+    // Função para atualizar um funcionário externo
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -155,7 +151,6 @@ export const Visitors = () => {
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar funcionário`);
                 return;
             }
 
@@ -167,18 +162,17 @@ export const Visitors = () => {
                 ...prevData,
                 employees: updatedEmployees
             }));
-            toast.success(response.statusText || 'Funcionário atualizado com sucesso!');
+            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateModal(false);
             refreshEmployees();
         }
     };
 
-    // Função para apagar um visitante
+    // Função para apagar um funcionário externo
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -190,7 +184,6 @@ export const Visitors = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar funcionário');
                 return;
             }
             const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
@@ -198,8 +191,8 @@ export const Visitors = () => {
                 ...prevData,
                 employees: deletedEmployee
             }));
-            await response.text();
-            toast.success(response.statusText || 'Funcionário apagado com sucesso!');
+            const deleteEmployee = await response.json();
+            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
@@ -209,17 +202,17 @@ export const Visitors = () => {
         }
     };
 
-    // Busca os visitantes ao carregar a página
+    // Função para buscar os dados dos funcionários externos
     useEffect(() => {
         fetchEmployees();
     }, []);
 
-    // Função para atualizar a lista de visitantes
+    // Função para atualizar os dados dos funcionários externos
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
-    // Função para filtrar os visitantes selecionados na TreeView
+    // Função para filtrar os funcionários externos
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -229,18 +222,18 @@ export const Visitors = () => {
         }
     };
 
-    // Atualiza a lista de visitantes filtrados ao mudar a lista de visitantes
+    // Função para filtrar os funcionários externos
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Função para abrir o modal de deletar visitante
+    // Função para abrir o modal de deletar funcionário externo
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
-    // Função para selecionar as colunas a serem exibidas
+    // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -249,7 +242,7 @@ export const Visitors = () => {
         }
     };
 
-    // Função para resetar as colunas exibidas
+    // Função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
@@ -259,7 +252,7 @@ export const Visitors = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Função para lidar com a seleção de linhas
+    // Função para selecionar a linha
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -268,13 +261,13 @@ export const Visitors = () => {
         setSelectedRows(state.selectedRows);
     };
 
-    // Função para limpar a seleção de linhas
+    // Função para limpar a seleção
     const handleClearSelection = () => {
         setClearSelectionToggle(!clearSelectionToggle);
         setSelectedRows([]);
     };
 
-    // Define a função de duplicar funcionários
+    // Define a função de duplicar funcionários externos
     const handleDuplicate = (data: Employee) => {
         setInitialData(data);
         handleCloseUpdateModal();
@@ -296,7 +289,7 @@ export const Visitors = () => {
         return new Intl.DateTimeFormat('pt-PT', options).format(date);
     }
 
-    // Define as colunas da tabela
+    // Define as colunas
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
@@ -346,30 +339,30 @@ export const Visitors = () => {
         )
     );
 
-    // Função para editar um visitante
+    // Função para editar um funcionário externo
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de visitante
+    // Fecha o modal de edição de funcionário externo
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedEmployee(null);
     };
 
-    // Função de paginação de EN em PT
+    // Define as opções de paginação em EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
-    // Componente expandido da tabela
+    // Define o componente de linha expandida
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
 
-    // Coluna de ações
+    // Define a coluna de ações
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (
@@ -394,7 +387,7 @@ export const Visitors = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span>Visitantes</span>
+                            <span>Funcionários Externos</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -434,7 +427,7 @@ export const Visitors = () => {
             </div>
             <Footer />
             <CreateModalEmployees
-                title="Adicionar Visitante"
+                title="Adicionar Funcionário Externo"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddEmployee}
@@ -449,7 +442,7 @@ export const Visitors = () => {
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}
-                    title="Atualizar Visitante"
+                    title="Atualizar Funcionário Externo"
                 />
             )}
             <DeleteModal

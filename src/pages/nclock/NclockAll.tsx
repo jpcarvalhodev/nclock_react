@@ -65,7 +65,6 @@ export const NclockAll = () => {
         try {
             const response = await fetchWithAuth('Attendances/GetAllAttendances');
             if (!response.ok) {
-                toast.error('Erro ao buscar assiduidades');
                 return;
             }
             const attendanceData = await response.json();
@@ -81,7 +80,6 @@ export const NclockAll = () => {
         try {
             const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
             if (!response.ok) {
-                toast.error('Erro ao buscar assiduidades');
                 return;
             }
             const data = await response.json();

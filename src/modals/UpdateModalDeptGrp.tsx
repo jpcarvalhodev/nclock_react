@@ -93,7 +93,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         try {
             const response = await fetchWithAuth(url);
             if (!response.ok) {
-                toast.error(`Erro ao buscar ${entityType === 'department' ? 'departamentos' : 'grupos'}`);
                 return;
             }
             const data = await response.json();
@@ -119,12 +118,12 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
             const data = await response.json();
             setEmployees([...employees, data]);
-            toast.success('Funcionário adicionado com sucesso');
+            toast.success(data.value || 'Funcionário adicionado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         } finally {
@@ -145,23 +144,17 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                toast.error(`Erro ao atualizar funcionário: ${errorText}`);
                 return;
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
-                const updatedEmployee = await response.json();
-                setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
-            } else {
-                await response.text();
-                toast.success(response.statusText);
-            }
+            (contentType && contentType.includes('application/json'))
+            const updatedEmployee = await response.json();
+            setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
+            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateEmployeeModal(false);
             fetchEntities();

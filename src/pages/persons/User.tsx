@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
-import '../css/PagesStyles.css';
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import '../../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Department, Employee, Group } from '../helpers/Types';
-import { CreateModalEmployees } from '../modals/CreateModalEmployees';
-import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
-import { DeleteModal } from '../modals/DeleteModal';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { fetchWithAuth } from '../components/FetchWithAuth';
-import { employeeFields } from '../helpers/Fields';
-import { ExportButton } from '../components/ExportButton';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { Department, Employee, Group } from '../../helpers/Types';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { fetchWithAuth } from '../../components/FetchWithAuth';
+import { employeeFields } from '../../helpers/Fields';
+import { ExportButton } from '../../components/ExportButton';
 import { toast } from 'react-toastify';
 import Split from 'react-split';
-import { TreeViewData } from '../components/TreeView';
-import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
-import { customStyles } from '../components/CustomStylesDataTable';
-import { SelectFilter } from '../components/SelectFilter';
+import { TreeViewData } from '../../components/TreeView';
+import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { SelectFilter } from '../../components/SelectFilter';
+import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -32,8 +33,8 @@ interface Filters {
     [key: string]: string;
 }
 
-// Define a página de provisórios
-export const Temporaries = () => {
+// Define a página de utentes
+export const User = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -63,7 +64,6 @@ export const Temporaries = () => {
                 const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
 
                 if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    toast.error('Falha ao buscar dados');
                     return;
                 }
 
@@ -73,7 +73,7 @@ export const Temporaries = () => {
                     employeesResponse.json(),
                 ]);
 
-                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Provisório');
+                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Utente');
 
                 setData({
                     departments,
@@ -84,22 +84,20 @@ export const Temporaries = () => {
                 setFilteredEmployees(filteredEmployees);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
-                toast.error('Falha ao buscar dados');
             }
         }
         fetchData();
     }, []);
 
-    // Função para buscar todos os funcionários provisórios
+    // Busca os dados dos utentes
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados dos funcionários');
                 return;
             }
             const data = await response.json();
-            const filteredData = data.filter((emp: Employee) => emp.type === 'Provisório');
+            const filteredData = data.filter((emp: Employee) => emp.type === 'Utente');
             setEmployees(filteredData);
             setFilteredEmployees(filteredData);
             setData(prevData => ({
@@ -111,7 +109,7 @@ export const Temporaries = () => {
         }
     };
 
-    // Função para adicionar um novo funcionário provisório
+    // Adiciona um novo utente
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -123,7 +121,6 @@ export const Temporaries = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
             const employeesData = await response.json();
@@ -132,8 +129,7 @@ export const Temporaries = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            await response.text();
-            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
+            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
@@ -143,7 +139,7 @@ export const Temporaries = () => {
         }
     };
 
-    // Função para atualizar um funcionário provisório
+    // Atualiza um utente
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -155,7 +151,6 @@ export const Temporaries = () => {
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar funcionário`);
                 return;
             }
 
@@ -167,19 +162,17 @@ export const Temporaries = () => {
                 ...prevData,
                 employees: updatedEmployees
             }));
-            await response.text();
-            toast.success(response.statusText || 'Funcionário atualizado com sucesso!');
+            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateModal(false);
             refreshEmployees();
         }
     };
 
-    // Função para apagar um funcionário provisório
+    // Apaga um utente
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -191,16 +184,15 @@ export const Temporaries = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar funcionário');
-                return; 
+                return;
             }
             const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
             setData(prevData => ({
                 ...prevData,
                 employees: deletedEmployee
             }));
-            await response.text();
-            toast.success(response.statusText || 'Funcionário apagado com sucesso!');
+            const deleteEmployee = await response.json();
+            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
@@ -210,17 +202,17 @@ export const Temporaries = () => {
         }
     };
 
-    // Atualiza a lista de funcionários ao carregar a página
+    // Atualiza a lista de utentes ao carregar a página
     useEffect(() => {
         fetchEmployees();
     }, []);
 
-    // Função para atualizar a lista de funcionários provisórios
+    // Atualiza a lista de utentes
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
-    // Função para filtrar os funcionários provisórios da árvore
+    // Filtra os utentes selecionados na árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -230,12 +222,12 @@ export const Temporaries = () => {
         }
     };
 
-    // Atualiza a lista de funcionários ao mudar a lista de funcionários
+    // Atualiza a lista de utentes ao mudar a lista de utentes
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Função para abrir o modal de deletar funcionário provisório
+    // Abre o modal de deletar utente
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
@@ -260,7 +252,7 @@ export const Temporaries = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Função para lidar com a seleção de linhas
+    // Função para selecionar as linhas
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -347,19 +339,19 @@ export const Temporaries = () => {
         )
     );
 
-    // Função para editar um funcionário provisório
+    // Função para editar um utente
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de funcionário provisório
+    // Fecha o modal de edição de utentes
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedEmployee(null);
     };
 
-    // Dados da paginação de EN em PT
+    // Opções de paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
@@ -370,7 +362,7 @@ export const Temporaries = () => {
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
 
-    // Coluna de ação
+    // Coluna de ações
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (
@@ -395,7 +387,7 @@ export const Temporaries = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span>Provisórios</span>
+                            <span>Utentes</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -435,7 +427,7 @@ export const Temporaries = () => {
             </div>
             <Footer />
             <CreateModalEmployees
-                title="Adicionar Provisório"
+                title="Adicionar Utente"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddEmployee}
@@ -450,7 +442,7 @@ export const Temporaries = () => {
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}
-                    title="Atualizar Provisório"
+                    title="Atualizar Utente"
                 />
             )}
             <DeleteModal

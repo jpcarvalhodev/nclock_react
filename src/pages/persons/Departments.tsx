@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Department } from '../helpers/Types';
-import { CreateModalDeptGrp } from '../modals/CreateModalDeptGrp';
-import { UpdateModalDeptGrp } from '../modals/UpdateModalDeptGrp';
-import { DeleteModal } from '../modals/DeleteModal';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { fetchWithAuth } from '../components/FetchWithAuth';
-import { departmentFields } from '../helpers/Fields';
-import { ExportButton } from '../components/ExportButton';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { Department } from '../../helpers/Types';
+import { CreateModalDeptGrp } from '../../modals/CreateModalDeptGrp';
+import { UpdateModalDeptGrp } from '../../modals/UpdateModalDeptGrp';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { fetchWithAuth } from '../../components/FetchWithAuth';
+import { departmentFields } from '../../helpers/Fields';
+import { ExportButton } from '../../components/ExportButton';
 import { toast } from 'react-toastify';
-import '../css/PagesStyles.css';
-import { ExpandedComponentDept } from '../components/ExpandedComponentDept';
-import { customStyles } from '../components/CustomStylesDataTable';
-import { SelectFilter } from '../components/SelectFilter';
+import '../../css/PagesStyles.css';
+import { ExpandedComponentDept } from '../../components/ExpandedComponentDept';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { SelectFilter } from '../../components/SelectFilter';
 
 // Define a interface para os filtros
 interface Filters {
@@ -41,7 +41,6 @@ export const Departments = () => {
         try {
             const response = await fetchWithAuth('Departaments');
             if (!response.ok) {
-                toast.error('Erro ao buscar dados dos departamentos');
                 return;
             }
             const allDepartments: Department[] = await response.json();
@@ -69,7 +68,6 @@ export const Departments = () => {
         try {
             const response = await fetchWithAuth(`Departaments?parentId=${parentId}`);
             if (!response.ok) {
-                toast.error('Erro ao buscar dados dos subdepartamentos');
                 return [];
             }
             const subdepartments: Department[] = await response.json();
@@ -92,12 +90,11 @@ export const Departments = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo departamento');
                 return;
             }
             const data = await response.json();
             setDepartments(deps => [...deps, data]);
-            toast.success(response.statusText || 'Departamento adicionado com sucesso!')
+            toast.success(data.value || 'Departamento adicionado com sucesso!')
 
         } catch (error) {
             console.error('Erro ao adicionar novo departamento:', error);
@@ -119,7 +116,6 @@ export const Departments = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao atualizar departamento');
                 return;
             }
 
@@ -127,11 +123,10 @@ export const Departments = () => {
             (contentType && contentType.includes('application/json'))
             const updatedDepartment = await response.json();
             setDepartments(deps => deps.map(dep => dep.departmentID === updatedDepartment.departmentID ? updatedDepartment : dep));
-            toast.success(response.statusText || 'Departamento atualizado com sucesso!');
+            toast.success(updatedDepartment.value || 'Departamento atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar departamento:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateModal(false);
             refreshDepartments();
@@ -149,12 +144,11 @@ export const Departments = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar departamento');
                 return;
             }
 
-            await response.json();
-            toast.success(response.statusText || 'Departamento apagado com sucesso!');
+            const deleteDept = await response.json();
+            toast.success(deleteDept.value || 'Departamento apagado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar departamento:', error);

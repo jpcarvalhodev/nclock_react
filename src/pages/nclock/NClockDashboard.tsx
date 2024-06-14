@@ -70,7 +70,6 @@ export const NclockDashboard = () => {
                 },
             });
             if (!response.ok) {
-                toast.error('Erro ao buscar eventos');
                 return [];
             }
             const employees: Employee[] = await response.json();
@@ -102,7 +101,6 @@ export const NclockDashboard = () => {
                 },
             });
             if (!response.ok) {
-                toast.error('Erro ao buscar departamentos');
                 return;
             }
             const departments: Department[] = await response.json();
@@ -121,7 +119,6 @@ export const NclockDashboard = () => {
                 },
             });
             if (!response.ok) {
-                toast.error('Erro ao buscar grupos');
                 return;
             }
             const groups: Group[] = await response.json();

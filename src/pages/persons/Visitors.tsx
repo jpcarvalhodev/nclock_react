@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
-import '../css/PagesStyles.css';
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import '../../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Department, Employee, Group } from '../helpers/Types';
-import { CreateModalEmployees } from '../modals/CreateModalEmployees';
-import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
-import { DeleteModal } from '../modals/DeleteModal';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { fetchWithAuth } from '../components/FetchWithAuth';
-import { employeeFields } from '../helpers/Fields';
-import { ExportButton } from '../components/ExportButton';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { Department, Employee, Group } from '../../helpers/Types';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { fetchWithAuth } from '../../components/FetchWithAuth';
+import { employeeFields } from '../../helpers/Fields';
+import { ExportButton } from '../../components/ExportButton';
 import { toast } from 'react-toastify';
 import Split from 'react-split';
-import { TreeViewData } from '../components/TreeView';
-import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
-import { customStyles } from '../components/CustomStylesDataTable';
-import { SelectFilter } from '../components/SelectFilter';
+import { TreeViewData } from '../../components/TreeView';
+import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { SelectFilter } from '../../components/SelectFilter';
 import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
@@ -33,8 +33,8 @@ interface Filters {
     [key: string]: string;
 }
 
-// Define a página de utentes
-export const User = () => {
+// Define a página de visitantes
+export const Visitors = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -64,7 +64,6 @@ export const User = () => {
                 const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
 
                 if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    toast.error('Falha ao buscar dados');
                     return;
                 }
 
@@ -74,7 +73,7 @@ export const User = () => {
                     employeesResponse.json(),
                 ]);
 
-                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Utente');
+                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Visitante');
 
                 setData({
                     departments,
@@ -85,22 +84,20 @@ export const User = () => {
                 setFilteredEmployees(filteredEmployees);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
-                toast.error('Falha ao buscar dados');
             }
         }
         fetchData();
     }, []);
 
-    // Busca os dados dos utentes
+    // Função para buscar todos os visitantes
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados dos funcionários');
                 return;
             }
             const data = await response.json();
-            const filteredData = data.filter((emp: Employee) => emp.type === 'Utente');
+            const filteredData = data.filter((emp: Employee) => emp.type === 'Visitante');
             setEmployees(filteredData);
             setFilteredEmployees(filteredData);
             setData(prevData => ({
@@ -112,7 +109,7 @@ export const User = () => {
         }
     };
 
-    // Adiciona um novo utente
+    // Função para adicionar um novo visitante
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -124,7 +121,6 @@ export const User = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
             const employeesData = await response.json();
@@ -133,7 +129,7 @@ export const User = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
+            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
@@ -143,7 +139,7 @@ export const User = () => {
         }
     };
 
-    // Atualiza um utente
+    // Função para atualizar um visitante
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -155,7 +151,6 @@ export const User = () => {
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar funcionário`);
                 return;
             }
 
@@ -167,18 +162,17 @@ export const User = () => {
                 ...prevData,
                 employees: updatedEmployees
             }));
-            toast.success(response.statusText || 'Funcionário atualizado com sucesso!');
+            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateModal(false);
             refreshEmployees();
         }
     };
 
-    // Apaga um utente
+    // Função para apagar um visitante
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -190,7 +184,6 @@ export const User = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar funcionário');
                 return;
             }
             const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
@@ -198,8 +191,8 @@ export const User = () => {
                 ...prevData,
                 employees: deletedEmployee
             }));
-            await response.text();
-            toast.success(response.statusText || 'Funcionário apagado com sucesso!');
+            const deleteEmployees = await response.json();
+            toast.success(deleteEmployees.value || 'Funcionário apagado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
@@ -209,17 +202,17 @@ export const User = () => {
         }
     };
 
-    // Atualiza a lista de utentes ao carregar a página
+    // Busca os visitantes ao carregar a página
     useEffect(() => {
         fetchEmployees();
     }, []);
 
-    // Atualiza a lista de utentes
+    // Função para atualizar a lista de visitantes
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
-    // Filtra os utentes selecionados na árvore
+    // Função para filtrar os visitantes selecionados na TreeView
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -229,18 +222,18 @@ export const User = () => {
         }
     };
 
-    // Atualiza a lista de utentes ao mudar a lista de utentes
+    // Atualiza a lista de visitantes filtrados ao mudar a lista de visitantes
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Abre o modal de deletar utente
+    // Função para abrir o modal de deletar visitante
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
-    // Função para selecionar as colunas
+    // Função para selecionar as colunas a serem exibidas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -249,7 +242,7 @@ export const User = () => {
         }
     };
 
-    // Função para resetar as colunas
+    // Função para resetar as colunas exibidas
     const resetColumns = () => {
         setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
@@ -259,7 +252,7 @@ export const User = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Função para selecionar as linhas
+    // Função para lidar com a seleção de linhas
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -268,7 +261,7 @@ export const User = () => {
         setSelectedRows(state.selectedRows);
     };
 
-    // Função para limpar a seleção
+    // Função para limpar a seleção de linhas
     const handleClearSelection = () => {
         setClearSelectionToggle(!clearSelectionToggle);
         setSelectedRows([]);
@@ -346,25 +339,25 @@ export const User = () => {
         )
     );
 
-    // Função para editar um utente
+    // Função para editar um visitante
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de utentes
+    // Fecha o modal de edição de visitante
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedEmployee(null);
     };
 
-    // Opções de paginação de EN em PT
+    // Função de paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
-    // Componente de linha expandida
+    // Componente expandido da tabela
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
@@ -394,7 +387,7 @@ export const User = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span>Utentes</span>
+                            <span>Visitantes</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -434,7 +427,7 @@ export const User = () => {
             </div>
             <Footer />
             <CreateModalEmployees
-                title="Adicionar Utente"
+                title="Adicionar Visitante"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddEmployee}
@@ -449,7 +442,7 @@ export const User = () => {
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}
-                    title="Atualizar Utente"
+                    title="Atualizar Visitante"
                 />
             )}
             <DeleteModal

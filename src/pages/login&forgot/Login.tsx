@@ -1,10 +1,10 @@
 import { useNavigate, Link } from 'react-router-dom';
-import '../css/Login.css';
+import '../../css/Login.css';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { fetchWithoutAuth } from '../components/FetchWithoutAuth';
+import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 
 // Interface para o usuário
 type User = {
@@ -50,7 +50,6 @@ export const Login = () => {
         toast.error('Dados incorretos. Tente novamente.');
       } else if (!response.ok) {
         console.error('Error:', response.status, response.statusText);
-        toast.error('Ocorreu um erro ao fazer login. Tente novamente.');
       } else {
         const data = await response.json();
 
@@ -74,7 +73,7 @@ export const Login = () => {
         navigate('/dashboard');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Erro:', error);
       toast.error('Problema com o servidor, contacte o administrador.');
     }
   };

@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 
 // Define a URL base da API
-const BASE_URL = 'https://localhost:7129/api/';
+const BASE_URL = 'https://localhost:9090/api/';
 
 // Define as opções de requisição
 interface FetchOptions extends RequestInit {
@@ -54,7 +54,9 @@ const handleHTTPError = async (response: Response) => {
             window.location.href = '/notfound';
             break;
         default:
-            toast.error('Ocorreu um erro inesperado');
+            const responseError = await response.json();
+            const error = responseError.errors.Name ? responseError.errors.Name[0] : "Erro desconhecido";
+            toast.error(error);
             break;
     }
 };

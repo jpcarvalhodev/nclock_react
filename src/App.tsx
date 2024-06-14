@@ -2,25 +2,25 @@ import { useRef, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Spinner } from 'react-bootstrap';
-import { Login } from './pages/Login';
+import { Login } from './pages/login&forgot/Login';
 import { Dashboard } from './pages/Dashboard';
-import { ForgotPassword } from './pages/ForgotPassword';
-import { Employees } from './pages/Employees';
-import { Departments } from './pages/Departments';
-import { Categories } from './pages/Categories';
-import { ExternalEntities } from './pages/ExternalEntities';
-import { Groups } from './pages/Groups';
-import { Professions } from './pages/Professions';
-import { Zones } from './pages/Zones';
-import { NotFound } from './pages/NotFound';
-import { Unauthorized } from './pages/Unauthorized';
-import { Persons } from './pages/Persons';
-import { ResetPassword } from './pages/PasswordReset';
-import { ExternalEmployees } from './pages/ExternalEmployees';
-import { User } from './pages/User';
-import { Visitors } from './pages/Visitors';
-import { Contacts } from './pages/Contacts';
-import { Temporaries } from './pages/Temporaries';
+import { ForgotPassword } from './pages/login&forgot/ForgotPassword';
+import { Employees } from './pages/persons/Employees';
+import { Departments } from './pages/persons/Departments';
+import { Categories } from './pages/persons/Categories';
+import { ExternalEntities } from './pages/persons/ExternalEntities';
+import { Groups } from './pages/persons/Groups';
+import { Professions } from './pages/persons/Professions';
+import { Zones } from './pages/persons/Zones';
+import { NotFound } from './pages/errors/NotFound';
+import { Unauthorized } from './pages/errors/Unauthorized';
+import { Persons } from './pages/persons/Persons';
+import { ResetPassword } from './pages/login&forgot/PasswordReset';
+import { ExternalEmployees } from './pages/persons/ExternalEmployees';
+import { User } from './pages/persons/User';
+import { Visitors } from './pages/persons/Visitors';
+import { Contacts } from './pages/persons/Contacts';
+import { Temporaries } from './pages/persons/Temporaries';
 import { NaccessDashboard } from './pages/naccess/NaccessDashboard';
 import { NclockMovement } from './pages/nclock/NclockMovement';
 import { PageProtection } from './components/PageProtection';
@@ -36,7 +36,8 @@ import { NclockRequests } from './pages/nclock/NclockRequests';
 import { NclockPresence } from './pages/nclock/NclockPresence';
 import { NclockDashboard } from './pages/nclock/NclockDashboard';
 import { NclockAll } from './pages/nclock/NclockAll';
-import { Types } from './pages/Types';
+import { Types } from './pages/persons/Types';
+import { Terminals } from './pages/devices/Terminals';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -79,32 +80,33 @@ function AnimatedRoutes() {
         >
           <div ref={nodeRef} style={{ display: showContent ? 'block' : 'none' }}>
             <Routes location={location}>
-              <Route path="/" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path='/reset-password' element={<ResetPassword />} />
-              <Route path="/unauthorized" element={<Unauthorized />} />
+              <Route path="/login&forgot/login" element={<Login />} />
+              <Route path="/login&forgot/forgot-password" element={<ForgotPassword />} />
+              <Route path='/login&forgot/reset-password' element={<ResetPassword />} />
+              <Route path="*" element={<Unauthorized />} />
+              <Route path="*" element={<NotFound />} />
               <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
-              <Route path="/persons" element={<PageProtection><Persons /></PageProtection>} />
-              <Route path="/employees" element={<PageProtection><Employees /></PageProtection>} />
-              <Route path="/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
-              <Route path="/user" element={<PageProtection><User /></PageProtection>} />
-              <Route path="/visitors" element={<PageProtection><Visitors /></PageProtection>} />
-              <Route path="/contacts" element={<PageProtection><Contacts /></PageProtection>} />
-              <Route path="/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
-              <Route path="/departments" element={<PageProtection><Departments /></PageProtection>} />
-              <Route path="/categories" element={<PageProtection><Categories /></PageProtection>} />
-              <Route path="/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />
-              <Route path="/groups" element={<PageProtection><Groups /></PageProtection>} />
-              <Route path="/professions" element={<PageProtection><Professions /></PageProtection>} />
-              <Route path="/zones" element={<PageProtection><Zones /></PageProtection>} />
-              <Route path="/types" element={<PageProtection><Types /></PageProtection>} />
+              <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />
+              <Route path="/persons/employees" element={<PageProtection><Employees /></PageProtection>} />
+              <Route path="/persons/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
+              <Route path="/persons/user" element={<PageProtection><User /></PageProtection>} />
+              <Route path="/persons/visitors" element={<PageProtection><Visitors /></PageProtection>} />
+              <Route path="/persons/contacts" element={<PageProtection><Contacts /></PageProtection>} />
+              <Route path="/persons/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
+              <Route path="/persons/departments" element={<PageProtection><Departments /></PageProtection>} />
+              <Route path="/persons/categories" element={<PageProtection><Categories /></PageProtection>} />
+              <Route path="/persons/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />
+              <Route path="/persons/groups" element={<PageProtection><Groups /></PageProtection>} />
+              <Route path="/persons/professions" element={<PageProtection><Professions /></PageProtection>} />
+              <Route path="/persons/zones" element={<PageProtection><Zones /></PageProtection>} />
+              <Route path="/persons/types" element={<PageProtection><Types /></PageProtection>} />
+              <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
               <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />
               <Route path="/nclock/nclockpresence" element={<PageProtection><NclockPresence /></PageProtection>} />
               <Route path="/nclock/nclockrequests" element={<PageProtection><NclockRequests /></PageProtection>} />
               <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
               <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
-              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </CSSTransition>

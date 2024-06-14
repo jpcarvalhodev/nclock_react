@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
-import { PersonsDataTable } from "../components/PersonsDataTable";
-import { TreeViewData } from "../components/TreeView";
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import { PersonsDataTable } from "../../components/PersonsDataTable";
+import { TreeViewData } from "../../components/TreeView";
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
 import Split from 'react-split';
-import '../css/PagesStyles.css';
-import { CreateModalEmployees } from '../modals/CreateModalEmployees';
-import { employeeFields } from '../helpers/Fields';
-import { Department, Employee, Group } from '../helpers/Types';
-import { fetchWithAuth } from '../components/FetchWithAuth';
+import '../../css/PagesStyles.css';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { employeeFields } from '../../helpers/Fields';
+import { Department, Employee, Group } from '../../helpers/Types';
+import { fetchWithAuth } from '../../components/FetchWithAuth';
 import { toast } from 'react-toastify';
-import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { ExportButton } from '../components/ExportButton';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { ExportButton } from '../../components/ExportButton';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -48,7 +48,6 @@ export const Persons = () => {
                 const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
 
                 if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    toast.error('Falha ao buscar dados');
                     return;
                 }
 
@@ -65,7 +64,6 @@ export const Persons = () => {
                 });
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
-                toast.error('Falha ao buscar dados');
             }
         }
         fetchData();
@@ -76,7 +74,6 @@ export const Persons = () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Erro ao buscar funcionários');
                 return;
             }
             const employeesData = await response.json();
@@ -107,7 +104,6 @@ export const Persons = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
             const employeesData = await response.json();
@@ -116,7 +112,7 @@ export const Persons = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
+            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);

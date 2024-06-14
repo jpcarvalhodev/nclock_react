@@ -62,7 +62,6 @@ export const NclockPresence = () => {
         try {
             const response = await fetchWithAuth('Attendances/GetAllAttendances');
             if (!response.ok) {
-                toast.error('Erro ao buscar assiduidades');
                 return;
             }
             const allAttendanceData: EmployeeAttendanceTimes[] = await response.json();

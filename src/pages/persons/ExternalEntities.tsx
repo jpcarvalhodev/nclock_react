@@ -1,23 +1,22 @@
 import { useEffect, useState } from "react";
-import { NavBar } from "../components/NavBar";
-import { Footer } from "../components/Footer";
-import '../css/PagesStyles.css';
-import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
+import { NavBar } from "../../components/NavBar";
+import { Footer } from "../../components/Footer";
+import '../../css/PagesStyles.css';
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ExternalEntity, ExternalEntityTypes } from "../helpers/Types";
+import { ExternalEntity, ExternalEntityTypes } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
-import { DeleteModal } from "../modals/DeleteModal";
-import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { fetchWithAuth } from "../components/FetchWithAuth";
-import { externalEntityFields } from "../helpers/Fields";
-import { ExportButton } from "../components/ExportButton";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { fetchWithAuth } from "../../components/FetchWithAuth";
+import { externalEntityFields } from "../../helpers/Fields";
+import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
-import { ExpandedComponentEmpZoneExtEnt } from "../components/ExpandedComponentEmpZoneExtEnt";
-import { CreateModalExtEnt } from "../modals/CreateModalExtEnt";
-import { UpdateModalExtEnt } from "../modals/UpdateModalExtEnt";
-import { customStyles } from "../components/CustomStylesDataTable";
-import { SelectFilter } from "../components/SelectFilter";
-import { set } from "date-fns";
+import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
+import { CreateModalExtEnt } from "../../modals/CreateModalExtEnt";
+import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { SelectFilter } from "../../components/SelectFilter";
 
 interface DataState {
     externalEntity: ExternalEntity[];
@@ -60,7 +59,6 @@ export const ExternalEntities = () => {
             const [typeResponse, entityResponse] = await Promise.all([typeResponsePromise, entityResponsePromise]);
 
             if (!typeResponse.ok || !entityResponse.ok) {
-                toast.error('Erro ao buscar os dados');
                 return;
             }
             const [ExternalEntityTypes, ExternalEntities] = await Promise.all([
@@ -73,7 +71,6 @@ export const ExternalEntities = () => {
             });
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
-            toast.error('Falha ao buscar dados');
         }
     };
 
@@ -88,12 +85,11 @@ export const ExternalEntities = () => {
                 body: JSON.stringify(externalEntity)
             });
             if (!response.ok) {
-                toast.error('Erro ao adicionar nova entidade externa');
                 return;
             }
             const data = await response.json();
             setExternalEntities([...externalEntities, data]);
-            toast.success(response.statusText || 'Entidade externa adicionada com sucesso!');
+            toast.success(data.value || 'Entidade externa adicionada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar nova entidade externa:', error);
@@ -114,7 +110,6 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar entidade externa`);
                 return;
             }
 
@@ -122,11 +117,10 @@ export const ExternalEntities = () => {
             (contentType && contentType.includes('application/json'))
             const updatedExternalEntity = await response.json();
             setExternalEntities(externalEntities => externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
-            toast.success(response.statusText || 'Entidade Externa atualizada com sucesso');
+            toast.success(updatedExternalEntity.value || 'Entidade Externa atualizada com sucesso');
 
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateModal(false);
             refreshExternalEntities();
@@ -144,11 +138,10 @@ export const ExternalEntities = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar entidade externa');
                 return;
             }
-            await response.text();
-            toast.success(response.statusText || 'Entidade externa apagada com sucesso!');
+            const deleteExtEnt = await response.json();
+            toast.success(deleteExtEnt.value || 'Entidade externa apagada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar entidade externa:', error);

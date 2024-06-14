@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../css/PasswordReset.css';
+import '../../css/PasswordReset.css';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { fetchWithoutAuth } from '../components/FetchWithoutAuth';
+import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 
 // Define a página de redefinição de senha
 export const ResetPassword = () => {
@@ -55,8 +55,6 @@ export const ResetPassword = () => {
       });
 
       if (!response.ok) {
-        const errorMsg = await response.text();
-        toast.error('Ocorreu um erro. Tente novamente: ' + errorMsg);
         return;
       }
 
@@ -64,8 +62,7 @@ export const ResetPassword = () => {
       navigate('/login');
 
     } catch (error) {
-      console.error(error);
-      toast.error('Ocorreu um erro. Tente novamente.');
+      console.error("Erro:", error);
     }
   };
 

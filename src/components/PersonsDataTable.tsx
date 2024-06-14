@@ -53,7 +53,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Erro ao buscar funcionários');
                 return;
             }
             const employeesData = await response.json();
@@ -78,24 +77,18 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar funcionário`);
                 return;
             }
 
             const contentType = response.headers.get('Content-Type');
-            if (contentType && contentType.includes('application/json')) {
+            (contentType && contentType.includes('application/json'))
                 const updatedEmployee = await response.json();
                 const updatedEmployees = data.employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
                 onRefreshData({
                     ...data,
                     employees: updatedEmployees
                 });
-                toast.success('Funcionário atualizado com sucesso');
-            } else {
-                await response.text();
-                toast.success(response.statusText || 'Atualização realizada com sucesso');
-            }
-
+                toast.success(updatedEmployee.value || 'Atualização realizada com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Erro ao conectar ao servidor');
@@ -110,10 +103,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         try {
             const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao excluir funcionário`);
                 return;
             }
             const updatedEmployees = data.employees.filter(emp => emp.employeeID !== employeeID);
@@ -121,7 +116,8 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 ...data,
                 employees: updatedEmployees,
             });
-            toast.success('Funcionário excluído com sucesso');
+            const deleteEmployee = await response.json();
+            toast.success(deleteEmployee.value || 'Funcionário excluído com sucesso!');
         } catch (error) {
             console.error('Erro ao excluir funcionário:', error);
             toast.error('Erro ao conectar ao servidor');

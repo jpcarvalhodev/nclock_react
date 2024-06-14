@@ -1,0 +1,31 @@
+
+.content-section > div {
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.button-terminals-users {
+    margin-right: 5px;
+    background-color: transparent;
+    border-color: #0050a0;
+    color: #0050a0;
+    height: 100px;
+    width: 130px;
+}
+
+.button-terminals-users:hover {
+    background-color: #0050a0;
+    color: #fff;
+}
+
+.button-terminals-users-track {
+    margin-bottom: 5px;
+    background-color: transparent;
+    border-color: #0050a0;
+    color: #0050a0;
+}
+
+.button-terminals-users-track:hover {
+    background-color: #0050a0;
+    color: #fff;
+}

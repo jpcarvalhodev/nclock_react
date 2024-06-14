@@ -4,7 +4,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
-import { TreeViewBaseItem } from '@mui/x-tree-view';
+import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -154,18 +154,18 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
     const treeItems = [
       {
         id: 'nclock',
-        label: 'Nclock',
+        label: 'NCLOCK',
         children: [
-          { id: 'departments', label: 'Departamentos', children: departmentItems },
+          { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
           ...(unassignedDepartmentItems.length > 0 ? [{
             id: 'unassigned',
-            label: 'Sem Departamento',
+            label: 'SEM DEPARTAMENTO',
             children: unassignedDepartmentItems,
           }] : []),
-          { id: 'groups', label: 'Grupos', children: groupItems },
+          { id: 'groups', label: 'GRUPOS', children: groupItems },
           ...(unassignedGroupItems.length > 0 ? [{
             id: 'unassignedGroup',
-            label: 'Sem Grupo',
+            label: 'SEM GRUPO',
             children: unassignedGroupItems,
           }] : []),
         ],
@@ -227,11 +227,12 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
     <Box className="TreeViewContainer">
       <Box className="treeViewFlexItem">
         <RichTreeView
-          multiSelect={true}
+          multiSelect
+          checkboxSelection
           items={filteredItems}
           getItemId={(item: TreeViewBaseItem) => item.id}
           onSelectedItemsChange={handleSelectedItemsChange}
-          selectedItems={selectedEmployeeIds}
+          // selectedItems={selectedEmployeeIds}
           expandedItems={expandedIds}
           onExpandedItemsChange={handleToggle}
         />

@@ -122,12 +122,10 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                     externalEntityId: externalEntities
                 });
             } else {
-                toast.error('Erro ao buscar os dados de departamentos e grupos.');
                 return;
             }
         } catch (error) {
-            toast.error('Erro ao buscar os dados de departamentos e grupos.');
-            console.error(error);
+            console.error('Erro ao buscar os dados de departamentos e grupos', error);
         }
     };
 
@@ -245,7 +243,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <Row>
+                <Row style={{ marginBottom: 20 }}>
                     <Col md={3} className='img-modal'>
                         <img
                             src={profileImage || modalAvatar}

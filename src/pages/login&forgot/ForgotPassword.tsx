@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../css/ForgotPassword.css';
+import '../../css/ForgotPassword.css';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
@@ -33,15 +33,14 @@ export const ForgotPassword = () => {
       });
 
       if (!response.ok) {
-        toast.error('Ocorreu um erro. Tente novamente.');
+        return;
       }
 
       toast('E-mail com redefinição de password enviado!', { progressClassName: 'custom-progress-bar' });
       navigate('/');
 
     } catch (error) {
-      console.error(error);
-      toast.error('Ocorreu um erro. Tente novamente.');
+      console.error("Erro:", error);
     }
   };
 

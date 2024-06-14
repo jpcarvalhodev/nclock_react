@@ -1,46 +1,45 @@
 import { useEffect, useState } from "react";
-import { NavBar } from "../components/NavBar";
-import { Footer } from "../components/Footer";
-import '../css/PagesStyles.css';
-import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
+import { NavBar } from "../../components/NavBar";
+import { Footer } from "../../components/Footer";
+import '../../css/PagesStyles.css';
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Profession } from "../helpers/Types";
+import { Category } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
-import { DeleteModal } from "../modals/DeleteModal";
-import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { fetchWithAuth } from "../components/FetchWithAuth";
-import { professionFields } from "../helpers/Fields";
-import { ExportButton } from "../components/ExportButton";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { fetchWithAuth } from "../../components/FetchWithAuth";
+import { categoryFields } from "../../helpers/Fields";
+import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
-import { ExpandedComponentGeneric } from "../components/ExpandedComponentGeneric";
-import { UpdateModalCatProfTypes } from "../modals/UpdateModalCatProfTypes";
-import { CreateModalCatProfTypes } from "../modals/CreateModalCatProfTypes";
-import { customStyles } from "../components/CustomStylesDataTable";
-import { SelectFilter } from "../components/SelectFilter";
-import { set } from "date-fns";
+import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
+import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
+import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { SelectFilter } from "../../components/SelectFilter";
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
 }
 
-// Define a página de profissões
-export const Professions = () => {
-    const [professions, setProfessions] = useState<Profession[]>([]);
-    const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
+// Define a página de categorias
+export const Categories = () => {
+    const [categories, setCategories] = useState<Category[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'description']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
+    const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
 
-    // Função para buscar as profissões
-    const fetchProfessions = async () => {
+    // Função para buscar as categorias
+    const fetchCategories = async () => {
         try {
-            const response = await fetchWithAuth('Professions', {
+            const response = await fetchWithAuth('Categories', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,80 +47,76 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados das profissões');
                 return;
             }
 
             const data = await response.json();
-            setProfessions(data);
+            setCategories(data);
         } catch (error) {
-            console.error('Erro ao buscar os dados das profissões:', error);
+            console.error('Erro ao buscar os dados das categorias:', error);
         }
     };
 
-    // Função para adicionar uma nova profissão
-    const handleAddProfession = async (profession: Profession) => {
+    // Função para adicionar uma categoria
+    const handleAddCategory = async (category: Category) => {
         try {
-            const response = await fetchWithAuth('Professions', {
+            const response = await fetchWithAuth('Categories', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(profession)
+                body: JSON.stringify(category)
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar nova profissão');
                 return;
             }
 
             const data = await response.json();
-            setProfessions([...professions, data]);
-            toast.success(response.statusText || 'Profissão adicionada com sucesso!');
-
+            setCategories([...categories, data]);
+            toast.success(data.value || 'Categoria adicionada com sucesso!');
+            
         } catch (error) {
-            console.error('Erro ao adicionar nova profissão:', error);
+            console.error('Erro ao adicionar nova categoria:', error);
         } finally {
             setShowAddModal(false);
-            refreshProfessions();
+            refreshCategories();
         }
     };
 
-    // Função para atualizar uma profissão
-    const handleUpdateProfession = async (profession: Profession) => {
+    // Função para atualizar uma categoria
+    const handleUpdateCategory = async (category: Category) => {
         try {
-            const response = await fetchWithAuth(`Professions/${profession.professionID}`, {
+            const response = await fetchWithAuth(`Categories/${category.categoryID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(profession)
+                body: JSON.stringify(category)
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar a profissão`);
                 return;
             }
 
             const contentType = response.headers.get('Content-Type');
             (contentType && contentType.includes('application/json'))
-            const updatedProfession = await response.json();
-            setProfessions(professions => professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
-            toast.success(response.statusText || 'Profissão atualizada com sucesso!');
+            const updatedCategory = await response.json();
+            setCategories(categories => categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
+            toast.success(updatedCategory.value || 'Categoria atualizada com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao atualizar a profissão:', error);
-            toast.error('Falha ao conectar ao servidor');
+            console.error('Erro ao atualizar categoria:', error);
         } finally {
             setShowUpdateModal(false);
-            refreshProfessions();
+            refreshCategories();
         }
     };
 
-    // Função para apagar uma profissão
-    const handleDeleteProfessions = async (professionID: string) => {
+    // Função para apagar uma categoria
+    const handleDeleteCategory = async (categoryID: string) => {
         try {
-            const response = await fetchWithAuth(`Professions/${professionID}`, {
+            const response = await fetchWithAuth(`Categories/${categoryID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -129,56 +124,55 @@ export const Professions = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar a profissão');
                 return;
             }
-            await response.text();
-            toast.success(response.statusText || 'Profissão apagada com sucesso!');
+            const deleteCategory = await response.json();
+            toast.success(deleteCategory.value || 'Categoria apagada com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao apagar a profissão:', error);
+            console.error('Erro ao apagar categoria:', error);
         } finally {
             setShowDeleteModal(false);
-            refreshProfessions();
+            refreshCategories();
         }
     };
 
-    // Atualiza a lista de profissões ao carregar a página
+    // Busca as categorias ao carregar a página
     useEffect(() => {
-        fetchProfessions();
+        fetchCategories();
     }, []);
 
-    // Função para atualizar a lista de profissões
-    const refreshProfessions = () => {
-        fetchProfessions();
+    // Função para atualizar as categorias
+    const refreshCategories = () => {
+        fetchCategories();
     };
 
-    // Função para abrir o modal de editar profissão
-    const handleEditProfession = (profession: Profession) => {
-        setSelectedProfession(profession);
+    // Função para editar uma categoria
+    const handleEditCategory = (category: Category) => {
+        setSelectedCategory(category);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de profissão
+    // Fecha o modal de edição de categoria
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
-        setSelectedProfession(null);
+        setSelectedCategory(null);
     };
 
-    // Função para abrir o modal de apagar profissão
-    const handleOpenDeleteModal = (professionID: string) => {
-        setSelectedProfessionForDelete(professionID);
+    // Função para abrir o modal de apagar categoria
+    const handleOpenDeleteModal = (categoryID: string) => {
+        setSelectedCategoryForDelete(categoryID);
         setShowDeleteModal(true);
     };
 
-    // Filtra as profissões
-    const filteredItems = professions.filter(item =>
+    // Filtra as categorias
+    const filteredItems = categories.filter(item =>
         Object.keys(item).some(key =>
             String(item[key]).toLowerCase().includes(filterText.toLowerCase())
         )
     );
 
-    // Função para alternar a visibilidade das colunas
+    // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -197,14 +191,14 @@ export const Professions = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Opções de paginação de EN em PT
+    // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
     // Mapeia os nomes das colunas
-    const columnNamesMap = professionFields.reduce<Record<string, string>>((acc, field) => {
+    const columnNamesMap = categoryFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
         return acc;
     }, {});
@@ -215,7 +209,7 @@ export const Professions = () => {
             name: (
                 <>
                     {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={professions} />
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={categories} />
                 </>
             ),
             selector: (row: Record<string, any>) => row[columnKey],
@@ -223,24 +217,24 @@ export const Professions = () => {
         }));
 
     // Filtra os dados da tabela
-    const filteredDataTable = professions.filter(profession =>
+    const filteredDataTable = categories.filter(category =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(profession[key]) === String(filters[key])
+            filters[key] === "" || String(category[key]) === String(filters[key])
         )
     );
 
     // Define a coluna de ações
-    const actionColumn: TableColumn<Profession> = {
+    const actionColumn: TableColumn<Category> = {
         name: 'Ações',
-        cell: (row: Profession) => (
+        cell: (row: Category) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditProfession(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)} >
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCategory(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
-        selector: (row: Profession) => row.professionID,
+        selector: (row: Category) => row.categoryID,
         ignoreRowClick: true,
     };
 
@@ -249,7 +243,7 @@ export const Professions = () => {
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Profissões</span>
+                    <span>Categorias</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -262,36 +256,36 @@ export const Professions = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={professions} selectedData={filteredItems} fields={professionFields} />
+                        <ExportButton allData={categories} selectedData={filteredItems} fields={categoryFields} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes
-                    title="Adicionar Profissão"
+                    title="Adicionar Categoria"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddProfession}
-                    fields={professionFields}
+                    onSave={handleAddCategory}
+                    fields={categoryFields}
                     initialValues={{}}
-                    entityType="profissões"
+                    entityType="categorias"
                 />
-                {selectedProfession && (
+                {selectedCategory && (
                     <UpdateModalCatProfTypes
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateProfession}
-                        entity={selectedProfession}
-                        fields={professionFields}
-                        title="Atualizar Profissão"
+                        onUpdate={handleUpdateCategory}
+                        entity={selectedCategory}
+                        fields={categoryFields}
+                        title="Atualizar Categoria"
                     />
                 )}
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteProfessions}
-                    entityId={selectedProfessionForDelete}
+                    onDelete={handleDeleteCategory}
+                    entityId={selectedCategoryForDelete}
                 />
             </div>
             <div className='content-wrapper'>
@@ -299,11 +293,11 @@ export const Professions = () => {
                     <DataTable
                         columns={[...tableColumns, actionColumn]}
                         data={filteredDataTable}
-                        onRowDoubleClicked={handleEditProfession}
+                        onRowDoubleClicked={handleEditCategory}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
@@ -312,7 +306,7 @@ export const Professions = () => {
             <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={professionFields}
+                    columns={categoryFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

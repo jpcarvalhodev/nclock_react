@@ -99,12 +99,10 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
           externalEntityId: externalEntities
         });
       } else {
-        toast.error('Erro ao buscar os dados de departamentos e grupos.');
         return;
       }
     } catch (error) {
-      toast.error('Erro ao buscar os dados de departamentos e grupos.');
-      console.error(error);
+      console.error('Erro ao buscar os dados de departamentos e grupos', error);
     }
   };
 

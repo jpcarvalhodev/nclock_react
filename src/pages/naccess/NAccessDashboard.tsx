@@ -20,7 +20,6 @@ export const NaccessDashboard = () => {
                 },
             });
             if (!response.ok) {
-                toast.error('Erro ao buscar departamentos');
                 return;
             }
             const employees: EmployeeAttendanceTimes[] = await response.json();

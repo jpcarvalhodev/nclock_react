@@ -1,21 +1,20 @@
 import DataTable, { TableColumn } from "react-data-table-component";
-import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { customStyles } from "../components/CustomStylesDataTable";
-import { ExportButton } from "../components/ExportButton";
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
-import { categoryFields, externalEntityTypeFields } from "../helpers/Fields";
-import { ColumnSelectorModal } from "../modals/ColumnSelectorModal";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExportButton } from "../../components/ExportButton";
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import { categoryFields, externalEntityTypeFields } from "../../helpers/Fields";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
-import { ExternalEntityTypes } from "../helpers/Types";
+import { ExternalEntityTypes } from "../../helpers/Types";
 import { toast } from "react-toastify";
-import { fetchWithAuth } from "../components/FetchWithAuth";
-import { SelectFilter } from "../components/SelectFilter";
-import { CreateModalCatProfTypes } from "../modals/CreateModalCatProfTypes";
-import { UpdateModalCatProfTypes } from "../modals/UpdateModalCatProfTypes";
-import { DeleteModal } from "../modals/DeleteModal";
-import { set } from "date-fns";
+import { fetchWithAuth } from "../../components/FetchWithAuth";
+import { SelectFilter } from "../../components/SelectFilter";
+import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
+import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
+import { DeleteModal } from "../../modals/DeleteModal";
 
 // Define a interface para os filtros
 interface Filters {
@@ -45,7 +44,6 @@ export const Types = () => {
                 },
             });
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados das entidades externas');
                 return;
             }
             const data = await response.json();
@@ -55,7 +53,7 @@ export const Types = () => {
         }
     };
 
-    // Função para adicionar uma nova entidade externa
+    // Função para adicionar um tipo de uma entidade externa
     const handleAddExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         try {
             const response = await fetchWithAuth('ExternalEntityTypes', {
@@ -67,7 +65,6 @@ export const Types = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar nova entidade externa');
                 return;
             }
 
@@ -83,7 +80,7 @@ export const Types = () => {
         }
     };
 
-    // Função para atualizar uma entidade externa
+    // Função para atualizar um tipo de uma entidade externa
     const handleUpdateExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         try {
             const response = await fetchWithAuth(`ExternalEntityTypes/${externalEntityType.externalEntityTypeID}`, {
@@ -95,7 +92,6 @@ export const Types = () => {
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar entidade externa`);
                 return;
             }
 
@@ -107,15 +103,14 @@ export const Types = () => {
 
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateModal(false);
             refreshExternalEntitiesTypes();
         }
     };
 
-    // Função para apagar uma entidade externa
-    const handleDeleteExternalEntity = async (externalEntityTypeID: string) => {
+    // Função para apagar um tipo de uma entidade externa
+    const handleDeleteExternalEntityType = async (externalEntityTypeID: string) => {
         try {
             const response = await fetchWithAuth(`ExternalEntityTypes/${externalEntityTypeID}`, {
                 method: 'DELETE',
@@ -125,11 +120,10 @@ export const Types = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar entidade externa');
                 return;
             }
-            await response.text();
-            toast.success('Tipo de entidade externa apagada com sucesso!');
+            const deleteExtEntType = await response.json();
+            toast.success(deleteExtEntType.value || 'Tipo de entidade externa apagada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar entidade externa:', error);
@@ -301,7 +295,7 @@ export const Types = () => {
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteExternalEntity}
+                onDelete={handleDeleteExternalEntityType}
                 entityId={selectedExternalEntityTypeForDelete}
             />
             {openColumnSelector && (

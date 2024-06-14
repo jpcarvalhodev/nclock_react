@@ -169,15 +169,15 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         const treeItems = [
           {
             id: 'nclock',
-            label: 'Nclock',
+            label: 'NCLOCK',
             children: [
-              { id: 'departments', label: 'Departamentos', children: departmentItems },
+              { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
               ...(unassignedDepartmentItems.length > 0 ? [{
                 id: 'unassigned',
                 label: 'Sem Departamento',
                 children: unassignedDepartmentItems,
               }] : []),
-              { id: 'groups', label: 'Grupos', children: groupItems },
+              { id: 'groups', label: 'GRUPOS', children: groupItems },
               ...(unassignedGroupItems.length > 0 ? [{
                 id: 'unassignedGroup',
                 label: 'Sem Grupo',
@@ -246,6 +246,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
       <Box className="treeViewFlexItem">
         <RichTreeView
           multiSelect={true}
+          checkboxSelection={true}
           items={filteredItems}
           getItemId={(item: TreeViewBaseItem) => item.id}
           onSelectedItemsChange={handleSelectedItemsChange}

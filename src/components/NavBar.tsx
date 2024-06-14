@@ -373,7 +373,7 @@ export const NavBar = () => {
 		localStorage.removeItem('showNcardTab');
 		localStorage.removeItem('showNviewTab');
 		localStorage.removeItem('showNsecurTab');
-		navigate('/');
+		navigate('/login&forgot/login');
 	};
 
 	// Atualiza o estado do ribbon no localStorage
@@ -1021,7 +1021,7 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className='icon-text-pessoas'>
-										<Link to="/Persons" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+										<Link to="/persons/Persons" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={person} alt="botão pessoas" />
 											</span>
@@ -1029,37 +1029,37 @@ export const NavBar = () => {
 										</Link>
 									</div>
 									<div className="grid-container">
-										<Link to="/Employees" type="button" className="btn btn-light ribbon-button">
+										<Link to="/persons/Employees" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="botão funcionários" />
 											</span>
 											<span className="text">Funcionários</span>
 										</Link>
-										<Link to='/Visitors' type="button" className="btn btn-light ribbon-button">
+										<Link to='/persons/Visitors' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="botão visitantes" />
 											</span>
 											<span className="text">Visitantes</span>
 										</Link>
-										<Link to='/ExternalEmployees' type="button" className="btn btn-light ribbon-button">
+										<Link to='/persons/ExternalEmployees' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="botão funcionários externos" />
 											</span>
 											<span className="text">Funcionários Externos</span>
 										</Link>
-										<Link to='/Contacts' type="button" className="btn btn-light ribbon-button">
+										<Link to='/persons/Contacts' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="botão contactos" />
 											</span>
 											<span className="text">Contactos</span>
 										</Link>
-										<Link to='/User' type="button" className="btn btn-light ribbon-button">
+										<Link to='/persons/User' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="botão utentes" />
 											</span>
 											<span className="text">Utentes</span>
 										</Link>
-										<Link to='/Temporaries' type="button" className="btn btn-light ribbon-button">
+										<Link to='/persons/Temporaries' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={person} alt="botão provisórios" />
 											</span>
@@ -1074,31 +1074,31 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className="grid-container">
-										<Link to="/Departments" type="button" className="btn btn-light ribbon-button">
+										<Link to="/persons/Departments" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={departments} alt="botão funcionários" />
 											</span>
 											<span className="text">Departamentos</span>
 										</Link>
-										<Link to="/Professions" type="button" className="btn btn-light ribbon-button">
+										<Link to="/persons/Professions" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={professions} alt="botão visitantes" />
 											</span>
 											<span className="text">Profissões</span>
 										</Link>
-										<Link to="/Groups" type="button" className="btn btn-light ribbon-button">
+										<Link to="/persons/Groups" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={groups} alt="botão funcionários externos" />
 											</span>
 											<span className="text">Grupos</span>
 										</Link>
-										<Link to="/Zones" type="button" className="btn btn-light ribbon-button">
+										<Link to="/persons/Zones" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={zones} alt="botão contactos" />
 											</span>
 											<span className="text">Zonas</span>
 										</Link>
-										<Link to="/Categories" type="button" className="btn btn-light ribbon-button">
+										<Link to="/persons/Categories" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={categories} alt="botão utentes" />
 											</span>
@@ -1119,7 +1119,7 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className='icon-text-informacoes'>
-										<Link to="/externalentities" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+										<Link to="/persons/externalentities" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
 											<span className="icon">
 												<img src={externalEntities} alt="botão entidades externas" />
 											</span>
@@ -1127,7 +1127,7 @@ export const NavBar = () => {
 										</Link>
 									</div>
 									<div>
-										<Link to="/types" type="button" className="btn btn-light ribbon-button">
+										<Link to="/persons/types" type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
 												<img src={types} alt="botão tipos" />
 											</span>
@@ -1195,7 +1195,7 @@ export const NavBar = () => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+										<Link to="/devices/terminals" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={terminal} alt="botão terminais" />
 											</span>

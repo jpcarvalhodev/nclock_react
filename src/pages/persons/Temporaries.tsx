@@ -1,25 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
-import '../css/PagesStyles.css';
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import '../../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../modals/ColumnSelectorModal';
-import { Department, Employee, Group } from '../helpers/Types';
-import { CreateModalEmployees } from '../modals/CreateModalEmployees';
-import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
-import { DeleteModal } from '../modals/DeleteModal';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { fetchWithAuth } from '../components/FetchWithAuth';
-import { employeeFields } from '../helpers/Fields';
-import { ExportButton } from '../components/ExportButton';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { Department, Employee, Group } from '../../helpers/Types';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { fetchWithAuth } from '../../components/FetchWithAuth';
+import { employeeFields } from '../../helpers/Fields';
+import { ExportButton } from '../../components/ExportButton';
 import { toast } from 'react-toastify';
 import Split from 'react-split';
-import { TreeViewData } from '../components/TreeView';
-import { ExpandedComponentEmpZoneExtEnt } from '../components/ExpandedComponentEmpZoneExtEnt';
-import { customStyles } from '../components/CustomStylesDataTable';
-import { SelectFilter } from '../components/SelectFilter';
-import { set } from 'date-fns';
+import { TreeViewData } from '../../components/TreeView';
+import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { SelectFilter } from '../../components/SelectFilter';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -33,8 +32,8 @@ interface Filters {
     [key: string]: string;
 }
 
-// Define a página de Contactos
-export const Contacts = () => {
+// Define a página de provisórios
+export const Temporaries = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -64,7 +63,6 @@ export const Contacts = () => {
                 const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
 
                 if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    toast.error('Falha ao buscar dados');
                     return;
                 }
 
@@ -74,7 +72,7 @@ export const Contacts = () => {
                     employeesResponse.json(),
                 ]);
 
-                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Contactos');
+                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Provisório');
 
                 setData({
                     departments,
@@ -85,22 +83,20 @@ export const Contacts = () => {
                 setFilteredEmployees(filteredEmployees);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
-                toast.error('Falha ao buscar dados');
             }
         }
         fetchData();
     }, []);
 
-    // Define a função para buscar os contactos
+    // Função para buscar todos os funcionários provisórios
     const fetchEmployees = async () => {
         try {
             const response = await fetchWithAuth('Employees/GetAllEmployees');
             if (!response.ok) {
-                toast.error('Erro ao buscar os dados dos funcionários');
                 return;
             }
             const data = await response.json();
-            const filteredData = data.filter((emp: Employee) => emp.type === 'Contacto');
+            const filteredData = data.filter((emp: Employee) => emp.type === 'Provisório');
             setEmployees(filteredData);
             setFilteredEmployees(filteredData);
             setData(prevData => ({
@@ -112,7 +108,7 @@ export const Contacts = () => {
         }
     };
 
-    // Define a função para adicionar um contacto
+    // Função para adicionar um novo funcionário provisório
     const handleAddEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth('Employees/CreateEmployee', {
@@ -124,7 +120,6 @@ export const Contacts = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao adicionar novo funcionário');
                 return;
             }
             const employeesData = await response.json();
@@ -133,8 +128,8 @@ export const Contacts = () => {
                 ...prevData,
                 employees: [...prevData.employees, employeesData]
             }));
-            toast.success(response.statusText || 'Funcionário adicionado com sucesso!');
-            
+            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         } finally {
@@ -143,7 +138,7 @@ export const Contacts = () => {
         }
     };
 
-    // Define a função para atualizar um contacto
+    // Função para atualizar um funcionário provisório
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
@@ -155,7 +150,6 @@ export const Contacts = () => {
             });
 
             if (!response.ok) {
-                toast.error(`Erro ao atualizar funcionário`);
                 return;
             }
 
@@ -167,18 +161,17 @@ export const Contacts = () => {
                 ...prevData,
                 employees: updatedEmployees
             }));
-            toast.success(response.statusText || 'Funcionário atualizado com sucesso!');
+            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Falha ao conectar ao servidor');
         } finally {
             setShowUpdateModal(false);
             refreshEmployees();
         }
     };
 
-    // Define a função para apagar um contacto
+    // Função para apagar um funcionário provisório
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
@@ -190,16 +183,16 @@ export const Contacts = () => {
             });
 
             if (!response.ok) {
-                toast.error('Erro ao apagar funcionário');
-                return;
+                return; 
             }
             const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
             setData(prevData => ({
                 ...prevData,
                 employees: deletedEmployee
             }));
-            await response.text();
-            toast.success(response.statusText || 'Funcionário apagado com sucesso!');
+            const deleteEmployee = await response.json();
+            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!');
+
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
         } finally {
@@ -208,17 +201,17 @@ export const Contacts = () => {
         }
     };
 
-    // Busca os contactos
+    // Atualiza a lista de funcionários ao carregar a página
     useEffect(() => {
         fetchEmployees();
     }, []);
 
-    // Atualiza os contactos
+    // Função para atualizar a lista de funcionários provisórios
     const refreshEmployees = () => {
         fetchEmployees();
     };
 
-    // Define a seleção da árvore
+    // Função para filtrar os funcionários provisórios da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         if (selectedIds.length === 0) {
             setFilteredEmployees(employees);
@@ -228,18 +221,18 @@ export const Contacts = () => {
         }
     };
 
-    // Atualiza os contactos filtrados
+    // Atualiza a lista de funcionários ao mudar a lista de funcionários
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Define a função para abrir o modal de apagar contacto
+    // Função para abrir o modal de deletar funcionário provisório
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
     };
 
-    // Define a função para abrir o modal de atualizar contacto
+    // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
@@ -248,17 +241,17 @@ export const Contacts = () => {
         }
     };
 
-    // Define a função para resetar as colunas
+    // Função para resetar as colunas
     const resetColumns = () => {
         setSelectedColumns(['enrollNumber', 'name', 'shortName']);
     };
 
-    // Define a função para selecionar todas as colunas
+    // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Define a função selecionar uma linha
+    // Função para lidar com a seleção de linhas
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
@@ -267,13 +260,13 @@ export const Contacts = () => {
         setSelectedRows(state.selectedRows);
     };
 
-    // Define a função para limpar a seleção	
+    // Função para limpar a seleção
     const handleClearSelection = () => {
         setClearSelectionToggle(!clearSelectionToggle);
         setSelectedRows([]);
     };
 
-    // Define a função de duplicar contactos
+    // Define a função de duplicar funcionários
     const handleDuplicate = (data: Employee) => {
         setInitialData(data);
         handleCloseUpdateModal();
@@ -295,7 +288,7 @@ export const Contacts = () => {
         return new Intl.DateTimeFormat('pt-PT', options).format(date);
     }
 
-    // Define as colunas
+    // Define as colunas da tabela
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
@@ -345,30 +338,30 @@ export const Contacts = () => {
         )
     );
 
-    // Define a função para editar um contacto
+    // Função para editar um funcionário provisório
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de contactos
+    // Fecha o modal de edição de funcionário provisório
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedEmployee(null);
     };
 
-    // Define o componente de paginação para troca de EN por PT
+    // Dados da paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
-    // Define o componente de linha expandida
+    // Componente de linha expandida
     const expandableRowComponent = (row: Employee) => (
         <ExpandedComponentEmpZoneExtEnt data={row} fields={employeeFields} />
     );
 
-    // Define a coluna de ações
+    // Coluna de ação
     const actionColumn: TableColumn<Employee> = {
         name: 'Ações',
         cell: (row: Employee) => (
@@ -393,7 +386,7 @@ export const Contacts = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span>Contactos</span>
+                            <span>Provisórios</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -433,7 +426,7 @@ export const Contacts = () => {
             </div>
             <Footer />
             <CreateModalEmployees
-                title="Adicionar Contacto"
+                title="Adicionar Provisório"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddEmployee}
@@ -448,7 +441,7 @@ export const Contacts = () => {
                     onUpdate={handleUpdateEmployee}
                     entity={selectedEmployee}
                     fields={employeeFields}
-                    title="Atualizar Contacto"
+                    title="Atualizar Provisório"
                 />
             )}
             <DeleteModal
