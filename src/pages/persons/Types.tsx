@@ -70,7 +70,7 @@ export const Types = () => {
 
             const data = await response.json();
             setexternalEntityTypes([...externalEntityTypes, data]);
-            toast.success(response.statusText || 'Tipo de entidade externa adicionada com sucesso!');
+            toast.success(data.value || 'Tipo de entidade externa adicionada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionar nova entidade externa:', error);
@@ -99,7 +99,7 @@ export const Types = () => {
             (contentType && contentType.includes('application/json'))
             const updatedExternalEntityType = await response.json();
             setexternalEntityTypes(externalEntitiesType => externalEntitiesType.map(entity => entity.externalEntityTypeID === updatedExternalEntityType.externalEntityTypeID ? updatedExternalEntityType : entity));
-            toast.success(response.statusText || 'Tipo de entidade externa atualizado com sucesso!');
+            toast.success(updatedExternalEntityType.value || 'Tipo de entidade externa atualizado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);

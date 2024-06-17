@@ -110,7 +110,7 @@ export const NclockPresence = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendance.filter(att => {
-            return att.employeeName.toLowerCase().includes(lowercasedFilter);
+            return att.employeeName && att.employeeName.toLowerCase().includes(lowercasedFilter);
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendance]);

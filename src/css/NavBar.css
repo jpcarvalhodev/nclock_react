@@ -254,10 +254,10 @@
     display: none !important;
 }
 
-.nav-item.active .nav-link,
-.nav-item:hover .nav-link {
+.nav-item.active,
+.nav-item:hover{
     background-color: white;
-    color: #0050a0;
+    color: #0050a0 !important;
     border-color: transparent;
     cursor: pointer;
 }

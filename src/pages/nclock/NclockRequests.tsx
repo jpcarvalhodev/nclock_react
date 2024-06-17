@@ -18,7 +18,6 @@ import { TreeViewDataNclock } from '../../components/TreeViewNclock';
 import "../../css/PagesStyles.css";
 import { Button } from 'react-bootstrap';
 import { SelectFilter } from '../../components/SelectFilter';
-import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -213,7 +212,6 @@ export const NclockRequests = () => {
 
     // Filtragem de dados de assiduidade para hoje
     const filterAttendanceDataForToday = (attendanceData: EmployeeAttendanceTimes[]) => {
-        console.log(attendanceData);
         const today = new Date();
         const startOfDay = formatDateToStartOfDay(today);
         const endOfDay = formatDateToEndOfDay(today);
@@ -222,7 +220,6 @@ export const NclockRequests = () => {
             const attDate = new Date(att.attendanceTime);
             return attDate >= new Date(startOfDay) && attDate <= new Date(endOfDay);
         });
-        console.log(filteredData);
         if (filteredAttendances.length !== filteredData.length) {
             setFilteredAttendances(filteredData);
         }

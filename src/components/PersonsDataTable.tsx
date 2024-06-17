@@ -82,13 +82,14 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
             const contentType = response.headers.get('Content-Type');
             (contentType && contentType.includes('application/json'))
-                const updatedEmployee = await response.json();
-                const updatedEmployees = data.employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
-                onRefreshData({
-                    ...data,
-                    employees: updatedEmployees
-                });
-                toast.success(updatedEmployee.value || 'Atualização realizada com sucesso!');
+            const updatedEmployee = await response.json();
+            const updatedEmployees = data.employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
+            onRefreshData({
+                ...data,
+                employees: updatedEmployees
+            });
+            toast.success(updatedEmployee.value || 'Atualização realizada com sucesso!');
+
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Erro ao conectar ao servidor');
@@ -153,7 +154,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             )
         );
 
-        filteredEmployees(filteredByColumnFilters); 
+        filteredEmployees(filteredByColumnFilters);
     }, [selectedEmployeeIds, filterText, filters, data.employees]);
 
     // Reseta a seleção de funcionários

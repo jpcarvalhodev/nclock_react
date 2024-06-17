@@ -58,8 +58,8 @@ export const Persons = () => {
                 ]);
 
                 setData({
-                    departments,
-                    groups,
+                    departments: departments,
+                    groups: groups,
                     employees: allEmployees
                 });
             } catch (error) {

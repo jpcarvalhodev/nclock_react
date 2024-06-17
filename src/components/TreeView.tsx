@@ -142,12 +142,12 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
-      id: `unassigned-empdept-${emp.employeeID}`,
+      id: `empd-${emp.employeeID}`,
       label: emp.name || 'Sem Nome',
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
-      id: `unassigned-empgrp-${emp.employeeID}`,
+      id: `empg-${emp.employeeID}`,
       label: emp.name || 'Sem Nome',
     }));
 
@@ -158,7 +158,7 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
         children: [
           { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
           ...(unassignedDepartmentItems.length > 0 ? [{
-            id: 'unassigned',
+            id: 'unassignedDept',
             label: 'SEM DEPARTAMENTO',
             children: unassignedDepartmentItems,
           }] : []),
@@ -198,22 +198,69 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
     }
   };
 
+  // Função auxiliar para coletar recursivamente todos os IDs dos itens filhos
+  function collectChildIds(item: TreeViewBaseItem): string[] {
+    let childIds: string[] = [];
+    if (item.children && item.children.length > 0) {
+      item.children.forEach(childItem => {
+        childIds.push(childItem.id);
+        childIds = childIds.concat(collectChildIds(childItem));
+      });
+    }
+    return childIds;
+  }
+
   // Função para lidar com a mudança de seleção dos itens
   const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
-    const employeeIds = itemIds
-      .filter(id => id.includes('-emp-'))
-      .map(id => id.substring(id.lastIndexOf('-emp-') + 5));
+    const itemsMap = new Map();
+    const currentSelectedIds = new Set(selectedEmployeeIds);
+    
 
-    const newSelectedEmployeeIds = selectedEmployeeIds.filter(id => !employeeIds.includes(id));
-
-    employeeIds.forEach(id => {
-      if (!selectedEmployeeIds.includes(id)) {
-        newSelectedEmployeeIds.push(id);
+    items.forEach(item => {
+      itemsMap.set(item.id, item);
+      if (item.children) {
+        item.children.forEach(child => itemsMap.set(child.id, child));
       }
     });
 
-    setSelectedEmployeeIds(newSelectedEmployeeIds);
-    onSelectEmployees(newSelectedEmployeeIds);
+    const newSelectedIds = new Set(itemIds);
+
+    currentSelectedIds.forEach(oldId => {
+      if (!newSelectedIds.has(oldId)) {
+        const item = itemsMap.get(oldId);
+        if (item && item.children && item.children.length > 0) {
+          const childIds = collectChildIds(item);
+          childIds.forEach(id => newSelectedIds.delete(id));
+        }
+      }
+    });
+
+    itemIds.forEach(itemId => {
+      const item = itemsMap.get(itemId);
+      if (item && item.children && item.children.length > 0) {
+        const childIds = collectChildIds(item);
+        if (newSelectedIds.has(itemId)) {
+          childIds.forEach(id => newSelectedIds.add(id));
+        }
+      }
+    });
+
+    setSelectedEmployeeIds(Array.from(newSelectedIds));
+
+    const employeeIds = Array.from(newSelectedIds).filter(id =>
+      id.includes('emp') || id.includes('-emp-') || id.startsWith('empd-') || id.startsWith('empg-')
+    ).map(id => {
+      if (id.includes('-emp-')) {
+        return id.substring(id.lastIndexOf('-emp-') + 5);
+      } else if (id.startsWith('empd-') || id.startsWith('empg-')) {
+        return id.substring(5);
+      } else if (id.startsWith('emp-')) {
+        return id.substring(4);
+      }
+      return null;
+    }).filter(id => id !== null);
+
+    onSelectEmployees(employeeIds as string[]);
   };
 
   // Atualiza a referência de mudança de seleção
@@ -232,7 +279,7 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
           items={filteredItems}
           getItemId={(item: TreeViewBaseItem) => item.id}
           onSelectedItemsChange={handleSelectedItemsChange}
-          // selectedItems={selectedEmployeeIds}
+          selectedItems={selectedEmployeeIds}
           expandedItems={expandedIds}
           onExpandedItemsChange={handleToggle}
         />

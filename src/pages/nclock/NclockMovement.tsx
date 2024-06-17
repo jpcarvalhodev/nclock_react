@@ -144,7 +144,6 @@ export const NclockMovement = () => {
                 return;
             }
             const updatedAttendance = await response.json();
-            console.log(updatedAttendance);
             setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
             toast.success(updatedAttendance.value || 'assiduidade atualizada com sucesso!');
 
@@ -302,14 +301,18 @@ export const NclockMovement = () => {
                     case 'employeeId':
                         return row.employeeName;
                     case 'inOutMode':
-                        switch (row[field.key]) {
-                            case 0: return 'Entrada';
-                            case 1: return 'Saída';
-                            case 2: return 'Pausa - Entrada';
-                            case 3: return 'Pausa - Saída';
-                            case 4: return 'Hora Extra - Entrada';
-                            case 5: return 'Hora Extra - Saída';
-                            default: return '';
+                        if (row.inOutModeDescription) {
+                            return row.inOutModeDescription;
+                        } else {
+                            switch (row[field.key]) {
+                                case 0: return 'Entrada';
+                                case 1: return 'Saída';
+                                case 2: return 'Pausa - Entrada';
+                                case 3: return 'Pausa - Saída';
+                                case 4: return 'Hora Extra - Entrada';
+                                case 5: return 'Hora Extra - Saída';
+                                default: return '';
+                            }
                         }
                     default:
                         return row[field.key];

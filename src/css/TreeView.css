@@ -19,5 +19,9 @@
 }
 
 .MuiTreeItem-label {
-  font-size: 0.9rem !important;
+  font-size: 0.8rem !important;
+}
+
+.MuiTreeItem-content {
+  padding: 0 !important;
 }

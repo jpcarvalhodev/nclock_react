@@ -54,7 +54,7 @@ body {
 
 .card-title {
     text-align: center;
-    color: #0050a0;
+    color: #0050a0 !important;
     font-size: 24px !important;
     margin-bottom: 0 !important;
 }
@@ -286,7 +286,11 @@ body {
 
 .nav-modal {
     background-color: white !important;
-    color: #0050a0;
+    color: #0050a0 !important;
+}
+
+.nav-modal .nav-link {
+    color: #0050a0 !important;
 }
 
 .form-grid {
