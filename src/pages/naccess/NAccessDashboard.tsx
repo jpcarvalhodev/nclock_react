@@ -3,7 +3,6 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { useEffect, useState } from "react";
 import { fetchWithAuth } from "../../components/FetchWithAuth";
-import { toast } from "react-toastify";
 import { EmployeeAttendanceTimes } from "../../helpers/Types";
 import '../../css/PagesStyles.css';
 

@@ -113,3 +113,21 @@ export const employeeAttendanceTimesFields = [
     { key: 'observation', label: 'Observação', type: 'string' },
     { key: 'type', label: 'Tipo', type: 'number' },
 ];
+
+export const deviceFields = [
+    { key: "deviceNumber", label: "Número", type: "number", required: true},
+    { key: "deviceName", label: "Nome", type: "string", required: true},
+    { key: "ipAddress", label: "Endereço IP", type: "string", required: true},
+    { key: "port", label: "Porta", type: "number" },
+    { key: "code", label: "Código", type: "number" },
+    { key: "machineNumber", label: "Número do Equipamento", type: "number", required: true},
+    { key: "platform", label: "Platforma", type: "string" },
+    { key: "firmware", label: "Firmware", type: "string" },
+    { key: "macAddress", label: "Endereço MAC", type: "string" },
+    { key: "serialNumber", label: "Número Serial", type: "string" },
+    { key: "faceAlg", label: "Algoritmo Facial", type: "number" },
+    { key: "fpAlg", label: "Algoritmo de Digitais", type: "number" },
+    { key: "productTime", label: "Tempo de Produção", type: "Date" },
+    { key: "producter", label: "Produtor", type: "string" },
+    { key: "status", label: "Status", type: "boolean" }
+];

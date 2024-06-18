@@ -254,12 +254,13 @@
     display: none !important;
 }
 
-.nav-item.active,
-.nav-item:hover{
-    background-color: white;
-    color: #0050a0 !important;
-    border-color: transparent;
+.nav-item:hover, .nav-link:hover {
+    color: white;
     cursor: pointer;
+}
+
+.nav-item.active .nav-link {
+    border-color: white;
 }
 
 @media (max-width: 500px) {

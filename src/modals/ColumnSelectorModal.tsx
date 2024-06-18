@@ -47,7 +47,7 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
                 <Modal.Title>Selecionar Colunas</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <div style={{ textAlign: 'center', marginBottom: 15 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 15 }}>
                     <FormCheck
                         label="Selecionar Todas"
                         checked={selectAll}

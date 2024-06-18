@@ -21,7 +21,6 @@ import { User } from './pages/persons/User';
 import { Visitors } from './pages/persons/Visitors';
 import { Contacts } from './pages/persons/Contacts';
 import { Temporaries } from './pages/persons/Temporaries';
-import { NaccessDashboard } from './pages/naccess/NaccessDashboard';
 import { NclockMovement } from './pages/nclock/NclockMovement';
 import { PageProtection } from './components/PageProtection';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -34,10 +33,11 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { NclockRequests } from './pages/nclock/NclockRequests';
 import { NclockPresence } from './pages/nclock/NclockPresence';
-import { NclockDashboard } from './pages/nclock/NclockDashboard';
 import { NclockAll } from './pages/nclock/NclockAll';
 import { Types } from './pages/persons/Types';
 import { Terminals } from './pages/devices/Terminals';
+import { NclockDashboard } from './pages/nclock/NclockDashboard';
+import { NaccessDashboard } from './pages/naccess/NaccessDashboard';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));

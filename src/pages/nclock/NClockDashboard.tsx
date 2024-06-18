@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { toast } from "react-toastify";
 import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Pie } from 'react-chartjs-2';

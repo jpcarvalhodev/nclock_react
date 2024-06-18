@@ -198,52 +198,38 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
     }
   };
 
-  // Função auxiliar para coletar recursivamente todos os IDs dos itens filhos
-  function collectChildIds(item: TreeViewBaseItem): string[] {
-    let childIds: string[] = [];
-    if (item.children && item.children.length > 0) {
-      item.children.forEach(childItem => {
-        childIds.push(childItem.id);
-        childIds = childIds.concat(collectChildIds(childItem));
-      });
-    }
-    return childIds;
-  }
-
   // Função para lidar com a mudança de seleção dos itens
   const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
-    const itemsMap = new Map();
-    const currentSelectedIds = new Set(selectedEmployeeIds);
-    
+    const itemsMap = new Map<string, TreeViewBaseItem>();
 
-    items.forEach(item => {
+    function mapItemsRecursively(item: TreeViewBaseItem) {
       itemsMap.set(item.id, item);
-      if (item.children) {
-        item.children.forEach(child => itemsMap.set(child.id, child));
-      }
-    });
+      item.children?.forEach(child => mapItemsRecursively(child));
+    }
+    items.forEach(item => mapItemsRecursively(item));
 
     const newSelectedIds = new Set(itemIds);
+    const previouslySelectedIds = new Set(selectedEmployeeIds);
 
-    currentSelectedIds.forEach(oldId => {
-      if (!newSelectedIds.has(oldId)) {
-        const item = itemsMap.get(oldId);
-        if (item && item.children && item.children.length > 0) {
-          const childIds = collectChildIds(item);
-          childIds.forEach(id => newSelectedIds.delete(id));
-        }
-      }
-    });
-
-    itemIds.forEach(itemId => {
+    function updateChildSelection(itemId: string, isSelected: boolean) {
       const item = itemsMap.get(itemId);
-      if (item && item.children && item.children.length > 0) {
-        const childIds = collectChildIds(item);
-        if (newSelectedIds.has(itemId)) {
-          childIds.forEach(id => newSelectedIds.add(id));
-        }
+      if (item) {
+        item.children?.forEach(child => {
+          if (isSelected) {
+            newSelectedIds.add(child.id);
+          } else {
+            newSelectedIds.delete(child.id);
+          }
+          updateChildSelection(child.id, isSelected);
+        });
       }
-    });
+    }
+
+    const addedIds = Array.from(newSelectedIds).filter(id => !previouslySelectedIds.has(id));
+    const removedIds = Array.from(previouslySelectedIds).filter(id => !newSelectedIds.has(id));
+
+    addedIds.forEach(id => updateChildSelection(id, true));
+    removedIds.forEach(id => updateChildSelection(id, false));
 
     setSelectedEmployeeIds(Array.from(newSelectedIds));
 

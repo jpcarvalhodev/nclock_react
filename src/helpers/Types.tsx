@@ -141,3 +141,23 @@ export type EmployeeAttendanceTimes = {
     type: number;
     attendanceTime: Date;
 };
+
+export type Devices = {
+    [key: string]: any;
+    id: string;
+    deviceNumber: number;
+    deviceName: string;
+    ipAddress: string;
+    port: number;
+    code: number;
+    machineNumber: number;
+    platform: string;
+    firmware: string;
+    macAddress: string;
+    serialNumber: string;
+    faceAlg: number;
+    fpAlg: number;
+    productTime: Date;
+    producter: string;
+    status: boolean;
+};

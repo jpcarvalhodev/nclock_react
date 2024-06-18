@@ -326,6 +326,7 @@ export const NclockMovement = () => {
                     </>
                 ),
                 selector: row => formatField(row),
+                sortable: true,
             };
         });
 
