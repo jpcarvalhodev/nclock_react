@@ -155,9 +155,37 @@ export type Devices = {
     firmware: string;
     macAddress: string;
     serialNumber: string;
+    readerCount: number;
+    auxInCount: number;
+    auxOutCount: number;
+    maxUserCount: number;
+    maxAttLogCount: number;
+    maxFingerCount: number;
+    maxUserFingerCount: number;
     faceAlg: number;
     fpAlg: number;
     productTime: Date;
     producter: string;
+    type: string;
     status: boolean;
+};
+
+export type EmployeeDevices = {
+    [key: string]: any;
+    id: string;
+    deviceNumber: number;
+    deviceSn: string;
+    deviceName: string;
+    enrollNumber: string;
+    employeeName: string;
+    cardNumber: string;
+    group: string;
+    devicePassword: string;
+    devicePrivelage: number;
+    deviceEnabled: boolean;
+    startTime: Date;
+    endTime: Date;
+    statusFprint: boolean;
+    statusFace: boolean;
+    statusPalm: boolean;
 };

@@ -125,9 +125,35 @@ export const deviceFields = [
     { key: "firmware", label: "Firmware", type: "string" },
     { key: "macAddress", label: "Endereço MAC", type: "string" },
     { key: "serialNumber", label: "Número Serial", type: "string" },
+    { key: "readerCount", label: "Contagem no Leitor", type: "number" },
+    { key: "auxInCount", label: "Contagem de Entrada", type: "number" },
+    { key: "auxOutCount", label: "Contagem de Saída", type: "number" },
+    { key: "maxUserCount", label: "Contagem Máxima de Utilizadores", type: "number" },
+    { key: "maxAttLogCount", label: "Contagem Máxima de Atualizações de Log", type: "number" },
+    { key: "maxFingerCount", label: "Contagem Máxima de Digitais", type: "number" },
+    { key: "maxUserFingerCount", label: "Contagem Máxima de Digitais de Utilizadores", type: "number" },
     { key: "faceAlg", label: "Algoritmo Facial", type: "number" },
     { key: "fpAlg", label: "Algoritmo de Digitais", type: "number" },
     { key: "productTime", label: "Tempo de Produção", type: "Date" },
     { key: "producter", label: "Produtor", type: "string" },
+    { key: "type", label: "Tipo", type: "string" },
     { key: "status", label: "Status", type: "boolean" }
+];
+
+export const employeeDeviceFields = [
+    { key: 'deviceNumber', label: 'Número do Dispositivo', type: 'number' },
+    { key: 'deviceSn', label: 'Serial do Dispositivo', type: 'string' },
+    { key: 'deviceName', label: 'Nome do Dispositivo', type: 'string' },
+    { key: 'enrollNumber', label: 'Número', type: 'string' },
+    { key: 'employeeName', label: 'Nome', type: 'string' },
+    { key: 'cardNumber', label: 'Número do Cartão', type: 'string' },
+    { key: 'group', label: 'Grupo', type: 'string' },
+    { key: 'devicePassword', label: 'Senha do Dispositivo', type: 'string' },
+    { key: 'devicePrivelage', label: 'Privilégio do Dispositivo', type: 'number' },
+    { key: 'deviceEnabled', label: 'Dispositivo Activado', type: 'boolean' },
+    { key: 'startTime', label: 'Hora de Início', type: 'Date' },
+    { key: 'endTime', label: 'Hora de Término', type: 'Date' },
+    { key: 'statusFprint', label: 'Status de Digital', type: 'boolean' },
+    { key: 'statusFace', label: 'Status de Face', type: 'boolean' },
+    { key: 'statusPalm', label: 'Status de Palma', type: 'boolean' }
 ];

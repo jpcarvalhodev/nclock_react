@@ -1,9 +1,9 @@
-import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices } from "../helpers/Types";
+import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices } from "../helpers/Types";
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
 import ReactDOM from "react-dom";
 
-type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices;
+type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices;
 
 interface SelectFilterProps {
     column: string;

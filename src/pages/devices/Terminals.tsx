@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -7,20 +7,40 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, Employee } from "../../helpers/Types";
-import { deviceFields, employeeFields } from "../../helpers/Fields";
+import { Devices, Employee, EmployeeDevices } from "../../helpers/Types";
+import { deviceFields, employeeDeviceFields } from "../../helpers/Fields";
 import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { toast } from "react-toastify";
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
 }
 
+// Define a interface para o status
+interface StatusCounts {
+    Activo: number;
+    Inactivo: number;
+}
+
+// Define a interface para os contadores de dispositivos
+interface DeviceStatusCounts {
+    Activo: number;
+    Inactivo: number;
+}
+
 export const Terminals = () => {
     const [devices, setDevices] = useState<Devices[]>([]);
-    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
+    const [employeeDevices, setEmployeeDevices] = useState<EmployeeDevices[]>([]);
+    const [employeesBio, setEmployeesBio] = useState<EmployeeDevices[]>([]);
+    const [employeesCard, setEmployeesCard] = useState<EmployeeDevices[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+    const [initialData, setInitialData] = useState<Employee | null>(null);
     const [mainTabKey, setMainTabKey] = useState('tasks');
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
     const [userTabKey, setUserTabKey] = useState('users');
@@ -28,14 +48,27 @@ export const Terminals = () => {
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'ipAddress']);
     const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'employeeName', 'cardNumber', 'statusFprint', 'statusFace']);
     const [selectedDevices, setSelectedDevices] = useState<Devices[]>([]);
-    const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
     const [selectedDeviceToDelete, setSelectedDeviceToDelete] = useState<string>('');
+    const [selectedUserToDelete, setSelectedUserToDelete] = useState<string>('');
     const [showUpdateDeviceModal, setShowUpdateDeviceModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedDeviceRows, setSelectedDeviceRows] = useState<Devices[]>([]);
-    const [selectedUserRows, setSelectedUserRows] = useState<Employee[]>([]);
+    const [selectedUserRows, setSelectedUserRows] = useState<EmployeeDevices[]>([]);
+    const [deviceStatusCount, setDeviceStatusCount] = useState<DeviceStatusCounts>({ Activo: 0, Inactivo: 0 });
+    const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(null);
+
+    // Função para contar o status
+    const countStatus = (statusArray: string[]): StatusCounts => {
+        const counts: StatusCounts = { Activo: 0, Inactivo: 0 };
+        statusArray.forEach(status => {
+            if (status in counts) {
+                counts[status as keyof StatusCounts]++;
+            }
+        });
+        return counts;
+    };
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async () => {
@@ -46,29 +79,149 @@ export const Terminals = () => {
             }
             const data = await response.json();
             setDevices(data);
+
+            const filteredStatus = data.map((device: Devices) => device.status ? 'Activo' : 'Inactivo');
+            setDeviceStatus(filteredStatus);
+            const statusCounts = countStatus(filteredStatus);
+            setDeviceStatusCount(statusCounts);
+
         } catch (error) {
-            console.error('Erro ao buscar assiduidades:', error);
+            console.error('Erro ao buscar dispositivos:', error);
         }
     };
 
-    // Função para buscar todos os utilizadores
-    const fetchAllEmployees = async () => {
+    // Função para deletar um dispositivo
+    const handleDeleteDevice = async (zktecoDeviceID: string) => {
         try {
-            const response = await fetchWithAuth('Employees/GetAllEmployees');
+            const response = await fetchWithAuth(`Zkteco/DeleteDevice?deviceId=${zktecoDeviceID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                return;
+            }
+            const deleteAttendance = await response.json();
+            toast.success(deleteAttendance.value || 'dispositivo apagado com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao apagar dispositivos:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshAll();
+        }
+    };
+
+    // Função para buscar todos os funcionários por dispositivos
+    const fetchAllEmployeeDevices = async () => {
+        try {
+            const response = await fetchWithAuth('Employees/GetAllEmployeesDevice');
             if (!response.ok) {
                 return;
             }
             const employeesData = await response.json();
-            setEmployees(employeesData);
+            setEmployeeDevices(employeesData);
+
+            const filteredEmployees = employeesData.filter((employee: EmployeeDevices) =>
+                employee.statusFprint === true || employee.statusFace === true
+            );
+            setEmployeesBio(filteredEmployees);
+
+            const filteredCardEmployees = employeesData.filter((employee: EmployeeDevices) =>
+                employee.cardNumber !== "0"
+            );
+            setEmployeesCard(filteredCardEmployees)
         } catch (error) {
             console.error('Erro ao buscar funcionários:', error);
         }
     }
 
+    // Define a função de adição de funcionários
+    const handleAddEmployee = async (employee: Employee) => {
+        try {
+            const response = await fetchWithAuth('Employees/CreateEmployee', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(employee)
+            });
+
+            if (!response.ok) {
+                return;
+            }
+            const employeesData = await response.json();
+            setEmployeeDevices([...employeeDevices, employeesData]);
+            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao adicionar novo funcionário:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshAll();
+        }
+    };
+
+    // Define a função de atualização de funcionários
+    const handleUpdateEmployee = async (employee: Employee) => {
+        try {
+            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(employee)
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const contentType = response.headers.get('Content-Type');
+            (contentType && contentType.includes('application/json'))
+            const updatedEmployee = await response.json();
+            setEmployeeDevices(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
+            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso');
+
+        } catch (error) {
+            console.error('Erro ao atualizar funcionário:', error);
+        } finally {
+            setShowUpdateModal(false);
+            refreshAll();
+        }
+    };
+
+    // Função para apagar um funcionário
+    const handleDeleteEmployee = async (employeeID: string) => {
+
+        try {
+            const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                return;
+            }
+            const deleteEmployee = await response.json();
+            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!')
+
+        } catch (error) {
+            console.error('Erro ao apagar funcionário:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshAll();
+        }
+    };
+
     // Atualiza os dados de renderização
     useEffect(() => {
         fetchAllDevices();
-        fetchAllEmployees();
+        fetchAllEmployeeDevices();
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -106,6 +259,19 @@ export const Terminals = () => {
         }
     };
 
+    // Define a função de duplicar funcionários
+    const handleDuplicate = (data: Employee) => {
+        setInitialData(data);
+        handleCloseUpdateModal();
+        setShowAddModal(true);
+    }
+
+    // Fecha o modal de edição de funcionário
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedEmployee(null);
+    };
+
     // Função para alternar a visibilidade das colunas
     const handleColumnToggle = (columnKey: string) => {
         if (selectedColumns.includes(columnKey)) {
@@ -128,16 +294,25 @@ export const Terminals = () => {
         selectedRows: Devices[];
     }) => {
         setSelectedDeviceRows(state.selectedRows);
+        setSelectedTerminal(state.selectedRows[0] || null);
     };
 
     // Define a função de seleção de linhas de utilizadores
     const handleUserRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: Employee[];
+        selectedRows: EmployeeDevices[];
     }) => {
         setSelectedUserRows(state.selectedRows);
     };
+
+    // Filtra os utilizadores no terminal
+    const filteredUsersInTerminal = useMemo(() => {
+        if (!selectedTerminal) {
+            return [];
+        }
+        return employeeDevices.filter(employee => employee.deviceNumber === selectedTerminal.deviceNumber);
+    }, [employeeDevices, selectedTerminal]);
 
     // Função para formatar a data e a hora
     function formatDateAndTime(input: string | Date): string {
@@ -154,14 +329,23 @@ export const Terminals = () => {
         return new Intl.DateTimeFormat('pt-PT', options).format(date);
     }
 
+    const excludedColumns = ['readerCount', 'auxInCount', 'auxOutCount', 'maxUserCount', 'maxAttLogCount', 'maxFingerCount', 'maxUserFingerCount', 'faceAlg', 'fpAlg'];
+
     // Define as colunas de dispositivos
     const deviceColumns: TableColumn<Devices>[] = deviceFields
         .filter(field => selectedColumns.includes(field.key))
+        .filter(field => !excludedColumns.includes(field.key))
         .map(field => {
             const formatField = (row: Devices) => {
                 switch (field.key) {
+                    case 'code':
+                        return row.code === 0 ? "" : row.code;
+                    case 'machineNumber':
+                        return row.code === 0 ? "" : row.machineNumber;
                     case 'productTime':
                         return formatDateAndTime(row[field.key]);
+                    case 'status':
+                        return row.status ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key];
                 }
@@ -185,32 +369,40 @@ export const Terminals = () => {
         )
     );
 
+    const stateColumns: TableColumn<Devices>[] = deviceFields
+        .filter(field => excludedColumns.includes(field.key) || field.key === 'deviceName')
+        .map(field => {
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={devices} />
+                    </>
+                ),
+                selector: row => row[field.key],
+                sortable: true,
+            };
+        });
+
+    // Filtra os dados da tabela de estado de dispositivos
+    const filteredStateDataTable = devices.filter(device =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(device[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas de utilizadores
-    const userColumns: TableColumn<Employee>[] = employeeFields
+    const userColumns: TableColumn<EmployeeDevices>[] = employeeDeviceFields
         .filter(field => selectedUserColums.includes(field.key))
         .map(field => {
-            const formatField = (row: Employee) => {
+            const formatField = (row: EmployeeDevices) => {
                 switch (field.key) {
-                    case 'birthday':
-                        return row.birthday ? formatDateAndTime(row[field.key]) : '';
-                    case 'status':
-                        return row.status ? 'Activo' : 'Inactivo';
-                    case 'statusEmail':
-                        return row.statusEmail ? 'Activo' : 'Inactivo';
-                    case 'rgpdAut':
-                        return row.rgpdAut ? 'Autorizado' : 'Não Autorizado';
-                    case 'departmentId':
-                        return row.departmentName || '';
-                    case 'professionId':
-                        return row.professionName || '';
-                    case 'categoryId':
-                        return row.categoryName || '';
-                    case 'groupId':
-                        return row.groupName || '';
-                    case 'zoneId':
-                        return row.zoneName || '';
-                    case 'externalEntityId':
-                        return row.externalEntityName || '';
+                    case 'cardNumber':
+                        return row.cardNumber === "0" ? "" : row.cardNumber;
+                    case 'statusFprint':
+                        return row.statusFprint ? 'Activo' : 'Inactivo';
+                    case 'statusFace':
+                        return row.statusFace ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key] || '';
                 }
@@ -220,7 +412,7 @@ export const Terminals = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={employeeDevices} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -228,8 +420,22 @@ export const Terminals = () => {
             };
         });
 
-    // Filtra os dados da tabela
-    const filteredUserDataTable = employees.filter(employee =>
+    // Filtra os dados da tabela de utilizadores
+    const filteredUserDataTable = employeeDevices.filter(employee =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(employee[key]) === String(filters[key])
+        )
+    );
+
+    // Define os dados da tabela de biometria
+    const filteredBioDataTable = employeesBio.filter(employee =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(employee[key]) === String(filters[key])
+        )
+    );
+
+    // Filtra os dados da tabela de cartões
+    const filteredCardDataTable = employeesCard.filter(employee =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(employee[key]) === String(filters[key])
         )
@@ -242,14 +448,8 @@ export const Terminals = () => {
     };
 
     // Define a função de abertura do modal de edição dos dispositivos
-    const handleEditDevices = (row: Devices[]) => {
-        setSelectedDevices(row);
-        setShowUpdateDeviceModal(true);
-    };
-
-    // Define a função de abertura do modal de edição dos utilizadores
-    const handleEditUsers = (row: Employee[]) => {
-        setSelectedEmployees(row);
+    const handleEditDevices = (row: Devices) => {
+        setSelectedDevices([row]);
         setShowUpdateDeviceModal(true);
     };
 
@@ -264,7 +464,7 @@ export const Terminals = () => {
         name: 'Ações',
         cell: (row: Devices) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices([row])} />
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDeviceID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
@@ -275,19 +475,31 @@ export const Terminals = () => {
     };
 
     // Define as colunas de ação de utilizadores
-    const userActionColumn: TableColumn<Employee> = {
-        name: 'Ações',
-        cell: (row: Employee) => (
+    const userActionColumn: TableColumn<EmployeeDevices> = {
+        name: 'Ação',
+        cell: (row: EmployeeDevices) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditUsers([row])} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
-        selector: (row: Employee) => row.employeeID,
+        selector: (row: EmployeeDevices) => row.employeeID,
         ignoreRowClick: true,
     };
+
+    // Define a cor do status
+    const getStatusColor = (statuses: string[]): string => {
+        const isActive = statuses.some(status => status === 'Activo');
+        return isActive ? 'green' : 'red';
+    };
+
+    // Define a cor de fundo do status
+    const backgroundColor = getStatusColor(deviceStatus);
+
+    // Condicionais separadas para identificar o que deve ser deletado
+    const isDeviceToDelete = !!selectedDeviceToDelete;
+    const isUserToDelete = !!selectedUserToDelete;
 
     return (
         <div className="main-container">
@@ -297,19 +509,30 @@ export const Terminals = () => {
                     <span>Terminais</span>
                 </div>
                 <div className="datatable-header">
-                    <div className="buttons-container-others">
+                    <div className="buttons-container-others" style={{ flexGrow: 1 }}>
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAll} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                        <span style={{
+                            color: 'white',
+                            backgroundColor: backgroundColor,
+                            borderRadius: '4px',
+                            padding: '2px 10px',
+                            display: 'inline-block',
+                            marginLeft: 'auto',
+                            marginRight: '30px'
+                        }}>
+                            Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Activo(s), ${deviceStatusCount['Inactivo'] || 0} Inactivo(s)`}
+                        </span>
                     </div>
                 </div>
             </div>
             <div className="content-section" style={{ display: 'flex', flex: 1 }}>
-                <div style={{ flex: 1, overflow: "auto" }}>
+                <div style={{ flex: 1.5, overflow: "auto" }}>
                     <DataTable
                         columns={[...deviceColumns, devicesActionColumn]}
                         data={filteredDeviceDataTable}
-                        //onRowDoubleClicked={handleEditDepartment}
+                        //onRowDoubleClicked={handleEditDevices}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         selectableRows
@@ -389,54 +612,58 @@ export const Terminals = () => {
                                     </div>
                                 </Tab>
                                 <Tab eventKey="users-terminal" title="Utilizadores no terminal">
-                                    <p>DATATABLE DE UTILIZADORES NO TERMINAL</p>
-                                    {/* <DataTable
-                                    columns={[...tableColumns, actionColumn]}
-                                    data={filteredDataTable}
-                                    onRowDoubleClicked={handleEditDepartment}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    noDataComponent="Não há dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    /> */}
+                                    <DataTable
+                                        columns={userColumns}
+                                        data={filteredUsersInTerminal}
+                                        pagination
+                                        paginationComponentOptions={paginationOptions}
+                                        selectableRows
+                                        onSelectedRowsChange={handleUserRowSelected}
+                                        selectableRowsHighlight
+                                        noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
+                                        customStyles={customStyles}
+                                    />
                                 </Tab>
                                 <Tab eventKey="facial-taken" title="Biometria recolhida">
-                                    <p>DATATABLE DE BIOMETRIA RECOLHIDA</p>
-                                    {/* <DataTable
-                                    columns={[...tableColumns, actionColumn]}
-                                    data={filteredDataTable}
-                                    onRowDoubleClicked={handleEditDepartment}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    noDataComponent="Não há dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    /> */}
+                                    <DataTable
+                                        columns={userColumns}
+                                        data={filteredBioDataTable}
+                                        pagination
+                                        paginationComponentOptions={paginationOptions}
+                                        selectableRows
+                                        onSelectedRowsChange={handleUserRowSelected}
+                                        selectableRowsHighlight
+                                        noDataComponent="Não há dados disponíveis para exibir."
+                                        customStyles={customStyles}
+                                    />
                                 </Tab>
                                 <Tab eventKey="cards-taken" title="Cartões recolhidos">
-                                    <p>DATATABLE DE CARTÕES RECOLHIDOS</p>
-                                    {/* <DataTable
-                                    columns={[...tableColumns, actionColumn]}
-                                    data={filteredDataTable}
-                                    onRowDoubleClicked={handleEditDepartment}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    noDataComponent="Não há dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    /> */}
+                                    <DataTable
+                                        columns={userColumns}
+                                        data={filteredCardDataTable}
+                                        pagination
+                                        paginationComponentOptions={paginationOptions}
+                                        selectableRows
+                                        onSelectedRowsChange={handleUserRowSelected}
+                                        selectableRowsHighlight
+                                        noDataComponent="Não há dados disponíveis para exibir."
+                                        customStyles={customStyles}
+                                    />
                                 </Tab>
                             </Tabs>
                         </Tab>
                         <Tab eventKey="state" title="Estado">
-                            <p>DATATABLE DE ESTADO</p>
-                            {/* <DataTable
-                                columns={[...tableColumns, actionColumn]}
-                                data={filteredDataTable}
-                                onRowDoubleClicked={handleEditDepartment}
+                            <DataTable
+                                columns={stateColumns}
+                                data={filteredStateDataTable}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
+                                selectableRows
+                                onSelectedRowsChange={handleDeviceRowSelected}
+                                selectableRowsHighlight
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
-                            /> */}
+                            />
                         </Tab>
                     </Tabs>
                 </div>
@@ -561,6 +788,14 @@ export const Terminals = () => {
                     onColumnToggle={handleColumnToggle}
                     onResetColumns={handleResetColumns}
                     onSelectAllColumns={handleSelectAllColumns}
+                />
+            )}
+            {showDeleteModal && (isDeviceToDelete || isUserToDelete) && (
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={isDeviceToDelete ? handleDeleteDevice : handleDeleteEmployee}
+                    entityId={isDeviceToDelete ? selectedDeviceToDelete : selectedUserToDelete}
                 />
             )}
         </div>
