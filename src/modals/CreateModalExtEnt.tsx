@@ -340,7 +340,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             src={profileImage || modalAvatar}
                                             alt="Profile Avatar"
                                             style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer' }}
-                                            onDoubleClick={triggerFileSelectPopup}
+                                            onClick={triggerFileSelectPopup}
                                         />
                                         <div>
                                             <input

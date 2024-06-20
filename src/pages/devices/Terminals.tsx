@@ -13,6 +13,7 @@ import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
+import { CreateModalDevices } from "../../modals/CreateModalDevices";
 
 // Define a interface para os filtros
 interface Filters {
@@ -90,6 +91,33 @@ export const Terminals = () => {
         }
     };
 
+    // Define a função de adição de dispositivos
+    const handleAddDevice = async (device: Devices) => {
+        try {
+            const response = await fetchWithAuth('Zkteco/CreateDevice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(device)
+            });
+            console.log(response)
+
+            if (!response.ok) {
+                return;
+            }
+            const deviceData = await response.json();
+            setDevices([...devices, deviceData]);
+            toast.success(deviceData.value || 'dispositivo apagado com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao apagar dispositivos:', error);
+        } finally {
+            setShowAddModal(false);
+            refreshAll();
+        }
+    };
+
     // Função para deletar um dispositivo
     const handleDeleteDevice = async (zktecoDeviceID: string) => {
         try {
@@ -134,64 +162,9 @@ export const Terminals = () => {
             );
             setEmployeesCard(filteredCardEmployees)
         } catch (error) {
-            console.error('Erro ao buscar funcionários:', error);
+            console.error('Erro ao apagar dispositivos:', error);
         }
     }
-
-    // Define a função de adição de funcionários
-    const handleAddEmployee = async (employee: Employee) => {
-        try {
-            const response = await fetchWithAuth('Employees/CreateEmployee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const employeesData = await response.json();
-            setEmployeeDevices([...employeeDevices, employeesData]);
-            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar novo funcionário:', error);
-        } finally {
-            setShowAddModal(false);
-            refreshAll();
-        }
-    };
-
-    // Define a função de atualização de funcionários
-    const handleUpdateEmployee = async (employee: Employee) => {
-        try {
-            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedEmployee = await response.json();
-            setEmployeeDevices(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
-            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso');
-
-        } catch (error) {
-            console.error('Erro ao atualizar funcionário:', error);
-        } finally {
-            setShowUpdateModal(false);
-            refreshAll();
-        }
-    };
 
     // Função para apagar um funcionário
     const handleDeleteEmployee = async (employeeID: string) => {
@@ -790,6 +763,14 @@ export const Terminals = () => {
                     onSelectAllColumns={handleSelectAllColumns}
                 />
             )}
+            <CreateModalDevices
+                title="Adicionar Terminal"
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={handleAddDevice}
+                fields={deviceFields}
+                initialValues={initialData || {}}
+            />
             {showDeleteModal && (isDeviceToDelete || isUserToDelete) && (
                 <DeleteModal
                     open={showDeleteModal}

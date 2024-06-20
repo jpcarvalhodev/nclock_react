@@ -249,7 +249,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             src={profileImage || modalAvatar}
                             alt="Profile Avatar"
                             style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer' }}
-                            onDoubleClick={triggerFileSelectPopup}
+                            onClick={triggerFileSelectPopup}
                         />
                         <div>
                             <input
