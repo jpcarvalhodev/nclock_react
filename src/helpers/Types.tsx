@@ -3,7 +3,7 @@
 export type Employee = {
     [key: string]: any;
     id: string;
-    enrollNumber: number;
+    enrollNumber: string;
     name: string;
     shortName: string;
     nameAcronym: string;
@@ -148,6 +148,7 @@ export type Devices = {
     deviceNumber: number;
     deviceName: string;
     ipAddress: string;
+    photo: string;
     port: number;
     code: number;
     machineNumber: number;

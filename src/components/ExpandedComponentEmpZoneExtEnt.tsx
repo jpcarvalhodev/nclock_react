@@ -12,7 +12,9 @@ interface Field {
 
 // Função para mapear os nomes das colunas
 const columnNamesMap = (fields: Field[]) => fields.reduce((map, field) => {
-    map[field.key] = field.label;
+    if (field.key !== 'photo') {
+        map[field.key] = field.label;
+    }
     return map;
 }, {} as Record<string, string>);
 
@@ -45,11 +47,13 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                     src={photo}
                     alt={'Foto não disponível'}
                     className="entity-photo-img"
+                    style={{ borderRadius: '50%' }}
                 />
             </div>
             <div className="entity-details-grid">
                 {fields.map((field) => {
                     const key = field.key;
+                    if (key === 'photo') return null;
                     const value = data[key];
                     let displayValue = value;
                     switch (key) {

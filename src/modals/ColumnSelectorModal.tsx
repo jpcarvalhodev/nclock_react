@@ -67,8 +67,8 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onResetColumns}>Resetar</Button>
-                <Button onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={onResetColumns}>Resetar</Button>
+                <Button variant="outline-primary" onClick={onClose}>Fechar</Button>
             </Modal.Footer>
         </Modal>
     );

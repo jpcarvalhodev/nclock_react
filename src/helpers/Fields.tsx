@@ -1,7 +1,7 @@
 //*** campos de todos os modelos para usar no programa todo ***
 
 export const employeeFields = [
-    { label: 'Número', key: 'enrollNumber', type: 'number', required: true },
+    { label: 'Número', key: 'enrollNumber', type: 'string', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
     { label: 'Acrônimo do Nome', key: 'nameAcronym', type: 'string' },
@@ -119,8 +119,9 @@ export const deviceFields = [
     { key: "deviceName", label: "Nome", type: "string", required: true},
     { key: "ipAddress", label: "Endereço IP", type: "string", required: true},
     { key: "port", label: "Porta", type: "number", required: true },
-    { key: "code", label: "Código", type: "number", required: true },
-    { key: "machineNumber", label: "Número do Equipamento", type: "number", required: true},
+    { key: "photo", label: "Foto", type: "string" },
+    { key: "code", label: "Código", type: "number" },
+    { key: "machineNumber", label: "Número do Equipamento", type: "number" },
     { key: "platform", label: "Platforma", type: "string" },
     { key: "firmware", label: "Firmware", type: "string" },
     { key: "macAddress", label: "Endereço MAC", type: "string" },

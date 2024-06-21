@@ -296,8 +296,8 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                 })}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

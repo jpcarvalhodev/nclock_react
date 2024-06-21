@@ -6,10 +6,16 @@ import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";
 
-// Define a interface para as propriedades do componente FieldConfig
-interface FieldConfig {
-    label: string;
+// Define a interface Entity
+export interface Entity {
+    id: string;
+    [key: string]: any;
+}
+
+// Define a interface Field	
+interface Field {
     key: string;
+    label: string;
     type: string;
     required?: boolean;
     optionsUrl?: string;
@@ -18,17 +24,18 @@ interface FieldConfig {
 }
 
 // Define as propriedades do componente
-interface Props<T> {
-    title: string;
+interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
-    fields: FieldConfig[];
-    initialValues: Partial<T>;
+    onDuplicate?: (entity: T) => void;
+    onUpdate: (entity: T) => Promise<void>;
+    entity: T | null;
+    fields: Field[];
+    title: string;
 }
 
-export const CreateModalDevices = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>(initialValues);
+export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+    const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [device, setDevice] = useState<Devices[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [ipAddress, setIpAddress] = useState('');
@@ -94,6 +101,22 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         fetchAllDevices();
     }, []);
 
+    // Atualiza o estado da foto
+    useEffect(() => {
+        if (entity && entity.photo) {
+            setDeviceImage(entity.photo);
+        } else {
+            setDeviceImage(no_image);
+        }
+    }, [entity]);
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { employeeID, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
+    };
+
     // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -157,7 +180,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
             [name]: parsedValue
         }));
         validateForm();
-    }; 
+    };
 
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
@@ -165,12 +188,13 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
             toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
             return;
         }
-        handleSave();
+        handleSubmit();
     };
 
-    // Função para lidar com o salvamento
-    const handleSave = () => {
-        onSave(formData as T);
+    // Define a função para enviar
+    const handleSubmit = async () => {
+        await onUpdate(formData);
+        onClose();
     };
 
     return (
@@ -286,14 +310,14 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                                 placement="right"
                                                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
                                                             >
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="ipAddress"
-                                                                value={formData['ipAddress'] || ''}
-                                                                onChange={handleChange}
-                                                                isInvalid={!!error}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
+                                                                <Form.Control
+                                                                    type="string"
+                                                                    name="ipAddress"
+                                                                    value={formData['ipAddress'] || ''}
+                                                                    onChange={handleChange}
+                                                                    isInvalid={!!error}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                />
                                                             </OverlayTrigger>
                                                             <Form.Control.Feedback type="invalid">
                                                                 {error}
@@ -307,13 +331,13 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                                 placement="right"
                                                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
                                                             >
-                                                            <Form.Control
-                                                                type="number"
-                                                                name="port"
-                                                                value={formData['port'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    name="port"
+                                                                    value={formData['port'] || ''}
+                                                                    onChange={handleChange}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                />
                                                             </OverlayTrigger>
                                                             {errors['port'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['port']}</div>}
                                                         </Form.Group>
@@ -459,6 +483,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                 </Row>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>

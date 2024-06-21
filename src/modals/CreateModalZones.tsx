@@ -75,9 +75,33 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfileImage(reader.result as string);
-                setFormData({ ...formData, photo: reader.result as string });
+            reader.onload = (readerEvent) => {
+                const image = new Image();
+                image.onload = () => {
+                    let width = image.width;
+                    let height = image.height;
+    
+                    if (width > 512 || height > 512) {
+                        if (width > height) {
+                            height *= 512 / width;
+                            width = 512;
+                        } else {
+                            width *= 512 / height;
+                            height = 512;
+                        }
+                    }
+    
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx?.drawImage(image, 0, 0, width, height);
+    
+                    const dataUrl = canvas.toDataURL('image/png');
+                    setProfileImage(dataUrl);
+                    setFormData({ ...formData, photo: dataUrl });
+                };
+                image.src = readerEvent.target?.result as string;
             };
             reader.readAsDataURL(file);
         }
@@ -210,7 +234,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                         <img
                                             src={profileImage || modalAvatar}
                                             alt="Profile Avatar"
-                                            style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer' }}
+                                            style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover'}}
                                             onDoubleClick={triggerFileSelectPopup}
                                         />
                                         <div>
@@ -259,8 +283,8 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

@@ -4,15 +4,15 @@
 }
 
 .entity-photo {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .entity-photo img {
-    width: 150px;
     height: 150px;
+    width: 150px;
+    object-fit: cover;
 }
 
 .entity-details-grid {

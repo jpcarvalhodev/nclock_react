@@ -29,10 +29,10 @@ export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalPr
                 Tem certeza que deseja apagar os dados da linha selecionada?
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>
+                <Button variant="outline-secondary" onClick={onClose}>
                     Cancelar
                 </Button>
-                <Button variant="danger" onClick={handleDelete}>
+                <Button variant="outline-danger" onClick={handleDelete}>
                     Apagar
                 </Button>
             </Modal.Footer>

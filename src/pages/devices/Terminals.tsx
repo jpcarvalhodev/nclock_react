@@ -14,6 +14,11 @@ import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
 import { CreateModalDevices } from "../../modals/CreateModalDevices";
+import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
+import fprintScan from "../../assets/img/terminais/fprintScan.png";
+import faceScan from "../../assets/img/terminais/faceScan.png";
+import palmScan from "../../assets/img/terminais/palmScan.png";
+import card from "../../assets/img/terminais/card.png";
 
 // Define a interface para os filtros
 interface Filters {
@@ -32,7 +37,12 @@ interface DeviceStatusCounts {
     Inactivo: number;
 }
 
-export const Terminals = () => {
+// Define as propriedades dos terminais
+interface TerminalProps {
+    onDuplicate?: (devices: Devices) => void;
+}
+
+export const Terminals = ({ onDuplicate }: TerminalProps) => {
     const [devices, setDevices] = useState<Devices[]>([]);
     const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
     const [employeeDevices, setEmployeeDevices] = useState<EmployeeDevices[]>([]);
@@ -40,7 +50,6 @@ export const Terminals = () => {
     const [employeesCard, setEmployeesCard] = useState<EmployeeDevices[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [initialData, setInitialData] = useState<Employee | null>(null);
     const [mainTabKey, setMainTabKey] = useState('tasks');
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
@@ -48,10 +57,8 @@ export const Terminals = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'ipAddress']);
     const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'employeeName', 'cardNumber', 'statusFprint', 'statusFace']);
-    const [selectedDevices, setSelectedDevices] = useState<Devices[]>([]);
     const [selectedDeviceToDelete, setSelectedDeviceToDelete] = useState<string>('');
     const [selectedUserToDelete, setSelectedUserToDelete] = useState<string>('');
-    const [showUpdateDeviceModal, setShowUpdateDeviceModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
@@ -118,10 +125,41 @@ export const Terminals = () => {
         }
     };
 
-    // Função para deletar um dispositivo
-    const handleDeleteDevice = async (zktecoDeviceID: string) => {
+    // Atualiza um funcionário
+    const handleUpdateDevice = async (device: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/DeleteDevice?deviceId=${zktecoDeviceID}`, {
+            const response = await fetchWithAuth(`Zkteco/UpdateDevice`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(device)
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const contentType = response.headers.get('Content-Type');
+            (contentType && contentType.includes('application/json'))
+            const updatedDevice = await response.json();
+            const updatedDevices = devices.map(d => d.ZktecoDeviceID === updatedDevice.ZktecoDeviceID ? updatedDevice : d);
+            setDevices(updatedDevices);
+            toast.success(updatedDevice.value || 'Atualização realizada com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao atualizar funcionário:', error);
+            toast.error('Erro ao conectar ao servidor');
+        } finally {
+            setShowUpdateModal(false);
+            refreshAll();
+        }
+    };
+
+    // Função para deletar um dispositivo
+    const handleDeleteDevice = async (ZktecoDeviceID: string) => {
+        try {
+            const response = await fetchWithAuth(`Zkteco/DeleteDevice?deviceId=${ZktecoDeviceID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -131,8 +169,8 @@ export const Terminals = () => {
             if (!response.ok) {
                 return;
             }
-            const deleteAttendance = await response.json();
-            toast.success(deleteAttendance.value || 'dispositivo apagado com sucesso!');
+            const deleteDevice = await response.json();
+            toast.success(deleteDevice.value || 'dispositivo apagado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar dispositivos:', error);
@@ -230,19 +268,6 @@ export const Terminals = () => {
         if (k) {
             setUserTabKey(k);
         }
-    };
-
-    // Define a função de duplicar funcionários
-    const handleDuplicate = (data: Employee) => {
-        setInitialData(data);
-        handleCloseUpdateModal();
-        setShowAddModal(true);
-    }
-
-    // Fecha o modal de edição de funcionário
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-        setSelectedEmployee(null);
     };
 
     // Função para alternar a visibilidade das colunas
@@ -364,18 +389,29 @@ export const Terminals = () => {
         )
     );
 
+    // Formata as 3 colunas abaixo em uma única coluna
+    const formatCombinedStatus = (row: EmployeeDevices) => {
+        return (
+            <>
+                {row.cardNumber !== "0" && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
+                {row.statusFprint && <img src={fprintScan} alt="Fingerprint" style={{ width: 20, marginRight: 5 }} />}
+                {row.statusFace && <img src={faceScan} alt="Face" style={{ width: 20, marginRight: 5 }} />}
+                {row.statusPalm && <img src={palmScan} alt="Palm" style={{ width: 20, marginRight: 5 }} />}
+            </>
+        );
+    };
+
+    const excludedUserColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+
     // Define as colunas de utilizadores
     const userColumns: TableColumn<EmployeeDevices>[] = employeeDeviceFields
         .filter(field => selectedUserColums.includes(field.key))
+        .filter(field => !excludedUserColumns.includes(field.key))
         .map(field => {
             const formatField = (row: EmployeeDevices) => {
                 switch (field.key) {
                     case 'cardNumber':
                         return row.cardNumber === "0" ? "" : row.cardNumber;
-                    case 'statusFprint':
-                        return row.statusFprint ? 'Activo' : 'Inactivo';
-                    case 'statusFace':
-                        return row.statusFace ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key] || '';
                 }
@@ -388,10 +424,21 @@ export const Terminals = () => {
                         <SelectFilter column={field.key} setFilters={setFilters} data={employeeDevices} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: EmployeeDevices) => formatField(row),
                 sortable: true,
             };
-        });
+        })
+        .concat([
+            {
+                name: (
+                    <>
+                        Modo de Verificação
+                    </>
+                ),
+                selector: row => formatCombinedStatus(row),
+                sortable: true,
+            }
+        ]);
 
     // Filtra os dados da tabela de utilizadores
     const filteredUserDataTable = employeeDevices.filter(employee =>
@@ -422,14 +469,28 @@ export const Terminals = () => {
 
     // Define a função de abertura do modal de edição dos dispositivos
     const handleEditDevices = (row: Devices) => {
-        setSelectedDevices([row]);
-        setShowUpdateDeviceModal(true);
+        setSelectedTerminal(row);
+        setShowUpdateModal(true);
     };
+
+    // Define a função de fechamento do modal de atualização
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedTerminal(null);
+    }
 
     // Define a função de abertura do modal de exclusão dos dispositivos
     const handleOpenDeleteModal = (Id: string) => {
         setSelectedDeviceToDelete(Id);
         setShowDeleteModal(true);
+    };
+
+    // Função que manipula a duplicação e fecha o modal de atualização
+    const handleDuplicateAndClose = (devices: Devices) => {
+        if (onDuplicate) {
+            onDuplicate(devices);
+        }
+        setShowUpdateModal(false);
     };
 
     // Define as colunas de ação de dispositivos
@@ -505,7 +566,7 @@ export const Terminals = () => {
                     <DataTable
                         columns={[...deviceColumns, devicesActionColumn]}
                         data={filteredDeviceDataTable}
-                        //onRowDoubleClicked={handleEditDevices}
+                        onRowDoubleClicked={handleEditDevices}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         selectableRows
@@ -771,6 +832,17 @@ export const Terminals = () => {
                 fields={deviceFields}
                 initialValues={initialData || {}}
             />
+            {selectedTerminal && (
+                <UpdateModalDevices
+                    open={showUpdateModal}
+                    onClose={handleCloseUpdateModal}
+                    onDuplicate={handleDuplicateAndClose}
+                    onUpdate={handleUpdateDevice}
+                    entity={selectedTerminal}
+                    fields={deviceFields}
+                    title="Atualizar Terminal"
+                />
+            )}
             {showDeleteModal && (isDeviceToDelete || isUserToDelete) && (
                 <DeleteModal
                     open={showDeleteModal}

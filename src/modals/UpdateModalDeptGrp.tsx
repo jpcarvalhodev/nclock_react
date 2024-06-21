@@ -65,9 +65,9 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             const fieldValue = formData[field.key];
             let valid = true;
 
-            if (field.type === 'number' && fieldValue != null && fieldValue <= 0) {
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser nulo ou negativo.`;
+                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -410,8 +410,8 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
             {showEmployeeModal && (
                 <CreateModalEmployees
