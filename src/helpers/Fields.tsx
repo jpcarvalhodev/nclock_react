@@ -106,12 +106,16 @@ export const zoneFields = [
 
 export const employeeAttendanceTimesFields = [
     { key: 'attendanceTime', label: 'Data e Hora de presença', type: 'datetime-local', required: true},
+    { key: 'deviceId', label: 'Dispositivo', type: 'dropdown' },
+    { key: 'deviceNumber', label: 'Número do Dispositivo', type: 'number' },
     { key: 'employeeId', label: 'Funcionário', type: 'dropdown', required: true},
     { key: 'enrollNumber', label: 'Número', type: 'number' },
     { key: 'employeeName', label: 'Nome do Funcionário', type: 'string' },
-    { key: 'inOutMode', label: 'Modo de entrada/saída', type: 'number' },
+    { key: 'inOutMode', label: 'Modo de Entrada/Saída', type: 'number' },
     { key: 'observation', label: 'Observação', type: 'string' },
     { key: 'type', label: 'Tipo', type: 'number' },
+    { key: 'verifyMode', label: 'Modo de Verificação', type: 'number' },
+    { key: 'workCode', label: 'Código', type: 'number' },
 ];
 
 export const deviceFields = [

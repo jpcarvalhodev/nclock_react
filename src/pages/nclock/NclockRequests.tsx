@@ -275,7 +275,7 @@ export const NclockRequests = () => {
     }
 
     // Remove o campo de número, nome, modo de entrada/saída e tipo
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'inOutMode' && field.key !== 'type');
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'inOutMode' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
 
     // Função para formatar a data e a hora
     function formatDateAndTime(input: string | Date): string {
@@ -320,7 +320,7 @@ export const NclockRequests = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={data.attendance} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -329,7 +329,7 @@ export const NclockRequests = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredAttendances.filter(attendances =>
+    const filteredDataTable = data.attendance.filter(attendances =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )
@@ -404,7 +404,7 @@ export const NclockRequests = () => {
                                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
-                                <ExportButton allData={attendance} selectedData={filteredAttendances} fields={employeeAttendanceTimesFields.map(field => ({ key: field.key, label: field.label }))} />
+                                <ExportButton allData={attendance} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
                             </div>
                             <div className="date-range-search">
                                 <input

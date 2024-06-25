@@ -160,6 +160,9 @@ export const NclockAll = () => {
         return new Intl.DateTimeFormat('pt-PT', options).format(date);
     }
 
+    // Remove o campo de observação, número, nome do funcionário e o tipo
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
+
     // Define as colunas
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
@@ -188,7 +191,7 @@ export const NclockAll = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={data.attendance} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -197,7 +200,7 @@ export const NclockAll = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredAttendances.filter(attendances =>
+    const filteredDataTable = data.attendance.filter(attendances =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )
@@ -243,7 +246,7 @@ export const NclockAll = () => {
                             <div className="buttons-container">
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                                <ExportButton allData={attendance} selectedData={attendance} fields={employeeAttendanceTimesFields.map(field => ({ key: field.key, label: field.label }))} />
+                                <ExportButton allData={attendance} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
                             </div>
                             <div className="date-range-search">
                                 <input

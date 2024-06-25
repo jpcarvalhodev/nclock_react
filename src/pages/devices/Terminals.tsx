@@ -206,7 +206,6 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
 
     // Função para apagar um funcionário
     const handleDeleteEmployee = async (employeeID: string) => {
-
         try {
             const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
                 method: 'DELETE',
@@ -340,6 +339,8 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                         return row.code === 0 ? "" : row.code;
                     case 'machineNumber':
                         return row.code === 0 ? "" : row.machineNumber;
+                    case 'cardNumber':
+                        return row.cardNumber === 0 ? "" : row.cardNumber;
                     case 'productTime':
                         return formatDateAndTime(row[field.key]);
                     case 'status':
@@ -480,10 +481,15 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     }
 
     // Define a função de abertura do modal de exclusão dos dispositivos
-    const handleOpenDeleteModal = (Id: string) => {
-        setSelectedDeviceToDelete(Id);
+    const handleOpenDeleteModal = (id: string, type: 'device' | 'user') => {
+        if (type === 'device') {
+            setSelectedDeviceToDelete(id);
+        } else {
+            setSelectedUserToDelete(id);
+        }
         setShowDeleteModal(true);
     };
+
 
     // Função que manipula a duplicação e fecha o modal de atualização
     const handleDuplicateAndClose = (devices: Devices) => {
@@ -499,26 +505,12 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
         cell: (row: Devices) => (
             <div style={{ display: 'flex' }}>
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDeviceID)}>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDevicesID, 'device')}>
                     <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                </Button>
             </div>
         ),
         selector: (row: Devices) => row.employeeID,
-        ignoreRowClick: true,
-    };
-
-    // Define as colunas de ação de utilizadores
-    const userActionColumn: TableColumn<EmployeeDevices> = {
-        name: 'Ação',
-        cell: (row: EmployeeDevices) => (
-            <div style={{ display: 'flex' }}>
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeID)}>
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
-            </div>
-        ),
-        selector: (row: EmployeeDevices) => row.employeeID,
         ignoreRowClick: true,
     };
 
@@ -618,7 +610,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                                     <div style={{ display: "flex" }}>
                                         <div style={{ overflowX: "auto", flex: 5 }}>
                                             <DataTable
-                                                columns={[...userColumns, userActionColumn]}
+                                                columns={userColumns}
                                                 data={filteredUserDataTable}
                                                 pagination
                                                 paginationComponentOptions={paginationOptions}
@@ -634,7 +626,12 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                                                 <i className="bi bi-person-fill-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                                 Enviar utilizadores seleccionados
                                             </Button>
-                                            <Button variant="outline-primary" size="sm" className="button-terminals-users-track">
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={() => {
+                                                if (selectedUserRows.length > 0) {
+                                                    const userId = selectedUserRows[0].employeeID;
+                                                    handleOpenDeleteModal(userId, 'user');
+                                                }
+                                            }}>
                                                 <i className="bi bi-person-x-fill" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                                 Remover utilizadores seleccionados
                                             </Button>

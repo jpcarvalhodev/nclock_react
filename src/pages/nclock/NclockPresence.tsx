@@ -166,8 +166,8 @@ export const NclockPresence = () => {
         return new Intl.DateTimeFormat('pt-PT', options).format(date);
     }
 
-    // Remove o campo de observação e tipo
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'type');
+    // Remove o campo de observação, número, nome do funcionário e o tipo
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeId' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
 
     // Definindo a coluna de Presença primeiro
     const presenceColumn: TableColumn<EmployeeAttendanceTimes> = {
@@ -215,7 +215,7 @@ export const NclockPresence = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={data.attendance} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -224,7 +224,7 @@ export const NclockPresence = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredAttendances.filter(attendances =>
+    const filteredDataTable = data.attendance.filter(attendances =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )
@@ -273,7 +273,7 @@ export const NclockPresence = () => {
                             <div className="buttons-container">
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                                <ExportButton allData={attendance} selectedData={attendance} fields={employeeAttendanceTimesFields.map(field => ({ key: field.key, label: field.label }))} />
+                                <ExportButton allData={attendance} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
                             </div>
                         </div>
                         <DataTable

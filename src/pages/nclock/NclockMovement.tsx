@@ -288,7 +288,7 @@ export const NclockMovement = () => {
     }
 
     // Remove o campo de observação, número, nome do funcionário e o tipo
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type');
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type' && field.key !== 'deviceNumber');
 
     // Define as colunas
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
@@ -297,12 +297,14 @@ export const NclockMovement = () => {
             const formatField = (row: EmployeeAttendanceTimes) => {
                 switch (field.key) {
                     case 'attendanceTime':
-                        return formatDateAndTime(row[field.key]);
+                        return row.attendanceTime ? formatDateAndTime(row[field.key]) : '';
+                    case 'deviceId':
+                        return row.deviceNumber || '';
                     case 'employeeId':
-                        return row.employeeName;
+                        return row.employeeName || '';
                     case 'inOutMode':
                         if (row.inOutModeDescription) {
-                            return row.inOutModeDescription;
+                            return row.inOutModeDescription || '';
                         } else {
                             switch (row[field.key]) {
                                 case 0: return 'Entrada';
@@ -315,14 +317,14 @@ export const NclockMovement = () => {
                             }
                         }
                     default:
-                        return row[field.key];
+                        return row[field.key] || '';
                 }
             };
             return {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={data.attendance} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -331,7 +333,7 @@ export const NclockMovement = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredAttendances.filter(attendances =>
+    const filteredDataTable = data.attendance.filter(attendances =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )
@@ -406,7 +408,7 @@ export const NclockMovement = () => {
                                 <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
-                                <ExportButton allData={attendance} selectedData={filteredAttendances} fields={employeeAttendanceTimesFields.map(field => ({ key: field.key, label: field.label }))} />
+                                <ExportButton allData={attendance} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
                             </div>
                             <div className="date-range-search">
                                 <input
