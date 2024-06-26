@@ -15,6 +15,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
 import { CreateModalDevices } from "../../modals/CreateModalDevices";
 import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
+import { Spinner } from 'react-bootstrap';
 import fprintScan from "../../assets/img/terminais/fprintScan.png";
 import faceScan from "../../assets/img/terminais/faceScan.png";
 import palmScan from "../../assets/img/terminais/palmScan.png";
@@ -66,6 +67,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     const [selectedUserRows, setSelectedUserRows] = useState<EmployeeDevices[]>([]);
     const [deviceStatusCount, setDeviceStatusCount] = useState<DeviceStatusCounts>({ Activo: 0, Inactivo: 0 });
     const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(null);
+    const [loading, setLoading] = useState(false);
 
     // Função para contar o status
     const countStatus = (statusArray: string[]): StatusCounts => {
@@ -98,6 +100,86 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
         }
     };
 
+    // Função para buscar todos os funcionários no dispositivo e salvar no DB
+    const fetchAllEmployeesOnDevice = async (zktecoDevicesID: Devices) => {
+        try {
+            const response = await fetchWithAuth(`Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDevicesID}`);
+            if (!response.ok) {
+                return;
+            }
+            const data = await response.json();
+            setDevices(data);
+            toast.success(data.value || 'Funcionários recolhidos com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao buscar dispositivos:', error);
+        }
+    };
+
+    // Função para enviar todos os funcionários para o dispositivo
+    const sendAllEmployeesToDevice = async (zktecoDevicesID: Devices) => {
+        try {
+            const response = await fetchWithAuth(`Zkteco/SendEmployeesToDevice/${zktecoDevicesID}`);
+            if (!response.ok) {
+                return;
+            }
+            const data = await response.json();
+            setDevices(data);
+            toast.success(data.value || 'Funcionários enviados com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao buscar dispositivos:', error);
+        }
+    };
+
+    // Função para buscar todas as assiduidades no dispositivo
+    const getAllAttendancesEmployeesOnDevice = async (zktecoDevicesID: Devices) => {
+        try {
+            const response = await fetchWithAuth(`Zkteco/GetAllAttendancesEmployeesOnDevice/${zktecoDevicesID}`);
+            if (!response.ok) {
+                return;
+            }
+            const data = await response.json();
+            setDevices(data);
+            toast.success(data.value || 'Assiduidades recolhidas com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao buscar dispositivos:', error);
+        }
+    };
+
+    // Função para sincronizar a hora manualmente para o dispositivo
+    const syncTimeManuallyToDevice = async (device: Devices) => {
+        try {
+            const deviceWithTime = {
+                ...device,
+                dateTimeNow: new Date().toISOString()
+            };
+
+            const response = await fetchWithAuth('Zkteco/SyncTimeManuallyToDevice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(deviceWithTime)
+            });
+
+            if (!response.ok) {
+                toast.error('Falha ao sincronizar a hora');
+                return;
+            }
+
+            const data = await response.json();
+            setDevices(data);
+            toast.success(data.value || 'Hora sincronizada com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao sincronizar a hora:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    };
+
+
     // Define a função de adição de dispositivos
     const handleAddDevice = async (device: Devices) => {
         try {
@@ -108,7 +190,6 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                 },
                 body: JSON.stringify(device)
             });
-            console.log(response)
 
             if (!response.ok) {
                 return;
@@ -630,6 +711,8 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                                                 if (selectedUserRows.length > 0) {
                                                     const userId = selectedUserRows[0].employeeID;
                                                     handleOpenDeleteModal(userId, 'user');
+                                                } else {
+                                                    toast.error('Selecione um utilizador primeiro!');
                                                 }
                                             }}>
                                                 <i className="bi bi-person-x-fill" style={{ marginRight: 5, fontSize: '1rem' }}></i>
@@ -709,23 +792,66 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                 >
                     <Tab eventKey="users" title="Utilizadores">
                         <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-arrow-down-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                if (selectedTerminal) {
+                                    setLoading(true);
+                                    await fetchAllEmployeesOnDevice(selectedTerminal);
+                                    setLoading(false);
+                                } else {
+                                    toast.error('Selecione um terminal primeiro!');
+                                }
+                            }}>
+                                {loading ? (
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                ) : (
+                                    <i className="bi bi-arrow-down-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                )}
                                 Recolher utilizadores
                             </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-arrow-up-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                if (selectedTerminal) {
+                                    setLoading(true);
+                                    await sendAllEmployeesToDevice(selectedTerminal);
+                                    setLoading(false);
+                                } else {
+                                    toast.error('Selecione um terminal primeiro!');
+                                }
+                            }}>
+                                {loading ? (
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                ) : (
+                                    <i className="bi bi-arrow-up-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                )}
                                 Enviar todos os utilizadores
                             </Button>
                             <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                 <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                 Sincronizar utilizadores
                             </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-arrow-left-right" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                if (selectedTerminal) {
+                                    setLoading(true);
+                                    await getAllAttendancesEmployeesOnDevice(selectedTerminal);
+                                    setLoading(false);
+                                } else {
+                                    toast.error('Selecione um terminal primeiro!');
+                                }
+                            }}>
+                                {loading ? (
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                ) : (
+                                    <i className="bi bi-arrow-left-right" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                )}
                                 Recolher movimentos
                             </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={() => {
+                                if (selectedUserRows.length > 0) {
+                                    const userId = selectedUserRows[0].employeeID;
+                                    handleOpenDeleteModal(userId, 'user');
+                                } else {
+                                    toast.error('Selecione um utilizador primeiro!');
+                                }
+                            }}>
                                 <i className="bi bi-trash" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                 Apagar utilizadores
                             </Button>
@@ -766,8 +892,20 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                     </Tab>
                     <Tab eventKey="configuration" title="Configurações">
                         <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-calendar-check" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                if (selectedTerminal) {
+                                    setLoading(true);
+                                    await syncTimeManuallyToDevice(selectedTerminal);
+                                    setLoading(false);
+                                } else {
+                                    toast.error('Selecione um terminal primeiro!');
+                                }
+                            }}>
+                                {loading ? (
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                ) : (
+                                    <i className="bi bi-calendar-check" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                )}
                                 Acertar a hora
                             </Button>
                             <Button variant="outline-primary" size="sm" className="button-terminals-users">
