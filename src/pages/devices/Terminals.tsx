@@ -43,6 +43,15 @@ interface TerminalProps {
     onDuplicate?: (devices: Devices) => void;
 }
 
+// Define a interface para as transações
+interface Transaction {
+    UserID: string;
+    IsInvalid: number;
+    State: number;
+    VerifyStyle: number;
+    Time: string;
+}
+
 export const Terminals = ({ onDuplicate }: TerminalProps) => {
     const [devices, setDevices] = useState<Devices[]>([]);
     const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
@@ -67,7 +76,15 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     const [selectedUserRows, setSelectedUserRows] = useState<EmployeeDevices[]>([]);
     const [deviceStatusCount, setDeviceStatusCount] = useState<DeviceStatusCounts>({ Activo: 0, Inactivo: 0 });
     const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loadingUser, setLoadingUser] = useState(false);
+    const [loadingAllUser, setLoadingAllUser] = useState(false);
+    const [loadingSyncAllUser, setLoadingSyncAllUser] = useState(false);
+    const [loadingMovements, setLoadingMovements] = useState(false);
+    const [loadingSyncTime, setLoadingSyncTime] = useState(false);
+    const [showAllUsers, setShowAllUsers] = useState(true);
+    const [showFingerprintUsers, setShowFingerprintUsers] = useState(false);
+    const [showFacialRecognitionUsers, setShowFacialRecognitionUsers] = useState(false);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
 
     // Função para contar o status
     const countStatus = (statusArray: string[]): StatusCounts => {
@@ -101,68 +118,67 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     };
 
     // Função para buscar todos os funcionários no dispositivo e salvar no DB
-    const fetchAllEmployeesOnDevice = async (zktecoDevicesID: Devices) => {
+    const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDevicesID}`);
+            const response = await fetchWithAuth(`Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`);
+
             if (!response.ok) {
                 return;
             }
             const data = await response.json();
-            setDevices(data);
             toast.success(data.value || 'Funcionários recolhidos com sucesso!');
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
+        } finally {
+            refreshAll();
         }
     };
 
     // Função para enviar todos os funcionários para o dispositivo
-    const sendAllEmployeesToDevice = async (zktecoDevicesID: Devices) => {
+    const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/SendEmployeesToDevice/${zktecoDevicesID}`);
+            const response = await fetchWithAuth(`Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(zktecoDeviceID)
+            });
+
             if (!response.ok) {
                 return;
             }
             const data = await response.json();
-            setDevices(data);
             toast.success(data.value || 'Funcionários enviados com sucesso!');
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
-        }
+        } 
     };
 
     // Função para buscar todas as assiduidades no dispositivo
-    const getAllAttendancesEmployeesOnDevice = async (zktecoDevicesID: Devices) => {
+    const getAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/GetAllAttendancesEmployeesOnDevice/${zktecoDevicesID}`);
+            const response = await fetchWithAuth(`Zkteco/GetAllAttendancesEmployeesOnDevice/${zktecoDeviceID}`);
+
             if (!response.ok) {
                 return;
             }
             const data = await response.json();
-            setDevices(data);
             toast.success(data.value || 'Assiduidades recolhidas com sucesso!');
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
+        } finally {
+            refreshAll();
         }
     };
 
     // Função para sincronizar a hora manualmente para o dispositivo
     const syncTimeManuallyToDevice = async (device: Devices) => {
         try {
-            const deviceWithTime = {
-                ...device,
-                dateTimeNow: new Date().toISOString()
-            };
-
-            const response = await fetchWithAuth('Zkteco/SyncTimeManuallyToDevice', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(deviceWithTime)
-            });
+            const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice?deviceId=${device.zktecoDeviceID}`);
 
             if (!response.ok) {
                 toast.error('Falha ao sincronizar a hora');
@@ -170,7 +186,6 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
             }
 
             const data = await response.json();
-            setDevices(data);
             toast.success(data.value || 'Hora sincronizada com sucesso!');
 
         } catch (error) {
@@ -178,7 +193,6 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
             toast.error('Erro ao conectar ao servidor');
         }
     };
-
 
     // Define a função de adição de dispositivos
     const handleAddDevice = async (device: Devices) => {
@@ -224,7 +238,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
             const contentType = response.headers.get('Content-Type');
             (contentType && contentType.includes('application/json'))
             const updatedDevice = await response.json();
-            const updatedDevices = devices.map(d => d.ZktecoDeviceID === updatedDevice.ZktecoDeviceID ? updatedDevice : d);
+            const updatedDevices = devices.map(d => d.zktecoDeviceID === updatedDevice.zktecoDeviceID ? updatedDevice : d);
             setDevices(updatedDevices);
             toast.success(updatedDevice.value || 'Atualização realizada com sucesso!');
 
@@ -238,9 +252,9 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     };
 
     // Função para deletar um dispositivo
-    const handleDeleteDevice = async (ZktecoDeviceID: string) => {
+    const handleDeleteDevice = async (zktecoDeviceID: string) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/DeleteDevice?deviceId=${ZktecoDeviceID}`, {
+            const response = await fetchWithAuth(`Zkteco/DeleteDevice?deviceId=${zktecoDeviceID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -305,9 +319,35 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
             console.error('Erro ao apagar funcionário:', error);
         } finally {
             setShowDeleteModal(false);
-            refreshAll();
         }
     };
+
+    // Função para buscar os logs de transações
+    useEffect(() => {
+        const ws = new WebSocket("ws://localhost:9999/websocket");
+
+        ws.onopen = () => {
+            console.log("Connected to WebSocket");
+        };
+
+        ws.onmessage = (event) => {
+            const transaction = JSON.parse(event.data);
+            setTransactions(prev => [...prev, transaction]);
+            console.log("Received data: ", transaction);
+        };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket error: ", error);
+        };
+
+        ws.onclose = () => {
+            console.log("WebSocket connection closed");
+        };
+
+        return () => {
+            ws.close();
+        };
+    }, []);
 
     // Atualiza os dados de renderização
     useEffect(() => {
@@ -322,10 +362,11 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
         }
     }, [resetSelection]);
 
-    // Função para atualizar tudo
+    // Função para atualizar todos os dispositivos
     const refreshAll = () => {
         fetchAllDevices();
-    };
+        fetchAllEmployeeDevices();
+    }
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
@@ -449,6 +490,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
         )
     );
 
+    // Define as colunas de estado de dispositivos
     const stateColumns: TableColumn<Devices>[] = deviceFields
         .filter(field => excludedColumns.includes(field.key) || field.key === 'deviceName')
         .map(field => {
@@ -523,11 +565,21 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
         ]);
 
     // Filtra os dados da tabela de utilizadores
-    const filteredUserDataTable = employeeDevices.filter(employee =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(employee[key]) === String(filters[key])
-        )
-    );
+    const filteredUserDataTable = useMemo(() => {
+        let filteredData: EmployeeDevices[] = [];
+
+        if (showAllUsers) {
+            return employeeDevices;
+        }
+
+        if (showFingerprintUsers) {
+            filteredData = [...filteredData, ...employeeDevices.filter(user => user.statusFprint)];
+        }
+        if (showFacialRecognitionUsers) {
+            filteredData = [...filteredData, ...employeeDevices.filter(user => user.statusFace)];
+        }
+        return filteredData;
+    }, [employeeDevices, showAllUsers, showFingerprintUsers, showFacialRecognitionUsers]);
 
     // Define os dados da tabela de biometria
     const filteredBioDataTable = employeesBio.filter(employee =>
@@ -580,6 +632,45 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
         setShowUpdateModal(false);
     };
 
+    // Função que manipula o filtro de utilizadores
+    const handleAllUsersChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setShowAllUsers(isChecked);
+        if (isChecked) {
+            setShowFingerprintUsers(false);
+            setShowFacialRecognitionUsers(false);
+        }
+    };
+
+    // Função que manipula o filtro de utilizadores de biometria digital
+    const handleFingerprintUsersChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setShowFingerprintUsers(isChecked);
+        if (isChecked) {
+            setShowAllUsers(false);
+        } else {
+            checkAllFiltersOff(false, showFacialRecognitionUsers);
+        }
+    };
+
+    // Função que manipula o filtro de utilizadores de biometria facial
+    const handleFacialRecognitionUsersChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setShowFacialRecognitionUsers(isChecked);
+        if (isChecked) {
+            setShowAllUsers(false);
+        } else {
+            checkAllFiltersOff(showFingerprintUsers, false);
+        }
+    };
+
+    // Função que verifica se todos os filtros estão desligados
+    const checkAllFiltersOff = (fingerprint: boolean, facial: boolean) => {
+        if (!fingerprint && !facial) {
+            setShowAllUsers(true);
+        }
+    };
+
     // Define as colunas de ação de dispositivos
     const devicesActionColumn: TableColumn<Devices> = {
         name: 'Ações',
@@ -607,6 +698,32 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     // Condicionais separadas para identificar o que deve ser deletado
     const isDeviceToDelete = !!selectedDeviceToDelete;
     const isUserToDelete = !!selectedUserToDelete;
+
+    // Define as colunas das transações
+    const columns = [
+        {
+            name: "ID do Usuário",
+            selector: (row: Transaction) => row.UserID,
+            sortable: true,
+        },
+        {
+            name: "Hora",
+            selector: (row: Transaction) => row.Time,
+            sortable: true,
+        },
+        {
+            name: "Estado",
+            selector: (row: Transaction) => row.State,
+            sortable: true,
+            format: (row: Transaction) => row.IsInvalid ? "Inválido" : "Válido"
+        },
+        {
+            name: "Método de Verificação",
+            selector: (row: Transaction) => row.VerifyStyle,
+            sortable: true,
+            format: (row: Transaction) => `${row.VerifyStyle}`
+        }
+    ];
 
     return (
         <div className="main-container">
@@ -662,22 +779,19 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                             {/* <DataTable
                                 columns={[...tableColumns, actionColumn]}
                                 data={filteredDataTable}
-                                onRowDoubleClicked={handleEditDepartment}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
                             /> */}
-                            <p>DATATABLE DE ACTIVIDADE</p>
-                            {/* <DataTable
-                                columns={[...tableColumns, actionColumn]}
-                                data={filteredDataTable}
-                                onRowDoubleClicked={handleEditDepartment}
+                            <DataTable
+                                columns={columns}
+                                data={transactions}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
-                            /> */}
+                            />
                         </Tab>
                         <Tab eventKey="user-track" title="Manutenção de utilizadores">
                             <Tabs
@@ -794,14 +908,14 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                         <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
                             <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
                                 if (selectedTerminal) {
-                                    setLoading(true);
-                                    await fetchAllEmployeesOnDevice(selectedTerminal);
-                                    setLoading(false);
+                                    setLoadingUser(true);
+                                    await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+                                    setLoadingUser(false);
                                 } else {
                                     toast.error('Selecione um terminal primeiro!');
                                 }
                             }}>
-                                {loading ? (
+                                {loadingUser ? (
                                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                 ) : (
                                     <i className="bi bi-arrow-down-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
@@ -810,34 +924,46 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                             </Button>
                             <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
                                 if (selectedTerminal) {
-                                    setLoading(true);
-                                    await sendAllEmployeesToDevice(selectedTerminal);
-                                    setLoading(false);
+                                    setLoadingAllUser(true);
+                                    await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID);
+                                    setLoadingAllUser(false);
                                 } else {
                                     toast.error('Selecione um terminal primeiro!');
                                 }
                             }}>
-                                {loading ? (
+                                {loadingAllUser ? (
                                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                 ) : (
                                     <i className="bi bi-arrow-up-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                 )}
                                 Enviar todos os utilizadores
                             </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Sincronizar utilizadores
-                            </Button>
                             <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
                                 if (selectedTerminal) {
-                                    setLoading(true);
-                                    await getAllAttendancesEmployeesOnDevice(selectedTerminal);
-                                    setLoading(false);
+                                    setLoadingSyncAllUser(true);
+                                    await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID);
+                                    setLoadingSyncAllUser(false);
                                 } else {
                                     toast.error('Selecione um terminal primeiro!');
                                 }
                             }}>
-                                {loading ? (
+                                {loadingSyncAllUser ? (
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                ) : (
+                                    <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                )}
+                                Sincronizar utilizadores
+                            </Button>
+                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                if (selectedTerminal) {
+                                    setLoadingMovements(true);
+                                    await getAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+                                    setLoadingMovements(false);
+                                } else {
+                                    toast.error('Selecione um terminal primeiro!');
+                                }
+                            }}>
+                                {loadingMovements ? (
                                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                 ) : (
                                     <i className="bi bi-arrow-left-right" style={{ marginRight: 5, fontSize: '1rem' }}></i>
@@ -856,9 +982,27 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                                 Apagar utilizadores
                             </Button>
                             <div className="col-3">
-                                <Form.Check type="checkbox" label="Utilizadores" className="mb-2" />
-                                <Form.Check type="checkbox" label="Biometria digital" className="mb-2" />
-                                <Form.Check type="checkbox" label="Biometria facial" className="mb-2" />
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Utilizadores"
+                                    checked={showAllUsers}
+                                    onChange={handleAllUsersChange}
+                                    className="mb-2"
+                                />
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Biometria digital"
+                                    checked={showFingerprintUsers}
+                                    onChange={handleFingerprintUsersChange}
+                                    className="mb-2"
+                                />
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Biometria facial"
+                                    checked={showFacialRecognitionUsers}
+                                    onChange={handleFacialRecognitionUsersChange}
+                                    className="mb-2"
+                                />
                             </div>
                         </div>
                     </Tab>
@@ -894,14 +1038,14 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                         <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
                             <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
                                 if (selectedTerminal) {
-                                    setLoading(true);
+                                    setLoadingSyncTime(true);
                                     await syncTimeManuallyToDevice(selectedTerminal);
-                                    setLoading(false);
+                                    setLoadingSyncTime(false);
                                 } else {
                                     toast.error('Selecione um terminal primeiro!');
                                 }
                             }}>
-                                {loading ? (
+                                {loadingSyncTime ? (
                                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                 ) : (
                                     <i className="bi bi-calendar-check" style={{ marginRight: 5, fontSize: '1rem' }}></i>
