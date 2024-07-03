@@ -28,7 +28,7 @@ interface Props<T> {
 }
 
 export const CreateModalDevices = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>(initialValues);
+    const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
     const [device, setDevice] = useState<Devices[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [ipAddress, setIpAddress] = useState('');
@@ -36,6 +36,16 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+
+    // Atualiza o estado do componente ao abrir o modal
+    useEffect(() => {
+        setFormData({ ...initialValues, status: true });
+        if (initialValues.photo) {
+            setDeviceImage(initialValues.photo);
+        } else {
+            setDeviceImage(null);
+        }
+    }, [initialValues]);    
 
     // UseEffect para validar o formulário
     useEffect(() => {

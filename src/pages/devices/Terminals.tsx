@@ -7,7 +7,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, Employee, EmployeeDevices } from "../../helpers/Types";
+import { Devices, EmployeeDevices } from "../../helpers/Types";
 import { deviceFields, employeeDeviceFields } from "../../helpers/Fields";
 import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -20,6 +20,7 @@ import fprintScan from "../../assets/img/terminais/fprintScan.png";
 import faceScan from "../../assets/img/terminais/faceScan.png";
 import palmScan from "../../assets/img/terminais/palmScan.png";
 import card from "../../assets/img/terminais/card.png";
+import { Overlay } from "../../components/OverlayComponent";
 
 // Define a interface para os filtros
 interface Filters {
@@ -38,21 +39,24 @@ interface DeviceStatusCounts {
     Inactivo: number;
 }
 
-// Define as propriedades dos terminais
-interface TerminalProps {
-    onDuplicate?: (devices: Devices) => void;
-}
-
 // Define a interface para as transações
 interface Transaction {
     UserID: string;
-    IsInvalid: number;
-    State: number;
-    VerifyStyle: number;
+    IsInvalid: string;
+    State: string;
+    VerifyStyle: string;
     Time: string;
 }
 
-export const Terminals = ({ onDuplicate }: TerminalProps) => {
+// Define a interface para as tarefas
+interface Tasks {
+    Status: string;
+    Date: Date;
+    Type: string;
+}
+
+// Define o componente de terminais
+export const Terminals = () => {
     const [devices, setDevices] = useState<Devices[]>([]);
     const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
     const [employeeDevices, setEmployeeDevices] = useState<EmployeeDevices[]>([]);
@@ -60,7 +64,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     const [employeesCard, setEmployeesCard] = useState<EmployeeDevices[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [initialData, setInitialData] = useState<Employee | null>(null);
+    const [initialData, setInitialData] = useState<Devices | null>(null);
     const [mainTabKey, setMainTabKey] = useState('tasks');
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
     const [userTabKey, setUserTabKey] = useState('users');
@@ -85,6 +89,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     const [showFingerprintUsers, setShowFingerprintUsers] = useState(false);
     const [showFacialRecognitionUsers, setShowFacialRecognitionUsers] = useState(false);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [task, setTask] = useState<Tasks[]>([]);
 
     // Função para contar o status
     const countStatus = (statusArray: string[]): StatusCounts => {
@@ -154,7 +159,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
-        } 
+        }
     };
 
     // Função para buscar todas as assiduidades no dispositivo
@@ -525,6 +530,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
         );
     };
 
+    // Define as colunas excluídas de utilizadores    
     const excludedUserColumns = ['statusFprint', 'statusFace', 'statusPalm'];
 
     // Define as colunas de utilizadores
@@ -624,12 +630,11 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     };
 
 
-    // Função que manipula a duplicação e fecha o modal de atualização
-    const handleDuplicateAndClose = (devices: Devices) => {
-        if (onDuplicate) {
-            onDuplicate(devices);
-        }
-        setShowUpdateModal(false);
+    // Função que manipula a duplicação
+    const handleDuplicate = (devices: Devices) => {
+        setInitialData(devices);
+        handleCloseUpdateModal();
+        setShowAddModal(true);
     };
 
     // Função que manipula o filtro de utilizadores
@@ -700,15 +705,15 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
     const isUserToDelete = !!selectedUserToDelete;
 
     // Define as colunas das transações
-    const columns = [
+    const transactionColumns: TableColumn<Transaction>[] = [
         {
             name: "ID do Usuário",
-            selector: (row: Transaction) => row.UserID,
+            selector: row => row.UserID,
             sortable: true,
         },
         {
             name: "Hora",
-            selector: (row: Transaction) => row.Time,
+            selector: row => row.Time,
             sortable: true,
         },
         {
@@ -725,8 +730,28 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
         }
     ];
 
+    // Define as colunas das tarefas
+    const taskColumns: TableColumn<Tasks>[] = [
+        {
+            name: "Status",
+            selector: (row: Tasks) => row.Status,
+            sortable: true,
+        },
+        {
+            name: "Data",
+            selector: (row: Tasks) => formatDateAndTime(row.Date),
+            sortable: true,
+        },
+        {
+            name: "Tipo",
+            selector: (row: Tasks) => row.Type,
+            sortable: true,
+        }
+    ];
+
     return (
         <div className="main-container">
+            <Overlay isLoading={loadingUser || loadingAllUser || loadingSyncAllUser || loadingMovements || loadingSyncTime} />
             <NavBar />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
@@ -746,13 +771,13 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                             marginLeft: 'auto',
                             marginRight: '30px'
                         }}>
-                            Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Activo(s), ${deviceStatusCount['Inactivo'] || 0} Inactivo(s)`}
+                            Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Online, ${deviceStatusCount['Inactivo'] || 0} Offline`}
                         </span>
                     </div>
                 </div>
             </div>
-            <div className="content-section" style={{ display: 'flex', flex: 1 }}>
-                <div style={{ flex: 1.5, overflow: "auto" }}>
+            <div className="content-section deviceTabsMobile" style={{ display: 'flex', flex: 1 }}>
+                <div style={{ flex: 1.5, overflow: "auto" }} className="deviceMobile">
                     <DataTable
                         columns={[...deviceColumns, devicesActionColumn]}
                         data={filteredDeviceDataTable}
@@ -775,21 +800,20 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                         style={{ marginBottom: 10 }}
                     >
                         <Tab eventKey="tasks" title="Actividade">
-                            <p>DATATABLE DE TAREFAS</p>
-                            {/* <DataTable
-                                columns={[...tableColumns, actionColumn]}
-                                data={filteredDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                noDataComponent="Não há dados disponíveis para exibir."
-                                customStyles={customStyles}
-                            /> */}
                             <DataTable
-                                columns={columns}
-                                data={transactions}
+                                columns={taskColumns}
+                                data={task}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
-                                noDataComponent="Não há dados disponíveis para exibir."
+                                noDataComponent="Não há tarefas disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
+                            <DataTable
+                                columns={transactionColumns}
+                                data={transactions} 
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                noDataComponent="Não há actividades disponíveis para exibir."
                                 customStyles={customStyles}
                             />
                         </Tab>
@@ -906,15 +930,19 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                 >
                     <Tab eventKey="users" title="Utilizadores">
                         <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                if (selectedTerminal) {
-                                    setLoadingUser(true);
-                                    await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
-                                    setLoadingUser(false);
-                                } else {
-                                    toast.error('Selecione um terminal primeiro!');
-                                }
-                            }}>
+                            <Button
+                                variant="outline-primary"
+                                size="sm"
+                                className="button-terminals-users"
+                                onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingUser(true);
+                                        await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+                                        setLoadingUser(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
                                 {loadingUser ? (
                                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                 ) : (
@@ -1115,7 +1143,7 @@ export const Terminals = ({ onDuplicate }: TerminalProps) => {
                 <UpdateModalDevices
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
-                    onDuplicate={handleDuplicateAndClose}
+                    onDuplicate={handleDuplicate}
                     onUpdate={handleUpdateDevice}
                     entity={selectedTerminal}
                     fields={deviceFields}

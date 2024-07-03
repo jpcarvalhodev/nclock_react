@@ -44,6 +44,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
         setFormData({ ...initialValues, status: true });
+        if (initialValues.photo) {
+            setProfileImage(initialValues.photo);
+        } else {
+            setProfileImage(null);
+        }
     }, [initialValues]);
 
     // Atualiza o estado do componente com uma parte das validações

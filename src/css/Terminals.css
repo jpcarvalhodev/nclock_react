@@ -46,3 +46,43 @@
 .nav-modal .nav-link.active {
     color: #0050a0;
 }
+
+@media (max-width: 500px) {
+    .deviceTabsMobile {
+        flex-direction: column;
+    }
+
+    .deviceMobile {
+        flex: none !important;
+    }
+
+    .button-terminals-users-track {
+        padding: 5px !important;
+        font-size: 13px !important;
+    }
+
+    .button-terminals-users {
+        padding: 5px !important;
+        font-size: 13px !important;
+    }
+}
+
+@media (min-width: 501px) and (max-width: 1200px){
+    .deviceTabsMobile {
+        flex-direction: column;
+    }
+
+    .deviceMobile {
+        flex: none !important;
+    }
+
+    .button-terminals-users-track {
+        padding: 5px !important;
+        font-size: 15px !important;
+    }
+
+    .button-terminals-users {
+        padding: 5px !important;
+        font-size: 15px !important;
+    }
+}
