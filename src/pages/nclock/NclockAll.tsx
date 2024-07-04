@@ -5,7 +5,6 @@ import { NavBar } from "../../components/NavBar";
 import "../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
-import { toast } from "react-toastify";
 import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { useEffect, useState } from "react";
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
@@ -69,7 +68,6 @@ export const NclockAll = () => {
             }
             const attendanceData = await response.json();
             setAttendance(attendanceData);
-            setData(prevState => ({ ...prevState, attendance: attendanceData }));
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -84,7 +82,6 @@ export const NclockAll = () => {
             }
             const data = await response.json();
             setFilteredAttendances(data);
-            setData(prevState => ({ ...prevState, attendance: data }));
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -117,7 +114,7 @@ export const NclockAll = () => {
         } else if (attendance.length > 0) {
             setFilteredAttendances(attendance);
         }
-    }, [selectedEmployeeId]);
+    }, [selectedEmployeeId, selectedEmployeeIds]);
 
     // Define a seleção de funcionários
     const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -161,7 +158,7 @@ export const NclockAll = () => {
     }
 
     // Remove o campo de observação, número, nome do funcionário e o tipo
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'employeeId' && field.key !== 'enrollNumber' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
 
     // Define as colunas
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
@@ -191,7 +188,7 @@ export const NclockAll = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={data.attendance} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -200,7 +197,7 @@ export const NclockAll = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = data.attendance.filter(attendances =>
+    const filteredDataTable = filteredAttendances.filter(attendances =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )
@@ -283,7 +280,7 @@ export const NclockAll = () => {
             <Footer />
             {showColumnSelector && (
                 <ColumnSelectorModal
-                    columns={employeeAttendanceTimesFields}
+                    columns={filteredColumns}
                     selectedColumns={selectedColumns}
                     onClose={() => setShowColumnSelector(false)}
                     onColumnToggle={handleColumnToggle}

@@ -75,7 +75,7 @@ export const Categories = () => {
             const data = await response.json();
             setCategories([...categories, data]);
             toast.success(data.value || 'Categoria adicionada com sucesso!');
-            
+
         } catch (error) {
             console.error('Erro ao adicionar nova categoria:', error);
         } finally {

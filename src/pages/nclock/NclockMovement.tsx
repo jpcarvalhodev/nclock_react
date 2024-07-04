@@ -82,7 +82,6 @@ export const NclockMovement = () => {
             const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
             setAttendance(attendanceData);
             filterAttendanceDataForToday(attendanceData);
-            setData(prevData => ({ ...prevData, attendance: attendanceData }));
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -98,7 +97,6 @@ export const NclockMovement = () => {
             const data = await response.json();
             const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.typeDescription !== 3);
             setFilteredAttendances(attendanceData);
-            setData(prevData => ({ ...prevData, attendance: attendanceData }));
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -208,7 +206,7 @@ export const NclockMovement = () => {
         } else if (attendance.length > 0) {
             setFilteredAttendances(attendance);
         }
-    }, [selectedEmployeeId]);
+    }, [selectedEmployeeId, selectedEmployeeIds]);
 
     // Filtragem de dados de assiduidade para hoje
     const filterAttendanceDataForToday = (attendanceData: EmployeeAttendanceTimes[]) => {
@@ -324,7 +322,7 @@ export const NclockMovement = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={data.attendance} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -333,7 +331,7 @@ export const NclockMovement = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = data.attendance.filter(attendances =>
+    const filteredDataTable = filteredAttendances.filter(attendances =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )

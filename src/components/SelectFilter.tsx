@@ -110,9 +110,9 @@ export const SelectFilter = ({ column, setFilters, data }: SelectFilterProps) =>
             </Dropdown.Toggle>
             {portalElement && ReactDOM.createPortal(
                 <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => handleChange("")}>Todos</Dropdown.Item>
-                    {options.map(option => (
-                        <Dropdown.Item key={option} onClick={() => handleChange(option)}>
+                    <Dropdown.Item onClick={() => handleChange("")} key="all">Todos</Dropdown.Item>
+                    {options.map((option, index) => (
+                        <Dropdown.Item key={`${option}-${index}`} onClick={() => handleChange(option)}>
                             {option}
                         </Dropdown.Item>
                     ))}

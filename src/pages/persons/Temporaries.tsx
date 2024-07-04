@@ -183,7 +183,7 @@ export const Temporaries = () => {
             });
 
             if (!response.ok) {
-                return; 
+                return;
             }
             const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
             setData(prevData => ({

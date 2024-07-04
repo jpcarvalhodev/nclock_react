@@ -433,7 +433,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                     { key: 'nacionality', label: 'Nacionalidade', type: 'string' },
                     { key: 'gender', label: 'Gênero', type: 'string' }
                   ].map((field) => (
-                    <Col md={3}>
+                    <Col md={3} key={field.key}>
                       <Form.Group controlId={`form${field.key}`}>
                         <Form.Label>{field.label}</Form.Label>
                         <Form.Control

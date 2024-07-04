@@ -167,7 +167,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
             [name]: parsedValue
         }));
         validateForm();
-    }; 
+    };
 
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
@@ -177,6 +177,13 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         }
         handleSave();
     };
+
+    // Função para lidar com o fechamento do modal
+    const handleClose = () => {
+        setFormData({});
+        setDeviceImage(null);
+        onClose();
+    }
 
     // Função para lidar com o salvamento
     const handleSave = () => {
@@ -469,7 +476,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                 </Row>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>

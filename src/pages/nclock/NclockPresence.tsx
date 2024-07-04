@@ -4,8 +4,6 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import "../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { ExportButton } from "../../components/ExportButton";
-import { toast } from "react-toastify";
 import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { useEffect, useState } from "react";
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
@@ -85,12 +83,6 @@ export const NclockPresence = () => {
             const attendances = Object.values(employeeStatusMap);
             setAttendance(attendances);
             setFilteredAttendances(attendances);
-            setData({
-                departments: [],
-                groups: [],
-                employees: [],
-                attendance: attendances,
-            });
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
         }
@@ -123,7 +115,7 @@ export const NclockPresence = () => {
         } else if (attendance.length > 0) {
             setFilteredAttendances(attendance);
         }
-    }, [selectedEmployeeId]);
+    }, [selectedEmployeeId, selectedEmployeeIds]);
 
     // Define a seleção de funcionários
     const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -215,7 +207,7 @@ export const NclockPresence = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={data.attendance} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -224,7 +216,7 @@ export const NclockPresence = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = data.attendance.filter(attendances =>
+    const filteredDataTable = filteredAttendances.filter(attendances =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )
@@ -273,7 +265,6 @@ export const NclockPresence = () => {
                             <div className="buttons-container">
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                                <ExportButton allData={attendance} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
                             </div>
                         </div>
                         <DataTable

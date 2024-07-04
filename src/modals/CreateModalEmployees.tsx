@@ -245,6 +245,13 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }
     };
 
+    // Função para lidar com o fechamento do modal
+    const handleClose = () => {
+        setFormData({});
+        setProfileImage(null);
+        onClose();
+    }
+
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
@@ -452,7 +459,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                         { key: 'nacionality', label: 'Nacionalidade', type: 'string' },
                                         { key: 'gender', label: 'Gênero', type: 'string' }
                                     ].map((field) => (
-                                        <Col md={3}>
+                                        <Col md={3} key={field.key}>
                                             <Form.Group controlId={`form${field.key}`}>
                                                 <Form.Label>{field.label}</Form.Label>
                                                 <Form.Control
@@ -549,7 +556,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>

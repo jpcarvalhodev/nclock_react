@@ -53,6 +53,7 @@ interface Tasks {
     Status: string;
     Date: Date;
     Type: string;
+    Device: string;
 }
 
 // Define o componente de terminais
@@ -132,6 +133,7 @@ export const Terminals = () => {
             }
             const data = await response.json();
             toast.success(data.value || 'Funcionários recolhidos com sucesso!');
+            addTask('Recolha de Funcionários', 'Concluído', zktecoDeviceID.deviceName);
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -156,6 +158,7 @@ export const Terminals = () => {
             }
             const data = await response.json();
             toast.success(data.value || 'Funcionários enviados com sucesso!');
+            addTask('Envio de Funcionários', 'Concluído', zktecoDeviceID.deviceName);
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -163,15 +166,16 @@ export const Terminals = () => {
     };
 
     // Função para buscar todas as assiduidades no dispositivo
-    const getAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
+    const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/GetAllAttendancesEmployeesOnDevice/${zktecoDeviceID}`);
+            const response = await fetchWithAuth(`Zkteco/SaveAllAttendancesEmployeesOnDeviceToDB/${zktecoDeviceID}`);
 
             if (!response.ok) {
                 return;
             }
             const data = await response.json();
             toast.success(data.value || 'Assiduidades recolhidas com sucesso!');
+            addTask('Recolha de Assiduidades', 'Concluído', zktecoDeviceID.deviceName);
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -192,6 +196,7 @@ export const Terminals = () => {
 
             const data = await response.json();
             toast.success(data.value || 'Hora sincronizada com sucesso!');
+            addTask('Sincronização de Hora', 'Concluído', device.deviceName);
 
         } catch (error) {
             console.error('Erro ao sincronizar a hora:', error);
@@ -704,6 +709,17 @@ export const Terminals = () => {
     const isDeviceToDelete = !!selectedDeviceToDelete;
     const isUserToDelete = !!selectedUserToDelete;
 
+    // Define a função de adição de tarefas
+    const addTask = (type: string, status: string, device: string) => {
+        const newTask = {
+            Status: status,
+            Date: new Date(),
+            Type: type,
+            Device: selectedTerminal?.deviceName || 'Nenhum dispositivo selecionado'
+        };
+        setTask(prevTasks => [...prevTasks, newTask]);
+    };
+
     // Define as colunas das transações
     const transactionColumns: TableColumn<Transaction>[] = [
         {
@@ -712,15 +728,15 @@ export const Terminals = () => {
             sortable: true,
         },
         {
-            name: "Hora",
-            selector: row => row.Time,
-            sortable: true,
-        },
-        {
             name: "Estado",
             selector: (row: Transaction) => row.State,
             sortable: true,
             format: (row: Transaction) => row.IsInvalid ? "Inválido" : "Válido"
+        },
+        {
+            name: "Hora",
+            selector: row => row.Time,
+            sortable: true,
         },
         {
             name: "Método de Verificação",
@@ -735,6 +751,11 @@ export const Terminals = () => {
         {
             name: "Status",
             selector: (row: Tasks) => row.Status,
+            sortable: true,
+        },
+        {
+            name: "Dispositivo",
+            selector: (row: Tasks) => row.Device,
             sortable: true,
         },
         {
@@ -783,6 +804,8 @@ export const Terminals = () => {
                         data={filteredDeviceDataTable}
                         onRowDoubleClicked={handleEditDevices}
                         pagination
+                        paginationPerPage={5}
+                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                         paginationComponentOptions={paginationOptions}
                         selectableRows
                         onSelectedRowsChange={handleDeviceRowSelected}
@@ -800,22 +823,32 @@ export const Terminals = () => {
                         style={{ marginBottom: 10 }}
                     >
                         <Tab eventKey="tasks" title="Actividade">
-                            <DataTable
-                                columns={taskColumns}
-                                data={task}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                noDataComponent="Não há tarefas disponíveis para exibir."
-                                customStyles={customStyles}
-                            />
-                            <DataTable
-                                columns={transactionColumns}
-                                data={transactions} 
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                noDataComponent="Não há actividades disponíveis para exibir."
-                                customStyles={customStyles}
-                            />
+                            <div>
+                                <p className="activityTabContent">Actividades</p>
+                                <DataTable
+                                    columns={taskColumns}
+                                    data={task}
+                                    pagination
+                                    paginationPerPage={5}
+                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                    paginationComponentOptions={paginationOptions}
+                                    noDataComponent="Não há tarefas disponíveis para exibir."
+                                    customStyles={customStyles}
+                                />
+                            </div>
+                            <div>
+                                <p className="activityTabContent">Movimentos</p>
+                                <DataTable
+                                    columns={transactionColumns}
+                                    data={transactions}
+                                    pagination
+                                    paginationPerPage={5}
+                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                    paginationComponentOptions={paginationOptions}
+                                    noDataComponent="Não há actividades disponíveis para exibir."
+                                    customStyles={customStyles}
+                                />
+                            </div>
                         </Tab>
                         <Tab eventKey="user-track" title="Manutenção de utilizadores">
                             <Tabs
@@ -832,6 +865,8 @@ export const Terminals = () => {
                                                 columns={userColumns}
                                                 data={filteredUserDataTable}
                                                 pagination
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                                 paginationComponentOptions={paginationOptions}
                                                 selectableRows
                                                 onSelectedRowsChange={handleUserRowSelected}
@@ -868,6 +903,8 @@ export const Terminals = () => {
                                         columns={userColumns}
                                         data={filteredUsersInTerminal}
                                         pagination
+                                        paginationPerPage={5}
+                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                         paginationComponentOptions={paginationOptions}
                                         selectableRows
                                         onSelectedRowsChange={handleUserRowSelected}
@@ -881,6 +918,8 @@ export const Terminals = () => {
                                         columns={userColumns}
                                         data={filteredBioDataTable}
                                         pagination
+                                        paginationPerPage={5}
+                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                         paginationComponentOptions={paginationOptions}
                                         selectableRows
                                         onSelectedRowsChange={handleUserRowSelected}
@@ -894,6 +933,8 @@ export const Terminals = () => {
                                         columns={userColumns}
                                         data={filteredCardDataTable}
                                         pagination
+                                        paginationPerPage={5}
+                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                         paginationComponentOptions={paginationOptions}
                                         selectableRows
                                         onSelectedRowsChange={handleUserRowSelected}
@@ -909,6 +950,8 @@ export const Terminals = () => {
                                 columns={stateColumns}
                                 data={filteredStateDataTable}
                                 pagination
+                                paginationPerPage={5}
+                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                 paginationComponentOptions={paginationOptions}
                                 selectableRows
                                 onSelectedRowsChange={handleDeviceRowSelected}
@@ -985,7 +1028,7 @@ export const Terminals = () => {
                             <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
                                 if (selectedTerminal) {
                                     setLoadingMovements(true);
-                                    await getAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+                                    await saveAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
                                     setLoadingMovements(false);
                                 } else {
                                     toast.error('Selecione um terminal primeiro!');

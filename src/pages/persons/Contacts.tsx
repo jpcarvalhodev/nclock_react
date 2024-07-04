@@ -130,7 +130,7 @@ export const Contacts = () => {
                 employees: [...prevData.employees, employeesData]
             }));
             toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
-            
+
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         } finally {
