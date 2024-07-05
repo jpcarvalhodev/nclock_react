@@ -47,16 +47,17 @@ const handleHTTPError = async (response: Response) => {
             toast.error('Página não encontrada');
             window.location.href = '/notfound';
             break;
+        case 500:
+        case 501:
         case 502:
         case 503:
         case 504:
-            toast.error('Serviço indisponível. Tente novamente mais tarde.');
-            window.location.href = '/notfound';
+            const serverError = await response.json();
+            toast.error(serverError.message || 'Serviço indisponível. Tente novamente mais tarde.');
             break;
         default:
             const responseError = await response.json();
-            const error = responseError.errors.Name ? responseError.errors.Name[0] : "Erro desconhecido";
-            toast.error(error);
+            toast.error(responseError.message || 'Erro desconhecido');
             break;
     }
 };

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -9,7 +9,6 @@ import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
 import { Devices, EmployeeDevices } from "../../helpers/Types";
 import { deviceFields, employeeDeviceFields } from "../../helpers/Fields";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
@@ -21,22 +20,11 @@ import faceScan from "../../assets/img/terminais/faceScan.png";
 import palmScan from "../../assets/img/terminais/palmScan.png";
 import card from "../../assets/img/terminais/card.png";
 import { Overlay } from "../../components/OverlayComponent";
+import { DeviceContextType, TerminalsContext } from "../../context/TerminalsContext";
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
-}
-
-// Define a interface para o status
-interface StatusCounts {
-    Activo: number;
-    Inactivo: number;
-}
-
-// Define a interface para os contadores de dispositivos
-interface DeviceStatusCounts {
-    Activo: number;
-    Inactivo: number;
 }
 
 // Define a interface para as transações
@@ -58,11 +46,23 @@ interface Tasks {
 
 // Define o componente de terminais
 export const Terminals = () => {
-    const [devices, setDevices] = useState<Devices[]>([]);
-    const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
-    const [employeeDevices, setEmployeeDevices] = useState<EmployeeDevices[]>([]);
-    const [employeesBio, setEmployeesBio] = useState<EmployeeDevices[]>([]);
-    const [employeesCard, setEmployeesCard] = useState<EmployeeDevices[]>([]);
+    const {
+        devices,
+        employeeDevices,
+        employeesBio,
+        employeesCard,
+        deviceStatus,
+        deviceStatusCount,
+        fetchAllDevices,
+        fetchAllEmployeesOnDevice,
+        sendAllEmployeesToDevice,
+        saveAllAttendancesEmployeesOnDevice,
+        syncTimeManuallyToDevice,
+        handleAddDevice,
+        handleUpdateDevice,
+        handleDeleteDevice,
+        fetchAllEmployeeDevices,
+    } = useContext(TerminalsContext) as DeviceContextType;
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [initialData, setInitialData] = useState<Devices | null>(null);
@@ -79,7 +79,6 @@ export const Terminals = () => {
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedDeviceRows, setSelectedDeviceRows] = useState<Devices[]>([]);
     const [selectedUserRows, setSelectedUserRows] = useState<EmployeeDevices[]>([]);
-    const [deviceStatusCount, setDeviceStatusCount] = useState<DeviceStatusCounts>({ Activo: 0, Inactivo: 0 });
     const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(null);
     const [loadingUser, setLoadingUser] = useState(false);
     const [loadingAllUser, setLoadingAllUser] = useState(false);
@@ -92,245 +91,28 @@ export const Terminals = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [task, setTask] = useState<Tasks[]>([]);
 
-    // Função para contar o status
-    const countStatus = (statusArray: string[]): StatusCounts => {
-        const counts: StatusCounts = { Activo: 0, Inactivo: 0 };
-        statusArray.forEach(status => {
-            if (status in counts) {
-                counts[status as keyof StatusCounts]++;
-            }
-        });
-        return counts;
-    };
-
-    // Função para buscar todos os dispositivos
-    const fetchAllDevices = async () => {
-        try {
-            const response = await fetchWithAuth('Zkteco/GetAllDevices');
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            setDevices(data);
-
-            const filteredStatus = data.map((device: Devices) => device.status ? 'Activo' : 'Inactivo');
-            setDeviceStatus(filteredStatus);
-            const statusCounts = countStatus(filteredStatus);
-            setDeviceStatusCount(statusCounts);
-
-        } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
-        }
-    };
-
-    // Função para buscar todos os funcionários no dispositivo e salvar no DB
-    const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
-        try {
-            const response = await fetchWithAuth(`Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`);
-
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            toast.success(data.value || 'Funcionários recolhidos com sucesso!');
-            addTask('Recolha de Funcionários', 'Concluído', zktecoDeviceID.deviceName);
-
-        } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
-        } finally {
-            refreshAll();
-        }
-    };
-
-    // Função para enviar todos os funcionários para o dispositivo
-    const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices) => {
-        try {
-            const response = await fetchWithAuth(`Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(zktecoDeviceID)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            toast.success(data.value || 'Funcionários enviados com sucesso!');
-            addTask('Envio de Funcionários', 'Concluído', zktecoDeviceID.deviceName);
-
-        } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
-        }
-    };
-
-    // Função para buscar todas as assiduidades no dispositivo
-    const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
-        try {
-            const response = await fetchWithAuth(`Zkteco/SaveAllAttendancesEmployeesOnDeviceToDB/${zktecoDeviceID}`);
-
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            toast.success(data.value || 'Assiduidades recolhidas com sucesso!');
-            addTask('Recolha de Assiduidades', 'Concluído', zktecoDeviceID.deviceName);
-
-        } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
-        } finally {
-            refreshAll();
-        }
-    };
-
-    // Função para sincronizar a hora manualmente para o dispositivo
-    const syncTimeManuallyToDevice = async (device: Devices) => {
-        try {
-            const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice?deviceId=${device.zktecoDeviceID}`);
-
-            if (!response.ok) {
-                toast.error('Falha ao sincronizar a hora');
-                return;
-            }
-
-            const data = await response.json();
-            toast.success(data.value || 'Hora sincronizada com sucesso!');
-            addTask('Sincronização de Hora', 'Concluído', device.deviceName);
-
-        } catch (error) {
-            console.error('Erro ao sincronizar a hora:', error);
-            toast.error('Erro ao conectar ao servidor');
-        }
-    };
-
-    // Define a função de adição de dispositivos
-    const handleAddDevice = async (device: Devices) => {
-        try {
-            const response = await fetchWithAuth('Zkteco/CreateDevice', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(device)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deviceData = await response.json();
-            setDevices([...devices, deviceData]);
-            toast.success(deviceData.value || 'dispositivo apagado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar dispositivos:', error);
-        } finally {
-            setShowAddModal(false);
-            refreshAll();
-        }
-    };
-
-    // Atualiza um funcionário
-    const handleUpdateDevice = async (device: Devices) => {
-        try {
-            const response = await fetchWithAuth(`Zkteco/UpdateDevice`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(device)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedDevice = await response.json();
-            const updatedDevices = devices.map(d => d.zktecoDeviceID === updatedDevice.zktecoDeviceID ? updatedDevice : d);
-            setDevices(updatedDevices);
-            toast.success(updatedDevice.value || 'Atualização realizada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Erro ao conectar ao servidor');
-        } finally {
-            setShowUpdateModal(false);
-            refreshAll();
-        }
-    };
-
-    // Função para deletar um dispositivo
-    const handleDeleteDevice = async (zktecoDeviceID: string) => {
-        try {
-            const response = await fetchWithAuth(`Zkteco/DeleteDevice?deviceId=${zktecoDeviceID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteDevice = await response.json();
-            toast.success(deleteDevice.value || 'dispositivo apagado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar dispositivos:', error);
-        } finally {
-            setShowDeleteModal(false);
-            refreshAll();
-        }
-    };
-
-    // Função para buscar todos os funcionários por dispositivos
-    const fetchAllEmployeeDevices = async () => {
-        try {
-            const response = await fetchWithAuth('Employees/GetAllEmployeesDevice');
-            if (!response.ok) {
-                return;
-            }
-            const employeesData = await response.json();
-            setEmployeeDevices(employeesData);
-
-            const filteredEmployees = employeesData.filter((employee: EmployeeDevices) =>
-                employee.statusFprint === true || employee.statusFace === true
-            );
-            setEmployeesBio(filteredEmployees);
-
-            const filteredCardEmployees = employeesData.filter((employee: EmployeeDevices) =>
-                employee.cardNumber !== "0"
-            );
-            setEmployeesCard(filteredCardEmployees)
-        } catch (error) {
-            console.error('Erro ao apagar dispositivos:', error);
-        }
+    // Função para adicionar um dispositivo
+    const addDevice = async (device: Devices) => {
+        await handleAddDevice(device);
+        setShowAddModal(false);
+        refreshAll();
     }
 
-    // Função para apagar um funcionário
-    const handleDeleteEmployee = async (employeeID: string) => {
-        try {
-            const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+    // Função para atualizar um dispositivo
+    const updateDevice = async (device: Devices) => {
+        await handleUpdateDevice(device);
+        setShowUpdateModal(false);
+        refreshAll();
+    }
 
-            if (!response.ok) {
-                return;
-            }
-            const deleteEmployee = await response.json();
-            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!')
-
-        } catch (error) {
-            console.error('Erro ao apagar funcionário:', error);
-        } finally {
+    // Função para excluir um dispositivo
+    const deleteDevice = async () => {
+        if (selectedDeviceToDelete) {
+            await handleDeleteDevice(selectedDeviceToDelete);
             setShowDeleteModal(false);
+            refreshAll();
         }
-    };
+    }
 
     // Função para buscar os logs de transações
     useEffect(() => {
@@ -705,10 +487,6 @@ export const Terminals = () => {
     // Define a cor de fundo do status
     const backgroundColor = getStatusColor(deviceStatus);
 
-    // Condicionais separadas para identificar o que deve ser deletado
-    const isDeviceToDelete = !!selectedDeviceToDelete;
-    const isUserToDelete = !!selectedUserToDelete;
-
     // Define a função de adição de tarefas
     const addTask = (type: string, status: string, device: string) => {
         const newTask = {
@@ -1041,14 +819,7 @@ export const Terminals = () => {
                                 )}
                                 Recolher movimentos
                             </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={() => {
-                                if (selectedUserRows.length > 0) {
-                                    const userId = selectedUserRows[0].employeeID;
-                                    handleOpenDeleteModal(userId, 'user');
-                                } else {
-                                    toast.error('Selecione um utilizador primeiro!');
-                                }
-                            }}>
+                            <Button variant="outline-primary" size="sm" className="button-terminals-users" >
                                 <i className="bi bi-trash" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                 Apagar utilizadores
                             </Button>
@@ -1178,7 +949,7 @@ export const Terminals = () => {
                 title="Adicionar Terminal"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddDevice}
+                onSave={addDevice}
                 fields={deviceFields}
                 initialValues={initialData || {}}
             />
@@ -1187,18 +958,18 @@ export const Terminals = () => {
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
                     onDuplicate={handleDuplicate}
-                    onUpdate={handleUpdateDevice}
+                    onUpdate={updateDevice}
                     entity={selectedTerminal}
                     fields={deviceFields}
                     title="Atualizar Terminal"
                 />
             )}
-            {showDeleteModal && (isDeviceToDelete || isUserToDelete) && (
+            {showDeleteModal && (
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={isDeviceToDelete ? handleDeleteDevice : handleDeleteEmployee}
-                    entityId={isDeviceToDelete ? selectedDeviceToDelete : selectedUserToDelete}
+                    onDelete={deleteDevice}
+                    entityId={selectedDeviceToDelete}
                 />
             )}
         </div>

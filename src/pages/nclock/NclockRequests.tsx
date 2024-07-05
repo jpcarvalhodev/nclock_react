@@ -96,7 +96,6 @@ export const NclockRequests = () => {
                 return;
             }
             const data = await response.json();
-            console.log(data);
             const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.typeDescription === "Pedido");
             setFilteredAttendances(attendanceData);
         } catch (error) {
