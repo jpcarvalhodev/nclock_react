@@ -1,12 +1,11 @@
 import Split from 'react-split';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar"
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
 import { employeeAttendanceTimesFields } from "../../helpers/Fields";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { toast } from "react-toastify";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -18,6 +17,7 @@ import { TreeViewDataNclock } from '../../components/TreeViewNclock';
 import "../../css/PagesStyles.css";
 import { Button } from 'react-bootstrap';
 import { SelectFilter } from '../../components/SelectFilter';
+import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../context/MovementContext';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -27,16 +27,6 @@ interface DataState {
     attendance: EmployeeAttendanceTimes[];
 }
 
-// Formata a data para o início do dia às 00:00
-const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T00:00`;
-}
-
-// Formata a data para o final do dia às 23:59
-const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T23:59`;
-}
-
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
@@ -44,8 +34,18 @@ interface Filters {
 
 // Define a página de pedidos
 export const NclockRequests = () => {
-    const currentDate = new Date();
-    const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
+    const {
+        startDate,
+        endDate,
+        setStartDate,
+        setEndDate,
+        fetchAllAttendances,
+        fetchAllAttendancesBetweenDates,
+        handleAddAttendance,
+        handleUpdateAttendance,
+        handleDeleteAttendance,
+    } = useContext(AttendanceContext) as AttendanceContextType;
+    const [attendanceRequests, setAttendanceRequests] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
@@ -58,11 +58,8 @@ export const NclockRequests = () => {
     const [filterText, setFilterText] = useState('');
     const [selectedAttendanceToDelete, setSelectedAttendanceToDelete] = useState<string | null>(null);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [selectedEmployee, setSelectedEmployee] = useState<EmployeeAttendanceTimes | null>(null);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
-    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
-    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [filters, setFilters] = useState<Filters>({});
     const [data, setData] = useState<DataState>({
         departments: [],
@@ -72,115 +69,49 @@ export const NclockRequests = () => {
     });
 
     // Função para buscar todos as assiduidades
-    const fetchAllAttendances = async () => {
-        try {
-            const response = await fetchWithAuth('Attendances/GetAllAttendances');
-            if (!response.ok) {
-                return;
+    const fetchRequests = () => {
+        fetchAllAttendances({
+            filterFunc: data => data.filter(att => att.type === 3),
+            postFetch: filteredData => {
+                setAttendanceRequests(filteredData);
             }
-            const data = await response.json();
-            const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.type === 3);
-            setAttendance(attendanceData);
-            filterAttendanceDataForToday(attendanceData);
-        }
-        catch (error) {
-            console.error('Erro ao buscar assiduidades:', error);
-        }
+        });
     };
 
-    // Função para buscar as assiduidades entre datas
-    const fetchAllAttendancesBetweenDates = async () => {
-        try {
-            const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
-            if (!response.ok) {
-                return;
+    // Função para buscar todos as assiduidades entre datas
+    const fetchRequestsBetweenDates = () => {
+        fetchAllAttendancesBetweenDates({
+            filterFunc: data => data.filter(att => att.type === 3),
+            postFetch: filteredData => {
+                setFilteredAttendances(filteredData);
             }
-            const data = await response.json();
-            const attendanceData = data.filter((att: EmployeeAttendanceTimes) => att.typeDescription === "Pedido");
-            setFilteredAttendances(attendanceData);
-        } catch (error) {
-            console.error('Erro ao buscar assiduidades:', error);
-        }
+        });
+    };
+
+    // Função para adicionar um movimento
+    const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
+        await handleAddAttendance(attendance);
+        setShowAddAttendanceModal(false);
+        refreshAttendance();
     }
 
-    // Função para adicionar uma nova assiduidade
-    const handleAddAttendance = async (attendances: EmployeeAttendanceTimes) => {
-        try {
-            const response = await fetchWithAuth('Attendances/CreatedAttendanceTime', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(attendances)
-            });
-            if (!response.ok) {
-                return;
-            }
-            const newAttendance = await response.json();
-            setAttendance([...attendance, newAttendance]);
-            toast.success(newAttendance.value || 'Pedido de assiduidade adicionado com sucesso!');
+    // Função para atualizar um movimento
+    const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
+        await handleUpdateAttendance(attendance);
+        setShowUpdateAttendanceModal(false);
+        refreshAttendance();
+    }
 
-        } catch (error) {
-            console.error('Erro ao adicionar nova assiduidade:', error);
-        } finally {
-            setShowAddAttendanceModal(false);
-            refreshAttendance();
-        }
-    };
-
-    // Função para atualizar uma assiduidade
-    const handleUpdateAttendance = async (attendances: EmployeeAttendanceTimes) => {
-        try {
-            const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime?attendanceTimeId=${attendances.attendanceTimeId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(attendances)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const updatedAttendance = await response.json();
-            setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
-            toast.success(updatedAttendance.value || 'Pedido de assiduidade atualizado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar assiduidade:', error);
-        } finally {
-            setShowUpdateAttendanceModal(false);
-            refreshAttendance();
-        }
-    };
-
-    // Função para deletar uma assiduidade
-    const handleDeleteAttendance = async () => {
-        try {
-            const response = await fetchWithAuth(`Attendances/DeleteAttendanceTime`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteAttendance = await response.json();
-            toast.success(deleteAttendance.value || 'Pedido de assiduidade apagado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar assiduidade:', error);
-        } finally {
-            setShowDeleteModal(false);
-            refreshAttendance();
-        }
-    };
+    // Função para deletar um movimento
+    const deleteAttendance = async (attendanceTimeId: string) => {
+        await handleDeleteAttendance(attendanceTimeId);
+        setShowDeleteModal(false);
+        refreshAttendance();
+    }
 
     // Atualiza os dados de renderização
     useEffect(() => {
-        fetchAllAttendances();
+        fetchRequests();
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -193,36 +124,21 @@ export const NclockRequests = () => {
     // Função para filtrar as presenças com base no texto de pesquisa
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
-        const filteredData = attendance.filter(att => {
+        const filteredData = attendanceRequests.filter(att => {
             return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
         });
         setFilteredAttendances(filteredData);
-    }, [filterText, attendance]);
+    }, [filterText, attendanceRequests]);
 
     // Atualiza a seleção ao mudar o filtro
     useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
-            const newFilteredAttendances = attendance.filter(att => selectedEmployeeIds.includes(att.employeeId));
+            const newFilteredAttendances = attendanceRequests.filter(att => selectedEmployeeIds.includes(att.employeeId));
             setFilteredAttendances(newFilteredAttendances);
-        } else if (attendance.length > 0) {
-            setFilteredAttendances(attendance);
+        } else if (attendanceRequests.length > 0) {
+            setFilteredAttendances(attendanceRequests);
         }
     }, [selectedEmployeeId, selectedEmployeeIds]);
-
-    // Filtragem de dados de assiduidade para hoje
-    const filterAttendanceDataForToday = (attendanceData: EmployeeAttendanceTimes[]) => {
-        const today = new Date();
-        const startOfDay = formatDateToStartOfDay(today);
-        const endOfDay = formatDateToEndOfDay(today);
-
-        const filteredData = attendanceData.filter(att => {
-            const attDate = new Date(att.attendanceTime);
-            return attDate >= new Date(startOfDay) && attDate <= new Date(endOfDay);
-        });
-        if (filteredAttendances.length !== filteredData.length) {
-            setFilteredAttendances(filteredData);
-        }
-    }
 
     // Define a seleção de funcionários
     const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -252,14 +168,7 @@ export const NclockRequests = () => {
 
     // Função para atualizar os funcionários
     const refreshAttendance = () => {
-        fetchAllAttendances();
-    };
-
-    // Função para limpar a seleção
-    const clearSelection = () => {
-        setResetSelection(true);
-        setSelectedEmployee(null);
-        setSelectedEmployeeId(null);
+        fetchRequests();
     };
 
     // Função para abrir o modal de adição de assiduidade
@@ -375,111 +284,112 @@ export const NclockRequests = () => {
     };
 
     return (
-        <div className="main-container">
-            <NavBar />
-            <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} data={data} />
-                    </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span>Pedidos</span>
+        <AttendanceProvider>
+            <div className="main-container">
+                <NavBar />
+                <div className="content-container">
+                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
                         </div>
-                        <div className="datatable-header">
-                            <div>
-                                <input
-                                    type="text"
-                                    placeholder="Pesquisa"
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    className='search-input'
-                                />
+                        <div className="datatable-container">
+                            <div className="datatable-title-text">
+                                <span>Pedidos</span>
                             </div>
-                            <div className="buttons-container">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
-                                <ExportButton allData={attendance} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
+                            <div className="datatable-header">
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        className='search-input'
+                                    />
+                                </div>
+                                <div className="buttons-container">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <ExportButton allData={filteredAttendances} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
+                                </div>
+                                <div className="date-range-search">
+                                    <input
+                                        type="datetime-local"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <span> até </span>
+                                    <input
+                                        type="datetime-local"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchRequestsBetweenDates} iconSize='1.1em' />
+                                </div>
                             </div>
-                            <div className="date-range-search">
-                                <input
-                                    type="datetime-local"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <span> até </span>
-                                <input
-                                    type="datetime-local"
-                                    value={endDate}
-                                    onChange={e => setEndDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <CustomOutlineButton icon="bi-search" onClick={fetchAllAttendancesBetweenDates} iconSize='1.1em' />
-                            </div>
+                            <DataTable
+                                columns={[...columns, actionColumn]}
+                                data={filteredDataTable}
+                                onRowDoubleClicked={(row) => {
+                                    setSelectedAttendances([row]);
+                                    setShowUpdateAttendanceModal(true);
+                                }}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não há dados disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
                         </div>
-                        <DataTable
-                            columns={[...columns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={(row) => {
-                                setSelectedAttendances([row]);
-                                setShowUpdateAttendanceModal(true);
-                            }}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não há dados disponíveis para exibir."
-                            customStyles={customStyles}
-                        />
-                    </div>
-                </Split>
+                    </Split>
+                </div>
+                <Footer />
+                {showAddAttendanceModal && (
+                    <CreateModalAttendance
+                        open={showAddAttendanceModal}
+                        onClose={() => setShowAddAttendanceModal(false)}
+                        onSave={addAttendance}
+                        title='Adicionar Pedido de Assiduidade'
+                        fields={employeeAttendanceTimesFields}
+                        initialValues={{}}
+                        entityType='pedidos'
+                    />
+                )}
+                {selectedAttendances.length > 0 && showUpdateAttendanceModal && (
+                    <UpdateModalAttendance
+                        open={showUpdateAttendanceModal}
+                        onClose={() => setShowUpdateAttendanceModal(false)}
+                        onUpdate={updateAttendance}
+                        entity={selectedAttendances[0]}
+                        fields={employeeAttendanceTimesFields}
+                        title='Atualizar Assiduidade'
+                        entityType='pedidos'
+                    />
+                )}
+                {selectedAttendanceToDelete && showDeleteModal && (
+                    <DeleteModal
+                        open={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        onDelete={deleteAttendance}
+                        entityId={selectedAttendanceToDelete}
+                    />
+                )}
+                {showColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={filteredColumns}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setShowColumnSelector(false)}
+                        onColumnToggle={handleColumnToggle}
+                        onResetColumns={handleResetColumns}
+                        onSelectAllColumns={handleSelectAllColumns}
+                    />
+                )}
             </div>
-            <Footer />
-            {showAddAttendanceModal && (
-                <CreateModalAttendance
-                    open={showAddAttendanceModal}
-                    onClose={() => setShowAddAttendanceModal(false)}
-                    onSave={handleAddAttendance}
-                    title='Adicionar Pedido de Assiduidade'
-                    fields={employeeAttendanceTimesFields}
-                    initialValues={{}}
-                    entityType='pedidos'
-                />
-            )}
-            {selectedAttendances.length > 0 && showUpdateAttendanceModal && (
-                <UpdateModalAttendance
-                    open={showUpdateAttendanceModal}
-                    onClose={() => setShowUpdateAttendanceModal(false)}
-                    onUpdate={handleUpdateAttendance}
-                    entity={selectedAttendances[0]}
-                    fields={employeeAttendanceTimesFields}
-                    title='Atualizar Assiduidade'
-                    entityType='pedidos'
-                />
-            )}
-            {selectedAttendanceToDelete && showDeleteModal && (
-                <DeleteModal
-                    open={showDeleteModal}
-                    onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteAttendance}
-                    entityId={selectedAttendanceToDelete}
-                />
-            )}
-            {showColumnSelector && (
-                <ColumnSelectorModal
-                    columns={filteredColumns}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setShowColumnSelector(false)}
-                    onColumnToggle={handleColumnToggle}
-                    onResetColumns={handleResetColumns}
-                    onSelectAllColumns={handleSelectAllColumns}
-                />
-            )}
-        </div>
+        </AttendanceProvider>
     );
 }

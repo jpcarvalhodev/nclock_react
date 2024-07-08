@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { PersonsDataTable } from "../../components/PersonsDataTable";
@@ -8,23 +8,23 @@ import Split from 'react-split';
 import '../../css/PagesStyles.css';
 import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { employeeFields } from '../../helpers/Fields';
-import { Department, Employee, Group } from '../../helpers/Types';
-import { fetchWithAuth } from '../../components/FetchWithAuth';
-import { toast } from 'react-toastify';
+import { Employee } from '../../helpers/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { ExportButton } from '../../components/ExportButton';
-
-// Define a interface para o estado de dados
-interface DataState {
-    departments: Department[];
-    groups: Group[];
-    employees: Employee[];
-}
+import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
 
 // Define a página de pessoas
 export const Persons = () => {
+    const {
+        employees,
+        data,
+        setData,
+        setEmployees,
+        fetchAllData,
+        fetchAllEmployees,
+        handleAddEmployee,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
-    const [employees, setEmployees] = useState<Employee[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -34,93 +34,32 @@ export const Persons = () => {
     const [filterText, setFilterText] = useState('');
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
     const [initialData, setInitialData] = useState<Employee | null>(null);
-    const [data, setData] = useState<DataState>({
-        departments: [],
-        groups: [],
-        employees: []
-    });
 
+    // Busca os departamentos, grupos e funcionários
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const deptResponse = await fetchWithAuth('Departaments/Employees');
-                const groupResponse = await fetchWithAuth('Groups/Employees');
-                const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
+        fetchAllData()
+    }, [fetchAllData]);
 
-                if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    return;
-                }
-
-                const [departments, groups, allEmployees] = await Promise.all([
-                    deptResponse.json(),
-                    groupResponse.json(),
-                    employeesResponse.json(),
-                ]);
-
-                setData({
-                    departments: departments,
-                    groups: groups,
-                    employees: allEmployees
-                });
-            } catch (error) {
-                console.error('Erro ao buscar dados:', error);
+    // Define a função de busca dos funcionários
+    const fetchEmployees = () => {
+        fetchAllEmployees({
+            postFetch: filteredData => {
+                setEmployees(filteredData);
             }
-        }
-        fetchData();
-    }, []);
+        });
+    };
 
-    // Função para buscar todos os funcionários
-    const fetchAllEmployees = async () => {
-        try {
-            const response = await fetchWithAuth('Employees/GetAllEmployees');
-            if (!response.ok) {
-                return;
-            }
-            const employeesData = await response.json();
-            setEmployees(employeesData);
-            setData(prevData => ({
-                ...prevData,
-                employees: employeesData
-            }));
-        } catch (error) {
-            console.error('Erro ao buscar funcionários:', error);
-        }
+    // Função para adicionar um funcionário
+    const addEmployee = async (employee: Employee) => {
+        await handleAddEmployee(employee);
+        setShowAddModal(false);
+        refreshEmployees();
     }
 
     // Atualiza a lista de funcionários ao carregar a página
     useEffect(() => {
-        fetchAllEmployees();
+        fetchEmployees();
     }, []);
-
-    // Função para adicionar um novo funcionário
-    const handleAddEmployee = async (employee: Employee) => {
-        try {
-            const response = await fetchWithAuth('Employees/CreateEmployee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const employeesData = await response.json();
-            setEmployees([...employees, employeesData]);
-            setData(prevData => ({
-                ...prevData,
-                employees: [...prevData.employees, employeesData]
-            }));
-            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar novo funcionário:', error);
-        } finally {
-            setShowAddModal(false);
-            refreshEmployees();
-        }
-    };
 
     // Função para selecionar funcionários
     const handleSelectEmployees = (employeeIds: string[]) => {
@@ -130,15 +69,9 @@ export const Persons = () => {
 
     // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
-        fetchAllEmployees();
-    }
-
-    // Função para limpar a seleção
-    const clearSelection = () => {
+        fetchEmployees();
         setSelectedEmployeeIds([]);
-        setResetSelection(prev => !prev);
-        setShowAllEmployees(true);
-    };
+    }
 
     // Define a função de duplicar funcionários
     const handleDuplicate = (data: Employee) => {
@@ -179,71 +112,72 @@ export const Persons = () => {
     };
 
     return (
-        <div className="main-container">
-            <NavBar />
-            <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewData onSelectEmployees={handleSelectEmployees} data={data} />
-                    </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span>Pessoas</span>
+        <PersonsProvider>
+            <div className="main-container">
+                <NavBar />
+                <div className="content-container">
+                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewData onSelectEmployees={handleSelectEmployees} />
                         </div>
-                        <div className="datatable-header">
-                            <div>
-                                <input
-                                    type="text"
-                                    placeholder="Pesquisa"
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    className='search-input'
-                                />
+                        <div className="datatable-container">
+                            <div className="datatable-title-text">
+                                <span>Pessoas</span>
                             </div>
-                            <div className="buttons-container">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-x" onClick={clearSelection} iconSize='1.1em' />
-                                <ExportButton allData={employees} selectedData={filteredData} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                            <div className="datatable-header">
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        className='search-input'
+                                    />
+                                </div>
+                                <div className="buttons-container">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <ExportButton allData={employees} selectedData={filteredData} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                                </div>
                             </div>
+                            <PersonsDataTable
+                                selectedEmployeeIds={selectedEmployeeIds}
+                                selectedColumns={selectedColumns}
+                                showAllEmployees={showAllEmployees}
+                                filterText={filterText}
+                                filteredEmployees={handleFilteredEmployees}
+                                resetSelection={resetSelection}
+                                data={data}
+                                onRefreshData={setData}
+                                filteredData={filteredData}
+                                onDuplicate={handleDuplicate}
+                            />
                         </div>
-                        <PersonsDataTable
-                            selectedEmployeeIds={selectedEmployeeIds}
-                            selectedColumns={selectedColumns}
-                            showAllEmployees={showAllEmployees}
-                            filterText={filterText}
-                            filteredEmployees={handleFilteredEmployees}
-                            resetSelection={resetSelection}
-                            data={data}
-                            onRefreshData={setData}
-                            filteredData={filteredData}
-                            onDuplicate={handleDuplicate}
-                        />
-                    </div>
-                </Split>
+                    </Split>
+                </div>
+                <Footer />
+                {showAddModal && (
+                    <CreateModalEmployees
+                        title="Adicionar Pessoa"
+                        open={showAddModal}
+                        onClose={() => setShowAddModal(false)}
+                        onSave={addEmployee}
+                        fields={employeeFields}
+                        initialValues={initialData || {}}
+                    />
+                )}
+                {showColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={employeeFields}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setShowColumnSelector(false)}
+                        onColumnToggle={handleColumnToggle}
+                        onResetColumns={handleResetColumns}
+                        onSelectAllColumns={handleSelectAllColumns}
+                    />
+                )}
             </div>
-            <Footer />
-            {showAddModal && (
-                <CreateModalEmployees
-                    title="Adicionar Pessoa"
-                    open={showAddModal}
-                    onClose={() => setShowAddModal(false)}
-                    onSave={handleAddEmployee}
-                    fields={employeeFields}
-                    initialValues={initialData || {}}
-                />
-            )}
-            {showColumnSelector && (
-                <ColumnSelectorModal
-                    columns={employeeFields}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setShowColumnSelector(false)}
-                    onColumnToggle={handleColumnToggle}
-                    onResetColumns={handleResetColumns}
-                    onSelectAllColumns={handleSelectAllColumns}
-                />
-            )}
-        </div>
+        </PersonsProvider>
     );
 };

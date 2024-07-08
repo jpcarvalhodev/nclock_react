@@ -1,10 +1,11 @@
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useContext, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
+import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -26,7 +27,6 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataProps {
   onSelectEmployees: (employeeIds: string[]) => void;
-  data: { departments: Department[], groups: Group[], employees: Employee[] };
 }
 
 // Função para filtrar os itens
@@ -64,7 +64,8 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
+export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
+  const { data } = useContext(PersonsContext) as PersonsContextType;
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -257,25 +258,27 @@ export function TreeViewData({ onSelectEmployees, data }: TreeViewDataProps) {
   }, [selectedEmployeeIds]);
 
   return (
-    <Box className="TreeViewContainer">
-      <Box className="treeViewFlexItem">
-        <RichTreeView
-          multiSelect
-          checkboxSelection
-          items={filteredItems}
-          getItemId={(item: TreeViewBaseItem) => item.id}
-          onSelectedItemsChange={handleSelectedItemsChange}
-          selectedItems={selectedEmployeeIds}
-          expandedItems={expandedIds}
-          onExpandedItemsChange={handleToggle}
+    <PersonsProvider>
+      <Box className="TreeViewContainer">
+        <Box className="treeViewFlexItem">
+          <RichTreeView
+            multiSelect
+            checkboxSelection
+            items={filteredItems}
+            getItemId={(item: TreeViewBaseItem) => item.id}
+            onSelectedItemsChange={handleSelectedItemsChange}
+            selectedItems={selectedEmployeeIds}
+            expandedItems={expandedIds}
+            onExpandedItemsChange={handleToggle}
+          />
+        </Box>
+        <CustomSearchBox
+          label="Pesquisa"
+          variant="outlined"
+          size="small"
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </Box>
-      <CustomSearchBox
-        label="Pesquisa"
-        variant="outlined"
-        size="small"
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-    </Box>
+    </PersonsProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { fetchWithAuth } from './FetchWithAuth';
 import { toast } from 'react-toastify';
@@ -11,8 +11,9 @@ import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { customStyles } from './CustomStylesDataTable';
 import { SelectFilter } from './SelectFilter';
+import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
 
-// Define a interface para o estado dos dados
+// Define a interface para o estado de dados
 interface DataState {
     departments: Department[];
     groups: Group[];
@@ -40,6 +41,11 @@ interface Filters {
 
 // Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate }: PersonsDataTableProps) => {
+    const {
+        fetchAllEmployees,
+        handleUpdateEmployee,
+        handleDeleteEmployee,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -48,94 +54,37 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
     const [filters, setFilters] = useState<Filters>({});
 
-    // Função para buscar todos os funcionários
-    const fetchAllEmployees = async () => {
-        try {
-            const response = await fetchWithAuth('Employees/GetAllEmployees');
-            if (!response.ok) {
-                return;
+    // Define a função de busca dos funcionários
+    const fetchEmployees = () => {
+        fetchAllEmployees({
+            postFetch: filteredData => {
+                onRefreshData({ ...data, employees: filteredData });
             }
-            const employeesData = await response.json();
-            onRefreshData({
-                ...data,
-                employees: employeesData
-            });
-        } catch (error) {
-            console.error('Erro ao buscar funcionários:', error);
-        }
-    }
-
-    // Atualiza um funcionário
-    const handleUpdateEmployee = async (employee: Employee) => {
-        try {
-            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedEmployee = await response.json();
-            const updatedEmployees = data.employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
-            onRefreshData({
-                ...data,
-                employees: updatedEmployees
-            });
-            toast.success(updatedEmployee.value || 'Atualização realizada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Erro ao conectar ao servidor');
-        } finally {
-            setShowUpdateModal(false);
-            refreshEmployees();
-        }
+        });
     };
 
-    // Exclui um funcionário
-    const handleDeleteEmployee = async (employeeID: string) => {
-        try {
-            const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+    // Função para atualizar um funcionário
+    const updateEmployee = async (employee: Employee) => {
+        await handleUpdateEmployee(employee);
+        setShowUpdateModal(false);
+        refreshEmployees();
+    }
 
-            if (!response.ok) {
-                return;
-            }
-            const updatedEmployees = data.employees.filter(emp => emp.employeeID !== employeeID);
-            onRefreshData({
-                ...data,
-                employees: updatedEmployees,
-            });
-            const deleteEmployee = await response.json();
-            toast.success(deleteEmployee.value || 'Funcionário excluído com sucesso!');
-        } catch (error) {
-            console.error('Erro ao excluir funcionário:', error);
-            toast.error('Erro ao conectar ao servidor');
-        } finally {
-            setShowDeleteModal(false);
-            refreshEmployees();
-        }
+    // Função para deletar um funcionário
+    const deleteEmployee = async (employeeId: string) => {
+        await handleDeleteEmployee(employeeId);
+        setShowDeleteModal(false);
+        refreshEmployees();
     }
 
     // Busca os funcionários
     useEffect(() => {
-        fetchAllEmployees();
+        fetchEmployees();
     }, []);
 
     // Atualiza a lista de funcionários
     const refreshEmployees = () => {
-        fetchAllEmployees();
+        fetchEmployees();
     }
 
     // Gerencia a aplicação de filtros e atualizar o estado no componente pai
@@ -301,44 +250,46 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     };
 
     return (
-        <div>
-            <>
-                <DataTable
-                    columns={[...columns, actionColumn]}
-                    data={filteredData}
-                    highlightOnHover
-                    pagination
-                    paginationComponentOptions={paginationOptions}
-                    onRowDoubleClicked={handleRowDoubleClicked}
-                    expandableRows
-                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                    selectableRows
-                    onSelectedRowsChange={handleRowSelected}
-                    selectableRowsHighlight
-                    clearSelectedRows={resetSelectionInternal}
-                    noDataComponent="Não há dados disponíveis para exibir."
-                    customStyles={customStyles}
-                />
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
-                        onDuplicate={handleDuplicateAndClose}
-                        onUpdate={handleUpdateEmployee}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Pessoa"
+        <PersonsProvider>
+            <div>
+                <>
+                    <DataTable
+                        columns={[...columns, actionColumn]}
+                        data={filteredData}
+                        highlightOnHover
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        onRowDoubleClicked={handleRowDoubleClicked}
+                        expandableRows
+                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        selectableRowsHighlight
+                        clearSelectedRows={resetSelectionInternal}
+                        noDataComponent="Não há dados disponíveis para exibir."
+                        customStyles={customStyles}
                     />
-                )}
-                {showDeleteModal && (
-                    <DeleteModal
-                        open={showDeleteModal}
-                        onClose={() => setShowDeleteModal(false)}
-                        onDelete={handleDeleteEmployee}
-                        entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
-                    />
-                )}
-            </>
-        </div>
+                    {selectedEmployee && (
+                        <UpdateModalEmployees
+                            open={showUpdateModal}
+                            onClose={handleCloseUpdateModal}
+                            onDuplicate={handleDuplicateAndClose}
+                            onUpdate={updateEmployee}
+                            entity={selectedEmployee}
+                            fields={employeeFields}
+                            title="Atualizar Pessoa"
+                        />
+                    )}
+                    {showDeleteModal && (
+                        <DeleteModal
+                            open={showDeleteModal}
+                            onClose={() => setShowDeleteModal(false)}
+                            onDelete={deleteEmployee}
+                            entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
+                        />
+                    )}
+                </>
+            </div>
+        </PersonsProvider>
     );
 };

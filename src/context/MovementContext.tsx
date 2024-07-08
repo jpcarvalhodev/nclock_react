@@ -1,22 +1,45 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { EmployeeAttendanceTimes } from "../helpers/Types";
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
+import { Department, Employee, EmployeeAttendanceTimes, Group } from "../helpers/Types";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import { toast } from "react-toastify";
+
+// Define a interface para o estado de dados
+interface DataState {
+    departments: Department[];
+    groups: Group[];
+    employees: Employee[];
+}
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {
     attendance: EmployeeAttendanceTimes[];
-    fetchAllAttendances: (options?: FetchOptions) => Promise<void>;
-    fetchAllAttendancesBetweenDates: () => Promise<void>;
+    data: DataState;
+    startDate: string;
+    endDate: string;
+    setStartDate: (date: string) => void;
+    setEndDate: (date: string) => void;
+    fetchAllData: () => Promise<void>;
+    fetchAllAttendances: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
+    fetchAllAttendancesBetweenDates: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     handleAddAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
     handleUpdateAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
     handleDeleteAttendance: (attendanceTimeId: string) => Promise<void>;
 }
 
-// Definindo as opções de busca
+// Expandindo as opções de busca
 interface FetchOptions {
     filterFunc?: (data: EmployeeAttendanceTimes[]) => EmployeeAttendanceTimes[];
-    additionalFilters?: (data: EmployeeAttendanceTimes[]) => EmployeeAttendanceTimes[];
+    postFetch?: (data: EmployeeAttendanceTimes[]) => void;
+}
+
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Criando o contexto
@@ -24,42 +47,86 @@ export const AttendanceContext = createContext<AttendanceContextType | undefined
 
 // Criando o provedor do contexto
 export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
+    const currentDate = new Date();
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
-    const [startDate, setStartDate] = useState<Date>(new Date());
-    const [endDate, setEndDate] = useState<Date>(new Date());
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [data, setData] = useState<DataState>({
+        departments: [],
+        groups: [],
+        employees: []
+    });
 
-    // Função para buscar todos as assiduidades
-    const fetchAllAttendances = useCallback(async (options?: FetchOptions) => {
+    // Função para buscar todos os dados
+    const fetchAllData = useCallback(async () => {
+        try {
+            const deptResponse = await fetchWithAuth('Departaments/Employees');
+            const groupResponse = await fetchWithAuth('Groups/Employees');
+            const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
+
+            if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
+                return;
+            }
+
+            const [departments, groups, employees] = await Promise.all([
+                deptResponse.json(),
+                groupResponse.json(),
+                employeesResponse.json(),
+            ]);
+
+            setData({
+                departments,
+                groups,
+                employees,
+            });
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+        }
+    }, []);
+
+    // Função para buscar todas as assiduidades
+    const fetchAllAttendances = useCallback(async (options?: FetchOptions): Promise<EmployeeAttendanceTimes[]> => {
         try {
             const response = await fetchWithAuth('Attendances/GetAllAttendances');
             if (!response.ok) {
-                throw new Error('Failed to fetch attendances');
+                return [];
             }
             let data = await response.json();
             if (options?.filterFunc) {
                 data = options.filterFunc(data);
             }
-            if (options?.additionalFilters) {
-                data = options.additionalFilters(data);
+            if (options?.postFetch) {
+                options.postFetch(data);
             }
-            setAttendance(data);
+            return data;
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
-            toast.error(`Erro ao buscar assiduidades: ${error}`);
+            return [];
         }
-    }, []);        
+    }, []);
 
     // Função para buscar as assiduidades entre datas
-    const fetchAllAttendancesBetweenDates = async () => {
+    const fetchAllAttendancesBetweenDates = useCallback(async (options?: FetchOptions): Promise<EmployeeAttendanceTimes[]> => {
         try {
             const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
             if (!response.ok) {
-                return;
+                return [];
             }
+            let data = await response.json();
+            console.log(data);
+            console.log(response)
+            if (options?.filterFunc) {
+                data = options.filterFunc(data);
+            }
+            if (options?.postFetch) {
+                options.postFetch(data);
+            }
+            return data;
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
+            return [];
         }
-    };
+    }, [startDate, endDate]);    
 
     // Função para adicionar uma nova assiduidade
     const handleAddAttendance = async (attendances: EmployeeAttendanceTimes) => {
@@ -77,7 +144,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             const newAttendance = await response.json();
             setAttendance([...attendance, newAttendance]);
             toast.success(newAttendance.value || 'assiduidade adicionada com sucesso!');
-
+            fetchAllData();
         } catch (error) {
             console.error('Erro ao adicionar nova assiduidade:', error);
         }
@@ -100,7 +167,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             const updatedAttendance = await response.json();
             setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
             toast.success(updatedAttendance.value || 'assiduidade atualizada com sucesso!');
-
+            fetchAllData();
         } catch (error) {
             console.error('Erro ao atualizar assiduidade:', error);
         }
@@ -121,14 +188,26 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             }
             const deleteAttendance = await response.json();
             toast.success(deleteAttendance.value || 'assiduidade apagada com sucesso!');
-
+            fetchAllData();
         } catch (error) {
             console.error('Erro ao apagar assiduidade:', error);
         }
     };
 
+    // Busca todos os dados para carregar o contexto
+    useEffect(() => {
+        fetchAllData();
+    }, [fetchAllData]);
+
+    // Definindo o valor do contexto
     const contextValue = {
         attendance,
+        data,
+        startDate,
+        endDate,
+        setStartDate,
+        setEndDate,
+        fetchAllData,
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
         handleAddAttendance,
@@ -143,6 +222,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
+// Hook personalizado para usar o contexto
 export const useAttendance = () => {
     const context = useContext(AttendanceContext);
     if (!context) throw new Error('useAttendance must be used within an AttendanceProvider');

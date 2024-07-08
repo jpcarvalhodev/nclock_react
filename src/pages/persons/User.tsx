@@ -1,32 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import '../../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
-import { Department, Employee, Group } from '../../helpers/Types';
+import { Employee } from '../../helpers/Types';
 import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
 import { DeleteModal } from '../../modals/DeleteModal';
 import { CustomOutlineButton } from '../../components/CustomOutlineButton';
-import { fetchWithAuth } from '../../components/FetchWithAuth';
 import { employeeFields } from '../../helpers/Fields';
 import { ExportButton } from '../../components/ExportButton';
-import { toast } from 'react-toastify';
 import Split from 'react-split';
 import { TreeViewData } from '../../components/TreeView';
 import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
-import { set } from 'date-fns';
-
-// Define a interface para o estado de dados
-interface DataState {
-    departments: Department[];
-    groups: Group[];
-    employees: Employee[];
-}
+import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
 
 // Define a interface para os filtros
 interface Filters {
@@ -35,7 +26,16 @@ interface Filters {
 
 // Define a página de utentes
 export const User = () => {
-    const [employees, setEmployees] = useState<Employee[]>([]);
+    const {
+        employees,
+        data,
+        setEmployees,
+        fetchAllData,
+        fetchAllEmployees,
+        handleAddEmployee,
+        handleUpdateEmployee,
+        handleDeleteEmployee,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -49,177 +49,78 @@ export const User = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [initialData, setInitialData] = useState<Employee | null>(null);
     const [filters, setFilters] = useState<Filters>({});
-    const [data, setData] = useState<DataState>({
-        departments: [],
-        groups: [],
-        employees: []
-    });
+    const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
 
     // Busca os departamentos, grupos e funcionários
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const deptResponse = await fetchWithAuth('Departaments/Employees');
-                const groupResponse = await fetchWithAuth('Groups/Employees');
-                const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
+        fetchAllData()
+    }, [fetchAllData]);
 
-                if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                    return;
-                }
-
-                const [departments, groups, allEmployees] = await Promise.all([
-                    deptResponse.json(),
-                    groupResponse.json(),
-                    employeesResponse.json(),
-                ]);
-
-                const filteredEmployees = allEmployees.filter((emp: Employee) => emp.type === 'Utente');
-
-                setData({
-                    departments,
-                    groups,
-                    employees: filteredEmployees
-                });
-                setEmployees(filteredEmployees);
-                setFilteredEmployees(filteredEmployees);
-            } catch (error) {
-                console.error('Erro ao buscar dados:', error);
+    // Define a função de busca dos funcionários
+    const fetchEmployees = () => {
+        fetchAllEmployees({
+            filterFunc: data => data.filter(emp => emp.type === 'Utente'),
+            postFetch: filteredData => {
+                setEmployees(filteredData);
+                setFilteredEmployees(filteredData);
             }
-        }
-        fetchData();
-    }, []);
-
-    // Busca os dados dos utentes
-    const fetchEmployees = async () => {
-        try {
-            const response = await fetchWithAuth('Employees/GetAllEmployees');
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            const filteredData = data.filter((emp: Employee) => emp.type === 'Utente');
-            setEmployees(filteredData);
-            setFilteredEmployees(filteredData);
-            setData(prevData => ({
-                ...prevData,
-                employees: filteredData
-            }));
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos funcionários:', error);
-        }
+        });
     };
 
-    // Adiciona um novo utente
-    const handleAddEmployee = async (employee: Employee) => {
-        try {
-            const response = await fetchWithAuth('Employees/CreateEmployee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
+    // Função para adicionar um funcionário
+    const addEmployee = async (employee: Employee) => {
+        await handleAddEmployee(employee);
+        setShowAddModal(false);
+        refreshEmployees();
+    }
 
-            if (!response.ok) {
-                return;
-            }
-            const employeesData = await response.json();
-            setEmployees([...employees, employeesData]);
-            setData(prevData => ({
-                ...prevData,
-                employees: [...prevData.employees, employeesData]
-            }));
-            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
+    // Função para atualizar um funcionário
+    const updateEmployee = async (employee: Employee) => {
+        await handleUpdateEmployee(employee);
+        setShowUpdateModal(false);
+        refreshEmployees();
+    }
 
-        } catch (error) {
-            console.error('Erro ao adicionar novo funcionário:', error);
-        } finally {
-            setShowAddModal(false);
-            refreshEmployees();
-        }
-    };
+    // Função para deletar um funcionário
+    const deleteEmployee = async (employeeId: string) => {
+        await handleDeleteEmployee(employeeId);
+        setShowDeleteModal(false);
+        refreshEmployees();
+    }
 
-    // Atualiza um utente
-    const handleUpdateEmployee = async (employee: Employee) => {
-        try {
-            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedEmployee = await response.json();
-            const updatedEmployees = employees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp);
-            setData(prevData => ({
-                ...prevData,
-                employees: updatedEmployees
-            }));
-            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar funcionário:', error);
-        } finally {
-            setShowUpdateModal(false);
-            refreshEmployees();
-        }
-    };
-
-    // Apaga um utente
-    const handleDeleteEmployee = async (employeeID: string) => {
-
-        try {
-            const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deletedEmployee = data.employees.filter(emp => emp.employeeID !== employeeID)
-            setData(prevData => ({
-                ...prevData,
-                employees: deletedEmployee
-            }));
-            const deleteEmployee = await response.json();
-            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar funcionário:', error);
-        } finally {
-            setShowDeleteModal(false);
-            refreshEmployees();
-        }
-    };
-
-    // Atualiza a lista de utentes ao carregar a página
+    // Busca os funcionários
     useEffect(() => {
         fetchEmployees();
     }, []);
 
-    // Atualiza a lista de utentes
+    // Atualiza os funcionários
     const refreshEmployees = () => {
         fetchEmployees();
+        setSelectedEmployeeIds([]);
     };
 
-    // Filtra os utentes selecionados na árvore
-    const handleSelectFromTreeView = (selectedIds: string[]) => {
-        if (selectedIds.length === 0) {
-            setFilteredEmployees(employees);
-        } else {
-            const filtered = employees.filter(employee => selectedIds.includes(employee.employeeID));
+    // Função para filtrar as presenças com base no texto de pesquisa
+    useEffect(() => {
+        const lowercasedFilter = filterText.toLowerCase();
+        const filteredData = employees.filter(emp => {
+            return emp.name ? emp.name.toLowerCase().includes(lowercasedFilter) : false;
+        });
+        setFilteredEmployees(filteredData);
+    }, [filterText, employees]);
+
+    // Atualiza os funcionários filtrados com base nos funcionários selecionados
+    useEffect(() => {
+        if (selectedEmployeeIds.length > 0) {
+            const filtered = employees.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
             setFilteredEmployees(filtered);
+        } else {
+            setFilteredEmployees(employees);
         }
+    }, [selectedEmployeeIds, employees]);
+
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedEmployeeIds(selectedIds);
     };
 
     // Atualiza a lista de utentes ao mudar a lista de utentes
@@ -259,12 +160,6 @@ export const User = () => {
         selectedRows: Employee[];
     }) => {
         setSelectedRows(state.selectedRows);
-    };
-
-    // Função para limpar a seleção
-    const handleClearSelection = () => {
-        setClearSelectionToggle(!clearSelectionToggle);
-        setSelectedRows([]);
     };
 
     // Define a função de duplicar funcionários
@@ -333,7 +228,7 @@ export const User = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = data.employees.filter(employee =>
+    const filteredDataTable = filteredEmployees.filter(employee =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(employee[key]) === String(filters[key])
         )
@@ -378,89 +273,90 @@ export const User = () => {
     };
 
     return (
-        <div className="main-container">
-            <NavBar />
-            <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewData onSelectEmployees={handleSelectFromTreeView} data={data} />
-                    </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span>Utentes</span>
+        <PersonsProvider>
+            <div className="main-container">
+                <NavBar />
+                <div className="content-container">
+                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
                         </div>
-                        <div className="datatable-header">
-                            <div>
-                                <input
-                                    type="text"
-                                    placeholder="Pesquisa"
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    className='search-input'
-                                />
+                        <div className="datatable-container">
+                            <div className="datatable-title-text">
+                                <span>Utentes</span>
                             </div>
-                            <div className="buttons-container">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-x" onClick={handleClearSelection} iconSize='1.1em' />
-                                <ExportButton allData={employees} selectedData={selectedRows} fields={employeeFields} />
+                            <div className="datatable-header">
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        className='search-input'
+                                    />
+                                </div>
+                                <div className="buttons-container">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                                    <ExportButton allData={employees} selectedData={selectedRows} fields={employeeFields} />
+                                </div>
                             </div>
+                            <DataTable
+                                columns={[...columns, actionColumn]}
+                                data={filteredDataTable}
+                                onRowDoubleClicked={handleEditEmployee}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                expandableRows
+                                expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não há dados disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
                         </div>
-                        <DataTable
-                            columns={[...columns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditEmployee}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            expandableRows
-                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não há dados disponíveis para exibir."
-                            customStyles={customStyles}
-                        />
-                    </div>
-                </Split>
-            </div>
-            <Footer />
-            <CreateModalEmployees
-                title="Adicionar Utente"
-                open={showAddModal}
-                onClose={() => setShowAddModal(false)}
-                onSave={handleAddEmployee}
-                fields={employeeFields}
-                initialValues={{}}
-            />
-            {selectedEmployee && (
-                <UpdateModalEmployees
-                    open={showUpdateModal}
-                    onClose={handleCloseUpdateModal}
-                    onDuplicate={handleDuplicate}
-                    onUpdate={handleUpdateEmployee}
-                    entity={selectedEmployee}
+                    </Split>
+                </div>
+                <Footer />
+                <CreateModalEmployees
+                    title="Adicionar Utente"
+                    open={showAddModal}
+                    onClose={() => setShowAddModal(false)}
+                    onSave={addEmployee}
                     fields={employeeFields}
-                    title="Atualizar Utente"
+                    initialValues={{}}
                 />
-            )}
-            <DeleteModal
-                open={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteEmployee}
-                entityId={selectedEmployeeToDelete}
-            />
-            {openColumnSelector && (
-                <ColumnSelectorModal
-                    columns={employeeFields}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setOpenColumnSelector(false)}
-                    onColumnToggle={toggleColumn}
-                    onResetColumns={resetColumns}
-                    onSelectAllColumns={onSelectAllColumns}
+                {selectedEmployee && (
+                    <UpdateModalEmployees
+                        open={showUpdateModal}
+                        onClose={handleCloseUpdateModal}
+                        onDuplicate={handleDuplicate}
+                        onUpdate={updateEmployee}
+                        entity={selectedEmployee}
+                        fields={employeeFields}
+                        title="Atualizar Utente"
+                    />
+                )}
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={deleteEmployee}
+                    entityId={selectedEmployeeToDelete}
                 />
-            )}
-        </div>
+                {openColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={employeeFields}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setOpenColumnSelector(false)}
+                        onColumnToggle={toggleColumn}
+                        onResetColumns={resetColumns}
+                        onSelectAllColumns={onSelectAllColumns}
+                    />
+                )}
+            </div>
+        </PersonsProvider>
     );
 }

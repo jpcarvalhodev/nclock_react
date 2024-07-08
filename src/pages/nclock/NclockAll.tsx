@@ -5,14 +5,14 @@ import { NavBar } from "../../components/NavBar";
 import "../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
 import { employeeAttendanceTimesFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import Split from 'react-split';
 import { TreeViewDataNclock } from "../../components/TreeViewNclock";
 import { SelectFilter } from "../../components/SelectFilter";
+import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../context/MovementContext";
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -39,8 +39,15 @@ interface Filters {
 
 // Define a página de todas as assiduidades
 export const NclockAll = () => {
-    const currentDate = new Date();
-    const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
+    const {
+        startDate,
+        endDate,
+        setStartDate,
+        setEndDate,
+        fetchAllAttendances,
+        fetchAllAttendancesBetweenDates,
+    } = useContext(AttendanceContext) as AttendanceContextType;
+    const [attendanceAll, setAttendanceAll] = useState<EmployeeAttendanceTimes[]>([]);
     const [filterText, setFilterText] = useState('');
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -49,8 +56,6 @@ export const NclockAll = () => {
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
-    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
-    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [filters, setFilters] = useState<Filters>({});
     const [data, setData] = useState<DataState>({
         departments: [],
@@ -60,59 +65,50 @@ export const NclockAll = () => {
     });
 
     // Função para buscar todos as assiduidades
-    const fetchAllAttendances = async () => {
-        try {
-            const response = await fetchWithAuth('Attendances/GetAllAttendances');
-            if (!response.ok) {
-                return;
+    const fetchAll = () => {
+        fetchAllAttendances({
+            filterFunc: data => data.filter(att => att.type !== 3),
+            postFetch: filteredData => {
+                setAttendanceAll(filteredData);
             }
-            const attendanceData = await response.json();
-            setAttendance(attendanceData);
-        } catch (error) {
-            console.error('Erro ao buscar assiduidades:', error);
-        }
+        });
     };
 
-    // Função para buscar as assiduidades entre datas
-    const fetchAllAttendancesBetweenDates = async () => {
-        try {
-            const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
-            if (!response.ok) {
-                return;
+    // Função para buscar todas as assiduidades entre datas
+    const fetchAllBetweenDates = () => {
+        fetchAllAttendancesBetweenDates({
+            postFetch: filteredData => {
+                setFilteredAttendances(filteredData);
             }
-            const data = await response.json();
-            setFilteredAttendances(data);
-        } catch (error) {
-            console.error('Erro ao buscar assiduidades:', error);
-        }
-    }
+        });
+    };
 
     // Atualiza a lista de funcionários ao carregar a página
     useEffect(() => {
-        fetchAllAttendances();
+        fetchAll();
     }, []);
 
     // Função para atualizar os dados da tabela
     const refreshAttendance = () => {
-        fetchAllAttendances();
+        fetchAll();
     };
 
     // Função para filtrar as presenças com base no texto de pesquisa
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
-        const filteredData = attendance.filter(att => {
+        const filteredData = attendanceAll.filter(att => {
             return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
         });
         setFilteredAttendances(filteredData);
-    }, [filterText, attendance]);
+    }, [filterText, attendanceAll]);
 
     // Atualiza a seleção ao mudar o filtro
     useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
-            const newFilteredAttendances = attendance.filter(att => selectedEmployeeIds.includes(att.employeeId));
+            const newFilteredAttendances = attendanceAll.filter(att => selectedEmployeeIds.includes(att.employeeId));
             setFilteredAttendances(newFilteredAttendances);
-        } else if (attendance.length > 0) {
-            setFilteredAttendances(attendance);
+        } else if (attendanceAll.length > 0) {
+            setFilteredAttendances(attendanceAll);
         }
     }, [selectedEmployeeId, selectedEmployeeIds]);
 
@@ -219,75 +215,77 @@ export const NclockAll = () => {
     };
 
     return (
-        <div className="main-container">
-            <NavBar />
-            <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} data={data} />
-                    </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span>Todos (Movimentos e Pedidos)</span>
+        <AttendanceProvider>
+            <div className="main-container">
+                <NavBar />
+                <div className="content-container">
+                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
                         </div>
-                        <div className="datatable-header">
-                            <div className="search-box">
-                                <input
-                                    type="text"
-                                    placeholder="Pesquisa"
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    className='search-input'
-                                />
+                        <div className="datatable-container">
+                            <div className="datatable-title-text">
+                                <span>Todos (Movimentos e Pedidos)</span>
                             </div>
-                            <div className="buttons-container">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                                <ExportButton allData={attendance} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
+                            <div className="datatable-header">
+                                <div className="search-box">
+                                    <input
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        className='search-input'
+                                    />
+                                </div>
+                                <div className="buttons-container">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <ExportButton allData={filteredAttendances} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
+                                </div>
+                                <div className="date-range-search">
+                                    <input
+                                        type="datetime-local"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <span> até </span>
+                                    <input
+                                        type="datetime-local"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchAllBetweenDates} iconSize='1.1em' />
+                                </div>
                             </div>
-                            <div className="date-range-search">
-                                <input
-                                    type="datetime-local"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <span> até </span>
-                                <input
-                                    type="datetime-local"
-                                    value={endDate}
-                                    onChange={e => setEndDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <CustomOutlineButton icon="bi-search" onClick={fetchAllAttendancesBetweenDates} iconSize='1.1em' />
-                            </div>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não há dados disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
                         </div>
-                        <DataTable
-                            columns={columns}
-                            data={filteredDataTable}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não há dados disponíveis para exibir."
-                            customStyles={customStyles}
-                        />
-                    </div>
-                </Split>
+                    </Split>
+                </div>
+                <Footer />
+                {showColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={filteredColumns}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setShowColumnSelector(false)}
+                        onColumnToggle={handleColumnToggle}
+                        onResetColumns={handleResetColumns}
+                        onSelectAllColumns={handleSelectAllColumns}
+                    />
+                )}
             </div>
-            <Footer />
-            {showColumnSelector && (
-                <ColumnSelectorModal
-                    columns={filteredColumns}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setShowColumnSelector(false)}
-                    onColumnToggle={handleColumnToggle}
-                    onResetColumns={handleResetColumns}
-                    onSelectAllColumns={handleSelectAllColumns}
-                />
-            )}
-        </div>
+        </AttendanceProvider>
     );
 };

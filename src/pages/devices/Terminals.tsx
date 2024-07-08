@@ -20,7 +20,7 @@ import faceScan from "../../assets/img/terminais/faceScan.png";
 import palmScan from "../../assets/img/terminais/palmScan.png";
 import card from "../../assets/img/terminais/card.png";
 import { Overlay } from "../../components/OverlayComponent";
-import { DeviceContextType, TerminalsContext } from "../../context/TerminalsContext";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -549,429 +549,431 @@ export const Terminals = () => {
     ];
 
     return (
-        <div className="main-container">
-            <Overlay isLoading={loadingUser || loadingAllUser || loadingSyncAllUser || loadingMovements || loadingSyncTime} />
-            <NavBar />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <div className="datatable-title-text">
-                    <span>Terminais</span>
-                </div>
-                <div className="datatable-header">
-                    <div className="buttons-container-others" style={{ flexGrow: 1 }}>
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAll} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                        <span style={{
-                            color: 'white',
-                            backgroundColor: backgroundColor,
-                            borderRadius: '4px',
-                            padding: '2px 10px',
-                            display: 'inline-block',
-                            marginLeft: 'auto',
-                            marginRight: '30px'
-                        }}>
-                            Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Online, ${deviceStatusCount['Inactivo'] || 0} Offline`}
-                        </span>
+        <TerminalsProvider>
+            <div className="main-container">
+                <Overlay isLoading={loadingUser || loadingAllUser || loadingSyncAllUser || loadingMovements || loadingSyncTime} />
+                <NavBar />
+                <div className='filter-refresh-add-edit-upper-class'>
+                    <div className="datatable-title-text">
+                        <span>Terminais</span>
+                    </div>
+                    <div className="datatable-header">
+                        <div className="buttons-container-others" style={{ flexGrow: 1 }}>
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAll} />
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                            <span style={{
+                                color: 'white',
+                                backgroundColor: backgroundColor,
+                                borderRadius: '4px',
+                                padding: '2px 10px',
+                                display: 'inline-block',
+                                marginLeft: 'auto',
+                                marginRight: '30px'
+                            }}>
+                                Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Online, ${deviceStatusCount['Inactivo'] || 0} Offline`}
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="content-section deviceTabsMobile" style={{ display: 'flex', flex: 1 }}>
-                <div style={{ flex: 1.5, overflow: "auto" }} className="deviceMobile">
-                    <DataTable
-                        columns={[...deviceColumns, devicesActionColumn]}
-                        data={filteredDeviceDataTable}
-                        onRowDoubleClicked={handleEditDevices}
-                        pagination
-                        paginationPerPage={5}
-                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                        paginationComponentOptions={paginationOptions}
-                        selectableRows
-                        onSelectedRowsChange={handleDeviceRowSelected}
-                        selectableRowsHighlight
-                        noDataComponent="Não há dados disponíveis para exibir."
-                        customStyles={customStyles}
-                    />
+                <div className="content-section deviceTabsMobile" style={{ display: 'flex', flex: 1 }}>
+                    <div style={{ flex: 1.5, overflow: "auto" }} className="deviceMobile">
+                        <DataTable
+                            columns={[...deviceColumns, devicesActionColumn]}
+                            data={filteredDeviceDataTable}
+                            onRowDoubleClicked={handleEditDevices}
+                            pagination
+                            paginationPerPage={5}
+                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            onSelectedRowsChange={handleDeviceRowSelected}
+                            selectableRowsHighlight
+                            noDataComponent="Não há dados disponíveis para exibir."
+                            customStyles={customStyles}
+                        />
+                    </div>
+                    <div style={{ flex: 2, overflow: "auto" }}>
+                        <Tabs
+                            id="controlled-tab-terminals"
+                            activeKey={mainTabKey}
+                            onSelect={handleMainSelect}
+                            className="nav-modal"
+                            style={{ marginBottom: 10 }}
+                        >
+                            <Tab eventKey="tasks" title="Actividade">
+                                <div>
+                                    <p className="activityTabContent">Actividades</p>
+                                    <DataTable
+                                        columns={taskColumns}
+                                        data={task}
+                                        pagination
+                                        paginationPerPage={5}
+                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                        paginationComponentOptions={paginationOptions}
+                                        noDataComponent="Não há tarefas disponíveis para exibir."
+                                        customStyles={customStyles}
+                                    />
+                                </div>
+                                <div>
+                                    <p className="activityTabContent">Movimentos</p>
+                                    <DataTable
+                                        columns={transactionColumns}
+                                        data={transactions}
+                                        pagination
+                                        paginationPerPage={5}
+                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                        paginationComponentOptions={paginationOptions}
+                                        noDataComponent="Não há actividades disponíveis para exibir."
+                                        customStyles={customStyles}
+                                    />
+                                </div>
+                            </Tab>
+                            <Tab eventKey="user-track" title="Manutenção de utilizadores">
+                                <Tabs
+                                    id="controlled-tab-terminals-user-track"
+                                    activeKey={userTrackTabKey}
+                                    onSelect={handleUserTrackSelect}
+                                    className="nav-modal"
+                                    style={{ marginBottom: 10 }}
+                                >
+                                    <Tab eventKey="users-software" title="Utilizadores no software">
+                                        <div style={{ display: "flex" }}>
+                                            <div style={{ overflowX: "auto", flex: 5 }}>
+                                                <DataTable
+                                                    columns={userColumns}
+                                                    data={filteredUserDataTable}
+                                                    pagination
+                                                    paginationPerPage={5}
+                                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                    paginationComponentOptions={paginationOptions}
+                                                    selectableRows
+                                                    onSelectedRowsChange={handleUserRowSelected}
+                                                    selectableRowsHighlight
+                                                    noDataComponent="Não há dados disponíveis para exibir."
+                                                    customStyles={customStyles}
+                                                />
+                                            </div>
+                                            <div style={{ flex: 1, flexDirection: "column" }}>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track">
+                                                    <i className="bi bi-person-fill-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    Enviar utilizadores seleccionados
+                                                </Button>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={() => {
+                                                    if (selectedUserRows.length > 0) {
+                                                        const userId = selectedUserRows[0].employeeID;
+                                                        handleOpenDeleteModal(userId, 'user');
+                                                    } else {
+                                                        toast.error('Selecione um utilizador primeiro!');
+                                                    }
+                                                }}>
+                                                    <i className="bi bi-person-x-fill" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    Remover utilizadores seleccionados
+                                                </Button>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track">
+                                                    <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    Recolher utilizadores seleccionados
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </Tab>
+                                    <Tab eventKey="users-terminal" title="Utilizadores no terminal">
+                                        <DataTable
+                                            columns={userColumns}
+                                            data={filteredUsersInTerminal}
+                                            pagination
+                                            paginationPerPage={5}
+                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                            paginationComponentOptions={paginationOptions}
+                                            selectableRows
+                                            onSelectedRowsChange={handleUserRowSelected}
+                                            selectableRowsHighlight
+                                            noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
+                                            customStyles={customStyles}
+                                        />
+                                    </Tab>
+                                    <Tab eventKey="facial-taken" title="Biometria recolhida">
+                                        <DataTable
+                                            columns={userColumns}
+                                            data={filteredBioDataTable}
+                                            pagination
+                                            paginationPerPage={5}
+                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                            paginationComponentOptions={paginationOptions}
+                                            selectableRows
+                                            onSelectedRowsChange={handleUserRowSelected}
+                                            selectableRowsHighlight
+                                            noDataComponent="Não há dados disponíveis para exibir."
+                                            customStyles={customStyles}
+                                        />
+                                    </Tab>
+                                    <Tab eventKey="cards-taken" title="Cartões recolhidos">
+                                        <DataTable
+                                            columns={userColumns}
+                                            data={filteredCardDataTable}
+                                            pagination
+                                            paginationPerPage={5}
+                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                            paginationComponentOptions={paginationOptions}
+                                            selectableRows
+                                            onSelectedRowsChange={handleUserRowSelected}
+                                            selectableRowsHighlight
+                                            noDataComponent="Não há dados disponíveis para exibir."
+                                            customStyles={customStyles}
+                                        />
+                                    </Tab>
+                                </Tabs>
+                            </Tab>
+                            <Tab eventKey="state" title="Estado">
+                                <DataTable
+                                    columns={stateColumns}
+                                    data={filteredStateDataTable}
+                                    pagination
+                                    paginationPerPage={5}
+                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                    paginationComponentOptions={paginationOptions}
+                                    selectableRows
+                                    onSelectedRowsChange={handleDeviceRowSelected}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não há dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                />
+                            </Tab>
+                        </Tabs>
+                    </div>
                 </div>
-                <div style={{ flex: 2, overflow: "auto" }}>
+                <div>
                     <Tabs
-                        id="controlled-tab-terminals"
-                        activeKey={mainTabKey}
-                        onSelect={handleMainSelect}
+                        id="controlled-tab-terminals-buttons"
+                        activeKey={userTabKey}
+                        onSelect={handleUserSelect}
                         className="nav-modal"
-                        style={{ marginBottom: 10 }}
+                        style={{ marginBottom: 10, marginTop: 10 }}
                     >
-                        <Tab eventKey="tasks" title="Actividade">
-                            <div>
-                                <p className="activityTabContent">Actividades</p>
-                                <DataTable
-                                    columns={taskColumns}
-                                    data={task}
-                                    pagination
-                                    paginationPerPage={5}
-                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                    paginationComponentOptions={paginationOptions}
-                                    noDataComponent="Não há tarefas disponíveis para exibir."
-                                    customStyles={customStyles}
-                                />
-                            </div>
-                            <div>
-                                <p className="activityTabContent">Movimentos</p>
-                                <DataTable
-                                    columns={transactionColumns}
-                                    data={transactions}
-                                    pagination
-                                    paginationPerPage={5}
-                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                    paginationComponentOptions={paginationOptions}
-                                    noDataComponent="Não há actividades disponíveis para exibir."
-                                    customStyles={customStyles}
-                                />
-                            </div>
-                        </Tab>
-                        <Tab eventKey="user-track" title="Manutenção de utilizadores">
-                            <Tabs
-                                id="controlled-tab-terminals-user-track"
-                                activeKey={userTrackTabKey}
-                                onSelect={handleUserTrackSelect}
-                                className="nav-modal"
-                                style={{ marginBottom: 10 }}
-                            >
-                                <Tab eventKey="users-software" title="Utilizadores no software">
-                                    <div style={{ display: "flex" }}>
-                                        <div style={{ overflowX: "auto", flex: 5 }}>
-                                            <DataTable
-                                                columns={userColumns}
-                                                data={filteredUserDataTable}
-                                                pagination
-                                                paginationPerPage={5}
-                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                                paginationComponentOptions={paginationOptions}
-                                                selectableRows
-                                                onSelectedRowsChange={handleUserRowSelected}
-                                                selectableRowsHighlight
-                                                noDataComponent="Não há dados disponíveis para exibir."
-                                                customStyles={customStyles}
-                                            />
-                                        </div>
-                                        <div style={{ flex: 1, flexDirection: "column" }}>
-                                            <Button variant="outline-primary" size="sm" className="button-terminals-users-track">
-                                                <i className="bi bi-person-fill-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                Enviar utilizadores seleccionados
-                                            </Button>
-                                            <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={() => {
-                                                if (selectedUserRows.length > 0) {
-                                                    const userId = selectedUserRows[0].employeeID;
-                                                    handleOpenDeleteModal(userId, 'user');
-                                                } else {
-                                                    toast.error('Selecione um utilizador primeiro!');
-                                                }
-                                            }}>
-                                                <i className="bi bi-person-x-fill" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                Remover utilizadores seleccionados
-                                            </Button>
-                                            <Button variant="outline-primary" size="sm" className="button-terminals-users-track">
-                                                <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                Recolher utilizadores seleccionados
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </Tab>
-                                <Tab eventKey="users-terminal" title="Utilizadores no terminal">
-                                    <DataTable
-                                        columns={userColumns}
-                                        data={filteredUsersInTerminal}
-                                        pagination
-                                        paginationPerPage={5}
-                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                        paginationComponentOptions={paginationOptions}
-                                        selectableRows
-                                        onSelectedRowsChange={handleUserRowSelected}
-                                        selectableRowsHighlight
-                                        noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
-                                        customStyles={customStyles}
-                                    />
-                                </Tab>
-                                <Tab eventKey="facial-taken" title="Biometria recolhida">
-                                    <DataTable
-                                        columns={userColumns}
-                                        data={filteredBioDataTable}
-                                        pagination
-                                        paginationPerPage={5}
-                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                        paginationComponentOptions={paginationOptions}
-                                        selectableRows
-                                        onSelectedRowsChange={handleUserRowSelected}
-                                        selectableRowsHighlight
-                                        noDataComponent="Não há dados disponíveis para exibir."
-                                        customStyles={customStyles}
-                                    />
-                                </Tab>
-                                <Tab eventKey="cards-taken" title="Cartões recolhidos">
-                                    <DataTable
-                                        columns={userColumns}
-                                        data={filteredCardDataTable}
-                                        pagination
-                                        paginationPerPage={5}
-                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                        paginationComponentOptions={paginationOptions}
-                                        selectableRows
-                                        onSelectedRowsChange={handleUserRowSelected}
-                                        selectableRowsHighlight
-                                        noDataComponent="Não há dados disponíveis para exibir."
-                                        customStyles={customStyles}
-                                    />
-                                </Tab>
-                            </Tabs>
-                        </Tab>
-                        <Tab eventKey="state" title="Estado">
-                            <DataTable
-                                columns={stateColumns}
-                                data={filteredStateDataTable}
-                                pagination
-                                paginationPerPage={5}
-                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                paginationComponentOptions={paginationOptions}
-                                selectableRows
-                                onSelectedRowsChange={handleDeviceRowSelected}
-                                selectableRowsHighlight
-                                noDataComponent="Não há dados disponíveis para exibir."
-                                customStyles={customStyles}
-                            />
-                        </Tab>
-                    </Tabs>
-                </div>
-            </div>
-            <div>
-                <Tabs
-                    id="controlled-tab-terminals-buttons"
-                    activeKey={userTabKey}
-                    onSelect={handleUserSelect}
-                    className="nav-modal"
-                    style={{ marginBottom: 10, marginTop: 10 }}
-                >
-                    <Tab eventKey="users" title="Utilizadores">
-                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button
-                                variant="outline-primary"
-                                size="sm"
-                                className="button-terminals-users"
-                                onClick={async () => {
+                        <Tab eventKey="users" title="Utilizadores">
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    className="button-terminals-users"
+                                    onClick={async () => {
+                                        if (selectedTerminal) {
+                                            setLoadingUser(true);
+                                            await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+                                            setLoadingUser(false);
+                                        } else {
+                                            toast.error('Selecione um terminal primeiro!');
+                                        }
+                                    }}>
+                                    {loadingUser ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-arrow-down-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
+                                    Recolher utilizadores
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
                                     if (selectedTerminal) {
-                                        setLoadingUser(true);
-                                        await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
-                                        setLoadingUser(false);
+                                        setLoadingAllUser(true);
+                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID);
+                                        setLoadingAllUser(false);
                                     } else {
                                         toast.error('Selecione um terminal primeiro!');
                                     }
                                 }}>
-                                {loadingUser ? (
-                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                ) : (
-                                    <i className="bi bi-arrow-down-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                )}
-                                Recolher utilizadores
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                if (selectedTerminal) {
-                                    setLoadingAllUser(true);
-                                    await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID);
-                                    setLoadingAllUser(false);
-                                } else {
-                                    toast.error('Selecione um terminal primeiro!');
-                                }
-                            }}>
-                                {loadingAllUser ? (
-                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                ) : (
-                                    <i className="bi bi-arrow-up-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                )}
-                                Enviar todos os utilizadores
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                if (selectedTerminal) {
-                                    setLoadingSyncAllUser(true);
-                                    await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID);
-                                    setLoadingSyncAllUser(false);
-                                } else {
-                                    toast.error('Selecione um terminal primeiro!');
-                                }
-                            }}>
-                                {loadingSyncAllUser ? (
-                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                ) : (
-                                    <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                )}
-                                Sincronizar utilizadores
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                if (selectedTerminal) {
-                                    setLoadingMovements(true);
-                                    await saveAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
-                                    setLoadingMovements(false);
-                                } else {
-                                    toast.error('Selecione um terminal primeiro!');
-                                }
-                            }}>
-                                {loadingMovements ? (
-                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                ) : (
-                                    <i className="bi bi-arrow-left-right" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                )}
-                                Recolher movimentos
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users" >
-                                <i className="bi bi-trash" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Apagar utilizadores
-                            </Button>
-                            <div className="col-3">
-                                <Form.Check
-                                    type="checkbox"
-                                    label="Utilizadores"
-                                    checked={showAllUsers}
-                                    onChange={handleAllUsersChange}
-                                    className="mb-2"
-                                />
-                                <Form.Check
-                                    type="checkbox"
-                                    label="Biometria digital"
-                                    checked={showFingerprintUsers}
-                                    onChange={handleFingerprintUsersChange}
-                                    className="mb-2"
-                                />
-                                <Form.Check
-                                    type="checkbox"
-                                    label="Biometria facial"
-                                    checked={showFacialRecognitionUsers}
-                                    onChange={handleFacialRecognitionUsersChange}
-                                    className="mb-2"
-                                />
+                                    {loadingAllUser ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-arrow-up-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
+                                    Enviar todos os utilizadores
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingSyncAllUser(true);
+                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID);
+                                        setLoadingSyncAllUser(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
+                                    {loadingSyncAllUser ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
+                                    Sincronizar utilizadores
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingMovements(true);
+                                        await saveAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+                                        setLoadingMovements(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
+                                    {loadingMovements ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-arrow-left-right" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
+                                    Recolher movimentos
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" >
+                                    <i className="bi bi-trash" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Apagar utilizadores
+                                </Button>
+                                <div className="col-3">
+                                    <Form.Check
+                                        type="checkbox"
+                                        label="Utilizadores"
+                                        checked={showAllUsers}
+                                        onChange={handleAllUsersChange}
+                                        className="mb-2"
+                                    />
+                                    <Form.Check
+                                        type="checkbox"
+                                        label="Biometria digital"
+                                        checked={showFingerprintUsers}
+                                        onChange={handleFingerprintUsersChange}
+                                        className="mb-2"
+                                    />
+                                    <Form.Check
+                                        type="checkbox"
+                                        label="Biometria facial"
+                                        checked={showFacialRecognitionUsers}
+                                        onChange={handleFacialRecognitionUsersChange}
+                                        className="mb-2"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </Tab>
-                    <Tab eventKey="onOff" title="Ligação">
-                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Ligar
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Reiniciar
-                            </Button>
-                        </div>
-                    </Tab>
-                    <Tab eventKey="access" title="Acessos">
-                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Enviar horários
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-door-open" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Abrir porta
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-pc" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Actualizar multiverificação
-                            </Button>
-                        </div>
-                    </Tab>
-                    <Tab eventKey="configuration" title="Configurações">
-                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                if (selectedTerminal) {
-                                    setLoadingSyncTime(true);
-                                    await syncTimeManuallyToDevice(selectedTerminal);
-                                    setLoadingSyncTime(false);
-                                } else {
-                                    toast.error('Selecione um terminal primeiro!');
-                                }
-                            }}>
-                                {loadingSyncTime ? (
-                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                ) : (
-                                    <i className="bi bi-calendar-check" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                )}
-                                Acertar a hora
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-gear-wide" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Enviar configurações
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-send-arrow-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Enviar códigos de tarefas
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-bell" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Sincronizar toques da sirene
-                            </Button>
-                        </div>
-                    </Tab>
-                    <Tab eventKey="files" title="Ficheiros">
-                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Importar movimentos
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Importar utilizadores
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Importar biometria digital
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Importar movimentos do log
-                            </Button>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                <i className="bi bi-files-alt" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                Importar movimentos do log (auto)
-                            </Button>
-                        </div>
-                    </Tab>
-                </Tabs>
-            </div>
-            <Footer />
-            {showColumnSelector && (
-                <ColumnSelectorModal
-                    columns={deviceFields}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setShowColumnSelector(false)}
-                    onColumnToggle={handleColumnToggle}
-                    onResetColumns={handleResetColumns}
-                    onSelectAllColumns={handleSelectAllColumns}
-                />
-            )}
-            <CreateModalDevices
-                title="Adicionar Terminal"
-                open={showAddModal}
-                onClose={() => setShowAddModal(false)}
-                onSave={addDevice}
-                fields={deviceFields}
-                initialValues={initialData || {}}
-            />
-            {selectedTerminal && (
-                <UpdateModalDevices
-                    open={showUpdateModal}
-                    onClose={handleCloseUpdateModal}
-                    onDuplicate={handleDuplicate}
-                    onUpdate={updateDevice}
-                    entity={selectedTerminal}
+                        </Tab>
+                        <Tab eventKey="onOff" title="Ligação">
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Ligar
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Reiniciar
+                                </Button>
+                            </div>
+                        </Tab>
+                        <Tab eventKey="access" title="Acessos">
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Enviar horários
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-door-open" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Abrir porta
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-pc" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Actualizar multiverificação
+                                </Button>
+                            </div>
+                        </Tab>
+                        <Tab eventKey="configuration" title="Configurações">
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingSyncTime(true);
+                                        await syncTimeManuallyToDevice(selectedTerminal);
+                                        setLoadingSyncTime(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
+                                    {loadingSyncTime ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-calendar-check" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
+                                    Acertar a hora
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-gear-wide" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Enviar configurações
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-send-arrow-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Enviar códigos de tarefas
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-bell" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Sincronizar toques da sirene
+                                </Button>
+                            </div>
+                        </Tab>
+                        <Tab eventKey="files" title="Ficheiros">
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Importar movimentos
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Importar utilizadores
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Importar biometria digital
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Importar movimentos do log
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <i className="bi bi-files-alt" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    Importar movimentos do log (auto)
+                                </Button>
+                            </div>
+                        </Tab>
+                    </Tabs>
+                </div>
+                <Footer />
+                {showColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={deviceFields}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setShowColumnSelector(false)}
+                        onColumnToggle={handleColumnToggle}
+                        onResetColumns={handleResetColumns}
+                        onSelectAllColumns={handleSelectAllColumns}
+                    />
+                )}
+                <CreateModalDevices
+                    title="Adicionar Terminal"
+                    open={showAddModal}
+                    onClose={() => setShowAddModal(false)}
+                    onSave={addDevice}
                     fields={deviceFields}
-                    title="Atualizar Terminal"
+                    initialValues={initialData || {}}
                 />
-            )}
-            {showDeleteModal && (
-                <DeleteModal
-                    open={showDeleteModal}
-                    onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteDevice}
-                    entityId={selectedDeviceToDelete}
-                />
-            )}
-        </div>
+                {selectedTerminal && (
+                    <UpdateModalDevices
+                        open={showUpdateModal}
+                        onClose={handleCloseUpdateModal}
+                        onDuplicate={handleDuplicate}
+                        onUpdate={updateDevice}
+                        entity={selectedTerminal}
+                        fields={deviceFields}
+                        title="Atualizar Terminal"
+                    />
+                )}
+                {showDeleteModal && (
+                    <DeleteModal
+                        open={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        onDelete={deleteDevice}
+                        entityId={selectedDeviceToDelete}
+                    />
+                )}
+            </div>
+        </TerminalsProvider>
     );
 };

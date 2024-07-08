@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useContext, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
@@ -6,7 +6,7 @@ import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { toast } from 'react-toastify';
-import { fetchWithAuth } from './FetchWithAuth';
+import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../context/MovementContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -28,7 +28,6 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataNclockProps {
   onSelectEmployees: (selectedEmployees: string[]) => void;
-  data: { departments: Department[], groups: Group[], employees: Employee[] };
 }
 
 // Função para filtrar os itens
@@ -67,6 +66,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProps) {
+  const { data } = useContext(AttendanceContext) as AttendanceContextType;
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -76,127 +76,108 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
 
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const deptResponse = await fetchWithAuth('Departaments/Employees');
-        const groupResponse = await fetchWithAuth('Groups/Employees');
-        const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
+    const departments = data.departments;
+    const groups = data.groups;
+    const allEmployees = data.employees;
 
-        if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-          toast.error('Falha ao buscar dados');
-          return;
-        }
+    const departmentMap = new Map();
+    const deptIdToCodeMap = new Map();
 
-        const [departments, groups, allEmployees] = await Promise.all([
-          deptResponse.json(),
-          groupResponse.json(),
-          employeesResponse.json(),
-        ]);
+    departments.forEach((dept: Department) => {
+      deptIdToCodeMap.set(dept.departmentID, dept.code);
+      departmentMap.set(dept.code, {
+        ...dept,
+        children: [],
+        employees: []
+      });
+    });
 
-        const departmentMap = new Map();
-        const deptIdToCodeMap = new Map();
-
-        departments.forEach((dept: Department) => {
-          deptIdToCodeMap.set(dept.departmentID, dept.code);
-          departmentMap.set(dept.code, {
-            ...dept,
-            children: [],
-            employees: []
+    allEmployees.forEach((emp: Employee) => {
+      if (emp.departmentId && deptIdToCodeMap.has(emp.departmentId)) {
+        const deptCode = deptIdToCodeMap.get(emp.departmentId);
+        if (departmentMap.has(deptCode)) {
+          departmentMap.get(deptCode).employees.push({
+            id: `emp-${emp.employeeID}`,
+            label: emp.name,
           });
-        });
-
-        allEmployees.forEach((emp: Employee) => {
-          if (emp.departmentId && deptIdToCodeMap.has(emp.departmentId)) {
-            const deptCode = deptIdToCodeMap.get(emp.departmentId);
-            if (departmentMap.has(deptCode)) {
-              departmentMap.get(deptCode).employees.push({
-                id: `emp-${emp.employeeID}`,
-                label: emp.name,
-              });
-            }
-          }
-        });
-
-        departments.forEach((dept: Department) => {
-          if (dept.paiId && departmentMap.has(dept.paiId)) {
-            departmentMap.get(dept.paiId).children.push(departmentMap.get(dept.code));
-          }
-        });
-
-        const unassignedDept = allEmployees.filter((emp: Employee) =>
-          emp.departmentId === null
-        );
-
-        const unassignedGroup = allEmployees.filter((emp: Employee) =>
-          emp.groupId === null
-        );
-
-        const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiId);
-
-        const buildDepartmentTree = (dept: Department) => ({
-          id: `department-${dept.departmentID}`,
-          label: dept.name || 'Sem Nome',
-          children: [
-            ...dept.children.map(buildDepartmentTree),
-            ...allEmployees.filter((emp: Employee) => emp.departmentId === dept.departmentID).map((emp: Employee) => ({
-              id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
-              label: emp.name,
-            })),
-          ],
-        });
-
-        const departmentItems = topDepartments.map(buildDepartmentTree);
-
-        const groupItems = groups.map((group: Group) => ({
-          id: `group-${group.groupID}`,
-          label: group.name || 'Sem Nome',
-          children: allEmployees.filter((emp: Employee) => emp.groupId === group.groupID).map((emp: Employee) => ({
-            id: `group-${group.groupID}-emp-${emp.employeeID}`,
-            label: emp.name || 'Sem Nome',
-          })),
-        }));
-
-        const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
-          id: `unassigned-empdept-${emp.employeeID}`,
-          label: emp.name || 'Sem Nome',
-        }));
-
-        const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
-          id: `unassigned-empgrp-${emp.employeeID}`,
-          label: emp.name || 'Sem Nome',
-        }));
-
-        const treeItems = [
-          {
-            id: 'nclock',
-            label: 'NCLOCK',
-            children: [
-              { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
-              ...(unassignedDepartmentItems.length > 0 ? [{
-                id: 'unassigned',
-                label: 'Sem Departamento',
-                children: unassignedDepartmentItems,
-              }] : []),
-              { id: 'groups', label: 'GRUPOS', children: groupItems },
-              ...(unassignedGroupItems.length > 0 ? [{
-                id: 'unassignedGroup',
-                label: 'Sem Grupo',
-                children: unassignedGroupItems,
-              }] : []),
-            ],
-          },
-        ];
-        setItems(treeItems);
-        setFilteredItems(treeItems);
-        const allExpandableIds = collectAllExpandableItemIds(treeItems);
-        setExpandedIds(allExpandableIds);
-      } catch (error) {
-        console.error('Erro ao buscar dados:', error);
-        toast.error('Falha ao buscar dados');
+        }
       }
-    }
-    fetchData();
-  }, []);
+    });
+
+    departments.forEach((dept: Department) => {
+      if (dept.paiId && departmentMap.has(dept.paiId)) {
+        departmentMap.get(dept.paiId).children.push(departmentMap.get(dept.code));
+      }
+    });
+
+    const unassignedDept = allEmployees.filter((emp: Employee) =>
+      emp.departmentId === null
+    );
+
+    const unassignedGroup = allEmployees.filter((emp: Employee) =>
+      emp.groupId === null
+    );
+
+    const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiId);
+
+    const buildDepartmentTree = (dept: Department) => ({
+      id: `department-${dept.departmentID}`,
+      label: dept.name || 'Sem Nome',
+      children: [
+        ...dept.children.map(buildDepartmentTree),
+        ...allEmployees.filter((emp: Employee) => emp.departmentId === dept.departmentID).map((emp: Employee) => ({
+          id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
+          label: emp.name,
+        })),
+      ],
+    });
+
+    const departmentItems = topDepartments.map(buildDepartmentTree);
+
+    const groupItems = groups.map((group: Group) => ({
+      id: `group-${group.groupID}`,
+      label: group.name || 'Sem Nome',
+      children: allEmployees.filter((emp: Employee) => emp.groupId === group.groupID).map((emp: Employee) => ({
+        id: `group-${group.groupID}-emp-${emp.employeeID}`,
+        label: emp.name || 'Sem Nome',
+      })),
+    }));
+
+    const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
+      id: `unassigned-empdept-${emp.employeeID}`,
+      label: emp.name || 'Sem Nome',
+    }));
+
+    const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
+      id: `unassigned-empgrp-${emp.employeeID}`,
+      label: emp.name || 'Sem Nome',
+    }));
+
+    const treeItems = [
+      {
+        id: 'nclock',
+        label: 'NCLOCK',
+        children: [
+          { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
+          ...(unassignedDepartmentItems.length > 0 ? [{
+            id: 'unassigned',
+            label: 'SEM DEPARTAMENTO',
+            children: unassignedDepartmentItems,
+          }] : []),
+          { id: 'groups', label: 'GRUPOS', children: groupItems },
+          ...(unassignedGroupItems.length > 0 ? [{
+            id: 'unassignedGroup',
+            label: 'SEM GRUPO',
+            children: unassignedGroupItems,
+          }] : []),
+        ],
+      },
+    ];
+    setItems(treeItems);
+    setFilteredItems(treeItems);
+    const allExpandableIds = collectAllExpandableItemIds(treeItems);
+    setExpandedIds(allExpandableIds);
+  }, [data]);
 
   // Função para lidar com a expansão dos itens
   const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {
@@ -276,25 +257,27 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   }, [selectedEmployeeIds]);
 
   return (
-    <Box className="TreeViewContainer">
-      <Box className="treeViewFlexItem">
-        <RichTreeView
-          multiSelect={true}
-          checkboxSelection={true}
-          items={filteredItems}
-          getItemId={(item: TreeViewBaseItem) => item.id}
-          onSelectedItemsChange={handleSelectedItemsChange}
-          selectedItems={selectedEmployeeIds}
-          expandedItems={expandedIds}
-          onExpandedItemsChange={handleToggle}
+    <AttendanceProvider>
+      <Box className="TreeViewContainer">
+        <Box className="treeViewFlexItem">
+          <RichTreeView
+            multiSelect={true}
+            checkboxSelection={true}
+            items={filteredItems}
+            getItemId={(item: TreeViewBaseItem) => item.id}
+            onSelectedItemsChange={handleSelectedItemsChange}
+            selectedItems={selectedEmployeeIds}
+            expandedItems={expandedIds}
+            onExpandedItemsChange={handleToggle}
+          />
+        </Box>
+        <CustomSearchBox
+          label="Pesquisa"
+          variant="outlined"
+          size="small"
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </Box>
-      <CustomSearchBox
-        label="Pesquisa"
-        variant="outlined"
-        size="small"
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-    </Box>
+    </AttendanceProvider>
   );
 }

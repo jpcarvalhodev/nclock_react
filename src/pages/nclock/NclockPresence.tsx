@@ -4,14 +4,14 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import "../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
 import { employeeAttendanceTimesFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import Split from 'react-split';
 import { TreeViewDataNclock } from "../../components/TreeViewNclock";
 import { SelectFilter } from "../../components/SelectFilter";
+import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../context/MovementContext";
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -30,14 +30,18 @@ interface Filters {
 interface EmployeeAttendanceWithPresence extends EmployeeAttendanceTimes {
     isPresent: boolean;
 }
+
 // Este objeto mapeará IDs de funcionários para seus respectivos status de presença
-type EmployeeStatusMap = {
-    [employeeId: string]: EmployeeAttendanceWithPresence;
-};
+interface EmployeeStatus {
+    [key: string]: EmployeeAttendanceTimes & { isPresent: boolean };
+}
 
 // Define a página de presença
 export const NclockPresence = () => {
-    const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
+    const {
+        fetchAllAttendances,
+    } = useContext(AttendanceContext) as AttendanceContextType;
+    const [attendancePresence, setAttendancePresence] = useState<EmployeeAttendanceWithPresence[]>([]);
     const [filterText, setFilterText] = useState('');
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -55,65 +59,65 @@ export const NclockPresence = () => {
     });
 
     // Função para buscar todos as assiduidades
-    const fetchAllAttendances = async () => {
+    const fetchPresence = () => {
         const currentDate = new Date().toLocaleDateString('pt-PT');
-        try {
-            const response = await fetchWithAuth('Attendances/GetAllAttendances');
-            if (!response.ok) {
-                return;
-            }
-            const allAttendanceData: EmployeeAttendanceTimes[] = await response.json();
-            const attendanceData = allAttendanceData.filter((att: EmployeeAttendanceTimes) => att.type !== 3);
-            const employeeStatusMap: EmployeeStatusMap = attendanceData.reduce((acc, att) => {
-                acc[att.employeeId as string] = {
-                    ...att,
+
+        fetchAllAttendances({
+            filterFunc: data => data.filter(att => att.type !== 3)
+        }).then(allAttendanceData => {
+            const employeeStatusMap: EmployeeStatus = {};
+
+            allAttendanceData.forEach((emp: EmployeeAttendanceTimes) => {
+                employeeStatusMap[emp.employeeId] = {
+                    ...emp,
                     isPresent: false
                 };
-                return acc;
-            }, {} as EmployeeStatusMap);
-            attendanceData.forEach(att => {
-                const attendanceDate = new Date(att.attendanceTime);
-                if (attendanceDate.toLocaleDateString('pt-PT') === currentDate) {
+            });
+
+            allAttendanceData.forEach((att: EmployeeAttendanceTimes) => {
+                const attendanceDate = new Date(att.attendanceTime).toLocaleDateString('pt-PT');
+                if (attendanceDate === currentDate && [0, 2, 4].includes(att.inOutMode)) {
                     employeeStatusMap[att.employeeId] = {
                         ...att,
-                        isPresent: [0, 2, 4].includes(att.inOutMode)
+                        isPresent: true
                     };
                 }
             });
+
             const attendances = Object.values(employeeStatusMap);
-            setAttendance(attendances);
+            setAttendancePresence(attendances);
             setFilteredAttendances(attendances);
-        } catch (error) {
-            console.error('Erro ao buscar assiduidades:', error);
-        }
+        }).catch(error => {
+            console.error("Error fetching presence data:", error);
+        });
     };
 
     // Atualiza a lista de funcionários ao carregar a página
     useEffect(() => {
-        fetchAllAttendances();
+        fetchPresence();
     }, []);
 
     // Função para atualizar os dados da tabela
     const refreshAttendance = () => {
-        fetchAllAttendances();
+        fetchPresence();
     };
 
     // Função para filtrar as presenças com base no texto de pesquisa
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
-        const filteredData = attendance.filter(att => {
+        const filteredData = attendancePresence.filter(att => {
             return att.employeeName && att.employeeName.toLowerCase().includes(lowercasedFilter);
         });
         setFilteredAttendances(filteredData);
-    }, [filterText, attendance]);
+    }, [filterText, attendancePresence]);
 
     // Atualiza a seleção ao mudar o filtro
     useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
-            const newFilteredAttendances = attendance.filter(att => selectedEmployeeIds.includes(att.employeeId));
+            const newFilteredAttendances = attendancePresence.filter(att => selectedEmployeeIds.includes(att.employeeId));
             setFilteredAttendances(newFilteredAttendances);
-        } else if (attendance.length > 0) {
-            setFilteredAttendances(attendance);
+        } else if (attendancePresence.length > 0) {
+            setFilteredAttendances(attendancePresence);
         }
     }, [selectedEmployeeId, selectedEmployeeIds]);
 
@@ -241,58 +245,60 @@ export const NclockPresence = () => {
     };
 
     return (
-        <div className="main-container">
-            <NavBar />
-            <div className="content-container">
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} data={data} />
-                    </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span>Presenças</span>
+        <AttendanceProvider>
+            <div className="main-container">
+                <NavBar />
+                <div className="content-container">
+                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
                         </div>
-                        <div className="datatable-header">
-                            <div>
-                                <input
-                                    type="text"
-                                    placeholder="Pesquisa"
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    className='search-input'
-                                />
+                        <div className="datatable-container">
+                            <div className="datatable-title-text">
+                                <span>Presenças</span>
                             </div>
-                            <div className="buttons-container">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                            <div className="datatable-header">
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        className='search-input'
+                                    />
+                                </div>
+                                <div className="buttons-container">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                </div>
                             </div>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não há dados disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
                         </div>
-                        <DataTable
-                            columns={columns}
-                            data={filteredDataTable}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não há dados disponíveis para exibir."
-                            customStyles={customStyles}
-                        />
-                    </div>
-                </Split>
+                    </Split>
+                </div>
+                <Footer />
+                {showColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={filteredColumns}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setShowColumnSelector(false)}
+                        onColumnToggle={handleColumnToggle}
+                        onResetColumns={handleResetColumns}
+                        onSelectAllColumns={handleSelectAllColumns}
+                    />
+                )}
             </div>
-            <Footer />
-            {showColumnSelector && (
-                <ColumnSelectorModal
-                    columns={filteredColumns}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setShowColumnSelector(false)}
-                    onColumnToggle={handleColumnToggle}
-                    onResetColumns={handleResetColumns}
-                    onSelectAllColumns={handleSelectAllColumns}
-                />
-            )}
-        </div>
+        </AttendanceProvider>
     );
 };
