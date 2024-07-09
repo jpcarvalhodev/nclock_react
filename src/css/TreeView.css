@@ -25,3 +25,7 @@
 .MuiTreeItem-content {
   padding: 0 !important;
 }
+
+.TreeViewContainer .MuiCheckbox-root {
+  transform: scale(0.9);
+}

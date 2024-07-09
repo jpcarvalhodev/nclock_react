@@ -31,10 +31,6 @@ export const fetchWithoutAuth = async (endpoint: string, options: FetchOptions =
 // Função para lidar com erros HTTP
 const handleHTTPError = async (response: Response) => {
     switch (response.status) {
-        case 401:
-            toast.error('Você não tem permissão para acessar esta página');
-            window.location.href = '/unauthorized';
-            break;
         case 404:
             toast.error('Página não encontrada');
             window.location.href = '/notfound';
