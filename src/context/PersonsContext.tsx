@@ -165,7 +165,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Busca todos os dados para carregar o contexto
     useEffect(() => {
         fetchAllData();
-    }, [fetchAllData]);
+    }, []);
 
     // Define o valor do contexto
     const contextValue: PersonsContextType = {

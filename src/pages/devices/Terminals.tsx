@@ -19,7 +19,6 @@ import fprintScan from "../../assets/img/terminais/fprintScan.png";
 import faceScan from "../../assets/img/terminais/faceScan.png";
 import palmScan from "../../assets/img/terminais/palmScan.png";
 import card from "../../assets/img/terminais/card.png";
-import { Overlay } from "../../components/OverlayComponent";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 
 // Define a interface para os filtros
@@ -551,7 +550,6 @@ export const Terminals = () => {
     return (
         <TerminalsProvider>
             <div className="main-container">
-                <Overlay isLoading={loadingUser || loadingAllUser || loadingSyncAllUser || loadingMovements || loadingSyncTime} />
                 <NavBar />
                 <div className='filter-refresh-add-edit-upper-class'>
                     <div className="datatable-title-text">
