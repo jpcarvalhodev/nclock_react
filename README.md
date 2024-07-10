@@ -33,7 +33,7 @@ npm install
  or with yarn
 
 ```
-yarn
+yarn install
 ```
 
 4. Start the development server with npm:
