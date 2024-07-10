@@ -194,11 +194,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Busca todos os dados para carregar o contexto
-    useEffect(() => {
-        fetchAllData();
-    }, []);
-
     // Definindo o valor do contexto
     const contextValue = {
         attendance,
