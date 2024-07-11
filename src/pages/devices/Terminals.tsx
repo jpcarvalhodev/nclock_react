@@ -57,6 +57,7 @@ export const Terminals = () => {
         sendAllEmployeesToDevice,
         saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
+        openDeviceDoor,
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
@@ -84,11 +85,12 @@ export const Terminals = () => {
     const [loadingSyncAllUser, setLoadingSyncAllUser] = useState(false);
     const [loadingMovements, setLoadingMovements] = useState(false);
     const [loadingSyncTime, setLoadingSyncTime] = useState(false);
+    const [loadingOpenDoor, setLoadingOpenDoor] = useState(false);
     const [showAllUsers, setShowAllUsers] = useState(true);
     const [showFingerprintUsers, setShowFingerprintUsers] = useState(false);
     const [showFacialRecognitionUsers, setShowFacialRecognitionUsers] = useState(false);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [task, setTask] = useState<Tasks[]>([]);
+    const [task, setTask] = useState<Tasks[]>([]);    
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
@@ -865,8 +867,20 @@ export const Terminals = () => {
                                     <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Enviar horários
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-door-open" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingOpenDoor(true);
+                                        await openDeviceDoor(selectedTerminal);
+                                        setLoadingOpenDoor(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
+                                    {loadingOpenDoor ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-door-open" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Abrir porta
                                 </Button>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users">

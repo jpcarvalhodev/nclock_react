@@ -5,8 +5,8 @@ import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { toast } from 'react-toastify';
-import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../context/MovementContext';
+import { AttendanceProvider } from '../context/MovementContext';
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -66,13 +66,18 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProps) {
-  const { data } = useContext(AttendanceContext) as AttendanceContextType;
+  const { data, fetchAllData } = useContext(PersonsContext) as PersonsContextType;
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
+
+  // Busca os dados ao carregar o componente
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   useEffect(() => {

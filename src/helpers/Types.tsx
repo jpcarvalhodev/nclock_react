@@ -29,6 +29,9 @@ export type Employee = {
     rgpdAut: boolean;
     status: boolean;
     statusEmail: boolean;
+    statusFprint: boolean;
+    statusFace: boolean;
+    statusPalm: boolean;
     type: string;
     departmentId: string;
     departmentName: string;
@@ -179,14 +182,13 @@ export type EmployeeDevices = {
     deviceName: string;
     enrollNumber: string;
     employeeName: string;
+    startTime: Date;
+    endTime: Date;
+};
+
+export type EmployeeCard = {
     cardNumber: string;
-    group: string;
     devicePassword: string;
     devicePrivelage: number;
     deviceEnabled: boolean;
-    startTime: Date;
-    endTime: Date;
-    statusFprint: boolean;
-    statusFace: boolean;
-    statusPalm: boolean;
 };

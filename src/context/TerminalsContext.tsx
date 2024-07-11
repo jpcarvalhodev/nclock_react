@@ -17,6 +17,7 @@ export interface DeviceContextType {
     sendAllEmployeesToDevice: (zktecoDeviceID: Devices) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     syncTimeManuallyToDevice: (device: Devices) => Promise<void>;
+    openDeviceDoor: (device: Devices) => Promise<void>;
     handleAddDevice: (device: Devices) => Promise<void>;
     handleUpdateDevice: (device: Devices) => Promise<void>;
     handleDeleteDevice: (zktecoDeviceID: string) => Promise<void>;
@@ -145,6 +146,25 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para abrir a porta via dispositivo
+    const openDeviceDoor = async (device: Devices) => {
+        try {
+            const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${device.zktecoDeviceID}delay=5`);
+
+            if (!response.ok) {
+                toast.error('Falha ao abrir a porta');
+                return;
+            }
+
+            const data = await response.json();
+            toast.success(data.value || 'Porta aberta com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao abrir a porta:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    };
+
     // Define a função de adição de dispositivos
     const handleAddDevice = async (device: Devices) => {
         try {
@@ -254,6 +274,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         sendAllEmployeesToDevice,
         saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
+        openDeviceDoor,
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,

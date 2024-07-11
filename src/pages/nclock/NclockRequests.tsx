@@ -19,14 +19,6 @@ import { Button } from 'react-bootstrap';
 import { SelectFilter } from '../../components/SelectFilter';
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../context/MovementContext';
 
-// Define a interface para o estado de dados
-interface DataState {
-    departments: Department[];
-    groups: Group[];
-    employees: Employee[];
-    attendance: EmployeeAttendanceTimes[];
-}
-
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
@@ -61,12 +53,6 @@ export const NclockRequests = () => {
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [filters, setFilters] = useState<Filters>({});
-    const [data, setData] = useState<DataState>({
-        departments: [],
-        groups: [],
-        employees: [],
-        attendance: [],
-    });
 
     // Função para buscar todos as assiduidades
     const fetchRequests = () => {

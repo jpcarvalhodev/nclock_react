@@ -6,31 +6,13 @@ import "../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
 import { useContext, useEffect, useState } from "react";
-import { Department, Employee, EmployeeAttendanceTimes, Group } from "../../helpers/Types";
+import { EmployeeAttendanceTimes } from "../../helpers/Types";
 import { employeeAttendanceTimesFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import Split from 'react-split';
 import { TreeViewDataNclock } from "../../components/TreeViewNclock";
 import { SelectFilter } from "../../components/SelectFilter";
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../context/MovementContext";
-
-// Define a interface para o estado de dados
-interface DataState {
-    departments: Department[];
-    groups: Group[];
-    employees: Employee[];
-    attendance: EmployeeAttendanceTimes[];
-}
-
-// Formata a data para o início do dia às 00:00
-const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T00:00`;
-}
-
-// Formata a data para o final do dia às 23:59
-const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T23:59`;
-}
 
 // Define a interface para os filtros
 interface Filters {
@@ -57,12 +39,6 @@ export const NclockAll = () => {
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [filters, setFilters] = useState<Filters>({});
-    const [data, setData] = useState<DataState>({
-        departments: [],
-        groups: [],
-        employees: [],
-        attendance: [],
-    });
 
     // Função para buscar todos as assiduidades
     const fetchAll = () => {

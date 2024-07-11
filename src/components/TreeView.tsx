@@ -65,13 +65,18 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
-  const { data } = useContext(PersonsContext) as PersonsContextType;
+  const { data, fetchAllData } = useContext(PersonsContext) as PersonsContextType;
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
+
+  // Busca os dados ao carregar o componente
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {

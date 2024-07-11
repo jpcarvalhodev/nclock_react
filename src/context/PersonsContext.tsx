@@ -41,7 +41,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         groups: [],
         employees: []
     });
-    
+
     // Função para buscar todos os dados
     const fetchAllData = useCallback(async () => {
         try {
@@ -107,7 +107,6 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             const employeesData = await response.json();
             setEmployees([...employees, employeesData]);
             toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
-            fetchAllData();
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         }
@@ -133,7 +132,6 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             const updatedEmployee = await response.json();
             setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
             toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso');
-            fetchAllData();
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
         }
@@ -156,16 +154,10 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
 
             const deleteEmployee = await response.json();
             toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!')
-            fetchAllData();
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
         }
     };
-
-    // Busca todos os dados para carregar o contexto
-    useEffect(() => {
-        fetchAllData();
-    }, []);
 
     // Define o valor do contexto
     const contextValue: PersonsContextType = {

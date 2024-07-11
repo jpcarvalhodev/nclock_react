@@ -13,14 +13,6 @@ import { TreeViewDataNclock } from "../../components/TreeViewNclock";
 import { SelectFilter } from "../../components/SelectFilter";
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../context/MovementContext";
 
-// Define a interface para o estado de dados
-interface DataState {
-    departments: Department[];
-    groups: Group[];
-    employees: Employee[];
-    attendance: EmployeeAttendanceTimes[];
-}
-
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
@@ -51,12 +43,6 @@ export const NclockPresence = () => {
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [filters, setFilters] = useState<Filters>({});
-    const [data, setData] = useState<DataState>({
-        departments: [],
-        groups: [],
-        employees: [],
-        attendance: [],
-    });
 
     // Função para buscar todos as assiduidades
     const fetchPresence = () => {

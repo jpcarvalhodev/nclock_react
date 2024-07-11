@@ -18,7 +18,6 @@ export interface AttendanceContextType {
     endDate: string;
     setStartDate: (date: string) => void;
     setEndDate: (date: string) => void;
-    fetchAllData: () => Promise<void>;
     fetchAllAttendances: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     fetchAllAttendancesBetweenDates: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     handleAddAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
@@ -57,33 +56,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         employees: []
     });
 
-    // Função para buscar todos os dados
-    const fetchAllData = useCallback(async () => {
-        try {
-            const deptResponse = await fetchWithAuth('Departaments/Employees');
-            const groupResponse = await fetchWithAuth('Groups/Employees');
-            const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
-
-            if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                return;
-            }
-
-            const [departments, groups, employees] = await Promise.all([
-                deptResponse.json(),
-                groupResponse.json(),
-                employeesResponse.json(),
-            ]);
-
-            setData({
-                departments,
-                groups,
-                employees,
-            });
-        } catch (error) {
-            console.error('Erro ao buscar dados:', error);
-        }
-    }, []);
-
     // Função para buscar todas as assiduidades
     const fetchAllAttendances = useCallback(async (options?: FetchOptions): Promise<EmployeeAttendanceTimes[]> => {
         try {
@@ -113,8 +85,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
                 return [];
             }
             let data = await response.json();
-            console.log(data);
-            console.log(response)
             if (options?.filterFunc) {
                 data = options.filterFunc(data);
             }
@@ -126,7 +96,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             console.error('Erro ao buscar assiduidades:', error);
             return [];
         }
-    }, [startDate, endDate]);    
+    }, [startDate, endDate]);
 
     // Função para adicionar uma nova assiduidade
     const handleAddAttendance = async (attendances: EmployeeAttendanceTimes) => {
@@ -144,7 +114,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             const newAttendance = await response.json();
             setAttendance([...attendance, newAttendance]);
             toast.success(newAttendance.value || 'assiduidade adicionada com sucesso!');
-            fetchAllData();
         } catch (error) {
             console.error('Erro ao adicionar nova assiduidade:', error);
         }
@@ -167,7 +136,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             const updatedAttendance = await response.json();
             setAttendance(prevAttendance => prevAttendance.map(att => att.attendanceID === updatedAttendance.attendanceID ? updatedAttendance : att));
             toast.success(updatedAttendance.value || 'assiduidade atualizada com sucesso!');
-            fetchAllData();
         } catch (error) {
             console.error('Erro ao atualizar assiduidade:', error);
         }
@@ -188,7 +156,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             }
             const deleteAttendance = await response.json();
             toast.success(deleteAttendance.value || 'assiduidade apagada com sucesso!');
-            fetchAllData();
         } catch (error) {
             console.error('Erro ao apagar assiduidade:', error);
         }
@@ -202,7 +169,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         endDate,
         setStartDate,
         setEndDate,
-        fetchAllData,
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
         handleAddAttendance,
