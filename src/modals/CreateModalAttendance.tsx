@@ -97,7 +97,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             }));
         }
     }, [open, entityType]);
-    
+
 
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
@@ -225,7 +225,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                     </>
                 )}
                 {entityType === 'movimentos' && fields.map((field) => {
-                    if (!['enrollNumber', 'employeeName', 'observation', 'type'].includes(field.key)) {
+                    if (!['deviceId', 'deviceNumber','enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
                         return (
                             <Form.Group controlId={`form${field.key}`} key={field.key}>
                                 <Form.Label>

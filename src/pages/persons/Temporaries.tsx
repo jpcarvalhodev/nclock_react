@@ -95,6 +95,7 @@ export const Temporaries = () => {
 
     // Atualiza os funcionários
     const refreshEmployees = () => {
+        fetchAllData();
         fetchEmployees();
         setSelectedEmployeeIds([]);
     };

@@ -95,6 +95,7 @@ export const Visitors = () => {
 
     // Atualiza os funcionários
     const refreshEmployees = () => {
+        fetchAllData();
         fetchEmployees();
         setSelectedEmployeeIds([]);
     };

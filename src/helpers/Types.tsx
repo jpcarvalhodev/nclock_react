@@ -177,6 +177,7 @@ export type Devices = {
 export type EmployeeDevices = {
     [key: string]: any;
     id: string;
+    employeeId: string;
     deviceNumber: number;
     deviceSn: string;
     deviceName: string;

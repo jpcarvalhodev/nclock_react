@@ -20,6 +20,7 @@ import faceScan from "../../assets/img/terminais/faceScan.png";
 import palmScan from "../../assets/img/terminais/palmScan.png";
 import card from "../../assets/img/terminais/card.png";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
+import React from "react";
 
 // Define a interface para os filtros
 interface Filters {
@@ -54,14 +55,17 @@ export const Terminals = () => {
         deviceStatusCount,
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
+        fetchAllEmployeeDevices,
         sendAllEmployeesToDevice,
+        saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
+        deleteAllUsersOnDevice,
         openDeviceDoor,
+        restartDevice,
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
-        fetchAllEmployeeDevices,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -86,11 +90,18 @@ export const Terminals = () => {
     const [loadingMovements, setLoadingMovements] = useState(false);
     const [loadingSyncTime, setLoadingSyncTime] = useState(false);
     const [loadingOpenDoor, setLoadingOpenDoor] = useState(false);
+    const [loadingDeleteAllUsers, setLoadingDeleteAllUsers] = useState(false);
+    const [loadingRestartDevice, setLoadingRestartDevice] = useState(false);
+    const [loadingDeleteSelectedUsers, setLoadingDeleteSelectedUsers] = useState(false);
+    const [loadingSendSelectedUsers, setLoadingSendSelectedUsers] = useState(false);
+    const [loadingFetchSelectedUsers, setLoadingFetchSelectedUsers] = useState(false);
     const [showAllUsers, setShowAllUsers] = useState(true);
     const [showFingerprintUsers, setShowFingerprintUsers] = useState(false);
     const [showFacialRecognitionUsers, setShowFacialRecognitionUsers] = useState(false);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [task, setTask] = useState<Tasks[]>([]);    
+    const [task, setTask] = useState<Tasks[]>([]);
+    const fileInputAttendanceRef = React.createRef<HTMLInputElement>();
+    const fileInputUserRef = React.createRef<HTMLInputElement>();
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
@@ -408,15 +419,22 @@ export const Terminals = () => {
     }
 
     // Define a função de abertura do modal de exclusão dos dispositivos
-    const handleOpenDeleteModal = (id: string, type: 'device' | 'user') => {
+    const handleOpenDeleteModal = async (id: string, type: 'device' | 'user') => {
         if (type === 'device') {
             setSelectedDeviceToDelete(id);
+            setShowDeleteModal(true);
         } else {
-            setSelectedUserToDelete(id);
+            if (selectedTerminal) {
+                setLoadingDeleteSelectedUsers(true);
+                setSelectedUserToDelete(id);
+                await deleteAllUsersOnDevice(selectedTerminal?.zktecoDeviceID, id);
+                setLoadingDeleteSelectedUsers(false);
+                fetchAllEmployeeDevices();
+            } else {
+                toast.error('Selecione um terminal primeiro!');
+            }
         }
-        setShowDeleteModal(true);
     };
-
 
     // Função que manipula a duplicação
     const handleDuplicate = (devices: Devices) => {
@@ -498,6 +516,65 @@ export const Terminals = () => {
         };
         setTask(prevTasks => [...prevTasks, newTask]);
     };
+
+    // Função para controlar a mudança de arquivo
+    const handleAttendanceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] || null;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const result = e.target?.result;
+                if (typeof result === 'string' || typeof result === 'number') {
+                    const parsedData = parseAttendanceData(result);
+                    //sendToApi(parsedData);
+                } else {
+                    console.error('Erro: o conteúdo do arquivo não é uma string ou number');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+
+    // Função para formatar os dados para a API
+    const parseAttendanceData = (text: string) => {
+        const lines = text.split('\n');
+        const data = lines.map(line => {
+            const [enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode] = line.trim().split(/\s+/);
+            return { enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode };
+        });
+        return data;
+    };
+
+    const handleUserFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] || null;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const result = e.target?.result;
+                if (typeof result === 'string' || typeof result === 'number') {
+                    const parsedData = parseUserData(result);
+                    //sendToApi(parsedData);
+                } else {
+                    console.error('Erro: o conteúdo do arquivo não é uma string ou number');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+
+    // Função para formatar os dados para a API
+    const parseUserData = (text: string) => {
+        const lines = text.split('\n');
+        const data = lines.map(line => {
+            //const [enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode] = line.trim().split(/\s+/);
+            //return { enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode };
+        });
+        return data;
+    };
+
+    // Funções para acionar o popup de seleção de arquivo
+    const triggerFileAttendanceSelectPopup = () => fileInputAttendanceRef.current?.click();
+    const triggerFileUserSelectPopup = () => fileInputUserRef.current?.click();
 
     // Define as colunas das transações
     const transactionColumns: TableColumn<Transaction>[] = [
@@ -655,8 +732,22 @@ export const Terminals = () => {
                                                 />
                                             </div>
                                             <div style={{ flex: 1, flexDirection: "column" }}>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track">
-                                                    <i className="bi bi-person-fill-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={async () => {
+                                                    if (!selectedTerminal || selectedUserRows.length === 0) {
+                                                        toast('Selecione um terminal e pelo menos um utilizador!');
+                                                    } else {
+                                                        setLoadingSendSelectedUsers(true);
+                                                        const userId = selectedUserRows[0].employeeID;
+                                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
+                                                        setLoadingSendSelectedUsers(false);
+                                                        fetchAllEmployeeDevices();
+                                                    }
+                                                }}>
+                                                    {loadingSendSelectedUsers ? (
+                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                    ) : (
+                                                        <i className="bi bi-person-fill-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    )}
                                                     Enviar utilizadores seleccionados
                                                 </Button>
                                                 <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={() => {
@@ -667,11 +758,29 @@ export const Terminals = () => {
                                                         toast.error('Selecione um utilizador primeiro!');
                                                     }
                                                 }}>
-                                                    <i className="bi bi-person-x-fill" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    {loadingDeleteSelectedUsers ? (
+                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                    ) : (
+                                                        <i className="bi bi-person-x-fill" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    )}
                                                     Remover utilizadores seleccionados
                                                 </Button>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track">
-                                                    <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={async () => {
+                                                    if (!selectedTerminal || selectedUserRows.length === 0) {
+                                                        toast('Selecione um terminal e pelo menos um utilizador!');
+                                                    } else {
+                                                        setLoadingFetchSelectedUsers(true);
+                                                        const userId = selectedUserRows[0].employeeID;
+                                                        await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
+                                                        setLoadingFetchSelectedUsers(false);
+                                                        fetchAllEmployeeDevices();
+                                                    }
+                                                }}>
+                                                    {loadingFetchSelectedUsers ? (
+                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                    ) : (
+                                                        <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    )}
                                                     Recolher utilizadores seleccionados
                                                 </Button>
                                             </div>
@@ -775,7 +884,7 @@ export const Terminals = () => {
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
                                     if (selectedTerminal) {
                                         setLoadingAllUser(true);
-                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID);
+                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
                                         setLoadingAllUser(false);
                                     } else {
                                         toast.error('Selecione um terminal primeiro!');
@@ -791,7 +900,7 @@ export const Terminals = () => {
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
                                     if (selectedTerminal) {
                                         setLoadingSyncAllUser(true);
-                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID);
+                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
                                         setLoadingSyncAllUser(false);
                                     } else {
                                         toast.error('Selecione um terminal primeiro!');
@@ -820,8 +929,20 @@ export const Terminals = () => {
                                     )}
                                     Recolher movimentos
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" >
-                                    <i className="bi bi-trash" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingDeleteAllUsers(true);
+                                        await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
+                                        setLoadingDeleteAllUsers(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
+                                    {loadingDeleteAllUsers ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-trash" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Apagar utilizadores
                                 </Button>
                                 <div className="col-3">
@@ -851,12 +972,24 @@ export const Terminals = () => {
                         </Tab>
                         <Tab eventKey="onOff" title="Ligação">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Ligar
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                </Button> */}
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingRestartDevice(true);
+                                        await restartDevice(selectedTerminal.zktecoDeviceID);
+                                        setLoadingRestartDevice(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
+                                    {loadingRestartDevice ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Reiniciar
                                 </Button>
                             </div>
@@ -915,19 +1048,19 @@ export const Terminals = () => {
                                     <i className="bi bi-send-arrow-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Enviar códigos de tarefas
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-bell" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Sincronizar toques da sirene
-                                </Button>
+                                </Button> */}
                             </div>
                         </Tab>
                         <Tab eventKey="files" title="Ficheiros">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
                                     <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Importar movimentos
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileUserSelectPopup}>
                                     <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Importar utilizadores
                                 </Button>
@@ -935,7 +1068,7 @@ export const Terminals = () => {
                                     <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Importar biometria digital
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
                                     <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Importar movimentos do log
                                 </Button>
@@ -985,6 +1118,20 @@ export const Terminals = () => {
                         entityId={selectedDeviceToDelete}
                     />
                 )}
+                <input
+                    type="file"
+                    accept=".dat,.txt"
+                    ref={fileInputAttendanceRef}
+                    style={{ display: 'none' }}
+                    onChange={handleAttendanceFileChange}
+                />
+                <input
+                    type="file"
+                    accept=".dat,.txt"
+                    ref={fileInputUserRef}
+                    style={{ display: 'none' }}
+                    onChange={handleUserFileChange}
+                />
             </div>
         </TerminalsProvider>
     );

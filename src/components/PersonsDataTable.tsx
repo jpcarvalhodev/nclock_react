@@ -42,6 +42,7 @@ interface Filters {
 // Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate }: PersonsDataTableProps) => {
     const {
+        fetchAllData,
         fetchAllEmployees,
         handleUpdateEmployee,
         handleDeleteEmployee,
@@ -53,6 +54,11 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
     const [filters, setFilters] = useState<Filters>({});
+
+    // Busca todos os dados
+    useEffect(() => {
+        fetchAllData();
+    }, [fetchAllData]);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -84,6 +90,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
     // Atualiza a lista de funcionários
     const refreshEmployees = () => {
+        fetchAllData();
         fetchEmployees();
     }
 

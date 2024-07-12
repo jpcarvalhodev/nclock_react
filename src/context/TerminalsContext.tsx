@@ -14,20 +14,29 @@ export interface DeviceContextType {
     deviceStatusCount: StatusCounts;
     fetchAllDevices: () => Promise<void>;
     fetchAllEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
-    sendAllEmployeesToDevice: (zktecoDeviceID: Devices) => Promise<void>;
+    fetchAllEmployeeDevices: () => Promise<void>;
+    sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
+    saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     syncTimeManuallyToDevice: (device: Devices) => Promise<void>;
+    deleteAllUsersOnDevice: (device: Devices, employee: string | null) => Promise<void>;
     openDeviceDoor: (device: Devices) => Promise<void>;
+    restartDevice: (device: Devices) => Promise<void>;
     handleAddDevice: (device: Devices) => Promise<void>;
     handleUpdateDevice: (device: Devices) => Promise<void>;
     handleDeleteDevice: (zktecoDeviceID: string) => Promise<void>;
-    fetchAllEmployeeDevices: () => Promise<void>;
 }
 
 // Define a interface para o status
 interface StatusCounts {
     Activo: number;
     Inactivo: number;
+}
+
+// Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
+interface BodyData {
+    zktecoDeviceID: Devices;
+    employeeID?: string;
 }
 
 // Cria o contexto	
@@ -89,25 +98,89 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Função para enviar todos os funcionários para o dispositivo
-    const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices) => {
+    // Função para buscar todos os funcionários por dispositivos
+    const fetchAllEmployeeDevices = async () => {
         try {
-            const response = await fetchWithAuth(`Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`, {
+            const response = await fetchWithAuth('Employees/GetAllEmployeesDevice');
+            if (!response.ok) {
+                return;
+            }
+            const employeesData = await response.json();
+            setEmployeeDevices(employeesData);
+
+            const filteredEmployees = employeesData.filter((employee: EmployeeDevices) =>
+                employee.statusFprint === true || employee.statusFace === true
+            );
+            setEmployeesBio(filteredEmployees);
+
+            const filteredCardEmployees = employeesData.filter((employee: EmployeeDevices) =>
+                employee.cardNumber !== "0"
+            );
+            setEmployeesCard(filteredCardEmployees)
+        } catch (error) {
+            console.error('Erro ao apagar dispositivos:', error);
+        }
+    }
+
+    // Função para enviar todos os funcionários para o dispositivo
+    const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+        try {
+            let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
+            if (employeeID !== null) {
+                url += `?employeeIds=${employeeID}`;
+            }
+
+            let bodyData: BodyData = { zktecoDeviceID };
+            if (employeeID) {
+                bodyData.employeeID = employeeID;
+            }
+
+            const response = await fetchWithAuth(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(zktecoDeviceID)
+                body: JSON.stringify(bodyData)
             });
+
+            if (!response.ok) {
+                toast.error('Falha ao enviar os utilizadores');
+                return;
+            }
+
+            /* const data = await response.json();
+            toast.success(data.value || 'Utilizadores apagados com sucesso!'); */
+            toast.success('Utilizadores enviados com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao enviar os utilizadores:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    };
+
+    // Função para salvar todos os funcionários no dispositivo
+    const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+        try {
+            let url = `Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`;
+            if (employeeID !== null) {
+                url += `?employeeIds=${employeeID}`;
+            }
+
+            let bodyData: BodyData = { zktecoDeviceID };
+            if (employeeID) {
+                bodyData.employeeID = employeeID;
+            }
+
+            const response = await fetchWithAuth(url);
 
             if (!response.ok) {
                 return;
             }
             const data = await response.json();
-            toast.success(data.value || 'Funcionários enviados com sucesso!');
+            toast.success(data.value || 'Utilizadores recolhidos com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
+            console.error('Erro ao buscar utilizadores:', error);
         }
     };
 
@@ -128,9 +201,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para sincronizar a hora manualmente para o dispositivo
-    const syncTimeManuallyToDevice = async (device: Devices) => {
+    const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice?deviceId=${device.zktecoDeviceID}`);
+            const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice?deviceId=${zktecoDeviceID}`);
 
             if (!response.ok) {
                 toast.error('Falha ao sincronizar a hora');
@@ -147,9 +220,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para abrir a porta via dispositivo
-    const openDeviceDoor = async (device: Devices) => {
+    const openDeviceDoor = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${device.zktecoDeviceID}delay=5`);
+            const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${zktecoDeviceID}delay=5`);
 
             if (!response.ok) {
                 toast.error('Falha ao abrir a porta');
@@ -161,6 +234,61 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao abrir a porta:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    };
+
+    // Função para apagar os utilizadores do dispositivo
+    const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+        try {
+            let url = `Zkteco/DeleteEmployeesToDevice/${zktecoDeviceID}`;
+            if (employeeID !== null) {
+                url += `?employeeIds=${employeeID}`;
+            }
+
+            let bodyData: BodyData = { zktecoDeviceID };
+            if (employeeID) {
+                bodyData.employeeID = employeeID;
+            }
+
+            const response = await fetchWithAuth(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bodyData)
+            });
+
+            if (!response.ok) {
+                toast.error('Falha ao apagar os utilizadores');
+                return;
+            }
+
+            /* const data = await response.json();
+            toast.success(data.value || 'Utilizadores apagados com sucesso!'); */
+            toast.success('Utilizadores apagados com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao apagar os utilizadores:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    };
+
+    // Função para reiniciar o dispositivo
+    const restartDevice = async (zktecoDeviceID: Devices) => {
+        try {
+            const response = await fetchWithAuth(`Zkteco/RestartDevice/${zktecoDeviceID}`);
+
+            if (!response.ok) {
+                toast.error('Falha ao reiniciar o dispositivo');
+                return;
+            }
+
+            const data = await response.json();
+            toast.success(data.value || 'Dispositivo reiniciado com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao reiniciar o dispositivo:', error);
             toast.error('Erro ao conectar ao servidor');
         }
     };
@@ -191,7 +319,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Atualiza um funcionário
     const handleUpdateDevice = async (device: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/UpdateDevice`, {
+            const response = await fetchWithAuth(`Zkteco/UpdateDevice/${device.zktecoDeviceID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -237,30 +365,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Função para buscar todos os funcionários por dispositivos
-    const fetchAllEmployeeDevices = async () => {
-        try {
-            const response = await fetchWithAuth('Employees/GetAllEmployeesDevice');
-            if (!response.ok) {
-                return;
-            }
-            const employeesData = await response.json();
-            setEmployeeDevices(employeesData);
-
-            const filteredEmployees = employeesData.filter((employee: EmployeeDevices) =>
-                employee.statusFprint === true || employee.statusFace === true
-            );
-            setEmployeesBio(filteredEmployees);
-
-            const filteredCardEmployees = employeesData.filter((employee: EmployeeDevices) =>
-                employee.cardNumber !== "0"
-            );
-            setEmployeesCard(filteredCardEmployees)
-        } catch (error) {
-            console.error('Erro ao apagar dispositivos:', error);
-        }
-    }
-
     // Define o valor do contexto
     const contextValue: DeviceContextType = {
         devices,
@@ -271,14 +375,17 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         deviceStatusCount,
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
+        fetchAllEmployeeDevices,
         sendAllEmployeesToDevice,
+        saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
+        deleteAllUsersOnDevice,
         openDeviceDoor,
+        restartDevice,
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
-        fetchAllEmployeeDevices
     };
 
     return (

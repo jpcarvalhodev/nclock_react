@@ -58,6 +58,7 @@ export const Persons = () => {
 
     // Atualiza a lista de funcionários ao carregar a página
     useEffect(() => {
+        fetchAllData();
         fetchEmployees();
     }, []);
 

@@ -27,6 +27,9 @@ export const employeeFields = [
     { label: 'Autorização RGPD', key: 'rgpdAut', type: 'boolean' },
     { label: 'Status', key: 'status', type: 'boolean' },
     { label: 'Status de E-Mail', key: 'statusEmail', type: 'boolean' },
+    { key: 'statusFprint', label: 'Status de Digital', type: 'boolean' },
+    { key: 'statusFace', label: 'Status de Face', type: 'boolean' },
+    { key: 'statusPalm', label: 'Status de Palma', type: 'boolean' },
     { label: 'Tipo', key: 'type', type: 'string' },
     { label: 'Departamento', key: 'departmentId', type: 'dropdown' },
     { label: 'Profissão', key: 'professionId', type: 'dropdown' },
@@ -151,14 +154,13 @@ export const employeeDeviceFields = [
     { key: 'deviceName', label: 'Nome do Dispositivo', type: 'string' },
     { key: 'enrollNumber', label: 'Número', type: 'string' },
     { key: 'employeeName', label: 'Nome', type: 'string' },
+    { key: 'startTime', label: 'Hora de Início', type: 'Date' },
+    { key: 'endTime', label: 'Hora de Término', type: 'Date' },
+];
+
+export const employeeCardFields = [
     { key: 'cardNumber', label: 'Número do Cartão', type: 'string' },
-    { key: 'group', label: 'Grupo', type: 'string' },
     { key: 'devicePassword', label: 'Senha do Dispositivo', type: 'string' },
     { key: 'devicePrivelage', label: 'Privilégio do Dispositivo', type: 'number' },
     { key: 'deviceEnabled', label: 'Dispositivo Activado', type: 'boolean' },
-    { key: 'startTime', label: 'Hora de Início', type: 'Date' },
-    { key: 'endTime', label: 'Hora de Término', type: 'Date' },
-    { key: 'statusFprint', label: 'Status de Digital', type: 'boolean' },
-    { key: 'statusFace', label: 'Status de Face', type: 'boolean' },
-    { key: 'statusPalm', label: 'Status de Palma', type: 'boolean' }
 ];
