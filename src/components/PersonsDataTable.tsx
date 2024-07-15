@@ -1,7 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { fetchWithAuth } from './FetchWithAuth';
-import { toast } from 'react-toastify';
 import { Department, Employee, Group } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';

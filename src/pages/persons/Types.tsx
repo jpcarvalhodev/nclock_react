@@ -10,11 +10,11 @@ import { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { ExternalEntityTypes } from "../../helpers/Types";
 import { toast } from "react-toastify";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { SelectFilter } from "../../components/SelectFilter";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
+import * as apiService from "../../helpers/apiService";
 
 // Define a interface para os filtros
 interface Filters {
@@ -35,18 +35,9 @@ export const Types = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar os tipos das entidades externas
-    const fetchExternalEntitiesTypes = async () => {
+    const fetchAllExternalEntityTypes = async () => {
         try {
-            const response = await fetchWithAuth('ExternalEntityTypes', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
+            const data = await apiService.fetchAllExternalEntityTypes();
             setexternalEntityTypes(data);
         } catch (error) {
             console.error('Erro ao buscar os dados das entidades externas:', error);
@@ -56,19 +47,7 @@ export const Types = () => {
     // Função para adicionar um tipo de uma entidade externa
     const handleAddExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         try {
-            const response = await fetchWithAuth('ExternalEntityTypes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(externalEntityType)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addExternalEntityTypes(externalEntityType);
             setexternalEntityTypes([...externalEntityTypes, data]);
             toast.success(data.value || 'Tipo de entidade externa adicionada com sucesso!');
 
@@ -83,21 +62,7 @@ export const Types = () => {
     // Função para atualizar um tipo de uma entidade externa
     const handleUpdateExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         try {
-            const response = await fetchWithAuth(`ExternalEntityTypes/${externalEntityType.externalEntityTypeID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(externalEntityType)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedExternalEntityType = await response.json();
+            const updatedExternalEntityType = await apiService.updateExternalEntityTypes(externalEntityType);
             setexternalEntityTypes(externalEntitiesType => externalEntitiesType.map(entity => entity.externalEntityTypeID === updatedExternalEntityType.externalEntityTypeID ? updatedExternalEntityType : entity));
             toast.success(updatedExternalEntityType.value || 'Tipo de entidade externa atualizado com sucesso!');
 
@@ -110,19 +75,9 @@ export const Types = () => {
     };
 
     // Função para apagar um tipo de uma entidade externa
-    const handleDeleteExternalEntityType = async (externalEntityTypeID: string) => {
+    const handleDeleteExternalEntityTypes = async (externalEntityTypeID: string) => {
         try {
-            const response = await fetchWithAuth(`ExternalEntityTypes/${externalEntityTypeID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteExtEntType = await response.json();
+            const deleteExtEntType = await apiService.deleteExternalEntityTypes(externalEntityTypeID);
             toast.success(deleteExtEntType.value || 'Tipo de entidade externa apagada com sucesso!');
 
         } catch (error) {
@@ -135,12 +90,12 @@ export const Types = () => {
 
     // Atualiza as entidades externas
     useEffect(() => {
-        fetchExternalEntitiesTypes();
+        fetchAllExternalEntityTypes();
     }, []);
 
     // Função para atualizar as entidades externas
     const refreshExternalEntitiesTypes = () => {
-        fetchExternalEntitiesTypes();
+        fetchAllExternalEntityTypes();
     };
 
     // Função para abrir o modal de editar entidade externa
@@ -290,12 +245,13 @@ export const Types = () => {
                     entity={selectedExternalEntityType}
                     fields={externalEntityTypeFields}
                     title="Atualizar Tipo"
+                    entityType="tipos"
                 />
             )}
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteExternalEntityType}
+                onDelete={handleDeleteExternalEntityTypes}
                 entityId={selectedExternalEntityTypeForDelete}
             />
             {openColumnSelector && (

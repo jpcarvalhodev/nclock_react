@@ -8,7 +8,6 @@ import { Category } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { categoryFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -17,6 +16,7 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
 
 // Define a interface para os filtros
 interface Filters {
@@ -37,20 +37,9 @@ export const Categories = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as categorias
-    const fetchCategories = async () => {
+    const fetchAllCategories = async () => {
         try {
-            const response = await fetchWithAuth('Categories', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.fetchAllCategories();
             setCategories(data);
         } catch (error) {
             console.error('Erro ao buscar os dados das categorias:', error);
@@ -60,19 +49,7 @@ export const Categories = () => {
     // Função para adicionar uma categoria
     const handleAddCategory = async (category: Category) => {
         try {
-            const response = await fetchWithAuth('Categories', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(category)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addCategory(category);
             setCategories([...categories, data]);
             toast.success(data.value || 'Categoria adicionada com sucesso!');
 
@@ -87,21 +64,7 @@ export const Categories = () => {
     // Função para atualizar uma categoria
     const handleUpdateCategory = async (category: Category) => {
         try {
-            const response = await fetchWithAuth(`Categories/${category.categoryID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(category)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedCategory = await response.json();
+            const updatedCategory = await apiService.updateCategory(category);
             setCategories(categories => categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
             toast.success(updatedCategory.value || 'Categoria atualizada com sucesso!');
 
@@ -116,17 +79,7 @@ export const Categories = () => {
     // Função para apagar uma categoria
     const handleDeleteCategory = async (categoryID: string) => {
         try {
-            const response = await fetchWithAuth(`Categories/${categoryID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteCategory = await response.json();
+            const deleteCategory = await apiService.deleteCategory(categoryID);
             toast.success(deleteCategory.value || 'Categoria apagada com sucesso!');
 
         } catch (error) {
@@ -139,12 +92,12 @@ export const Categories = () => {
 
     // Busca as categorias ao carregar a página
     useEffect(() => {
-        fetchCategories();
+        fetchAllCategories();
     }, []);
 
     // Função para atualizar as categorias
     const refreshCategories = () => {
-        fetchCategories();
+        fetchAllCategories();
     };
 
     // Função para editar uma categoria
@@ -279,6 +232,7 @@ export const Categories = () => {
                         entity={selectedCategory}
                         fields={categoryFields}
                         title="Atualizar Categoria"
+                        entityType="categorias"
                     />
                 )}
                 <DeleteModal

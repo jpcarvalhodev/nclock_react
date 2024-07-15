@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -62,7 +62,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
 
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
-        const response = await fetchWithAuth('Employees/GetAllEmployees');
+        const response = await apiService.fetchAllEmployees();
         if (response.ok) {
             const employees = await response.json();
             setDropdownData(prev => ({ ...prev, responsibleName: employees }));
@@ -75,7 +75,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const externalEntityTypesResponse = await fetchWithAuth('ExternalEntityTypes');
+            const externalEntityTypesResponse = await apiService.fetchAllExternalEntityTypes();
             if (externalEntityTypesResponse.ok) {
                 const externalEntitiesType = await externalEntityTypesResponse.json();
                 setDropdownData({

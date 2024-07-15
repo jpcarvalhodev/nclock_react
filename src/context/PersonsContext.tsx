@@ -1,8 +1,8 @@
-import { createContext, useState, useContext, useCallback, useEffect } from 'react';
+import { createContext, useState, useContext, useCallback } from 'react';
 import { ReactNode } from 'react';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Department, Employee, Group } from '../helpers/Types';
 import { toast } from 'react-toastify';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -45,24 +45,11 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar todos os dados
     const fetchAllData = useCallback(async () => {
         try {
-            const deptResponse = await fetchWithAuth('Departaments/Employees');
-            const groupResponse = await fetchWithAuth('Groups/Employees');
-            const employeesResponse = await fetchWithAuth('Employees/GetAllEmployees');
-
-            if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-                return;
-            }
-
-            const [departments, groups, employees] = await Promise.all([
-                deptResponse.json(),
-                groupResponse.json(),
-                employeesResponse.json(),
-            ]);
-
+            const allData = await apiService.fetchAllData();
             setData({
-                departments,
-                groups,
-                employees,
+                departments: allData?.departments,
+                groups: allData?.groups,
+                employees: allData?.employees,
             });
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
@@ -72,11 +59,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar todos os funcionários
     const fetchAllEmployees = useCallback(async (options?: FetchOptions): Promise<Employee[]> => {
         try {
-            const response = await fetchWithAuth('Employees/GetAllEmployees');
-            if (!response.ok) {
-                return [];
-            }
-            let data = await response.json();
+            let data = await apiService.fetchAllEmployees();
             if (options?.filterFunc) {
                 data = options.filterFunc(data);
             }
@@ -93,18 +76,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Define a função de adição de funcionários
     const handleAddEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth('Employees/CreateEmployee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const employeesData = await response.json();
+            const employeesData = await apiService.addEmployee(employee);
             setEmployees([...employees, employeesData]);
             toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
         } catch (error) {
@@ -115,21 +87,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Define a função de atualização de funcionários
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedEmployee = await response.json();
+            const updatedEmployee = await apiService.updateEmployee(employee);
             setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
             toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso');
         } catch (error) {
@@ -141,18 +99,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const handleDeleteEmployee = async (employeeID: string) => {
 
         try {
-            const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const deleteEmployee = await response.json();
+            const deleteEmployee = await apiService.deleteEmployee(employeeID);
             toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!')
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);

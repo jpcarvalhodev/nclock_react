@@ -3,7 +3,6 @@ import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Department, Employee, Group } from "../helpers/Types";
-import { fetchWithAuth } from "../components/FetchWithAuth";
 import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Chart as ChartJS, ArcElement, PieController, Tooltip, Legend, BarElement, BarController, CategoryScale, LinearScale } from 'chart.js';
@@ -28,6 +27,7 @@ import nview from '../assets/img/navbar/navbar/nview.webp';
 import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
 import { Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import * as apiService from "../helpers/apiService";
 
 // Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
@@ -86,15 +86,7 @@ export const Dashboard = () => {
     // Define a função de busca de eventos
     const fetchEvents = async (): Promise<CalendarEvent[]> => {
         try {
-            const response = await fetchWithAuth('Employees/GetAllEmployees', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                return [];
-            }
-            const employees: Employee[] = await response.json();
+            const employees: Employee[] = await apiService.fetchAllEmployees();
             setTotalEmployees(employees.length);
             const currentYear = new Date().getFullYear();
             return employees.map(employee => {
@@ -117,15 +109,7 @@ export const Dashboard = () => {
     // Define a função de busca de departamentos
     const fetchDepartments = async (): Promise<void> => {
         try {
-            const response = await fetchWithAuth('Departaments', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                return;
-            }
-            const departments: Department[] = await response.json();
+            const departments: Department[] = await apiService.fetchAllDepartments();
             setTotalDepartments(departments.length);
         } catch (error) {
             console.error('Erro ao buscar departamentos:', error);
@@ -135,15 +119,7 @@ export const Dashboard = () => {
     // Define a função de busca de grupos
     const fetchGroups = async (): Promise<void> => {
         try {
-            const response = await fetchWithAuth('Groups', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                return;
-            }
-            const groups: Group[] = await response.json();
+            const groups: Group[] = await apiService.fetchAllGroups();
             setTotalGroups(groups.length);
         } catch (error) {
             console.error('Erro ao buscar grupos:', error);

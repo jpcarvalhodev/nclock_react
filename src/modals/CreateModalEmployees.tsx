@@ -2,11 +2,11 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import { Employee } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -92,7 +92,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Função para buscar os funcionários e definir o próximo número de matrícula
     const fetchEmployeesAndSetNextEnrollNumber = async () => {
-        const response = await fetchWithAuth('Employees/GetAllEmployees');
+        const response = await apiService.fetchAllEmployees();
         if (response.ok) {
             const employees: Employee[] = await response.json();
             const maxEnrollNumber = employees.reduce((max: number, employee: Employee) => {
@@ -111,11 +111,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const departmentsResponse = await fetchWithAuth('Departaments');
-            const groupsResponse = await fetchWithAuth('Groups');
-            const professionsResponse = await fetchWithAuth('Professions');
-            const zonesResponse = await fetchWithAuth('Zones');
-            const externalEntitiesResponse = await fetchWithAuth('ExternalEntities');
+            const departmentsResponse = await apiService.fetchAllDepartments();
+            const groupsResponse = await apiService.fetchAllGroups();
+            const professionsResponse = await apiService.fetchAllProfessions();
+            const zonesResponse = await apiService.fetchAllZones();
+            const externalEntitiesResponse = await apiService.fetchAllExternalEntities();
             if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
                 const departments = await departmentsResponse.json();
                 const groups = await groupsResponse.json();

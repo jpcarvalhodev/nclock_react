@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
@@ -50,25 +49,6 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     useEffect(() => {
         validateForm();
     }, [formData, fields]);
-
-    // Carregar as opções dos dropdowns
-    useEffect(() => {
-        const fetchDropdownOptions = async (field: FieldConfig) => {
-            if (field.optionsUrl) {
-                const response = await fetchWithAuth(field.optionsUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    setDropdownData(prev => ({ ...prev, [field.key]: data }));
-                }
-            }
-        };
-
-        fields.forEach(field => {
-            if (field.type === 'dropdown') {
-                fetchDropdownOptions(field);
-            }
-        });
-    }, [fields]);
 
     // Atualiza o valor do campo da foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

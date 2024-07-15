@@ -5,10 +5,10 @@ import { ptBR } from 'date-fns/locale';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, PieController, Tooltip, Legend, BarElement, BarController, CategoryScale, LinearScale } from 'chart.js';
 import { Bar } from "react-chartjs-2";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { Employee, Department, Group } from "../../helpers/Types";
+import * as apiService from "../../helpers/apiService";
 
 // Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
@@ -63,15 +63,7 @@ export const NclockDashboard = () => {
     // Função para buscar os eventos dos funcionários
     const fetchEvents = async (): Promise<CalendarEvent[]> => {
         try {
-            const response = await fetchWithAuth('Employees/GetAllEmployees', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                return [];
-            }
-            const employees: Employee[] = await response.json();
+            const employees: Employee[] = await apiService.fetchAllEmployees();
             setTotalEmployees(employees.length);
             const currentYear = new Date().getFullYear();
             return employees.map(employee => {
@@ -94,15 +86,7 @@ export const NclockDashboard = () => {
     // Função para buscar os departamentos
     const fetchDepartments = async (): Promise<void> => {
         try {
-            const response = await fetchWithAuth('Departaments', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                return;
-            }
-            const departments: Department[] = await response.json();
+            const departments: Department[] = await apiService.fetchAllDepartments();
             setTotalDepartments(departments.length);
         } catch (error) {
             console.error('Erro ao buscar departamentos:', error);
@@ -112,15 +96,7 @@ export const NclockDashboard = () => {
     // Função para buscar os grupos
     const fetchGroups = async (): Promise<void> => {
         try {
-            const response = await fetchWithAuth('Groups', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                return;
-            }
-            const groups: Group[] = await response.json();
+            const groups: Group[] = await apiService.fetchAllGroups();
             setTotalGroups(groups.length);
         } catch (error) {
             console.error('Erro ao buscar grupos:', error);

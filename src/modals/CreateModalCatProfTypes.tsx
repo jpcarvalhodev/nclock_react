@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import { fetchWithAuth } from '../components/FetchWithAuth';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -70,20 +70,20 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
         let url;
         switch (entityType) {
             case 'categorias':
-                url = 'Categories';
+                url = apiService.fetchAllCategories;
                 break;
             case 'profissões':
-                url = 'Professions';
+                url = apiService.fetchAllProfessions;
                 break;
             case 'tipos':
-                url = 'ExternalEntityTypes';
+                url = apiService.fetchAllExternalEntityTypes;
                 break;
             default:
-                toast.error(`Tipo de entidade '${entityType}' não suportado.`);
+                toast.error(`Tipo de entidade '${entityType}' não existe.`);
                 return;
         }
         try {
-            const response = await fetchWithAuth(url);
+            const response = await url();
             if (response.ok) {
                 const data: CodeItem[] = await response.json();
                 const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code), 0) + 1;

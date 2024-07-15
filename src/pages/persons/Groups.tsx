@@ -17,6 +17,7 @@ import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
 
 // Define a interface para os filtros
 interface Filters {
@@ -37,20 +38,9 @@ export const Groups = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar os grupos
-    const fetchGroups = async () => {
+    const fetchAllGroups = async () => {
         try {
-            const response = await fetchWithAuth('Groups', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.fetchAllGroups();
             setGroups(data);
         } catch (error) {
             console.error('Erro ao buscar os dados dos grupos:', error);
@@ -60,19 +50,7 @@ export const Groups = () => {
     // Função para adicionar um grupo
     const handleAddGroup = async (group: Group) => {
         try {
-            const response = await fetchWithAuth('Groups', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(group)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addGroup(group);
             setGroups([...groups, data]);
             toast.success(data.value || 'Grupo adicionado com sucesso!');
 
@@ -87,21 +65,7 @@ export const Groups = () => {
     // Função para atualizar um grupo
     const handleUpdateGroup = async (group: Group) => {
         try {
-            const response = await fetchWithAuth(`Groups/${group.groupID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(group)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedGroup = await response.json();
+            const updatedGroup = await apiService.updateGroup(group);
             setGroups(groups => groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
             toast.success(updatedGroup.value || 'Grupo atualizado com sucesso!');
 
@@ -116,17 +80,7 @@ export const Groups = () => {
     // Função para apagar um grupo
     const handleDeleteGroup = async (groupID: string) => {
         try {
-            const response = await fetchWithAuth(`Groups/${groupID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteGroup = await response.json();
+            const deleteGroup = await apiService.deleteGroup(groupID);
             toast.success(deleteGroup.value || 'Grupo apagado com sucesso!');
 
         } catch (error) {
@@ -139,12 +93,12 @@ export const Groups = () => {
 
     // Busca os grupos ao carregar a página
     useEffect(() => {
-        fetchGroups();
+        fetchAllGroups();
     }, []);
 
     // Função para atualizar os grupos
     const refreshGroups = () => {
-        fetchGroups();
+        fetchAllGroups();
     };
 
     // Função para abrir o modal de atualizar grupo

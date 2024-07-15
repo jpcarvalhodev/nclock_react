@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
 import { Devices } from "../helpers/Types";
-import { fetchWithAuth } from "../components/FetchWithAuth";
 import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";
+import { TerminalsContext, DeviceContextType } from "../context/TerminalsContext";
 
 // Define a interface Entity
 export interface Entity {
@@ -35,6 +35,9 @@ interface UpdateModalProps<T extends Entity> {
 }
 
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+    const {
+        fetchAllDevices,
+    } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [device, setDevice] = useState<Devices[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -79,21 +82,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         });
 
         setIsFormValid(isValid);
-    };
-
-    // Função para buscar todos os dispositivos
-    const fetchAllDevices = async () => {
-        try {
-            const response = await fetchWithAuth('Zkteco/GetAllDevices');
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            setDevice(data);
-
-        } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
-        }
     };
 
     // UseEffect para atualizar lista de todos os dispositivos

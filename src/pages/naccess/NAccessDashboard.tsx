@@ -2,9 +2,9 @@ import { Bar } from "react-chartjs-2";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { useEffect, useState } from "react";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { EmployeeAttendanceTimes } from "../../helpers/Types";
 import '../../css/PagesStyles.css';
+import * as apiService from "../../helpers/apiService";
 
 // Define a página principal
 export const NaccessDashboard = () => {
@@ -13,15 +13,7 @@ export const NaccessDashboard = () => {
     // Função para buscar os departamentos
     const fetchAssiduityEmployees = async (): Promise<void> => {
         try {
-            const response = await fetchWithAuth('Attendances/GetAllAttendances', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                return;
-            }
-            const employees: EmployeeAttendanceTimes[] = await response.json();
+            const employees: EmployeeAttendanceTimes[] = await apiService.fetchAllAttendances();
             setTotalEmployees(employees.length);
         } catch (error) {
             console.error('Erro ao buscar departamentos:', error);

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
@@ -48,25 +47,6 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
         });
         setIsFormValid(isValid);
     }, [formData, fields]);
-
-    // Atualiza o estado do componente com os dados do dropdown
-    useEffect(() => {
-        const fetchDropdownOptions = async (field: Field) => {
-            if (field.optionsUrl) {
-                const response = await fetchWithAuth(field.optionsUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    setDropdownData(prev => ({ ...prev, [field.key]: data }));
-                }
-            }
-        };
-
-        fields.forEach(field => {
-            if (field.type === 'dropdown') {
-                fetchDropdownOptions(field);
-            }
-        });
-    }, [fields]);
 
     // Atualiza o estado da foto
     useEffect(() => {

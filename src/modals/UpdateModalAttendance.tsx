@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import * as apiService from "../helpers/apiService";
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -64,7 +64,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employeeResponse = await fetchWithAuth('Employees/GetAllEmployees');
+            const employeeResponse = await apiService.fetchAllEmployees();
             if (employeeResponse.ok) {
                 const employees = await employeeResponse.json();
                 setDropdownData({

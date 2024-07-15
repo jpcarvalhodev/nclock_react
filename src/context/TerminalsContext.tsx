@@ -1,8 +1,8 @@
 import { createContext, useState, useContext } from 'react';
 import { ReactNode } from 'react';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Devices, EmployeeDevices } from '../helpers/Types';
 import { toast } from 'react-toastify';
+import * as apiService from "../helpers/apiService";
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -33,12 +33,6 @@ interface StatusCounts {
     Inactivo: number;
 }
 
-// Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
-interface BodyData {
-    zktecoDeviceID: Devices;
-    employeeID?: string;
-}
-
 // Cria o contexto	
 export const TerminalsContext = createContext<DeviceContextType | undefined>(undefined);
 
@@ -65,11 +59,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async () => {
         try {
-            const response = await fetchWithAuth('Zkteco/GetAllDevices');
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
+            const data = await apiService.fetchAllDevices();
             setDevices(data);
 
             const filteredStatus = data.map((device: Devices) => device.status ? 'Activo' : 'Inactivo');
@@ -85,12 +75,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar todos os funcionários no dispositivo e salvar no DB
     const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`);
-
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
+            const data = await apiService.fetchAllEmployeesOnDevice(zktecoDeviceID);
             toast.success(data.value || 'Funcionários recolhidos com sucesso!');
 
         } catch (error) {
@@ -101,13 +86,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar todos os funcionários por dispositivos
     const fetchAllEmployeeDevices = async () => {
         try {
-            const response = await fetchWithAuth('Employees/GetAllEmployeesDevice');
-            if (!response.ok) {
-                return;
-            }
-            const employeesData = await response.json();
+            const employeesData = await apiService.fetchAllEmployeeDevices();
             setEmployeeDevices(employeesData);
-
             const filteredEmployees = employeesData.filter((employee: EmployeeDevices) =>
                 employee.statusFprint === true || employee.statusFace === true
             );
@@ -125,32 +105,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para enviar todos os funcionários para o dispositivo
     const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
         try {
-            let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
-            if (employeeID !== null) {
-                url += `?employeeIds=${employeeID}`;
-            }
-
-            let bodyData: BodyData = { zktecoDeviceID };
-            if (employeeID) {
-                bodyData.employeeID = employeeID;
-            }
-
-            const response = await fetchWithAuth(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(bodyData)
-            });
-
-            if (!response.ok) {
-                toast.error('Falha ao enviar os utilizadores');
-                return;
-            }
-
-            /* const data = await response.json();
-            toast.success(data.value || 'Utilizadores apagados com sucesso!'); */
-            toast.success('Utilizadores enviados com sucesso!');
+            const data = await apiService.sendAllEmployeesToDevice(zktecoDeviceID, employeeID);
+            toast.success(data.value || 'Utilizadores apagados com sucesso!');
 
         } catch (error) {
             console.error('Erro ao enviar os utilizadores:', error);
@@ -161,22 +117,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para salvar todos os funcionários no dispositivo
     const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
         try {
-            let url = `Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`;
-            if (employeeID !== null) {
-                url += `?employeeIds=${employeeID}`;
-            }
-
-            let bodyData: BodyData = { zktecoDeviceID };
-            if (employeeID) {
-                bodyData.employeeID = employeeID;
-            }
-
-            const response = await fetchWithAuth(url);
-
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
+            const data = await apiService.saveAllEmployeesOnDeviceToDB(zktecoDeviceID, employeeID);
             toast.success(data.value || 'Utilizadores recolhidos com sucesso!');
 
         } catch (error) {
@@ -187,12 +128,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar todas as assiduidades no dispositivo
     const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/SaveAllAttendancesEmployeesOnDeviceToDB/${zktecoDeviceID}`);
-
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
+            const data = await apiService.saveAllAttendancesEmployeesOnDevice(zktecoDeviceID);
             toast.success(data.value || 'Assiduidades recolhidas com sucesso!');
 
         } catch (error) {
@@ -203,14 +139,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para sincronizar a hora manualmente para o dispositivo
     const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice?deviceId=${zktecoDeviceID}`);
-
-            if (!response.ok) {
-                toast.error('Falha ao sincronizar a hora');
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.syncTimeManuallyToDevice(zktecoDeviceID);
             toast.success(data.value || 'Hora sincronizada com sucesso!');
 
         } catch (error) {
@@ -222,14 +151,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para abrir a porta via dispositivo
     const openDeviceDoor = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${zktecoDeviceID}delay=5`);
-
-            if (!response.ok) {
-                toast.error('Falha ao abrir a porta');
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.openDeviceDoor(zktecoDeviceID);
             toast.success(data.value || 'Porta aberta com sucesso!');
 
         } catch (error) {
@@ -241,32 +163,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para apagar os utilizadores do dispositivo
     const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
         try {
-            let url = `Zkteco/DeleteEmployeesToDevice/${zktecoDeviceID}`;
-            if (employeeID !== null) {
-                url += `?employeeIds=${employeeID}`;
-            }
-
-            let bodyData: BodyData = { zktecoDeviceID };
-            if (employeeID) {
-                bodyData.employeeID = employeeID;
-            }
-
-            const response = await fetchWithAuth(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(bodyData)
-            });
-
-            if (!response.ok) {
-                toast.error('Falha ao apagar os utilizadores');
-                return;
-            }
-
-            /* const data = await response.json();
-            toast.success(data.value || 'Utilizadores apagados com sucesso!'); */
-            toast.success('Utilizadores apagados com sucesso!');
+            const data = await apiService.deleteAllUsersOnDevice(zktecoDeviceID, employeeID);
+            toast.success(data.value || 'Utilizadores apagados com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar os utilizadores:', error);
@@ -277,14 +175,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para reiniciar o dispositivo
     const restartDevice = async (zktecoDeviceID: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/RestartDevice/${zktecoDeviceID}`);
-
-            if (!response.ok) {
-                toast.error('Falha ao reiniciar o dispositivo');
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.restartDevice(zktecoDeviceID);
             toast.success(data.value || 'Dispositivo reiniciado com sucesso!');
 
         } catch (error) {
@@ -296,18 +187,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Define a função de adição de dispositivos
     const handleAddDevice = async (device: Devices) => {
         try {
-            const response = await fetchWithAuth('Zkteco/CreateDevice', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(device)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deviceData = await response.json();
+            const deviceData = await apiService.addDevice(device);
             setDevices([...devices, deviceData]);
             toast.success(deviceData.value || 'dispositivo apagado com sucesso!');
 
@@ -319,21 +199,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Atualiza um funcionário
     const handleUpdateDevice = async (device: Devices) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/UpdateDevice/${device.zktecoDeviceID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(device)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedDevice = await response.json();
+            const updatedDevice = await apiService.updateDevice(device);
             const updatedDevices = devices.map(d => d.zktecoDeviceID === updatedDevice.zktecoDeviceID ? updatedDevice : d);
             setDevices(updatedDevices);
             toast.success(updatedDevice.value || 'Atualização realizada com sucesso!');
@@ -347,17 +213,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para deletar um dispositivo
     const handleDeleteDevice = async (zktecoDeviceID: string) => {
         try {
-            const response = await fetchWithAuth(`Zkteco/DeleteDevice?deviceId=${zktecoDeviceID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteDevice = await response.json();
+            const deleteDevice = await apiService.deleteDevice(zktecoDeviceID);
             toast.success(deleteDevice.value || 'dispositivo apagado com sucesso!');
 
         } catch (error) {

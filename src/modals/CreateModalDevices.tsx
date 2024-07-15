@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
 import { Devices } from "../helpers/Types";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";
+import { DeviceContextType, TerminalsContext } from "../context/TerminalsContext";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -28,8 +29,10 @@ interface Props<T> {
 }
 
 export const CreateModalDevices = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
+    const {
+        fetchAllDevices,
+    } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
-    const [device, setDevice] = useState<Devices[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [ipAddress, setIpAddress] = useState('');
     const [error, setError] = useState('');
@@ -82,21 +85,6 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         });
 
         setIsFormValid(isValid);
-    };
-
-    // Função para buscar todos os dispositivos
-    const fetchAllDevices = async () => {
-        try {
-            const response = await fetchWithAuth('Zkteco/GetAllDevices');
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            setDevice(data);
-
-        } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
-        }
     };
 
     // UseEffect para atualizar lista de todos os dispositivos

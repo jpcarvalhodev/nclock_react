@@ -38,7 +38,7 @@ export const fetchWithAuth = async (endpoint: string, options: FetchOptions = {}
 
 // Função para lidar com erros HTTP
 const handleHTTPError = async (response: Response) => {
-    const token = localStorage.getItem('token');
+    const token = await localStorage.getItem('token');
 
     switch (response.status) {
         case 401:

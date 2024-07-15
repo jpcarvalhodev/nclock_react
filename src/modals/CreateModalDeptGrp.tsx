@@ -7,6 +7,7 @@ import { CreateModalEmployees } from './CreateModalEmployees';
 import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { Department, Employee, Group } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -78,9 +79,9 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     // Função para buscar os dados de departamento/grupo
     const fetchData = async () => {
         const isDepartment = entityType === 'department';
-        const url = isDepartment ? 'Departaments/Employees' : 'Groups/Employees';
+        const url = isDepartment ? apiService.fetchAllDepartmentsEmployees : apiService.fetchAllGroupsEmployees;
         try {
-            const response = await fetchWithAuth(url);
+            const response = await url();
             if (!response.ok) {
                 return;
             }

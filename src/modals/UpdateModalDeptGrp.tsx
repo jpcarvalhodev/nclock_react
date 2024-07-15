@@ -6,9 +6,9 @@ import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { employeeFields } from '../helpers/Fields';
 import { toast } from 'react-toastify';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Department, Employee, Group } from '../helpers/Types';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -89,9 +89,9 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     // Função para buscar as entidades
     const fetchEntities = async () => {
-        const url = entityType === 'department' ? 'Departaments/Employees' : 'Groups/Employees';
+        const url = entityType === 'department' ? apiService.fetchAllDepartmentsEmployees : apiService.fetchAllGroupsEmployees;
         try {
-            const response = await fetchWithAuth(url);
+            const response = await url();
             if (!response.ok) {
                 return;
             }
@@ -109,18 +109,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para adicionar um funcionário
     const handleAddEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth('Employees/CreateEmployee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
+            const data = await apiService.addEmployee(employee);
             setEmployees([...employees, data]);
             toast.success(data.value || 'Funcionário adicionado com sucesso!');
 
@@ -135,21 +124,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para atualizar um funcionário
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
-            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedEmployee = await response.json();
+            const updatedEmployee = await apiService.updateEmployee(employee);
             setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
             toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
 
@@ -187,8 +162,8 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const departmentResponse = await fetchWithAuth('Departaments');
-            const groupResponse = await fetchWithAuth('Groups');
+            const departmentResponse = await apiService.fetchAllDepartments();
+            const groupResponse = await apiService.fetchAllGroups();
 
             if (departmentResponse.ok && groupResponse.ok) {
                 const departments = await departmentResponse.json();

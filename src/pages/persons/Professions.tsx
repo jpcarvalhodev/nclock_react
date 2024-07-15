@@ -8,7 +8,6 @@ import { Profession } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { professionFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -17,6 +16,7 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
 
 // Define a interface para os filtros
 interface Filters {
@@ -37,20 +37,9 @@ export const Professions = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as profissões
-    const fetchProfessions = async () => {
+    const fetchAllProfessions = async () => {
         try {
-            const response = await fetchWithAuth('Professions', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.fetchAllProfessions();
             setProfessions(data);
         } catch (error) {
             console.error('Erro ao buscar os dados das profissões:', error);
@@ -60,19 +49,7 @@ export const Professions = () => {
     // Função para adicionar uma nova profissão
     const handleAddProfession = async (profession: Profession) => {
         try {
-            const response = await fetchWithAuth('Professions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(profession)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addProfession(profession);
             setProfessions([...professions, data]);
             toast.success(data.value || 'Profissão adicionada com sucesso!');
 
@@ -87,21 +64,7 @@ export const Professions = () => {
     // Função para atualizar uma profissão
     const handleUpdateProfession = async (profession: Profession) => {
         try {
-            const response = await fetchWithAuth(`Professions/${profession.professionID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(profession)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedProfession = await response.json();
+            const updatedProfession = await apiService.updateProfession(profession);
             setProfessions(professions => professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
             toast.success(updatedProfession.value || 'Profissão atualizada com sucesso!');
 
@@ -116,17 +79,7 @@ export const Professions = () => {
     // Função para apagar uma profissão
     const handleDeleteProfessions = async (professionID: string) => {
         try {
-            const response = await fetchWithAuth(`Professions/${professionID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteProfession = await response.json();
+            const deleteProfession = await apiService.deleteProfession(professionID);
             toast.success(deleteProfession.value || 'Profissão apagada com sucesso!');
 
         } catch (error) {
@@ -139,12 +92,12 @@ export const Professions = () => {
 
     // Atualiza a lista de profissões ao carregar a página
     useEffect(() => {
-        fetchProfessions();
+        fetchAllProfessions();
     }, []);
 
     // Função para atualizar a lista de profissões
     const refreshProfessions = () => {
-        fetchProfessions();
+        fetchAllProfessions();
     };
 
     // Função para abrir o modal de editar profissão
@@ -279,6 +232,7 @@ export const Professions = () => {
                         entity={selectedProfession}
                         fields={professionFields}
                         title="Atualizar Profissão"
+                        entityType="profissões"
                     />
                 )}
                 <DeleteModal

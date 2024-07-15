@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
+import * as apiService from "../helpers/apiService";
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -80,11 +80,11 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   // Função para buscar as opções do dropdown
   const fetchDropdownOptions = async () => {
     try {
-      const departmentsResponse = await fetchWithAuth('Departaments');
-      const groupsResponse = await fetchWithAuth('Groups');
-      const professionsResponse = await fetchWithAuth('Professions');
-      const zonesResponse = await fetchWithAuth('Zones');
-      const externalEntitiesResponse = await fetchWithAuth('ExternalEntities');
+      const departmentsResponse = await apiService.fetchAllDepartments();
+      const groupsResponse = await apiService.fetchAllGroups();
+      const professionsResponse = await apiService.fetchAllProfessions();
+      const zonesResponse = await apiService.fetchAllZones();
+      const externalEntitiesResponse = await apiService.fetchAllExternalEntities();
       if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
         const departments = await departmentsResponse.json();
         const groups = await groupsResponse.json();

@@ -73,10 +73,10 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
 
-  // Busca os dados ao carregar o componente
+  /* // Busca os dados ao carregar o componente
   useEffect(() => {
     fetchAllData();
-  }, [fetchAllData]);
+  }, [fetchAllData]); */
 
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {

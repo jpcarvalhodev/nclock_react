@@ -17,6 +17,7 @@ import { UpdateModalZones } from "../../modals/UpdateModalZones";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
 
 // Define a interface para os filtros
 interface Filters {
@@ -37,20 +38,9 @@ export const Zones = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as zonas
-    const fetchZones = async () => {
+    const fetchAllZones = async () => {
         try {
-            const response = await fetchWithAuth('Zones', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.fetchAllZones();
             setZones(data);
         } catch (error) {
             console.error('Erro ao buscar os dados das zonas:', error);
@@ -60,19 +50,7 @@ export const Zones = () => {
     // Função para adicionar uma zona
     const handleAddZone = async (zone: Zone) => {
         try {
-            const response = await fetchWithAuth('Zones', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(zone)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addZone(zone);
             setZones([...zones, data]);
             toast.success(data.value || 'Zona adicionada com sucesso!');
 
@@ -87,21 +65,7 @@ export const Zones = () => {
     // Função para atualizar uma zona
     const handleUpdateZone = async (zone: Zone) => {
         try {
-            const response = await fetchWithAuth(`Zones/${zone.zoneID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(zone)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedZone = await response.json();
+            const updatedZone = await apiService.updateZone(zone);
             setZones(zones => zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
             toast.success(updatedZone.value || 'Zona atualizada com sucesso!');
 
@@ -116,17 +80,7 @@ export const Zones = () => {
     // Função para apagar uma zona
     const handleDeleteZone = async (zoneID: string) => {
         try {
-            const response = await fetchWithAuth(`Zones/${zoneID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteZone = await response.json();
+            const deleteZone = await apiService.deleteZone(zoneID);
             toast.success(deleteZone.value || 'Zona apagada com sucesso!');
 
         } catch (error) {
@@ -139,12 +93,12 @@ export const Zones = () => {
 
     // Atualiza a lista de zonas ao carregar a página
     useEffect(() => {
-        fetchZones();
+        fetchAllZones();
     }, []);
 
     // Função para atualizar as zonas
     const refreshZones = () => {
-        fetchZones();
+        fetchAllZones();
     };
 
     // Função para abrir o modal de editar zona
