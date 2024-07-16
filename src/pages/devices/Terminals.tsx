@@ -626,130 +626,6 @@ export const Terminals = () => {
         }
     ];
 
-    // Função para enviar os utilizadores selecionados
-    const handleSendSelectedUsers = async () => {
-        if (!selectedTerminal || selectedUserRows.length === 0) {
-            toast('Selecione um terminal e pelo menos um utilizador!');
-        } else {
-            setLoadingSendSelectedUsers(true);
-            const userId = selectedUserRows[0].employeeID;
-            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
-            setLoadingSendSelectedUsers(false);
-            fetchAllEmployeeDevices();
-        }
-    }
-
-    // Função para excluir os utilizadores selecionados
-    const handleDeleteSelectedUsers = async () => {
-        if (selectedUserRows.length > 0) {
-            const userId = selectedUserRows[0].employeeID;
-            handleOpenDeleteModal(userId, 'user');
-        } else {
-            toast.error('Selecione um utilizador primeiro!');
-        }
-    }
-
-    // Função para recolher os utilizadores selecionados
-    const handleFetchSelectedUsers = async () => {
-        if (!selectedTerminal || selectedUserRows.length === 0) {
-            toast('Selecione um terminal e pelo menos um utilizador!');
-        } else {
-            setLoadingFetchSelectedUsers(true);
-            const userId = selectedUserRows[0].employeeID;
-            await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
-            setLoadingFetchSelectedUsers(false);
-            fetchAllEmployeeDevices();
-        }
-    }
-
-    // Função para enviar todos os utilizadores
-    const handleUsers = async () => {
-        if (selectedTerminal) {
-            setLoadingUser(true);
-            await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
-            setLoadingUser(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
-    }
-
-    // Função para enviar todos os utilizadores
-    const handleAllUsers = async () => {
-        if (selectedTerminal) {
-            setLoadingAllUser(true);
-            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
-            setLoadingAllUser(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
-    }
-
-    // Função para sincronizar todos os utilizadores
-    const handleSyncAllUsers = async () => {
-        if (selectedTerminal) {
-            setLoadingSyncAllUser(true);
-            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
-            setLoadingSyncAllUser(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
-    }
-
-    // Função para manipular os movimentos
-    const handleMovements = async () => {
-        if (selectedTerminal) {
-            setLoadingMovements(true);
-            await saveAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
-            setLoadingMovements(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
-    }
-
-    // Função para excluir todos os utilizadores
-    const handleDeleteAllUsers = async () => {
-        if (selectedTerminal) {
-            setLoadingDeleteAllUsers(true);
-            await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
-            setLoadingDeleteAllUsers(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
-    }
-
-    // Função para reiniciar o dispositivo
-    const handleRestartDevice = async () => {
-        if (selectedTerminal) {
-            setLoadingRestartDevice(true);
-            await restartDevice(selectedTerminal.zktecoDeviceID);
-            setLoadingRestartDevice(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
-    }
-
-    // Função para abrir a porta ligada ao dispositivo
-    const handleOpenDoor = async () => {
-        if (selectedTerminal) {
-            setLoadingOpenDoor(true);
-            await openDeviceDoor(selectedTerminal);
-            setLoadingOpenDoor(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
-    }
-
-    // Função para sincronizar a hora
-    const handleSyncTime = async () => {
-        if (selectedTerminal) {
-            setLoadingSyncTime(true);
-            await syncTimeManuallyToDevice(selectedTerminal);
-            setLoadingSyncTime(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
-    }
-
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -856,7 +732,17 @@ export const Terminals = () => {
                                                 />
                                             </div>
                                             <div style={{ flex: 1, flexDirection: "column" }}>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={async () => {handleSendSelectedUsers}}>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={async () => {
+                                                    if (!selectedTerminal || selectedUserRows.length === 0) {
+                                                        toast('Selecione um terminal e pelo menos um utilizador!');
+                                                    } else {
+                                                        setLoadingSendSelectedUsers(true);
+                                                        const userId = selectedUserRows[0].employeeID;
+                                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
+                                                        setLoadingSendSelectedUsers(false);
+                                                        fetchAllEmployeeDevices();
+                                                    }
+                                                }}>
                                                     {loadingSendSelectedUsers ? (
                                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                                     ) : (
@@ -864,7 +750,14 @@ export const Terminals = () => {
                                                     )}
                                                     Enviar utilizadores seleccionados
                                                 </Button>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={() => {handleDeleteSelectedUsers}}>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={() => {
+                                                    if (selectedUserRows.length > 0) {
+                                                        const userId = selectedUserRows[0].employeeID;
+                                                        handleOpenDeleteModal(userId, 'user');
+                                                    } else {
+                                                        toast.error('Selecione um utilizador primeiro!');
+                                                    }
+                                                }}>
                                                     {loadingDeleteSelectedUsers ? (
                                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                                     ) : (
@@ -872,7 +765,17 @@ export const Terminals = () => {
                                                     )}
                                                     Remover utilizadores seleccionados
                                                 </Button>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={async () => {handleFetchSelectedUsers}}>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={async () => {
+                                                    if (!selectedTerminal || selectedUserRows.length === 0) {
+                                                        toast('Selecione um terminal e pelo menos um utilizador!');
+                                                    } else {
+                                                        setLoadingFetchSelectedUsers(true);
+                                                        const userId = selectedUserRows[0].employeeID;
+                                                        await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
+                                                        setLoadingFetchSelectedUsers(false);
+                                                        fetchAllEmployeeDevices();
+                                                    }
+                                                }}>
                                                     {loadingFetchSelectedUsers ? (
                                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                                     ) : (
@@ -962,7 +865,15 @@ export const Terminals = () => {
                                     variant="outline-primary"
                                     size="sm"
                                     className="button-terminals-users"
-                                    onClick={async () => {handleUsers}}>
+                                    onClick={async () => {
+                                        if (selectedTerminal) {
+                                            setLoadingUser(true);
+                                            await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+                                            setLoadingUser(false);
+                                        } else {
+                                            toast.error('Selecione um terminal primeiro!');
+                                        }
+                                    }}>
                                     {loadingUser ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -970,7 +881,15 @@ export const Terminals = () => {
                                     )}
                                     Recolher utilizadores
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {handleAllUsers}}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingAllUser(true);
+                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
+                                        setLoadingAllUser(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
                                     {loadingAllUser ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -978,7 +897,15 @@ export const Terminals = () => {
                                     )}
                                     Enviar todos os utilizadores
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {handleSyncAllUsers}}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingSyncAllUser(true);
+                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
+                                        setLoadingSyncAllUser(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
                                     {loadingSyncAllUser ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -986,7 +913,15 @@ export const Terminals = () => {
                                     )}
                                     Sincronizar utilizadores
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {handleMovements}}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingMovements(true);
+                                        await saveAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+                                        setLoadingMovements(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
                                     {loadingMovements ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -994,7 +929,15 @@ export const Terminals = () => {
                                     )}
                                     Recolher movimentos
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {handleDeleteAllUsers}}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingDeleteAllUsers(true);
+                                        await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
+                                        setLoadingDeleteAllUsers(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
                                     {loadingDeleteAllUsers ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -1033,7 +976,15 @@ export const Terminals = () => {
                                     <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Ligar
                                 </Button> */}
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {handleRestartDevice}}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingRestartDevice(true);
+                                        await restartDevice(selectedTerminal.zktecoDeviceID);
+                                        setLoadingRestartDevice(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
                                     {loadingRestartDevice ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -1049,7 +1000,15 @@ export const Terminals = () => {
                                     <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Enviar horários
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {handleOpenDoor}}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingOpenDoor(true);
+                                        await openDeviceDoor(selectedTerminal);
+                                        setLoadingOpenDoor(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
                                     {loadingOpenDoor ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -1065,7 +1024,15 @@ export const Terminals = () => {
                         </Tab>
                         <Tab eventKey="configuration" title="Configurações">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {handleSyncTime}}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
+                                    if (selectedTerminal) {
+                                        setLoadingSyncTime(true);
+                                        await syncTimeManuallyToDevice(selectedTerminal);
+                                        setLoadingSyncTime(false);
+                                    } else {
+                                        toast.error('Selecione um terminal primeiro!');
+                                    }
+                                }}>
                                     {loadingSyncTime ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
