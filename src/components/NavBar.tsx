@@ -80,6 +80,7 @@ import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
 import about from '../assets/img/navbar/ajuda/about.png';
 import manual from '../assets/img/navbar/ajuda/manual.png';
 import helpdesk from '../assets/img/navbar/ajuda/helpdesk.png';
+import { TerminalOptionsModal } from '../modals/TerminalOptions';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -150,6 +151,7 @@ export const NavBar = () => {
 	const [showNcardTab, setShowNcardTab] = useState(false);
 	const [showNviewTab, setShowNviewTab] = useState(false);
 	const [showNsecurTab, setShowNsecurTab] = useState(false);
+	const [showModal, setShowModal] = useState(false);
 
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
@@ -429,6 +431,9 @@ export const NavBar = () => {
 			<span>{label}</span>
 		</li>
 	);
+
+	// Função para abrir o modal de opções do terminal
+	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
 
 	return (
 		<nav data-role="ribbonmenu">
@@ -1227,12 +1232,12 @@ export const NavBar = () => {
 										</Link>
 									</div>
 									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+										<button onClick={toggleTerminalOptionsModal} className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={settings} alt="botão opções" />
 											</span>
 											<span className="text">Opções</span>
-										</Link>
+										</button>
 									</div>
 								</div>
 								<div className="title-container">
@@ -1475,6 +1480,14 @@ export const NavBar = () => {
 						/>
 					</div>
 				</div>
+			)}
+			{showModal && (
+				<TerminalOptionsModal
+					open={showModal}
+					onClose={() => setShowModal(false)}
+					onSave={() => setShowModal(false)}
+					initialValues={{}}
+				/>
 			)}
 		</nav>
 	);

@@ -17,7 +17,7 @@ export interface PersonsContextType {
     data: DataState;
     setData: (data: DataState) => void;
     setEmployees: (employees: Employee[]) => void;
-    fetchAllData: () => Promise<void>;
+    fetchAllData: (entity?: string) => Promise<void>;
     fetchAllEmployees: (options?: FetchOptions) => Promise<Employee[]>;
     handleAddEmployee: (employee: Employee) => Promise<void>;
     handleUpdateEmployee: (employee: Employee) => Promise<void>;
@@ -43,14 +43,62 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Função para buscar todos os dados
-    const fetchAllData = useCallback(async () => {
+    const fetchAllData = useCallback(async (entity: string = 'all') => {
         try {
             const allData = await apiService.fetchAllData();
-            setData({
-                departments: allData?.departments,
-                groups: allData?.groups,
-                employees: allData?.employees,
-            });
+            switch (entity) {
+                case 'all':
+                    setData({
+                        departments: allData?.departments,
+                        groups: allData?.groups,
+                        employees: allData?.employees,
+                    });
+                    break;
+                case 'employees':
+                    setData({
+                        departments: allData?.departments,
+                        groups: allData?.groups,
+                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário')
+                    });
+                    break;
+                case 'external employees':
+                    setData({
+                        departments: allData?.departments,
+                        groups: allData?.groups,
+                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário Externo')
+                    });
+                    break;
+                case 'users':
+                    setData({
+                        departments: allData?.departments,
+                        groups: allData?.groups,
+                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Utente')
+                    });
+                    break;
+                case 'visitors':
+                    setData({
+                        departments: allData?.departments,
+                        groups: allData?.groups,
+                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Visitante')
+                    });
+                    break;
+                case 'contacts':
+                    setData({
+                        departments: allData?.departments,
+                        groups: allData?.groups,
+                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Contacto')
+                    });
+                    break;
+                case 'temporaries':
+                    setData({
+                        departments: allData?.departments,
+                        groups: allData?.groups,
+                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Provisório')
+                    });
+                    break;
+                default:
+                    console.log(`Não há dados para essa entidade ${entity}`);
+            }
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
         }

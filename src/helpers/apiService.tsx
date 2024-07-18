@@ -12,19 +12,19 @@ interface BodyData {
 
 
 export const fetchAllAttendances = async () => {
-    const response = await fetchWithAuth(`GetAllAttendances`);
-    if (!response.ok) throw new Error('Failed to fetch attendances');
+    const response = await fetchWithAuth(`Attendances/GetAllAttendances`);
+    if (!response.ok) return;
     return response.json();
 };
 
 export const fetchAllAttendancesBetweenDates = async (startDate: string, endDate: string) => {
-    const response = await fetchWithAuth(`GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
-    if (!response.ok) throw new Error('Failed to fetch attendances between dates');
+    const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
+    if (!response.ok) return;
     return response.json();
 };
 
 export const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
-    const response = await fetchWithAuth(`CreatedAttendanceTime`, {
+    const response = await fetchWithAuth(`Attendances/CreatedAttendanceTime`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
 };
 
 export const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
-    const response = await fetchWithAuth(`UpdatedAttendanceTime?attendanceTimeId=${attendance.attendanceTimeId}`, {
+    const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime?attendanceTimeId=${attendance.attendanceTimeId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
 };
 
 export const deleteAttendance = async (attendanceTimeId: string) => {
-    const response = await fetchWithAuth(`DeleteAttendanceTime?attendanceTimeId=${attendanceTimeId}`, {
+    const response = await fetchWithAuth(`Attendances/DeleteAttendanceTime?attendanceTimeId=${attendanceTimeId}`, {
         method: 'DELETE',
     });
     if (!response.ok) return;

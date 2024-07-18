@@ -27,6 +27,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataProps {
   onSelectEmployees: (employeeIds: string[]) => void;
+  entity: "all" | "employees" | "external employees" | "users" | "visitors" | "contacts" | "temporaries";
 }
 
 // Função para filtrar os itens
@@ -64,7 +65,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
+export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
   const { data, fetchAllData } = useContext(PersonsContext) as PersonsContextType;
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,10 +74,34 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
 
-  /* // Busca os dados ao carregar o componente
+  // Busca os dados ao carregar o componente de acordo com a entidade
   useEffect(() => {
-    fetchAllData();
-  }, [fetchAllData]); */
+    switch (entity) {
+      case 'all':
+        fetchAllData();
+        break;
+      case 'employees':
+        fetchAllData('employees');
+        break;
+      case 'external employees':
+        fetchAllData('external employees');
+        break;
+      case 'users':
+        fetchAllData('users');
+        break;
+      case 'visitors':
+        fetchAllData('visitors');
+        break;
+      case 'contacts':
+        fetchAllData('contacts');
+        break;
+      case 'temporaries':
+        fetchAllData('temporaries');
+        break;
+      default:
+        console.log('Unknown entity type');
+    }
+  }, [fetchAllData, entity]);
 
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {

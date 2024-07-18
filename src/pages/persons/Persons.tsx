@@ -119,7 +119,7 @@ export const Persons = () => {
                 <div className="content-container">
                     <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewData onSelectEmployees={handleSelectEmployees} />
+                            <TreeViewData onSelectEmployees={handleSelectEmployees} entity='all' />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
