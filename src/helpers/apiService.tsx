@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { Category, Department, Devices, Employee, EmployeeAttendanceTimes, ExternalEntity, ExternalEntityTypes, Group, Profession, Zone } from "./Types";
+import { Category, Department, Devices, Employee, EmployeeAttendanceTimes, EmployeeCard, ExternalEntity, ExternalEntityTypes, Group, Profession, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -682,3 +682,61 @@ export const deleteZone = async (zoneID: string) => {
     }
     return response.json();
 };
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DOS CARTÕES DOS FUNCIONÁRIOS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllEmployeeCards = async () => {
+    const response = await fetchWithAuth(`Employees/GetAllCardsEmployees`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const fetchEmployeeCardDataByEmployeeID = async (employeeID: string) => {
+    const response = await fetchWithAuth(`Employees/GetEmployeeByIdCard/${employeeID}`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const addEmployeeCard = async (employeeCard: EmployeeCard) => {
+    const response = await fetchWithAuth(`Employees/CreateEmployeeCard`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employeeCard)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const updateEmployeeCard = async (employeeCard: EmployeeCard) => {
+    const response = await fetchWithAuth(`Employees/UpdateEmployeeCard/${employeeCard.cardId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employeeCard)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const deleteEmployeeCard = async (cardId: string) => {
+    const response = await fetchWithAuth(`Employees/DeleteEmployeeCard/${cardId}`, {
+        method: 'DELETE'
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}

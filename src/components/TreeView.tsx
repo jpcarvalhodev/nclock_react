@@ -66,7 +66,9 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
-  const { data, fetchAllData } = useContext(PersonsContext) as PersonsContextType;
+  const { data,
+    fetchAllData
+  } = useContext(PersonsContext) as PersonsContextType;
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -99,7 +101,7 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
         fetchAllData('temporaries');
         break;
       default:
-        console.log('Unknown entity type');
+        console.log('Tipo de entidade desconhecido');
     }
   }, [fetchAllData, entity]);
 
@@ -207,7 +209,7 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
     setFilteredItems(treeItems);
     const allExpandableIds = collectAllExpandableItemIds(treeItems);
     setExpandedIds(allExpandableIds);
-  }, [data]);
+  }, [data, fetchAllData]);
 
   // Filtra os itens ao mudar o termo de pesquisa
   useEffect(() => {

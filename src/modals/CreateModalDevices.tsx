@@ -1,7 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
-import { Devices } from "../helpers/Types";
-import { fetchWithAuth } from "../components/FetchWithAuth";
 import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";

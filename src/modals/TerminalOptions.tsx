@@ -94,17 +94,21 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
                     <Modal.Title>Opções</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Tabs defaultActiveKey="general" id="uncontrolled-tab-example" className="terminal-options-tabs mb-3">
+                    <Tabs defaultActiveKey="general" id="general-tab" className="terminal-options-tabs mb-3">
                         <Tab eventKey="general" title="Geral">
                             <Form>
-                                <Form.Group as={Col} controlId="formBasicEmail" className='terminal-options-checkboxes custom-size'>
-                                    <Form.Label>Tempo de espera nas ligações (ms)</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} controlId="formBasicEmail" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Tempo de espera nas ligações (ms)</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="formBasicRetry" className='terminal-options-checkboxes custom-size'>
-                                    <Form.Label>Tempo entre tentativas nas ligações</Form.Label>
-                                    <Form.Control type="time" />
+                                <Form.Group as={Col} controlId="formBasicRetry" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Tempo entre tentativas nas ligações</Form.Label>
+                                        <Form.Control type="time" />
+                                    </div>
                                 </Form.Group>
 
                                 <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes'>
@@ -117,29 +121,37 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
                                     <Form.Check type="checkbox" />
                                 </Form.Group>
 
-                                <Form.Group as={Col} className='terminal-options-checkboxes custom-size'>
-                                    <Form.Label>Acertar data/hora em intervalos de:</Form.Label>
-                                    <Form.Control as="select">
-                                        <option>1:00</option>
-                                        <option>2:00</option>
-                                        <option>12:00</option>
-                                        <option>24:00</option>
-                                    </Form.Control>
+                                <Form.Group as={Col} className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Acertar data/hora em intervalos de</Form.Label>
+                                        <Form.Control as="select">
+                                            <option>1:00</option>
+                                            <option>2:00</option>
+                                            <option>12:00</option>
+                                            <option>24:00</option>
+                                        </Form.Control>
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} className='terminal-options-checkboxes custom-size'>
-                                    <Form.Label>Tempo de abertura do relé:</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Tempo de abertura do relé</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} className='terminal-options-checkboxes custom-size'>
-                                    <Form.Label>Nº de tarefas em simultâneo:</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Nº de tarefas em simultâneo</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} className='terminal-options-checkboxes custom-size'>
-                                    <Form.Label>Tempo de espera pela execução de tarefas (min.):</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Tempo de espera pela execução de tarefas (min.)</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
                                 <Form.Group as={Col} className='terminal-options-checkboxes'>
@@ -151,188 +163,174 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
                         <Tab eventKey="systemActivity" title="Actividade do sistema">
                             <Form>
                                 <Form.Group as={Col} controlId="serviceLanguage">
-                                    <Form.Label>Idioma do serviço:</Form.Label>
-                                    <Form.Control as="select" defaultValue="Português">
-                                        <option value="Português">Português</option>
-                                        <option value="Inglês">Inglês</option>
-                                    </Form.Control>
+                                    <div className="input-container" style={{ marginBottom: 15 }}>
+                                        <Form.Label>Idioma do serviço:</Form.Label>
+                                        <Form.Control as="select" defaultValue="Português">
+                                            <option value="Português">Português</option>
+                                            <option value="Inglês">Inglês</option>
+                                        </Form.Control>
+                                    </div>
                                 </Form.Group>
 
                                 <Form.Group as={Col} controlId="saveOptions">
                                     <Form.Label>Guardar:</Form.Label>
                                     <div className="mb-3">
-                                        <Form.Check
-                                            type="checkbox"
-                                            label="Ficheiro de texto"
-                                            id="textFile"
-                                        />
-                                        <Form.Check
-                                            type="checkbox"
-                                            label="Base de dados"
-                                            id="database"
-                                        />
-                                        <Form.Check
-                                            type="checkbox"
-                                            label="Eventos do Windows"
-                                            id="windowsEvents"
-                                        />
+                                        <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                            <Form.Label>Ficheiro de texto</Form.Label>
+                                            <Form.Check type="checkbox" />
+                                        </Form.Group>
+                                        <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                            <Form.Label>Base de dados</Form.Label>
+                                            <Form.Check type="checkbox" />
+                                        </Form.Group>
+                                        <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                            <Form.Label>Eventos do Windows</Form.Label>
+                                            <Form.Check type="checkbox" />
+                                        </Form.Group>
                                     </div>
                                 </Form.Group>
 
                                 <Form.Group as={Col} controlId="level">
-                                    <Form.Label>Nível:</Form.Label>
-                                    <Form.Control as="select" >
-                                        <option value="Nivel 1">Nivel 1</option>
-                                        <option value="Nivel 2">Nivel 2</option>
-                                        <option value="Nivel 3">Nivel 3</option>
-                                    </Form.Control>
+                                    <div className="input-container">
+                                        <Form.Label>Nível:</Form.Label>
+                                        <Form.Control as="select" >
+                                            <option value="Nivel 1">Nivel 1</option>
+                                            <option value="Nivel 2">Nivel 2</option>
+                                            <option value="Nivel 3">Nivel 3</option>
+                                        </Form.Control>
+                                    </div>
                                 </Form.Group>
                             </Form>
                         </Tab>
                         <Tab eventKey="scheduledTasks" title="Tarefas Agendadas">
                             <Form>
-                                <Form.Group as={Col} controlId="noCreateAlterOnFetch">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Não criar/alterar utilizadores na recolha"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Não criar/alterar utilizadores na recolha</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="noDeleteOnSend">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Não apagar utilizadores no envio"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Não apagar utilizadores no envio</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="fetchSyncUsers">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Recolher/Sincronizar utilizadores"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Recolher/Sincronizar utilizadores</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="fetchSendUsers">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Recolher/Enviar utilizadores"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Recolher/Enviar utilizadores</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="fetchUsers">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Recolher utilizadores"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Recolher utilizadores</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="syncUsers">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Sincronizar utilizador"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Sincronizar utilizador</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="sendUsers">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Enviar utilizadores"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Enviar utilizadores</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="restartTerminals">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Reiniciar terminais"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Reiniciar terminais</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="importMovementFiles">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Importar ficheiros de movimentos:"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Importar ficheiros de movimentos</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
-
-                                <Form.Group as={Col} controlId="clearMovementsAndMemory">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Recolher movimentos e limpar memória"
-                                    />
+                                <Form.Group as={Col} controlId="formBasicCheckbox" className='terminal-options-checkboxes-2'>
+                                    <Form.Label>Recolher movimentos e limpar memória</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
                             </Form>
                         </Tab>
                         <Tab eventKey="protocol" title="Protocolo">
                             <Form>
-                                <Form.Group as={Col} controlId="appServer">
-                                    <Form.Label>Servidor de aplicações</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} controlId="appServer" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Servidor de aplicações</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="appServerPort">
-                                    <Form.Label>Porta</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} controlId="appServerPort" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Porta</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="usePing">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Usar comando ping para testar conectividade de equipamentos"
-                                    />
+                                <Form.Group as={Col} controlId="usePing" className='terminal-options-checkboxes'>
+                                    <Form.Label>Usar comando ping para testar conectividade de equipamentos</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="pushServer">
-                                    <Form.Label>Servidor Push</Form.Label>
-                                    <Form.Control type="text" />
+                                <Form.Group as={Col} controlId="pushServer" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Servidor Push</Form.Label>
+                                        <Form.Control type="text" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="pushServerPort">
-                                    <Form.Label>Porta</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} controlId="pushServerPort" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Porta</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="IDServerLPR">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Ligação ao IDServerLPR"
-                                    />
+                                <Form.Group as={Col} controlId="IDServerLPR" className='terminal-options-checkboxes'>
+                                    <Form.Label>Ligação ao IDServerLPR</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="logT">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="T.log"
-                                    />
+                                <Form.Group as={Col} controlId="logT" className='terminal-options-checkboxes'>
+                                    <Form.Label>T.log</Form.Label>
+                                    <Form.Check type="checkbox" />
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="offlineAlerts">
-                                    <Form.Label>Alertas de terminais offline</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} controlId="offlineAlerts" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Alertas de terminais offline</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="offlineEmail">
-                                    <Form.Label>Email</Form.Label>
-                                    <Form.Control type="email" />
+                                <Form.Group as={Col} controlId="offlineEmail" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Email</Form.Label>
+                                        <Form.Control type="email" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="ftpIP">
-                                    <Form.Label>IP</Form.Label>
-                                    <Form.Control type="text" />
+                                <Form.Group as={Col} controlId="ftpIP" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>IP</Form.Label>
+                                        <Form.Control type="text" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="ftpPort">
-                                    <Form.Label>Porta</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} controlId="ftpPort" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Porta</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="ftpTimeout">
-                                    <Form.Label>Tempo de espera (segundos)</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} controlId="ftpTimeout" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Tempo de espera (segundos)</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
 
-                                <Form.Group as={Col} controlId="logRemovalDays">
-                                    <Form.Label>Remover log após (Dias)</Form.Label>
-                                    <Form.Control type="number" />
+                                <Form.Group as={Col} controlId="logRemovalDays" className='terminal-options-checkboxes'>
+                                    <div className="input-container">
+                                        <Form.Label>Remover log após (Dias)</Form.Label>
+                                        <Form.Control type="number" />
+                                    </div>
                                 </Form.Group>
                             </Form>
                         </Tab>

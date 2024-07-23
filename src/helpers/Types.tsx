@@ -188,8 +188,10 @@ export type EmployeeDevices = {
 };
 
 export type EmployeeCard = {
-    cardNumber: string;
+    [key: string]: any;
+    id: string;
     devicePassword: string;
     devicePrivelage: number;
     deviceEnabled: boolean;
+    cardNumber: string;
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { Row, Col, Form, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -6,9 +6,11 @@ import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { employeeFields } from '../helpers/Fields';
 import { toast } from 'react-toastify';
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
 import * as apiService from "../helpers/apiService";
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -42,6 +44,12 @@ interface UpdateModalProps<T extends Entity> {
 
 // Exporta o componente
 export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, entity, entityType, fields }: UpdateModalProps<T>) => {
+    const {
+        handleAddEmployee,
+        handleAddEmployeeCard,
+        handleUpdateEmployee,
+        handleUpdateEmployeeCard,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<T>({ ...entity });
     const [departments, setDepartments] = useState<Department[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -89,52 +97,53 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     // Função para buscar as entidades
     const fetchEntities = async () => {
-        const url = entityType === 'department' ? apiService.fetchAllDepartmentsEmployees : apiService.fetchAllGroupsEmployees;
+        const isDepartment = entityType === 'department';
         try {
-            const response = await url();
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            if (entityType === 'department') {
-                setDepartments(data);
+            const data = isDepartment ? await apiService.fetchAllDepartmentsEmployees() : await apiService.fetchAllGroupsEmployees();
+            const items = data.map((item: Department | Group) => ({
+                ...item,
+                code: (item.code)
+            }));
+
+            if (isDepartment) {
+                setDepartments(items as Department[]);
             } else {
-                setGroups(data);
+                setGroups(items as Group[]);
             }
         } catch (error) {
             console.error(`Erro ao buscar ${entityType === 'department' ? 'departamentos' : 'grupos'}:`, error);
         }
     }
 
-    // Função para adicionar um funcionário
-    const handleAddEmployee = async (employee: Employee) => {
-        try {
-            const data = await apiService.addEmployee(employee);
-            setEmployees([...employees, data]);
-            toast.success(data.value || 'Funcionário adicionado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar novo funcionário:', error);
-        } finally {
-            setShowEmployeeModal(false);
-            fetchEntities();
+    // Função para adicionar um funcionário e um cartão
+    const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
+        await handleAddEmployee(employee as Employee);
+        const employeeCard = {
+            ...card,
+            employeeId: employee.employeeID
+        };
+        await handleAddEmployeeCard(employeeCard as EmployeeCard);
+        fetchEntities();
+        setShowEmployeeModal(false);
+    }
+ 
+    // Função para atualizar um funcionário e um cartão
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+        await handleUpdateEmployee(employee);
+        const employeeCard = {
+            ...card,
+            employeeId: employee.employeeID
+        };
+        if (employeeCard && Object.keys(employeeCard).length > 0) {
+            if (card.cardID) {
+                await handleUpdateEmployeeCard(employeeCard as EmployeeCard);
+            } else {
+                await handleAddEmployeeCard(employeeCard as EmployeeCard);
+            }
         }
-    };
-
-    // Função para atualizar um funcionário
-    const handleUpdateEmployee = async (employee: Employee) => {
-        try {
-            const updatedEmployee = await apiService.updateEmployee(employee);
-            setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
-            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar funcionário:', error);
-        } finally {
-            setShowUpdateEmployeeModal(false);
-            fetchEntities();
-        }
-    };
+        fetchEntities();
+        setShowUpdateEmployeeModal(false);
+    }
 
     // Função para lidar com o clique em um funcionário
     const handleEmployeeClick = (employee: Employee) => {
@@ -162,20 +171,13 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const departmentResponse = await apiService.fetchAllDepartments();
-            const groupResponse = await apiService.fetchAllGroups();
+            const departments = await apiService.fetchAllDepartments();
+            const groups = await apiService.fetchAllGroups();
 
-            if (departmentResponse.ok && groupResponse.ok) {
-                const departments = await departmentResponse.json();
-                const groups = await groupResponse.json();
-
-                setDropdownData({
-                    departments: departments,
-                    groups: groups
-                });
-            } else {
-                toast.error('Erro ao buscar os dados de departamentos e grupos.');
-            }
+            setDropdownData({
+                departments: departments,
+                groups: groups
+            });
         } catch (error) {
             toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
             console.error(error);
@@ -393,7 +395,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     title='Adicionar Funcionário'
                     open={showEmployeeModal}
                     onClose={() => setShowEmployeeModal(false)}
-                    onSave={handleAddEmployee}
+                    onSave={addEmployeeAndCard}
                     fields={employeeFields}
                     initialValues={{}}
                 />
@@ -403,7 +405,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     title='Atualizar Funcionário'
                     open={showUpdateEmployeeModal}
                     onClose={() => setShowUpdateEmployeeModal(false)}
-                    onUpdate={handleUpdateEmployee}
+                    onUpdate={updateEmployeeAndCard}
                     entity={selectedEmployee}
                     fields={employeeFields}
                 />

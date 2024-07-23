@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useCallback } from 'react';
 import { ReactNode } from 'react';
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -22,6 +22,10 @@ export interface PersonsContextType {
     handleAddEmployee: (employee: Employee) => Promise<void>;
     handleUpdateEmployee: (employee: Employee) => Promise<void>;
     handleDeleteEmployee: (employeeID: string) => Promise<void>;
+    fetchEmployeeCardData: (employeeID: string) => Promise<EmployeeCard[]>;
+    handleAddEmployeeCard: (employeeCard: EmployeeCard) => Promise<void>;
+    handleUpdateEmployeeCard: (employeeCard: EmployeeCard) => Promise<void>;
+    handleDeleteEmployeeCard: (cardId: string) => Promise<void>;
 }
 
 // Expandindo as opções de busca
@@ -36,6 +40,7 @@ export const PersonsContext = createContext<PersonsContextType | undefined>(unde
 // Provedor do contexto
 export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [employeeCards, setEmployeeCards] = useState<EmployeeCard[]>([]);
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -154,6 +159,50 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Define a função para buscar cartões de funcionários
+    const fetchEmployeeCardData = async (employeeID: string): Promise<EmployeeCard[]> => {
+        try {
+            const employeeCardsData = await apiService.fetchEmployeeCardDataByEmployeeID(employeeID);
+            setEmployeeCards(employeeCardsData);
+            return employeeCardsData;
+        } catch (error) {
+            console.error('Erro ao buscar cartões de funcionários:', error);
+            return [];
+        }
+    };
+
+    // Define a função de adição de cartões de funcionários
+    const handleAddEmployeeCard = async (employeeCard: EmployeeCard) => {
+        try {
+            const employeesData = await apiService.addEmployeeCard(employeeCard);
+            setEmployeeCards([...employeeCards, employeesData]);
+            toast.success(employeesData.value || 'Cartão adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar novo cartão:', error);
+        }
+    };
+
+    // Define a função de atualização de cartões de funcionários
+    const handleUpdateEmployeeCard = async (employeeCard: EmployeeCard) => {
+        try {
+            const updatedEmployeeCard = await apiService.updateEmployeeCard(employeeCard);
+            setEmployeeCards(prevEmployeeCards => prevEmployeeCards.map(emp => emp.cardID === updatedEmployeeCard.cardID ? updatedEmployeeCard : emp));
+            toast.success(updatedEmployeeCard.value || 'Cartão atualizado com sucesso');
+        } catch (error) {
+            console.error('Erro ao atualizar cartão:', error);
+        }
+    };
+
+    // Define a função de apagar cartões de funcionários
+    const handleDeleteEmployeeCard = async (cardId: string) => {
+        try {
+            const deleteEmployeeCard = await apiService.deleteEmployeeCard(cardId);
+            toast.success(deleteEmployeeCard.value || 'Cartão apagado com sucesso!')
+        } catch (error) {
+            console.error('Erro ao apagar cartão:', error);
+        }
+    }
+
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,
@@ -165,6 +214,10 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,
+        fetchEmployeeCardData,
+        handleAddEmployeeCard,
+        handleUpdateEmployeeCard,
+        handleDeleteEmployeeCard
     };
 
     return (

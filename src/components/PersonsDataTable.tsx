@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { Button } from 'react-bootstrap';
@@ -44,6 +44,8 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         fetchAllEmployees,
         handleUpdateEmployee,
         handleDeleteEmployee,
+        handleUpdateEmployeeCard,
+        handleAddEmployeeCard,
     } = useContext(PersonsContext) as PersonsContextType;
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -68,23 +70,23 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     };
 
     // Função para atualizar um funcionário
-    const updateEmployee = async (employee: Employee) => {
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
         await handleUpdateEmployee(employee);
+        if (card.cardId) {
+            await handleUpdateEmployeeCard(card as EmployeeCard);
+        } else {
+            await handleAddEmployeeCard(card as EmployeeCard);
+        }
         setShowUpdateModal(false);
         refreshEmployees();
-    }
+    };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee(employeeId);
         setShowDeleteModal(false);
         refreshEmployees();
-    }
-
-    // Busca os funcionários
-    useEffect(() => {
-        fetchEmployees();
-    }, []);
+    };
 
     // Atualiza a lista de funcionários
     const refreshEmployees = () => {
@@ -279,7 +281,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                             open={showUpdateModal}
                             onClose={handleCloseUpdateModal}
                             onDuplicate={handleDuplicateAndClose}
-                            onUpdate={updateEmployee}
+                            onUpdate={updateEmployeeAndCard}
                             entity={selectedEmployee}
                             fields={employeeFields}
                             title="Atualizar Pessoa"

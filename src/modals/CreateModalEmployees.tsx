@@ -5,7 +5,7 @@ import '../css/PagesStyles.css';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
-import { Employee } from '../helpers/Types';
+import { Employee, EmployeeCard } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
@@ -27,7 +27,7 @@ interface Props<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
+    onSave: (data: Partial<T>, cardData: Partial<EmployeeCard>) => void;
     fields: FieldConfig[];
     initialValues: Partial<T>;
 }
@@ -35,6 +35,7 @@ interface Props<T> {
 // Define o componente
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
+    const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
@@ -92,9 +93,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Função para buscar os funcionários e definir o próximo número de matrícula
     const fetchEmployeesAndSetNextEnrollNumber = async () => {
-        const response = await apiService.fetchAllEmployees();
-        if (response.ok) {
-            const employees: Employee[] = await response.json();
+        try {
+            const employees: Employee[] = await apiService.fetchAllEmployees();
             const maxEnrollNumber = employees.reduce((max: number, employee: Employee) => {
                 const currentEnrollNumber = parseInt(employee.enrollNumber);
                 return Math.max(max, currentEnrollNumber);
@@ -103,7 +103,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 ...prevState,
                 enrollNumber: (maxEnrollNumber + 1).toString()
             }));
-        } else {
+
+        } catch {
             toast.error('Erro ao buscar o número de matrícula dos funcionários.');
         }
     };
@@ -111,27 +112,18 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const departmentsResponse = await apiService.fetchAllDepartments();
-            const groupsResponse = await apiService.fetchAllGroups();
-            const professionsResponse = await apiService.fetchAllProfessions();
-            const zonesResponse = await apiService.fetchAllZones();
-            const externalEntitiesResponse = await apiService.fetchAllExternalEntities();
-            if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
-                const departments = await departmentsResponse.json();
-                const groups = await groupsResponse.json();
-                const professions = await professionsResponse.json();
-                const zones = await zonesResponse.json();
-                const externalEntities = await externalEntitiesResponse.json();
-                setDropdownData({
-                    departmentId: departments,
-                    groupId: groups,
-                    professionId: professions,
-                    zoneId: zones,
-                    externalEntityId: externalEntities
-                });
-            } else {
-                return;
-            }
+            const departments = await apiService.fetchAllDepartments();
+            const groups = await apiService.fetchAllGroups();
+            const professions = await apiService.fetchAllProfessions();
+            const zones = await apiService.fetchAllZones();
+            const externalEntities = await apiService.fetchAllExternalEntities();
+            setDropdownData({
+                departmentId: departments,
+                groupId: groups,
+                professionId: professions,
+                zoneId: zones,
+                externalEntityId: externalEntities
+            });
         } catch (error) {
             console.error('Erro ao buscar os dados de departamentos e grupos', error);
         }
@@ -155,7 +147,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 image.onload = () => {
                     let width = image.width;
                     let height = image.height;
-    
+
                     if (width > 512 || height > 512) {
                         if (width > height) {
                             height *= 512 / width;
@@ -165,13 +157,13 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             height = 512;
                         }
                     }
-    
+
                     const canvas = document.createElement('canvas');
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(image, 0, 0, width, height);
-    
+
                     const dataUrl = canvas.toDataURL('image/png');
                     setProfileImage(dataUrl);
                     setFormData({ ...formData, photo: dataUrl });
@@ -180,7 +172,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             };
             reader.readAsDataURL(file);
         }
-    };    
+    };
 
     // Função para acionar o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
@@ -245,9 +237,20 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }
     };
 
+    // Função para lidar com a mudança de dados do cartão
+    const handleCardChange = (e: ChangeEvent<FormControlElement>) => {
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
+        setCardFormData(prevState => ({
+            ...prevState,
+            [name]: parsedValue
+        }));
+    };
+
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
         setFormData({});
+        setCardFormData({});
         setProfileImage(null);
         onClose();
     }
@@ -263,7 +266,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Função para lidar com o salvamento
     const handleSave = () => {
-        onSave(formData as T);
+        onSave(formData as T, cardFormData as EmployeeCard);
     };
 
     // Opções do tipo
@@ -440,6 +443,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                         <Nav.Item>
                             <Nav.Link eventKey="dadosProfissionais">Dados Profissionais</Nav.Link>
                         </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="cartoes">Cartão</Nav.Link>
+                        </Nav.Item>
                     </Nav>
                     <Tab.Content>
                         <Tab.Pane eventKey="dadosPessoais">
@@ -549,6 +555,58 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                             </Form.Group>
                                         </Col>
                                     ))}
+                                </Row>
+                            </Form>
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="cartoes">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                <Row>
+                                    <Col md={3}>
+                                        <Form.Group controlId="formDeviceEnabled" className="d-flex align-items-center mb-3">
+                                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Dispositivo Activado:</Form.Label>
+                                            <Form.Check
+                                                type="switch"
+                                                id="custom-switch-device-enabled"
+                                                checked={cardFormData.deviceEnabled || false}
+                                                onChange={(e) => setCardFormData({ ...cardFormData, deviceEnabled: e.target.checked })}
+                                                className="ms-auto"
+                                                label=""
+                                                name="deviceEnabled"
+                                            />
+                                        </Form.Group>
+                                        <Form.Group controlId="formCardNumber" style={{ marginTop: 30 }}>
+                                            <Form.Label>Número do Cartão</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                className="custom-input-height custom-select-font-size"
+                                                value={cardFormData.cardNumber || ''}
+                                                onChange={handleCardChange}
+                                                name="cardNumber"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                        <Form.Group controlId="formDevicePrivelage">
+                                            <Form.Label>Privilégio do Dispositivo</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                className="custom-input-height custom-select-font-size"
+                                                value={cardFormData.devicePrivelage || ''}
+                                                onChange={handleCardChange}
+                                                name="devicePrivelage"
+                                            />
+                                        </Form.Group>
+                                        <Form.Group controlId="formDevicePassword">
+                                            <Form.Label>Senha do Dispositivo</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                className="custom-input-height custom-select-font-size"
+                                                value={cardFormData.devicePassword || ''}
+                                                onChange={handleCardChange}
+                                                name="devicePassword"
+                                            />
+                                        </Form.Group>
+                                    </Col>
                                 </Row>
                             </Form>
                         </Tab.Pane>
