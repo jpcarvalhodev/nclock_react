@@ -77,7 +77,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   // Busca os dados ao carregar o componente
   useEffect(() => {
     fetchAllData();
-  }, [fetchAllData]);
+  }, [data]);
 
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   useEffect(() => {

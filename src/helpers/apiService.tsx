@@ -718,6 +718,7 @@ export const addEmployeeCard = async (employeeCard: EmployeeCard) => {
 }
 
 export const updateEmployeeCard = async (employeeCard: EmployeeCard) => {
+    
     const response = await fetchWithAuth(`Employees/UpdateEmployeeCard/${employeeCard.cardId}`, {
         method: 'PUT',
         headers: {

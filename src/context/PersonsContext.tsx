@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
+import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -176,7 +177,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const employeesData = await apiService.addEmployeeCard(employeeCard);
             setEmployeeCards([...employeeCards, employeesData]);
-            toast.success(employeesData.value || 'Cartão adicionado com sucesso!');
+            if (employeesData.length > 0) {
+                toast.success(employeesData.value || 'Cartão adicionado com sucesso!');
+            }
         } catch (error) {
             console.error('Erro ao adicionar novo cartão:', error);
         }
@@ -187,7 +190,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const updatedEmployeeCard = await apiService.updateEmployeeCard(employeeCard);
             setEmployeeCards(prevEmployeeCards => prevEmployeeCards.map(emp => emp.cardID === updatedEmployeeCard.cardID ? updatedEmployeeCard : emp));
-            toast.success(updatedEmployeeCard.value || 'Cartão atualizado com sucesso');
+            if (updatedEmployeeCard.length > 0) {
+                toast.success(updatedEmployeeCard.value || 'Cartão adicionado com sucesso!');
+            }
         } catch (error) {
             console.error('Erro ao atualizar cartão:', error);
         }
