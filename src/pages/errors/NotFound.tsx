@@ -15,7 +15,7 @@ export const NotFound = () => {
               <p>
                 Você não pode acessar esta página ou o servidor está fora do ar. Se necessário, contacte o administrador do sistema.
               </p>
-              <Link to="/login&forgot/login">
+              <Link to="/">
                 <Button className='link-button'>Voltar para o login</Button>
               </Link>
             </Alert>

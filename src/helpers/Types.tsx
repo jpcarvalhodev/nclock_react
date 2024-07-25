@@ -135,7 +135,7 @@ export type EmployeeAttendanceTimes = {
     deviceId: string;
     deviceNumber: number;
     employeeId: string;
-    enrollNumber: number;
+    enrollNumber: string;
     employeeName: string;
     verifyMode: number;
     inOutMode: number;

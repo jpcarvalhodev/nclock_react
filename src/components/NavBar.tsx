@@ -375,7 +375,7 @@ export const NavBar = () => {
 		localStorage.removeItem('showNcardTab');
 		localStorage.removeItem('showNviewTab');
 		localStorage.removeItem('showNsecurTab');
-		navigate('/login&forgot/login');
+		navigate('/');
 	};
 
 	// Atualiza o estado do ribbon no localStorage

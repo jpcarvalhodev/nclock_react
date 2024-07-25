@@ -80,7 +80,7 @@ function AnimatedRoutes() {
         >
           <div ref={nodeRef} style={{ display: showContent ? 'block' : 'none' }}>
             <Routes location={location}>
-              <Route path="/login&forgot/login" element={<Login />} />
+              <Route path="/" element={<Login />} />
               <Route path="/login&forgot/forgot-password" element={<ForgotPassword />} />
               <Route path='/login&forgot/reset-password' element={<ResetPassword />} />
               <Route path="*" element={<Unauthorized />} />

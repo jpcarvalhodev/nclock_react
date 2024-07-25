@@ -112,7 +112,7 @@ export const employeeAttendanceTimesFields = [
     { key: 'deviceId', label: 'Dispositivo', type: 'dropdown' },
     { key: 'deviceNumber', label: 'Número do Dispositivo', type: 'number' },
     { key: 'employeeId', label: 'Funcionário', type: 'dropdown', required: true},
-    { key: 'enrollNumber', label: 'Número', type: 'number' },
+    { key: 'enrollNumber', label: 'Número', type: 'string' },
     { key: 'employeeName', label: 'Nome do Funcionário', type: 'string' },
     { key: 'inOutMode', label: 'Modo de Entrada/Saída', type: 'number' },
     { key: 'observation', label: 'Observação', type: 'string' },

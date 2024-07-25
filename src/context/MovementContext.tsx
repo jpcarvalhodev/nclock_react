@@ -21,6 +21,7 @@ export interface AttendanceContextType {
     fetchAllAttendances: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     fetchAllAttendancesBetweenDates: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     handleAddAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
+    handleAddImportedAttendance: (attendance: Partial<EmployeeAttendanceTimes>) => Promise<void>;
     handleUpdateAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
     handleDeleteAttendance: (attendanceTimeId: string) => Promise<void>;
 }
@@ -101,6 +102,19 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para adicionar assiduidades importadas
+    const handleAddImportedAttendance = async (attendances: Partial<EmployeeAttendanceTimes>) => {
+        try {
+            console.log(attendances);
+            const newAttendance = await apiService.addImportedAttendance(attendances);
+            console.log(newAttendance);
+            setAttendance([...attendance, newAttendance]);
+            toast.success(newAttendance.value || 'assiduidades adicionadas com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar nova assiduidade:', error);
+        }
+    };
+
     // Função para atualizar uma assiduidade
     const handleUpdateAttendance = async (attendances: EmployeeAttendanceTimes) => {
         try {
@@ -133,6 +147,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
         handleAddAttendance,
+        handleAddImportedAttendance,
         handleUpdateAttendance,
         handleDeleteAttendance
     };

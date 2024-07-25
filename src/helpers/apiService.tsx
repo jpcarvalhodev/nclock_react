@@ -35,6 +35,18 @@ export const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
     return response.json();
 };
 
+export const addImportedAttendance = async (attendance: Partial<EmployeeAttendanceTimes>) => {
+    const response = await fetchWithAuth(`Attendances/CreateImportAttendanceTimes`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(attendance)
+    });
+    if (!response.ok) return;
+    return response.json();
+};
+
 export const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
     const response = await fetchWithAuth(`Attendances/UpdatedAttendanceTime?attendanceTimeId=${attendance.attendanceTimeId}`, {
         method: 'PUT',

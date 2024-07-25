@@ -7,7 +7,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, EmployeeDevices } from "../../helpers/Types";
+import { Devices, EmployeeAttendanceTimes, EmployeeDevices } from "../../helpers/Types";
 import { deviceFields, employeeDeviceFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -21,6 +21,7 @@ import palmScan from "../../assets/img/terminais/palmScan.png";
 import card from "../../assets/img/terminais/card.png";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 import React from "react";
+import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -67,6 +68,9 @@ export const Terminals = () => {
         handleUpdateDevice,
         handleDeleteDevice,
     } = useContext(TerminalsContext) as DeviceContextType;
+    const {
+        handleAddImportedAttendance,
+    } = useContext(AttendanceContext) as AttendanceContextType;
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [initialData, setInitialData] = useState<Devices | null>(null);
@@ -95,6 +99,9 @@ export const Terminals = () => {
     const [loadingDeleteSelectedUsers, setLoadingDeleteSelectedUsers] = useState(false);
     const [loadingSendSelectedUsers, setLoadingSendSelectedUsers] = useState(false);
     const [loadingFetchSelectedUsers, setLoadingFetchSelectedUsers] = useState(false);
+    const [loadingImportAttendance, setLoadingImportAttendance] = useState(false);
+    const [loadingImportAttendanceLog, setLoadingImportAttendanceLog] = useState(false);
+    const [loadingImportUsers, setLoadingImportUsers] = useState(false);
     const [showAllUsers, setShowAllUsers] = useState(true);
     const [showFingerprintUsers, setShowFingerprintUsers] = useState(false);
     const [showFacialRecognitionUsers, setShowFacialRecognitionUsers] = useState(false);
@@ -517,34 +524,46 @@ export const Terminals = () => {
         setTask(prevTasks => [...prevTasks, newTask]);
     };
 
-    // Função para controlar a mudança de arquivo
+    // Função para controlar a mudança de arquivo dos movimentos
     const handleAttendanceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 const result = e.target?.result;
-                if (typeof result === 'string' || typeof result === 'number') {
-                    const parsedData = parseAttendanceData(result);
-                    //sendToApi(parsedData);
+                if (typeof result === 'string') {
+                    const fileName = file.name;
+                    const parsedData = parseAttendanceData(result, fileName);
+                    await handleAddImportedAttendance(parsedData);
                 } else {
                     console.error('Erro: o conteúdo do arquivo não é uma string ou number');
                 }
             };
+            setLoadingImportAttendance(false);
+            setLoadingImportAttendanceLog(false);
             reader.readAsText(file);
         }
     };
 
     // Função para formatar os dados para a API
-    const parseAttendanceData = (text: string) => {
+    const parseAttendanceData = (text: string, fileName: string): Partial<EmployeeAttendanceTimes> => {
+        const deviceSN = fileName.split('_')[0];
         const lines = text.split('\n');
-        const data = lines.map(line => {
-            const [enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode] = line.trim().split(/\s+/);
-            return { enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode };
+        return lines.map(line => {
+            const [enrollNumber, attendanceTime, deviceNumber, inOutMode, verifyMode, workCode] = line.trim().split(/\s+/);
+            return {
+                deviceSN: deviceSN,
+                enrollNumber: enrollNumber,
+                attendanceTime: attendanceTime,
+                deviceNumber: parseInt(deviceNumber, 10),
+                inOutMode: parseInt(inOutMode, 10),
+                verifyMode: parseInt(verifyMode, 10),
+                workCode: parseInt(workCode, 10),
+            };
         });
-        return data;
     };
 
+    // Função para controlar a mudança de arquivo dos utilizadores
     const handleUserFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
         if (file) {
@@ -558,6 +577,7 @@ export const Terminals = () => {
                     console.error('Erro: o conteúdo do arquivo não é uma string ou number');
                 }
             };
+            setLoadingImportUsers(false);
             reader.readAsText(file);
         }
     };
@@ -573,8 +593,9 @@ export const Terminals = () => {
     };
 
     // Funções para acionar o popup de seleção de arquivo
-    const triggerFileAttendanceSelectPopup = () => fileInputAttendanceRef.current?.click();
-    const triggerFileUserSelectPopup = () => fileInputUserRef.current?.click();
+    const triggerFileAttendanceSelectPopup = () => { fileInputAttendanceRef.current?.click(); setLoadingImportAttendance(true); };
+    const triggerFileAttendanceLogSelectPopup = () => { fileInputAttendanceRef.current?.click(); setLoadingImportAttendanceLog(true); };
+    const triggerFileUserSelectPopup = () => { fileInputUserRef.current?.click(); setLoadingImportUsers(true); };
 
     // Define as colunas das transações
     const transactionColumns: TableColumn<Transaction>[] = [
@@ -1065,7 +1086,7 @@ export const Terminals = () => {
                         </Tab>
                         <Tab eventKey="configuration" title="Configurações">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncTime}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncTime}>
                                     {loadingSyncTime ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -1090,19 +1111,31 @@ export const Terminals = () => {
                         <Tab eventKey="files" title="Ficheiros">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
-                                    <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    {loadingImportAttendance ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Importar movimentos
                                 </Button>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileUserSelectPopup}>
-                                    <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    {loadingImportUsers ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Importar utilizadores
                                 </Button>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Importar biometria digital
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
-                                    <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceLogSelectPopup}>
+                                    {loadingImportAttendanceLog ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Importar movimentos do log
                                 </Button>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users">

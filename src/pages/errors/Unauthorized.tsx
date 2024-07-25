@@ -15,7 +15,7 @@ export const Unauthorized = () => {
               <p>
                 Seu acesso expirou, retorne e faça login novamente. Caso tenha problemas, contacte o administrador do sistema.
               </p>
-              <Link to="/login&forgot/login">
+              <Link to="/">
                 <Button className='link-button'>Voltar para o login</Button>
               </Link>
             </Alert>
