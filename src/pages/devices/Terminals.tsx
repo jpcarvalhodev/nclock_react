@@ -7,7 +7,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, EmployeeAttendanceTimes, EmployeeDevices } from "../../helpers/Types";
+import { Devices, EmployeeDevices } from "../../helpers/Types";
 import { deviceFields, employeeDeviceFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -43,6 +43,15 @@ interface Tasks {
     Date: Date;
     Type: string;
     Device: string;
+}
+
+// Define a interface para os utilizadores
+interface User {
+    devicePrivelage: number;
+    devicePassword: string;
+    employeeName: string;
+    cardNumber: number;
+    enrollNumber: string;
 }
 
 // Define o componente de terminais
@@ -132,33 +141,6 @@ export const Terminals = () => {
             refreshAll();
         }
     }
-
-    // Função para buscar os logs de transações
-    useEffect(() => {
-        const ws = new WebSocket("ws://localhost:9999/websocket");
-
-        ws.onopen = () => {
-            console.log("Connected to WebSocket");
-        };
-
-        ws.onmessage = (event) => {
-            const transaction = JSON.parse(event.data);
-            setTransactions(prev => [...prev, transaction]);
-            console.log("Received data: ", transaction);
-        };
-
-        ws.onerror = (error) => {
-            console.error("WebSocket error: ", error);
-        };
-
-        ws.onclose = () => {
-            console.log("WebSocket connection closed");
-        };
-
-        return () => {
-            ws.close();
-        };
-    }, []);
 
     // Atualiza os dados de renderização
     useEffect(() => {
@@ -546,15 +528,22 @@ export const Terminals = () => {
     };
 
     // Função para formatar os dados para a API
-    const parseAttendanceData = (text: string, fileName: string): Partial<EmployeeAttendanceTimes> => {
+    const parseAttendanceData = (text: string, fileName: string) => {
         const deviceSN = fileName.split('_')[0];
         const lines = text.split('\n');
-        return lines.map(line => {
-            const [enrollNumber, attendanceTime, deviceNumber, inOutMode, verifyMode, workCode] = line.trim().split(/\s+/);
+        return lines.filter(line => line.trim().length > 0).map(line => {
+            const parts = line.trim().split(/\s+/);
+            const enrollNumber = parts[0];
+            const attendanceDateTime = `${parts[1]}T${parts[2]}.000Z`;
+            const deviceNumber = parts[3];
+            const inOutMode = parts[4];
+            const verifyMode = parts[5];
+            const workCode = parts[6];
+            
             return {
                 deviceSN: deviceSN,
                 enrollNumber: enrollNumber,
-                attendanceTime: attendanceTime,
+                attendanceTime: attendanceDateTime,
                 deviceNumber: parseInt(deviceNumber, 10),
                 inOutMode: parseInt(inOutMode, 10),
                 verifyMode: parseInt(verifyMode, 10),
@@ -565,37 +554,80 @@ export const Terminals = () => {
 
     // Função para controlar a mudança de arquivo dos utilizadores
     const handleUserFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0] || null;
+        const file = event.target.files ? event.target.files[0] : null;
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const result = e.target?.result;
-                if (typeof result === 'string' || typeof result === 'number') {
-                    const parsedData = parseUserData(result);
-                    //sendToApi(parsedData);
-                } else {
-                    console.error('Erro: o conteúdo do arquivo não é uma string ou number');
-                }
+                const buffer = e.target?.result as ArrayBuffer;
+                const data = parseUserData(buffer);
+                console.log(data);
+                //await API(data);
             };
             setLoadingImportUsers(false);
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file);
         }
     };
 
     // Função para formatar os dados para a API
-    const parseUserData = (text: string) => {
-        const lines = text.split('\n');
-        const data = lines.map(line => {
-            //const [enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode] = line.trim().split(/\s+/);
-            //return { enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode };
-        });
-        return data;
+    const parseUserData = (buffer: ArrayBuffer): User[] => {
+        const dataView = new DataView(buffer);
+        const users: User[] = [];
+        let offset = 0;
+        const USER_STRUCT_SIZE = calcUserStructSize();
+        while (offset + USER_STRUCT_SIZE <= buffer.byteLength) {
+            offset += 2;
+            const devicePrivelage = dataView.getUint8(offset); offset += 1;
+            const devicePassword = decodeString(dataView, offset, 8); offset += 8;
+            const employeeName = decodeString(dataView, offset, 24); offset += 24;
+            const cardNumber = dataView.getUint32(offset, true); offset += 4;
+            offset += 1 + 8;
+            const enrollNumber = decodeString(dataView, offset, 24); offset += 24;
+
+            users.push({ devicePrivelage, devicePassword, employeeName, cardNumber, enrollNumber });
+        }
+
+        return users;
     };
 
-    // Funções para acionar o popup de seleção de arquivo
-    const triggerFileAttendanceSelectPopup = () => { fileInputAttendanceRef.current?.click(); setLoadingImportAttendance(true); };
-    const triggerFileAttendanceLogSelectPopup = () => { fileInputAttendanceRef.current?.click(); setLoadingImportAttendanceLog(true); };
-    const triggerFileUserSelectPopup = () => { fileInputUserRef.current?.click(); setLoadingImportUsers(true); };
+    // Função para calcular o tamanho da estrutura do utilizador
+    const calcUserStructSize = (): number => {
+        return 2 + 1 + 8 + 24 + 4 + 1 + 8 + 24;
+    };
+
+    // Função para decodificar a string
+    const decodeString = (dataView: DataView, offset: number, length: number): string => {
+        const bytes = new Uint8Array(dataView.buffer, offset, length);
+        return new TextDecoder('utf-8').decode(bytes).replace(/\0/g, '');
+    };
+
+    // Funções para acionar o popup de seleção de arquivo dos movimentos e utilizadores
+    const triggerFileAttendanceSelectPopup = () => {
+        fileInputAttendanceRef.current?.click();
+        setLoadingImportAttendance(true);
+        setTimeout(() => {
+            if (!fileInputAttendanceRef.current?.value) {
+                setLoadingImportAttendance(false);
+            }
+        }, 5000);
+    };
+    const triggerFileAttendanceLogSelectPopup = () => {
+        fileInputAttendanceRef.current?.click();
+        setLoadingImportAttendanceLog(true);
+        setTimeout(() => {
+            if (!fileInputAttendanceRef.current?.value) {
+                setLoadingImportAttendanceLog(false);
+            }
+        }, 5000);
+    };
+    const triggerFileUserSelectPopup = () => {
+        fileInputUserRef.current?.click();
+        setLoadingImportUsers(true);
+        setTimeout(() => {
+            if (!fileInputUserRef.current?.value) {
+                setLoadingImportUsers(false);
+            }
+        }, 5000);
+    };
 
     // Define as colunas das transações
     const transactionColumns: TableColumn<Transaction>[] = [
