@@ -3,7 +3,6 @@ import { ReactNode } from 'react';
 import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
-import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -15,6 +14,8 @@ interface DataState {
 // Define o tipo de contexto
 export interface PersonsContextType {
     employees: Employee[];
+    employeesBio: Employee[];
+    employeesCard: Employee[];
     data: DataState;
     setData: (data: DataState) => void;
     setEmployees: (employees: Employee[]) => void;
@@ -41,6 +42,8 @@ export const PersonsContext = createContext<PersonsContextType | undefined>(unde
 // Provedor do contexto
 export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [employeesBio, setEmployeesBio] = useState<Employee[]>([]);
+    const [employeesCard, setEmployeesCard] = useState<Employee[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeCard[]>([]);
     const [data, setData] = useState<DataState>({
         departments: [],
@@ -114,6 +117,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllEmployees = useCallback(async (options?: FetchOptions): Promise<Employee[]> => {
         try {
             let data = await apiService.fetchAllEmployees();
+
             if (options?.filterFunc) {
                 data = options.filterFunc(data);
             }
@@ -211,6 +215,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,
+        employeesBio,
+        employeesCard,
         data,
         setData,
         setEmployees,

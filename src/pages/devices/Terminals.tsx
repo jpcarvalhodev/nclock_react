@@ -7,8 +7,8 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, EmployeeDevices } from "../../helpers/Types";
-import { deviceFields, employeeDeviceFields } from "../../helpers/Fields";
+import { Devices, Employee } from "../../helpers/Types";
+import { deviceFields, employeeFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
@@ -22,6 +22,7 @@ import card from "../../assets/img/terminais/card.png";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 import React from "react";
 import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -54,13 +55,27 @@ interface User {
     enrollNumber: string;
 }
 
+// Define a interface para os dados de biometria
+interface FingerprintTemplate {
+    FPTmpLength: number;
+    enrollNumber: string;
+    FPTmpIndex: number;
+    FPTmpFlag: number;
+    FPTmpData: string;
+}
+
+// Define a interface para os dados de face
+interface FaceTemplate {
+    enrollNumber: string;
+    FaceTmpIndex: number;
+    FaceTmpData: string;
+    FaceTmpLength: number;
+}
+
 // Define o componente de terminais
 export const Terminals = () => {
     const {
         devices,
-        employeeDevices,
-        employeesBio,
-        employeesCard,
         deviceStatus,
         deviceStatusCount,
         fetchAllDevices,
@@ -80,6 +95,11 @@ export const Terminals = () => {
     const {
         handleAddImportedAttendance,
     } = useContext(AttendanceContext) as AttendanceContextType;
+    const {
+        employees,
+        employeesBio,
+        employeesCard,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [initialData, setInitialData] = useState<Devices | null>(null);
@@ -95,7 +115,7 @@ export const Terminals = () => {
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedDeviceRows, setSelectedDeviceRows] = useState<Devices[]>([]);
-    const [selectedUserRows, setSelectedUserRows] = useState<EmployeeDevices[]>([]);
+    const [selectedUserRows, setSelectedUserRows] = useState<Employee[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(null);
     const [loadingUser, setLoadingUser] = useState(false);
     const [loadingAllUser, setLoadingAllUser] = useState(false);
@@ -111,6 +131,8 @@ export const Terminals = () => {
     const [loadingImportAttendance, setLoadingImportAttendance] = useState(false);
     const [loadingImportAttendanceLog, setLoadingImportAttendanceLog] = useState(false);
     const [loadingImportUsers, setLoadingImportUsers] = useState(false);
+    const [loadingImportBio, setLoadingImportBio] = useState(false);
+    const [loadingImportFace, setLoadingImportFace] = useState(false);
     const [showAllUsers, setShowAllUsers] = useState(true);
     const [showFingerprintUsers, setShowFingerprintUsers] = useState(false);
     const [showFacialRecognitionUsers, setShowFacialRecognitionUsers] = useState(false);
@@ -118,6 +140,10 @@ export const Terminals = () => {
     const [task, setTask] = useState<Tasks[]>([]);
     const fileInputAttendanceRef = React.createRef<HTMLInputElement>();
     const fileInputUserRef = React.createRef<HTMLInputElement>();
+    const fileInputFPRef = React.createRef<HTMLInputElement>();
+    const fileInputFaceRef = React.createRef<HTMLInputElement>();
+
+    console.log(employees);
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
@@ -213,7 +239,7 @@ export const Terminals = () => {
     const handleUserRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: EmployeeDevices[];
+        selectedRows: Employee[];
     }) => {
         setSelectedUserRows(state.selectedRows);
     };
@@ -223,8 +249,8 @@ export const Terminals = () => {
         if (!selectedTerminal) {
             return [];
         }
-        return employeeDevices.filter(employee => employee.deviceNumber === selectedTerminal.deviceNumber);
-    }, [employeeDevices, selectedTerminal]);
+        return employees.filter(employee => employee.deviceNumber === selectedTerminal.deviceNumber);
+    }, [employees, selectedTerminal]);
 
     // Função para formatar a data e a hora
     function formatDateAndTime(input: string | Date): string {
@@ -307,7 +333,7 @@ export const Terminals = () => {
     );
 
     // Formata as 3 colunas abaixo em uma única coluna
-    const formatCombinedStatus = (row: EmployeeDevices) => {
+    const formatCombinedStatus = (row: Employee) => {
         return (
             <>
                 {row.cardNumber !== "0" && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
@@ -322,11 +348,11 @@ export const Terminals = () => {
     const excludedUserColumns = ['statusFprint', 'statusFace', 'statusPalm'];
 
     // Define as colunas de utilizadores
-    const userColumns: TableColumn<EmployeeDevices>[] = employeeDeviceFields
+    const userColumns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedUserColums.includes(field.key))
         .filter(field => !excludedUserColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: EmployeeDevices) => {
+            const formatField = (row: Employee) => {
                 switch (field.key) {
                     case 'cardNumber':
                         return row.cardNumber === "0" ? "" : row.cardNumber;
@@ -339,10 +365,10 @@ export const Terminals = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={employeeDevices} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
                     </>
                 ),
-                selector: (row: EmployeeDevices) => formatField(row),
+                selector: (row: Employee) => formatField(row),
                 sortable: true,
             };
         })
@@ -360,20 +386,20 @@ export const Terminals = () => {
 
     // Filtra os dados da tabela de utilizadores
     const filteredUserDataTable = useMemo(() => {
-        let filteredData: EmployeeDevices[] = [];
+        let filteredData: Employee[] = [];
 
         if (showAllUsers) {
-            return employeeDevices;
+            return employees;
         }
 
         if (showFingerprintUsers) {
-            filteredData = [...filteredData, ...employeeDevices.filter(user => user.statusFprint)];
+            filteredData = [...filteredData, ...employees.filter(user => user.statusFprint)];
         }
         if (showFacialRecognitionUsers) {
-            filteredData = [...filteredData, ...employeeDevices.filter(user => user.statusFace)];
+            filteredData = [...filteredData, ...employees.filter(user => user.statusFace)];
         }
         return filteredData;
-    }, [employeeDevices, showAllUsers, showFingerprintUsers, showFacialRecognitionUsers]);
+    }, [employees, showAllUsers, showFingerprintUsers, showFacialRecognitionUsers]);
 
     // Define os dados da tabela de biometria
     const filteredBioDataTable = employeesBio.filter(employee =>
@@ -527,7 +553,7 @@ export const Terminals = () => {
         }
     };
 
-    // Função para formatar os dados para a API
+    // Função para formatar os dados de movimentos para a API
     const parseAttendanceData = (text: string, fileName: string) => {
         const deviceSN = fileName.split('_')[0];
         const lines = text.split('\n');
@@ -539,7 +565,7 @@ export const Terminals = () => {
             const inOutMode = parts[4];
             const verifyMode = parts[5];
             const workCode = parts[6];
-            
+
             return {
                 deviceSN: deviceSN,
                 enrollNumber: enrollNumber,
@@ -568,7 +594,7 @@ export const Terminals = () => {
         }
     };
 
-    // Função para formatar os dados para a API
+    // Função para formatar os dados de utilizadores para a API
     const parseUserData = (buffer: ArrayBuffer): User[] => {
         const dataView = new DataView(buffer);
         const users: User[] = [];
@@ -600,7 +626,87 @@ export const Terminals = () => {
         return new TextDecoder('utf-8').decode(bytes).replace(/\0/g, '');
     };
 
-    // Funções para acionar o popup de seleção de arquivo dos movimentos e utilizadores
+    // Função para controlar a mudança de arquivo da biometria
+    const handleFPFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files ? event.target.files[0] : null;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const buffer = e.target?.result as ArrayBuffer;
+                const data = parseFPData(buffer);
+                console.log(data);
+                //await API(data);
+            };
+            setLoadingImportUsers(false);
+            reader.readAsArrayBuffer(file);
+        }
+    };
+
+    // Função para formatar os dados de biometria para a API
+    const parseFPData = (buffer: ArrayBuffer): FingerprintTemplate[] => {
+        const dataView = new DataView(buffer);
+        const templates: FingerprintTemplate[] = [];
+        let offset = 0;
+
+        while (offset < buffer.byteLength) {
+            const FPTmpLength = dataView.getUint16(offset, true); offset += 2;
+            const enrollNumberNumeric = dataView.getUint16(offset, true); offset += 2;
+            const enrollNumber = enrollNumberNumeric.toString();
+            const FPTmpIndex = dataView.getUint8(offset); offset += 1;
+            const FPTmpFlag = dataView.getUint8(offset); offset += 1;
+
+            const TemplateSize = FPTmpLength - (2 + 2 + 1 + 1);
+            const FPTmpData = new Uint8Array(buffer, offset, TemplateSize);
+            offset += TemplateSize;
+
+            const templateBase64 = btoa(String.fromCharCode(...FPTmpData));
+
+            templates.push({ FPTmpLength, enrollNumber, FPTmpIndex, FPTmpFlag, FPTmpData: templateBase64 });
+        }
+
+        return templates;
+    };
+
+    // Função para controlar a mudança de arquivo da face
+    const handleFaceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files ? event.target.files[0] : null;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target?.result as string;
+                const parsedData = parseFaceData(content);
+                console.log(parsedData);
+                //await API(parsedData);
+            };
+            reader.readAsText(file);
+        }
+    };
+
+    // Função para formatar os dados de face para a API
+    const parseFaceData = (dataString: string): FaceTemplate[] => {
+        const lines = dataString.split('\n');
+        const results: FaceTemplate[] = [];
+
+        lines.forEach(line => {
+            if (line.includes('Pin=')) {
+                const enrollNumber = line.match(/Pin=(\d+)/)?.[1];
+                const FaceTmpIndexMatch = line.match(/Index=(\d+)/);
+                const FaceTmpDataMatch = line.match(/Tmp=([a-zA-Z0-9+/=]+)/);
+
+                if (enrollNumber && FaceTmpIndexMatch && FaceTmpDataMatch) {
+                    const FaceTmpIndex = parseInt(FaceTmpIndexMatch[1], 10);
+                    const FaceTmpData = FaceTmpDataMatch[1];
+                    const FaceTmpLength = FaceTmpData.length;
+                    
+                    results.push({ enrollNumber, FaceTmpIndex, FaceTmpData, FaceTmpLength });
+                }
+            }
+        });
+
+        return results;
+    };
+
+    // Funções para acionar o popup de seleção de arquivo dos movimentos, utilizadores e biometria
     const triggerFileAttendanceSelectPopup = () => {
         fileInputAttendanceRef.current?.click();
         setLoadingImportAttendance(true);
@@ -625,6 +731,24 @@ export const Terminals = () => {
         setTimeout(() => {
             if (!fileInputUserRef.current?.value) {
                 setLoadingImportUsers(false);
+            }
+        }, 5000);
+    };
+    const triggerFileFPSelectPopup = () => {
+        fileInputFPRef.current?.click();
+        setLoadingImportBio(true);
+        setTimeout(() => {
+            if (!fileInputFPRef.current?.value) {
+                setLoadingImportBio(false);
+            }
+        }, 5000);
+    };
+    const triggerFileFaceSelectPopup = () => {
+        fileInputFaceRef.current?.click();
+        setLoadingImportFace(true);
+        setTimeout(() => {
+            if (!fileInputFaceRef.current?.value) {
+                setLoadingImportFace(false);
             }
         }, 5000);
     };
@@ -1158,9 +1282,21 @@ export const Terminals = () => {
                                     )}
                                     Importar utilizadores
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileFPSelectPopup}>
+                                    {loadingImportBio ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Importar biometria digital
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileFaceSelectPopup}>
+                                    {loadingImportFace ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-person-square" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
+                                    Importar biometria Facial
                                 </Button>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceLogSelectPopup}>
                                     {loadingImportAttendanceLog ? (
@@ -1169,10 +1305,6 @@ export const Terminals = () => {
                                         <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     )}
                                     Importar movimentos do log
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-files-alt" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    Importar movimentos do log (auto)
                                 </Button>
                             </div>
                         </Tab>
@@ -1229,6 +1361,20 @@ export const Terminals = () => {
                     ref={fileInputUserRef}
                     style={{ display: 'none' }}
                     onChange={handleUserFileChange}
+                />
+                <input
+                    type="file"
+                    accept=".fp10"
+                    ref={fileInputFPRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFPFileChange}
+                />
+                <input
+                    type="file"
+                    accept=".dat"
+                    ref={fileInputFaceRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFaceFileChange}
                 />
             </div>
         </TerminalsProvider>

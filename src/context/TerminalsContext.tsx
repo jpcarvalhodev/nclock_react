@@ -1,15 +1,13 @@
 import { createContext, useState, useContext } from 'react';
 import { ReactNode } from 'react';
-import { Devices, EmployeeDevices } from '../helpers/Types';
+import { Devices, Employee, EmployeeDevices } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
 // Define o tipo de contexto
 export interface DeviceContextType {
     devices: Devices[];
-    employeeDevices: EmployeeDevices[];
-    employeesBio: EmployeeDevices[];
-    employeesCard: EmployeeDevices[];
+    employeeDevices: Employee[];
     deviceStatus: string[];
     deviceStatusCount: StatusCounts;
     fetchAllDevices: () => Promise<void>;
@@ -39,9 +37,7 @@ export const TerminalsContext = createContext<DeviceContextType | undefined>(und
 // Provedor do contexto
 export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [devices, setDevices] = useState<Devices[]>([]);
-    const [employeeDevices, setEmployeeDevices] = useState<EmployeeDevices[]>([]);
-    const [employeesBio, setEmployeesBio] = useState<EmployeeDevices[]>([]);
-    const [employeesCard, setEmployeesCard] = useState<EmployeeDevices[]>([]);
+    const [employeeDevices, setEmployeeDevices] = useState<Employee[]>([]);
     const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
     const [deviceStatusCount, setDeviceStatusCount] = useState<StatusCounts>({ Activo: 0, Inactivo: 0 });
 
@@ -88,15 +84,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const employeesData = await apiService.fetchAllEmployeeDevices();
             setEmployeeDevices(employeesData);
-            const filteredEmployees = employeesData.filter((employee: EmployeeDevices) =>
-                employee.statusFprint === true || employee.statusFace === true
-            );
-            setEmployeesBio(filteredEmployees);
-
-            const filteredCardEmployees = employeesData.filter((employee: EmployeeDevices) =>
-                employee.cardNumber !== "0"
-            );
-            setEmployeesCard(filteredCardEmployees)
         } catch (error) {
             console.error('Erro ao apagar dispositivos:', error);
         }
@@ -225,8 +212,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const contextValue: DeviceContextType = {
         devices,
         employeeDevices,
-        employeesBio,
-        employeesCard,
         deviceStatus,
         deviceStatusCount,
         fetchAllDevices,

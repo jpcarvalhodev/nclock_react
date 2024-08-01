@@ -53,10 +53,6 @@ export const Employees = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
 
-    // Busca os departamentos, grupos e funcionários
-    useEffect(() => {
-        fetchAllData()
-    }, [fetchAllData]);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
