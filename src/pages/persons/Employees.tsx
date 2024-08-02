@@ -98,9 +98,13 @@ export const Employees = () => {
         refreshEmployees();
     }
 
+    // Busca todos os dados
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
+
     // Atualiza os funcionários
     const refreshEmployees = () => {
-        fetchAllData();
         fetchEmployees();
         setSelectedEmployeeIds([]);
     };

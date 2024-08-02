@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useCallback } from 'react';
 import { ReactNode } from 'react';
-import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
+import { Department, Employee, EmployeeCard, EmployeeFace, EmployeeFP, Group } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -14,13 +14,12 @@ interface DataState {
 // Define o tipo de contexto
 export interface PersonsContextType {
     employees: Employee[];
-    employeesBio: Employee[];
-    employeesCard: Employee[];
     data: DataState;
     setData: (data: DataState) => void;
     setEmployees: (employees: Employee[]) => void;
     fetchAllData: (entity?: string) => Promise<void>;
     fetchAllEmployees: (options?: FetchOptions) => Promise<Employee[]>;
+    fetchAllCardData: () => Promise<EmployeeCard[]>;
     handleAddEmployee: (employee: Employee) => Promise<void>;
     handleUpdateEmployee: (employee: Employee) => Promise<void>;
     handleDeleteEmployee: (employeeID: string) => Promise<void>;
@@ -28,6 +27,9 @@ export interface PersonsContextType {
     handleAddEmployeeCard: (employeeCard: EmployeeCard) => Promise<void>;
     handleUpdateEmployeeCard: (employeeCard: EmployeeCard) => Promise<void>;
     handleDeleteEmployeeCard: (cardId: string) => Promise<void>;
+    handleImportEmployeeFP: (employeeFP: Partial<EmployeeFP>) => Promise<void>;
+    handleImportEmployeeFace: (employeeFace: Partial<EmployeeFace>) => Promise<void>;
+    handleImportEmployeeCard: (employeeCard: Partial<EmployeeCard>) => Promise<void>;
 }
 
 // Expandindo as opções de busca
@@ -42,8 +44,8 @@ export const PersonsContext = createContext<PersonsContextType | undefined>(unde
 // Provedor do contexto
 export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const [employeesBio, setEmployeesBio] = useState<Employee[]>([]);
-    const [employeesCard, setEmployeesCard] = useState<Employee[]>([]);
+    const [employeesFP, setEmployeesFP] = useState<EmployeeFP[]>([]);
+    const [employeesFace, setEmployeesFace] = useState<EmployeeFace[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeCard[]>([]);
     const [data, setData] = useState<DataState>({
         departments: [],
@@ -55,59 +57,25 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllData = useCallback(async (entity: string = 'all') => {
         try {
             const allData = await apiService.fetchAllData();
-            switch (entity) {
-                case 'all':
-                    setData({
-                        departments: allData?.departments,
-                        groups: allData?.groups,
-                        employees: allData?.employees,
-                    });
-                    break;
-                case 'employees':
-                    setData({
-                        departments: allData?.departments,
-                        groups: allData?.groups,
-                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário')
-                    });
-                    break;
-                case 'external employees':
-                    setData({
-                        departments: allData?.departments,
-                        groups: allData?.groups,
-                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário Externo')
-                    });
-                    break;
-                case 'users':
-                    setData({
-                        departments: allData?.departments,
-                        groups: allData?.groups,
-                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Utente')
-                    });
-                    break;
-                case 'visitors':
-                    setData({
-                        departments: allData?.departments,
-                        groups: allData?.groups,
-                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Visitante')
-                    });
-                    break;
-                case 'contacts':
-                    setData({
-                        departments: allData?.departments,
-                        groups: allData?.groups,
-                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Contacto')
-                    });
-                    break;
-                case 'temporaries':
-                    setData({
-                        departments: allData?.departments,
-                        groups: allData?.groups,
-                        employees: allData?.employees.filter((emp: Employee) => emp.type === 'Provisório')
-                    });
-                    break;
-                default:
-                    console.log(`Não há dados para essa entidade ${entity}`);
+            let newData: DataState = {
+                departments: allData?.departments,
+                groups: allData?.groups,
+                employees: allData?.employees,
+            };
+            if (entity === 'employees') {
+                newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário');
+            } else if (entity === 'external employees') {
+                newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário Externo');
+            } else if (entity === 'users') {
+                newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Utente');
+            } else if (entity === 'visitors') {
+                newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Visitante');
+            } else if (entity === 'contacts') {
+                newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Contacto');
+            } else if (entity === 'temporaries') {
+                newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Provisório');
             }
+            setData(newData);
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
         }
@@ -164,6 +132,17 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Define a função para buscar todos os cartões de funcionários
+    const fetchAllCardData = async () => {
+        try {
+            const allCardData = await apiService.fetchAllEmployeeCards();
+            return allCardData;
+        } catch (error) {
+            console.error('Erro ao buscar cartões de funcionários:', error);
+            return [];
+        }
+    };
+
     // Define a função para buscar cartões de funcionários
     const fetchEmployeeCardData = async (employeeID: string): Promise<EmployeeCard[]> => {
         try {
@@ -212,23 +191,55 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    const handleImportEmployeeFP = async (employeeFP: Partial<EmployeeFP>) => {
+        try {
+            const employeesData = await apiService.employeeImportFP(employeeFP);
+            setEmployeesFP([...employeesFP, employeesData]);
+            toast.success(employeesData.value || 'Biometria digital adicionada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar nova biometria digital:', error);
+        }
+    }
+
+    const handleImportEmployeeFace = async (employeeFace: Partial<EmployeeFace>) => {
+        try {
+            const employeesData = await apiService.employeeImportFace(employeeFace);
+            setEmployeesFace([...employeesFace, employeesData]);
+            toast.success(employeesData.value || 'Biometria facial adicionada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar nova biometria facial:', error);
+        }
+    }
+
+    const handleImportEmployeeCard = async (employeeCard: Partial<EmployeeCard>) => {
+        try {
+            const employeesData = await apiService.employeeImportCard(employeeCard);
+            setEmployeeCards([...employeeCards, employeesData]);
+            toast.success(employeesData.value || 'Cartão adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar novo cartão:', error);
+        }
+    }
+
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,
-        employeesBio,
-        employeesCard,
         data,
         setData,
         setEmployees,
         fetchAllData,
         fetchAllEmployees,
+        fetchAllCardData,
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,
         fetchEmployeeCardData,
         handleAddEmployeeCard,
         handleUpdateEmployeeCard,
-        handleDeleteEmployeeCard
+        handleDeleteEmployeeCard,
+        handleImportEmployeeFP,
+        handleImportEmployeeFace,
+        handleImportEmployeeCard
     };
 
     return (

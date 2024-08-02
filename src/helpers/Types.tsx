@@ -195,3 +195,22 @@ export type EmployeeCard = {
     deviceEnabled: boolean;
     cardNumber: string;
 };
+
+export type EmployeeAndCard = Partial<Employee> & Partial<EmployeeCard>;
+
+export type EmployeeFP = {
+    [key: string]: any;
+    id: string;
+    FPTmpIndex: number;
+    FPTmpData: string;
+    FPTmpLength: number;
+    FPTmpFlag: number;
+};
+
+export type EmployeeFace = {
+    [key: string]: any;
+    id: string;
+    FaceTmpIndex: number;
+    FaceTmpData: string;
+    FaceTmpLength: number;
+};

@@ -7,8 +7,8 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, Employee } from "../../helpers/Types";
-import { deviceFields, employeeFields } from "../../helpers/Fields";
+import { Devices, Employee, EmployeeAndCard, EmployeeCard } from "../../helpers/Types";
+import { deviceFields, employeeCardFields, employeeFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
@@ -46,15 +46,6 @@ interface Tasks {
     Device: string;
 }
 
-// Define a interface para os utilizadores
-interface User {
-    devicePrivelage: number;
-    devicePassword: string;
-    employeeName: string;
-    cardNumber: number;
-    enrollNumber: string;
-}
-
 // Define a interface para os dados de biometria
 interface FingerprintTemplate {
     FPTmpLength: number;
@@ -71,6 +62,12 @@ interface FaceTemplate {
     FaceTmpData: string;
     FaceTmpLength: number;
 }
+
+// Define a interface para os dados de utilizadores e cartões
+interface MergedEmployeeAndCard extends Employee, Partial<Omit<EmployeeCard, 'id'>> {}
+
+// Junta os campos de utilizadores e cartões
+const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
 
 // Define o componente de terminais
 export const Terminals = () => {
@@ -96,10 +93,15 @@ export const Terminals = () => {
         handleAddImportedAttendance,
     } = useContext(AttendanceContext) as AttendanceContextType;
     const {
-        employees,
-        employeesBio,
-        employeesCard,
+        fetchAllEmployees,
+        fetchAllCardData,
+        handleImportEmployeeCard,
+        handleImportEmployeeFP,
+        handleImportEmployeeFace
     } = useContext(PersonsContext) as PersonsContextType;
+    const [employees, setEmployees] = useState<EmployeeAndCard[]>([]);
+    const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
+    const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [initialData, setInitialData] = useState<Devices | null>(null);
@@ -108,14 +110,16 @@ export const Terminals = () => {
     const [userTabKey, setUserTabKey] = useState('users');
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'ipAddress']);
-    const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'employeeName', 'cardNumber', 'statusFprint', 'statusFace']);
+    const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber', 'statusFprint', 'statusFace']);
+    const [selectedBioColums, setSelectedBioColumns] = useState<string[]>(['enrollNumber', 'name', 'statusFprint', 'statusFace']);
+    const [selectedCardColums, setSelectedCardColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber']);
     const [selectedDeviceToDelete, setSelectedDeviceToDelete] = useState<string>('');
     const [selectedUserToDelete, setSelectedUserToDelete] = useState<string>('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedDeviceRows, setSelectedDeviceRows] = useState<Devices[]>([]);
-    const [selectedUserRows, setSelectedUserRows] = useState<Employee[]>([]);
+    const [selectedUserRows, setSelectedUserRows] = useState<EmployeeAndCard[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(null);
     const [loadingUser, setLoadingUser] = useState(false);
     const [loadingAllUser, setLoadingAllUser] = useState(false);
@@ -143,7 +147,44 @@ export const Terminals = () => {
     const fileInputFPRef = React.createRef<HTMLInputElement>();
     const fileInputFaceRef = React.createRef<HTMLInputElement>();
 
-    console.log(employees);
+    // Função para mesclar os dados de utilizadores e cartões
+    const mergeEmployeeAndCardData = (
+        employees: Employee[],
+        employeeCards: EmployeeCard[]
+    ): MergedEmployeeAndCard[] => {
+        const mergedEmployeesData = employees.map(employee => {
+            const card = employeeCards.filter(card => card.employeeId === employee.employeeID)[0];
+            if (card) {
+                return {
+                    ...employee,
+                    ...card,
+                } as MergedEmployeeAndCard;
+            }
+            return employee as MergedEmployeeAndCard;
+        })
+        return mergedEmployeesData;
+    };
+
+    // Função para buscar todos os utilizadores e cartões
+    const fetchEmployeesAndCards = async () => {
+        const employeesData: Employee[] = await fetchAllEmployees();
+    
+        const cardData: EmployeeCard[] = await fetchAllCardData();
+    
+        const mergedData = mergeEmployeeAndCardData(employeesData, cardData);
+    
+        const filteredEmployeesBio = mergedData.filter(employee =>
+            employee.statusFprint === true || employee.statusFace === true
+        );
+
+        const filteredEmployeesCard = mergedData.filter(employee =>
+            employee.cardNumber !== "0"
+        );
+    
+        setEmployees(mergedData);
+        setEmployeesBio(filteredEmployeesBio);
+        setEmployeeCards(filteredEmployeesCard);
+    };
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
@@ -171,7 +212,7 @@ export const Terminals = () => {
     // Atualiza os dados de renderização
     useEffect(() => {
         fetchAllDevices();
-        fetchAllEmployeeDevices();
+        fetchEmployeesAndCards();
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -184,7 +225,7 @@ export const Terminals = () => {
     // Função para atualizar todos os dispositivos
     const refreshAll = () => {
         fetchAllDevices();
-        fetchAllEmployeeDevices();
+        fetchEmployeesAndCards();
     }
 
     // Função para resetar as colunas
@@ -239,7 +280,7 @@ export const Terminals = () => {
     const handleUserRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: Employee[];
+        selectedRows: EmployeeAndCard[];
     }) => {
         setSelectedUserRows(state.selectedRows);
     };
@@ -332,27 +373,43 @@ export const Terminals = () => {
         )
     );
 
-    // Formata as 3 colunas abaixo em uma única coluna
-    const formatCombinedStatus = (row: Employee) => {
+    // Formata as colunas especiais na tabela de utilizadores, biometria e cartões
+    const formatUserStatus = (row: EmployeeAndCard) => {
         return (
             <>
-                {row.cardNumber !== "0" && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
+                {row.cardNumber && row.cardNumber !== "0" && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusFprint && <img src={fprintScan} alt="Fingerprint" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusFace && <img src={faceScan} alt="Face" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusPalm && <img src={palmScan} alt="Palm" style={{ width: 20, marginRight: 5 }} />}
             </>
         );
     };
+    const formatBioStatus = (row: EmployeeAndCard) => {
+        return (
+            <>
+                {row.statusFprint && <img src={fprintScan} alt="Fingerprint" style={{ width: 20, marginRight: 5 }} />}
+                {row.statusFace && <img src={faceScan} alt="Face" style={{ width: 20, marginRight: 5 }} />}
+                {row.statusPalm && <img src={palmScan} alt="Palm" style={{ width: 20, marginRight: 5 }} />}
+            </>
+        );
+    };
+    const formatCardStatus = (row: EmployeeAndCard) => {
+        return (
+            <>
+                {row.cardNumber && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
+            </>
+        );
+    };    
 
     // Define as colunas excluídas de utilizadores    
-    const excludedUserColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+    const excludedUserColumns = ['statusFprint', 'statusFace', 'statusPalm', 'cardNumber'];
 
     // Define as colunas de utilizadores
-    const userColumns: TableColumn<Employee>[] = employeeFields
+    const userColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
         .filter(field => selectedUserColums.includes(field.key))
         .filter(field => !excludedUserColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: Employee) => {
+            const formatField = (row: EmployeeAndCard) => {
                 switch (field.key) {
                     case 'cardNumber':
                         return row.cardNumber === "0" ? "" : row.cardNumber;
@@ -360,7 +417,6 @@ export const Terminals = () => {
                         return row[field.key] || '';
                 }
             };
-
             return {
                 name: (
                     <>
@@ -368,7 +424,7 @@ export const Terminals = () => {
                         <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
                     </>
                 ),
-                selector: (row: Employee) => formatField(row),
+                selector: (row: EmployeeAndCard) => formatField(row),
                 sortable: true,
             };
         })
@@ -379,14 +435,14 @@ export const Terminals = () => {
                         Modo de Verificação
                     </>
                 ),
-                selector: row => formatCombinedStatus(row),
+                selector: row => formatUserStatus(row),
                 sortable: true,
             }
         ]);
 
     // Filtra os dados da tabela de utilizadores
     const filteredUserDataTable = useMemo(() => {
-        let filteredData: Employee[] = [];
+        let filteredData: EmployeeAndCard[] = [];
 
         if (showAllUsers) {
             return employees;
@@ -401,6 +457,37 @@ export const Terminals = () => {
         return filteredData;
     }, [employees, showAllUsers, showFingerprintUsers, showFacialRecognitionUsers]);
 
+    // Define as colunas excluídas de utilizadores    
+    const excludedBioColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+
+    // Define as colunas de utilizadores
+    const bioColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
+        .filter(field => selectedBioColums.includes(field.key))
+        .filter(field => !excludedBioColumns.includes(field.key))
+        .map(field => {
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
+                    </>
+                ),
+                selector: (row: EmployeeAndCard) => row[field.key] || '',
+                sortable: true,
+            };
+        })
+        .concat([
+            {
+                name: (
+                    <>
+                        Modo de Verificação
+                    </>
+                ),
+                selector: row => formatBioStatus(row),
+                sortable: true,
+            }
+        ]);
+
     // Define os dados da tabela de biometria
     const filteredBioDataTable = employeesBio.filter(employee =>
         Object.keys(filters).every(key =>
@@ -408,8 +495,47 @@ export const Terminals = () => {
         )
     );
 
+    // Define as colunas excluídas de utilizadores    
+    const excludedCardColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+
+    // Define as colunas de utilizadores
+    const cardColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
+        .filter(field => selectedCardColums.includes(field.key))
+        .filter(field => !excludedCardColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: EmployeeAndCard) => {
+                switch (field.key) {
+                    case 'cardNumber':
+                        return row.cardNumber === "0" ? "" : row.cardNumber;
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
+                    </>
+                ),
+                selector: (row: EmployeeAndCard) => formatField(row),
+                sortable: true,
+            };
+        })
+        .concat([
+            {
+                name: (
+                    <>
+                        Modo de Verificação
+                    </>
+                ),
+                selector: row => formatCardStatus(row),
+                sortable: true,
+            }
+        ]);
+
     // Filtra os dados da tabela de cartões
-    const filteredCardDataTable = employeesCard.filter(employee =>
+    const filteredCardDataTable = employeeCards.filter(employee =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(employee[key]) === String(filters[key])
         )
@@ -583,11 +709,10 @@ export const Terminals = () => {
         const file = event.target.files ? event.target.files[0] : null;
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 const buffer = e.target?.result as ArrayBuffer;
                 const data = parseUserData(buffer);
-                console.log(data);
-                //await API(data);
+                await handleImportEmployeeCard(data);
             };
             setLoadingImportUsers(false);
             reader.readAsArrayBuffer(file);
@@ -595,9 +720,9 @@ export const Terminals = () => {
     };
 
     // Função para formatar os dados de utilizadores para a API
-    const parseUserData = (buffer: ArrayBuffer): User[] => {
+    const parseUserData = (buffer: ArrayBuffer): Partial<EmployeeCard>[] => {
         const dataView = new DataView(buffer);
-        const users: User[] = [];
+        const users: Partial<EmployeeCard>[] = [];
         let offset = 0;
         const USER_STRUCT_SIZE = calcUserStructSize();
         while (offset + USER_STRUCT_SIZE <= buffer.byteLength) {
@@ -609,7 +734,7 @@ export const Terminals = () => {
             offset += 1 + 8;
             const enrollNumber = decodeString(dataView, offset, 24); offset += 24;
 
-            users.push({ devicePrivelage, devicePassword, employeeName, cardNumber, enrollNumber });
+            users.push({ devicePrivelage, devicePassword, employeeName, cardNumber: cardNumber.toString(), enrollNumber, deviceEnabled: true });
         }
 
         return users;
@@ -631,11 +756,11 @@ export const Terminals = () => {
         const file = event.target.files ? event.target.files[0] : null;
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 const buffer = e.target?.result as ArrayBuffer;
                 const data = parseFPData(buffer);
                 console.log(data);
-                //await API(data);
+                await handleImportEmployeeFP(data);
             };
             setLoadingImportUsers(false);
             reader.readAsArrayBuffer(file);
@@ -672,11 +797,11 @@ export const Terminals = () => {
         const file = event.target.files ? event.target.files[0] : null;
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 const content = e.target?.result as string;
                 const parsedData = parseFaceData(content);
                 console.log(parsedData);
-                //await API(parsedData);
+                await handleImportEmployeeFace(parsedData);
             };
             reader.readAsText(file);
         }
@@ -697,7 +822,7 @@ export const Terminals = () => {
                     const FaceTmpIndex = parseInt(FaceTmpIndexMatch[1], 10);
                     const FaceTmpData = FaceTmpDataMatch[1];
                     const FaceTmpLength = FaceTmpData.length;
-                    
+
                     results.push({ enrollNumber, FaceTmpIndex, FaceTmpData, FaceTmpLength });
                 }
             }
@@ -1077,7 +1202,7 @@ export const Terminals = () => {
                                     </Tab>
                                     <Tab eventKey="facial-taken" title="Biometria recolhida">
                                         <DataTable
-                                            columns={userColumns}
+                                            columns={bioColumns}
                                             data={filteredBioDataTable}
                                             pagination
                                             paginationPerPage={5}
@@ -1092,7 +1217,7 @@ export const Terminals = () => {
                                     </Tab>
                                     <Tab eventKey="cards-taken" title="Cartões recolhidos">
                                         <DataTable
-                                            columns={userColumns}
+                                            columns={cardColumns}
                                             data={filteredCardDataTable}
                                             pagination
                                             paginationPerPage={5}

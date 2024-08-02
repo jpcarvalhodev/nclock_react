@@ -36,11 +36,6 @@ export const Persons = () => {
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
     const [initialData, setInitialData] = useState<Employee | null>(null);
 
-    // Busca os departamentos, grupos e funcionários
-    useEffect(() => {
-        fetchAllData();
-    }, [fetchAllData]);
-
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
         fetchAllEmployees({
@@ -70,9 +65,13 @@ export const Persons = () => {
         setShowAllEmployees(employeeIds.length === 0);
     };
 
+    // Busca todos os dados
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
+
     // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
-        fetchAllData();
         fetchEmployees();
         setSelectedEmployeeIds([]);
     }

@@ -55,11 +55,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
     const [filters, setFilters] = useState<Filters>({});
 
-    // Busca todos os dados
-    useEffect(() => {
-        fetchAllData();
-    }, [fetchAllData]);
-
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
         fetchAllEmployees({
@@ -88,9 +83,13 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         refreshEmployees();
     };
 
+    // Busca todos os dados
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
+
     // Atualiza a lista de funcionários
     const refreshEmployees = () => {
-        fetchAllData();
         fetchEmployees();
     }
 

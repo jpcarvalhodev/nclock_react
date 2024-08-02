@@ -105,9 +105,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     // Função para adicionar assiduidades importadas
     const handleAddImportedAttendance = async (attendances: Partial<EmployeeAttendanceTimes>) => {
         try {
-            console.log(attendances);
             const newAttendance = await apiService.addImportedAttendance(attendances);
-            console.log(newAttendance);
             setAttendance([...attendance, newAttendance]);
             toast.success(newAttendance.value || 'assiduidades adicionadas com sucesso!');
         } catch (error) {

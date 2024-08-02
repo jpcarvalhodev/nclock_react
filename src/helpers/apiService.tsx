@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { Category, Department, Devices, Employee, EmployeeAttendanceTimes, EmployeeCard, ExternalEntity, ExternalEntityTypes, Group, Profession, Zone } from "./Types";
+import { Category, Department, Devices, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -128,6 +128,48 @@ export const updateEmployee = async (employee: Employee) => {
 export const deleteEmployee = async (employeeID: string) => {
     const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
         method: 'DELETE'
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const employeeImportFP = async (employeeFP: Partial<EmployeeFP>) => {
+    const response = await fetchWithAuth(`Employees/ProcessImportEmployeeFP`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employeeFP)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const employeeImportFace = async (employeeFace: Partial<EmployeeFace>) => {
+    const response = await fetchWithAuth(`Employees/ProcessImportEmployeeFaces`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employeeFace)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const employeeImportCard = async (employeeCard: Partial<EmployeeCard>) => {
+    const response = await fetchWithAuth(`Employees/ProcessImportEmployeeCards`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employeeCard)
     });
     if (!response.ok) {
         return;
