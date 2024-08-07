@@ -36,8 +36,8 @@ import { NclockPresence } from './pages/nclock/NclockPresence';
 import { NclockAll } from './pages/nclock/NclockAll';
 import { Types } from './pages/persons/Types';
 import { Terminals } from './pages/devices/Terminals';
-import { NclockDashboard } from './pages/nclock/NClockDashboard';
-import { NaccessDashboard } from './pages/naccess/NAccessDashboard';
+import { NclockDashboard } from './pages/nclock/NclockDashboard';
+import { NaccessDashboard } from './pages/naccess/NaccessDashboard';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
