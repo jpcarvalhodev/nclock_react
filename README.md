@@ -15,7 +15,7 @@ Nclock assiduity project using React and typescript for SISNID
 1. Clone this repository:
  
 ```
-git clone https://github.com/JPCarvalho23/nclock_react.git
+git clone https://github.com/jpcarvalhodev/nclock_react.git
 ```
 
 2. Navigate into the project directory:
