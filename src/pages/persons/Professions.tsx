@@ -193,7 +193,7 @@ export const Professions = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar color="#000000" />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span>Profissões</span>
@@ -257,7 +257,7 @@ export const Professions = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            <Footer color="#000000" />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={professionFields}

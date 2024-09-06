@@ -25,6 +25,14 @@ export const Login = () => {
     const token = localStorage.getItem('token');
     if (token) {
       navigate('/dashboard');
+    } else {
+      const savedUsername = localStorage.getItem('rememberMeUser');
+      const savedPassword = localStorage.getItem('rememberMePassword');
+      if (savedUsername && savedPassword) {
+        setUsername(savedUsername);
+        setPassword(savedPassword);
+        setRememberMe(true);
+      }
     }
   }, [navigate]);
 
@@ -69,7 +77,7 @@ export const Login = () => {
           localStorage.removeItem('rememberMePassword');
         }
 
-        toast(`Seja bem vindo ${username}!`, {progressClassName: 'custom-progress-bar'});
+        toast(`Seja bem vindo ${username}!`, { progressClassName: 'custom-progress-bar' });
         navigate('/dashboard');
       }
     } catch (error) {

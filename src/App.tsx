@@ -38,6 +38,9 @@ import { Types } from './pages/persons/Types';
 import { Terminals } from './pages/devices/Terminals';
 import { NclockDashboard } from './pages/nclock/NclockDashboard';
 import { NaccessDashboard } from './pages/naccess/NaccessDashboard';
+import { NvisitorDashboard } from './pages/nvisitor/NvisitorDashboard';
+import { NviewDashboard } from './pages/nview/NviewDashboard';
+import { NkioskDashboard } from './pages/nkiosk/NkioskDashboard';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -107,6 +110,9 @@ function AnimatedRoutes() {
               <Route path="/nclock/nclockrequests" element={<PageProtection><NclockRequests /></PageProtection>} />
               <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
               <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
+              <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
+              <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
+              <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
             </Routes>
           </div>
         </CSSTransition>

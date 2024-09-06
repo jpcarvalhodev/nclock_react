@@ -2,7 +2,6 @@
 .nav {
     display: flex;
     align-items: center;
-    background-color: #0050a0;
 }
 
 .logo {
@@ -33,6 +32,7 @@
 .section {
     display: flex;
     border-bottom: 1px solid #ccc;
+    background-color: white;
 }
 
 .group {
@@ -249,12 +249,28 @@
     border-bottom: none !important;
 }
 
+.submenu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.submenu>div {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
 #dropdown-basic::after,
 #dropdown-basic-2::after {
     display: none !important;
 }
 
-.nav-item:hover, .nav-link:hover {
+.nav-item:hover,
+.nav-link:hover {
     color: white;
     cursor: pointer;
 }

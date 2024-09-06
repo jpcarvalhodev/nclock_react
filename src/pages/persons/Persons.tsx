@@ -117,7 +117,7 @@ export const Persons = () => {
     return (
         <PersonsProvider>
             <div className="main-container">
-                <NavBar />
+                <NavBar color="#000000" />
                 <div className="content-container">
                     <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
@@ -159,7 +159,7 @@ export const Persons = () => {
                         </div>
                     </Split>
                 </div>
-                <Footer />
+                <Footer color="#000000" />
                 {showAddModal && (
                     <CreateModalEmployees
                         title="Adicionar Pessoa"

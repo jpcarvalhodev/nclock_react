@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { EmployeeAttendanceTimes } from "../../helpers/Types";
 import '../../css/PagesStyles.css';
 import * as apiService from "../../helpers/apiService";
+import { Carousel } from "react-responsive-carousel";
+import banner_naccess from "../../assets/img/carousel/banner_naccess.jpg";
 
 // Define a página principal
 export const NaccessDashboard = () => {
@@ -48,21 +50,26 @@ export const NaccessDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar />
+            <NavBar color="#0050a0" />
             <div className="datatable-title-text-dashboard">
                 <span>Naccess dashboard</span>
             </div>
-            <div className='content-wrapper'>
-                <div className="dashboard-content">
-                    <div className="chart-container">
-                        <div className="departments-groups-chart" style={{ flex: 1 }}>
-                            <h2 className="departments-groups-chart-text">Presença de Funcionários</h2>
-                            <Bar data={chartDataEmployees} />
+            <div className="dashboard-content">
+                <div className="dashboard-carousel-container">
+                    <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
+                        <div>
+                            <img className="img-carousel" src={banner_naccess} alt="NAccess" />
                         </div>
+                    </Carousel>
+                </div>
+                <div className="chart-container">
+                    <div className="departments-groups-chart" style={{ flex: 1 }}>
+                        <h2 className="departments-groups-chart-text">Presença de Funcionários</h2>
+                        <Bar data={chartDataEmployees} />
                     </div>
                 </div>
             </div>
-            <Footer />
+            <Footer color="#0050a0" />
         </div>
     );
 }

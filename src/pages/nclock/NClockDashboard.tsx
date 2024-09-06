@@ -9,6 +9,9 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { Employee, Department, Group } from "../../helpers/Types";
 import * as apiService from "../../helpers/apiService";
+import { Carousel } from "react-responsive-carousel";
+import { motion } from "framer";
+import banner_nclock from "../../assets/img/carousel/banner_nclock.jpg";
 
 // Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
@@ -150,13 +153,20 @@ export const NclockDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar />
+            <NavBar color="#0050a0" />
             <div className="datatable-title-text-dashboard">
                 <span>Nclock dashboard</span>
             </div>
-            <div>
+            <div className="dashboard-content">
+                <div className="dashboard-carousel-container">
+                    <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
+                        <div>
+                            <img className="img-carousel" src={banner_nclock} alt="Nclock" />
+                        </div>
+                    </Carousel>
+                </div>
                 <div className="calendar-container">
-                    <div className="dashboard-calendar" style={{ width: 1800 }}>
+                    <div className="dashboard-calendar" style={{ width: 800 }}>
                         <Calendar
                             localizer={localizer}
                             events={events}
@@ -183,7 +193,7 @@ export const NclockDashboard = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            <Footer color="#0050a0" />
         </div>
     );
 };

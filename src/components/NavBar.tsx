@@ -4,6 +4,7 @@ import { JwtPayload, jwtDecode } from "jwt-decode";
 import { Employee } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
+import { TerminalOptionsModal } from '../modals/TerminalOptions';
 import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
 import person from '../assets/img/navbar/pessoas/person.png';
 import categories from '../assets/img/navbar/pessoas/categories.png';
@@ -80,7 +81,47 @@ import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
 import about from '../assets/img/navbar/ajuda/about.png';
 import manual from '../assets/img/navbar/ajuda/manual.png';
 import helpdesk from '../assets/img/navbar/ajuda/helpdesk.png';
-import { TerminalOptionsModal } from '../modals/TerminalOptions';
+import nsoftware from '../assets/img/navbar/navbar/nsoftware.webp';
+import nsystem from '../assets/img/navbar/navbar/nsystem.webp';
+import napp from '../assets/img/navbar/navbar/napp.webp';
+import ncyber from '../assets/img/navbar/navbar/ncyber.webp';
+import ndigital from '../assets/img/navbar/navbar/ndigital.webp';
+import nserver from '../assets/img/navbar/navbar/nserver.webp';
+import naut from '../assets/img/navbar/navbar/naut.webp';
+import nequip from '../assets/img/navbar/navbar/nequip.webp';
+import nproject from '../assets/img/navbar/navbar/nproject.webp';
+import nidgroup from '../assets/img/navbar/navbar/nidgroup.png';
+import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
+import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
+import nidtec from '../assets/img/navbar/navbar/nidtec.png';
+import nsmart from '../assets/img/navbar/navbar/nsmart.webp';
+import nglasses from '../assets/img/navbar/navbar/nglasses.webp';
+import npro from '../assets/img/navbar/navbar/npro.webp';
+import npower from '../assets/img/navbar/navbar/npower.webp';
+import npost from '../assets/img/navbar/navbar/npost.webp';
+import ncity from '../assets/img/navbar/navbar/ncity.png';
+import nkio from '../assets/img/navbar/navbar/nkio.webp';
+import nled from '../assets/img/navbar/navbar/nled.webp';
+import nfire from '../assets/img/navbar/navbar/nfire.webp';
+import nfurniture from '../assets/img/navbar/navbar/nfurniture.webp';
+import nping from '../assets/img/navbar/navbar/nping.webp';
+import nconnect from '../assets/img/navbar/navbar/nconnect.webp';
+import nlight from '../assets/img/navbar/navbar/nlight.webp';
+import ncomfort from '../assets/img/navbar/navbar/ncomfort.webp';
+import nsound from '../assets/img/navbar/navbar/nsound.webp';
+import nhome from '../assets/img/navbar/navbar/nhome.webp';
+import ndecor from '../assets/img/navbar/navbar/ndecor.webp';
+import npartition from '../assets/img/navbar/navbar/npartition.webp';
+import payment_card from '../assets/img/navbar/nvisitor/payment_card.png';
+import coin from '../assets/img/navbar/nvisitor/coin.png';
+import card_movement from '../assets/img/navbar/nvisitor/card_movement.png';
+import doorlock_movement from '../assets/img/navbar/nvisitor/doorlock_movement.png';
+import ads from '../assets/img/navbar/nvisitor/ads.png';
+import video from '../assets/img/navbar/nvisitor/video.png';
+import image from '../assets/img/navbar/nvisitor/image.png';
+import online from '../assets/img/navbar/nvisitor/online.png';
+import card_report from '../assets/img/navbar/nvisitor/card_report.png';
+import coin_report from '../assets/img/navbar/nvisitor/coin_report.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -113,17 +154,30 @@ type TabInfo = {
 	route: string;
 };
 
-// Define as propriedades de um item de menu
-type MenuItemProps = {
-	active: boolean;
-	onClick: () => void;
-	image: string;
-	alt: string;
+// Define a interface para os dados do menu
+interface MenuItem {
+	active?: boolean;
+	onClick?: () => void;
 	label: string;
-};
+	image: any;
+	alt: string;
+	key: string;
+	submenu?: MenuItem[];
+}
+
+// Define a interface para a estrutura do menu
+interface MenuStructure {
+	[key: string]: MenuItem;
+}
 
 // Define as propriedades do componente
-export const NavBar = () => {
+interface NavBarProps {
+	color?: string;
+	onTabChange?: (tabName: string) => void;
+}
+
+// Define as propriedades do componente
+export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -152,11 +206,20 @@ export const NavBar = () => {
 	const [showNviewTab, setShowNviewTab] = useState(false);
 	const [showNsecurTab, setShowNsecurTab] = useState(false);
 	const [showModal, setShowModal] = useState(false);
+	const [showSubMenu, setShowSubMenu] = useState<{ [key: string]: boolean }>({});
 
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
 		loadInitialToken();
 		loadRibbonState();
+
+		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
+		setIsRibbonPinned(ribbonPinned);
+
+		if (ribbonPinned && activeTab in ribbons) {
+			const [setRibbon] = ribbons[activeTab as RibbonName];
+			setRibbon(true);
+		}
 	}, []);
 
 	// Função para carregar o token inicial
@@ -249,8 +312,10 @@ export const NavBar = () => {
 			const [setRibbon, ribbonName] = ribbons[tabName as RibbonName];
 
 			if (activeTab === ribbonName) {
-				setRibbon(false);
-				setActiveTab('');
+				if (!isRibbonPinned) {
+					setRibbon(false);
+					setActiveTab('');
+				}
 			} else {
 				Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
 				setActiveTab(ribbonName);
@@ -280,7 +345,7 @@ export const NavBar = () => {
 			setRibbon: setShowNvisitorRibbon,
 			localStorageTabKey: 'showNvisitorTab',
 			localStorageRibbonKey: 'showNvisitorRibbon',
-			route: '#',
+			route: '/nvisitor/nvisitordashboard',
 		},
 		'npark': {
 			setTab: setShowNparkTab,
@@ -365,16 +430,7 @@ export const NavBar = () => {
 
 	// Função para fazer logout
 	const logout = () => {
-		localStorage.removeItem('token');
-		localStorage.removeItem('showNclockTab');
-		localStorage.removeItem('showNaccessTab');
-		localStorage.removeItem('showNvisitorTab');
-		localStorage.removeItem('showNparkTab');
-		localStorage.removeItem('showNdoorTab');
-		localStorage.removeItem('showNpatrolTab');
-		localStorage.removeItem('showNcardTab');
-		localStorage.removeItem('showNviewTab');
-		localStorage.removeItem('showNsecurTab');
+		localStorage.clear();
 		navigate('/');
 	};
 
@@ -407,6 +463,8 @@ export const NavBar = () => {
 		const newState = !isRibbonPinned;
 		setIsRibbonPinned(newState);
 
+		localStorage.setItem('ribbonPinned', String(newState));
+
 		if (!newState) {
 			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
 			setActiveTab('');
@@ -416,12 +474,96 @@ export const NavBar = () => {
 				setRibbon(true);
 			}
 		}
+	};
 
-		localStorage.setItem('ribbonPinned', String(newState));
+	// Função para alternar o submenu
+	const toggleSubMenu = (menuKey: keyof MenuStructure) => {
+		setShowSubMenu((prev) => ({
+			...prev,
+			[menuKey]: !prev[menuKey],
+		}));
 	};
 
 	// Define o componente do item de menu
-	const MenuItem = ({ active, onClick, image, alt, label }: MenuItemProps) => (
+	const menuStructure: MenuStructure = {
+		dashboard: { label: 'NIDGROUP', image: nidgroup, alt: 'NIDGROUP', key: 'dashboard' },
+		sisnid: {
+			label: 'SISNID',
+			image: sisnidlogo,
+			alt: 'SISNID',
+			key: 'sisnid',
+			submenu: [
+				{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
+				{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
+				{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
+				{ label: 'Npark', image: npark, alt: 'npark', key: 'npark' },
+				{ label: 'Ndoor', image: ndoor, alt: 'ndoor', key: 'ndoor' },
+				{ label: 'Npatrol', image: npatrol, alt: 'npatrol', key: 'npatrol' },
+				{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
+				{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
+				{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
+				{ label: 'Nsoftwares', image: sisnidlogo, alt: 'nsoftwares', key: 'nsoftwares' }
+			],
+		},
+		nidsof: {
+			label: 'NIDSOF',
+			image: nidsof,
+			alt: 'NIDSOF',
+			key: 'nidsof',
+			submenu: [
+				{ label: 'Nsoftware', image: nsoftware, alt: 'nsoftware', key: 'nsoftware' },
+				{ label: 'Nsystem', image: nsystem, alt: 'nsystem', key: 'nsystem' },
+				{ label: 'Napp', image: napp, alt: 'napp', key: 'napp' },
+				{ label: 'Ncyber', image: ncyber, alt: 'ncyber', key: 'ncyber' },
+				{ label: 'Ndigital', image: ndigital, alt: 'ndigital', key: 'ndigital' },
+				{ label: 'Nserver', image: nserver, alt: 'nserver', key: 'nserver' },
+				{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
+				{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
+				{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
+				{ label: 'Nsoftwares', image: nidsof, alt: 'nsoftwares', key: 'nsoftwares' }
+			],
+		},
+		nidtec: {
+			label: 'NIDTEC',
+			image: nidtec,
+			alt: 'NIDTEC',
+			key: 'nidtec',
+			submenu: [
+				{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
+				{ label: 'Nglasses', image: nglasses, alt: 'nglasses', key: 'nglasses' },
+				{ label: 'Npro', image: npro, alt: 'npro', key: 'npro' },
+				{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
+				{ label: 'Npost', image: npost, alt: 'npost', key: 'npost' },
+				{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
+				{ label: 'Nkio', image: nkio, alt: 'nkio', key: 'nkio' },
+				{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
+				{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
+				{ label: 'Nsoftwares', image: nidtec, alt: 'nsoftwares', key: 'nsoftwares' }
+			],
+		},
+		nidplace: {
+			label: 'NIDPLACE',
+			image: nidplace,
+			alt: 'NIDPLACE',
+			key: 'nidplace',
+			submenu: [
+				{ label: 'Nfurniture', image: nfurniture, alt: 'nfurniture', key: 'nfurniture' },
+				{ label: 'Npartition', image: npartition, alt: 'npartition', key: 'npartition' },
+				{ label: 'Ndecor', image: ndecor, alt: 'ndecor', key: 'ndecor' },
+				{ label: 'Nping', image: nping, alt: 'nping', key: 'nping' },
+				{ label: 'Nconnect', image: nconnect, alt: 'nconnect', key: 'nconnect' },
+				{ label: 'Nlight', image: nlight, alt: 'nlight', key: 'nlight' },
+				{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
+				{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
+				{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
+				{ label: 'Nsoftwares', image: nidplace, alt: 'nsoftwares', key: 'nsoftwares' }
+			],
+		},
+	};
+
+
+	// Define o componente do item de menu
+	const MenuItem = ({ active, onClick, image, alt, label }: MenuItem) => (
 		<li
 			className={`image-text ${active ? 'active' : ''}`}
 			onClick={onClick}
@@ -432,135 +574,106 @@ export const NavBar = () => {
 		</li>
 	);
 
+	// Função genérica para renderizar o menu
+	const renderMenu = (menuKey: keyof MenuStructure) => {
+		const menu = menuStructure[menuKey as string];
+		return (
+			<div key={menuKey as string}>
+				<MenuItem
+					key={menuKey as string}
+					active={activeTab === menuKey}
+					onClick={() => (menu.submenu ? toggleSubMenu(menuKey) : handleTab(menuKey as string))}
+					image={menu.image}
+					alt={menu.alt}
+					label={menu.label}
+				/>
+				{showSubMenu[menuKey] && menu.submenu && (
+					<div className="submenu">
+						{menu.submenu.map((item: MenuItem) => (
+							<MenuItem
+								key={item.key}
+								active={activeTab === item.key}
+								onClick={() => handleTab(item.key)}
+								image={item.image}
+								alt={item.alt}
+								label={item.label}
+							/>
+						))}
+					</div>
+				)}
+			</div>
+		);
+	};
+
+	// Função para combinar as duas funções
+	const handleTabClick = (tabName: string) => {
+		handleRibbonClick(tabName);
+		if (onTabChange) {
+			onTabChange(tabName);
+		}
+		setActiveTab(tabName);
+	}
+
 	// Função para abrir o modal de opções do terminal
 	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
 
 	return (
-		<nav data-role="ribbonmenu">
+		<nav data-role="ribbonmenu" style={{ backgroundColor: color }}>
 			<div className="nav-container">
 				<Dropdown className='dropdown-icon'>
 					<Dropdown.Toggle variant="basic" id="dropdown-basic">
-						<span className="logo">NSOFTWARES</span>
+						<span className="logo">NIDGROUP</span>
 					</Dropdown.Toggle>
 					<Dropdown.Menu>
-						<div>
-							<MenuItem
-								active={activeTab === 'dashboard'}
-								onClick={() => handleTab('dashboard')}
-								image={sisnidlogo}
-								alt="início"
-								label="Início"
-							/>
-							<MenuItem
-								active={activeTab === 'nclock'}
-								onClick={() => handleTab('nclock')}
-								image={nclock}
-								alt="nclock"
-								label="Nclock"
-							/>
-							<MenuItem
-								active={activeTab === 'naccess'}
-								onClick={() => handleTab('naccess')}
-								image={naccess}
-								alt="naccess"
-								label="Naccess"
-							/>
-							<MenuItem
-								active={activeTab === 'nvisitor'}
-								onClick={() => handleTab('nvisitor')}
-								image={nvisitor}
-								alt="nvisitor"
-								label="Nvisitor"
-							/>
-							<MenuItem
-								active={activeTab === 'npark'}
-								onClick={() => handleTab('npark')}
-								image={npark}
-								alt="npark"
-								label="Npark"
-							/>
-							<MenuItem
-								active={activeTab === 'ndoor'}
-								onClick={() => handleTab('ndoor')}
-								image={ndoor}
-								alt="ndoor"
-								label="Ndoor"
-							/>
-							<MenuItem
-								active={activeTab === 'npatrol'}
-								onClick={() => handleTab('npatrol')}
-								image={npatrol}
-								alt="npatrol"
-								label="Npatrol"
-							/>
-							<MenuItem
-								active={activeTab === 'ncard'}
-								onClick={() => handleTab('ncard')}
-								image={ncard}
-								alt="ncard"
-								label="Ncard"
-							/>
-							<MenuItem
-								active={activeTab === 'nview'}
-								onClick={() => handleTab('nview')}
-								image={nview}
-								alt="nview"
-								label="Nview"
-							/>
-							<MenuItem
-								active={activeTab === 'nsecur'}
-								onClick={() => handleTab('nsecur')}
-								image={nsecur}
-								alt="nsecur"
-								label="Nsecur"
-							/>
+						<div style={{ position: 'relative' }}>
+							{Object.keys(menuStructure).map((menuKey) => renderMenu(menuKey))}
 						</div>
 					</Dropdown.Menu>
 				</Dropdown>
 				<ul className="nav nav-tabs">
 					{showNclockTab && (
 						<li className={`nav-item ${activeTab === 'nclock' ? 'active' : ''}`}>
-							<a className="nav-link nclock-tab" id="nclock-tab" onClick={() => handleRibbonClick('nclock')}>NCLOCK</a>
+							<a className="nav-link nclock-tab" id="nclock-tab" onClick={() => handleTabClick('nclock')}>NCLOCK</a>
 						</li>
 					)}
 					{showNaccessTab && (
 						<li className={`nav-item ${activeTab === 'naccess' ? 'active' : ''}`}>
-							<a className="nav-link naccess-tab" id="naccess-tab" onClick={() => handleRibbonClick('naccess')}>NACCESS</a>
+							<a className="nav-link naccess-tab" id="naccess-tab" onClick={() => handleTabClick('naccess')}>NACCESS</a>
 						</li>
 					)}
 					{showNvisitorTab && (
 						<li className={`nav-item ${activeTab === 'nvisitor' ? 'active' : ''}`}>
-							<a className="nav-link nvisitor-tab" id="nvisitor-tab" onClick={() => handleRibbonClick('nvisitor')}>NVISITOR</a>
+							<a className="nav-link nvisitor-tab" id="nvisitor-tab" onClick={() => handleTabClick('nvisitor')}>NVISITOR</a>
 						</li>
 					)}
 					{showNparkTab && (
 						<li className={`nav-item ${activeTab === 'npark' ? 'active' : ''}`}>
-							<a className="nav-link npark-tab" id="npark-tab" onClick={() => handleRibbonClick('npark')}>NPARK</a>
+							<a className="nav-link npark-tab" id="npark-tab" onClick={() => handleTabClick('npark')}>NPARK</a>
 						</li>
 					)}
 					{showNdoorTab && (
 						<li className={`nav-item ${activeTab === 'ndoor' ? 'active' : ''}`}>
-							<a className="nav-link ndoor-tab" id="ndoor-tab" onClick={() => handleRibbonClick('ndoor')}>NDOOR</a>
+							<a className="nav-link ndoor-tab" id="ndoor-tab" onClick={() => handleTabClick('ndoor')}>NDOOR</a>
 						</li>
 					)}
 					{showNpatrolTab && (
 						<li className={`nav-item ${activeTab === 'npatrol' ? 'active' : ''}`}>
-							<a className="nav-link npatrol-tab" id="npatrol-tab" onClick={() => handleRibbonClick('npatrol')}>NPATROL</a>
+							<a className="nav-link npatrol-tab" id="npatrol-tab" onClick={() => handleTabClick('npatrol')}>NPATROL</a>
 						</li>
 					)}
 					{showNcardTab && (
 						<li className={`nav-item ${activeTab === 'ncard' ? 'active' : ''}`}>
-							<a className="nav-link ncard-tab" id="ncard-tab" onClick={() => handleRibbonClick('ncard')}>NCARD</a>
+							<a className="nav-link ncard-tab" id="ncard-tab" onClick={() => handleTabClick('ncard')}>NCARD</a>
 						</li>
 					)}
 					{showNviewTab && (
 						<li className={`nav-item ${activeTab === 'nview' ? 'active' : ''}`}>
-							<a className="nav-link nview-tab" id="nview-tab" onClick={() => handleRibbonClick('nview')}>Nview</a>
+							<a className="nav-link nview-tab" id="nview-tab" onClick={() => handleTabClick('nview')}>Nview</a>
 						</li>
 					)}
 					{showNsecurTab && (
 						<li className={`nav-item ${activeTab === 'nsecur' ? 'active' : ''}`}>
-							<a className="nav-link nsecur-tab" id="nsecur-tab" onClick={() => handleRibbonClick('nsecur')}>NSECUR</a>
+							<a className="nav-link nsecur-tab" id="nsecur-tab" onClick={() => handleTabClick('nsecur')}>NSECUR</a>
 						</li>
 					)}
 					<li className={`nav-item ${activeTab === 'pessoas' ? 'active' : ''}`}>
@@ -586,7 +699,7 @@ export const NavBar = () => {
 								<img src={employee?.photo || profileAvatar} alt="user photo" className='profile-avatar' />
 								<Dropdown.Item disabled>{user.name}</Dropdown.Item>
 								<Dropdown.Item disabled>{user.email}</Dropdown.Item>
-								<Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+								<Dropdown.Item onClick={logout}>Sair</Dropdown.Item>
 							</div>
 						</Dropdown.Menu>
 					</Dropdown>
@@ -723,7 +836,7 @@ export const NavBar = () => {
 									</div>
 								</div>
 								<div className="title-container">
-									<span className="title">Acessos</span>
+									<span className="title">Horários</span>
 								</div>
 							</div>
 							<div className="group">
@@ -864,7 +977,7 @@ export const NavBar = () => {
 									</div>
 								</div>
 								<div className="title-container">
-									<span className="title">Códigos de Resultados</span>
+									<span className="title">Escalas</span>
 								</div>
 							</div>
 							<div className="group">
@@ -1005,6 +1118,126 @@ export const NavBar = () => {
 								</div>
 								<div className="title-container">
 									<span className="title">Configuração</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div className="ribbon-toggle">
+						<img
+							src={isRibbonPinned ? unpin : pin}
+							alt="Lock/Unlock Ribbon"
+							onClick={togglePinRibbon}
+							className='ribbon-icon'
+						/>
+					</div>
+				</div>
+			)}
+			{showNvisitorRibbon && (
+				<div className="tab-content" id="myTabContent">
+					<div className="tab-pane fade show active" id="nvisitor" role="tabpanel" aria-labelledby="nvisitor-tab">
+						<div className="section" id="section-group">
+							<div className="group">
+								<div className="btn-group" role="group">
+									<div className="grid-container">
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={payment_card} alt="botão pagamento terminal" />
+											</span>
+											<span className="text">Pagamento Terminal</span>
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={coin} alt="botão pagamento moedas" />
+											</span>
+											<span className="text">Pagamento Moedas</span>
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={card_movement} alt="botão movimentos cartão" />
+											</span>
+											<span className="text">Movimentos Cartão</span>
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={doorlock_movement} alt="botão movimentos porteiro" />
+											</span>
+											<span className="text">Movimentos Porteiro</span>
+										</Link>
+									</div>
+								</div>
+								<div className="title-container">
+									<span className="title">Acesso WC</span>
+								</div>
+							</div>
+							<div className="group">
+								<div className="btn-group" role="group">
+									<div className="grid-container">
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={camera} alt="botão videovigilância" />
+											</span>
+											<span className="text">Videovigilância</span>
+										</Link>
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={ads} alt="botão publicidade" />
+											</span>
+											<span className="text">Publicidade</span>
+										</Link>
+									</div>
+									<div>
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={video} alt="botão vídeo" />
+											</span>
+											<span className="text">Vídeo</span>
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={image} alt="botão imagem" />
+											</span>
+											<span className="text">Imagem</span>
+										</Link>
+									</div>
+								</div>
+								<div className="title-container">
+									<span className="title">Organização</span>
+								</div>
+							</div>
+							<div className="group">
+								<div className="btn-group" role="group">
+									<div className='icon-text-informacoes'>
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<span className="icon">
+												<img src={online} alt="botão online" />
+											</span>
+											<span className="text">Online</span>
+										</Link>
+									</div>
+								</div>
+								<div className="title-container">
+									<span className="title">Videovigilância</span>
+								</div>
+							</div>
+							<div className="group">
+								<div className="btn-group" role="group">
+									<div className="grid-container">
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={card_report} alt="botão relatório cartão" />
+											</span>
+											<span className="text">Relatório Cartão</span>
+										</Link>
+										<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={coin_report} alt="botão relatório moedas" />
+											</span>
+											<span className="text">Relatório Moedas</span>
+										</Link>
+									</div>
+								</div>
+								<div className="title-container">
+									<span className="title">Recebimentos</span>
 								</div>
 							</div>
 						</div>

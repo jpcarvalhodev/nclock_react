@@ -222,7 +222,7 @@ export const Departments = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar color="#000000" />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span>Departamentos</span>
@@ -298,7 +298,7 @@ export const Departments = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            <Footer />
+            <Footer color="#000000" />
         </div>
     );
 }

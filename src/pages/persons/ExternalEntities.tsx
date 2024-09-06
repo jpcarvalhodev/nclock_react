@@ -232,7 +232,7 @@ export const ExternalEntities = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar color="#000000" />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span>Entidades Externas</span>
@@ -294,7 +294,7 @@ export const ExternalEntities = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            <Footer color="#000000" />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={externalEntityFields}

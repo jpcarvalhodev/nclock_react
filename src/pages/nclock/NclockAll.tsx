@@ -193,7 +193,7 @@ export const NclockAll = () => {
     return (
         <AttendanceProvider>
             <div className="main-container">
-                <NavBar />
+                <NavBar color="#0050a0" />
                 <div className="content-container">
                     <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
@@ -250,7 +250,7 @@ export const NclockAll = () => {
                         </div>
                     </Split>
                 </div>
-                <Footer />
+                <Footer color="#0050a0" />
                 {showColumnSelector && (
                     <ColumnSelectorModal
                         columns={filteredColumns}

@@ -1055,7 +1055,7 @@ export const Terminals = () => {
     return (
         <TerminalsProvider>
             <div className="main-container">
-                <NavBar />
+                <NavBar color="#000000" />
                 <div className='filter-refresh-add-edit-upper-class'>
                     <div className="datatable-title-text">
                         <span>Terminais</span>
@@ -1435,7 +1435,7 @@ export const Terminals = () => {
                         </Tab>
                     </Tabs>
                 </div>
-                <Footer />
+                <Footer color="#000000" />
                 {showColumnSelector && (
                     <ColumnSelectorModal
                         columns={deviceFields}

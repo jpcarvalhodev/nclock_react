@@ -191,7 +191,7 @@ export const Types = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar color="#000000" />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span>Tipos</span>
@@ -227,7 +227,7 @@ export const Types = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            <Footer color="#000000" />
             <CreateModalCatProfTypes
                 title="Adicionar Tipo"
                 open={showAddModal}

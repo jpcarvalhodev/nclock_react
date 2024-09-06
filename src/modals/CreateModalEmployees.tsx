@@ -444,6 +444,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             <Nav.Link eventKey="dadosProfissionais">Dados Profissionais</Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
+                            <Nav.Link eventKey="dadosDaEmpresa">Dados da Empresa</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
                             <Nav.Link eventKey="cartoes">Cartão</Nav.Link>
                         </Nav.Item>
                     </Nav>
