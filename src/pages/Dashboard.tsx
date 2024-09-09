@@ -22,12 +22,12 @@ import naut from '../assets/img/navbar/navbar/naut.webp';
 import nequip from '../assets/img/navbar/navbar/nequip.webp';
 import nproject from '../assets/img/navbar/navbar/nproject.webp';
 import nsmart from '../assets/img/navbar/navbar/nsmart.webp';
-import nglasses from '../assets/img/navbar/navbar/nglasses.webp';
-import npro from '../assets/img/navbar/navbar/npro.webp';
+import nreality from '../assets/img/navbar/navbar/nreality.webp';
+import nhologram from '../assets/img/navbar/navbar/nhologram.webp';
 import npower from '../assets/img/navbar/navbar/npower.webp';
-import npost from '../assets/img/navbar/navbar/npost.webp';
+import ncharge from '../assets/img/navbar/navbar/ncharge.webp';
 import ncity from '../assets/img/navbar/navbar/ncity.png';
-import nkio from '../assets/img/navbar/navbar/nkio.webp';
+import nkiosk from '../assets/img/navbar/navbar/nkiosk.webp';
 import nled from '../assets/img/navbar/navbar/nled.webp';
 import nfire from '../assets/img/navbar/navbar/nfire.webp';
 import nfurniture from '../assets/img/navbar/navbar/nfurniture.webp';
@@ -43,6 +43,7 @@ import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
 import nidtec from '../assets/img/navbar/navbar/nidtec.png';
 import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
 import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.png';
+import banner_nidgroup from '../assets/img/carousel/banner_nidgroup.jpg';
 import banner_nclock from '../assets/img/carousel/banner_nclock.jpg';
 import banner_naccess from '../assets/img/carousel/banner_naccess.jpg';
 import banner_nvisitor from '../assets/img/carousel/banner_nvisitor.jpg';
@@ -64,30 +65,33 @@ import banner_napp from '../assets/img/carousel/banner_napp.webp';
 import banner_ncyber from '../assets/img/carousel/banner_ncyber.webp';
 import banner_ndigital from '../assets/img/carousel/banner_ndigital.webp';
 import banner_nserver from '../assets/img/carousel/banner_nserver.webp';
-import banner_nout from '../assets/img/carousel/banner_nout.webp';
-import banner_nequip from '../assets/img/carousel/banner_nequip.webp';
+import banner_naut from '../assets/img/carousel/banner_naut.webp';
+import banner_nequip from '../assets/img/carousel/banner_nequip.jpg';
+import banner_nproject from '../assets/img/carousel/banner_nproject.webp';
 import banner_nsmart from '../assets/img/carousel/banner_nsmart.webp';
-import banner_npro from '../assets/img/carousel/banner_npro.webp';
+import banner_nreality from '../assets/img/carousel/banner_nreality.jpg';
+import banner_nhologram from '../assets/img/carousel/banner_nhologram.jpg';
 import banner_npower from '../assets/img/carousel/banner_npower.webp';
-import banner_npost from '../assets/img/carousel/banner_npost.webp';
+import banner_ncharge from '../assets/img/carousel/banner_ncharge.webp';
 import banner_ncity from '../assets/img/carousel/banner_ncity.webp';
-import banner_nkio from '../assets/img/carousel/banner_nkio.webp';
-import banner_nled from '../assets/img/carousel/banner_nled.webp';
-import banner_nfire from '../assets/img/carousel/banner_nfire.webp';
-import banner_nfurniture from '../assets/img/carousel/banner_nfurniture.webp';
-import banner_npartition from '../assets/img/carousel/banner_npartition.webp';
-import banner_ndecor from '../assets/img/carousel/banner_ndecor.webp';
-import banner_nping from '../assets/img/carousel/banner_nping.webp';
-import banner_nconnect from '../assets/img/carousel/banner_nconnect.webp';
-import banner_ncomfort from '../assets/img/carousel/banner_ncomfort.webp';
-import banner_nhome from '../assets/img/carousel/banner_nhome.webp';
-import banner_nidgroup from '../assets/img/carousel/banner_nidgroup.jpg';
+import banner_nkiosk from '../assets/img/carousel/banner_nkiosk.jpg';
+import banner_nled from '../assets/img/carousel/banner_nled.jpg';
+import banner_nfire from '../assets/img/carousel/banner_nfire.jpg';
+import banner_nfurniture from '../assets/img/carousel/banner_nfurniture.jpg';
+import banner_npartition from '../assets/img/carousel/banner_npartition.jpg';
+import banner_ndecor from '../assets/img/carousel/banner_ndecor.jpg';
+import banner_nping from '../assets/img/carousel/banner_nping.jpg';
+import banner_nconnect from '../assets/img/carousel/banner_nconnect.jpg';
+import banner_nlight from '../assets/img/carousel/banner_nlight.jpg';
+import banner_ncomfort from '../assets/img/carousel/banner_ncomfort.jpg';
+import banner_nsound from '../assets/img/carousel/banner_nsound.jpg';
+import banner_nhome from '../assets/img/carousel/banner_nhome.jpg';
 
 // Define o tipo TabName
 type TabName = 'NIDGROUP' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
 
 // Define o tipo CardTitle
-type CardTitle = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nglasses' | 'Npro' | 'Npower' | 'Npost' | 'Ncity' | 'Nkio' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome' | 'Nsoftwares';
+type CardTitle = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome' | 'Nsoftwares';
 
 // Define o objeto tabData
 const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: string }> = {
@@ -98,7 +102,7 @@ const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: str
     Ndoor: { route: '#', tabKey: 'showNdoorTab', ribbonKey: 'showNdoorRibbon' },
     Npatrol: { route: '#', tabKey: 'showNpatrolTab', ribbonKey: 'showNpatrolRibbon' },
     Ncard: { route: '#', tabKey: 'showNcardTab', ribbonKey: 'showNcardRibbon' },
-    Nview: { route: '#', tabKey: 'showNviewTab', ribbonKey: 'showNviewRibbon' },
+    Nview: { route: '/nview/nviewdashboard', tabKey: 'showNviewTab', ribbonKey: 'showNviewRibbon' },
     Nsecur: { route: '#', tabKey: 'showNsecurTab', ribbonKey: 'showNsecurRibbon' },
     Nsoftware: { route: '#', tabKey: 'showNsoftwareTab', ribbonKey: 'showNsoftwareRibbon' },
     Nsystem: { route: '#', tabKey: 'showNsystemTab', ribbonKey: 'showNsystemRibbon' },
@@ -110,12 +114,12 @@ const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: str
     Nequip: { route: '#', tabKey: 'showNequipTab', ribbonKey: 'showNequipRibbon' },
     Nproject: { route: '#', tabKey: 'showNprojectTab', ribbonKey: 'showNprojectRibbon' },
     Nsmart: { route: '#', tabKey: 'showNsmartTab', ribbonKey: 'showNsmartRibbon' },
-    Nglasses: { route: '#', tabKey: 'showNglassesTab', ribbonKey: 'showNglassesRibbon' },
-    Npro: { route: '#', tabKey: 'showNproTab', ribbonKey: 'showNproRibbon' },
+    Nreality: { route: '#', tabKey: 'showNrealityTab', ribbonKey: 'showNrealityRibbon' },
+    Nhologram: { route: '#', tabKey: 'showNhologramTab', ribbonKey: 'showNhologramRibbon' },
     Npower: { route: '#', tabKey: 'showNpowerTab', ribbonKey: 'showNpowerRibbon' },
-    Npost: { route: '#', tabKey: 'showNpostTab', ribbonKey: 'showNpostRibbon' },
+    Ncharge: { route: '#', tabKey: 'showNchargeTab', ribbonKey: 'showNchargeRibbon' },
     Ncity: { route: '#', tabKey: 'showNcityTab', ribbonKey: 'showNcityRibbon' },
-    Nkio: { route: '#', tabKey: 'showNkioTab', ribbonKey: 'showNkioRibbon' },
+    Nkiosk: { route: '/nkiosk/nkioskdashboard', tabKey: 'showNkioskTab', ribbonKey: 'showNkioskRibbon' },
     Nled: { route: '#', tabKey: 'showNledTab', ribbonKey: 'showNledRibbon' },
     Nfire: { route: '#', tabKey: 'showNfireTab', ribbonKey: 'showNfireRibbon' },
     Nfurniture: { route: '#', tabKey: 'showNfurnitureTab', ribbonKey: 'showNfurnitureRibbon' },
@@ -140,6 +144,39 @@ const tabColors: Record<string, { navbarColor: string; footerColor: string }> = 
     nclock: { navbarColor: '#0050a0', footerColor: '#0050a0' },
     naccess: { navbarColor: '#0050a0', footerColor: '#0050a0' },
     nvisitor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+    npark: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+    ndoor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+    npatrol: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+    ncard: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+    nview: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+    nsecur: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+    nsoftware: { navbarColor: '#D01313', footerColor: '#D01313' },
+    nsystem: { navbarColor: '#D01313', footerColor: '#D01313' },
+    napp: { navbarColor: '#D01313', footerColor: '#D01313' },
+    ncyber: { navbarColor: '#D01313', footerColor: '#D01313' },
+    ndigital: { navbarColor: '#D01313', footerColor: '#D01313' },
+    nserver: { navbarColor: '#D01313', footerColor: '#D01313' },
+    naut: { navbarColor: '#D01313', footerColor: '#D01313' },
+    nequip: { navbarColor: '#D01313', footerColor: '#D01313' },
+    nproject: { navbarColor: '#D01313', footerColor: '#D01313' },
+    nsmart: { navbarColor: '#009739', footerColor: '#009739' },
+    nreality: { navbarColor: '#009739', footerColor: '#009739' },
+    nhologram: { navbarColor: '#009739', footerColor: '#009739' },
+    npower: { navbarColor: '#009739', footerColor: '#009739' },
+    ncharge: { navbarColor: '#009739', footerColor: '#009739' },
+    ncity: { navbarColor: '#009739', footerColor: '#009739' },
+    nkiosk: { navbarColor: '#009739', footerColor: '#009739' },
+    nled: { navbarColor: '#009739', footerColor: '#009739' },
+    nfire: { navbarColor: '#009739', footerColor: '#009739' },
+    nfurniture: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+    npartition: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+    ndecor: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+    nping: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+    nconnect: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+    nlight: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+    ncomfort: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+    nsound: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+    nhome: { navbarColor: '#FEC629', footerColor: '#FEC629' },
 };
 
 // Define a página principal
@@ -169,7 +206,7 @@ export const Dashboard = () => {
         'NIDGROUP': [
             { title: 'Nvisitor', img: nvisitor },
             { title: 'Nview', img: nview },
-            { title: 'Nkiosk', img: nkio }
+            { title: 'Nkiosk', img: nkiosk }
         ],
         'SISNID': [
             { title: 'Nclock', img: nclock },
@@ -197,12 +234,12 @@ export const Dashboard = () => {
         ],
         'NIDTEC': [
             { title: 'Nsmart', img: nsmart },
-            { title: 'Nglasses', img: nglasses },
-            { title: 'Npro', img: npro },
+            { title: 'Nreality', img: nreality },
+            { title: 'Nhologram', img: nhologram },
             { title: 'Npower', img: npower },
-            { title: 'Npost', img: npost },
+            { title: 'Ncharge', img: ncharge },
             { title: 'Ncity', img: ncity },
-            { title: 'Nkiosk', img: nkio },
+            { title: 'Nkiosk', img: nkiosk },
             { title: 'Nled', img: nled },
             { title: 'Nfire', img: nfire },
             { title: 'Nsoftwares', img: nidtec }
@@ -272,6 +309,7 @@ export const Dashboard = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
+                    <h5 className="dashboard-title-text-inside">Soluções</h5>
                     {activeKey === 'NIDGROUP' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
@@ -281,22 +319,138 @@ export const Dashboard = () => {
                     )}
                     {activeKey === 'SISNID' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-
+                            <div>
+                                <img className="img-carousel" src={banner_sisnid} alt="SISNID" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nclock} alt="Nclock" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_naccess} alt="Naccess" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nvisitor} alt="Nvisitor" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_npark} alt="Npark" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_ndoor} alt="Ndoor" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_npatrol} alt="Npatrol" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_ncard} alt="Ncard" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nview} alt="Nview" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nsecur} alt="Nsecur" />
+                            </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDSOF' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-
+                            <div>
+                                <img className="img-carousel" src={banner_nidsof} alt="NIDSOF" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nsoftware} alt="Nsoftware" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nsystem} alt="Nsystem" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_napp} alt="Napp" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_ncyber} alt="Ncyber" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_ndigital} alt="Ndigital" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nserver} alt="Nserver" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_naut} alt="Naut" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nequip} alt="Nequip" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nproject} alt="Nproject" />
+                            </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDTEC' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-
+                            <div>
+                                <img className="img-carousel" src={banner_nidtec} alt="NIDTEC" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nsmart} alt="Nsmart" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nreality} alt="Nreality" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nhologram} alt="Nhologram" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_npower} alt="Npower" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_ncharge} alt="Ncharge" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_ncity} alt="Ncity" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nkiosk} alt="Nkiosk" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nled} alt="Nled" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nfire} alt="Nfire" />
+                            </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDPLACE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-
+                            <div>
+                                <img className="img-carousel" src={banner_nidplace} alt="NIDPLACE" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nfurniture} alt="Nfurniture" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_npartition} alt="Npartition" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_ndecor} alt="Ndecor" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nping} alt="Nping" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nconnect} alt="Nconnect" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nlight} alt="Nlight" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_ncomfort} alt="Ncomfort" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nsound} alt="Nsound" />
+                            </div>
+                            <div>
+                                <img className="img-carousel" src={banner_nhome} alt="Nhome" />
+                            </div>
                         </Carousel>
                     )}
                 </motion.div>
@@ -306,6 +460,7 @@ export const Dashboard = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
+                    <h5 className="dashboard-title-text-inside">Notícias</h5>
                     {activeKey === 'NIDGROUP' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
@@ -324,22 +479,30 @@ export const Dashboard = () => {
                     )}
                     {activeKey === 'SISNID' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-
+                            <div>
+                                <img className="img-carousel" src={banner_sisnid} alt="SISNID" />
+                            </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDSOF' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-
+                            <div>
+                                <img className="img-carousel" src={banner_nidsof} alt="NIDSOF" />
+                            </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDTEC' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-
+                            <div>
+                                <img className="img-carousel" src={banner_nidtec} alt="NIDTEC" />
+                            </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDPLACE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-
+                            <div>
+                                <img className="img-carousel" src={banner_nidplace} alt="NIDPLACE" />
+                            </div>
                         </Carousel>
                     )}
                 </motion.div>

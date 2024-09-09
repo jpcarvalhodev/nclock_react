@@ -17,6 +17,7 @@ declare module '@mui/x-tree-view/models';
 declare module 'split.js';
 declare module 'react-chartjs-2';
 declare module 'react-responsive-carousel';
+declare module "https://framer.com/m/*";
 
 // Declarações de módulos de exportação que não possuem tipos
 declare module 'file-saver';

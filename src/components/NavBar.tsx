@@ -95,12 +95,12 @@ import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
 import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
 import nidtec from '../assets/img/navbar/navbar/nidtec.png';
 import nsmart from '../assets/img/navbar/navbar/nsmart.webp';
-import nglasses from '../assets/img/navbar/navbar/nglasses.webp';
-import npro from '../assets/img/navbar/navbar/npro.webp';
+import nreality from '../assets/img/navbar/navbar/nreality.webp';
+import nhologram from '../assets/img/navbar/navbar/nhologram.webp';
 import npower from '../assets/img/navbar/navbar/npower.webp';
-import npost from '../assets/img/navbar/navbar/npost.webp';
+import ncharge from '../assets/img/navbar/navbar/ncharge.webp';
 import ncity from '../assets/img/navbar/navbar/ncity.png';
-import nkio from '../assets/img/navbar/navbar/nkio.webp';
+import nkiosk from '../assets/img/navbar/navbar/nkiosk.webp';
 import nled from '../assets/img/navbar/navbar/nled.webp';
 import nfire from '../assets/img/navbar/navbar/nfire.webp';
 import nfurniture from '../assets/img/navbar/navbar/nfurniture.webp';
@@ -130,20 +130,7 @@ interface MyTokenPayload extends JwtPayload {
 }
 
 // Define os nomes das abas
-type RibbonName =
-	| 'pessoas'
-	| 'dispositivos'
-	| 'configuracao'
-	| 'ajuda'
-	| 'nclock'
-	| 'naccess'
-	| 'nvisitor'
-	| 'npark'
-	| 'ndoor'
-	| 'npatrol'
-	| 'ncard'
-	| 'nview'
-	| 'nsecur';
+type RibbonName = 'pessoas' | 'dispositivos' | 'configuracao' | 'ajuda' | 'nclock' | 'naccess' | 'nvisitor' | 'npark' | 'ndoor' | 'npatrol' | 'ncard' | 'nview' | 'nsecur' | 'nsoftware' | 'nsystem' | 'napp' | 'ncyber' | 'ndigital' | 'nserver' | 'naut' | 'nequip' | 'nproject' | 'nsmart' | 'nreality' | 'nhologram' | 'npower' | 'ncharge' | 'ncity' | 'nkiosk' | 'nled' | 'nfire' | 'nfurniture' | 'npartition' | 'ndecor' | 'nping' | 'nconnect' | 'nlight' | 'ncomfort' | 'nsound' | 'nhome';
 
 // Define a interface para as informações da aba
 type TabInfo = {
@@ -196,6 +183,33 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 	const [showNcardRibbon, setShowNcardRibbon] = useState(false);
 	const [showNviewRibbon, setShowNviewRibbon] = useState(false);
 	const [showNsecurRibbon, setShowNsecurRibbon] = useState(false);
+	const [showNsoftwareRibbon, setShowNsoftwareRibbon] = useState(false);
+	const [showNsystemRibbon, setShowNsystemRibbon] = useState(false);
+	const [showNappRibbon, setShowNappRibbon] = useState(false);
+	const [showNcyberRibbon, setShowNcyberRibbon] = useState(false);
+	const [showNdigitalRibbon, setShowNdigitalRibbon] = useState(false);
+	const [showNserverRibbon, setShowNserverRibbon] = useState(false);
+	const [showNautRibbon, setShowNautRibbon] = useState(false);
+	const [showNequipRibbon, setShowNequipRibbon] = useState(false);
+	const [showNprojectRibbon, setShowNprojectRibbon] = useState(false);
+	const [showNsmartRibbon, setShowNsmartRibbon] = useState(false);
+	const [showNrealityRibbon, setShowNrealityRibbon] = useState(false);
+	const [showNhologramRibbon, setShowNhologramRibbon] = useState(false);
+	const [showNpowerRibbon, setShowNpowerRibbon] = useState(false);
+	const [showNchargeRibbon, setShowNchargeRibbon] = useState(false);
+	const [showNcityRibbon, setShowNcityRibbon] = useState(false);
+	const [showNkioskRibbon, setShowNkioskRibbon] = useState(false);
+	const [showNledRibbon, setShowNledRibbon] = useState(false);
+	const [showNfireRibbon, setShowNfireRibbon] = useState(false);
+	const [showNfurnitureRibbon, setShowNfurnitureRibbon] = useState(false);
+	const [showNpartitionRibbon, setShowNpartitionRibbon] = useState(false);
+	const [showNdecorRibbon, setShowNdecorRibbon] = useState(false);
+	const [showNpingRibbon, setShowNpingRibbon] = useState(false);
+	const [showNconnectRibbon, setShowNconnectRibbon] = useState(false);
+	const [showNlightRibbon, setShowNlightRibbon] = useState(false);
+	const [showNcomfortRibbon, setShowNcomfortRibbon] = useState(false);
+	const [showNsoundRibbon, setShowNsoundRibbon] = useState(false);
+	const [showNhomeRibbon, setShowNhomeRibbon] = useState(false);
 	const [showNclockTab, setShowNclockTab] = useState(false);
 	const [showNaccessTab, setShowNaccessTab] = useState(false);
 	const [showNvisitorTab, setShowNvisitorTab] = useState(false);
@@ -205,8 +219,35 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 	const [showNcardTab, setShowNcardTab] = useState(false);
 	const [showNviewTab, setShowNviewTab] = useState(false);
 	const [showNsecurTab, setShowNsecurTab] = useState(false);
+	const [showNsoftwareTab, setShowNsoftwareTab] = useState(false);
+	const [showNsystemTab, setShowNsystemTab] = useState(false);
+	const [showNappTab, setShowNappTab] = useState(false);
+	const [showNcyberTab, setShowNcyberTab] = useState(false);
+	const [showNdigitalTab, setShowNdigitalTab] = useState(false);
+	const [showNserverTab, setShowNserverTab] = useState(false);
+	const [showNautTab, setShowNautTab] = useState(false);
+	const [showNequipTab, setShowNequipTab] = useState(false);
+	const [showNprojectTab, setShowNprojectTab] = useState(false);
+	const [showNsmartTab, setShowNsmartTab] = useState(false);
+	const [showNrealityTab, setShowNrealityTab] = useState(false);
+	const [showNhologramTab, setShowNhologramTab] = useState(false);
+	const [showNpowerTab, setShowNpowerTab] = useState(false);
+	const [showNchargeTab, setShowNchargeTab] = useState(false);
+	const [showNcityTab, setShowNcityTab] = useState(false);
+	const [showNkioskTab, setShowNkioskTab] = useState(false);
+	const [showNledTab, setShowNledTab] = useState(false);
+	const [showNfireTab, setShowNfireTab] = useState(false);
+	const [showNfurnitureTab, setShowNfurnitureTab] = useState(false);
+	const [showNpartitionTab, setShowNpartitionTab] = useState(false);
+	const [showNdecorTab, setShowNdecorTab] = useState(false);
+	const [showNpingTab, setShowNpingTab] = useState(false);
+	const [showNconnectTab, setShowNconnectTab] = useState(false);
+	const [showNlightTab, setShowNlightTab] = useState(false);
+	const [showNcomfortTab, setShowNcomfortTab] = useState(false);
+	const [showNsoundTab, setShowNsoundTab] = useState(false);
+	const [showNhomeTab, setShowNhomeTab] = useState(false);
 	const [showModal, setShowModal] = useState(false);
-	const [showSubMenu, setShowSubMenu] = useState<{ [key: string]: boolean }>({});
+	const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
@@ -215,6 +256,14 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 
 		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
 		setIsRibbonPinned(ribbonPinned);
+
+		const savedActiveTab = localStorage.getItem('activeTab');
+		if (savedActiveTab && tabData[savedActiveTab]) {
+			setActiveTab(savedActiveTab);
+			const { setTab, setRibbon } = tabData[savedActiveTab];
+			setTab(true);
+			setRibbon(true);
+		}
 
 		if (ribbonPinned && activeTab in ribbons) {
 			const [setRibbon] = ribbons[activeTab as RibbonName];
@@ -249,6 +298,33 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		const ncardShown = localStorage.getItem('showNcardTab') === 'true';
 		const nviewShown = localStorage.getItem('showNviewTab') === 'true';
 		const nsecurShown = localStorage.getItem('showNsecurTab') === 'true';
+		const nsoftwareShown = localStorage.getItem('showNsoftwareTab') === 'true';
+		const nsystemShown = localStorage.getItem('showNsystemTab') === 'true';
+		const nappShown = localStorage.getItem('showNappTab') === 'true';
+		const ncyberShown = localStorage.getItem('showNcyberTab') === 'true';
+		const ndigitalShown = localStorage.getItem('showNdigitalTab') === 'true';
+		const nserverShown = localStorage.getItem('showNserverTab') === 'true';
+		const nautShown = localStorage.getItem('showNautTab') === 'true';
+		const nequipShown = localStorage.getItem('showNequipTab') === 'true';
+		const nprojectShown = localStorage.getItem('showNprojectTab') === 'true';
+		const nsmartShown = localStorage.getItem('showNsmartTab') === 'true';
+		const nrealityShown = localStorage.getItem('showNrealityTab') === 'true';
+		const nhologramShown = localStorage.getItem('showNhologramTab') === 'true';
+		const npowerShown = localStorage.getItem('showNpowerTab') === 'true';
+		const nchargeShown = localStorage.getItem('showNchargeTab') === 'true';
+		const ncityShown = localStorage.getItem('showNcityTab') === 'true';
+		const nkioskShown = localStorage.getItem('showNkioskTab') === 'true';
+		const nledShown = localStorage.getItem('showNledTab') === 'true';
+		const nfireShown = localStorage.getItem('showNfireTab') === 'true';
+		const nfurnitureShown = localStorage.getItem('showNfurnitureTab') === 'true';
+		const npartitionShown = localStorage.getItem('showNpartitionTab') === 'true';
+		const ndecorShown = localStorage.getItem('showNdecorTab') === 'true';
+		const npingShown = localStorage.getItem('showNpingTab') === 'true';
+		const nconnectShown = localStorage.getItem('showNconnectTab') === 'true';
+		const nlightShown = localStorage.getItem('showNlightTab') === 'true';
+		const ncomfortShown = localStorage.getItem('showNcomfortTab') === 'true';
+		const nsoundShown = localStorage.getItem('showNsoundTab') === 'true';
+		const nhomeShown = localStorage.getItem('showNhomeTab') === 'true';
 
 		setShowNclockTab(nclockShown);
 		setShowNaccessTab(naccessShown);
@@ -259,6 +335,33 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		setShowNcardTab(ncardShown);
 		setShowNviewTab(nviewShown);
 		setShowNsecurTab(nsecurShown);
+		setShowNsoftwareTab(nsoftwareShown);
+		setShowNsystemTab(nsystemShown);
+		setShowNappTab(nappShown);
+		setShowNcyberTab(ncyberShown);
+		setShowNdigitalTab(ndigitalShown);
+		setShowNserverTab(nserverShown);
+		setShowNautTab(nautShown);
+		setShowNequipTab(nequipShown);
+		setShowNprojectTab(nprojectShown);
+		setShowNsmartTab(nsmartShown);
+		setShowNrealityTab(nrealityShown);
+		setShowNhologramTab(nhologramShown);
+		setShowNpowerTab(npowerShown);
+		setShowNchargeTab(nchargeShown);
+		setShowNcityTab(ncityShown);
+		setShowNkioskTab(nkioskShown);
+		setShowNledTab(nledShown);
+		setShowNfireTab(nfireShown);
+		setShowNfurnitureTab(nfurnitureShown);
+		setShowNpartitionTab(npartitionShown);
+		setShowNdecorTab(ndecorShown);
+		setShowNpingTab(npingShown);
+		setShowNconnectTab(nconnectShown);
+		setShowNlightTab(nlightShown);
+		setShowNcomfortTab(ncomfortShown);
+		setShowNsoundTab(nsoundShown);
+		setShowNhomeTab(nhomeShown);
 
 		if (!ribbonPinned) {
 			setShowPessoasRibbon(false);
@@ -274,6 +377,33 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 			setShowNcardRibbon(false);
 			setShowNviewRibbon(false);
 			setShowNsecurRibbon(false);
+			setShowNsoftwareRibbon(false);
+			setShowNsystemRibbon(false);
+			setShowNappRibbon(false);
+			setShowNcyberRibbon(false);
+			setShowNdigitalRibbon(false);
+			setShowNserverRibbon(false);
+			setShowNautRibbon(false);
+			setShowNequipRibbon(false);
+			setShowNprojectRibbon(false);
+			setShowNsmartRibbon(false);
+			setShowNrealityRibbon(false);
+			setShowNhologramRibbon(false);
+			setShowNpowerRibbon(false);
+			setShowNchargeRibbon(false);
+			setShowNcityRibbon(false);
+			setShowNkioskRibbon(false);
+			setShowNledRibbon(false);
+			setShowNfireRibbon(false);
+			setShowNfurnitureRibbon(false);
+			setShowNpartitionRibbon(false);
+			setShowNdecorRibbon(false);
+			setShowNpingRibbon(false);
+			setShowNconnectRibbon(false);
+			setShowNlightRibbon(false);
+			setShowNcomfortRibbon(false);
+			setShowNsoundRibbon(false);
+			setShowNhomeRibbon(false);
 		} else {
 			const pessoasShown = localStorage.getItem('showPessoasRibbon') === 'true';
 			const dispositivosShown = localStorage.getItem('showDispositivosRibbon') === 'true';
@@ -304,6 +434,33 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		'ncard': [setShowNcardRibbon, 'ncard'],
 		'nview': [setShowNviewRibbon, 'nview'],
 		'nsecur': [setShowNsecurRibbon, 'nsecur'],
+		'nsoftware': [setShowNsoftwareRibbon, 'nsoftware'],
+		'nsystem': [setShowNsystemRibbon, 'nsystem'],
+		'napp': [setShowNappRibbon, 'napp'],
+		'ncyber': [setShowNcyberRibbon, 'ncyber'],
+		'ndigital': [setShowNdigitalRibbon, 'ndigital'],
+		'nserver': [setShowNserverRibbon, 'nserver'],
+		'naut': [setShowNautRibbon, 'naut'],
+		'nequip': [setShowNequipRibbon, 'nequip'],
+		'nproject': [setShowNprojectRibbon, 'nproject'],
+		'nsmart': [setShowNsmartRibbon, 'nsmart'],
+		'nreality': [setShowNrealityRibbon, 'nreality'],
+		'nhologram': [setShowNhologramRibbon, 'nhologram'],
+		'npower': [setShowNpowerRibbon, 'npower'],
+		'ncharge': [setShowNchargeRibbon, 'ncharge'],
+		'ncity': [setShowNcityRibbon, 'ncity'],
+		'nkiosk': [setShowNkioskRibbon, 'nkiosk'],
+		'nled': [setShowNledRibbon, 'nled'],
+		'nfire': [setShowNfireRibbon, 'nfire'],
+		'nfurniture': [setShowNfurnitureRibbon, 'nfurniture'],
+		'npartition': [setShowNpartitionRibbon, 'npartition'],
+		'ndecor': [setShowNdecorRibbon, 'ndecor'],
+		'nping': [setShowNpingRibbon, 'nping'],
+		'nconnect': [setShowNconnectRibbon, 'nconnect'],
+		'nlight': [setShowNlightRibbon, 'nlight'],
+		'ncomfort': [setShowNcomfortRibbon, 'ncomfort'],
+		'nsound': [setShowNsoundRibbon, 'nsound'],
+		'nhome': [setShowNhomeRibbon, 'nhome'],
 	};
 
 	// Função para lidar com o clique no ribbon
@@ -318,77 +475,57 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 				}
 			} else {
 				Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
-				setActiveTab(ribbonName);
 				setRibbon(true);
+				setActiveTab(ribbonName);
 			}
 		}
 	};
 
+	// Função para criar as abas
+	const createTabInfo = (tab: string, route: string): TabInfo => ({
+		setTab: eval(`setShow${tab.charAt(0).toUpperCase() + tab.slice(1)}Tab`),
+		setRibbon: eval(`setShow${tab.charAt(0).toUpperCase() + tab.slice(1)}Ribbon`),
+		localStorageTabKey: `show${tab.charAt(0).toUpperCase() + tab.slice(1)}Tab`,
+		localStorageRibbonKey: `show${tab.charAt(0).toUpperCase() + tab.slice(1)}Ribbon`,
+		route: route,
+	});
+
 	// Define os dados das abas
 	const tabData: Record<string, TabInfo> = {
-		'nclock': {
-			setTab: setShowNclockTab,
-			setRibbon: setShowNclockRibbon,
-			localStorageTabKey: 'showNclockTab',
-			localStorageRibbonKey: 'showNclockRibbon',
-			route: '/nclock/nclockdashboard',
-		},
-		'naccess': {
-			setTab: setShowNaccessTab,
-			setRibbon: setShowNaccessRibbon,
-			localStorageTabKey: 'showNaccessTab',
-			localStorageRibbonKey: 'showNaccessRibbon',
-			route: '/naccess/naccessdashboard',
-		},
-		'nvisitor': {
-			setTab: setShowNvisitorTab,
-			setRibbon: setShowNvisitorRibbon,
-			localStorageTabKey: 'showNvisitorTab',
-			localStorageRibbonKey: 'showNvisitorRibbon',
-			route: '/nvisitor/nvisitordashboard',
-		},
-		'npark': {
-			setTab: setShowNparkTab,
-			setRibbon: setShowNparkRibbon,
-			localStorageTabKey: 'showNparkTab',
-			localStorageRibbonKey: 'showNparkRibbon',
-			route: '#',
-		},
-		'ndoor': {
-			setTab: setShowNdoorTab,
-			setRibbon: setShowNdoorRibbon,
-			localStorageTabKey: 'showNdoorTab',
-			localStorageRibbonKey: 'showNdoorRibbon',
-			route: '#',
-		},
-		'npatrol': {
-			setTab: setShowNpatrolTab,
-			setRibbon: setShowNpatrolRibbon,
-			localStorageTabKey: 'showNpatrolTab',
-			localStorageRibbonKey: 'showNpatrolRibbon',
-			route: '#',
-		},
-		'ncard': {
-			setTab: setShowNcardTab,
-			setRibbon: setShowNcardRibbon,
-			localStorageTabKey: 'showNcardTab',
-			localStorageRibbonKey: 'showNcardRibbon',
-			route: '#',
-		},
-		'nview': {
-			setTab: setShowNviewTab,
-			setRibbon: setShowNviewRibbon,
-			localStorageTabKey: 'showNviewTab',
-			localStorageRibbonKey: 'showNviewRibbon',
-			route: '#',
-		},
-		'nsecur': {
-			setTab: setShowNsecurTab,
-			setRibbon: setShowNsecurRibbon,
-			localStorageTabKey: 'showNsecurTab',
-			localStorageRibbonKey: 'showNsecurRibbon',
-			route: '#',
-		},
+		nclock: createTabInfo('nclock', '/nclock/nclockdashboard'),
+		naccess: createTabInfo('naccess', '/naccess/naccessdashboard'),
+		nvisitor: createTabInfo('nvisitor', '/nvisitor/nvisitordashboard'),
+		npark: createTabInfo('npark', '#'),
+		ndoor: createTabInfo('ndoor', '#'),
+		npatrol: createTabInfo('npatrol', '#'),
+		ncard: createTabInfo('ncard', '#'),
+		nview: createTabInfo('nview', '/nview/nviewdashboard'),
+		nsecur: createTabInfo('nsecur', '#'),
+		nsoftware: createTabInfo('nsoftware', '#'),
+		nsystem: createTabInfo('nsystem', '#'),
+		napp: createTabInfo('napp', '#'),
+		ncyber: createTabInfo('ncyber', '#'),
+		ndigital: createTabInfo('ndigital', '#'),
+		nserver: createTabInfo('nserver', '#'),
+		naut: createTabInfo('naut', '#'),
+		nequip: createTabInfo('nequip', '#'),
+		nproject: createTabInfo('nproject', '#'),
+		nsmart: createTabInfo('nsmart', '#'),
+		nreality: createTabInfo('nreality', '#'),
+		nhologram: createTabInfo('nhologram', '#'),
+		npower: createTabInfo('npower', '#'),
+		ncharge: createTabInfo('ncharge', '#'),
+		ncity: createTabInfo('ncity', '#'),
+		nkiosk: createTabInfo('nkiosk', '/nkiosk/nkioskdashboard'),
+		nled: createTabInfo('nled', '#'),
+		nfire: createTabInfo('nfire', '#'),
+		nfurniture: createTabInfo('nfurniture', '#'),
+		nping: createTabInfo('nping', '#'),
+		nconnect: createTabInfo('nconnect', '#'),
+		nlight: createTabInfo('nlight', '#'),
+		ncomfort: createTabInfo('ncomfort', '#'),
+		nsound: createTabInfo('nsound', '#'),
+		nhome: createTabInfo('nhome', '#'),
 	};
 
 	// Função para limpar todas as abas
@@ -400,13 +537,16 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 			localStorage.removeItem(localStorageRibbonKey);
 		});
 		setActiveTab('');
+		localStorage.removeItem('activeTab');
 	};
 
 	// Função para lidar com a aba
 	const handleTab = (tabName: string) => {
 		clearAllTabs();
+
 		if (tabName === 'dashboard') {
 			setActiveTab('');
+			localStorage.removeItem('activeTab');
 			navigate('/dashboard');
 		} else if (tabData[tabName]) {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
@@ -417,12 +557,14 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 				localStorage.removeItem(localStorageTabKey);
 				localStorage.removeItem(localStorageRibbonKey);
 				setActiveTab('');
+				localStorage.removeItem('activeTab');
 			} else {
 				setTab(true);
 				setRibbon(true);
 				localStorage.setItem(localStorageTabKey, 'true');
 				localStorage.setItem(localStorageRibbonKey, 'true');
 				setActiveTab(tabName);
+				localStorage.setItem('activeTab', tabName);
 				navigate(route);
 			}
 		}
@@ -450,13 +592,40 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 			localStorage.setItem('showNcardRibbon', String(showNcardRibbon));
 			localStorage.setItem('showNviewRibbon', String(showNviewRibbon));
 			localStorage.setItem('showNsecurRibbon', String(showNsecurRibbon));
+			localStorage.setItem('showNsoftwareRibbon', String(showNsoftwareRibbon));
+			localStorage.setItem('showNsystemRibbon', String(showNsystemRibbon));
+			localStorage.setItem('showNappRibbon', String(showNappRibbon));
+			localStorage.setItem('showNcyberRibbon', String(showNcyberRibbon));
+			localStorage.setItem('showNdigitalRibbon', String(showNdigitalRibbon));
+			localStorage.setItem('showNserverRibbon', String(showNserverRibbon));
+			localStorage.setItem('showNautRibbon', String(showNautRibbon));
+			localStorage.setItem('showNequipRibbon', String(showNequipRibbon));
+			localStorage.setItem('showNprojectRibbon', String(showNprojectRibbon));
+			localStorage.setItem('showNsmartRibbon', String(showNsmartRibbon));
+			localStorage.setItem('showNrealityRibbon', String(showNrealityRibbon));
+			localStorage.setItem('showNhologramRibbon', String(showNhologramRibbon));
+			localStorage.setItem('showNpowerRibbon', String(showNpowerRibbon));
+			localStorage.setItem('showNchargeRibbon', String(showNchargeRibbon));
+			localStorage.setItem('showNcityRibbon', String(showNcityRibbon));
+			localStorage.setItem('showNkioskRibbon', String(showNkioskRibbon));
+			localStorage.setItem('showNledRibbon', String(showNledRibbon));
+			localStorage.setItem('showNfireRibbon', String(showNfireRibbon));
+			localStorage.setItem('showNfurnitureRibbon', String(showNfurnitureRibbon));
+			localStorage.setItem('showNpartitionRibbon', String(showNpartitionRibbon));
+			localStorage.setItem('showNdecorRibbon', String(showNdecorRibbon));
+			localStorage.setItem('showNpingRibbon', String(showNpingRibbon));
+			localStorage.setItem('showNconnectRibbon', String(showNconnectRibbon));
+			localStorage.setItem('showNlightRibbon', String(showNlightRibbon));
+			localStorage.setItem('showNcomfortRibbon', String(showNcomfortRibbon));
+			localStorage.setItem('showNsoundRibbon', String(showNsoundRibbon));
+			localStorage.setItem('showNhomeRibbon', String(showNhomeRibbon));
 			localStorage.setItem('ribbonPinned', String(isRibbonPinned));
 		};
 
 		const timer = setTimeout(handleStateChange, 10);
 
 		return () => clearTimeout(timer);
-	}, [isRibbonPinned, showPessoasRibbon, showDispositivosRibbon, showConfiguracaoRibbon, showAjudaRibbon]);
+	}, [isRibbonPinned, showPessoasRibbon, showDispositivosRibbon, showConfiguracaoRibbon, showAjudaRibbon, showNclockRibbon, showNaccessRibbon, showNvisitorRibbon, showNparkRibbon, showNdoorRibbon, showNpatrolRibbon, showNcardRibbon, showNviewRibbon, showNsecurRibbon, showNsoftwareRibbon, showNsystemRibbon, showNappRibbon, showNcyberRibbon, showNdigitalRibbon, showNserverRibbon, showNautRibbon, showNequipRibbon, showNprojectRibbon, showNsmartRibbon, showNrealityRibbon, showNhologramRibbon, showNpowerRibbon, showNchargeRibbon, showNcityRibbon, showNkioskRibbon, showNledRibbon, showNfireRibbon, showNfurnitureRibbon, showNpartitionRibbon, showNdecorRibbon, showNpingRibbon, showNconnectRibbon, showNlightRibbon, showNcomfortRibbon, showNsoundRibbon, showNhomeRibbon]);
 
 	// Função para alternar o estado do ribbon
 	const togglePinRibbon = () => {
@@ -477,11 +646,12 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 	};
 
 	// Função para alternar o submenu
-	const toggleSubMenu = (menuKey: keyof MenuStructure) => {
-		setShowSubMenu((prev) => ({
-			...prev,
-			[menuKey]: !prev[menuKey],
-		}));
+	const toggleSubMenu = (menuKey: string) => {
+		if (activeMenu === menuKey) {
+			setActiveMenu(null);
+		} else {
+			setActiveMenu(menuKey);
+		}
 	};
 
 	// Define o componente do item de menu
@@ -530,12 +700,12 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 			key: 'nidtec',
 			submenu: [
 				{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
-				{ label: 'Nglasses', image: nglasses, alt: 'nglasses', key: 'nglasses' },
-				{ label: 'Npro', image: npro, alt: 'npro', key: 'npro' },
+				{ label: 'Nreality', image: nreality, alt: 'nreality', key: 'nreality' },
+				{ label: 'Nhologram', image: nhologram, alt: 'nhologram', key: 'nhologram' },
 				{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
-				{ label: 'Npost', image: npost, alt: 'npost', key: 'npost' },
+				{ label: 'Ncharge', image: ncharge, alt: 'ncharge', key: 'ncharge' },
 				{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
-				{ label: 'Nkio', image: nkio, alt: 'nkio', key: 'nkio' },
+				{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
 				{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
 				{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
 				{ label: 'Nsoftwares', image: nidtec, alt: 'nsoftwares', key: 'nsoftwares' }
@@ -561,7 +731,6 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		},
 	};
 
-
 	// Define o componente do item de menu
 	const MenuItem = ({ active, onClick, image, alt, label }: MenuItem) => (
 		<li
@@ -576,23 +745,23 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 
 	// Função genérica para renderizar o menu
 	const renderMenu = (menuKey: keyof MenuStructure) => {
-		const menu = menuStructure[menuKey as string];
+		const menu = menuStructure[String(menuKey)];
 		return (
 			<div key={menuKey as string}>
 				<MenuItem
 					key={menuKey as string}
-					active={activeTab === menuKey}
-					onClick={() => (menu.submenu ? toggleSubMenu(menuKey) : handleTab(menuKey as string))}
+					active={activeMenu === menuKey}
+					onClick={() => menu.submenu ? toggleSubMenu(String(menuKey)) : handleTab(String(menuKey))}
 					image={menu.image}
 					alt={menu.alt}
 					label={menu.label}
 				/>
-				{showSubMenu[menuKey] && menu.submenu && (
+				{activeMenu === menuKey && menu.submenu && (
 					<div className="submenu">
 						{menu.submenu.map((item: MenuItem) => (
 							<MenuItem
 								key={item.key}
-								active={activeTab === item.key}
+								active={activeMenu === item.key}
 								onClick={() => handleTab(item.key)}
 								image={item.image}
 								alt={item.alt}
@@ -605,20 +774,83 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		);
 	};
 
-	// Função para combinar as duas funções
+	// Função para geranciar o clique na aba
 	const handleTabClick = (tabName: string) => {
-		handleRibbonClick(tabName);
-		if (onTabChange) {
-			onTabChange(tabName);
+		if (activeTab === tabName) {
+			setActiveTab('');
+			const [setRibbon] = ribbons[tabName as RibbonName];
+			setRibbon(false);
+			localStorage.removeItem('activeTab');
+		} else {
+			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
+			const [setRibbon] = ribbons[tabName as RibbonName];
+			setRibbon(true);
+			setActiveTab(tabName);
+			localStorage.setItem('activeTab', tabName);
 		}
-		setActiveTab(tabName);
-	}
+	};	
 
 	// Função para abrir o modal de opções do terminal
 	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
 
+	// Defina o mapeamento das cores para cada aba
+	const tabColors: Record<string, { navbarColor: string; footerColor: string }> = {
+		nclock: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		naccess: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		nvisitor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		npark: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		ndoor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		npatrol: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		ncard: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		nview: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		nsecur: { navbarColor: '#0050a0', footerColor: '#0050a0' },
+		nsoftware: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nsystem: { navbarColor: '#D01313', footerColor: '#D01313' },
+		napp: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ncyber: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ndigital: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nserver: { navbarColor: '#D01313', footerColor: '#D01313' },
+		naut: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nequip: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nproject: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nsmart: { navbarColor: '#009739', footerColor: '#009739' },
+		nreality: { navbarColor: '#009739', footerColor: '#009739' },
+		nhologram: { navbarColor: '#009739', footerColor: '#009739' },
+		npower: { navbarColor: '#009739', footerColor: '#009739' },
+		ncharge: { navbarColor: '#009739', footerColor: '#009739' },
+		ncity: { navbarColor: '#009739', footerColor: '#009739' },
+		nkiosk: { navbarColor: '#009739', footerColor: '#009739' },
+		nled: { navbarColor: '#009739', footerColor: '#009739' },
+		nfire: { navbarColor: '#009739', footerColor: '#009739' },
+		nfurniture: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		npartition: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		ndecor: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		nping: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		nconnect: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		nlight: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		ncomfort: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		nsound: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		nhome: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+	};
+
+	// Busca a aba ativa no localStorage
+	const getActiveTabFromLocalStorage = () => {
+		const tabKeys = Object.keys(tabColors);
+		for (const tabKey of tabKeys) {
+			const isTabActive = localStorage.getItem(`show${tabKey.charAt(0).toUpperCase() + tabKey.slice(1)}Tab`);
+			if (isTabActive === 'true') {
+				return tabKey;
+			}
+		}
+		return null;
+	};
+
+	// Define a cor da aba atual baseada na aba ativa
+	const tabActive = getActiveTabFromLocalStorage();
+	const currentTabColor = tabActive ? tabColors[tabActive] : null;
+
 	return (
-		<nav data-role="ribbonmenu" style={{ backgroundColor: color }}>
+		<nav data-role="ribbonmenu" style={{ backgroundColor: currentTabColor?.navbarColor || '#000000' }}>
 			<div className="nav-container">
 				<Dropdown className='dropdown-icon'>
 					<Dropdown.Toggle variant="basic" id="dropdown-basic">
@@ -668,12 +900,147 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 					)}
 					{showNviewTab && (
 						<li className={`nav-item ${activeTab === 'nview' ? 'active' : ''}`}>
-							<a className="nav-link nview-tab" id="nview-tab" onClick={() => handleTabClick('nview')}>Nview</a>
+							<a className="nav-link nview-tab" id="nview-tab" onClick={() => handleTabClick('nview')}>NVIEW</a>
 						</li>
 					)}
 					{showNsecurTab && (
 						<li className={`nav-item ${activeTab === 'nsecur' ? 'active' : ''}`}>
 							<a className="nav-link nsecur-tab" id="nsecur-tab" onClick={() => handleTabClick('nsecur')}>NSECUR</a>
+						</li>
+					)}
+					{showNsoftwareTab && (
+						<li className={`nav-item ${activeTab === 'nsoftware' ? 'active' : ''}`}>
+							<a className="nav-link nsoftware-tab" id="nsoftware-tab" onClick={() => handleTabClick('nsoftware')}>NSOFTWARE</a>
+						</li>
+					)}
+					{showNsystemTab && (
+						<li className={`nav-item ${activeTab === 'nsystem' ? 'active' : ''}`}>
+							<a className="nav-link nsystem-tab" id="nsystem-tab" onClick={() => handleTabClick('nsystem')}>NSYSTEM</a>
+						</li>
+					)}
+					{showNappTab && (
+						<li className={`nav-item ${activeTab === 'napp' ? 'active' : ''}`}>
+							<a className="nav-link napp-tab" id="napp-tab" onClick={() => handleTabClick('napp')}>NAPP</a>
+						</li>
+					)}
+					{showNcyberTab && (
+						<li className={`nav-item ${activeTab === 'ncyber' ? 'active' : ''}`}>
+							<a className="nav-link ncyber-tab" id="ncyber-tab" onClick={() => handleTabClick('ncyber')}>NCYBER</a>
+						</li>
+					)}
+					{showNdigitalTab && (
+						<li className={`nav-item ${activeTab === 'ndigital' ? 'active' : ''}`}>
+							<a className="nav-link ndigital-tab" id="ndigital-tab" onClick={() => handleTabClick('ndigital')}>NDIGITAL</a>
+						</li>
+					)}
+					{showNserverTab && (
+						<li className={`nav-item ${activeTab === 'nserver' ? 'active' : ''}`}>
+							<a className="nav-link nserver-tab" id="nserver-tab" onClick={() => handleTabClick('nserver')}>NSERVER</a>
+						</li>
+					)}
+					{showNautTab && (
+						<li className={`nav-item ${activeTab === 'naut' ? 'active' : ''}`}>
+							<a className="nav-link naut-tab" id="naut-tab" onClick={() => handleTabClick('naut')}>NAUT</a>
+						</li>
+					)}
+					{showNequipTab && (
+						<li className={`nav-item ${activeTab === 'nequip' ? 'active' : ''}`}>
+							<a className="nav-link nequip-tab" id="nequip-tab" onClick={() => handleTabClick('nequip')}>NEQUIP</a>
+						</li>
+					)}
+					{showNprojectTab && (
+						<li className={`nav-item ${activeTab === 'nproject' ? 'active' : ''}`}>
+							<a className="nav-link nproject-tab" id="nproject-tab" onClick={() => handleTabClick('nproject')}>NPROJECT</a>
+						</li>
+					)}
+					{showNsmartTab && (
+						<li className={`nav-item ${activeTab === 'nsmart' ? 'active' : ''}`}>
+							<a className="nav-link nsmart-tab" id="nsmart-tab" onClick={() => handleTabClick('nsmart')}>NSMART</a>
+						</li>
+					)}
+					{showNrealityTab && (
+						<li className={`nav-item ${activeTab === 'nreality' ? 'active' : ''}`}>
+							<a className="nav-link nreality-tab" id="nreality-tab" onClick={() => handleTabClick('nreality')}>NREALITY</a>
+						</li>
+					)}
+					{showNhologramTab && (
+						<li className={`nav-item ${activeTab === 'nhologram' ? 'active' : ''}`}>
+							<a className="nav-link nhologram-tab" id="nhologram-tab" onClick={() => handleTabClick('nhologram')}>NHOLOGRAM</a>
+						</li>
+					)}
+					{showNpowerTab && (
+						<li className={`nav-item ${activeTab === 'npower' ? 'active' : ''}`}>
+							<a className="nav-link npower-tab" id="npower-tab" onClick={() => handleTabClick('npower')}>NPOWER</a>
+						</li>
+					)}
+					{showNchargeTab && (
+						<li className={`nav-item ${activeTab === 'ncharge' ? 'active' : ''}`}>
+							<a className="nav-link ncharge-tab" id="ncharge-tab" onClick={() => handleTabClick('ncharge')}>NCHARGE</a>
+						</li>
+					)}
+					{showNcityTab && (
+						<li className={`nav-item ${activeTab === 'ncity' ? 'active' : ''}`}>
+							<a className="nav-link ncity-tab" id="ncity-tab" onClick={() => handleTabClick('ncity')}>NCITY</a>
+						</li>
+					)}
+					{showNkioskTab && (
+						<li className={`nav-item ${activeTab === 'nkiosk' ? 'active' : ''}`}>
+							<a className="nav-link nkiosk-tab" id="nkiosk-tab" onClick={() => handleTabClick('nkiosk')}>NKIOSK</a>
+						</li>
+					)}
+					{showNledTab && (
+						<li className={`nav-item ${activeTab === 'nled' ? 'active' : ''}`}>
+							<a className="nav-link nled-tab" id="nled-tab" onClick={() => handleTabClick('nled')}>NLED</a>
+						</li>
+					)}
+					{showNfireTab && (
+						<li className={`nav-item ${activeTab === 'nfire' ? 'active' : ''}`}>
+							<a className="nav-link nfire-tab" id="nfire-tab" onClick={() => handleTabClick('nfire')}>NFIRE</a>
+						</li>
+					)}
+					{showNfurnitureTab && (
+						<li className={`nav-item ${activeTab === 'nfurniture' ? 'active' : ''}`}>
+							<a className="nav-link nfurniture-tab" id="nfurniture-tab" onClick={() => handleTabClick('nfurniture')}>NFURNITURE</a>
+						</li>
+					)}
+					{showNpartitionTab && (
+						<li className={`nav-item ${activeTab === 'npartition' ? 'active' : ''}`}>
+							<a className="nav-link npartition-tab" id="npartition-tab" onClick={() => handleTabClick('npartition')}>NPARTITION</a>
+						</li>
+					)}
+					{showNdecorTab && (
+						<li className={`nav-item ${activeTab === 'ndecor' ? 'active' : ''}`}>
+							<a className="nav-link ndecor-tab" id="ndecor-tab" onClick={() => handleTabClick('ndecor')}>NDECOR</a>
+						</li>
+					)}
+					{showNpingTab && (
+						<li className={`nav-item ${activeTab === 'nping' ? 'active' : ''}`}>
+							<a className="nav-link nping-tab" id="nping-tab" onClick={() => handleTabClick('nping')}>NPING</a>
+						</li>
+					)}
+					{showNconnectTab && (
+						<li className={`nav-item ${activeTab === 'nconnect' ? 'active' : ''}`}>
+							<a className="nav-link nconnect-tab" id="nconnect-tab" onClick={() => handleTabClick('nconnect')}>NCONNECT</a>
+						</li>
+					)}
+					{showNlightTab && (
+						<li className={`nav-item ${activeTab === 'nlight' ? 'active' : ''}`}>
+							<a className="nav-link nlight-tab" id="nlight-tab" onClick={() => handleTabClick('nlight')}>NLIGHT</a>
+						</li>
+					)}
+					{showNcomfortTab && (
+						<li className={`nav-item ${activeTab === 'ncomfort' ? 'active' : ''}`}>
+							<a className="nav-link ncomfort-tab" id="ncomfort-tab" onClick={() => handleTabClick('ncomfort')}>NCOMFORT</a>
+						</li>
+					)}
+					{showNsoundTab && (
+						<li className={`nav-item ${activeTab === 'nsound' ? 'active' : ''}`}>
+							<a className="nav-link nsound-tab" id="nsound-tab" onClick={() => handleTabClick('nsound')}>NSOUND</a>
+						</li>
+					)}
+					{showNhomeTab && (
+						<li className={`nav-item ${activeTab === 'nhome' ? 'active' : ''}`}>
+							<a className="nav-link nhome-tab" id="nhome-tab" onClick={() => handleTabClick('nhome')}>NHOME</a>
 						</li>
 					)}
 					<li className={`nav-item ${activeTab === 'pessoas' ? 'active' : ''}`}>
@@ -1132,9 +1499,9 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 					</div>
 				</div>
 			)}
-			{showNvisitorRibbon && (
+			{showNkioskRibbon && (
 				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="nvisitor" role="tabpanel" aria-labelledby="nvisitor-tab">
+					<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
 						<div className="section" id="section-group">
 							<div className="group">
 								<div className="btn-group" role="group">
@@ -1172,13 +1539,13 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className="grid-container">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={camera} alt="botão videovigilância" />
 											</span>
 											<span className="text">Videovigilância</span>
 										</Link>
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={ads} alt="botão publicidade" />
 											</span>
@@ -1206,8 +1573,8 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 							</div>
 							<div className="group">
 								<div className="btn-group" role="group">
-									<div className='icon-text-informacoes'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+									<div className='icon-text-pessoas'>
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={online} alt="botão online" />
 											</span>
@@ -1222,13 +1589,13 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 							<div className="group">
 								<div className="btn-group" role="group">
 									<div className="grid-container">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={card_report} alt="botão relatório cartão" />
 											</span>
 											<span className="text">Relatório Cartão</span>
 										</Link>
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
+										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
 												<img src={coin_report} alt="botão relatório moedas" />
 											</span>

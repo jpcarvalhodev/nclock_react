@@ -93,7 +93,7 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
                 <Modal.Header closeButton>
                     <Modal.Title>Opções</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="modal-body-scrollable">
                     <Tabs defaultActiveKey="general" id="general-tab" className="terminal-options-tabs mb-3">
                         <Tab eventKey="general" title="Geral">
                             <Form>

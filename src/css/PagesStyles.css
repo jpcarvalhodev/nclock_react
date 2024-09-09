@@ -214,34 +214,23 @@ body {
     border-bottom: 1px solid #ccc;
 }
 
-.dashboard-title-text-dashboard {
-    font-size: 20px;
-    color: #0050a0;
-    font-weight: bold;
-    margin-left: 10px;
-    border-bottom: 1px solid #ccc;
-    text-align: center;
-    margin-top: 10px;
-}
-
 .dashboard-title-text {
     font-size: 20px;
     color: black;
     font-weight: bold;
-    margin-left: 10px;
     border-bottom: 1px solid #ccc;
     text-align: center;
     margin-top: 10px;
 }
 
-.datatable-title-text-dashboard {
-    font-size: 20px;
-    color: #0050a0;
-    font-weight: bold;
-    margin-left: 10px;
+.dashboard-title-text-inside {
     border-bottom: 1px solid #ccc;
     text-align: center;
-    margin-top: 10px;
+}
+
+.dashboard-text-inside {
+    text-align: center;
+    margin-top: 50px;
 }
 
 .datatable-header {
@@ -423,6 +412,7 @@ body {
 
 .nav.nav-pills .nav-link.active {
     color: white;
+    background-color: black;
 }
 
 .nav.nav-pills .nav-link:hover {
@@ -437,6 +427,10 @@ body {
 .textarea-large {
     height: 200px !important;
     resize: none !important;
+}
+
+.nav-container li:hover > .submenu {
+    display: block;
 }
 
 .btn-selector-modal-close {
@@ -494,7 +488,8 @@ body {
     }
 
     .dashboard-cards-container {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .nav-pills .nav-item {
@@ -508,6 +503,10 @@ body {
 
     .dashboard-content-wrapper {
         flex-direction: column;
+    }
+
+    .dashboard-title-text {
+        font-size: 18px;
     }
 }
 

@@ -1057,7 +1057,7 @@ export const Terminals = () => {
             <div className="main-container">
                 <NavBar color="#000000" />
                 <div className='filter-refresh-add-edit-upper-class'>
-                    <div className="datatable-title-text">
+                    <div className="datatable-title-text" style={{ color: '#000000' }}>
                         <span>Terminais</span>
                     </div>
                     <div className="datatable-header">

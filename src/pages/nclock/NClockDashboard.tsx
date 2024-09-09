@@ -10,7 +10,6 @@ import { NavBar } from "../../components/NavBar";
 import { Employee, Department, Group } from "../../helpers/Types";
 import * as apiService from "../../helpers/apiService";
 import { Carousel } from "react-responsive-carousel";
-import { motion } from "framer";
 import banner_nclock from "../../assets/img/carousel/banner_nclock.jpg";
 
 // Registra os elementos do ChartJS
@@ -154,7 +153,7 @@ export const NclockDashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar color="#0050a0" />
-            <div className="datatable-title-text-dashboard">
+            <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
                 <span>Nclock dashboard</span>
             </div>
             <div className="dashboard-content">
