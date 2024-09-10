@@ -292,7 +292,7 @@ export const Contacts = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span>Contactos</span>
+                                <span style={{ color: '#000000' }}>Contactos</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

@@ -21,7 +21,6 @@ import { User } from './pages/persons/User';
 import { Visitors } from './pages/persons/Visitors';
 import { Contacts } from './pages/persons/Contacts';
 import { Temporaries } from './pages/persons/Temporaries';
-import { NclockMovement } from './pages/nclock/NclockMovement';
 import { PageProtection } from './components/PageProtection';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -31,16 +30,31 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { NclockRequests } from './pages/nclock/NclockRequests';
-import { NclockPresence } from './pages/nclock/NclockPresence';
-import { NclockAll } from './pages/nclock/NclockAll';
 import { Types } from './pages/persons/Types';
 import { Terminals } from './pages/devices/Terminals';
-import { NclockDashboard } from './pages/nclock/NclockDashboard';
-import { NaccessDashboard } from './pages/naccess/NaccessDashboard';
-import { NvisitorDashboard } from './pages/nvisitor/NvisitorDashboard';
-import { NviewDashboard } from './pages/nview/NviewDashboard';
-import { NkioskDashboard } from './pages/nkiosk/NkioskDashboard';
+import { NkioskDashboard } from './pages/nidtec/nkiosk/NkioskDashboard';
+import { NclockDashboard } from './pages/sisnid/nclock/NclockDashboard';
+import { NaccessDashboard } from './pages/sisnid/naccess/NaccessDashboard';
+import { NclockAll } from './pages/sisnid/nclock/NclockAll';
+import { NclockMovement } from './pages/sisnid/nclock/NclockMovement';
+import { NclockPresence } from './pages/sisnid/nclock/NclockPresence';
+import { NclockRequests } from './pages/sisnid/nclock/NclockRequests';
+import { NviewDashboard } from './pages/sisnid/nview/NviewDashboard';
+import { NvisitorDashboard } from './pages/sisnid/nvisitor/NvisitorDashboard';
+import { NcardDashboard } from './pages/sisnid/ncard/NcardDashboard';
+import { NdoorDashboard } from './pages/sisnid/ndoor/NdoorDashboard';
+import { NparkDashboard } from './pages/sisnid/npark/NparkDashboard';
+import { NpatrolDashboard } from './pages/sisnid/npatrol/NpatrolDashboard';
+import { NsecurDashboard } from './pages/sisnid/nsecur/NsecurDashboard';
+import { NappDashboard } from './pages/nidsof/napp/NappDashboard';
+import { NautDashboard } from './pages/nidsof/naut/NautDashboard';
+import { NcyberDashboard } from './pages/nidsof/ncyber/NcyberDashboard';
+import { NdigitalDashboard } from './pages/nidsof/ndigital/NdigitalDashboard';
+import { NequipDashboard } from './pages/nidsof/nequip/NequipDashboard';
+import { NprojectDashboard } from './pages/nidsof/nproject/NprojectDashboard';
+import { NserverDashboard } from './pages/nidsof/nserver/NserverDashboard';
+import { NsoftwareDashboard } from './pages/nidsof/nsoftware/NsoftwareDashboard';
+import { NsystemDashboard } from './pages/nidsof/nsystem/NsystemDashboard';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -112,6 +126,20 @@ function AnimatedRoutes() {
               <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
               <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
               <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
+              <Route path="/ncard/ncarddashboard" element={<PageProtection><NcardDashboard /></PageProtection>} />
+              <Route path="/ndoor/ndoordashboard" element={<PageProtection><NdoorDashboard /></PageProtection>} />
+              <Route path="/npark/nparkdashboard" element={<PageProtection><NparkDashboard /></PageProtection>} />
+              <Route path="/npatrol/npatroldashboard" element={<PageProtection><NpatrolDashboard /></PageProtection>} />
+              <Route path="/nsecur/nsecurdashboard" element={<PageProtection><NsecurDashboard /></PageProtection>} />
+              <Route path="/nsoftware/nsoftwaredashboard" element={<PageProtection><NsoftwareDashboard /></PageProtection>} />
+              <Route path="/nsystem/nsystemdashboard" element={<PageProtection><NsystemDashboard /></PageProtection>} />
+              <Route path="/napp/nappdashboard" element={<PageProtection><NappDashboard /></PageProtection>} />
+              <Route path="/ncyber/ncyberdashboard" element={<PageProtection><NcyberDashboard /></PageProtection>} />
+              <Route path="/ndigital/ndigitaldashboard" element={<PageProtection><NdigitalDashboard /></PageProtection>} />
+              <Route path="/nserver/nserverdashboard" element={<PageProtection><NserverDashboard /></PageProtection>} />
+              <Route path="/naut/nautdashboard" element={<PageProtection><NautDashboard /></PageProtection>} />
+              <Route path="/nequip/nequipdashboard" element={<PageProtection><NequipDashboard /></PageProtection>} />
+              <Route path="/nproject/nprojectdashboard" element={<PageProtection><NprojectDashboard /></PageProtection>} />
               <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
             </Routes>
           </div>

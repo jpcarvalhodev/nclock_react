@@ -121,7 +121,6 @@ import video from '../assets/img/navbar/nvisitor/video.png';
 import image from '../assets/img/navbar/nvisitor/image.png';
 import online from '../assets/img/navbar/nvisitor/online.png';
 import card_report from '../assets/img/navbar/nvisitor/card_report.png';
-import coin_report from '../assets/img/navbar/nvisitor/coin_report.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -495,21 +494,21 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		nclock: createTabInfo('nclock', '/nclock/nclockdashboard'),
 		naccess: createTabInfo('naccess', '/naccess/naccessdashboard'),
 		nvisitor: createTabInfo('nvisitor', '/nvisitor/nvisitordashboard'),
-		npark: createTabInfo('npark', '#'),
-		ndoor: createTabInfo('ndoor', '#'),
-		npatrol: createTabInfo('npatrol', '#'),
-		ncard: createTabInfo('ncard', '#'),
+		npark: createTabInfo('npark', '/npark/nparkdashboard'),
+		ndoor: createTabInfo('ndoor', '/ndoor/ndoordashboard'),
+		npatrol: createTabInfo('npatrol', '/npatrol/npatroldashboard'),
+		ncard: createTabInfo('ncard', '/npatrol/npatroldashboard'),
 		nview: createTabInfo('nview', '/nview/nviewdashboard'),
-		nsecur: createTabInfo('nsecur', '#'),
-		nsoftware: createTabInfo('nsoftware', '#'),
-		nsystem: createTabInfo('nsystem', '#'),
-		napp: createTabInfo('napp', '#'),
-		ncyber: createTabInfo('ncyber', '#'),
-		ndigital: createTabInfo('ndigital', '#'),
-		nserver: createTabInfo('nserver', '#'),
-		naut: createTabInfo('naut', '#'),
-		nequip: createTabInfo('nequip', '#'),
-		nproject: createTabInfo('nproject', '#'),
+		nsecur: createTabInfo('nsecur', '/nsecur/nsecurdashboard'),
+		nsoftware: createTabInfo('nsoftware', '/nsoftware/nsoftwaredashboard'),
+		nsystem: createTabInfo('nsystem', '/nsystem/nsystemdashboard'),
+		napp: createTabInfo('napp', '/napp/nappdashboard'),
+		ncyber: createTabInfo('ncyber', '/ncyber/ncyberdashboard'),
+		ndigital: createTabInfo('ndigital', '/ndigital/ndigitaldashboard'),
+		nserver: createTabInfo('nserver', '/nserver/nserverdashboard'),
+		naut: createTabInfo('naut', '/naut/nautdashboard'),
+		nequip: createTabInfo('nequip', '/nequip/nequipdashboard'),
+		nproject: createTabInfo('nproject', '/nproject/nprojectdashboard'),
 		nsmart: createTabInfo('nsmart', '#'),
 		nreality: createTabInfo('nreality', '#'),
 		nhologram: createTabInfo('nhologram', '#'),
@@ -1514,15 +1513,15 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 										</Link>
 										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
-												<img src={coin} alt="botão pagamento moedas" />
-											</span>
-											<span className="text">Pagamento Moedas</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
 												<img src={card_movement} alt="botão movimentos cartão" />
 											</span>
 											<span className="text">Movimentos Cartão</span>
+										</Link>
+										<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<span className="icon">
+												<img src={coin} alt="botão pagamento moedas" />
+											</span>
+											<span className="text">Pagamento Moedas</span>
 										</Link>
 										<Link to='#' type="button" className="btn btn-light ribbon-button">
 											<span className="icon">
@@ -1588,18 +1587,12 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 							</div>
 							<div className="group">
 								<div className="btn-group" role="group">
-									<div className="grid-container">
+									<div className="icon-text-pessoas">
 										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 											<span className="icon">
-												<img src={card_report} alt="botão relatório cartão" />
+												<img src={card_report} alt="botão relatório moedas" />
 											</span>
-											<span className="text">Relatório Cartão</span>
-										</Link>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={coin_report} alt="botão relatório moedas" />
-											</span>
-											<span className="text">Relatório Moedas</span>
+											<span className="text">Listagem de Pagamentos</span>
 										</Link>
 									</div>
 								</div>

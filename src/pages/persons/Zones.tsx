@@ -202,7 +202,7 @@ export const Zones = () => {
             <NavBar color="#000000" />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Zonas</span>
+                    <span style={{ color: '#000000' }}>Zonas</span>
                 </div>
                 <div className="datatable-header">
                     <div>

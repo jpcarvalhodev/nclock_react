@@ -75,7 +75,7 @@ export const ExternalEntities = () => {
     // Função para atualizar uma entidade externa
     const handleUpdateExternalEntity = async (externalEntity: ExternalEntity) => {
         try {
-            const updatedExternalEntity = await apiService.addExternalEntity(externalEntity);
+            const updatedExternalEntity = await apiService.updateExternalEntity(externalEntity);
             setExternalEntities(externalEntities => externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
             toast.success(updatedExternalEntity.value || 'Entidade Externa atualizada com sucesso');
 
@@ -235,7 +235,7 @@ export const ExternalEntities = () => {
             <NavBar color="#000000" />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Entidades Externas</span>
+                    <span style={{ color: '#000000' }}>Entidades Externas</span>
                 </div>
                 <div className="datatable-header">
                     <div>

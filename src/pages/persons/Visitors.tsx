@@ -292,7 +292,7 @@ export const Visitors = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span>Visitantes</span>
+                                <span style={{ color: '#000000' }}>Visitantes</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

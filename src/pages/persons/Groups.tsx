@@ -197,7 +197,7 @@ export const Groups = () => {
             <NavBar color="#000000" />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Grupos</span>
+                    <span style={{ color: '#000000' }}>Grupos</span>
                 </div>
                 <div className="datatable-header">
                     <div>

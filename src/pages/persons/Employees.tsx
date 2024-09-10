@@ -292,7 +292,7 @@ export const Employees = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span>Funcionários</span>
+                                <span style={{ color: '#000000' }}>Funcionários</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

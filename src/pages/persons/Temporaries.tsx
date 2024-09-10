@@ -292,7 +292,7 @@ export const Temporaries = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span>Provisórios</span>
+                                <span style={{ color: '#000000' }}>Provisórios</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

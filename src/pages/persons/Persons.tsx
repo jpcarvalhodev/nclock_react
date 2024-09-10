@@ -125,7 +125,7 @@ export const Persons = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span>Pessoas</span>
+                                <span style={{ color: '#000000' }}>Pessoas</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

@@ -62,28 +62,22 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
 
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
-        const response = await apiService.fetchAllEmployees();
-        if (response.ok) {
-            const employees = await response.json();
-            setDropdownData(prev => ({ ...prev, responsibleName: employees }));
-        } else {
-            toast.error('Erro ao buscar os funcionários.');
+        try {
+            const employeeResponse = await apiService.fetchAllEmployees();
+            setDropdownData(prev => ({ ...prev, responsibleName: employeeResponse }));
+        } catch (error) {
+            toast.error('Erro ao buscar os dados dos funcionários.');
+            console.error(error);
         }
-        fetchEmployees();
     };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
             const externalEntityTypesResponse = await apiService.fetchAllExternalEntityTypes();
-            if (externalEntityTypesResponse.ok) {
-                const externalEntitiesType = await externalEntityTypesResponse.json();
-                setDropdownData({
-                    externalEntityTypeId: externalEntitiesType
-                });
-            } else {
-                toast.error('Erro ao buscar os dados de tipos.');
-            }
+            setDropdownData({
+                externalEntityTypeId: externalEntityTypesResponse
+            });
         } catch (error) {
             toast.error('Erro ao buscar os dados de tipos.');
             console.error(error);
@@ -106,7 +100,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                 image.onload = () => {
                     let width = image.width;
                     let height = image.height;
-    
+
                     if (width > 512 || height > 512) {
                         if (width > height) {
                             height *= 512 / width;
@@ -116,13 +110,13 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             height = 512;
                         }
                     }
-    
+
                     const canvas = document.createElement('canvas');
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(image, 0, 0, width, height);
-    
+
                     const dataUrl = canvas.toDataURL('image/png');
                     setProfileImage(dataUrl);
                     setFormData({ ...formData, photo: dataUrl });
@@ -131,7 +125,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
             };
             reader.readAsDataURL(file);
         }
-    }; 
+    };
 
     // Define a abertura do seletor de arquivos
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
@@ -268,7 +262,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                             <Form.Control as="select" value={formData.responsibleName || ''} onChange={handleChange} name="responsibleName" className="custom-input-height custom-select-font-size">
                                                 <option value="">Selecione...</option>
                                                 {dropdownData.responsibleName && dropdownData.responsibleName.map((employee) => (
-                                                    <option key={employee.id} value={employee.name}>
+                                                    <option key={employee.employeeID} value={employee.name}>
                                                         {employee.name}
                                                     </option>
                                                 ))}

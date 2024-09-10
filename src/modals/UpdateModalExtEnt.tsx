@@ -67,28 +67,22 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
 
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
-        const response = await apiService.fetchAllEmployees();
-        if (response.ok) {
-            const employees = await response.json();
-            setDropdownData(prev => ({ ...prev, responsibleName: employees }));
-        } else {
-            toast.error('Erro ao buscar os funcionários.');
+        try {
+            const employeeResponse = await apiService.fetchAllEmployees();
+            setDropdownData(prev => ({ ...prev, responsibleName: employeeResponse }));
+        } catch (error) {
+            toast.error('Erro ao buscar os dados dos funcionários.');
+            console.error(error);
         }
-        fetchEmployees();
     };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
             const externalEntityTypesResponse = await apiService.fetchAllExternalEntityTypes();
-            if (externalEntityTypesResponse.ok) {
-                const externalEntitiesType = await externalEntityTypesResponse.json();
-                setDropdownData({
-                    externalEntityTypeId: externalEntitiesType
-                });
-            } else {
-                toast.error('Erro ao buscar os dados de tipos.');
-            }
+            setDropdownData({
+                externalEntityTypeId: externalEntityTypesResponse
+            });
         } catch (error) {
             toast.error('Erro ao buscar os dados de tipos.');
             console.error(error);

@@ -12,7 +12,7 @@ export const Footer = ({ color }: FooterProps) => {
 
   return (
     <footer className="footer" style={{ backgroundColor: color }}>
-      <p className='footer-line1'>{currentYear} ®Nclock by SISNID - All Rights Reserved</p>
+      <p className='footer-line1'>{currentYear} ®NIDGROUP by SISNID - All Rights Reserved</p>
     </footer>
   );
 };
