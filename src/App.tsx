@@ -55,6 +55,23 @@ import { NprojectDashboard } from './pages/nidsof/nproject/NprojectDashboard';
 import { NserverDashboard } from './pages/nidsof/nserver/NserverDashboard';
 import { NsoftwareDashboard } from './pages/nidsof/nsoftware/NsoftwareDashboard';
 import { NsystemDashboard } from './pages/nidsof/nsystem/NsystemDashboard';
+import { NsmartDashboard } from './pages/nidtec/nsmart/NsmartDashboard';
+import { NchargeDashboard } from './pages/nidtec/ncharge/NchargeDashboard';
+import { NcityDashboard } from './pages/nidtec/ncity/NcityDashboard';
+import { NfireDashboard } from './pages/nidtec/nfire/NfireDashboard';
+import { NhologramDashboard } from './pages/nidtec/nhologram/NhologramDashboard';
+import { NledDashboard } from './pages/nidtec/nled/NledDashboard';
+import { NpowerDashboard } from './pages/nidtec/npower/NpowerDashboard';
+import { NrealityDashboard } from './pages/nidtec/nreality/NrealityDashboard';
+import { NcomfortDashboard } from './pages/nidplace/ncomfort/NcomfortDashboard';
+import { NconnectDashboard } from './pages/nidplace/nconnect/NconnectDashboard';
+import { NdecorDashboard } from './pages/nidplace/ndecor/NdecorDashboard';
+import { NfurnitureDashboard } from './pages/nidplace/nfurniture/NfurnitureDashboard';
+import { NhomeDashboard } from './pages/nidplace/nhome/NhomeDashboard';
+import { NlightDashboard } from './pages/nidplace/nlight/NlightDashboard';
+import { NpartitionDashboard } from './pages/nidplace/npartition/NpartitionDashboard';
+import { NpingDashboard } from './pages/nidplace/nping/NpingDashboard';
+import { NsoundDashboard } from './pages/nidplace/nsound/NsoundDashboard';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -140,7 +157,24 @@ function AnimatedRoutes() {
               <Route path="/naut/nautdashboard" element={<PageProtection><NautDashboard /></PageProtection>} />
               <Route path="/nequip/nequipdashboard" element={<PageProtection><NequipDashboard /></PageProtection>} />
               <Route path="/nproject/nprojectdashboard" element={<PageProtection><NprojectDashboard /></PageProtection>} />
+              <Route path="/nsmart/nsmartdashboard" element={<PageProtection><NsmartDashboard /></PageProtection>} />
+              <Route path="/nreality/nrealitydashboard" element={<PageProtection><NrealityDashboard /></PageProtection>} />
+              <Route path="/nhologram/nhologramdashboard" element={<PageProtection><NhologramDashboard /></PageProtection>} />
+              <Route path="/npower/npowerdashboard" element={<PageProtection><NpowerDashboard /></PageProtection>} />
+              <Route path="/ncharge/nchargedashboard" element={<PageProtection><NchargeDashboard /></PageProtection>} />
+              <Route path="/ncity/ncitydashboard" element={<PageProtection><NcityDashboard /></PageProtection>} />
               <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
+              <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
+              <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
+              <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />
+              <Route path="/npartition/npartitiondashboard" element={<PageProtection><NpartitionDashboard /></PageProtection>} />
+              <Route path="/ndecor/ndecordashboard" element={<PageProtection><NdecorDashboard /></PageProtection>} />
+              <Route path="/nping/npingdashboard" element={<PageProtection><NpingDashboard /></PageProtection>} />
+              <Route path="/nconnect/nconnectdashboard" element={<PageProtection><NconnectDashboard /></PageProtection>} />
+              <Route path="/nlight/nlightdashboard" element={<PageProtection><NlightDashboard /></PageProtection>} />
+              <Route path="/ncomfort/ncomfortdashboard" element={<PageProtection><NcomfortDashboard /></PageProtection>} />
+              <Route path="/nsound/nsounddashboard" element={<PageProtection><NsoundDashboard /></PageProtection>} />
+              <Route path="/nhome/nhomedashboard" element={<PageProtection><NhomeDashboard /></PageProtection>} />
             </Routes>
           </div>
         </CSSTransition>

@@ -20,7 +20,7 @@ export const NequipDashboard = () => {
                     </Carousel>
                 </div>
                 <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">Software SISNID Nequip</h3>
+                    <h3 className="dashboard-title-text-inside">Software Nequip</h3>
                     <p className="dashboard-text-inside">
                         O Nequip é um software pensado para as diferentes necessidades tecnológicas das empresas, na esfera da Gestão de Equipamentos. Ele permite-lhe:
                     </p>

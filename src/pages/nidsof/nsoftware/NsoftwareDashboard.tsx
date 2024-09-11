@@ -20,7 +20,7 @@ export const NsoftwareDashboard = () => {
                     </Carousel>
                 </div>
                 <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">Software SISNID Nsoftware</h3>
+                    <h3 className="dashboard-title-text-inside">Software Nsoftware</h3>
                     <p className="dashboard-text-inside">
                         O Nsoftware é um software pensado para as diferentes necessidades de segurança das empresas, na esfera do desenvolvimento de software. Ele permite-lhe:
                     </p>

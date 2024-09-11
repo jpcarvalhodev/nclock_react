@@ -20,7 +20,7 @@ export const NserverDashboard = () => {
                     </Carousel>
                 </div>
                 <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">Software SISNID Nserver</h3>
+                    <h3 className="dashboard-title-text-inside">Software Nserver</h3>
                     <p className="dashboard-text-inside">
                         O Nserver é um software pensado para as diferentes necessidades tecnológicas das empresas, na esfera da Integração Webservers. Ele permite-lhe:
                     </p>

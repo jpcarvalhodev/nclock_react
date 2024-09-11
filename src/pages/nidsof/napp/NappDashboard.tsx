@@ -20,7 +20,7 @@ export const NappDashboard = () => {
                     </Carousel>
                 </div>
                 <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">Software SISNID Napp</h3>
+                    <h3 className="dashboard-title-text-inside">Software Napp</h3>
                     <p className="dashboard-text-inside">
                         O Napp é um software pensado para as diferentes necessidades tecnológicas das empresas, na esfera das Aplicações Móveis. Ele permite-lhe:
                     </p>

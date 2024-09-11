@@ -20,7 +20,7 @@ export const NsystemDashboard = () => {
                     </Carousel>
                 </div>
                 <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">Software SISNID Nsystem</h3>
+                    <h3 className="dashboard-title-text-inside">Software Nsystem</h3>
                     <p className="dashboard-text-inside">
                         O Nsystem é um software pensado para as diferentes necessidades tecnológicos das empresas, na esfera do desenvolvimento de software. Ele permite-lhe:
                     </p>
