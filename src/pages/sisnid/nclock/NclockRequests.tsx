@@ -18,6 +18,7 @@ import "../../../css/PagesStyles.css";
 import { Button } from 'react-bootstrap';
 import { SelectFilter } from '../../../components/SelectFilter';
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../../context/MovementContext';
+import { useColor } from '../../../context/ColorContext';
 
 // Define a interface para os filtros
 interface Filters {
@@ -37,6 +38,7 @@ export const NclockRequests = () => {
         handleUpdateAttendance,
         handleDeleteAttendance,
     } = useContext(AttendanceContext) as AttendanceContextType;
+    const { navbarColor, footerColor } = useColor();
     const [attendanceRequests, setAttendanceRequests] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
@@ -272,7 +274,7 @@ export const NclockRequests = () => {
     return (
         <AttendanceProvider>
             <div className="main-container">
-                <NavBar color="#0050a0" />
+                <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className="content-container">
                     <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
@@ -334,7 +336,7 @@ export const NclockRequests = () => {
                         </div>
                     </Split>
                 </div>
-                <Footer color="#0050a0" />
+                <Footer style={{ backgroundColor: footerColor }} />
                 {showAddAttendanceModal && (
                     <CreateModalAttendance
                         open={showAddAttendanceModal}

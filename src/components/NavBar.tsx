@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { Employee } from '../helpers/Types';
@@ -112,15 +112,18 @@ import nsound from '../assets/img/navbar/navbar/nsound.webp';
 import nhome from '../assets/img/navbar/navbar/nhome.webp';
 import ndecor from '../assets/img/navbar/navbar/ndecor.webp';
 import npartition from '../assets/img/navbar/navbar/npartition.webp';
-import payment_card from '../assets/img/navbar/nvisitor/payment_card.png';
-import coin from '../assets/img/navbar/nvisitor/coin.png';
-import card_movement from '../assets/img/navbar/nvisitor/card_movement.png';
-import doorlock_movement from '../assets/img/navbar/nvisitor/doorlock_movement.png';
-import ads from '../assets/img/navbar/nvisitor/ads.png';
-import video from '../assets/img/navbar/nvisitor/video.png';
-import image from '../assets/img/navbar/nvisitor/image.png';
-import online from '../assets/img/navbar/nvisitor/online.png';
-import card_report from '../assets/img/navbar/nvisitor/card_report.png';
+import payment_card from '../assets/img/navbar/nkiosk/payment_card.png';
+import coin from '../assets/img/navbar/nkiosk/coin.png';
+import card_movement from '../assets/img/navbar/nkiosk/card_movement.png';
+import doorlock_movement from '../assets/img/navbar/nkiosk/doorlock_movement.png';
+import ads from '../assets/img/navbar/nkiosk/ads.png';
+import video from '../assets/img/navbar/nkiosk/video.png';
+import image from '../assets/img/navbar/nkiosk/image.png';
+import online from '../assets/img/navbar/nkiosk/online.png';
+import card_report from '../assets/img/navbar/nkiosk/card_report.png';
+import offline from '../assets/img/navbar/nkiosk/offline.png';
+import maps from '../assets/img/navbar/nkiosk/maps.png';
+import { ColorProvider, useColor } from '../context/ColorContext';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -158,12 +161,12 @@ interface MenuStructure {
 
 // Define as propriedades do componente
 interface NavBarProps {
-	color?: string;
-	onTabChange?: (tabName: string) => void;
+	style?: React.CSSProperties;
 }
 
 // Define as propriedades do componente
-export const NavBar = ({ color, onTabChange }: NavBarProps) => {
+export const NavBar = ({ style }: NavBarProps) => {
+	const { navbarColor, footerColor, setNavbarColor, setFooterColor } = useColor();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -247,6 +250,7 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 	const [showNhomeTab, setShowNhomeTab] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
+	const location = useLocation();
 
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
@@ -287,7 +291,6 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 	// Função para carregar o estado do ribbon
 	const loadRibbonState = () => {
 		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
-
 		const nclockShown = localStorage.getItem('showNclockTab') === 'true';
 		const naccessShown = localStorage.getItem('showNaccessTab') === 'true';
 		const nvisitorShown = localStorage.getItem('showNvisitorTab') === 'true';
@@ -497,7 +500,7 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		npark: createTabInfo('npark', '/npark/nparkdashboard'),
 		ndoor: createTabInfo('ndoor', '/ndoor/ndoordashboard'),
 		npatrol: createTabInfo('npatrol', '/npatrol/npatroldashboard'),
-		ncard: createTabInfo('ncard', '/npatrol/npatroldashboard'),
+		ncard: createTabInfo('ncard', '/ncard/ncarddashboard'),
 		nview: createTabInfo('nview', '/nview/nviewdashboard'),
 		nsecur: createTabInfo('nsecur', '/nsecur/nsecurdashboard'),
 		nsoftware: createTabInfo('nsoftware', '/nsoftware/nsoftwaredashboard'),
@@ -775,27 +778,9 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		);
 	};
 
-	// Função para geranciar o clique na aba
-	const handleTabClick = (tabName: string) => {
-		if (activeTab === tabName) {
-			setActiveTab('');
-			const [setRibbon] = ribbons[tabName as RibbonName];
-			setRibbon(false);
-			localStorage.removeItem('activeTab');
-		} else {
-			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
-			const [setRibbon] = ribbons[tabName as RibbonName];
-			setRibbon(true);
-			setActiveTab(tabName);
-			localStorage.setItem('activeTab', tabName);
-		}
-	};	
-
-	// Função para abrir o modal de opções do terminal
-	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
-
 	// Defina o mapeamento das cores para cada aba
 	const tabColors: Record<string, { navbarColor: string; footerColor: string }> = {
+		default: { navbarColor: '#000000', footerColor: '#000000' },
 		nclock: { navbarColor: '#0050a0', footerColor: '#0050a0' },
 		naccess: { navbarColor: '#0050a0', footerColor: '#0050a0' },
 		nvisitor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
@@ -834,1256 +819,1287 @@ export const NavBar = ({ color, onTabChange }: NavBarProps) => {
 		nhome: { navbarColor: '#FEC629', footerColor: '#FEC629' },
 	};
 
-	// Busca a aba ativa no localStorage
-	const getActiveTabFromLocalStorage = () => {
-		const tabKeys = Object.keys(tabColors);
-		for (const tabKey of tabKeys) {
-			const isTabActive = localStorage.getItem(`show${tabKey.charAt(0).toUpperCase() + tabKey.slice(1)}Tab`);
-			if (isTabActive === 'true') {
-				return tabKey;
-			}
+	// useEffect para atualizar as cores da navbar e do footer ao trocar a página
+	useEffect(() => {
+		const currentPath = location.pathname.split('/')[1];
+		const colorConfig = tabColors[currentPath] || tabColors.default;
+
+		setNavbarColor(colorConfig.navbarColor);
+		setFooterColor(colorConfig.footerColor);
+	}, [location, navbarColor, footerColor, setNavbarColor, setFooterColor]);
+
+	// Função para geranciar o clique na aba
+	const handleTabClick = (tabName: string) => {
+		if (activeTab === tabName) {
+			setActiveTab('');
+			const [setRibbon] = ribbons[tabName as RibbonName];
+			setRibbon(false);
+			localStorage.removeItem('activeTab');
+		} else {
+			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
+			const [setRibbon] = ribbons[tabName as RibbonName];
+			setRibbon(true);
+			setActiveTab(tabName);
+			localStorage.setItem('activeTab', tabName);
 		}
-		return null;
 	};
 
-	// Define a cor da aba atual baseada na aba ativa
-	const tabActive = getActiveTabFromLocalStorage();
-	const currentTabColor = tabActive ? tabColors[tabActive] : null;
+	// Função para abrir o modal de opções do terminal
+	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
 
 	return (
-		<nav data-role="ribbonmenu" style={{ backgroundColor: currentTabColor?.navbarColor || '#000000' }}>
-			<div className="nav-container">
-				<Dropdown className='dropdown-icon'>
-					<Dropdown.Toggle variant="basic" id="dropdown-basic">
-						<span className="logo">NIDGROUP</span>
-					</Dropdown.Toggle>
-					<Dropdown.Menu>
-						<div style={{ position: 'relative' }}>
-							{Object.keys(menuStructure).map((menuKey) => renderMenu(menuKey))}
-						</div>
-					</Dropdown.Menu>
-				</Dropdown>
-				<ul className="nav nav-tabs">
-					{showNclockTab && (
-						<li className={`nav-item ${activeTab === 'nclock' ? 'active' : ''}`}>
-							<a className="nav-link nclock-tab" id="nclock-tab" onClick={() => handleTabClick('nclock')}>NCLOCK</a>
-						</li>
-					)}
-					{showNaccessTab && (
-						<li className={`nav-item ${activeTab === 'naccess' ? 'active' : ''}`}>
-							<a className="nav-link naccess-tab" id="naccess-tab" onClick={() => handleTabClick('naccess')}>NACCESS</a>
-						</li>
-					)}
-					{showNvisitorTab && (
-						<li className={`nav-item ${activeTab === 'nvisitor' ? 'active' : ''}`}>
-							<a className="nav-link nvisitor-tab" id="nvisitor-tab" onClick={() => handleTabClick('nvisitor')}>NVISITOR</a>
-						</li>
-					)}
-					{showNparkTab && (
-						<li className={`nav-item ${activeTab === 'npark' ? 'active' : ''}`}>
-							<a className="nav-link npark-tab" id="npark-tab" onClick={() => handleTabClick('npark')}>NPARK</a>
-						</li>
-					)}
-					{showNdoorTab && (
-						<li className={`nav-item ${activeTab === 'ndoor' ? 'active' : ''}`}>
-							<a className="nav-link ndoor-tab" id="ndoor-tab" onClick={() => handleTabClick('ndoor')}>NDOOR</a>
-						</li>
-					)}
-					{showNpatrolTab && (
-						<li className={`nav-item ${activeTab === 'npatrol' ? 'active' : ''}`}>
-							<a className="nav-link npatrol-tab" id="npatrol-tab" onClick={() => handleTabClick('npatrol')}>NPATROL</a>
-						</li>
-					)}
-					{showNcardTab && (
-						<li className={`nav-item ${activeTab === 'ncard' ? 'active' : ''}`}>
-							<a className="nav-link ncard-tab" id="ncard-tab" onClick={() => handleTabClick('ncard')}>NCARD</a>
-						</li>
-					)}
-					{showNviewTab && (
-						<li className={`nav-item ${activeTab === 'nview' ? 'active' : ''}`}>
-							<a className="nav-link nview-tab" id="nview-tab" onClick={() => handleTabClick('nview')}>NVIEW</a>
-						</li>
-					)}
-					{showNsecurTab && (
-						<li className={`nav-item ${activeTab === 'nsecur' ? 'active' : ''}`}>
-							<a className="nav-link nsecur-tab" id="nsecur-tab" onClick={() => handleTabClick('nsecur')}>NSECUR</a>
-						</li>
-					)}
-					{showNsoftwareTab && (
-						<li className={`nav-item ${activeTab === 'nsoftware' ? 'active' : ''}`}>
-							<a className="nav-link nsoftware-tab" id="nsoftware-tab" onClick={() => handleTabClick('nsoftware')}>NSOFTWARE</a>
-						</li>
-					)}
-					{showNsystemTab && (
-						<li className={`nav-item ${activeTab === 'nsystem' ? 'active' : ''}`}>
-							<a className="nav-link nsystem-tab" id="nsystem-tab" onClick={() => handleTabClick('nsystem')}>NSYSTEM</a>
-						</li>
-					)}
-					{showNappTab && (
-						<li className={`nav-item ${activeTab === 'napp' ? 'active' : ''}`}>
-							<a className="nav-link napp-tab" id="napp-tab" onClick={() => handleTabClick('napp')}>NAPP</a>
-						</li>
-					)}
-					{showNcyberTab && (
-						<li className={`nav-item ${activeTab === 'ncyber' ? 'active' : ''}`}>
-							<a className="nav-link ncyber-tab" id="ncyber-tab" onClick={() => handleTabClick('ncyber')}>NCYBER</a>
-						</li>
-					)}
-					{showNdigitalTab && (
-						<li className={`nav-item ${activeTab === 'ndigital' ? 'active' : ''}`}>
-							<a className="nav-link ndigital-tab" id="ndigital-tab" onClick={() => handleTabClick('ndigital')}>NDIGITAL</a>
-						</li>
-					)}
-					{showNserverTab && (
-						<li className={`nav-item ${activeTab === 'nserver' ? 'active' : ''}`}>
-							<a className="nav-link nserver-tab" id="nserver-tab" onClick={() => handleTabClick('nserver')}>NSERVER</a>
-						</li>
-					)}
-					{showNautTab && (
-						<li className={`nav-item ${activeTab === 'naut' ? 'active' : ''}`}>
-							<a className="nav-link naut-tab" id="naut-tab" onClick={() => handleTabClick('naut')}>NAUT</a>
-						</li>
-					)}
-					{showNequipTab && (
-						<li className={`nav-item ${activeTab === 'nequip' ? 'active' : ''}`}>
-							<a className="nav-link nequip-tab" id="nequip-tab" onClick={() => handleTabClick('nequip')}>NEQUIP</a>
-						</li>
-					)}
-					{showNprojectTab && (
-						<li className={`nav-item ${activeTab === 'nproject' ? 'active' : ''}`}>
-							<a className="nav-link nproject-tab" id="nproject-tab" onClick={() => handleTabClick('nproject')}>NPROJECT</a>
-						</li>
-					)}
-					{showNsmartTab && (
-						<li className={`nav-item ${activeTab === 'nsmart' ? 'active' : ''}`}>
-							<a className="nav-link nsmart-tab" id="nsmart-tab" onClick={() => handleTabClick('nsmart')}>NSMART</a>
-						</li>
-					)}
-					{showNrealityTab && (
-						<li className={`nav-item ${activeTab === 'nreality' ? 'active' : ''}`}>
-							<a className="nav-link nreality-tab" id="nreality-tab" onClick={() => handleTabClick('nreality')}>NREALITY</a>
-						</li>
-					)}
-					{showNhologramTab && (
-						<li className={`nav-item ${activeTab === 'nhologram' ? 'active' : ''}`}>
-							<a className="nav-link nhologram-tab" id="nhologram-tab" onClick={() => handleTabClick('nhologram')}>NHOLOGRAM</a>
-						</li>
-					)}
-					{showNpowerTab && (
-						<li className={`nav-item ${activeTab === 'npower' ? 'active' : ''}`}>
-							<a className="nav-link npower-tab" id="npower-tab" onClick={() => handleTabClick('npower')}>NPOWER</a>
-						</li>
-					)}
-					{showNchargeTab && (
-						<li className={`nav-item ${activeTab === 'ncharge' ? 'active' : ''}`}>
-							<a className="nav-link ncharge-tab" id="ncharge-tab" onClick={() => handleTabClick('ncharge')}>NCHARGE</a>
-						</li>
-					)}
-					{showNcityTab && (
-						<li className={`nav-item ${activeTab === 'ncity' ? 'active' : ''}`}>
-							<a className="nav-link ncity-tab" id="ncity-tab" onClick={() => handleTabClick('ncity')}>NCITY</a>
-						</li>
-					)}
-					{showNkioskTab && (
-						<li className={`nav-item ${activeTab === 'nkiosk' ? 'active' : ''}`}>
-							<a className="nav-link nkiosk-tab" id="nkiosk-tab" onClick={() => handleTabClick('nkiosk')}>NKIOSK</a>
-						</li>
-					)}
-					{showNledTab && (
-						<li className={`nav-item ${activeTab === 'nled' ? 'active' : ''}`}>
-							<a className="nav-link nled-tab" id="nled-tab" onClick={() => handleTabClick('nled')}>NLED</a>
-						</li>
-					)}
-					{showNfireTab && (
-						<li className={`nav-item ${activeTab === 'nfire' ? 'active' : ''}`}>
-							<a className="nav-link nfire-tab" id="nfire-tab" onClick={() => handleTabClick('nfire')}>NFIRE</a>
-						</li>
-					)}
-					{showNfurnitureTab && (
-						<li className={`nav-item ${activeTab === 'nfurniture' ? 'active' : ''}`}>
-							<a className="nav-link nfurniture-tab" id="nfurniture-tab" onClick={() => handleTabClick('nfurniture')}>NFURNITURE</a>
-						</li>
-					)}
-					{showNpartitionTab && (
-						<li className={`nav-item ${activeTab === 'npartition' ? 'active' : ''}`}>
-							<a className="nav-link npartition-tab" id="npartition-tab" onClick={() => handleTabClick('npartition')}>NPARTITION</a>
-						</li>
-					)}
-					{showNdecorTab && (
-						<li className={`nav-item ${activeTab === 'ndecor' ? 'active' : ''}`}>
-							<a className="nav-link ndecor-tab" id="ndecor-tab" onClick={() => handleTabClick('ndecor')}>NDECOR</a>
-						</li>
-					)}
-					{showNpingTab && (
-						<li className={`nav-item ${activeTab === 'nping' ? 'active' : ''}`}>
-							<a className="nav-link nping-tab" id="nping-tab" onClick={() => handleTabClick('nping')}>NPING</a>
-						</li>
-					)}
-					{showNconnectTab && (
-						<li className={`nav-item ${activeTab === 'nconnect' ? 'active' : ''}`}>
-							<a className="nav-link nconnect-tab" id="nconnect-tab" onClick={() => handleTabClick('nconnect')}>NCONNECT</a>
-						</li>
-					)}
-					{showNlightTab && (
-						<li className={`nav-item ${activeTab === 'nlight' ? 'active' : ''}`}>
-							<a className="nav-link nlight-tab" id="nlight-tab" onClick={() => handleTabClick('nlight')}>NLIGHT</a>
-						</li>
-					)}
-					{showNcomfortTab && (
-						<li className={`nav-item ${activeTab === 'ncomfort' ? 'active' : ''}`}>
-							<a className="nav-link ncomfort-tab" id="ncomfort-tab" onClick={() => handleTabClick('ncomfort')}>NCOMFORT</a>
-						</li>
-					)}
-					{showNsoundTab && (
-						<li className={`nav-item ${activeTab === 'nsound' ? 'active' : ''}`}>
-							<a className="nav-link nsound-tab" id="nsound-tab" onClick={() => handleTabClick('nsound')}>NSOUND</a>
-						</li>
-					)}
-					{showNhomeTab && (
-						<li className={`nav-item ${activeTab === 'nhome' ? 'active' : ''}`}>
-							<a className="nav-link nhome-tab" id="nhome-tab" onClick={() => handleTabClick('nhome')}>NHOME</a>
-						</li>
-					)}
-					<li className={`nav-item ${activeTab === 'pessoas' ? 'active' : ''}`}>
-						<a className="nav-link pessoas-tab" id="pessoas-tab" onClick={() => handleRibbonClick('pessoas')}>PESSOAS</a>
-					</li>
-					<li className={`nav-item ${activeTab === 'dispositivos' ? 'active' : ''}`}>
-						<a className="nav-link dispositivos-tab" id="dispositivos-tab" onClick={() => handleRibbonClick('dispositivos')}>DISPOSITIVOS</a>
-					</li>
-					<li className={`nav-item ${activeTab === 'configuracao' ? 'active' : ''}`}>
-						<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={() => handleRibbonClick('configuracao')}>CONFIGURAÇÃO</a>
-					</li>
-					<li className={`nav-item ${activeTab === 'ajuda' ? 'active' : ''}`}>
-						<a className="nav-link ajuda-tab" id="ajuda-tab" onClick={() => handleRibbonClick('ajuda')}>AJUDA</a>
-					</li>
-				</ul>
-				<div className="user-section">
+		<ColorProvider>
+			<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
+				<div className="nav-container">
 					<Dropdown className='dropdown-icon'>
-						<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
-							<span className='user-info'>{user.name}</span>
+						<Dropdown.Toggle variant="basic" id="dropdown-basic">
+							<span className="logo">NIDGROUP</span>
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
-							<div className='dropdown-content'>
-								<img src={employee?.photo || profileAvatar} alt="user photo" className='profile-avatar' />
-								<Dropdown.Item disabled>{user.name}</Dropdown.Item>
-								<Dropdown.Item disabled>{user.email}</Dropdown.Item>
-								<Dropdown.Item onClick={logout}>Sair</Dropdown.Item>
+							<div style={{ position: 'relative' }}>
+								{Object.keys(menuStructure).map((menuKey) => renderMenu(menuKey))}
 							</div>
 						</Dropdown.Menu>
 					</Dropdown>
+					<ul className="nav nav-tabs">
+						{showNclockTab && (
+							<li className={`nav-item ${activeTab === 'nclock' ? 'active' : ''}`}>
+								<a className="nav-link nclock-tab" id="nclock-tab" onClick={() => handleTabClick('nclock')}>NCLOCK</a>
+							</li>
+						)}
+						{showNaccessTab && (
+							<li className={`nav-item ${activeTab === 'naccess' ? 'active' : ''}`}>
+								<a className="nav-link naccess-tab" id="naccess-tab" onClick={() => handleTabClick('naccess')}>NACCESS</a>
+							</li>
+						)}
+						{showNvisitorTab && (
+							<li className={`nav-item ${activeTab === 'nvisitor' ? 'active' : ''}`}>
+								<a className="nav-link nvisitor-tab" id="nvisitor-tab" onClick={() => handleTabClick('nvisitor')}>NVISITOR</a>
+							</li>
+						)}
+						{showNparkTab && (
+							<li className={`nav-item ${activeTab === 'npark' ? 'active' : ''}`}>
+								<a className="nav-link npark-tab" id="npark-tab" onClick={() => handleTabClick('npark')}>NPARK</a>
+							</li>
+						)}
+						{showNdoorTab && (
+							<li className={`nav-item ${activeTab === 'ndoor' ? 'active' : ''}`}>
+								<a className="nav-link ndoor-tab" id="ndoor-tab" onClick={() => handleTabClick('ndoor')}>NDOOR</a>
+							</li>
+						)}
+						{showNpatrolTab && (
+							<li className={`nav-item ${activeTab === 'npatrol' ? 'active' : ''}`}>
+								<a className="nav-link npatrol-tab" id="npatrol-tab" onClick={() => handleTabClick('npatrol')}>NPATROL</a>
+							</li>
+						)}
+						{showNcardTab && (
+							<li className={`nav-item ${activeTab === 'ncard' ? 'active' : ''}`}>
+								<a className="nav-link ncard-tab" id="ncard-tab" onClick={() => handleTabClick('ncard')}>NCARD</a>
+							</li>
+						)}
+						{showNviewTab && (
+							<li className={`nav-item ${activeTab === 'nview' ? 'active' : ''}`}>
+								<a className="nav-link nview-tab" id="nview-tab" onClick={() => handleTabClick('nview')}>NVIEW</a>
+							</li>
+						)}
+						{showNsecurTab && (
+							<li className={`nav-item ${activeTab === 'nsecur' ? 'active' : ''}`}>
+								<a className="nav-link nsecur-tab" id="nsecur-tab" onClick={() => handleTabClick('nsecur')}>NSECUR</a>
+							</li>
+						)}
+						{showNsoftwareTab && (
+							<li className={`nav-item ${activeTab === 'nsoftware' ? 'active' : ''}`}>
+								<a className="nav-link nsoftware-tab" id="nsoftware-tab" onClick={() => handleTabClick('nsoftware')}>NSOFTWARE</a>
+							</li>
+						)}
+						{showNsystemTab && (
+							<li className={`nav-item ${activeTab === 'nsystem' ? 'active' : ''}`}>
+								<a className="nav-link nsystem-tab" id="nsystem-tab" onClick={() => handleTabClick('nsystem')}>NSYSTEM</a>
+							</li>
+						)}
+						{showNappTab && (
+							<li className={`nav-item ${activeTab === 'napp' ? 'active' : ''}`}>
+								<a className="nav-link napp-tab" id="napp-tab" onClick={() => handleTabClick('napp')}>NAPP</a>
+							</li>
+						)}
+						{showNcyberTab && (
+							<li className={`nav-item ${activeTab === 'ncyber' ? 'active' : ''}`}>
+								<a className="nav-link ncyber-tab" id="ncyber-tab" onClick={() => handleTabClick('ncyber')}>NCYBER</a>
+							</li>
+						)}
+						{showNdigitalTab && (
+							<li className={`nav-item ${activeTab === 'ndigital' ? 'active' : ''}`}>
+								<a className="nav-link ndigital-tab" id="ndigital-tab" onClick={() => handleTabClick('ndigital')}>NDIGITAL</a>
+							</li>
+						)}
+						{showNserverTab && (
+							<li className={`nav-item ${activeTab === 'nserver' ? 'active' : ''}`}>
+								<a className="nav-link nserver-tab" id="nserver-tab" onClick={() => handleTabClick('nserver')}>NSERVER</a>
+							</li>
+						)}
+						{showNautTab && (
+							<li className={`nav-item ${activeTab === 'naut' ? 'active' : ''}`}>
+								<a className="nav-link naut-tab" id="naut-tab" onClick={() => handleTabClick('naut')}>NAUT</a>
+							</li>
+						)}
+						{showNequipTab && (
+							<li className={`nav-item ${activeTab === 'nequip' ? 'active' : ''}`}>
+								<a className="nav-link nequip-tab" id="nequip-tab" onClick={() => handleTabClick('nequip')}>NEQUIP</a>
+							</li>
+						)}
+						{showNprojectTab && (
+							<li className={`nav-item ${activeTab === 'nproject' ? 'active' : ''}`}>
+								<a className="nav-link nproject-tab" id="nproject-tab" onClick={() => handleTabClick('nproject')}>NPROJECT</a>
+							</li>
+						)}
+						{showNsmartTab && (
+							<li className={`nav-item ${activeTab === 'nsmart' ? 'active' : ''}`}>
+								<a className="nav-link nsmart-tab" id="nsmart-tab" onClick={() => handleTabClick('nsmart')}>NSMART</a>
+							</li>
+						)}
+						{showNrealityTab && (
+							<li className={`nav-item ${activeTab === 'nreality' ? 'active' : ''}`}>
+								<a className="nav-link nreality-tab" id="nreality-tab" onClick={() => handleTabClick('nreality')}>NREALITY</a>
+							</li>
+						)}
+						{showNhologramTab && (
+							<li className={`nav-item ${activeTab === 'nhologram' ? 'active' : ''}`}>
+								<a className="nav-link nhologram-tab" id="nhologram-tab" onClick={() => handleTabClick('nhologram')}>NHOLOGRAM</a>
+							</li>
+						)}
+						{showNpowerTab && (
+							<li className={`nav-item ${activeTab === 'npower' ? 'active' : ''}`}>
+								<a className="nav-link npower-tab" id="npower-tab" onClick={() => handleTabClick('npower')}>NPOWER</a>
+							</li>
+						)}
+						{showNchargeTab && (
+							<li className={`nav-item ${activeTab === 'ncharge' ? 'active' : ''}`}>
+								<a className="nav-link ncharge-tab" id="ncharge-tab" onClick={() => handleTabClick('ncharge')}>NCHARGE</a>
+							</li>
+						)}
+						{showNcityTab && (
+							<li className={`nav-item ${activeTab === 'ncity' ? 'active' : ''}`}>
+								<a className="nav-link ncity-tab" id="ncity-tab" onClick={() => handleTabClick('ncity')}>NCITY</a>
+							</li>
+						)}
+						{showNkioskTab && (
+							<li className={`nav-item ${activeTab === 'nkiosk' ? 'active' : ''}`}>
+								<a className="nav-link nkiosk-tab" id="nkiosk-tab" onClick={() => handleTabClick('nkiosk')}>NKIOSK</a>
+							</li>
+						)}
+						{showNledTab && (
+							<li className={`nav-item ${activeTab === 'nled' ? 'active' : ''}`}>
+								<a className="nav-link nled-tab" id="nled-tab" onClick={() => handleTabClick('nled')}>NLED</a>
+							</li>
+						)}
+						{showNfireTab && (
+							<li className={`nav-item ${activeTab === 'nfire' ? 'active' : ''}`}>
+								<a className="nav-link nfire-tab" id="nfire-tab" onClick={() => handleTabClick('nfire')}>NFIRE</a>
+							</li>
+						)}
+						{showNfurnitureTab && (
+							<li className={`nav-item ${activeTab === 'nfurniture' ? 'active' : ''}`}>
+								<a className="nav-link nfurniture-tab" id="nfurniture-tab" onClick={() => handleTabClick('nfurniture')}>NFURNITURE</a>
+							</li>
+						)}
+						{showNpartitionTab && (
+							<li className={`nav-item ${activeTab === 'npartition' ? 'active' : ''}`}>
+								<a className="nav-link npartition-tab" id="npartition-tab" onClick={() => handleTabClick('npartition')}>NPARTITION</a>
+							</li>
+						)}
+						{showNdecorTab && (
+							<li className={`nav-item ${activeTab === 'ndecor' ? 'active' : ''}`}>
+								<a className="nav-link ndecor-tab" id="ndecor-tab" onClick={() => handleTabClick('ndecor')}>NDECOR</a>
+							</li>
+						)}
+						{showNpingTab && (
+							<li className={`nav-item ${activeTab === 'nping' ? 'active' : ''}`}>
+								<a className="nav-link nping-tab" id="nping-tab" onClick={() => handleTabClick('nping')}>NPING</a>
+							</li>
+						)}
+						{showNconnectTab && (
+							<li className={`nav-item ${activeTab === 'nconnect' ? 'active' : ''}`}>
+								<a className="nav-link nconnect-tab" id="nconnect-tab" onClick={() => handleTabClick('nconnect')}>NCONNECT</a>
+							</li>
+						)}
+						{showNlightTab && (
+							<li className={`nav-item ${activeTab === 'nlight' ? 'active' : ''}`}>
+								<a className="nav-link nlight-tab" id="nlight-tab" onClick={() => handleTabClick('nlight')}>NLIGHT</a>
+							</li>
+						)}
+						{showNcomfortTab && (
+							<li className={`nav-item ${activeTab === 'ncomfort' ? 'active' : ''}`}>
+								<a className="nav-link ncomfort-tab" id="ncomfort-tab" onClick={() => handleTabClick('ncomfort')}>NCOMFORT</a>
+							</li>
+						)}
+						{showNsoundTab && (
+							<li className={`nav-item ${activeTab === 'nsound' ? 'active' : ''}`}>
+								<a className="nav-link nsound-tab" id="nsound-tab" onClick={() => handleTabClick('nsound')}>NSOUND</a>
+							</li>
+						)}
+						{showNhomeTab && (
+							<li className={`nav-item ${activeTab === 'nhome' ? 'active' : ''}`}>
+								<a className="nav-link nhome-tab" id="nhome-tab" onClick={() => handleTabClick('nhome')}>NHOME</a>
+							</li>
+						)}
+						<li className={`nav-item ${activeTab === 'pessoas' ? 'active' : ''}`}>
+							<a className="nav-link pessoas-tab" id="pessoas-tab" onClick={() => handleRibbonClick('pessoas')}>PESSOAS</a>
+						</li>
+						<li className={`nav-item ${activeTab === 'dispositivos' ? 'active' : ''}`}>
+							<a className="nav-link dispositivos-tab" id="dispositivos-tab" onClick={() => handleRibbonClick('dispositivos')}>DISPOSITIVOS</a>
+						</li>
+						<li className={`nav-item ${activeTab === 'configuracao' ? 'active' : ''}`}>
+							<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={() => handleRibbonClick('configuracao')}>CONFIGURAÇÃO</a>
+						</li>
+						<li className={`nav-item ${activeTab === 'ajuda' ? 'active' : ''}`}>
+							<a className="nav-link ajuda-tab" id="ajuda-tab" onClick={() => handleRibbonClick('ajuda')}>AJUDA</a>
+						</li>
+					</ul>
+					<div className="user-section">
+						<Dropdown className='dropdown-icon'>
+							<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
+								<span className='user-info'>{user.name}</span>
+							</Dropdown.Toggle>
+							<Dropdown.Menu>
+								<div className='dropdown-content'>
+									<img src={employee?.photo || profileAvatar} alt="user photo" className='profile-avatar' />
+									<Dropdown.Item disabled>{user.name}</Dropdown.Item>
+									<Dropdown.Item disabled>{user.email}</Dropdown.Item>
+									<Dropdown.Item onClick={logout}>Sair</Dropdown.Item>
+								</div>
+							</Dropdown.Menu>
+						</Dropdown>
+					</div>
 				</div>
-			</div>
-			{showNclockRibbon && (
-				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
-						<div className="section" id="section-group">
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="/nclock/nclockmovement" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={movement} alt="botão assiduidade movimentos" />
-											</span>
-											<span className="text">Movimentos</span>
-										</Link>
+				{showNclockRibbon && (
+					<div className="tab-content" id="myTabContent">
+						<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
+							<div className="section" id="section-group">
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="/nclock/nclockmovement" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={movement} alt="botão assiduidade movimentos" />
+												</span>
+												<span className="text">Movimentos</span>
+											</Link>
+										</div>
+										<div>
+											<Link to="/nclock/nclockpresence" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={presence} alt="botão assiduidade presenças" />
+												</span>
+												<span className="text">Presenças</span>
+											</Link>
+											<Link to='/nclock/nclockrequests' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={request} alt="botão pedidos" />
+												</span>
+												<span className="text">Pedidos</span>
+											</Link>
+											<Link to='/nclock/nclockall' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={all} alt="botão todos" />
+												</span>
+												<span className="text">Todos</span>
+											</Link>
+										</div>
 									</div>
-									<div>
-										<Link to="/nclock/nclockpresence" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={presence} alt="botão assiduidade presenças" />
-											</span>
-											<span className="text">Presenças</span>
-										</Link>
-										<Link to='/nclock/nclockrequests' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={request} alt="botão pedidos" />
-											</span>
-											<span className="text">Pedidos</span>
-										</Link>
-										<Link to='/nclock/nclockall' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={all} alt="botão todos" />
-											</span>
-											<span className="text">Todos</span>
-										</Link>
-									</div>
-								</div>
-								<div className="title-container">
-									<span className="title">Assiduidade</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className="grid-container-entidades">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={movement} alt="botão acessos movimentos" />
-											</span>
-											<span className="text">Movimentos</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={presence} alt="botão acessos presenças" />
-											</span>
-											<span className="text">Presenças</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Assiduidade</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Acessos</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={clipboard} alt="botão resultados" />
-											</span>
-											<span className="text">Resultados</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container-entidades">
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={movement} alt="botão acessos movimentos" />
+												</span>
+												<span className="text">Movimentos</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={presence} alt="botão acessos presenças" />
+												</span>
+												<span className="text">Presenças</span>
+											</Link>
+										</div>
 									</div>
-									<div className="grid-container">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={processing} alt="botão processamento" />
-											</span>
-											<span className="text">Processamento</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={segmentation} alt="botão segmentos" />
-											</span>
-											<span className="text">Segmentos</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={plusMinus} alt="botão compensações" />
-											</span>
-											<span className="text">Compensações</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={battery} alt="botão acumulados" />
-											</span>
-											<span className="text">Acumulados</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={hourDatabase} alt="botão banco de horas" />
-											</span>
-											<span className="text">Banco de Horas</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={clock} alt="botão trabalho suplementar" />
-											</span>
-											<span className="text">Trabalho Suplementar</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Acessos</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Resultados</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className="grid-container-entidades">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={time} alt="botão horários" />
-											</span>
-											<span className="text">Horários</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={workPlan} alt="botão planos de trabalho" />
-											</span>
-											<span className="text">Planos de Trabalho</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={clipboard} alt="botão resultados" />
+												</span>
+												<span className="text">Resultados</span>
+											</Link>
+										</div>
+										<div className="grid-container">
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={processing} alt="botão processamento" />
+												</span>
+												<span className="text">Processamento</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={segmentation} alt="botão segmentos" />
+												</span>
+												<span className="text">Segmentos</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={plusMinus} alt="botão compensações" />
+												</span>
+												<span className="text">Compensações</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={battery} alt="botão acumulados" />
+												</span>
+												<span className="text">Acumulados</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={hourDatabase} alt="botão banco de horas" />
+												</span>
+												<span className="text">Banco de Horas</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={clock} alt="botão trabalho suplementar" />
+												</span>
+												<span className="text">Trabalho Suplementar</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Resultados</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Horários</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className="grid-container">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={absent} alt="botão ausências faltas" />
-											</span>
-											<span className="text">Ausências Faltas</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={unknown} alt="botão não definido" />
-											</span>
-											<span className="text">Não Definido</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={work} alt="botão trabalho" />
-											</span>
-											<span className="text">Trabalho</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={extra} alt="botão extra" />
-											</span>
-											<span className="text">Extra</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={limit} alt="botão tolerâncias" />
-											</span>
-											<span className="text">Tolerâncias</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={addHour} alt="botão banco de horas" />
-											</span>
-											<span className="text">Banco de Horas</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container-entidades">
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={time} alt="botão horários" />
+												</span>
+												<span className="text">Horários</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={workPlan} alt="botão planos de trabalho" />
+												</span>
+												<span className="text">Planos de Trabalho</span>
+											</Link>
+										</div>
 									</div>
-									<div>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={rules} alt="botão regras" />
-											</span>
-											<span className="text">Regras</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Horários</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Códigos de Resultados</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={medicalLeave} alt="botão ausências" />
-											</span>
-											<span className="text">Ausências</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container">
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={absent} alt="botão ausências faltas" />
+												</span>
+												<span className="text">Ausências Faltas</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={unknown} alt="botão não definido" />
+												</span>
+												<span className="text">Não Definido</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={work} alt="botão trabalho" />
+												</span>
+												<span className="text">Trabalho</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={extra} alt="botão extra" />
+												</span>
+												<span className="text">Extra</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={limit} alt="botão tolerâncias" />
+												</span>
+												<span className="text">Tolerâncias</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={addHour} alt="botão banco de horas" />
+												</span>
+												<span className="text">Banco de Horas</span>
+											</Link>
+										</div>
+										<div>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={rules} alt="botão regras" />
+												</span>
+												<span className="text">Regras</span>
+											</Link>
+										</div>
 									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={vacation} alt="botão férias" />
-											</span>
-											<span className="text">Férias</span>
-										</Link>
-									</div>
-									<div>
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={vacation} alt="botão alteração de férias" />
-											</span>
-											<span className="text">Alteração de Férias</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={holidays} alt="botão feriados" />
-											</span>
-											<span className="text">Feriados</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={autorization} alt="botão autorizações" />
-											</span>
-											<span className="text">Autorizações</span>
-										</Link>
-									</div>
-								</div>
-								<div className="title-container">
-									<span className="title">Alterações</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className="grid-container">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={calendar} alt="botão calendário" />
-											</span>
-											<span className="text">Calendário</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={segmentation} alt="botão segmentos" />
-											</span>
-											<span className="text">Segmentos</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={monthly} alt="botão mensal" />
-											</span>
-											<span className="text">Mensal</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={exchange} alt="botão trocas" />
-											</span>
-											<span className="text">Trocas</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={availability} alt="botão disponibilidades" />
-											</span>
-											<span className="text">Disponibilidades</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={plans} alt="botão planos" />
-											</span>
-											<span className="text">Planos</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Códigos de Resultados</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Escalas</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-informacoes'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
-											<span className="icon">
-												<img src={settings} alt="botão opções" />
-											</span>
-											<span className="text">Opções</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={medicalLeave} alt="botão ausências" />
+												</span>
+												<span className="text">Ausências</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={vacation} alt="botão férias" />
+												</span>
+												<span className="text">Férias</span>
+											</Link>
+										</div>
+										<div>
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={vacation} alt="botão alteração de férias" />
+												</span>
+												<span className="text">Alteração de Férias</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={holidays} alt="botão feriados" />
+												</span>
+												<span className="text">Feriados</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={autorization} alt="botão autorizações" />
+												</span>
+												<span className="text">Autorizações</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Alterações</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Configurações</span>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container">
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={calendar} alt="botão calendário" />
+												</span>
+												<span className="text">Calendário</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={segmentation} alt="botão segmentos" />
+												</span>
+												<span className="text">Segmentos</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={monthly} alt="botão mensal" />
+												</span>
+												<span className="text">Mensal</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={exchange} alt="botão trocas" />
+												</span>
+												<span className="text">Trocas</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={availability} alt="botão disponibilidades" />
+												</span>
+												<span className="text">Disponibilidades</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={plans} alt="botão planos" />
+												</span>
+												<span className="text">Planos</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Escalas</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-informacoes'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+												<span className="icon">
+													<img src={settings} alt="botão opções" />
+												</span>
+												<span className="text">Opções</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Configurações</span>
+									</div>
 								</div>
 							</div>
 						</div>
+						<div className="ribbon-toggle">
+							<img
+								src={isRibbonPinned ? unpin : pin}
+								alt="Lock/Unlock Ribbon"
+								onClick={togglePinRibbon}
+								className='ribbon-icon'
+							/>
+						</div>
 					</div>
-					<div className="ribbon-toggle">
-						<img
-							src={isRibbonPinned ? unpin : pin}
-							alt="Lock/Unlock Ribbon"
-							onClick={togglePinRibbon}
-							className='ribbon-icon'
-						/>
-					</div>
-				</div>
-			)}
-			{showNaccessRibbon && (
-				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="naccess" role="tabpanel" aria-labelledby="naccess-tab">
-						<div className="section" id="section-group">
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={movement} alt="botão movimentos" />
-											</span>
-											<span className="text">Movimentos</span>
-										</Link>
+				)}
+				{showNaccessRibbon && (
+					<div className="tab-content" id="myTabContent">
+						<div className="tab-pane fade show active" id="naccess" role="tabpanel" aria-labelledby="naccess-tab">
+							<div className="section" id="section-group">
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={movement} alt="botão movimentos" />
+												</span>
+												<span className="text">Movimentos</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={presence} alt="botão presença" />
+												</span>
+												<span className="text">Presença</span>
+											</Link>
+										</div>
+										<div>
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={all} alt="botão todos" />
+												</span>
+												<span className="text">Todos</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={formation} alt="botão formação" />
+												</span>
+												<span className="text">Formação</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={person} alt="botão visitas" />
+												</span>
+												<span className="text">Visitas</span>
+											</Link>
+										</div>
+										<div>
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={motives} alt="botão motivos" />
+												</span>
+												<span className="text">Motivos</span>
+											</Link>
+										</div>
 									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={presence} alt="botão presença" />
-											</span>
-											<span className="text">Presença</span>
-										</Link>
-									</div>
-									<div>
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={all} alt="botão todos" />
-											</span>
-											<span className="text">Todos</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={formation} alt="botão formação" />
-											</span>
-											<span className="text">Formação</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={person} alt="botão visitas" />
-											</span>
-											<span className="text">Visitas</span>
-										</Link>
-									</div>
-									<div>
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={motives} alt="botão motivos" />
-											</span>
-											<span className="text">Motivos</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Acessos</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Acessos</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={search} alt="botão revistas" />
-											</span>
-											<span className="text">Revistas</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={search} alt="botão revistas" />
+												</span>
+												<span className="text">Revistas</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={plans} alt="botão planos" />
+												</span>
+												<span className="text">Planos</span>
+											</Link>
+										</div>
 									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={plans} alt="botão planos" />
-											</span>
-											<span className="text">Planos</span>
-										</Link>
-									</div>
-								</div>
-								<div className="title-container">
-									<span className="title">Revistas</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={imports} alt="botão importações" />
-											</span>
-											<span className="text">Importações</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={controlPanel} alt="botão painel de controlo" />
-											</span>
-											<span className="text">Painel de Controlo</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={settings} alt="botão opções" />
-											</span>
-											<span className="text">Opções</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Revistas</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Configuração</span>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={imports} alt="botão importações" />
+												</span>
+												<span className="text">Importações</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={controlPanel} alt="botão painel de controlo" />
+												</span>
+												<span className="text">Painel de Controlo</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={settings} alt="botão opções" />
+												</span>
+												<span className="text">Opções</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Configuração</span>
+									</div>
 								</div>
 							</div>
 						</div>
+						<div className="ribbon-toggle">
+							<img
+								src={isRibbonPinned ? unpin : pin}
+								alt="Lock/Unlock Ribbon"
+								onClick={togglePinRibbon}
+								className='ribbon-icon'
+							/>
+						</div>
 					</div>
-					<div className="ribbon-toggle">
-						<img
-							src={isRibbonPinned ? unpin : pin}
-							alt="Lock/Unlock Ribbon"
-							onClick={togglePinRibbon}
-							className='ribbon-icon'
-						/>
-					</div>
-				</div>
-			)}
-			{showNkioskRibbon && (
-				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
-						<div className="section" id="section-group">
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className="grid-container">
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={payment_card} alt="botão pagamento terminal" />
-											</span>
-											<span className="text">Pagamento Terminal</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={card_movement} alt="botão movimentos cartão" />
-											</span>
-											<span className="text">Movimentos Cartão</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={coin} alt="botão pagamento moedas" />
-											</span>
-											<span className="text">Pagamento Moedas</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={doorlock_movement} alt="botão movimentos porteiro" />
-											</span>
-											<span className="text">Movimentos Porteiro</span>
-										</Link>
+				)}
+				{showNkioskRibbon && (
+					<div className="tab-content" id="myTabContent">
+						<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
+							<div className="section" id="section-group">
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container">
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={payment_card} alt="botão pagamento terminal" />
+												</span>
+												<span className="text">Pagamento Terminal</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={card_movement} alt="botão movimentos cartão" />
+												</span>
+												<span className="text">Movimentos Cartão</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={coin} alt="botão pagamento moedas" />
+												</span>
+												<span className="text">Pagamento Moedas</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={doorlock_movement} alt="botão movimentos porteiro" />
+												</span>
+												<span className="text">Movimentos Porteiro</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Acessos</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Acesso WC</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className="grid-container">
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={camera} alt="botão videovigilância" />
-											</span>
-											<span className="text">Videovigilância</span>
-										</Link>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={ads} alt="botão publicidade" />
-											</span>
-											<span className="text">Publicidade</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={ads} alt="botão publicidade" />
+												</span>
+												<span className="text">Publicidade</span>
+											</Link>
+										</div>
+										<div>
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={video} alt="botão vídeo" />
+												</span>
+												<span className="text">Vídeo</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={image} alt="botão imagem" />
+												</span>
+												<span className="text">Imagem</span>
+											</Link>
+										</div>
 									</div>
-									<div>
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={video} alt="botão vídeo" />
-											</span>
-											<span className="text">Vídeo</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={image} alt="botão imagem" />
-											</span>
-											<span className="text">Imagem</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Anúncios</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Organização</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={online} alt="botão online" />
-											</span>
-											<span className="text">Online</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={online} alt="botão online" />
+												</span>
+												<span className="text">Online</span>
+											</Link>
+										</div>
+										<div>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={offline} alt="botão offline" />
+												</span>
+												<span className="text">Offline</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Videovigilância</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Videovigilância</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className="icon-text-pessoas">
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={card_report} alt="botão relatório moedas" />
-											</span>
-											<span className="text">Listagem de Pagamentos</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="icon-text-pessoas">
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={card_report} alt="botão relatório moedas" />
+												</span>
+												<span className="text">Listagem de Pagamentos</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Recebimentos</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Recebimentos</span>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={maps} alt="botão mapa" />
+												</span>
+												<span className="text">Mapa</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Zonas</span>
+									</div>
 								</div>
 							</div>
 						</div>
+						<div className="ribbon-toggle">
+							<img
+								src={isRibbonPinned ? unpin : pin}
+								alt="Lock/Unlock Ribbon"
+								onClick={togglePinRibbon}
+								className='ribbon-icon'
+							/>
+						</div>
 					</div>
-					<div className="ribbon-toggle">
-						<img
-							src={isRibbonPinned ? unpin : pin}
-							alt="Lock/Unlock Ribbon"
-							onClick={togglePinRibbon}
-							className='ribbon-icon'
-						/>
-					</div>
-				</div>
-			)}
-			{showPessoasRibbon && (
-				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="pessoas" role="tabpanel" aria-labelledby="pessoas-tab">
-						<div className="section" id="section-group">
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="/persons/Persons" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={person} alt="botão pessoas" />
-											</span>
-											<span className="text">Pessoas</span>
-										</Link>
+				)}
+				{showPessoasRibbon && (
+					<div className="tab-content" id="myTabContent">
+						<div className="tab-pane fade show active" id="pessoas" role="tabpanel" aria-labelledby="pessoas-tab">
+							<div className="section" id="section-group">
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="/persons/Persons" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={person} alt="botão pessoas" />
+												</span>
+												<span className="text">Pessoas</span>
+											</Link>
+										</div>
+										<div className="grid-container">
+											<Link to="/persons/Employees" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={person} alt="botão funcionários" />
+												</span>
+												<span className="text">Funcionários</span>
+											</Link>
+											<Link to='/persons/Visitors' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={person} alt="botão visitantes" />
+												</span>
+												<span className="text">Visitantes</span>
+											</Link>
+											<Link to='/persons/ExternalEmployees' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={person} alt="botão funcionários externos" />
+												</span>
+												<span className="text">Funcionários Externos</span>
+											</Link>
+											<Link to='/persons/Contacts' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={person} alt="botão contactos" />
+												</span>
+												<span className="text">Contactos</span>
+											</Link>
+											<Link to='/persons/User' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={person} alt="botão utentes" />
+												</span>
+												<span className="text">Utentes</span>
+											</Link>
+											<Link to='/persons/Temporaries' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={person} alt="botão provisórios" />
+												</span>
+												<span className="text">Provisórios</span>
+											</Link>
+										</div>
 									</div>
-									<div className="grid-container">
-										<Link to="/persons/Employees" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={person} alt="botão funcionários" />
-											</span>
-											<span className="text">Funcionários</span>
-										</Link>
-										<Link to='/persons/Visitors' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={person} alt="botão visitantes" />
-											</span>
-											<span className="text">Visitantes</span>
-										</Link>
-										<Link to='/persons/ExternalEmployees' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={person} alt="botão funcionários externos" />
-											</span>
-											<span className="text">Funcionários Externos</span>
-										</Link>
-										<Link to='/persons/Contacts' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={person} alt="botão contactos" />
-											</span>
-											<span className="text">Contactos</span>
-										</Link>
-										<Link to='/persons/User' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={person} alt="botão utentes" />
-											</span>
-											<span className="text">Utentes</span>
-										</Link>
-										<Link to='/persons/Temporaries' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={person} alt="botão provisórios" />
-											</span>
-											<span className="text">Provisórios</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Pessoas</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Pessoas</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className="grid-container">
-										<Link to="/persons/Departments" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={departments} alt="botão funcionários" />
-											</span>
-											<span className="text">Departamentos</span>
-										</Link>
-										<Link to="/persons/Professions" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={professions} alt="botão visitantes" />
-											</span>
-											<span className="text">Profissões</span>
-										</Link>
-										<Link to="/persons/Groups" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={groups} alt="botão funcionários externos" />
-											</span>
-											<span className="text">Grupos</span>
-										</Link>
-										<Link to="/persons/Zones" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={zones} alt="botão contactos" />
-											</span>
-											<span className="text">Zonas</span>
-										</Link>
-										<Link to="/persons/Categories" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={categories} alt="botão utentes" />
-											</span>
-											<span className="text">Categorias</span>
-										</Link>
-										<Link to="#" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={fraccoes} alt="botão provisórios" />
-											</span>
-											<span className="text">Fracções</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container">
+											<Link to="/persons/Departments" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={departments} alt="botão funcionários" />
+												</span>
+												<span className="text">Departamentos</span>
+											</Link>
+											<Link to="/persons/Professions" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={professions} alt="botão visitantes" />
+												</span>
+												<span className="text">Profissões</span>
+											</Link>
+											<Link to="/persons/Groups" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={groups} alt="botão funcionários externos" />
+												</span>
+												<span className="text">Grupos</span>
+											</Link>
+											<Link to="/persons/Zones" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={zones} alt="botão contactos" />
+												</span>
+												<span className="text">Zonas</span>
+											</Link>
+											<Link to="/persons/Categories" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={categories} alt="botão utentes" />
+												</span>
+												<span className="text">Categorias</span>
+											</Link>
+											<Link to="#" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={fraccoes} alt="botão provisórios" />
+												</span>
+												<span className="text">Fracções</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Organização</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Organização</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-informacoes'>
-										<Link to="/persons/externalentities" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
-											<span className="icon">
-												<img src={externalEntities} alt="botão entidades externas" />
-											</span>
-											<span className="text">Entidades Externas</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-informacoes'>
+											<Link to="/persons/externalentities" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+												<span className="icon">
+													<img src={externalEntities} alt="botão entidades externas" />
+												</span>
+												<span className="text">Entidades Externas</span>
+											</Link>
+										</div>
+										<div>
+											<Link to="/persons/types" type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={types} alt="botão tipos" />
+												</span>
+												<span className="text">Tipos</span>
+											</Link>
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={fonts} alt="botão fontes" />
+												</span>
+												<span className="text">Fontes</span>
+											</Link>
+										</div>
+										<div className='icon-text-informacoes'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+												<span className="icon">
+													<img src={interventionAreas} alt="botão áreas de intervenção" />
+												</span>
+												<span className="text">Áreas de Intervenção</span>
+											</Link>
+										</div>
+										<div className='icon-text-informacoes'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+												<span className="icon">
+													<img src={businessAreas} alt="botão áreas de negócios" />
+												</span>
+												<span className="text">Áreas de Negócios</span>
+											</Link>
+										</div>
 									</div>
-									<div>
-										<Link to="/persons/types" type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={types} alt="botão tipos" />
-											</span>
-											<span className="text">Tipos</span>
-										</Link>
-										<Link to='#' type="button" className="btn btn-light ribbon-button">
-											<span className="icon">
-												<img src={fonts} alt="botão fontes" />
-											</span>
-											<span className="text">Fontes</span>
-										</Link>
-									</div>
-									<div className='icon-text-informacoes'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
-											<span className="icon">
-												<img src={interventionAreas} alt="botão áreas de intervenção" />
-											</span>
-											<span className="text">Áreas de Intervenção</span>
-										</Link>
-									</div>
-									<div className='icon-text-informacoes'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
-											<span className="icon">
-												<img src={businessAreas} alt="botão áreas de negócios" />
-											</span>
-											<span className="text">Áreas de Negócios</span>
-										</Link>
-									</div>
-								</div>
-								<div className="title-container">
-									<span className="title">Entidades</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-informacoes'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
-											<span className="icon">
-												<img src={internalContacts} alt="botão contactos internos" />
-											</span>
-											<span className="text">Contactos Internos</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Entidades</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Informações</span>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-informacoes'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+												<span className="icon">
+													<img src={internalContacts} alt="botão contactos internos" />
+												</span>
+												<span className="text">Contactos Internos</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Informações</span>
+									</div>
 								</div>
 							</div>
 						</div>
+						<div className="ribbon-toggle">
+							<img
+								src={isRibbonPinned ? unpin : pin}
+								alt="Lock/Unlock Ribbon"
+								onClick={togglePinRibbon}
+								className='ribbon-icon'
+							/>
+						</div>
 					</div>
-					<div className="ribbon-toggle">
-						<img
-							src={isRibbonPinned ? unpin : pin}
-							alt="Lock/Unlock Ribbon"
-							onClick={togglePinRibbon}
-							className='ribbon-icon'
-						/>
-					</div>
-				</div>
-			)}
-			{showDispositivosRibbon && (
-				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="dispositivos" role="tabpanel" aria-labelledby="dispositivos-tab">
-						<div className="section" id="section-group">
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="/devices/terminals" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={terminal} alt="botão terminais" />
-											</span>
-											<span className="text">Terminais</span>
-										</Link>
+				)}
+				{showDispositivosRibbon && (
+					<div className="tab-content" id="myTabContent">
+						<div className="tab-pane fade show active" id="dispositivos" role="tabpanel" aria-labelledby="dispositivos-tab">
+							<div className="section" id="section-group">
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="/devices/terminals" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={terminal} alt="botão terminais" />
+												</span>
+												<span className="text">Terminais</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={accessPlan} alt="botão planos de acesso" />
+												</span>
+												<span className="text">Planos de Acesso</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={timePlan} alt="botão planos de horários" />
+												</span>
+												<span className="text">Planos de Horários</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={clock} alt="botão períodos" />
+												</span>
+												<span className="text">Períodos</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<button onClick={toggleTerminalOptionsModal} className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={settings} alt="botão opções" />
+												</span>
+												<span className="text">Opções</span>
+											</button>
+										</div>
 									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={accessPlan} alt="botão planos de acesso" />
-											</span>
-											<span className="text">Planos de Acesso</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={timePlan} alt="botão planos de horários" />
-											</span>
-											<span className="text">Planos de Horários</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={clock} alt="botão períodos" />
-											</span>
-											<span className="text">Períodos</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<button onClick={toggleTerminalOptionsModal} className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={settings} alt="botão opções" />
-											</span>
-											<span className="text">Opções</span>
-										</button>
+									<div className="title-container">
+										<span className="title">Terminais</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Terminais</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={camera} alt="botão câmeras" />
-											</span>
-											<span className="text">Câmeras</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={camera} alt="botão câmeras" />
+												</span>
+												<span className="text">Câmeras</span>
+											</Link>
+										</div>
 									</div>
-								</div>
-								<div className="title-container">
-									<span className="title">Câmeras</span>
+									<div className="title-container">
+										<span className="title">Câmeras</span>
+									</div>
 								</div>
 							</div>
 						</div>
+						<div className="ribbon-toggle">
+							<img
+								src={isRibbonPinned ? unpin : pin}
+								alt="Lock/Unlock Ribbon"
+								onClick={togglePinRibbon}
+								className='ribbon-icon'
+							/>
+						</div>
 					</div>
-					<div className="ribbon-toggle">
-						<img
-							src={isRibbonPinned ? unpin : pin}
-							alt="Lock/Unlock Ribbon"
-							onClick={togglePinRibbon}
-							className='ribbon-icon'
-						/>
-					</div>
-				</div>
-			)}
-			{showConfiguracaoRibbon && (
-				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="configuracao" role="tabpanel" aria-labelledby="configuracao-tab">
-						<div className="section" id="section-group">
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={database} alt="botão base de dados" />
-											</span>
-											<span className="text">Base de Dados</span>
-										</Link>
+				)}
+				{showConfiguracaoRibbon && (
+					<div className="tab-content" id="myTabContent">
+						<div className="tab-pane fade show active" id="configuracao" role="tabpanel" aria-labelledby="configuracao-tab">
+							<div className="section" id="section-group">
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={database} alt="botão base de dados" />
+												</span>
+												<span className="text">Base de Dados</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={imports} alt="botão backup bd" />
+												</span>
+												<span className="text">Backup BD</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={departments} alt="botão entidade" />
+												</span>
+												<span className="text">Entidade</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={license} alt="botão licença" />
+												</span>
+												<span className="text">Licença</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={settings} alt="botão opções" />
+												</span>
+												<span className="text">Opções</span>
+											</Link>
+										</div>
 									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={imports} alt="botão backup bd" />
-											</span>
-											<span className="text">Backup BD</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={departments} alt="botão entidade" />
-											</span>
-											<span className="text">Entidade</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={license} alt="botão licença" />
-											</span>
-											<span className="text">Licença</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={settings} alt="botão opções" />
-											</span>
-											<span className="text">Opções</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Base</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Base</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={settings} alt="botão opções" />
-											</span>
-											<span className="text">Opções</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={settings} alt="botão opções" />
+												</span>
+												<span className="text">Opções</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={timeZone} alt="botão fusos horários" />
+												</span>
+												<span className="text">Fusos Horários</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={nacionalities} alt="botão nacionalidades" />
+												</span>
+												<span className="text">Nacionalidades</span>
+											</Link>
+										</div>
 									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={timeZone} alt="botão fusos horários" />
-											</span>
-											<span className="text">Fusos Horários</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={nacionalities} alt="botão nacionalidades" />
-											</span>
-											<span className="text">Nacionalidades</span>
-										</Link>
-									</div>
-								</div>
-								<div className="title-container">
-									<span className="title">Geral</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={groups} alt="botão perfis" />
-											</span>
-											<span className="text">Perfis</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={person} alt="botão utilizadores" />
-											</span>
-											<span className="text">Utilizadores</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Geral</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Permissões</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={document} alt="botão documentos" />
-											</span>
-											<span className="text">Documentos</span>
-										</Link>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={groups} alt="botão perfis" />
+												</span>
+												<span className="text">Perfis</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={person} alt="botão utilizadores" />
+												</span>
+												<span className="text">Utilizadores</span>
+											</Link>
+										</div>
 									</div>
-									<div>
-										<Link to="#" type="button" className="btn btn-light ribbon-button-ent">
-											<span className="icon">
-												<img src={types} alt="botão tipos" />
-											</span>
-											<span className="text">Tipos</span>
-										</Link>
-									</div>
-								</div>
-								<div className="title-container">
-									<span className="title">Documentos</span>
-								</div>
-							</div>
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={consult} alt="botão consultar" />
-											</span>
-											<span className="text">Consultar</span>
-										</Link>
-									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={dpoConsult} alt="botão consultar dpo" />
-											</span>
-											<span className="text">Consultar DPO</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Permissões</span>
 									</div>
 								</div>
-								<div className="title-container">
-									<span className="title">Actividade do Sistema</span>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={document} alt="botão documentos" />
+												</span>
+												<span className="text">Documentos</span>
+											</Link>
+										</div>
+										<div>
+											<Link to="#" type="button" className="btn btn-light ribbon-button-ent">
+												<span className="icon">
+													<img src={types} alt="botão tipos" />
+												</span>
+												<span className="text">Tipos</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Documentos</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={consult} alt="botão consultar" />
+												</span>
+												<span className="text">Consultar</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={dpoConsult} alt="botão consultar dpo" />
+												</span>
+												<span className="text">Consultar DPO</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Actividade do Sistema</span>
+									</div>
 								</div>
 							</div>
 						</div>
+						<div className="ribbon-toggle">
+							<img
+								src={isRibbonPinned ? unpin : pin}
+								alt="Lock/Unlock Ribbon"
+								onClick={togglePinRibbon}
+								className='ribbon-icon'
+							/>
+						</div>
 					</div>
-					<div className="ribbon-toggle">
-						<img
-							src={isRibbonPinned ? unpin : pin}
-							alt="Lock/Unlock Ribbon"
-							onClick={togglePinRibbon}
-							className='ribbon-icon'
-						/>
-					</div>
-				</div>
-			)}
-			{showAjudaRibbon && (
-				<div className="tab-content" id="myTabContent">
-					<div className="tab-pane fade show active" id="ajuda" role="tabpanel" aria-labelledby="ajuda-tab">
-						<div className="section" id="section-group">
-							<div className="group">
-								<div className="btn-group" role="group">
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={about} alt="botão acerca de" />
-											</span>
-											<span className="text">Acerca de</span>
-										</Link>
+				)}
+				{showAjudaRibbon && (
+					<div className="tab-content" id="myTabContent">
+						<div className="tab-pane fade show active" id="ajuda" role="tabpanel" aria-labelledby="ajuda-tab">
+							<div className="section" id="section-group">
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={about} alt="botão acerca de" />
+												</span>
+												<span className="text">Acerca de</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={manual} alt="botão manual" />
+												</span>
+												<span className="text">Manual</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={helpdesk} alt="botão helpdesk" />
+												</span>
+												<span className="text">Helpdesk</span>
+											</Link>
+										</div>
 									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={manual} alt="botão manual" />
-											</span>
-											<span className="text">Manual</span>
-										</Link>
+									<div className="title-container">
+										<span className="title">Suporte</span>
 									</div>
-									<div className='icon-text-pessoas'>
-										<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-											<span className="icon">
-												<img src={helpdesk} alt="botão helpdesk" />
-											</span>
-											<span className="text">Helpdesk</span>
-										</Link>
-									</div>
-								</div>
-								<div className="title-container">
-									<span className="title">Suporte</span>
 								</div>
 							</div>
 						</div>
+						<div className="ribbon-toggle">
+							<img
+								src={isRibbonPinned ? unpin : pin}
+								alt="Lock/Unlock Ribbon"
+								onClick={togglePinRibbon}
+								className='ribbon-icon'
+							/>
+						</div>
 					</div>
-					<div className="ribbon-toggle">
-						<img
-							src={isRibbonPinned ? unpin : pin}
-							alt="Lock/Unlock Ribbon"
-							onClick={togglePinRibbon}
-							className='ribbon-icon'
-						/>
-					</div>
-				</div>
-			)}
-			{showModal && (
-				<TerminalOptionsModal
-					open={showModal}
-					onClose={() => setShowModal(false)}
-					onSave={() => setShowModal(false)}
-					initialValues={{}}
-				/>
-			)}
-		</nav>
+				)}
+				{showModal && (
+					<TerminalOptionsModal
+						open={showModal}
+						onClose={() => setShowModal(false)}
+						onSave={() => setShowModal(false)}
+						initialValues={{}}
+					/>
+				)}
+			</nav>
+		</ColorProvider>
 	);
 };

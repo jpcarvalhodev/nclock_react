@@ -8,7 +8,6 @@ import { Zone } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { zoneFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -18,6 +17,7 @@ import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedCompone
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -26,6 +26,7 @@ interface Filters {
 
 // Define a página de Zonas
 export const Zones = () => {
+    const { navbarColor, footerColor } = useColor();
     const [zones, setZones] = useState<Zone[]>([]);
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
     const [filterText, setFilterText] = useState('');
@@ -199,7 +200,7 @@ export const Zones = () => {
 
     return (
         <div className="main-container">
-            <NavBar color="#000000" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Zonas</span>
@@ -261,7 +262,7 @@ export const Zones = () => {
                     />
                 </div>
             </div>
-            <Footer color="#000000" />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={zoneFields}

@@ -72,6 +72,9 @@ import { NlightDashboard } from './pages/nidplace/nlight/NlightDashboard';
 import { NpartitionDashboard } from './pages/nidplace/npartition/NpartitionDashboard';
 import { NpingDashboard } from './pages/nidplace/nping/NpingDashboard';
 import { NsoundDashboard } from './pages/nidplace/nsound/NsoundDashboard';
+import { ColorProvider } from './context/ColorContext';
+import { NavBar } from './components/NavBar';
+import { Footer } from './components/Footer';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -185,10 +188,12 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <Router>
-      <ToastContainer />
-      <AnimatedRoutes />
-    </Router>
+    <ColorProvider>
+      <Router>
+        <ToastContainer />
+        <AnimatedRoutes />
+      </Router>
+    </ColorProvider>
   );
 }
 

@@ -104,7 +104,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const employeesData = await apiService.addEmployee(employee);
             setEmployees([...employees, employeesData]);
-            toast.success(employeesData.value || 'Funcionário adicionado com sucesso!');
+            toast.success(employeesData.message || 'Funcionário adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
         }
@@ -114,8 +114,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const updatedEmployee = await apiService.updateEmployee(employee);
+            console.log('updatedEmployee:', updatedEmployee);
             setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
-            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso');
+            toast.success(updatedEmployee.message || 'Funcionário atualizado com sucesso');
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
         }
@@ -126,7 +127,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
 
         try {
             const deleteEmployee = await apiService.deleteEmployee(employeeID);
-            toast.success(deleteEmployee.value || 'Funcionário apagado com sucesso!')
+            toast.success(deleteEmployee.message || 'Funcionário apagado com sucesso!')
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
         }
@@ -161,7 +162,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             const employeesData = await apiService.addEmployeeCard(employeeCard);
             setEmployeeCards([...employeeCards, employeesData]);
             if (employeesData.length > 0) {
-                toast.success(employeesData.value || 'Cartão adicionado com sucesso!');
+                toast.success(employeesData.message || 'Cartão adicionado com sucesso!');
             }
         } catch (error) {
             console.error('Erro ao adicionar novo cartão:', error);
@@ -172,9 +173,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const handleUpdateEmployeeCard = async (employeeCard: EmployeeCard) => {
         try {
             const updatedEmployeeCard = await apiService.updateEmployeeCard(employeeCard);
-            setEmployeeCards(prevEmployeeCards => prevEmployeeCards.map(emp => emp.cardID === updatedEmployeeCard.cardID ? updatedEmployeeCard : emp));
+            setEmployeeCards(prevEmployeeCards => prevEmployeeCards.map(emp => emp.cardId === updatedEmployeeCard.cardId ? updatedEmployeeCard : emp));
             if (updatedEmployeeCard.length > 0) {
-                toast.success(updatedEmployeeCard.value || 'Cartão adicionado com sucesso!');
+                toast.success(updatedEmployeeCard.message || 'Cartão adicionado com sucesso!');
             }
         } catch (error) {
             console.error('Erro ao atualizar cartão:', error);
@@ -185,7 +186,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const handleDeleteEmployeeCard = async (cardId: string) => {
         try {
             const deleteEmployeeCard = await apiService.deleteEmployeeCard(cardId);
-            toast.success(deleteEmployeeCard.value || 'Cartão apagado com sucesso!')
+            toast.success(deleteEmployeeCard.message || 'Cartão apagado com sucesso!')
         } catch (error) {
             console.error('Erro ao apagar cartão:', error);
         }

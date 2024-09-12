@@ -2,12 +2,14 @@ import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import product_nconnect from "../../../assets/img/carousel/product_nconnect.png";
+import { useColor } from "../../../context/ColorContext";
 
 export const NconnectDashboard = () => {
+    const { navbarColor, footerColor } = useColor();
 
     return (
         <div className="dashboard-container">
-            <NavBar color="#FEC629" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text" style={{ color: '#FEC629' }}>
                 <span>Nconnect Dashboard</span>
             </div>
@@ -33,7 +35,7 @@ export const NconnectDashboard = () => {
                     <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
-            <Footer color="#FEC629" />
+            <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
 }

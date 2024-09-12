@@ -86,6 +86,7 @@ import banner_nlight from '../assets/img/carousel/banner_nlight.jpg';
 import banner_ncomfort from '../assets/img/carousel/banner_ncomfort.jpg';
 import banner_nsound from '../assets/img/carousel/banner_nsound.jpg';
 import banner_nhome from '../assets/img/carousel/banner_nhome.jpg';
+import { useColor } from "../context/ColorContext";
 
 // Define o tipo TabName
 type TabName = 'NIDGROUP' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
@@ -101,7 +102,7 @@ const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: str
     Npark: { route: '/npark/nparkdashboard', tabKey: 'showNparkTab', ribbonKey: 'showNparkRibbon' },
     Ndoor: { route: '/ndoor/ndoordashboard', tabKey: 'showNdoorTab', ribbonKey: 'showNdoorRibbon' },
     Npatrol: { route: '/npatrol/npatroldashboard', tabKey: 'showNpatrolTab', ribbonKey: 'showNpatrolRibbon' },
-    Ncard: { route: '/npatrol/npatroldashboard', tabKey: 'showNcardTab', ribbonKey: 'showNcardRibbon' },
+    Ncard: { route: '/ncard/ncarddashboard', tabKey: 'showNcardTab', ribbonKey: 'showNcardRibbon' },
     Nview: { route: '/nview/nviewdashboard', tabKey: 'showNviewTab', ribbonKey: 'showNviewRibbon' },
     Nsecur: { route: '/nsecur/nsecurdashboard', tabKey: 'showNsecurTab', ribbonKey: 'showNsecurRibbon' },
     Nsoftware: { route: '/nsoftware/nsoftwaredashboard', tabKey: 'showNsoftwareTab', ribbonKey: 'showNsoftwareRibbon' },
@@ -139,58 +140,11 @@ const isValidCardTitle = (title: string): title is CardTitle => {
     return title in tabData;
 };
 
-// Defina o mapeamento das cores para cada aba
-const tabColors: Record<string, { navbarColor: string; footerColor: string }> = {
-    nclock: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    naccess: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    nvisitor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    npark: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    ndoor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    npatrol: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    ncard: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    nview: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    nsecur: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-    nsoftware: { navbarColor: '#D01313', footerColor: '#D01313' },
-    nsystem: { navbarColor: '#D01313', footerColor: '#D01313' },
-    napp: { navbarColor: '#D01313', footerColor: '#D01313' },
-    ncyber: { navbarColor: '#D01313', footerColor: '#D01313' },
-    ndigital: { navbarColor: '#D01313', footerColor: '#D01313' },
-    nserver: { navbarColor: '#D01313', footerColor: '#D01313' },
-    naut: { navbarColor: '#D01313', footerColor: '#D01313' },
-    nequip: { navbarColor: '#D01313', footerColor: '#D01313' },
-    nproject: { navbarColor: '#D01313', footerColor: '#D01313' },
-    nsmart: { navbarColor: '#009739', footerColor: '#009739' },
-    nreality: { navbarColor: '#009739', footerColor: '#009739' },
-    nhologram: { navbarColor: '#009739', footerColor: '#009739' },
-    npower: { navbarColor: '#009739', footerColor: '#009739' },
-    ncharge: { navbarColor: '#009739', footerColor: '#009739' },
-    ncity: { navbarColor: '#009739', footerColor: '#009739' },
-    nkiosk: { navbarColor: '#009739', footerColor: '#009739' },
-    nled: { navbarColor: '#009739', footerColor: '#009739' },
-    nfire: { navbarColor: '#009739', footerColor: '#009739' },
-    nfurniture: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-    npartition: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-    ndecor: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-    nping: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-    nconnect: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-    nlight: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-    ncomfort: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-    nsound: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-    nhome: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-};
-
 // Define a página principal
 export const Dashboard = () => {
+    const { navbarColor, footerColor } = useColor();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDGROUP');
-    const [activeTab, setActiveTab] = useState('');
-
-    // Obtenha as cores atuais com base na aba ativa
-    const currentColors = tabColors[activeTab] || { navbarColor: '#000000', footerColor: '#000000' };
-
-    const handleTabChange = (tabName: string) => {
-        setActiveTab(tabName);
-    };
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -276,7 +230,7 @@ export const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar color={currentColors.navbarColor} onTabChange={handleTabChange} />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text">
                 <span>Seja bem vindo aos softwares do NIDGROUP</span>
             </div>
@@ -507,7 +461,7 @@ export const Dashboard = () => {
                     )}
                 </motion.div>
             </div>
-            <Footer color={currentColors.footerColor} />
+            <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
 };

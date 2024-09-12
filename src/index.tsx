@@ -6,19 +6,22 @@ import reportWebVitals from './reportWebVitals';
 import { TerminalsProvider } from './context/TerminalsContext';
 import { AttendanceProvider } from './context/MovementContext';
 import { PersonsProvider } from './context/PersonsContext';
+import { ColorProvider } from './context/ColorContext';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <PersonsProvider>
-      <AttendanceProvider>
-        <TerminalsProvider>
-          <App />
-        </TerminalsProvider>
-      </AttendanceProvider>
-    </PersonsProvider>
+    <ColorProvider>
+      <PersonsProvider>
+        <AttendanceProvider>
+          <TerminalsProvider>
+            <App />
+          </TerminalsProvider>
+        </AttendanceProvider>
+      </PersonsProvider>
+    </ColorProvider>
   </React.StrictMode>
 );
 

@@ -11,6 +11,7 @@ import { Employee, Department, Group } from "../../../helpers/Types";
 import * as apiService from "../../../helpers/apiService";
 import { Carousel } from "react-responsive-carousel";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
+import { useColor } from "../../../context/ColorContext";
 
 // Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
@@ -57,6 +58,7 @@ const messages = {
 
 // Define a página principal
 export const NclockDashboard = () => {
+    const { navbarColor, footerColor } = useColor();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [totalDepartments, setTotalDepartments] = useState<number>(0);
@@ -152,7 +154,7 @@ export const NclockDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar color="#0050a0" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
                 <span>Nclock dashboard</span>
             </div>
@@ -192,7 +194,7 @@ export const NclockDashboard = () => {
                     </div>
                 </div>
             </div>
-            <Footer color="#0050a0" />
+            <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
 };

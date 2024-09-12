@@ -1,18 +1,18 @@
-import '../css/PagesStyles.css';
+import { ColorProvider, useColor } from "../context/ColorContext";
 
-// Define as propriedades do componente
 interface FooterProps {
-  color?: string;
+  style?: React.CSSProperties;
 }
 
-// Define o componente
-export const Footer = ({ color }: FooterProps) => {
-
+export const Footer = ({ style }: FooterProps) => {
+  const { footerColor } = useColor();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="footer" style={{ backgroundColor: color }}>
-      <p className='footer-line1'>{currentYear} ®NIDGROUP by SISNID - All Rights Reserved</p>
-    </footer>
+    <ColorProvider>
+      <footer className="footer" style={{ backgroundColor: footerColor }}>
+        <p>{currentYear} ®NIDGROUP by SISNID - All Rights Reserved</p>
+      </footer>
+    </ColorProvider>
   );
 };

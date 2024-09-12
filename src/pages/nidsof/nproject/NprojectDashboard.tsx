@@ -2,12 +2,14 @@ import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import product_nproject from "../../../assets/img/carousel/product_nproject.webp";
+import { useColor } from "../../../context/ColorContext";
 
 export const NprojectDashboard = () => {
+    const { navbarColor, footerColor } = useColor();
 
     return (
         <div className="dashboard-container">
-            <NavBar color="#D01313" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text" style={{ color: '#D01313' }}>
                 <span>Nproject Dashboard</span>
             </div>
@@ -33,7 +35,7 @@ export const NprojectDashboard = () => {
                     <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
-            <Footer color="#D01313" />
+            <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
 }

@@ -18,6 +18,7 @@ import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedCompone
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
+import { useColor } from '../../context/ColorContext';
 
 // Define a interface para os filtros
 interface Filters {
@@ -30,7 +31,6 @@ export const Contacts = () => {
         employees,
         data,
         setEmployees,
-        fetchAllData,
         fetchAllEmployees,
         handleAddEmployee,
         handleUpdateEmployee,
@@ -38,6 +38,7 @@ export const Contacts = () => {
         handleAddEmployeeCard,
         handleUpdateEmployeeCard
     } = useContext(PersonsContext) as PersonsContextType;
+    const { navbarColor, footerColor } = useColor();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -284,7 +285,7 @@ export const Contacts = () => {
     return (
         <PersonsProvider>
             <div className="main-container">
-                <NavBar color="#000000" />
+                <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className="content-container">
                     <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
@@ -329,7 +330,7 @@ export const Contacts = () => {
                         </div>
                     </Split>
                 </div>
-                <Footer color="#000000" />
+                <Footer style={{ backgroundColor: footerColor }} />
                 <CreateModalEmployees
                     title="Adicionar Contacto"
                     open={showAddModal}

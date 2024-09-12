@@ -2,12 +2,14 @@ import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import product_nequip from "../../../assets/img/carousel/product_nequip.webp";
+import { useColor } from "../../../context/ColorContext";
 
 export const NequipDashboard = () => {
+    const { navbarColor, footerColor } = useColor();
 
     return (
         <div className="dashboard-container">
-            <NavBar color="#D01313" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text" style={{ color: '#D01313' }}>
                 <span>Nequip Dashboard</span>
             </div>
@@ -32,7 +34,7 @@ export const NequipDashboard = () => {
                     <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
-            <Footer color="#D01313" />
+            <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
 }

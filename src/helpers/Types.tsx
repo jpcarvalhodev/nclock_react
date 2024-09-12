@@ -45,6 +45,11 @@ export type Employee = {
     zoneName: string;
     externalEntityId: string;
     externalEntityName: string;
+    companyName: string;
+    companyNif: number;
+    companyAddress: string;
+    companyLocality: string;
+    companyZipCode: string;
 };
 
 export type Department = {
@@ -170,7 +175,8 @@ export type Devices = {
     fpAlg: number;
     productTime: Date;
     producter: string;
-    type: string;
+    deviceProtocol: number;
+    deviceType: number;
     status: boolean;
 };
 

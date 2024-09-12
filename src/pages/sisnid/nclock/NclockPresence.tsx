@@ -12,6 +12,7 @@ import Split from 'react-split';
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../../context/MovementContext";
+import { useColor } from "../../../context/ColorContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -33,6 +34,7 @@ export const NclockPresence = () => {
     const {
         fetchAllAttendances,
     } = useContext(AttendanceContext) as AttendanceContextType;
+    const { navbarColor, footerColor } = useColor();
     const [attendancePresence, setAttendancePresence] = useState<EmployeeAttendanceWithPresence[]>([]);
     const [filterText, setFilterText] = useState('');
     const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -233,7 +235,7 @@ export const NclockPresence = () => {
     return (
         <AttendanceProvider>
             <div className="main-container">
-                <NavBar color="#0050a0" />
+                <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className="content-container">
                     <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
@@ -273,7 +275,7 @@ export const NclockPresence = () => {
                         </div>
                     </Split>
                 </div>
-                <Footer color="#0050a0" />
+                <Footer style={{ backgroundColor: footerColor }} />
                 {showColumnSelector && (
                     <ColumnSelectorModal
                         columns={filteredColumns}

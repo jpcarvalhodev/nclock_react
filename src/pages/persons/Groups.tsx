@@ -8,7 +8,6 @@ import { Group } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { groupFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -18,6 +17,7 @@ import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -26,6 +26,7 @@ interface Filters {
 
 // Define a página de grupos
 export const Groups = () => {
+    const { navbarColor, footerColor } = useColor();
     const [groups, setGroups] = useState<Group[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -194,7 +195,7 @@ export const Groups = () => {
 
     return (
         <div className="main-container">
-            <NavBar color="#000000" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Grupos</span>
@@ -258,7 +259,7 @@ export const Groups = () => {
                     />
                 </div>
             </div>
-            <Footer color="#000000" />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={groupFields}

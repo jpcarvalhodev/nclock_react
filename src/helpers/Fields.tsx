@@ -37,6 +37,11 @@ export const employeeFields = [
     { label: 'Grupo', key: 'groupId', type: 'dropdown', },
     { label: 'Zona', key: 'zoneId', type: 'dropdown', },
     { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', },
+    { label: 'Nome', key: 'companyName', type: 'string' },
+    { label: 'NIF', key: 'companyNif', type: 'number' },
+    { label: 'Morada', key: 'companyAddress', type: 'string' },
+    { label: 'Localidade', key: 'companyLocality', type: 'string' },
+    { label: 'Código Postal', key: 'companyZipCode', type: 'string' },
 ];
 
 export const departmentFields = [
@@ -144,7 +149,8 @@ export const deviceFields = [
     { key: "fpAlg", label: "Algoritmo de Digitais", type: "number" },
     { key: "productTime", label: "Tempo de Produção", type: "Date" },
     { key: "producter", label: "Produtor", type: "string" },
-    { key: "type", label: "Tipo", type: "string" },
+    { key: "deviceProtocol", label: "Protocolo", type: "number" },
+    { key: "deviceType", label: "Tipo", type: "number" },
     { key: "status", label: "Status", type: "boolean" }
 ];
 

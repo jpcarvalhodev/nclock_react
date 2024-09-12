@@ -12,6 +12,7 @@ import { Employee, EmployeeCard } from '../../helpers/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { ExportButton } from '../../components/ExportButton';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
+import { useColor } from '../../context/ColorContext';
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -20,11 +21,11 @@ export const Persons = () => {
         data,
         setData,
         setEmployees,
-        fetchAllData,
         fetchAllEmployees,
         handleAddEmployee,
         handleAddEmployeeCard
     } = useContext(PersonsContext) as PersonsContextType;
+    const { navbarColor, footerColor } = useColor();
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName']);
@@ -117,7 +118,7 @@ export const Persons = () => {
     return (
         <PersonsProvider>
             <div className="main-container">
-                <NavBar color="#000000" />
+                <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className="content-container">
                     <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
@@ -159,7 +160,7 @@ export const Persons = () => {
                         </div>
                     </Split>
                 </div>
-                <Footer color="#000000" />
+                <Footer style={{ backgroundColor: footerColor }} />
                 {showAddModal && (
                     <CreateModalEmployees
                         title="Adicionar Pessoa"

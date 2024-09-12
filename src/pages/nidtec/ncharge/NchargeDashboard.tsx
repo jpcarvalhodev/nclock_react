@@ -2,12 +2,14 @@ import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import product_ncharge from "../../../assets/img/carousel/product_ncharge.webp";
+import { useColor } from "../../../context/ColorContext";
 
 export const NchargeDashboard = () => {
+    const { navbarColor, footerColor } = useColor();
 
     return (
         <div className="dashboard-container">
-            <NavBar color="#009739" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text" style={{ color: '#009739' }}>
                 <span>Ncharge Dashboard</span>
             </div>
@@ -32,7 +34,7 @@ export const NchargeDashboard = () => {
                     <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
-            <Footer color="#009739" />
+            <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
 }

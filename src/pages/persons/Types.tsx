@@ -15,6 +15,7 @@ import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
 import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -23,6 +24,7 @@ interface Filters {
 
 // Define a página de tipos de entidades externas
 export const Types = () => {
+    const { navbarColor, footerColor } = useColor();
     const [externalEntityTypes, setexternalEntityTypes] = useState<ExternalEntityTypes[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -191,7 +193,7 @@ export const Types = () => {
 
     return (
         <div className="main-container">
-            <NavBar color="#000000" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Tipos</span>
@@ -227,7 +229,7 @@ export const Types = () => {
                     />
                 </div>
             </div>
-            <Footer color="#000000" />
+            <Footer style={{ backgroundColor: footerColor }} />
             <CreateModalCatProfTypes
                 title="Adicionar Tipo"
                 open={showAddModal}

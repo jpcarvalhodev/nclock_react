@@ -17,6 +17,7 @@ import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -25,6 +26,7 @@ interface Filters {
 
 // Define a página de profissões
 export const Professions = () => {
+    const { navbarColor, footerColor } = useColor();
     const [professions, setProfessions] = useState<Profession[]>([]);
     const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
     const [filterText, setFilterText] = useState('');
@@ -193,7 +195,7 @@ export const Professions = () => {
 
     return (
         <div className="main-container">
-            <NavBar color="#000000" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Profissões</span>
@@ -257,7 +259,7 @@ export const Professions = () => {
                     />
                 </div>
             </div>
-            <Footer color="#000000" />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={professionFields}

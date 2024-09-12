@@ -17,6 +17,7 @@ import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
 
 interface DataState {
     externalEntity: ExternalEntity[];
@@ -30,6 +31,7 @@ interface Filters {
 
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
+    const { navbarColor, footerColor } = useColor();
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -232,7 +234,7 @@ export const ExternalEntities = () => {
 
     return (
         <div className="main-container">
-            <NavBar color="#000000" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Entidades Externas</span>
@@ -294,7 +296,7 @@ export const ExternalEntities = () => {
                     />
                 </div>
             </div>
-            <Footer color="#000000" />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={externalEntityFields}

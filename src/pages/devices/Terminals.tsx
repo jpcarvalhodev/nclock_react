@@ -23,6 +23,7 @@ import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../co
 import React from "react";
 import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+import { useColor } from "../../context/ColorContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -99,6 +100,7 @@ export const Terminals = () => {
         handleImportEmployeeFP,
         handleImportEmployeeFace
     } = useContext(PersonsContext) as PersonsContextType;
+    const { navbarColor, footerColor } = useColor();
     const [employees, setEmployees] = useState<EmployeeAndCard[]>([]);
     const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
@@ -1055,7 +1057,7 @@ export const Terminals = () => {
     return (
         <TerminalsProvider>
             <div className="main-container">
-                <NavBar color="#000000" />
+                <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className='filter-refresh-add-edit-upper-class'>
                     <div className="datatable-title-text" style={{ color: '#000000' }}>
                         <span>Terminais</span>
@@ -1435,7 +1437,7 @@ export const Terminals = () => {
                         </Tab>
                     </Tabs>
                 </div>
-                <Footer color="#000000" />
+                <Footer style={{ backgroundColor: footerColor }} />
                 {showColumnSelector && (
                     <ColumnSelectorModal
                         columns={deviceFields}

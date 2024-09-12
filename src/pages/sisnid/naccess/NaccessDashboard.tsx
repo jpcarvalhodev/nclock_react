@@ -7,9 +7,11 @@ import '../../../css/PagesStyles.css';
 import * as apiService from "../../../helpers/apiService";
 import { Carousel } from "react-responsive-carousel";
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
+import { useColor } from "../../../context/ColorContext";
 
 // Define a página principal
 export const NaccessDashboard = () => {
+    const { navbarColor, footerColor } = useColor();
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
 
     // Função para buscar os departamentos
@@ -50,7 +52,7 @@ export const NaccessDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar color="#0050a0" />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="datatable-title-text-dashboard">
                 <span>Naccess dashboard</span>
             </div>
@@ -69,7 +71,7 @@ export const NaccessDashboard = () => {
                     </div>
                 </div>
             </div>
-            <Footer color="#0050a0" />
+            <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
 }
