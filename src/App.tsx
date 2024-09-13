@@ -75,6 +75,7 @@ import { NsoundDashboard } from './pages/nidplace/nsound/NsoundDashboard';
 import { ColorProvider } from './context/ColorContext';
 import { NavBar } from './components/NavBar';
 import { Footer } from './components/Footer';
+import { NkioskAds } from './pages/nidtec/nkiosk/NkioskAds';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -167,6 +168,7 @@ function AnimatedRoutes() {
               <Route path="/ncharge/nchargedashboard" element={<PageProtection><NchargeDashboard /></PageProtection>} />
               <Route path="/ncity/ncitydashboard" element={<PageProtection><NcityDashboard /></PageProtection>} />
               <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
+              <Route path="/nkiosk/NkioskAds" element={<PageProtection><NkioskAds /></PageProtection>} />
               <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
               <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
               <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />

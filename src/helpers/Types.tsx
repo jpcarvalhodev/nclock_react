@@ -220,3 +220,16 @@ export type EmployeeFace = {
     FaceTmpData: string;
     FaceTmpLength: number;
 };
+
+export type Ads = {
+    [key: string]: any;
+    id: string;
+    NomeArquivo: string;
+    TipoArquivo: number;
+    Creador: string;
+    Desativar: boolean;
+    URLArquivo: string;
+    Ordem: number;
+    CreateDate: Date;
+    UpdateDate: Date;
+};

@@ -39,7 +39,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         fetchAllDevices,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<T>({ ...entity } as T);
-    const [device, setDevice] = useState<Devices[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [ipAddress, setIpAddress] = useState('');
     const [error, setError] = useState('');
@@ -115,7 +114,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 image.onload = () => {
                     let width = image.width;
                     let height = image.height;
-    
+
                     if (width > 512 || height > 512) {
                         if (width > height) {
                             height *= 512 / width;
@@ -125,13 +124,13 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                             height = 512;
                         }
                     }
-    
+
                     const canvas = document.createElement('canvas');
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(image, 0, 0, width, height);
-    
+
                     const dataUrl = canvas.toDataURL('image/png');
                     setDeviceImage(dataUrl);
                     setFormData({ ...formData, photo: dataUrl });
@@ -152,7 +151,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     };
 
     // Função para lidar com a mudança de valor
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const parsedValue = type === 'number' ? Number(value) : value;
         if (name === "ipAddress") {
@@ -194,7 +193,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 <Row>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceName">
-                            <Form.Label>Nome</Form.Label>
+                            <Form.Label>Nome <span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
@@ -211,7 +210,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceNumber">
-                            <Form.Label>Número</Form.Label>
+                            <Form.Label>Número <span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
@@ -293,7 +292,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                 <Row>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formIpAddress">
-                                                            <Form.Label>IP</Form.Label>
+                                                            <Form.Label>IP<span style={{ color: 'red' }}>*</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
                                                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
@@ -310,6 +309,20 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                             <Form.Control.Feedback type="invalid">
                                                                 {error}
                                                             </Form.Control.Feedback>
+                                                        </Form.Group>
+                                                        <Form.Group controlId="formDeviceProtocol">
+                                                            <Form.Label>Protocolo<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                            <Form.Select
+                                                                name="deviceProtocol"
+                                                                value={formData['deviceProtocol'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            >
+                                                                <option value="">Selecione</option>
+                                                                <option value="1">Standalone</option>
+                                                                <option value="2">Pull</option>
+                                                                <option value="3">Push</option>
+                                                            </Form.Select>
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
@@ -385,6 +398,16 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
                                                         </Form.Group>
+                                                        <Form.Group controlId="formProductTime">
+                                                            <Form.Label>Data do Produto</Form.Label>
+                                                            <Form.Control
+                                                                type="date"
+                                                                name="productTime"
+                                                                value={formData['productTime'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
+                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formFirmware">
@@ -393,6 +416,16 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                                 type="string"
                                                                 name="firmware"
                                                                 value={formData['firmware'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
+                                                        </Form.Group>
+                                                        <Form.Group controlId="formProducter">
+                                                            <Form.Label>Fabricante</Form.Label>
+                                                            <Form.Control
+                                                                type="string"
+                                                                name="producter"
+                                                                value={formData['producter'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
@@ -409,52 +442,24 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
                                                         </Form.Group>
+                                                        <Form.Group controlId="formDeviceType">
+                                                            <Form.Label>Tipo</Form.Label>
+                                                            <Form.Control
+                                                                type="string"
+                                                                name="deviceType"
+                                                                value={formData['deviceType'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
+                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formSerialNumber">
-                                                            <Form.Label>Número de Série</Form.Label>
+                                                            <Form.Label>Número de Série<span style={{ color: 'red' }}>*</span></Form.Label>
                                                             <Form.Control
                                                                 type="string"
                                                                 name="serialNumber"
                                                                 value={formData['serialNumber'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formProductTime">
-                                                            <Form.Label>Data do Produto</Form.Label>
-                                                            <Form.Control
-                                                                type="date"
-                                                                name="productTime"
-                                                                value={formData['productTime'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formProducter">
-                                                            <Form.Label>Fabricante</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="producter"
-                                                                value={formData['producter'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formType">
-                                                            <Form.Label>Tipo</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="type"
-                                                                value={formData['type'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
                                                             />

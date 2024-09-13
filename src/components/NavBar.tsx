@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { Employee } from '../helpers/Types';
+import { Ads, Employee } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -124,6 +124,10 @@ import card_report from '../assets/img/navbar/nkiosk/card_report.png';
 import offline from '../assets/img/navbar/nkiosk/offline.png';
 import maps from '../assets/img/navbar/nkiosk/maps.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
+import { CreateAdsModal } from '../modals/CreateAdsModal';
+import { Button } from 'react-bootstrap';
+import { adsFields } from '../helpers/Fields';
+import { useAds } from '../context/AdsContext';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -166,7 +170,8 @@ interface NavBarProps {
 
 // Define as propriedades do componente
 export const NavBar = ({ style }: NavBarProps) => {
-	const { navbarColor, footerColor, setNavbarColor, setFooterColor } = useColor();
+	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
+	const { handleAddModalNavbar } = useAds();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -251,6 +256,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showModal, setShowModal] = useState(false);
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
 	const location = useLocation();
+	const [showAdsModal, setShowAdsModal] = useState(false);
 
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
@@ -781,6 +787,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Defina o mapeamento das cores para cada aba
 	const tabColors: Record<string, { navbarColor: string; footerColor: string }> = {
 		default: { navbarColor: '#000000', footerColor: '#000000' },
+		dashboard: { navbarColor: '#000000', footerColor: '#000000' },
 		nclock: { navbarColor: '#0050a0', footerColor: '#0050a0' },
 		naccess: { navbarColor: '#0050a0', footerColor: '#0050a0' },
 		nvisitor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
@@ -821,12 +828,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// useEffect para atualizar as cores da navbar e do footer ao trocar a página
 	useEffect(() => {
-		const currentPath = location.pathname.split('/')[1];
-		const colorConfig = tabColors[currentPath] || tabColors.default;
+		const pathSegments = location.pathname.split('/');
+		const mainSegment = pathSegments[1];
+		const colorConfig = tabColors[mainSegment] || tabColors.default;
 
 		setNavbarColor(colorConfig.navbarColor);
 		setFooterColor(colorConfig.footerColor);
-	}, [location, navbarColor, footerColor, setNavbarColor, setFooterColor]);
+	}, [location.pathname, setNavbarColor, setFooterColor]);
 
 	// Função para geranciar o clique na aba
 	const handleTabClick = (tabName: string) => {
@@ -846,6 +854,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para abrir o modal de opções do terminal
 	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
+
+	// Função para abrir o modal de publicidade
+	const toggleAdsModal = () => setShowAdsModal(!showAdsModal);
+
+	// Função para adicionar publicidade via contexto
+	const handleUploadClick = (ad: FormData) => {
+		handleAddModalNavbar(ad);
+	};
 
 	return (
 		<ColorProvider>
@@ -1538,7 +1554,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/nkiosk/NkioskAds" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={ads} alt="botão publicidade" />
 												</span>
@@ -1546,18 +1562,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 										</div>
 										<div>
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={video} alt="botão vídeo" />
 												</span>
 												<span className="text">Vídeo</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={image} alt="botão imagem" />
 												</span>
 												<span className="text">Imagem</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -2097,6 +2113,16 @@ export const NavBar = ({ style }: NavBarProps) => {
 						onClose={() => setShowModal(false)}
 						onSave={() => setShowModal(false)}
 						initialValues={{}}
+					/>
+				)}
+				{showAdsModal && (
+					<CreateAdsModal
+						open={showAdsModal}
+						onClose={() => setShowAdsModal(false)}
+						onSave={handleUploadClick}
+						fields={adsFields}
+						initialValues={{}}
+						title='Publicidades'
 					/>
 				)}
 			</nav>

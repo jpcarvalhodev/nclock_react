@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { Category, Department, Devices, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Zone } from "./Types";
+import { Ads, Category, Department, Devices, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -795,3 +795,68 @@ export const deleteEmployeeCard = async (cardId: string) => {
     }
     return response.json();
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DAS PUBLICIDADES////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllAds = async () => {
+    const response = await fetchWithAuth(`Publicidade`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const fetchAllAdsByType = async (tipoArquivo: number) => {
+    const response = await fetchWithAuth(`Publicidade/tipo/${tipoArquivo}`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const fetchAdByid = async (id: string) => {
+    const response = await fetchWithAuth(`Publicidade/${id}`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const addAd = async (ad: FormData) => {
+    console.log('enviando dados', ad);
+    const response = await fetchWithAuth(`Publicidade/upload`, {
+        method: 'POST',
+        body: ad
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const updateAd = async (ads: Ads) => {
+    const response = await fetchWithAuth(`Publicidade/${ads.Id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(ads)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const deleteAd = async (id: string) => {
+    console.log(id);
+    const response = await fetchWithAuth(`Publicidade/${id}`, {
+        method: 'DELETE'
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};

@@ -183,3 +183,14 @@ export const employeeFaceFields = [
     { key: 'FaceTmpData', label: 'Dados da Biometria Facial', type: 'string' },
     { key: 'FaceTmpLength', label: 'Comprimento da Biometria Facial', type: 'number' },
 ];
+
+export const adsFields = [
+    { key: 'nomeArquivo', label: 'Nome do Arquivo', type: 'string' },
+    { key: 'tipoArquivo', label: 'Tipo de Arquivo', type: 'number' },
+    { key: 'creador', label: 'Criador', type: 'string' },
+    { key: 'desativar', label: 'Desativar', type: 'boolean' },
+    { key: 'urlArquivo', label: 'URL do Arquivo', type: 'string' },
+    { key: 'ordem', label: 'Ordem', type: 'number' },
+    { key: 'createDate', label: 'Data de Criação', type: 'Date' },
+    { key: 'updateDate', label: 'Data de Atualização', type: 'Date' },
+];

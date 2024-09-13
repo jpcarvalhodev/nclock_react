@@ -46,7 +46,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         } else {
             setDeviceImage(null);
         }
-    }, [initialValues]);    
+    }, [initialValues]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -100,7 +100,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                 image.onload = () => {
                     let width = image.width;
                     let height = image.height;
-    
+
                     if (width > 512 || height > 512) {
                         if (width > height) {
                             height *= 512 / width;
@@ -110,13 +110,13 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                             height = 512;
                         }
                     }
-    
+
                     const canvas = document.createElement('canvas');
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(image, 0, 0, width, height);
-    
+
                     const dataUrl = canvas.toDataURL('image/png');
                     setDeviceImage(dataUrl);
                     setFormData({ ...formData, photo: dataUrl });
@@ -137,7 +137,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     };
 
     // Função para lidar com a mudança de valor
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const parsedValue = type === 'number' ? Number(value) : value;
         if (name === "ipAddress") {
@@ -185,7 +185,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                 <Row>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceName">
-                            <Form.Label>Nome</Form.Label>
+                            <Form.Label>Nome<span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
@@ -202,7 +202,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceNumber">
-                            <Form.Label>Número</Form.Label>
+                            <Form.Label>Número<span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
@@ -284,39 +284,53 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                 <Row>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formIpAddress">
-                                                            <Form.Label>IP</Form.Label>
+                                                            <Form.Label>IP<span style={{ color: 'red' }}>*</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
                                                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
                                                             >
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="ipAddress"
-                                                                value={formData['ipAddress'] || ''}
-                                                                onChange={handleChange}
-                                                                isInvalid={!!error}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
+                                                                <Form.Control
+                                                                    type="string"
+                                                                    name="ipAddress"
+                                                                    value={formData['ipAddress'] || ''}
+                                                                    onChange={handleChange}
+                                                                    isInvalid={!!error}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                />
                                                             </OverlayTrigger>
                                                             <Form.Control.Feedback type="invalid">
                                                                 {error}
                                                             </Form.Control.Feedback>
                                                         </Form.Group>
+                                                        <Form.Group controlId="formDeviceProtocol">
+                                                            <Form.Label>Protocolo</Form.Label>
+                                                            <Form.Select
+                                                                name="deviceProtocol"
+                                                                value={formData['deviceProtocol'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            >
+                                                                <option value="">Selecione</option>
+                                                                <option value="1">Standalone</option>
+                                                                <option value="2">Pull</option>
+                                                                <option value="3">Push</option>
+                                                            </Form.Select>
+                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formPort">
-                                                            <Form.Label>Porta</Form.Label>
+                                                            <Form.Label>Porta<span style={{ color: 'red' }}>*</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
                                                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
                                                             >
-                                                            <Form.Control
-                                                                type="number"
-                                                                name="port"
-                                                                value={formData['port'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    name="port"
+                                                                    value={formData['port'] || ''}
+                                                                    onChange={handleChange}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                />
                                                             </OverlayTrigger>
                                                             {errors['port'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['port']}</div>}
                                                         </Form.Group>
@@ -376,6 +390,16 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
                                                         </Form.Group>
+                                                        <Form.Group controlId="formProductTime">
+                                                            <Form.Label>Data do Produto</Form.Label>
+                                                            <Form.Control
+                                                                type="date"
+                                                                name="productTime"
+                                                                value={formData['productTime'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
+                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formFirmware">
@@ -384,6 +408,16 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                                 type="string"
                                                                 name="firmware"
                                                                 value={formData['firmware'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
+                                                        </Form.Group>
+                                                        <Form.Group controlId="formProducter">
+                                                            <Form.Label>Fabricante</Form.Label>
+                                                            <Form.Control
+                                                                type="string"
+                                                                name="producter"
+                                                                value={formData['producter'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
@@ -400,52 +434,24 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
                                                         </Form.Group>
+                                                        <Form.Group controlId="formDeviceType">
+                                                            <Form.Label>Tipo</Form.Label>
+                                                            <Form.Control
+                                                                type="string"
+                                                                name="deviceType"
+                                                                value={formData['deviceType'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
+                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formSerialNumber">
-                                                            <Form.Label>Número de Série</Form.Label>
+                                                            <Form.Label>Número de Série<span style={{ color: 'red' }}>*</span></Form.Label>
                                                             <Form.Control
                                                                 type="string"
                                                                 name="serialNumber"
                                                                 value={formData['serialNumber'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formProductTime">
-                                                            <Form.Label>Data do Produto</Form.Label>
-                                                            <Form.Control
-                                                                type="date"
-                                                                name="productTime"
-                                                                value={formData['productTime'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formProducter">
-                                                            <Form.Label>Fabricante</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="producter"
-                                                                value={formData['producter'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formType">
-                                                            <Form.Label>Tipo</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="type"
-                                                                value={formData['type'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
