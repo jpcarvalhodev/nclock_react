@@ -133,7 +133,6 @@ export const deviceFields = [
     { key: "port", label: "Porta", type: "number", required: true },
     { key: "photo", label: "Foto", type: "string" },
     { key: "code", label: "Código", type: "number" },
-    { key: "machineNumber", label: "Número do Equipamento", type: "number" },
     { key: "platform", label: "Platforma", type: "string" },
     { key: "firmware", label: "Firmware", type: "string" },
     { key: "macAddress", label: "Endereço MAC", type: "string" },
@@ -151,7 +150,8 @@ export const deviceFields = [
     { key: "producter", label: "Produtor", type: "string" },
     { key: "deviceProtocol", label: "Protocolo", type: "number" },
     { key: "deviceType", label: "Tipo", type: "number" },
-    { key: "status", label: "Status", type: "boolean" }
+    { key: "status", label: "Status", type: "boolean" },
+    { key: "disabled", label: "Activo", type: "boolean" }
 ];
 
 export const employeeDeviceFields = [

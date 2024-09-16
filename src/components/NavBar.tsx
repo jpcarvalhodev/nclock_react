@@ -1553,22 +1553,37 @@ export const NavBar = ({ style }: NavBarProps) => {
 								</div>
 								<div className="group">
 									<div className="btn-group" role="group">
+										<div className="icon-text-pessoas">
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={card_report} alt="botão relatório moedas" />
+												</span>
+												<span className="text">Listagem de Pagamentos</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Recebimentos</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
 										<div>
-											<Link to="/nkiosk/NkioskAds" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="/nkiosk/NkioskAds" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={ads} alt="botão publicidade" />
 												</span>
 												<span className="text">Publicidade</span>
-											</Link>
+											</Button>
 										</div>
 										<div>
-											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button">
+											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={video} alt="botão vídeo" />
 												</span>
 												<span className="text">Vídeo</span>
 											</Button>
-											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button">
+											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={image} alt="botão imagem" />
 												</span>
@@ -1583,39 +1598,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={online} alt="botão online" />
 												</span>
 												<span className="text">Online</span>
-											</Link>
+											</Button>
 										</div>
 										<div>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={offline} alt="botão offline" />
 												</span>
 												<span className="text">Offline</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
 										<span className="title">Videovigilância</span>
-									</div>
-								</div>
-								<div className="group">
-									<div className="btn-group" role="group">
-										<div className="icon-text-pessoas">
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-												<span className="icon">
-													<img src={card_report} alt="botão relatório moedas" />
-												</span>
-												<span className="text">Listagem de Pagamentos</span>
-											</Link>
-										</div>
-									</div>
-									<div className="title-container">
-										<span className="title">Recebimentos</span>
 									</div>
 								</div>
 								<div className="group">

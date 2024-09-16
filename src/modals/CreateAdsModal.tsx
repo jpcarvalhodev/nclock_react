@@ -5,14 +5,13 @@ import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, Row } from 'react-bootstrap';
-import { useAds } from '../context/AdsContext';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: T | FormData) => void;
+    onSave: (data: T) => void;
     fields: Field[];
     initialValues: Partial<T>;
 }
@@ -124,20 +123,8 @@ export const CreateAdsModal = <T extends Record<string, any>>({ title, open, onC
 
     // Função para salvar os dados
     const handleSave = () => {
-        const formDataToSend = new FormData();
-
-        Object.keys(formData).forEach(key => {
-            const value = formData[key as keyof T];
-            if (value !== undefined && value !== null) {
-                formDataToSend.append(key, String(value));
-            }
-        });
-
-        files.forEach((file) => {
-            formDataToSend.append('files', file);
-        });
-
-        onSave(formDataToSend);
+        console.log('Salvando:', formData);
+        onSave(formData as T);
         onClose();
     };
 

@@ -65,7 +65,7 @@ interface FaceTemplate {
 }
 
 // Define a interface para os dados de utilizadores e cartões
-interface MergedEmployeeAndCard extends Employee, Partial<Omit<EmployeeCard, 'id'>> {}
+interface MergedEmployeeAndCard extends Employee, Partial<Omit<EmployeeCard, 'id'>> { }
 
 // Junta os campos de utilizadores e cartões
 const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
@@ -170,11 +170,11 @@ export const Terminals = () => {
     // Função para buscar todos os utilizadores e cartões
     const fetchEmployeesAndCards = async () => {
         const employeesData: Employee[] = await fetchAllEmployees();
-    
+
         const cardData: EmployeeCard[] = await fetchAllCardData();
-    
+
         const mergedData = mergeEmployeeAndCardData(employeesData, cardData);
-    
+
         const filteredEmployeesBio = mergedData.filter(employee =>
             employee.statusFprint === true || employee.statusFace === true
         );
@@ -182,7 +182,7 @@ export const Terminals = () => {
         const filteredEmployeesCard = mergedData.filter(employee =>
             employee.cardNumber !== "0"
         );
-    
+
         setEmployees(mergedData);
         setEmployeesBio(filteredEmployeesBio);
         setEmployeeCards(filteredEmployeesCard);
@@ -328,7 +328,9 @@ export const Terminals = () => {
                     case 'productTime':
                         return formatDateAndTime(row[field.key]);
                     case 'status':
-                        return row.status ? 'Activo' : 'Inactivo';
+                        return row.status ? 'Online' : 'Offline';
+                    case 'disabled':
+                        return row.disabled ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key];
                 }
@@ -401,7 +403,7 @@ export const Terminals = () => {
                 {row.cardNumber && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
             </>
         );
-    };    
+    };
 
     // Define as colunas excluídas de utilizadores    
     const excludedUserColumns = ['statusFprint', 'statusFace', 'statusPalm', 'cardNumber'];
@@ -562,15 +564,15 @@ export const Terminals = () => {
     }
 
     // Define a função de abertura do modal de exclusão dos dispositivos
-    const handleOpenDeleteModal = async (id: string, type: 'device' | 'user') => {
+    const handleOpenDeleteModal = async (zktecoDeviceID: string, type: 'device' | 'user') => {
         if (type === 'device') {
-            setSelectedDeviceToDelete(id);
+            setSelectedDeviceToDelete(zktecoDeviceID);
             setShowDeleteModal(true);
         } else {
             if (selectedTerminal) {
                 setLoadingDeleteSelectedUsers(true);
-                setSelectedUserToDelete(id);
-                await deleteAllUsersOnDevice(selectedTerminal?.zktecoDeviceID, id);
+                setSelectedUserToDelete(zktecoDeviceID);
+                await deleteAllUsersOnDevice(selectedTerminal?.zktecoDeviceID, zktecoDeviceID);
                 setLoadingDeleteSelectedUsers(false);
                 fetchAllEmployeeDevices();
             } else {
@@ -631,7 +633,7 @@ export const Terminals = () => {
         cell: (row: Devices) => (
             <div style={{ display: 'flex' }}>
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDevicesID, 'device')}>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDeviceID, 'device')}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>
             </div>

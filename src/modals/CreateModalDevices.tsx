@@ -30,7 +30,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const {
         fetchAllDevices,
     } = useContext(TerminalsContext) as DeviceContextType;
-    const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
+    const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, disabled: true });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [ipAddress, setIpAddress] = useState('');
     const [error, setError] = useState('');
@@ -40,7 +40,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        setFormData({ ...initialValues, status: true });
+        setFormData({ ...initialValues, disabled: true });
         if (initialValues.photo) {
             setDeviceImage(initialValues.photo);
         } else {
@@ -139,7 +139,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
-        const parsedValue = type === 'number' ? Number(value) : value;
+        const parsedValue = (name === 'deviceType' || name === 'deviceProtocol') ? Number(value) : (type === 'number' ? Number(value) : value);
         if (name === "ipAddress") {
             if (validateIPAddress(value)) {
                 setIpAddress(value);
@@ -247,16 +247,16 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                         ref={fileInputRef}
                                                     />
                                                 </div>
-                                                <Form.Group controlId="formStatus" className="d-flex align-items-center mb-3">
+                                                <Form.Group controlId="formDisabled" className="d-flex align-items-center mb-3">
                                                     <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo</Form.Label>
                                                     <Form.Check
                                                         type="switch"
-                                                        id="custom-switch-status"
-                                                        checked={formData.status === true}
-                                                        onChange={(e) => setFormData({ ...formData, status: e.target.checked ? true : false })}
+                                                        id="custom-switch-disabled"
+                                                        checked={formData.disabled === true}
+                                                        onChange={(e) => { const isDisabled = e.target.checked; setFormData({ ...formData, disabled: isDisabled }); }}
                                                         className="ms-auto"
                                                         label=""
-                                                        name="status"
+                                                        name="disabled"
                                                     />
                                                 </Form.Group>
                                                 <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', marginTop: '20px', textAlign: "center" }}>
@@ -302,20 +302,6 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                                 {error}
                                                             </Form.Control.Feedback>
                                                         </Form.Group>
-                                                        <Form.Group controlId="formDeviceProtocol">
-                                                            <Form.Label>Protocolo</Form.Label>
-                                                            <Form.Select
-                                                                name="deviceProtocol"
-                                                                value={formData['deviceProtocol'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            >
-                                                                <option value="">Selecione</option>
-                                                                <option value="1">Standalone</option>
-                                                                <option value="2">Pull</option>
-                                                                <option value="3">Push</option>
-                                                            </Form.Select>
-                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formPort">
@@ -349,15 +335,19 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
-                                                        <Form.Group controlId="formMachineNumber">
-                                                            <Form.Label>Número da Máquina</Form.Label>
-                                                            <Form.Control
-                                                                type="number"
-                                                                name="machineNumber"
-                                                                value={formData['machineNumber'] || ''}
+                                                        <Form.Group controlId="formDeviceProtocol">
+                                                            <Form.Label>Protocolo</Form.Label>
+                                                            <Form.Select
+                                                                name="deviceProtocol"
+                                                                value={formData['deviceProtocol'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
-                                                            />
+                                                            >
+                                                                <option value="">Selecione</option>
+                                                                <option value="1">Standalone</option>
+                                                                <option value="2">Pull</option>
+                                                                <option value="3">Push</option>
+                                                            </Form.Select>
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
@@ -436,13 +426,16 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                         </Form.Group>
                                                         <Form.Group controlId="formDeviceType">
                                                             <Form.Label>Tipo</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
+                                                            <Form.Select
                                                                 name="deviceType"
                                                                 value={formData['deviceType'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
-                                                            />
+                                                            >
+                                                                <option value="">Selecione</option>
+                                                                <option value="1">Assiduidade</option>
+                                                                <option value="2">Controle de Acesso</option>
+                                                            </Form.Select>
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>

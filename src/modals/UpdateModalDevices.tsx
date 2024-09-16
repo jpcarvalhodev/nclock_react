@@ -255,16 +255,16 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         ref={fileInputRef}
                                                     />
                                                 </div>
-                                                <Form.Group controlId="formStatus" className="d-flex align-items-center mb-3">
+                                                <Form.Group controlId="formDisabled" className="d-flex align-items-center mb-3">
                                                     <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo</Form.Label>
                                                     <Form.Check
                                                         type="switch"
-                                                        id="custom-switch-status"
-                                                        checked={formData.status === true}
-                                                        onChange={(e) => setFormData({ ...formData, status: e.target.checked ? true : false })}
+                                                        id="custom-switch-disabled"
+                                                        checked={formData.disabled === true}
+                                                        onChange={(e) => { const isDisabled = e.target.checked; setFormData({ ...formData, disabled: isDisabled }); }}
                                                         className="ms-auto"
                                                         label=""
-                                                        name="status"
+                                                        name="disabled"
                                                     />
                                                 </Form.Group>
                                                 <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', marginTop: '20px', textAlign: "center" }}>
@@ -310,20 +310,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                                 {error}
                                                             </Form.Control.Feedback>
                                                         </Form.Group>
-                                                        <Form.Group controlId="formDeviceProtocol">
-                                                            <Form.Label>Protocolo<span style={{ color: 'red' }}>*</span></Form.Label>
-                                                            <Form.Select
-                                                                name="deviceProtocol"
-                                                                value={formData['deviceProtocol'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            >
-                                                                <option value="">Selecione</option>
-                                                                <option value="1">Standalone</option>
-                                                                <option value="2">Pull</option>
-                                                                <option value="3">Push</option>
-                                                            </Form.Select>
-                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formPort">
@@ -357,15 +343,19 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
-                                                        <Form.Group controlId="formMachineNumber">
-                                                            <Form.Label>Número da Máquina</Form.Label>
-                                                            <Form.Control
-                                                                type="number"
-                                                                name="machineNumber"
-                                                                value={formData['machineNumber'] || ''}
+                                                        <Form.Group controlId="formDeviceProtocol">
+                                                            <Form.Label>Protocolo<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                            <Form.Select
+                                                                name="deviceProtocol"
+                                                                value={formData['deviceProtocol'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
-                                                            />
+                                                            >
+                                                                <option value="">Selecione</option>
+                                                                <option value="1">Standalone</option>
+                                                                <option value="2">Pull</option>
+                                                                <option value="3">Push</option>
+                                                            </Form.Select>
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>

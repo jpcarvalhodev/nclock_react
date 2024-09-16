@@ -176,10 +176,10 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const deviceData = await apiService.addDevice(device);
             setDevices([...devices, deviceData]);
-            toast.success(deviceData.value || 'dispositivo apagado com sucesso!');
+            toast.success(deviceData.value || 'dispositivo adicionado com sucesso!');
 
         } catch (error) {
-            console.error('Erro ao apagar dispositivos:', error);
+            console.error('Erro ao adicionado dispositivos:', error);
         }
     };
 

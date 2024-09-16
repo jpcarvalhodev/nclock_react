@@ -159,7 +159,6 @@ export type Devices = {
     photo: string;
     port: number;
     code: number;
-    machineNumber: number;
     platform: string;
     firmware: string;
     macAddress: string;
@@ -178,6 +177,7 @@ export type Devices = {
     deviceProtocol: number;
     deviceType: number;
     status: boolean;
+    disabled: boolean;
 };
 
 export type EmployeeDevices = {
