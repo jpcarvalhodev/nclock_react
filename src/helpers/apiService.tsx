@@ -825,7 +825,6 @@ export const fetchAdByid = async (id: string) => {
 };
 
 export const addAd = async (ad: FormData) => {
-    console.log('enviando dados', ad);
     const response = await fetchWithAuth(`Publicidade/upload`, {
         method: 'POST',
         body: ad
@@ -851,10 +850,29 @@ export const updateAd = async (ads: Ads) => {
 };
 
 export const deleteAd = async (id: string) => {
-    console.log(id);
     const response = await fetchWithAuth(`Publicidade/${id}`, {
         method: 'DELETE'
     });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DAS TRANSAÇÕES DO QUIOSQUE////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllKioskTransactions = async (zktecoDeviceID: Devices) => {
+    const response = await fetchWithAuth(`KioskTransaction/?deviceID=${zktecoDeviceID}`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const fetchKioskTransactionDoorAsync = async () => {
+    const response = await fetchWithAuth(`KioskTransaction/GetAllTransactionDoorAsync`);
     if (!response.ok) {
         return;
     }

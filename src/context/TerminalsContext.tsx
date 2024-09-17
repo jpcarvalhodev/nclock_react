@@ -1,6 +1,6 @@
 import { createContext, useState, useContext } from 'react';
 import { ReactNode } from 'react';
-import { Devices, Employee, EmployeeDevices } from '../helpers/Types';
+import { Devices, Employee, KioskTransaction } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -13,6 +13,7 @@ export interface DeviceContextType {
     fetchAllDevices: () => Promise<void>;
     fetchAllEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllEmployeeDevices: () => Promise<void>;
+    fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
@@ -87,6 +88,17 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         } catch (error) {
             console.error('Erro ao apagar dispositivos:', error);
         }
+    }
+
+    // Função para buscar todas as actividades de quiosque
+    const fetchAllKioskTransaction = async (zktecoDeviceID: Devices): Promise <KioskTransaction[]> => {
+        try {
+            const transactionData = await apiService.fetchAllKioskTransactions(zktecoDeviceID);
+            return transactionData;
+        } catch (error) {
+            console.error('Erro ao buscar transações:', error);
+        }
+        return [];
     }
 
     // Função para enviar todos os funcionários para o dispositivo
@@ -217,6 +229,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
+        fetchAllKioskTransaction,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,

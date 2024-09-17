@@ -7,8 +7,8 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, Employee, EmployeeAndCard, EmployeeCard } from "../../helpers/Types";
-import { deviceFields, employeeCardFields, employeeFields } from "../../helpers/Fields";
+import { Devices, Employee, EmployeeAndCard, EmployeeCard, KioskTransaction } from "../../helpers/Types";
+import { deviceFields, employeeCardFields, employeeFields, transactionFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
@@ -30,23 +30,6 @@ interface Filters {
     [key: string]: string;
 }
 
-// Define a interface para as transações
-interface Transaction {
-    UserID: string;
-    IsInvalid: string;
-    State: string;
-    VerifyStyle: string;
-    Time: string;
-}
-
-// Define a interface para as tarefas
-interface Tasks {
-    Status: string;
-    Date: Date;
-    Type: string;
-    Device: string;
-}
-
 // Define a interface para os dados de biometria
 interface FingerprintTemplate {
     FPTmpLength: number;
@@ -64,6 +47,15 @@ interface FaceTemplate {
     FaceTmpLength: number;
 }
 
+// Define a interface para os movimentos
+interface Movement {
+    UserID: string;
+    IsInvalid: string;
+    State: string;
+    VerifyStyle: string;
+    Time: string;
+}
+
 // Define a interface para os dados de utilizadores e cartões
 interface MergedEmployeeAndCard extends Employee, Partial<Omit<EmployeeCard, 'id'>> { }
 
@@ -79,6 +71,7 @@ export const Terminals = () => {
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
+        fetchAllKioskTransaction,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,
@@ -142,12 +135,12 @@ export const Terminals = () => {
     const [showAllUsers, setShowAllUsers] = useState(true);
     const [showFingerprintUsers, setShowFingerprintUsers] = useState(false);
     const [showFacialRecognitionUsers, setShowFacialRecognitionUsers] = useState(false);
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [task, setTask] = useState<Tasks[]>([]);
     const fileInputAttendanceRef = React.createRef<HTMLInputElement>();
     const fileInputUserRef = React.createRef<HTMLInputElement>();
     const fileInputFPRef = React.createRef<HTMLInputElement>();
     const fileInputFaceRef = React.createRef<HTMLInputElement>();
+    const [movements, setMovements] = useState<Movement[]>([]);
+    const [transactions, setTransactions] = useState<KioskTransaction[]>([]);
 
     // Função para mesclar os dados de utilizadores e cartões
     const mergeEmployeeAndCardData = (
@@ -187,6 +180,23 @@ export const Terminals = () => {
         setEmployeesBio(filteredEmployeesBio);
         setEmployeeCards(filteredEmployeesCard);
     };
+
+    // Função para buscar todas as transações de quiosques
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            if (selectedTerminal) {
+                try {
+                    const fetchedTransactions = await fetchAllKioskTransaction(selectedTerminal.zktecoDeviceID);
+                    setTransactions(fetchedTransactions);
+                } catch (error) {
+                    console.error("Erro ao buscar transações:", error);
+                }
+            } else {
+                setTransactions([]);
+            }
+        };
+        fetchTransactions();
+    }, [selectedTerminal]); 
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
@@ -353,6 +363,33 @@ export const Terminals = () => {
             filters[key] === "" || String(device[key]) === String(filters[key])
         )
     );
+
+    // Define as colunas de transações de quiosques
+    const transactionColumns: TableColumn<KioskTransaction>[] = transactionFields
+        .filter(field => field.key !== 'id')
+        .map(field => {
+            const formatField = (row: KioskTransaction) => {
+                switch (field.key) {
+                    default:
+                        return row[field.key];
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={transactions} />
+                    </>
+                ),
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
+
+    // Filtra os dados da tabela de dispositivos
+    const filteredTransactions = useMemo(() => {
+        return transactions
+    }, [transactions]);
 
     // Define as colunas de estado de dispositivos
     const stateColumns: TableColumn<Devices>[] = deviceFields
@@ -651,17 +688,6 @@ export const Terminals = () => {
     // Define a cor de fundo do status
     const backgroundColor = getStatusColor(deviceStatus);
 
-    // Define a função de adição de tarefas
-    const addTask = (type: string, status: string, device: string) => {
-        const newTask = {
-            Status: status,
-            Date: new Date(),
-            Type: type,
-            Device: selectedTerminal?.deviceName || 'Nenhum dispositivo selecionado'
-        };
-        setTask(prevTasks => [...prevTasks, newTask]);
-    };
-
     // Função para controlar a mudança de arquivo dos movimentos
     const handleAttendanceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
@@ -882,56 +908,6 @@ export const Terminals = () => {
         }, 5000);
     };
 
-    // Define as colunas das transações
-    const transactionColumns: TableColumn<Transaction>[] = [
-        {
-            name: "ID do Usuário",
-            selector: row => row.UserID,
-            sortable: true,
-        },
-        {
-            name: "Estado",
-            selector: (row: Transaction) => row.State,
-            sortable: true,
-            format: (row: Transaction) => row.IsInvalid ? "Inválido" : "Válido"
-        },
-        {
-            name: "Hora",
-            selector: row => row.Time,
-            sortable: true,
-        },
-        {
-            name: "Método de Verificação",
-            selector: (row: Transaction) => row.VerifyStyle,
-            sortable: true,
-            format: (row: Transaction) => `${row.VerifyStyle}`
-        }
-    ];
-
-    // Define as colunas das tarefas
-    const taskColumns: TableColumn<Tasks>[] = [
-        {
-            name: "Status",
-            selector: (row: Tasks) => row.Status,
-            sortable: true,
-        },
-        {
-            name: "Dispositivo",
-            selector: (row: Tasks) => row.Device,
-            sortable: true,
-        },
-        {
-            name: "Data",
-            selector: (row: Tasks) => formatDateAndTime(row.Date),
-            sortable: true,
-        },
-        {
-            name: "Tipo",
-            selector: (row: Tasks) => row.Type,
-            sortable: true,
-        }
-    ];
-
     // Função para enviar os utilizadores selecionados
     const handleSendSelectedUsers = async () => {
         if (!selectedTerminal || selectedUserRows.length === 0) {
@@ -1056,6 +1032,32 @@ export const Terminals = () => {
         }
     }
 
+    // Define as colunas das transações
+    const movementColumns: TableColumn<Movement>[] = [
+        {
+            name: "ID do Usuário",
+            selector: row => row.UserID,
+            sortable: true,
+        },
+        {
+            name: "Estado",
+            selector: (row: Movement) => row.State,
+            sortable: true,
+            format: (row: Movement) => row.IsInvalid ? "Inválido" : "Válido"
+        },
+        {
+            name: "Hora",
+            selector: row => row.Time,
+            sortable: true,
+        },
+        {
+            name: "Método de Verificação",
+            selector: (row: Movement) => row.VerifyStyle,
+            sortable: true,
+            format: (row: Movement) => `${row.VerifyStyle}`
+        }
+    ];
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -1112,21 +1114,21 @@ export const Terminals = () => {
                                 <div>
                                     <p className="activityTabContent">Actividades</p>
                                     <DataTable
-                                        columns={taskColumns}
-                                        data={task}
+                                        columns={transactionColumns}
+                                        data={filteredTransactions}
                                         pagination
                                         paginationPerPage={5}
                                         paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                         paginationComponentOptions={paginationOptions}
-                                        noDataComponent="Não há tarefas disponíveis para exibir."
+                                        noDataComponent={selectedTerminal ? "Não há tarefas disponíveis para exibir." : "Selecione um terminal para ver as atividades."}
                                         customStyles={customStyles}
                                     />
                                 </div>
                                 <div>
                                     <p className="activityTabContent">Movimentos</p>
                                     <DataTable
-                                        columns={transactionColumns}
-                                        data={transactions}
+                                        columns={movementColumns}
+                                        data={movements}
                                         pagination
                                         paginationPerPage={5}
                                         paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}

@@ -194,3 +194,17 @@ export const adsFields = [
     { key: 'createDate', label: 'Data de Criação', type: 'Date' },
     { key: 'updateDate', label: 'Data de Atualização', type: 'Date' },
 ];
+
+export const transactionFields = [
+    { key: 'id', label: 'ID', type: 'string' },
+    { key: 'EventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'Pin', label: 'PIN', type: 'number' },
+    { key: 'CardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'EventName', label: 'Nome do Evento', type: 'string' },
+    { key: 'EventId', label: 'ID do Evento', type: 'number' },
+    { key: 'EventDoorId', label: 'ID da Porta do Evento', type: 'number' },
+    { key: 'VerifyModeNo', label: 'Modo de Verificação', type: 'number' },
+    { key: 'DeviceSN', label: 'Número de Série do Dispositivo', type: 'string' },
+    { key: 'CreateTime', label: 'Data de Criação', type: 'Date' },
+    { key: 'UpdateTime', label: 'Data de Atualização', type: 'Date' },
+];

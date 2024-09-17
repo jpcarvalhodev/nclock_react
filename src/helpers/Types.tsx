@@ -233,3 +233,18 @@ export type Ads = {
     CreateDate: Date;
     UpdateDate: Date;
 };
+
+export type KioskTransaction = {
+    [key: string]: any;
+    id: string;
+    EventTime: Date;
+    Pin: number;
+    CardNo: number;
+    EventName: string;
+    EventId: number;
+    EventDoorId: number;
+    VerifyModeNo: number;
+    DeviceSN: string;
+    CreateTime: Date;
+    UpdateTime: Date;
+};

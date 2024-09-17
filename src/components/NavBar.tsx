@@ -121,8 +121,10 @@ import video from '../assets/img/navbar/nkiosk/video.png';
 import image from '../assets/img/navbar/nkiosk/image.png';
 import online from '../assets/img/navbar/nkiosk/online.png';
 import card_report from '../assets/img/navbar/nkiosk/card_report.png';
+import coin_report from '../assets/img/navbar/nkiosk/coin_report.png';
 import offline from '../assets/img/navbar/nkiosk/offline.png';
 import maps from '../assets/img/navbar/nkiosk/maps.png';
+import logs from '../assets/img/navbar/nkiosk/logs.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateAdsModal } from '../modals/CreateAdsModal';
 import { Button } from 'react-bootstrap';
@@ -1556,9 +1558,17 @@ export const NavBar = ({ style }: NavBarProps) => {
 										<div className="icon-text-pessoas">
 											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
-													<img src={card_report} alt="botão relatório moedas" />
+													<img src={card_report} alt="botão listagem de pagamentos" />
 												</span>
 												<span className="text">Listagem de Pagamentos</span>
+											</Link>
+										</div>
+										<div className="icon-text-pessoas">
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={coin_report} alt="botão listagem de movimentos " />
+												</span>
+												<span className="text">Listagem de Movimentos</span>
 											</Link>
 										</div>
 									</div>
@@ -1631,6 +1641,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 									<div className="title-container">
 										<span className="title">Zonas</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={logs} alt="botão log de utilizadores" />
+												</span>
+												<span className="text">Log de Utilizadores</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Logs</span>
 									</div>
 								</div>
 							</div>
