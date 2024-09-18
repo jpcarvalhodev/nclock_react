@@ -1631,7 +1631,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/nkiosk/nkioskmap" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={maps} alt="botão mapa" />
 												</span>

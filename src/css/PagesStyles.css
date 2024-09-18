@@ -441,6 +441,22 @@ body {
     background-color: #00366d !important;
 }
 
+.center-map-button {
+    position: absolute;
+    top: 15px;
+    right: 15px; 
+    z-Index: 1000;
+    width: 40px; 
+    height: 40px;
+    background-color: white;
+    border-radius: 10%;
+}
+
+.center-map-button img {
+    width: 100%;
+    height: auto;
+}
+
 @media (max-width: 500px) {
 
     .profile-avatar {
