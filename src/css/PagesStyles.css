@@ -157,6 +157,11 @@ body {
     flex: 1;
 }
 
+.content-wrapper-payment {
+    display:flex;
+    flex-grow: 1;
+}
+
 .footer {
     width: 100%;
     color: #fff;

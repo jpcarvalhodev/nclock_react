@@ -878,3 +878,11 @@ export const fetchKioskTransactionDoorAsync = async () => {
     }
     return response.json();
 };
+
+export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventDoorId: string, deviceSN: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/GetByEventDoorIdAndDeviceSNAsync/${deviceSN}?eventDoorId=${eventDoorId}`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}

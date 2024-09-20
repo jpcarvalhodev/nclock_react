@@ -11,7 +11,7 @@ export const NparkDashboard = () => {
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
-                <span>Nview Dashboard</span>
+                <span>Npark Dashboard</span>
             </div>
             <div className="dashboard-content-wrapper">
                 <div className="dashboard-carousel-container">

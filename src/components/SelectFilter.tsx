@@ -1,10 +1,10 @@
-import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard } from "../helpers/Types";
+import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction } from "../helpers/Types";
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
 import ReactDOM from "react-dom";
 
 // Tipos de dados
-type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard;
+type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction;
 
 // Propriedades do componente de filtro de seleção
 interface SelectFilterProps {
@@ -79,6 +79,16 @@ const formatDataItem = (item: DataItem, column: string) => {
             return item.productTime ? formatDateAndTime(item[column]) : '';
         case 'status':
             return item.status ? 'Activo' : 'Inactivo';
+        case 'createDate':
+            return new Date(item.createDate).toLocaleString() || '';
+        case 'updateDate':
+            return new Date(item.updateDate).toLocaleString() || '';
+        case 'eventTime':
+            return new Date(item.eventTime).toLocaleString() || '';
+        case 'createTime':
+            return new Date(item.createTime).toLocaleString() || '';
+        case 'updateTime':
+            return new Date(item.updateTime).toLocaleString() || '';
         default:
             return item[column]?.toString();
     }

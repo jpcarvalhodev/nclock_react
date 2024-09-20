@@ -237,14 +237,27 @@ export type Ads = {
 export type KioskTransaction = {
     [key: string]: any;
     id: string;
-    EventTime: Date;
-    Pin: number;
-    CardNo: number;
-    EventName: string;
-    EventId: number;
-    EventDoorId: number;
-    VerifyModeNo: number;
-    DeviceSN: string;
-    CreateTime: Date;
-    UpdateTime: Date;
+    eventTime: Date;
+    pin: number;
+    cardNo: number;
+    eventName: string;
+    eventId: number;
+    eventDoorId: number;
+    verifyModeNo: number;
+    deviceSN: string;
+    createTime: Date;
+    updateTime: Date;
 };
+
+export type KioskTransactionList = {
+    [key: string]: any;
+    id: string;
+    eventTime: Date;
+    pin: number;
+    cardNo: number;
+    eventNo: number;
+    eventName: string;
+    eventDoorId: number;
+    eventDoorName: string;
+    verifyModeNo: number;
+}

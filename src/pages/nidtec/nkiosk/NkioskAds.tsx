@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { Button } from "react-bootstrap";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { CreateAdsModal } from "../../../modals/CreateAdsModal";
+import { CreateModalAds } from "../../../modals/CreateModalAds";
 
 export const NkioskAds = () => {
     const { navbarColor, footerColor } = useColor();
@@ -71,7 +71,6 @@ export const NkioskAds = () => {
     // Função para apagar uma publicidade
     const handleDeleteAds = async (id: string) => {
         try {
-            console.log("preparando dados para envio", id);
             const deleteAds = await apiService.deleteAd(id);
             toast.success(deleteAds.message || 'publicidade apagada com sucesso!');
 
@@ -144,6 +143,10 @@ export const NkioskAds = () => {
                 switch (field.key) {
                     case 'tipoArquivo':
                         return (row[field.key] === 1) ? 'Imagem' : 'Vídeo' || '';
+                    case 'createDate':
+                        return new Date(row[field.key]).toLocaleString() || '';
+                    case 'updateDate':
+                        return new Date(row[field.key]).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -161,11 +164,20 @@ export const NkioskAds = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = ads.filter(ads =>
+    const filteredDataTable = ads.filter(ad =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(ads[key]) === String(filters[key])
-        )
-    );
+            filters[key] === "" || (ad[key] != null && String(ad[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) && 
+        Object.values(ad).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
+    );  
 
     // Define a coluna de ações
     const actionColumn: TableColumn<Ads> = {
@@ -205,7 +217,7 @@ export const NkioskAds = () => {
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                     </div>
                 </div>
-                <CreateAdsModal
+                <CreateModalAds
                     title="Publicidades"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}

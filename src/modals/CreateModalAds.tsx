@@ -27,7 +27,7 @@ interface Field {
 }
 
 // Define o componente
-export const CreateAdsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
+export const CreateModalAds = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [files, setFiles] = useState<File[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});

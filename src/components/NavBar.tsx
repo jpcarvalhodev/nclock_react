@@ -126,7 +126,7 @@ import offline from '../assets/img/navbar/nkiosk/offline.png';
 import maps from '../assets/img/navbar/nkiosk/maps.png';
 import logs from '../assets/img/navbar/nkiosk/logs.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
-import { CreateAdsModal } from '../modals/CreateAdsModal';
+import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
 import { adsFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
@@ -1523,25 +1523,25 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className="grid-container">
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Link to="/nkiosk/nkioskpayterminal" type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={payment_card} alt="botão pagamento terminal" />
 												</span>
 												<span className="text">Pagamento Terminal</span>
 											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<Link to='/nkiosk/nkioskmovecard' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={card_movement} alt="botão movimentos cartão" />
 												</span>
 												<span className="text">Movimentos Cartão</span>
 											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<Link to='/nkiosk/nkioskpaycoins' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={coin} alt="botão pagamento moedas" />
 												</span>
 												<span className="text">Pagamento Moedas</span>
 											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<Link to='/nkiosk/nkioskmovedoorman' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={doorlock_movement} alt="botão movimentos porteiro" />
 												</span>
@@ -1556,7 +1556,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className="icon-text-pessoas">
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/nkiosk/nkiosklistpayments" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={card_report} alt="botão listagem de pagamentos" />
 												</span>
@@ -1564,7 +1564,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 										</div>
 										<div className="icon-text-pessoas">
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/nkiosk/nkiosklistmovements" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={coin_report} alt="botão listagem de movimentos " />
 												</span>
@@ -1646,7 +1646,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/nkiosk/nkiosklogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={logs} alt="botão log de utilizadores" />
 												</span>
@@ -2141,7 +2141,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					/>
 				)}
 				{showAdsModal && (
-					<CreateAdsModal
+					<CreateModalAds
 						open={showAdsModal}
 						onClose={() => setShowAdsModal(false)}
 						onSave={handleUploadClick}

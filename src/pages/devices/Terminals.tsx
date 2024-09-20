@@ -196,7 +196,7 @@ export const Terminals = () => {
             }
         };
         fetchTransactions();
-    }, [selectedTerminal]); 
+    }, [selectedTerminal]);
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
@@ -370,6 +370,12 @@ export const Terminals = () => {
         .map(field => {
             const formatField = (row: KioskTransaction) => {
                 switch (field.key) {
+                    case 'eventTime':
+                        return new Date(row[field.key]).toLocaleString() || '';
+                    case 'createTime':
+                        return new Date(row[field.key]).toLocaleString() || '';
+                    case 'updateTime':
+                        return new Date(row[field.key]).toLocaleString() || '';
                     default:
                         return row[field.key];
                 }
@@ -385,11 +391,6 @@ export const Terminals = () => {
                 sortable: true,
             };
         });
-
-    // Filtra os dados da tabela de dispositivos
-    const filteredTransactions = useMemo(() => {
-        return transactions
-    }, [transactions]);
 
     // Define as colunas de estado de dispositivos
     const stateColumns: TableColumn<Devices>[] = deviceFields
@@ -1032,7 +1033,7 @@ export const Terminals = () => {
         }
     }
 
-    // Define as colunas das transações
+    // Define as colunas dos movimentos temporariamente
     const movementColumns: TableColumn<Movement>[] = [
         {
             name: "ID do Usuário",
@@ -1115,12 +1116,12 @@ export const Terminals = () => {
                                     <p className="activityTabContent">Actividades</p>
                                     <DataTable
                                         columns={transactionColumns}
-                                        data={filteredTransactions}
+                                        data={transactions}
                                         pagination
                                         paginationPerPage={5}
                                         paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                         paginationComponentOptions={paginationOptions}
-                                        noDataComponent={selectedTerminal ? "Não há tarefas disponíveis para exibir." : "Selecione um terminal para ver as atividades."}
+                                        noDataComponent={selectedTerminal ? "Não há actividades disponíveis para exibir." : "Selecione um terminal para ver as actividades."}
                                         customStyles={customStyles}
                                     />
                                 </div>
@@ -1133,7 +1134,7 @@ export const Terminals = () => {
                                         paginationPerPage={5}
                                         paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                         paginationComponentOptions={paginationOptions}
-                                        noDataComponent="Não há actividades disponíveis para exibir."
+                                        noDataComponent={selectedTerminal ? "Não há movimentos disponíveis para exibir." : "Selecione um terminal para ver os movimentos."}
                                         customStyles={customStyles}
                                     />
                                 </div>

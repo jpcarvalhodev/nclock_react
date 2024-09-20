@@ -8,6 +8,7 @@ import marker from '../../../assets/img/map/marker.png';
 import { MapCenterButton } from '../../../components/MapCenterButton';
 import { useEffect } from 'react';
 
+// Icone personalizado para o marcador
 const customIcon = new L.Icon({
     iconUrl: marker,
     iconSize: [40, 40],
@@ -15,6 +16,7 @@ const customIcon = new L.Icon({
     popupAnchor: [0, -35],
 });
 
+// Função para inicializar o mapa
 const MapInitialization = ({ position }: { position: [number, number] }) => {
     const map = useMap();
   
@@ -38,7 +40,7 @@ export const NkioskMap = () => {
                 </div>
             </div>
             <div className='d-flex justify-content-center' style={{ height: "90vh" }}>
-                <MapContainer center={position} zoom={15} scrollWheelZoom={true} style={{ height: "50vh", width: "90vw", marginTop: "100px" }}>
+                <MapContainer center={position} zoom={15} scrollWheelZoom={true} style={{ height: "80vh", width: "90vw", marginTop: "50px" }}>
                     <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

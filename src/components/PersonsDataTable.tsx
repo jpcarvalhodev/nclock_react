@@ -40,7 +40,6 @@ interface Filters {
 // Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate }: PersonsDataTableProps) => {
     const {
-        fetchAllData,
         fetchAllEmployees,
         handleUpdateEmployee,
         handleDeleteEmployee,

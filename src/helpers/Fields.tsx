@@ -196,15 +196,25 @@ export const adsFields = [
 ];
 
 export const transactionFields = [
-    { key: 'id', label: 'ID', type: 'string' },
-    { key: 'EventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'Pin', label: 'PIN', type: 'number' },
-    { key: 'CardNo', label: 'Número do Cartão', type: 'number' },
-    { key: 'EventName', label: 'Nome do Evento', type: 'string' },
-    { key: 'EventId', label: 'ID do Evento', type: 'number' },
-    { key: 'EventDoorId', label: 'ID da Porta do Evento', type: 'number' },
-    { key: 'VerifyModeNo', label: 'Modo de Verificação', type: 'number' },
-    { key: 'DeviceSN', label: 'Número de Série do Dispositivo', type: 'string' },
-    { key: 'CreateTime', label: 'Data de Criação', type: 'Date' },
-    { key: 'UpdateTime', label: 'Data de Atualização', type: 'Date' },
+    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'pin', label: 'PIN', type: 'number' },
+    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
+    { key: 'eventId', label: 'ID do Evento', type: 'number' },
+    { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
+    { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
+    { key: 'deviceSN', label: 'Número de Série do Dispositivo', type: 'string' },
+    { key: 'createTime', label: 'Data de Criação', type: 'Date' },
+    { key: 'updateTime', label: 'Data de Atualização', type: 'Date' },
+];
+
+export const transactionListFields = [
+    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'pin', label: 'PIN', type: 'number' },
+    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'eventNo', label: 'Número do Evento', type: 'number' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
+    { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
+    { key: 'eventDoorName', label: 'Nome da Porta do Evento', type: 'string' },
+    { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
 ];
