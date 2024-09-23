@@ -70,6 +70,26 @@ export const NkioskMoveDoorman = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = moveDoorman
+        .filter(listMovement =>
+            listMovement.eventName === 'Door Opens' || listMovement.eventName === 'Open the door by pressing the exit button'
+        )
+        .filter(moveDoormans =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || (moveDoormans[key] != null && String(moveDoormans[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            ) &&
+            Object.values(moveDoormans).some(value => {
+                if (value == null) {
+                    return false;
+                } else if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            })
+        );
+
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransaction>[] = transactionFields
         .filter(field => selectedColumns.includes(field.key))
@@ -92,29 +112,13 @@ export const NkioskMoveDoorman = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={moveDoorman} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
                 sortable: true,
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = moveDoorman.filter(moveDoormans =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (moveDoormans[key] != null && String(moveDoormans[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(moveDoormans).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
 
     return (
         <div className="dashboard-container">

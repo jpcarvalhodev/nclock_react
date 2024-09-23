@@ -886,3 +886,19 @@ export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventD
     }
     return response.json();
 }
+
+export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: string, deviceSN: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/GetTransactionsByCardAndDeviceSN/${deviceSN}?eventDoorId=${eventDoorId}`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const fetchKioskTransactionsByMBAndDeviceSN = async (eventDoorId: string, deviceSN: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/GetTransactionsByMBAndDeviceSN/${deviceSN}?eventDoorId=${eventDoorId}`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}

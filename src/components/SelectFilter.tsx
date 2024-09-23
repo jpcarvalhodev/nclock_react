@@ -1,10 +1,10 @@
-import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction } from "../helpers/Types";
+import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction, KioskTransactionList, KioskTransactionCard, KioskTransactionMB, KioskTransactionMBCoin, KioskTransactionCardDoorman } from "../helpers/Types";
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
 import ReactDOM from "react-dom";
 
 // Tipos de dados
-type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction;
+type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionList | KioskTransactionCard | KioskTransactionMB | KioskTransactionMBCoin | KioskTransactionCardDoorman;
 
 // Propriedades do componente de filtro de seleção
 interface SelectFilterProps {
@@ -83,12 +83,22 @@ const formatDataItem = (item: DataItem, column: string) => {
             return new Date(item.createDate).toLocaleString() || '';
         case 'updateDate':
             return new Date(item.updateDate).toLocaleString() || '';
-        case 'eventTime':
-            return new Date(item.eventTime).toLocaleString() || '';
         case 'createTime':
             return new Date(item.createTime).toLocaleString() || '';
         case 'updateTime':
             return new Date(item.updateTime).toLocaleString() || '';
+        case 'timestamp':
+            return item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+        case 'eventDoorId':
+            switch (item.eventDoorId) {
+                case 1: return 'Terminal';
+                case 2: return 'Moedeiro';
+                case 3: return 'Cartão';
+                case 4: return 'Video Porteiro';
+                default: return '';
+            }
+        case 'eventDoorName':
+            return item.eventDoorId === 2 ? 'Moedeiro' : 'Terminal';
         default:
             return item[column]?.toString();
     }
@@ -119,7 +129,7 @@ export const SelectFilter = ({ column, setFilters, data }: SelectFilterProps) =>
                 <i className="bi bi-filter"></i>
             </Dropdown.Toggle>
             {portalElement && ReactDOM.createPortal(
-                <Dropdown.Menu>
+                <Dropdown.Menu style={{ maxHeight: 200, overflowY: 'auto' }}>
                     <Dropdown.Item onClick={() => handleChange("")} key="all">Todos</Dropdown.Item>
                     {options.map((option, index) => (
                         <Dropdown.Item key={`${option}-${index}`} onClick={() => handleChange(option)}>

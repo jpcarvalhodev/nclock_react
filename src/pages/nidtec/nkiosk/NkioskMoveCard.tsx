@@ -7,16 +7,16 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransaction } from "../../../helpers/Types";
-import { transactionFields } from "../../../helpers/Fields";
+import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { transactionCardFields } from "../../../helpers/Fields";
 
 export const NkioskMoveCard = () => {
     const { navbarColor, footerColor } = useColor();
-    const [moveCard, setMoveCard] = useState<KioskTransaction[]>([]);
+    const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['cardNo', 'nameUser', 'eventName', 'eventTime']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const eventDoorId = '3';
     const deviceSN = 'AGB7234900595';
@@ -24,7 +24,7 @@ export const NkioskMoveCard = () => {
     // Função para buscar as publicidades
     const fetchAllMoveCard = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN);
             if (Array.isArray(data)) {
                 setMoveCard(data);
             } else {
@@ -56,7 +56,7 @@ export const NkioskMoveCard = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'cardNo', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['cardNo', 'nameUser', 'eventName', 'eventTime']);
     };
 
     // Função para selecionar todas as colunas
@@ -70,20 +70,34 @@ export const NkioskMoveCard = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = moveCard
+        .filter(listMovement =>
+            listMovement.eventName === 'Door Opens' || listMovement.eventName === 'Open the door by pressing the exit button'
+        )
+        .filter(moveCards =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            ) &&
+            Object.values(moveCards).some(value => {
+                if (value == null) {
+                    return false;
+                } else if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            })
+        );
+
     // Define as colunas da tabela
-    const columns: TableColumn<KioskTransaction>[] = transactionFields
+    const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: KioskTransaction) => {
+            const formatField = (row: KioskTransactionCard) => {
                 switch (field.key) {
                     case 'eventDoorId':
                         return 'Cartão';
-                    case 'eventTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
-                    case 'createTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
-                    case 'updateTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -92,29 +106,13 @@ export const NkioskMoveCard = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={moveCard} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
                 sortable: true,
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = moveCard.filter(moveCards =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) && 
-        Object.values(moveCards).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );      
 
     return (
         <div className="dashboard-container">
@@ -154,7 +152,7 @@ export const NkioskMoveCard = () => {
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={transactionFields}
+                    columns={transactionCardFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

@@ -16,7 +16,7 @@ export const NkioskPayCoins = () => {
     const [payCoins, setPayCoins] = useState<KioskTransaction[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventName', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventDoorId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const eventDoorId = '2';
     const deviceSN = 'AGB7234900595';
@@ -56,7 +56,7 @@ export const NkioskPayCoins = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'eventName', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'eventDoorId', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas

@@ -218,3 +218,26 @@ export const transactionListFields = [
     { key: 'eventDoorName', label: 'Nome da Porta do Evento', type: 'string' },
     { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
 ];
+
+export const transactionMBFields = [
+    { key: 'transactionType', label: 'Tipo de Transação', type: 'string' },
+    { key: 'amount', label: 'Valor', type: 'string' },
+    { key: 'statusCode', label: 'Código de Status', type: 'number' },
+    { key: 'statusMessage', label: 'Mensagem de Status', type: 'string' },
+    { key: 'clientTicket', label: 'Ticket do Cliente', type: 'string' },
+    { key: 'merchantTicket', label: 'Ticket do Comerciante', type: 'string' },
+    { key: 'email', label: 'Email', type: 'string' },
+    { key: 'timestamp', label: 'Data e Hora', type: 'Date' },
+];
+
+export const transactionCardFields = [
+    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'nameUser', label: 'Nome do Usuário', type: 'string' },
+    { key: 'eventNo', label: 'Número do Evento', type: 'number' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
+    { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
+    { key: 'eventDoorName', label: 'Nome da Porta do Evento', type: 'string' },
+    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'pin', label: 'PIN', type: 'number' },
+    { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
+];

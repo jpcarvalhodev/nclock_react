@@ -261,3 +261,34 @@ export type KioskTransactionList = {
     eventDoorName: string;
     verifyModeNo: number;
 }
+
+export type KioskTransactionMB = {
+    [key: string]: any;
+    id: string;
+    transactionType: string;
+    amount: string;
+    statusCode: number;
+    statusMessage: string;
+    clientTicket: string;
+    merchantTicket: string;
+    email: string;
+    timestamp: Date;
+};
+
+export type KioskTransactionCard = {
+    [key: string]: any;
+    id: string;
+    cardNo: number;
+    nameUser: string;
+    eventNo: number;
+    eventName: string;
+    eventDoorId: number;
+    eventDoorName: string;
+    eventTime: Date;
+    pin: number;
+    verifyModeNo: number;
+};
+
+export type KioskTransactionMBCoin = Partial<KioskTransactionMB> & Partial<KioskTransactionList>;
+
+export type KioskTransactionCardDoorman = Partial<KioskTransactionCard> & Partial<KioskTransactionList>;

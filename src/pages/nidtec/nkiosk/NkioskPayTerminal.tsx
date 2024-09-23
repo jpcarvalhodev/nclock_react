@@ -7,17 +7,19 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransaction } from "../../../helpers/Types";
-import { transactionFields } from "../../../helpers/Fields";
+import { KioskTransactionMB } from "../../../helpers/Types";
+import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { set } from "date-fns";
+
+// URL base das imagens
+const baseURL = "https://localhost:9090/";
 
 export const NkioskPayTerminal = () => {
     const { navbarColor, footerColor } = useColor();
-    const [payTerminal, setPayTerminal] = useState<KioskTransaction[]>([]);
+    const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventName', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['transactionType', 'amount', 'timestamp']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const eventDoorId = '1';
     const deviceSN = 'AGB7234900595';
@@ -25,7 +27,7 @@ export const NkioskPayTerminal = () => {
     // Função para buscar os pagamentos dos terminais
     const fetchAllPayTerminal = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN);
             if (Array.isArray(data)) {
                 setPayTerminal(data);
             } else {
@@ -57,7 +59,7 @@ export const NkioskPayTerminal = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'eventName', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['transactionType', 'amount', 'timestamp']);
     };
 
     // Função para selecionar todas as colunas
@@ -71,23 +73,35 @@ export const NkioskPayTerminal = () => {
         rangeSeparatorText: 'de',
     };
 
+    console.log(payTerminal);
+
     // Define as colunas da tabela
-    const columns: TableColumn<KioskTransaction>[] = transactionFields
+    const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
-        .concat([{ key: 'value', label: 'Valor', type: 'string' }])
+        .sort((a, b) => {if (a.key === 'timestamp') return -1; else if (b.key === 'timestamp') return 1; else return 0;})
         .map(field => {
-            const formatField = (row: KioskTransaction) => {
+            const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
-                    case 'value':
-                        return '0,50€';
-                    case 'eventDoorId':
-                        return 'Terminal';
-                    case 'eventTime':
+                    case 'timestamp':
                         return new Date(row[field.key]).toLocaleString() || '';
-                    case 'createTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
-                    case 'updateTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
+                    case 'clientTicket':
+                    case 'merchantTicket':
+                        const imageUrl = row[field.key];
+                        if (imageUrl) {
+                            const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
+                            const fullImageUrl = `${baseURL}${uploadPath}`;
+                            return (
+                                <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
+                                    <img
+                                        src={fullImageUrl}
+                                        alt={field.label}
+                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                    />
+                                </a>
+                            );
+                        } else {
+                            return 'Sem Ticket';
+                        }
                     default:
                         return row[field.key] || '';
                 }
@@ -96,7 +110,7 @@ export const NkioskPayTerminal = () => {
                 name: (
                     <>
                         {field.label}
-                        {field.key !== 'value' && <SelectFilter column={field.key} setFilters={setFilters} data={payTerminal} />}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={payTerminal} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -158,7 +172,7 @@ export const NkioskPayTerminal = () => {
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={transactionFields}
+                    columns={transactionMBFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

@@ -8,40 +8,97 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { KioskTransactionList } from "../../../helpers/Types";
-import { transactionListFields } from "../../../helpers/Fields";
+import { KioskTransactionCard, KioskTransactionCardDoorman, KioskTransactionList } from "../../../helpers/Types";
+import { transactionCardFields, transactionListFields } from "../../../helpers/Fields";
+import { ca } from "date-fns/locale";
 
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useColor();
-    const [listMovements, setListMovements] = useState<KioskTransactionList[]>([]);
+    const [listMovements, setListMovements] = useState<KioskTransactionCardDoorman[]>([]);
+    const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
+    const [listMovementDoorman, setListMovementDoorman] = useState<KioskTransactionList[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'eventName', 'eventNo', 'eventDoorId']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'eventName', 'nameUser', 'eventDoorId']);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const eventDoorId = '3';
+    const deviceSN = 'AGB7234900595';
 
-    // Função para buscar as listagens de movimentos
-    const fetchAllListMovements = async () => {
+    // Função para buscar as listagens de movimentos de cartão
+    const fetchAllListMovementsCard = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionDoorAsync();
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN);
             if (Array.isArray(data)) {
-                const filteredData = data.filter(item => item.eventDoorId === 3 || item.eventDoorId === 4);
-                setListMovements(filteredData);
+                setListMovementCard(data);
             } else {
-                setListMovements([]);
+                setListMovementCard([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de movimentos:', error);
+            console.error('Erro ao buscar os dados de listagem de movimentos de cartão:', error);
         }
     };
 
+    // Função para buscar as listagens de movimentos de porteiro
+    const fetchAllListMovementsDoorman = async () => {
+        try {
+            const data = await apiService.fetchKioskTransactionDoorAsync();
+            if (Array.isArray(data)) {
+                const filteredData = data.filter(item => item.eventDoorId === 4);
+                setListMovementDoorman(filteredData);
+            } else {
+                setListMovementDoorman([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de movimentos de porteiro:', error);
+        }
+    };
+
+    // Unifica os dados de movimentos de cartão e porteiro
+    const mergeMovementData = () => {
+        const unifiedData: KioskTransactionCardDoorman[] = [
+            ...listMovementCard.map((movement) => ({
+                id: movement.id,
+                cardNo: movement.cardNo,
+                nameUser: movement.nameUser,
+                eventNo: movement.eventNo,
+                eventName: movement.eventName,
+                eventDoorId: movement.eventDoorId,
+                eventDoorName: movement.eventDoorName,
+                eventTime: movement.eventTime,
+                pin: movement.pin,
+                verifyModeNo: movement.verifyModeNo,
+            })),
+            ...listMovementDoorman.map((movement) => ({
+                id: movement.id,
+                cardNo: movement.cardNo,
+                eventNo: movement.eventNo,
+                eventName: movement.eventName,
+                eventDoorId: movement.eventDoorId,
+                eventDoorName: movement.eventDoorName,
+                eventTime: movement.eventTime,
+                pin: movement.pin,
+                verifyModeNo: movement.verifyModeNo,
+            }))
+        ];
+
+        setListMovements(unifiedData);
+    };
+
+    // Atualiza a lista de movimentos ao receber novos dados
+    useEffect(() => {
+        mergeMovementData();
+    }, [listMovementCard, listMovementDoorman]);
+
     // Busca as listagens de movimentos ao carregar a página
     useEffect(() => {
-        fetchAllListMovements();
+        fetchAllListMovementsCard();
+        fetchAllListMovementsDoorman();
     }, []);
 
     // Função para atualizar as listagens de movimentos
     const refreshAds = () => {
-        fetchAllListMovements();
+        fetchAllListMovementsCard();
+        fetchAllListMovementsDoorman();
     };
 
     // Função para selecionar as colunas
@@ -55,7 +112,7 @@ export const NkioskListMovements = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'cardNo', 'eventName', 'eventNo', 'eventDoorId']);
+        setSelectedColumns(['eventTime', 'cardNo', 'eventName', 'nameUser', 'eventDoorId']);
     };
 
     // Função para selecionar todas as colunas
@@ -69,14 +126,42 @@ export const NkioskListMovements = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela com base no filtro de 'eventName'
+    const filteredDataTable = listMovements
+        .filter(listMovement =>
+            listMovement.eventName === 'Door Opens' || listMovement.eventName === 'Open the door by pressing the exit button'
+        )
+        .filter(listMovement =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            ) &&
+            Object.values(listMovement).some(value => {
+                if (value == null) {
+                    return false;
+                } else if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            })
+        );
+
+    // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
+    const combinedMovements = [...transactionCardFields, ...transactionListFields].reduce((acc, current) => {
+        if (!acc.some(field => field.key === current.key)) {
+            acc.push(current);
+        }
+        return acc;
+    }, [] as typeof transactionCardFields);
+
     // Define as colunas da tabela
-    const columns: TableColumn<KioskTransactionList>[] = transactionListFields
+    const columns: TableColumn<KioskTransactionCardDoorman>[] = combinedMovements
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: KioskTransactionList) => {
+            const formatField = (row: KioskTransactionCardDoorman) => {
                 switch (field.key) {
                     case 'eventDoorId':
-                        return row.eventDoorId === 3 ? 'Cartão' : 'Video Porteiro';
+                        return row.eventDoorId === 4 ? 'Video Porteiro' : 'Cartão';
                     default:
                         return row[field.key] || '';
                 }
@@ -85,29 +170,13 @@ export const NkioskListMovements = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={listMovements} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
                 sortable: true,
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = listMovements.filter(listMovement =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) && 
-        Object.values(listMovement).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );  
 
     return (
         <div className="dashboard-container">
@@ -147,7 +216,7 @@ export const NkioskListMovements = () => {
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={transactionListFields}
+                    columns={combinedMovements}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
