@@ -14,13 +14,26 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 // URL base das imagens
 const baseURL = "https://localhost:9090/";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
+
 export const NkioskPayTerminal = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['transactionType', 'amount', 'timestamp']);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const eventDoorId = '1';
     const deviceSN = 'AGB7234900595';
 
@@ -37,6 +50,20 @@ export const NkioskPayTerminal = () => {
             console.error('Erro ao buscar os dados de pagamento dos terminais:', error);
         }
     };
+
+    // Função para buscar os pagamentos dos terminais entre datas
+    const fetchPaymentsBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
+            if (Array.isArray(data)) {
+                setPayTerminal(data);
+            } else {
+                setPayTerminal([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de pagamento dos terminais:', error);
+        }
+    }
 
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
@@ -78,7 +105,7 @@ export const NkioskPayTerminal = () => {
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
-        .sort((a, b) => {if (a.key === 'timestamp') return -1; else if (b.key === 'timestamp') return 1; else return 0;})
+        .sort((a, b) => { if (a.key === 'timestamp') return -1; else if (b.key === 'timestamp') return 1; else return 0; })
         .map(field => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
@@ -134,6 +161,11 @@ export const NkioskPayTerminal = () => {
         })
     );
 
+    // Calcula o total do valor dos pagamentos
+    const totalAmount = filteredDataTable.reduce((total, transaction) => {
+        return total + (typeof transaction.amount === 'number' ? transaction.amount : parseFloat(transaction.amount) || 0);
+    }, 0);
+
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -155,6 +187,22 @@ export const NkioskPayTerminal = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                     </div>
+                    <div className="date-range-search">
+                        <input
+                            type="datetime-local"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="datetime-local"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
+                    </div>
                 </div>
             </div>
             <div className='content-wrapper'>
@@ -167,6 +215,9 @@ export const NkioskPayTerminal = () => {
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
+                </div>
+                <div className="total-amount">
+                    <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

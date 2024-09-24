@@ -11,13 +11,26 @@ import { KioskTransaction } from "../../../helpers/Types";
 import { transactionFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
+
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
     const [payCoins, setPayCoins] = useState<KioskTransaction[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventDoorId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const eventDoorId = '2';
     const deviceSN = 'AGB7234900595';
 
@@ -34,6 +47,20 @@ export const NkioskPayCoins = () => {
             console.error('Erro ao buscar os dados de pagamento de moedas:', error);
         }
     };
+
+    // Função para buscar os pagamentos do moedeiro entre datas
+    const fetchPaymentsCoinBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId, deviceSN, startDate, endDate);
+            if (Array.isArray(data)) {
+                setPayCoins(data);
+            } else {
+                setPayCoins([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de pagamento de moedas:', error);
+        }
+    }
 
     // Busca os pagamentos no moedeiro ao carregar a página
     useEffect(() => {
@@ -78,7 +105,7 @@ export const NkioskPayCoins = () => {
             const formatField = (row: KioskTransaction) => {
                 switch (field.key) {
                     case 'value':
-                        return '0,50€';
+                        return '0,50';
                     case 'eventDoorId':
                         return 'Moedeiro';
                     case 'eventTime':
@@ -117,7 +144,10 @@ export const NkioskPayCoins = () => {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
             }
         })
-    );      
+    );
+
+    // Calcula o total do valor dos pagamentos
+    const totalAmount = filteredDataTable.length * 0.50;  
 
     return (
         <div className="dashboard-container">
@@ -140,6 +170,22 @@ export const NkioskPayCoins = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                     </div>
+                    <div className="date-range-search">
+                        <input
+                            type="datetime-local"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="datetime-local"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsCoinBetweenDates} iconSize='1.1em' />
+                    </div>
                 </div>
             </div>
             <div className='content-wrapper'>
@@ -152,6 +198,9 @@ export const NkioskPayCoins = () => {
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
+                </div>
+                <div className="total-amount">
+                    <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

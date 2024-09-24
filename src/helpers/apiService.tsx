@@ -879,24 +879,44 @@ export const fetchKioskTransactionDoorAsync = async () => {
     return response.json();
 };
 
-export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventDoorId: string, deviceSN: string) => {
-    const response = await fetchWithAuth(`KioskTransaction/GetByEventDoorIdAndDeviceSNAsync/${deviceSN}?eventDoorId=${eventDoorId}`);
+export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetByEventDoorIdAndDeviceSNAsync/${deviceSN}?eventDoorId=${eventDoorId}`;
+    if (startDate && endDate) {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         return;
     }
     return response.json();
 }
 
-export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: string, deviceSN: string) => {
-    const response = await fetchWithAuth(`KioskTransaction/GetTransactionsByCardAndDeviceSN/${deviceSN}?eventDoorId=${eventDoorId}`);
+export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetTransactionsByCardAndDeviceSN/${deviceSN}?eventDoorId=${eventDoorId}`;
+    if (startDate && endDate) {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         return;
     }
     return response.json();
 }
 
-export const fetchKioskTransactionsByMBAndDeviceSN = async (eventDoorId: string, deviceSN: string) => {
-    const response = await fetchWithAuth(`KioskTransaction/GetTransactionsByMBAndDeviceSN/${deviceSN}?eventDoorId=${eventDoorId}`);
+export const fetchKioskTransactionsByMBAndDeviceSN = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN/${deviceSN}?eventDoorId=${eventDoorId}`;
+    if (startDate && endDate) {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const fetchTransactionsByDatesFilters = async (eventDoorId: string, deviceSN: string, startDate: string, endDate: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/GetTransactionsByDatesFilters?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}&startDate=${startDate}&endDate=${endDate}`);
     if (!response.ok) {
         return;
     }

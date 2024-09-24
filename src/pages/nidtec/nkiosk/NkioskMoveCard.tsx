@@ -11,13 +11,26 @@ import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { transactionCardFields } from "../../../helpers/Fields";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
+
 export const NkioskMoveCard = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['cardNo', 'nameUser', 'eventName', 'eventTime']);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const eventDoorId = '3';
     const deviceSN = 'AGB7234900595';
 
@@ -34,6 +47,20 @@ export const NkioskMoveCard = () => {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
         }
     };
+
+    // Função para buscar os movimentos dos cartões entre datas
+    const fetchMovementCardBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
+            if (Array.isArray(data)) {
+                setMoveCard(data);
+            } else {
+                setMoveCard([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+        }
+    }
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
@@ -119,7 +146,7 @@ export const NkioskMoveCard = () => {
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Movimentos Cartão</span>
+                    <span style={{ color: '#009739' }}>Movimentos Torniquete</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -134,6 +161,22 @@ export const NkioskMoveCard = () => {
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                    </div>
+                    <div className="date-range-search">
+                        <input
+                            type="datetime-local"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="datetime-local"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
                     </div>
                 </div>
             </div>

@@ -10,10 +10,20 @@ import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { KioskTransactionCard, KioskTransactionCardDoorman, KioskTransactionList } from "../../../helpers/Types";
 import { transactionCardFields, transactionListFields } from "../../../helpers/Fields";
-import { ca } from "date-fns/locale";
+
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
 
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
     const [listMovements, setListMovements] = useState<KioskTransactionCardDoorman[]>([]);
     const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
     const [listMovementDoorman, setListMovementDoorman] = useState<KioskTransactionList[]>([]);
@@ -21,6 +31,8 @@ export const NkioskListMovements = () => {
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'eventName', 'nameUser', 'eventDoorId']);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const eventDoorId = '3';
     const deviceSN = 'AGB7234900595';
 
@@ -52,6 +64,23 @@ export const NkioskListMovements = () => {
             console.error('Erro ao buscar os dados de listagem de movimentos de porteiro:', error);
         }
     };
+
+    // Função para buscar os movimentos dos cartões entre datas
+    const fetchMovementCardBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
+            const dataDoorman = await apiService.fetchTransactionsByDatesFilters(eventDoorId, deviceSN, startDate, endDate);
+            if (Array.isArray(data)) {
+                setListMovementCard(data);
+                setListMovementDoorman(dataDoorman);
+            } else {
+                setListMovementCard([]);
+                setListMovementDoorman([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de movimentos', error);
+        }
+    }
 
     // Unifica os dados de movimentos de cartão e porteiro
     const mergeMovementData = () => {
@@ -198,6 +227,22 @@ export const NkioskListMovements = () => {
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                    </div>
+                    <div className="date-range-search">
+                        <input
+                            type="datetime-local"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="datetime-local"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
                     </div>
                 </div>
             </div>

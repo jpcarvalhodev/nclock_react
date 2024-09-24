@@ -11,13 +11,26 @@ import { KioskTransaction } from "../../../helpers/Types";
 import { transactionFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
+
 export const NkioskMoveDoorman = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
     const [moveDoorman, setMoveDoorman] = useState<KioskTransaction[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventName', 'eventDoorId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const eventDoorId = '4';
     const deviceSN = 'AGB7234900595';
 
@@ -34,6 +47,20 @@ export const NkioskMoveDoorman = () => {
             console.error('Erro ao buscar os dados de movimentos de videoporteiro:', error);
         }
     };
+
+    // Função para buscar os pagamentos do moedeiro entre datas
+    const fetchMovementsDoormanBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId, deviceSN, startDate, endDate);
+            if (Array.isArray(data)) {
+                setMoveDoorman(data);
+            } else {
+                setMoveDoorman([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de videoporteiro:', error);
+        }
+    }
 
     // Busca os movimentos de videoporteiro ao carregar a página
     useEffect(() => {
@@ -125,7 +152,7 @@ export const NkioskMoveDoorman = () => {
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Movimentos Video Porteiro</span>
+                    <span style={{ color: '#009739' }}>Movimentos de Abertura Video Porteiro</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -140,6 +167,22 @@ export const NkioskMoveDoorman = () => {
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                    </div>
+                    <div className="date-range-search">
+                        <input
+                            type="datetime-local"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="datetime-local"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementsDoormanBetweenDates} iconSize='1.1em' />
                     </div>
                 </div>
             </div>

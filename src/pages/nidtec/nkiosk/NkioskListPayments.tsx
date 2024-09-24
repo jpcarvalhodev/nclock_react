@@ -11,12 +11,24 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { KioskTransactionList, KioskTransactionMB, KioskTransactionMBCoin, } from "../../../helpers/Types";
 import { transactionListFields, transactionMBFields } from "../../../helpers/Fields";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { set } from "date-fns";
 
 // URL base das imagens
 const baseURL = "https://localhost:9090/";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
+
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
     const [listPayments, setListPayments] = useState<KioskTransactionMBCoin[]>([]);
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionList[]>([]);
@@ -24,7 +36,10 @@ export const NkioskListPayments = () => {
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'timestamp', 'transactionType']);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const eventDoorId = '1';
+    const eventDoorId2 = '2';
     const deviceSN = 'AGB7234900595';
 
     // Função para buscar as listagens de pagamentos em MB
@@ -49,6 +64,23 @@ export const NkioskListPayments = () => {
                 const filteredData = data.filter(item => item.eventDoorId === 2);
                 setListPaymentCoin(filteredData);
             } else {
+                setListPaymentCoin([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de pagamentos:', error);
+        }
+    }
+
+    // Função para buscar os pagamentos dos terminais entre datas
+    const fetchPaymentsBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
+            const dataCoin = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId2, deviceSN, startDate, endDate);
+            if (Array.isArray(data)) {
+                setListPaymentMB(data);
+                setListPaymentCoin(dataCoin);
+            } else {
+                setListPaymentMB([]);
                 setListPaymentCoin([]);
             }
         } catch (error) {
@@ -201,10 +233,21 @@ export const NkioskListPayments = () => {
             };
         });
 
-    const totalValue = listPayments.length * 0.50;
+    // Calcula o valor total dos pagamentos no terminal
+    const totalAmountTransactions = filteredDataTable.reduce((total, transaction) => {
+        const amount = transaction.amount ? String(transaction.amount) : '0';
+        return total + (typeof transaction.amount === 'number' ? transaction.amount : parseFloat(amount) || 0);
+    }, 0);
 
+    // Calcula o valor total dos pagamentos no moedeiro
+    const totalAmountFixed = filteredDataTable.length * 0.50;
+
+    // Calcula o total do valor dos pagamentos
+    const totalAmount = totalAmountTransactions + totalAmountFixed;
+
+    // Calcula o valor total dos pagamentos no gráfico
     const data = [
-        { nome: 'Total Recebido - €', valor: totalValue }
+        { nome: 'Total Recebido - €', valor: totalAmount }
     ];
 
     return (
@@ -227,6 +270,22 @@ export const NkioskListPayments = () => {
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                    </div>
+                    <div className="date-range-search">
+                        <input
+                            type="datetime-local"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="datetime-local"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
                     </div>
                 </div>
             </div>
@@ -252,6 +311,9 @@ export const NkioskListPayments = () => {
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
+                    <div className="total-amount">
+                        <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
+                    </div>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

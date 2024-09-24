@@ -114,8 +114,9 @@ import ndecor from '../assets/img/navbar/navbar/ndecor.webp';
 import npartition from '../assets/img/navbar/navbar/npartition.webp';
 import payment_card from '../assets/img/navbar/nkiosk/payment_card.png';
 import coin from '../assets/img/navbar/nkiosk/coin.png';
-import card_movement from '../assets/img/navbar/nkiosk/card_movement.png';
-import doorlock_movement from '../assets/img/navbar/nkiosk/doorlock_movement.png';
+import intercom from '../assets/img/navbar/nkiosk/intercom.png';
+import kiosk from '../assets/img/navbar/nkiosk/kiosk.png';
+import barrier from '../assets/img/navbar/nkiosk/barrier.png';
 import ads from '../assets/img/navbar/nkiosk/ads.png';
 import video from '../assets/img/navbar/nkiosk/video.png';
 import image from '../assets/img/navbar/nkiosk/image.png';
@@ -125,6 +126,7 @@ import coin_report from '../assets/img/navbar/nkiosk/coin_report.png';
 import offline from '../assets/img/navbar/nkiosk/offline.png';
 import maps from '../assets/img/navbar/nkiosk/maps.png';
 import logs from '../assets/img/navbar/nkiosk/logs.png';
+import bell from '../assets/img/navbar/nkiosk/bell.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -1531,9 +1533,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 											<Link to='/nkiosk/nkioskmovecard' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
-													<img src={card_movement} alt="botão movimentos cartão" />
+													<img src={barrier} alt="botão movimentos cartão" />
 												</span>
-												<span className="text">Movimentos Cartão</span>
+												<span className="text">Movimentos Torniquete</span>
 											</Link>
 											<Link to='/nkiosk/nkioskpaycoins' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
@@ -1541,11 +1543,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</span>
 												<span className="text">Pagamento Moedas</span>
 											</Link>
-											<Link to='/nkiosk/nkioskmovedoorman' type="button" className="btn btn-light ribbon-button">
+											<Link to='#' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
-													<img src={doorlock_movement} alt="botão movimentos porteiro" />
+													<img src={kiosk} alt="botão movimentos porteiro" />
 												</span>
-												<span className="text">Movimentos Porteiro</span>
+												<span className="text">Movimentos Quiosque</span>
+											</Link>
+										</div>
+										<div className="icon-text-pessoas">
+											<Link to="/nkiosk/nkioskmovedoorman" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={intercom} alt="botão listagem de movimentos " />
+												</span>
+												<span className="text">Abertura Video Porteiro</span>
 											</Link>
 										</div>
 									</div>
@@ -1656,6 +1666,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 									<div className="title-container">
 										<span className="title">Logs</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={bell} alt="botão alertas" />
+												</span>
+												<span className="text">Alertas</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Alertas</span>
 									</div>
 								</div>
 							</div>
