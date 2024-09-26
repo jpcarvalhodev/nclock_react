@@ -157,7 +157,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         selectedRows: Employee[];
     }) => {
         setSelectedRows(state.selectedRows);
-        filteredEmployees(state.selectedRows);
     };
 
     // Função que manipula a duplicação e fecha o modal de atualização

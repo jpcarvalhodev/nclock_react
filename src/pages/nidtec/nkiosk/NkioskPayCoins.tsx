@@ -10,6 +10,7 @@ import * as apiService from "../../../helpers/apiService";
 import { KioskTransaction } from "../../../helpers/Types";
 import { transactionFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -31,6 +32,8 @@ export const NkioskPayCoins = () => {
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedRows, setSelectedRows] = useState<KioskTransaction[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const eventDoorId = '2';
     const deviceSN = 'AGB7234900595';
 
@@ -68,8 +71,9 @@ export const NkioskPayCoins = () => {
     }, []);
 
     // Função para atualizar os pagamentos no moedeiro
-    const refreshAds = () => {
+    const refreshPayCoins = () => {
         fetchAllPayCoins();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para selecionar as colunas
@@ -89,6 +93,15 @@ export const NkioskPayCoins = () => {
     // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
+    };
+
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: KioskTransaction[];
+    }) => {
+        setSelectedRows(state.selectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -167,8 +180,9 @@ export const NkioskPayCoins = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayCoins} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <ExportButton allData={payCoins} selectedData={selectedRows} fields={transactionFields} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -195,6 +209,10 @@ export const NkioskPayCoins = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        selectableRowsHighlight
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />

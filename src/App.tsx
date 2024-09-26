@@ -73,8 +73,6 @@ import { NpartitionDashboard } from './pages/nidplace/npartition/NpartitionDashb
 import { NpingDashboard } from './pages/nidplace/nping/NpingDashboard';
 import { NsoundDashboard } from './pages/nidplace/nsound/NsoundDashboard';
 import { ColorProvider } from './context/ColorContext';
-import { NavBar } from './components/NavBar';
-import { Footer } from './components/Footer';
 import { NkioskAds } from './pages/nidtec/nkiosk/NkioskAds';
 import { NkioskMap } from './pages/nidtec/nkiosk/NkioskMap';
 import { NkioskPayTerminal } from './pages/nidtec/nkiosk/NkioskPayTerminal';
@@ -84,6 +82,7 @@ import { NkioskMoveDoorman } from './pages/nidtec/nkiosk/NkioskMoveDoorman';
 import { NkioskListMovements } from './pages/nidtec/nkiosk/NkioskListMovements';
 import { NkioskListPayments } from './pages/nidtec/nkiosk/NkioskListPayments';
 import { NkioskLogs } from './pages/nidtec/nkiosk/NkioskLogs';
+import { NewUsers } from './pages/configs/NewUsers';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -147,6 +146,7 @@ function AnimatedRoutes() {
               <Route path="/persons/zones" element={<PageProtection><Zones /></PageProtection>} />
               <Route path="/persons/types" element={<PageProtection><Types /></PageProtection>} />
               <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
+              <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
               <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />
               <Route path="/nclock/nclockpresence" element={<PageProtection><NclockPresence /></PageProtection>} />

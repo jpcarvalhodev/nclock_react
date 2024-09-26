@@ -108,6 +108,7 @@ export const Employees = () => {
     const refreshEmployees = () => {
         fetchEmployees();
         setSelectedEmployeeIds([]);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para filtrar as presenças com base no texto de pesquisa

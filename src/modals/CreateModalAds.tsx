@@ -133,7 +133,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
                         <Col md={6}>

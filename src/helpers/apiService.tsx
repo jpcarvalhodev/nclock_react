@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { Ads, Category, Department, Devices, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Zone } from "./Types";
+import { Ads, Category, Department, Devices, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -880,7 +880,7 @@ export const fetchKioskTransactionDoorAsync = async () => {
 };
 
 export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
-    let url = `KioskTransaction/GetByEventDoorIdAndDeviceSNAsync/${deviceSN}?eventDoorId=${eventDoorId}`;
+    let url = `KioskTransaction/GetByEventDoorIdAndDeviceSNAsync?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
     if (startDate && endDate) {
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }
@@ -892,7 +892,7 @@ export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventD
 }
 
 export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
-    let url = `KioskTransaction/GetTransactionsByCardAndDeviceSN/${deviceSN}?eventDoorId=${eventDoorId}`;
+    let url = `KioskTransaction/GetTransactionsByCardAndDeviceSN?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
     if (startDate && endDate) {
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }
@@ -904,7 +904,7 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: strin
 }
 
 export const fetchKioskTransactionsByMBAndDeviceSN = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
-    let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN/${deviceSN}?eventDoorId=${eventDoorId}`;
+    let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
     if (startDate && endDate) {
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }
@@ -915,8 +915,88 @@ export const fetchKioskTransactionsByMBAndDeviceSN = async (eventDoorId: string,
     return response.json();
 }
 
-export const fetchTransactionsByDatesFilters = async (eventDoorId: string, deviceSN: string, startDate: string, endDate: string) => {
-    const response = await fetchWithAuth(`KioskTransaction/GetTransactionsByDatesFilters?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}&startDate=${startDate}&endDate=${endDate}`);
+export const fetchKioskTransactionsVideoPorteiroByDatesFilters = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
+    if (startDate && endDate) {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CRIAÇÃO DE CONTAS E EMAILS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllRegisteredUsers = async () => {
+    const response = await fetchWithAuth(`Authentication/GetAllUsersWithRoles`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+};
+
+export const fetchAllEmailConfig = async () => {
+    const response = await fetchWithAuth(`Configuration/GetEmailSMTPConfigurations`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const addNewRegisteredUser = async (registeredUser: Register) => {
+    const response = await fetchWithAuth(`Authentication/Register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registeredUser)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const updateRegisteredUser = async (registeredUser: Register) => {
+    const response = await fetchWithAuth(`Authentication/UpdateUser`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registeredUser)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const addUserEmailConfig = async (email: EmailUser) => {
+    const response = await fetchWithAuth(`Configuration/AddEmailConfigurations`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(email)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const updateUserEmailConfig = async (email: EmailUser) => {
+    const response = await fetchWithAuth(`Configuration/UpdateEmailConfigurations`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(email)
+    });
     if (!response.ok) {
         return;
     }

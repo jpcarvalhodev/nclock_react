@@ -33,7 +33,6 @@ interface UpdateModalProps<T extends Entity> {
 // Define o componente
 export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
-    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
     const fileInputRef = React.createRef<HTMLInputElement>();

@@ -249,19 +249,6 @@ export type KioskTransaction = {
     updateTime: Date;
 };
 
-export type KioskTransactionList = {
-    [key: string]: any;
-    id: string;
-    eventTime: Date;
-    pin: number;
-    cardNo: number;
-    eventNo: number;
-    eventName: string;
-    eventDoorId: number;
-    eventDoorName: string;
-    verifyModeNo: number;
-}
-
 export type KioskTransactionMB = {
     [key: string]: any;
     id: string;
@@ -280,6 +267,7 @@ export type KioskTransactionCard = {
     id: string;
     cardNo: number;
     nameUser: string;
+    deviceSN: string;
     eventNo: number;
     eventName: string;
     eventDoorId: number;
@@ -289,6 +277,25 @@ export type KioskTransactionCard = {
     verifyModeNo: number;
 };
 
-export type KioskTransactionMBCoin = Partial<KioskTransactionMB> & Partial<KioskTransactionList>;
+export type KioskTransactionMBCoin = Partial<KioskTransactionMB> & Partial<KioskTransaction>;
 
-export type KioskTransactionCardDoorman = Partial<KioskTransactionCard> & Partial<KioskTransactionList>;
+export type Register = {
+    [key: string]: any;
+    id: string;
+    name: string;
+    userName: string;
+    emailAddress: string;
+    password: string;
+    confirmPassword: string;
+    roles: string;
+};
+
+export type EmailUser = {
+    [key: string]: any;
+    id: string;
+    usernameEmail: string;
+    passwordEmail: string;
+    hostSMTP: string;
+    portSMTP: string;
+    enableSSL: boolean;
+};

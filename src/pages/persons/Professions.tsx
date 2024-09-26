@@ -37,6 +37,7 @@ export const Professions = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [selectedRows, setSelectedRows] = useState<Profession[]>([]);
 
     // Função para buscar as profissões
     const fetchAllProfessions = async () => {
@@ -120,13 +121,6 @@ export const Professions = () => {
         setShowDeleteModal(true);
     };
 
-    // Filtra as profissões
-    const filteredItems = professions.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
-
     // Função para alternar a visibilidade das colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -144,6 +138,15 @@ export const Professions = () => {
     // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
+    };
+
+    // Função para lidar com a seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Profession[];
+    }) => {
+        setSelectedRows(state.selectedRows);
     };
 
     // Opções de paginação de EN em PT
@@ -214,7 +217,7 @@ export const Professions = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={professions} selectedData={filteredItems} fields={professionFields} />
+                        <ExportButton allData={professions} selectedData={selectedRows} fields={professionFields} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes

@@ -208,17 +208,6 @@ export const transactionFields = [
     { key: 'updateTime', label: 'Data de Atualização', type: 'Date' },
 ];
 
-export const transactionListFields = [
-    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'pin', label: 'PIN', type: 'number' },
-    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
-    { key: 'eventNo', label: 'Número do Evento', type: 'number' },
-    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
-    { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
-    { key: 'eventDoorName', label: 'Nome da Porta do Evento', type: 'string' },
-    { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
-];
-
 export const transactionMBFields = [
     { key: 'transactionType', label: 'Tipo de Transação', type: 'string' },
     { key: 'amount', label: 'Valor', type: 'string' },
@@ -233,6 +222,7 @@ export const transactionMBFields = [
 export const transactionCardFields = [
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
     { key: 'nameUser', label: 'Nome do Usuário', type: 'string' },
+    { key: 'deviceSN', label: 'Número de Série do Dispositivo', type: 'string' },
     { key: 'eventNo', label: 'Número do Evento', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
@@ -240,4 +230,21 @@ export const transactionCardFields = [
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
     { key: 'pin', label: 'PIN', type: 'number' },
     { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
+];
+
+export const registerFields = [
+    { key: 'name', label: 'Nome', type: 'string', required: true },
+    { key: 'userName', label: 'Nome de Usuário', type: 'string', required: true },
+    { key: 'emailAddress', label: 'E-Mail', type: 'string', required: true },
+    { key: 'password', label: 'Senha', type: 'string', required: true },
+    { key: 'confirmPassword', label: 'Confirmar Senha', type: 'string', required: true },
+    { key: 'roles', label: 'Tipo de Conta', type: 'string', required: true },
+];
+
+export const emailFields = [
+    { key: 'usernameEmail', label: 'E-Mail do Utilizador', type: 'string', required: true },
+    { key: 'passwordEmail', label: 'Senha do E-Mail', type: 'string', required: true },
+    { key: 'hostSMTP', label: 'Servidor SMTP', type: 'string', required: true },
+    { key: 'portSMTP', label: 'Porta SMTP', type: 'string', required: true },
+    { key: 'enableSSL', label: 'Activar SSL', type: 'string', required: true },
 ];

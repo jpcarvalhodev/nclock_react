@@ -10,6 +10,7 @@ import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionMB } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 
 // URL base das imagens
 const baseURL = "https://localhost:9090/";
@@ -34,6 +35,8 @@ export const NkioskPayTerminal = () => {
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const eventDoorId = '1';
     const deviceSN = 'AGB7234900595';
 
@@ -71,8 +74,9 @@ export const NkioskPayTerminal = () => {
     }, []);
 
     // Função para atualizar os pagamentos dos terminais
-    const refreshAds = () => {
+    const refreshPayTerminal = () => {
         fetchAllPayTerminal();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para selecionar as colunas
@@ -94,13 +98,20 @@ export const NkioskPayTerminal = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: KioskTransactionMB[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
+
     // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
-
-    console.log(payTerminal);
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -184,8 +195,9 @@ export const NkioskPayTerminal = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayTerminal} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <ExportButton allData={payTerminal} selectedData={selectedRows} fields={transactionMBFields} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -212,6 +224,10 @@ export const NkioskPayTerminal = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        selectableRowsHighlight
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />

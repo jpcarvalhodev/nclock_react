@@ -10,6 +10,7 @@ import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { transactionCardFields } from "../../../helpers/Fields";
+import { ExportButton } from "../../../components/ExportButton";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -31,6 +32,8 @@ export const NkioskMoveCard = () => {
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const eventDoorId = '3';
     const deviceSN = 'AGB7234900595';
 
@@ -68,8 +71,9 @@ export const NkioskMoveCard = () => {
     }, []);
 
     // Função para atualizar as publicidades
-    const refreshAds = () => {
+    const refreshMoveCard = () => {
         fetchAllMoveCard();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para selecionar as colunas
@@ -91,6 +95,15 @@ export const NkioskMoveCard = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: KioskTransactionCard[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
+
     // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -99,9 +112,6 @@ export const NkioskMoveCard = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = moveCard
-        .filter(listMovement =>
-            listMovement.eventName === 'Door Opens' || listMovement.eventName === 'Open the door by pressing the exit button'
-        )
         .filter(moveCards =>
             Object.keys(filters).every(key =>
                 filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
@@ -125,6 +135,8 @@ export const NkioskMoveCard = () => {
                 switch (field.key) {
                     case 'eventDoorId':
                         return 'Cartão';
+                    case 'eventTime':
+                        return new Date(row[field.key]).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -159,8 +171,9 @@ export const NkioskMoveCard = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <ExportButton allData={moveCard} selectedData={selectedRows} fields={transactionCardFields} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -187,6 +200,10 @@ export const NkioskMoveCard = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        selectableRowsHighlight
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />

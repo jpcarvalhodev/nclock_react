@@ -56,6 +56,7 @@ export const Persons = () => {
             employeeID: lastEmployee.employeeID
         };
         await handleAddEmployeeCard(employeeCard as EmployeeCard);
+        setData({ ...data, employees: employees });
         refreshEmployees();
         setShowAddModal(false);
     };
@@ -110,11 +111,6 @@ export const Persons = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Função para filtrar funcionários
-    const handleFilteredEmployees = (employees: Employee[]) => {
-        setFilteredData(employees);
-    };
-
     return (
         <PersonsProvider>
             <div className="main-container">
@@ -150,7 +146,7 @@ export const Persons = () => {
                                 selectedColumns={selectedColumns}
                                 showAllEmployees={showAllEmployees}
                                 filterText={filterText}
-                                filteredEmployees={handleFilteredEmployees}
+                                filteredEmployees={setFilteredData}
                                 resetSelection={resetSelection}
                                 data={data}
                                 onRefreshData={setData}

@@ -82,7 +82,7 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
       await fetchAllData(entity);
     };
     fetchData();
-  }, [entity, fetchAllData]);
+  }, [entity, fetchAllData, data]);
 
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {

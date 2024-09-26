@@ -92,7 +92,6 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
                     code: maxCode
                 }));
             } else {
-                toast.error(`Erro ao buscar dados de ${entityType}`);
                 return;
             }
         } catch (error) {

@@ -8,8 +8,9 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { KioskTransactionCard, KioskTransactionCardDoorman, KioskTransactionList } from "../../../helpers/Types";
-import { transactionCardFields, transactionListFields } from "../../../helpers/Fields";
+import { KioskTransactionCard } from "../../../helpers/Types";
+import { transactionCardFields } from "../../../helpers/Fields";
+import { ExportButton } from "../../../components/ExportButton";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -24,16 +25,19 @@ const formatDateToEndOfDay = (date: Date): string => {
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useColor();
     const currentDate = new Date();
-    const [listMovements, setListMovements] = useState<KioskTransactionCardDoorman[]>([]);
+    const [listMovements, setListMovements] = useState<KioskTransactionCard[]>([]);
     const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
-    const [listMovementDoorman, setListMovementDoorman] = useState<KioskTransactionList[]>([]);
+    const [listMovementDoorman, setListMovementDoorman] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'eventName', 'nameUser', 'eventDoorId']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const eventDoorId = '3';
+    const eventDoorId2 = '4';
     const deviceSN = 'AGB7234900595';
 
     // Função para buscar as listagens de movimentos de cartão
@@ -53,10 +57,9 @@ export const NkioskListMovements = () => {
     // Função para buscar as listagens de movimentos de porteiro
     const fetchAllListMovementsDoorman = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionDoorAsync();
+            const data = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
-                const filteredData = data.filter(item => item.eventDoorId === 4);
-                setListMovementDoorman(filteredData);
+                setListMovementDoorman(data);
             } else {
                 setListMovementDoorman([]);
             }
@@ -69,7 +72,7 @@ export const NkioskListMovements = () => {
     const fetchMovementCardBetweenDates = async () => {
         try {
             const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
-            const dataDoorman = await apiService.fetchTransactionsByDatesFilters(eventDoorId, deviceSN, startDate, endDate);
+            const dataDoorman = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setListMovementCard(data);
                 setListMovementDoorman(dataDoorman);
@@ -84,11 +87,12 @@ export const NkioskListMovements = () => {
 
     // Unifica os dados de movimentos de cartão e porteiro
     const mergeMovementData = () => {
-        const unifiedData: KioskTransactionCardDoorman[] = [
+        const unifiedData: KioskTransactionCard[] = [
             ...listMovementCard.map((movement) => ({
                 id: movement.id,
                 cardNo: movement.cardNo,
                 nameUser: movement.nameUser,
+                deviceSN: movement.deviceSN,
                 eventNo: movement.eventNo,
                 eventName: movement.eventName,
                 eventDoorId: movement.eventDoorId,
@@ -100,6 +104,8 @@ export const NkioskListMovements = () => {
             ...listMovementDoorman.map((movement) => ({
                 id: movement.id,
                 cardNo: movement.cardNo,
+                nameUser: movement.nameUser,
+                deviceSN: movement.deviceSN,
                 eventNo: movement.eventNo,
                 eventName: movement.eventName,
                 eventDoorId: movement.eventDoorId,
@@ -125,9 +131,10 @@ export const NkioskListMovements = () => {
     }, []);
 
     // Função para atualizar as listagens de movimentos
-    const refreshAds = () => {
+    const refreshListMovements = () => {
         fetchAllListMovementsCard();
         fetchAllListMovementsDoorman();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para selecionar as colunas
@@ -147,6 +154,15 @@ export const NkioskListMovements = () => {
     // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
+    };
+
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: KioskTransactionCard[];
+    }) => {
+        setSelectedRows(state.selectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -176,7 +192,7 @@ export const NkioskListMovements = () => {
         );
 
     // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
-    const combinedMovements = [...transactionCardFields, ...transactionListFields].reduce((acc, current) => {
+    const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {
         if (!acc.some(field => field.key === current.key)) {
             acc.push(current);
         }
@@ -184,10 +200,10 @@ export const NkioskListMovements = () => {
     }, [] as typeof transactionCardFields);
 
     // Define as colunas da tabela
-    const columns: TableColumn<KioskTransactionCardDoorman>[] = combinedMovements
+    const columns: TableColumn<KioskTransactionCard>[] = combinedMovements
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: KioskTransactionCardDoorman) => {
+            const formatField = (row: KioskTransactionCard) => {
                 switch (field.key) {
                     case 'eventDoorId':
                         return row.eventDoorId === 4 ? 'Video Porteiro' : 'Cartão';
@@ -225,8 +241,9 @@ export const NkioskListMovements = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <ExportButton allData={listMovements} selectedData={selectedRows} fields={combinedMovements} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -253,6 +270,10 @@ export const NkioskListMovements = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        selectableRowsHighlight
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />

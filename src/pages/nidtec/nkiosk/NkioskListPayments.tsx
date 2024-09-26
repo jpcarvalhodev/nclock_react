@@ -8,9 +8,10 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { KioskTransactionList, KioskTransactionMB, KioskTransactionMBCoin, } from "../../../helpers/Types";
-import { transactionListFields, transactionMBFields } from "../../../helpers/Fields";
+import { KioskTransaction, KioskTransactionMB, KioskTransactionMBCoin, } from "../../../helpers/Types";
+import { transactionFields, transactionMBFields } from "../../../helpers/Fields";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { ExportButton } from "../../../components/ExportButton";
 import { set } from "date-fns";
 
 // URL base das imagens
@@ -31,13 +32,15 @@ export const NkioskListPayments = () => {
     const currentDate = new Date();
     const [listPayments, setListPayments] = useState<KioskTransactionMBCoin[]>([]);
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
-    const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionList[]>([]);
+    const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransaction[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'timestamp', 'transactionType']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedRows, setSelectedRows] = useState<KioskTransactionMBCoin[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const eventDoorId = '1';
     const eventDoorId2 = '2';
     const deviceSN = 'AGB7234900595';
@@ -59,10 +62,9 @@ export const NkioskListPayments = () => {
     // Função para buscar as listagens de pagamentos em moedas
     const fetchAllListPaymentsCoins = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionDoorAsync();
+            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
-                const filteredData = data.filter(item => item.eventDoorId === 2);
-                setListPaymentCoin(filteredData);
+                setListPaymentCoin(data);
             } else {
                 setListPaymentCoin([]);
             }
@@ -130,9 +132,10 @@ export const NkioskListPayments = () => {
     }, []);
 
     // Função para atualizar as listagens de pagamentos
-    const refreshAds = () => {
+    const refreshListPayments = () => {
         fetchAllListPaymentsMB();
         fetchAllListPaymentsCoins();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para selecionar as colunas
@@ -152,6 +155,15 @@ export const NkioskListPayments = () => {
     // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
+    };
+
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: KioskTransactionMBCoin[];
+    }) => {
+        setSelectedRows(state.selectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -180,7 +192,7 @@ export const NkioskListPayments = () => {
     );
 
     // Combina os campos para a tabela
-    const combinedPayments = [...transactionMBFields, ...transactionListFields];
+    const combinedPayments = [...transactionMBFields, ...transactionFields];
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMBCoin>[] = combinedPayments
@@ -197,6 +209,10 @@ export const NkioskListPayments = () => {
                         return row.eventDoorId === 2 ? 'Moedeiro' : 'Terminal';
                     case 'timestamp':
                         return row.timestamp ? new Date(row.timestamp).toLocaleString() : '';
+                    case 'eventTime':
+                    case 'createTime':
+                    case 'updateTime':
+                        return row[field.key] ? new Date(row[field.key] as string | number | Date).toLocaleString() : '';
                     case 'eventDoorName':
                         return row.eventDoorId === 2 ? 'Moedeiro' : 'Terminal';
                     case 'clientTicket':
@@ -268,8 +284,9 @@ export const NkioskListPayments = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <ExportButton allData={listPayments} selectedData={selectedRows} fields={combinedPayments} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -308,6 +325,10 @@ export const NkioskListPayments = () => {
                         paginationPerPage={5}
                         paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                         paginationComponentOptions={paginationOptions}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        selectableRowsHighlight
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />

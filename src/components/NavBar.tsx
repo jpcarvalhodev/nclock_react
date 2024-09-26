@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { Ads, Employee } from '../helpers/Types';
+import { Ads, EmailUser, Employee } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -130,8 +130,11 @@ import bell from '../assets/img/navbar/nkiosk/bell.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields } from '../helpers/Fields';
+import { adsFields, emailFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
+import { EmailOptionsModal } from '../modals/EmailOptions';
+import * as apiService from "../helpers/apiService";
+import { toast } from 'react-toastify';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -171,6 +174,15 @@ interface MenuStructure {
 interface NavBarProps {
 	style?: React.CSSProperties;
 }
+
+const defaultEmailUser: EmailUser = {
+    id: '',
+    usernameEmail: '',
+    passwordEmail: '',
+    hostSMTP: '',
+    portSMTP: '',
+    enableSSL: false
+};
 
 // Define as propriedades do componente
 export const NavBar = ({ style }: NavBarProps) => {
@@ -261,6 +273,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
 	const location = useLocation();
 	const [showAdsModal, setShowAdsModal] = useState(false);
+	const [showEmailModal, setShowEmailModal] = useState(false);
+	const [emailConfig, setEmailConfig] = useState<EmailUser>(defaultEmailUser);
 
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
@@ -297,6 +311,33 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setUser({ name: userName, email: userEmail });
 		}
 	};
+
+	// Função para carregar os dados das configurações de email
+	const fetchEmailConfig = async () => {
+		try {
+			const data = await apiService.fetchAllEmailConfig();
+			setEmailConfig(data[0]);
+		} catch (error) {
+			console.error('Erro ao carregar os emails registados:', error);
+		}
+	}
+
+	// Função de atualização de emails de utilizadores
+	const handleUpdateEmailConfig = async (email: EmailUser) => {
+		try {
+            const data = await apiService.updateUserEmailConfig(email);
+            const updatedUsers = email.map((u: EmailUser) => u.id === data.id ? data : u);
+            setEmailConfig(updatedUsers);
+            toast.success(data.value || 'Email atualizado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar o email registado:', error);
+        }
+    }
+
+	// Carregamento inicial dos dados de configuração de email
+	useEffect(() => {
+		fetchEmailConfig();
+	}, []);
 
 	// Função para carregar o estado do ribbon
 	const loadRibbonState = () => {
@@ -854,10 +895,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setActiveTab(tabName);
 			localStorage.setItem('activeTab', tabName);
 		}
-	};
+	};	
 
 	// Função para abrir o modal de opções do terminal
 	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
+
+	const toggleEmailOptionsModal = () => setShowEmailModal(!showEmailModal);
 
 	// Função para abrir o modal de publicidade
 	const toggleAdsModal = () => setShowAdsModal(!showAdsModal);
@@ -1986,12 +2029,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button onClick={toggleEmailOptionsModal} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={settings} alt="botão opções" />
 												</span>
 												<span className="text">Opções</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -2040,7 +2083,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/configs/newusers" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={person} alt="botão utilizadores" />
 												</span>
@@ -2163,6 +2206,16 @@ export const NavBar = ({ style }: NavBarProps) => {
 						onClose={() => setShowModal(false)}
 						onSave={() => setShowModal(false)}
 						initialValues={{}}
+					/>
+				)}
+				{showEmailModal && (
+					<EmailOptionsModal
+						open={showEmailModal}
+						onClose={() => setShowEmailModal(false)}
+						onUpdate={handleUpdateEmailConfig}
+						entity={emailConfig}
+						fields={emailFields}
+						title='Opções de E-Mail'
 					/>
 				)}
 				{showAdsModal && (

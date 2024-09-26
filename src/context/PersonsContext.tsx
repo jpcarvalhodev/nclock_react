@@ -114,7 +114,6 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const handleUpdateEmployee = async (employee: Employee) => {
         try {
             const updatedEmployee = await apiService.updateEmployee(employee);
-            console.log('updatedEmployee:', updatedEmployee);
             setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
             toast.success(updatedEmployee.message || 'Funcionário atualizado com sucesso');
         } catch (error) {

@@ -7,9 +7,10 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransaction } from "../../../helpers/Types";
-import { transactionFields } from "../../../helpers/Fields";
+import { KioskTransactionCard } from "../../../helpers/Types";
+import { transactionCardFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -24,20 +25,22 @@ const formatDateToEndOfDay = (date: Date): string => {
 export const NkioskMoveDoorman = () => {
     const { navbarColor, footerColor } = useColor();
     const currentDate = new Date();
-    const [moveDoorman, setMoveDoorman] = useState<KioskTransaction[]>([]);
+    const [moveDoorman, setMoveDoorman] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventName', 'eventDoorId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const eventDoorId = '4';
     const deviceSN = 'AGB7234900595';
 
     // Função para buscar os movimentos de videoporteiro
     const fetchAllMoveDoorman = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId, deviceSN);
             if (Array.isArray(data)) {
                 setMoveDoorman(data);
             } else {
@@ -51,7 +54,7 @@ export const NkioskMoveDoorman = () => {
     // Função para buscar os pagamentos do moedeiro entre datas
     const fetchMovementsDoormanBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setMoveDoorman(data);
             } else {
@@ -68,8 +71,9 @@ export const NkioskMoveDoorman = () => {
     }, []);
 
     // Função para atualizar os movimentos de videoporteiro
-    const refreshAds = () => {
+    const refreshMoveDoorman = () => {
         fetchAllMoveDoorman();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para selecionar as colunas
@@ -91,6 +95,15 @@ export const NkioskMoveDoorman = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: KioskTransactionCard[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
+
     // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -99,9 +112,6 @@ export const NkioskMoveDoorman = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = moveDoorman
-        .filter(listMovement =>
-            listMovement.eventName === 'Door Opens' || listMovement.eventName === 'Open the door by pressing the exit button'
-        )
         .filter(moveDoormans =>
             Object.keys(filters).every(key =>
                 filters[key] === "" || (moveDoormans[key] != null && String(moveDoormans[key]).toLowerCase().includes(filters[key].toLowerCase()))
@@ -118,18 +128,14 @@ export const NkioskMoveDoorman = () => {
         );
 
     // Define as colunas da tabela
-    const columns: TableColumn<KioskTransaction>[] = transactionFields
+    const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: KioskTransaction) => {
+            const formatField = (row: KioskTransactionCard) => {
                 switch (field.key) {
                     case 'eventDoorId':
                         return 'Video Porteiro';
                     case 'eventTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
-                    case 'createTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
-                    case 'updateTime':
                         return new Date(row[field.key]).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
@@ -165,8 +171,9 @@ export const NkioskMoveDoorman = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveDoorman} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <ExportButton allData={moveDoorman} selectedData={selectedRows} fields={transactionCardFields} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -193,6 +200,10 @@ export const NkioskMoveDoorman = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        selectableRowsHighlight
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
@@ -201,7 +212,7 @@ export const NkioskMoveDoorman = () => {
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={transactionFields}
+                    columns={transactionCardFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
