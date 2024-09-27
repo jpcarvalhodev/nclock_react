@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { Ads, EmailUser, Employee } from '../helpers/Types';
+import { EmailUser, Employee } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -127,6 +127,8 @@ import offline from '../assets/img/navbar/nkiosk/offline.png';
 import maps from '../assets/img/navbar/nkiosk/maps.png';
 import logs from '../assets/img/navbar/nkiosk/logs.png';
 import bell from '../assets/img/navbar/nkiosk/bell.png';
+import registry from '../assets/img/navbar/nkiosk/registry.png';
+import alert from '../assets/img/navbar/nkiosk/alert.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -1176,18 +1178,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className="grid-container-entidades">
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={movement} alt="botão acessos movimentos" />
 												</span>
 												<span className="text">Movimentos</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={presence} alt="botão acessos presenças" />
 												</span>
 												<span className="text">Presenças</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1197,50 +1199,50 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={clipboard} alt="botão resultados" />
 												</span>
 												<span className="text">Resultados</span>
-											</Link>
+											</Button>
 										</div>
 										<div className="grid-container">
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={processing} alt="botão processamento" />
 												</span>
 												<span className="text">Processamento</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={segmentation} alt="botão segmentos" />
 												</span>
 												<span className="text">Segmentos</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={plusMinus} alt="botão compensações" />
 												</span>
 												<span className="text">Compensações</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={battery} alt="botão acumulados" />
 												</span>
 												<span className="text">Acumulados</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={hourDatabase} alt="botão banco de horas" />
 												</span>
 												<span className="text">Banco de Horas</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={clock} alt="botão trabalho suplementar" />
 												</span>
 												<span className="text">Trabalho Suplementar</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1250,18 +1252,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className="grid-container-entidades">
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={time} alt="botão horários" />
 												</span>
 												<span className="text">Horários</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={workPlan} alt="botão planos de trabalho" />
 												</span>
 												<span className="text">Planos de Trabalho</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1271,50 +1273,50 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className="grid-container">
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={absent} alt="botão ausências faltas" />
 												</span>
 												<span className="text">Ausências Faltas</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={unknown} alt="botão não definido" />
 												</span>
 												<span className="text">Não Definido</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={work} alt="botão trabalho" />
 												</span>
 												<span className="text">Trabalho</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={extra} alt="botão extra" />
 												</span>
 												<span className="text">Extra</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={limit} alt="botão tolerâncias" />
 												</span>
 												<span className="text">Tolerâncias</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={addHour} alt="botão banco de horas" />
 												</span>
 												<span className="text">Banco de Horas</span>
-											</Link>
+											</Button>
 										</div>
 										<div>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={rules} alt="botão regras" />
 												</span>
 												<span className="text">Regras</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1324,40 +1326,40 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={medicalLeave} alt="botão ausências" />
 												</span>
 												<span className="text">Ausências</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={vacation} alt="botão férias" />
 												</span>
 												<span className="text">Férias</span>
-											</Link>
+											</Button>
 										</div>
 										<div>
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={vacation} alt="botão alteração de férias" />
 												</span>
 												<span className="text">Alteração de Férias</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={holidays} alt="botão feriados" />
 												</span>
 												<span className="text">Feriados</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={autorization} alt="botão autorizações" />
 												</span>
 												<span className="text">Autorizações</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1367,42 +1369,42 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className="grid-container">
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={calendar} alt="botão calendário" />
 												</span>
 												<span className="text">Calendário</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={segmentation} alt="botão segmentos" />
 												</span>
 												<span className="text">Segmentos</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={monthly} alt="botão mensal" />
 												</span>
 												<span className="text">Mensal</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={exchange} alt="botão trocas" />
 												</span>
 												<span className="text">Trocas</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={availability} alt="botão disponibilidades" />
 												</span>
 												<span className="text">Disponibilidades</span>
-											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											</Button>
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={plans} alt="botão planos" />
 												</span>
 												<span className="text">Planos</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1412,12 +1414,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-informacoes'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-entidades" disabled>
 												<span className="icon">
 													<img src={settings} alt="botão opções" />
 												</span>
 												<span className="text">Opções</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1443,52 +1445,52 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={movement} alt="botão movimentos" />
 												</span>
 												<span className="text">Movimentos</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={presence} alt="botão presença" />
 												</span>
 												<span className="text">Presença</span>
-											</Link>
+											</Button>
 										</div>
 										<div>
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={all} alt="botão todos" />
 												</span>
 												<span className="text">Todos</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={formation} alt="botão formação" />
 												</span>
 												<span className="text">Formação</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={person} alt="botão visitas" />
 												</span>
 												<span className="text">Visitas</span>
-											</Link>
+											</Button>
 										</div>
 										<div>
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={motives} alt="botão motivos" />
 												</span>
 												<span className="text">Motivos</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1498,20 +1500,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={search} alt="botão revistas" />
 												</span>
 												<span className="text">Revistas</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={plans} alt="botão planos" />
 												</span>
 												<span className="text">Planos</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1521,28 +1523,28 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={imports} alt="botão importações" />
 												</span>
 												<span className="text">Importações</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={controlPanel} alt="botão painel de controlo" />
 												</span>
 												<span className="text">Painel de Controlo</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={settings} alt="botão opções" />
 												</span>
 												<span className="text">Opções</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1613,7 +1615,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												<span className="icon">
 													<img src={card_report} alt="botão listagem de pagamentos" />
 												</span>
-												<span className="text">Listagem de Pagamentos</span>
+												<span className="text">Listagem Pagamentos</span>
 											</Link>
 										</div>
 										<div className="icon-text-pessoas">
@@ -1621,7 +1623,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												<span className="icon">
 													<img src={coin_report} alt="botão listagem de movimentos " />
 												</span>
-												<span className="text">Listagem de Movimentos</span>
+												<span className="text">Listagem Movimentos</span>
 											</Link>
 										</div>
 									</div>
@@ -1632,21 +1634,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div>
-											<Button /* to="/nkiosk/NkioskAds" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+											<Link to="/nkiosk/NkioskAds" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" >
 												<span className="icon">
 													<img src={ads} alt="botão publicidade" />
 												</span>
 												<span className="text">Publicidade</span>
-											</Button>
+											</Link>
 										</div>
 										<div>
-											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button" disabled>
+											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button" >
 												<span className="icon">
 													<img src={video} alt="botão vídeo" />
 												</span>
 												<span className="text">Vídeo</span>
 											</Button>
-											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button" disabled>
+											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button" >
 												<span className="icon">
 													<img src={image} alt="botão imagem" />
 												</span>
@@ -1718,12 +1720,42 @@ export const NavBar = ({ style }: NavBarProps) => {
 												<span className="icon">
 													<img src={bell} alt="botão alertas" />
 												</span>
-												<span className="text">Alertas</span>
+												<span className="text">Avisos</span>
 											</Link>
 										</div>
 									</div>
 									<div className="title-container">
 										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<span className="icon">
+													<img src={registry} alt="botão registos" />
+												</span>
+												<span className="text">Ocorrências</span>
+											</Button>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Registos</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<span className="icon">
+													<img src={alert} alt="botão registos" />
+												</span>
+												<span className="text">Intrusão</span>
+											</Button>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Alarmes</span>
 									</div>
 								</div>
 							</div>
@@ -1828,12 +1860,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</span>
 												<span className="text">Categorias</span>
 											</Link>
-											<Link to="#" type="button" className="btn btn-light ribbon-button">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={fraccoes} alt="botão provisórios" />
 												</span>
 												<span className="text">Fracções</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1857,28 +1889,28 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</span>
 												<span className="text">Tipos</span>
 											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											<Button /* to='#' */ type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={fonts} alt="botão fontes" />
 												</span>
 												<span className="text">Fontes</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-informacoes'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-entidades" disabled>
 												<span className="icon">
 													<img src={interventionAreas} alt="botão áreas de intervenção" />
 												</span>
 												<span className="text">Áreas de Intervenção</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-informacoes'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-entidades" disabled>
 												<span className="icon">
 													<img src={businessAreas} alt="botão áreas de negócios" />
 												</span>
 												<span className="text">Áreas de Negócios</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1888,12 +1920,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-informacoes'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-entidades">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-entidades" disabled>
 												<span className="icon">
 													<img src={internalContacts} alt="botão contactos internos" />
 												</span>
 												<span className="text">Contactos Internos</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1927,23 +1959,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>  
 												<span className="icon">
 													<img src={accessPlan} alt="botão planos de acesso" />
 												</span>
 												<span className="text">Planos de Acesso</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={timePlan} alt="botão planos de horários" />
 												</span>
 												<span className="text">Planos de Horários</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/devices/timeperiods" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={clock} alt="botão períodos" />
 												</span>
@@ -1966,12 +1998,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={camera} alt="botão câmeras" />
 												</span>
 												<span className="text">Câmeras</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -1997,36 +2029,36 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={database} alt="botão base de dados" />
 												</span>
 												<span className="text">Base de Dados</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={imports} alt="botão backup bd" />
 												</span>
 												<span className="text">Backup BD</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={departments} alt="botão entidade" />
 												</span>
 												<span className="text">Entidade</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={license} alt="botão licença" />
 												</span>
 												<span className="text">Licença</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
 											<Button onClick={toggleEmailOptionsModal} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
@@ -2044,28 +2076,28 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={settings} alt="botão opções" />
 												</span>
 												<span className="text">Opções</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={timeZone} alt="botão fusos horários" />
 												</span>
 												<span className="text">Fusos Horários</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={nacionalities} alt="botão nacionalidades" />
 												</span>
 												<span className="text">Nacionalidades</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -2075,12 +2107,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={groups} alt="botão perfis" />
 												</span>
 												<span className="text">Perfis</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
 											<Link to="/configs/newusers" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
@@ -2098,20 +2130,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={document} alt="botão documentos" />
 												</span>
 												<span className="text">Documentos</span>
-											</Link>
+											</Button>
 										</div>
 										<div>
-											<Link to="#" type="button" className="btn btn-light ribbon-button-ent">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button-ent" disabled>
 												<span className="icon">
 													<img src={types} alt="botão tipos" />
 												</span>
 												<span className="text">Tipos</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -2121,20 +2153,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={consult} alt="botão consultar" />
 												</span>
 												<span className="text">Consultar</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={dpoConsult} alt="botão consultar dpo" />
 												</span>
 												<span className="text">Consultar DPO</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">
@@ -2160,28 +2192,28 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={about} alt="botão acerca de" />
 												</span>
 												<span className="text">Acerca de</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={manual} alt="botão manual" />
 												</span>
 												<span className="text">Manual</span>
-											</Link>
+											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled> 
 												<span className="icon">
 													<img src={helpdesk} alt="botão helpdesk" />
 												</span>
 												<span className="text">Helpdesk</span>
-											</Link>
+											</Button>
 										</div>
 									</div>
 									<div className="title-container">

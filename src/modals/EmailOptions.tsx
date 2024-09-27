@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { Col, Form, Nav, OverlayTrigger, Row, Tab, Table, Tooltip } from 'react-bootstrap';
+import { Col, Form, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 import { EmailUser } from '../helpers/Types';
@@ -86,8 +86,17 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-        const parsedValue = type === 'number' ? Number(value) : value;
+        const target = e.target as HTMLInputElement;
+        const { name, value, type } = target;
+        let parsedValue: string | number | boolean;
+    
+        if (type === 'checkbox') {
+            parsedValue = target.checked;
+        } else if (type === 'number') {
+            parsedValue = Number(value);
+        } else {
+            parsedValue = value;
+        }
         setFormData(prevState => ({
             ...prevState,
             [name]: parsedValue
@@ -135,12 +144,12 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                     </Row>
                     <Row style={{ flex: 1.5 }}>
                         <Col md={6}>
-                            <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between'>
+                            <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between mt-3'>
                                 <Form.Label>Activar SSL:</Form.Label>
                                 <Form.Check
                                     type="switch"
                                     name="enableSSL"
-                                    checked={formData.enableSSL}
+                                    checked={!!formData.enableSSL}
                                     onChange={handleChange}
                                 />
                             </Form.Group>

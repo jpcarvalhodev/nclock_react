@@ -83,6 +83,7 @@ import { NkioskListMovements } from './pages/nidtec/nkiosk/NkioskListMovements';
 import { NkioskListPayments } from './pages/nidtec/nkiosk/NkioskListPayments';
 import { NkioskLogs } from './pages/nidtec/nkiosk/NkioskLogs';
 import { NewUsers } from './pages/configs/NewUsers';
+import { TimePeriods } from './pages/devices/TimePeriods';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -146,6 +147,7 @@ function AnimatedRoutes() {
               <Route path="/persons/zones" element={<PageProtection><Zones /></PageProtection>} />
               <Route path="/persons/types" element={<PageProtection><Types /></PageProtection>} />
               <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
+              <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
               <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
               <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />

@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
+import { EmailUser } from '../helpers/Types';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -20,13 +21,14 @@ interface Props<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
+    onSave: (data: Partial<T>, emailData: Partial<EmailUser>) => void;
     fields: FieldConfig[];
     initialValues: Partial<T>;
 }
 
 export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>(initialValues);
+    const [formData, setFormData] = useState<Partial<T>>({...initialValues});
+    const [emailData, setEmailData] = useState<Partial<EmailUser>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -52,8 +54,17 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-        const parsedValue = type === 'number' ? Number(value) : value;
+        const target = e.target as HTMLInputElement;
+        const { name, value, type } = target;
+        let parsedValue: string | number | boolean;
+    
+        if (type === 'checkbox') {
+            parsedValue = target.checked;
+        } else if (type === 'number') {
+            parsedValue = Number(value);
+        } else {
+            parsedValue = value;
+        }
         setFormData(prevState => ({
             ...prevState,
             [name]: parsedValue
@@ -66,7 +77,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onSave(formData as T);
+        onSave(formData as T, emailData as EmailUser);
     };
 
     // Define as seleções de tipo de conta
@@ -215,12 +226,12 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form style={{ marginTop: 20, marginBottom: 20 }}></Form>
                                 <Row>
                                     <Col md={6}>
-                                        <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between'>
+                                        <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between mt-3'>
                                             <Form.Label>Activar SSL:</Form.Label>
                                             <Form.Check
                                                 type="switch"
                                                 name="enableSSL"
-                                                checked={formData.enableSSL}
+                                                checked={!!emailData.enableSSL}
                                                 onChange={handleChange}
                                             />
                                         </Form.Group>
@@ -236,7 +247,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                                     className="custom-input-height custom-select-font-size"
                                                     type="text"
                                                     name="usernameEmail"
-                                                    value={formData.usernameEmail || ''}
+                                                    value={emailData.usernameEmail || ''}
                                                     onChange={handleChange}
                                                 />
                                             </OverlayTrigger>
@@ -254,7 +265,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                                     className="custom-input-height custom-select-font-size"
                                                     type="text"
                                                     name="passwordEmail"
-                                                    value={formData.passwordEmail || ''}
+                                                    value={emailData.passwordEmail || ''}
                                                     onChange={handleChange}
                                                 />
                                             </OverlayTrigger>
@@ -272,7 +283,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                                     className="custom-input-height custom-select-font-size"
                                                     type="text"
                                                     name="hostSMTP"
-                                                    value={formData.hostSMTP || ''}
+                                                    value={emailData.hostSMTP || ''}
                                                     onChange={handleChange}
                                                 />
                                             </OverlayTrigger>
@@ -290,7 +301,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                                     className="custom-input-height custom-select-font-size"
                                                     type="text"
                                                     name="portSMTP"
-                                                    value={formData.portSMTP || ''}
+                                                    value={emailData.portSMTP || ''}
                                                     onChange={handleChange}
                                                 />
                                             </OverlayTrigger>

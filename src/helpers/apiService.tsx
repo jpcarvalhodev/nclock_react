@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { Ads, Category, Department, Devices, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, Zone } from "./Types";
+import { Ads, Category, Department, Devices, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -996,6 +996,56 @@ export const updateUserEmailConfig = async (email: EmailUser) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(email)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CRIAÇÃO DE HORÁRIOS///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllTimePeriods = async () => {
+    const response = await fetchWithAuth(`AccTimeSeg`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const addTimePeriod = async (timePeriod: TimePeriod) => {
+    const response = await fetchWithAuth(`AccTimeSeg`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(timePeriod)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const updateTimePeriod = async (timePeriod: TimePeriod) => {
+    const response = await fetchWithAuth(`AccTimeSeg/${timePeriod.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(timePeriod)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const deleteTimePeriod = async (id: string) => {
+    const response = await fetchWithAuth(`AccTimeSeg/${id}`, {
+        method: 'DELETE'
     });
     if (!response.ok) {
         return;

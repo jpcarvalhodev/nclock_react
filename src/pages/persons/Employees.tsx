@@ -140,7 +140,7 @@ export const Employees = () => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Define a abertura do modal de atualização
+    // Define a abertura do modal de apagar funcionário
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);

@@ -53,7 +53,7 @@ export const NaccessDashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="datatable-title-text-dashboard">
+            <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
                 <span>Naccess dashboard</span>
             </div>
             <div className="dashboard-content">

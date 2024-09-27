@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
+import { EmailUser } from '../helpers/Types';
 
 // Define a interface Entity
 export interface Entity {
@@ -26,13 +27,14 @@ interface Props<T extends Entity> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onUpdate: (entity: T) => Promise<void>;
+    onUpdate: (entity: T, emailData: Partial<EmailUser>) => Promise<void>;
     entity: T;
     fields: FieldConfig[];
 }
 
 export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: Props<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
+    const [emailData, setEmailData] = useState<Partial<EmailUser>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -65,8 +67,17 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-        const parsedValue = type === 'number' ? Number(value) : value;
+        const target = e.target as HTMLInputElement;
+        const { name, value, type } = target;
+        let parsedValue: string | number | boolean;
+    
+        if (type === 'checkbox') {
+            parsedValue = target.checked;
+        } else if (type === 'number') {
+            parsedValue = Number(value);
+        } else {
+            parsedValue = value;
+        }
         setFormData(prevState => ({
             ...prevState,
             [name]: parsedValue
@@ -79,7 +90,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onUpdate(formData as T);
+        onUpdate(formData as T, emailData as EmailUser);
     };
 
     // Define as seleções de tipo de conta
@@ -228,12 +239,12 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 <Form style={{ marginTop: 20, marginBottom: 20 }}></Form>
                                 <Row>
                                     <Col md={6}>
-                                        <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between'>
+                                        <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between mt-3'>
                                             <Form.Label>Activar SSL:</Form.Label>
                                             <Form.Check
                                                 type="switch"
                                                 name="enableSSL"
-                                                checked={formData.enableSSL}
+                                                checked={!!emailData.enableSSL}
                                                 onChange={handleChange}
                                             />
                                         </Form.Group>
@@ -249,7 +260,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                                     className="custom-input-height custom-select-font-size"
                                                     type="text"
                                                     name="usernameEmail"
-                                                    value={formData.usernameEmail || ''}
+                                                    value={emailData.usernameEmail || ''}
                                                     onChange={handleChange}
                                                 />
                                             </OverlayTrigger>
@@ -267,7 +278,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                                     className="custom-input-height custom-select-font-size"
                                                     type="text"
                                                     name="passwordEmail"
-                                                    value={formData.passwordEmail || ''}
+                                                    value={emailData.passwordEmail || ''}
                                                     onChange={handleChange}
                                                 />
                                             </OverlayTrigger>
@@ -285,7 +296,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                                     className="custom-input-height custom-select-font-size"
                                                     type="text"
                                                     name="hostSMTP"
-                                                    value={formData.hostSMTP || ''}
+                                                    value={emailData.hostSMTP || ''}
                                                     onChange={handleChange}
                                                 />
                                             </OverlayTrigger>
@@ -303,7 +314,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                                 className="custom-input-height custom-select-font-size"
                                                 type="text"
                                                 name="portSMTP"
-                                                value={formData.portSMTP || ''}
+                                                value={emailData.portSMTP || ''}
                                                 onChange={handleChange}
                                             />
                                             </OverlayTrigger>
