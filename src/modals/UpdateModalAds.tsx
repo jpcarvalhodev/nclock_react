@@ -30,10 +30,11 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    entities: 'all' | 'photo' | 'video';
 }
 
 // Define o componente
-export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: UpdateModalProps<T>) => {
+export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdate, entity, entities, fields }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({...entity});
     const [files, setFiles] = useState<File[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -118,6 +119,20 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
         }
     };
 
+    // Função para obter os tipos de arquivo aceitos com base na entidade
+    const getAcceptedFileTypes = () => {
+        switch (entities) {
+            case 'photo':
+                return allowedImageExtensions.map(ext => `.${ext}`).join(',');
+            case 'video':
+                return allowedVideoExtensions.map(ext => `.${ext}`).join(',');
+            case 'all':
+                return allowedImageExtensions.map(ext => `.${ext}`).join(',') + ',' + allowedVideoExtensions.map(ext => `.${ext}`).join(',');
+            default:
+                return '';
+        }
+    };
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -148,7 +163,7 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
                                     type="file"
-                                    accept={allowedImageExtensions.map(ext => `.${ext}`).join(',') + ',' + allowedVideoExtensions.map(ext => `.${ext}`).join(',')}
+                                    accept={getAcceptedFileTypes()}
                                     multiple
                                     onChange={handleFilesChange}
                                 />
@@ -192,8 +207,8 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
                                             value={formData.tipoArquivo}
                                             onChange={handleChange}
                                         >
-                                            <option value={1}>Imagem</option>
-                                            <option value={2}>Vídeo</option>
+                                            {entities !== 'video' && <option value={1}>Imagem</option>}
+                                            {entities !== 'photo' && <option value={2}>Vídeo</option>}
                                         </Form.Control>
                                         {errors['tipoArquivo'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['tipoArquivo']}</div>}
                                     </Form.Group>

@@ -287,7 +287,7 @@ export type Register = {
     emailAddress: string;
     password: string;
     confirmPassword: string;
-    roles: string;
+    role: string;
 };
 
 export type EmailUser = {
@@ -298,6 +298,17 @@ export type EmailUser = {
     hostSMTP: string;
     portSMTP: string;
     enableSSL: boolean;
+};
+
+export type EmailCompany = {
+    [key: string]: any;
+    id: string;
+    companyName: string;
+    responsibleName: string;
+    companyAddress: string;
+    companyCity: string;
+    emailContact: string;
+    language: string;
 };
 
 export type TimePeriod = {

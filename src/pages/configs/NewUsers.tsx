@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { registerFields } from "../../helpers/Fields";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import * as apiService from "../../helpers/apiService";
-import { EmailUser, Register } from "../../helpers/Types";
+import { Register } from "../../helpers/Types";
 import { toast } from "react-toastify";
 import { SelectFilter } from "../../components/SelectFilter";
 import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
@@ -36,27 +36,23 @@ export const NewUsers = () => {
     };
 
     // Função para adicionar usuários registados
-    const handleAddUsers = async (user: Partial<Register>, email: Partial<EmailUser>) => {
+    const handleAddUsers = async (user: Register) => {
         try {
             const data = await apiService.addNewRegisteredUser(user as Register);
             setUsers([...users, data]);
-            await apiService.addUserEmailConfig(email as EmailUser);
             toast.success(data.value || 'Usuário adicionado com sucesso!');
-            toast.success('Email adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar o usuário registado:', error);
         }
     }
 
     // Função para atualizar usuários registados
-    const handleUpdateUser = async (user: Partial<Register>, email: Partial<EmailUser>) => {
+    const handleUpdateUser = async (user: Register) => {
         try {
             const data = await apiService.updateRegisteredUser(user as Register);
             const updatedUsers = users.map(u => u.id === data.id ? data : u);
             setUsers(updatedUsers);
-            await apiService.updateUserEmailConfig(email as EmailUser);
             toast.success(data.value || 'Usuário atualizado com sucesso!');
-            toast.success('Email atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar o usuário registado:', error);
         }
@@ -197,7 +193,6 @@ export const NewUsers = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddUsers}
                     fields={registerFields}
-                    initialValues={{}}
                 />
             {selectedUser && (
                 <UpdateModalRegisterUsers

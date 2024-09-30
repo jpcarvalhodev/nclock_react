@@ -238,7 +238,7 @@ export const registerFields = [
     { key: 'emailAddress', label: 'E-Mail', type: 'string', required: true },
     { key: 'password', label: 'Senha', type: 'string', required: true },
     { key: 'confirmPassword', label: 'Confirmar Senha', type: 'string', required: true },
-    { key: 'roles', label: 'Tipo de Conta', type: 'string', required: true },
+    { key: 'role', label: 'Tipo de Conta', type: 'string', required: true },
 ];
 
 export const emailFields = [
@@ -247,6 +247,15 @@ export const emailFields = [
     { key: 'hostSMTP', label: 'Servidor SMTP', type: 'string', required: true },
     { key: 'portSMTP', label: 'Porta SMTP', type: 'string', required: true },
     { key: 'enableSSL', label: 'Activar SSL', type: 'string', required: true },
+];
+
+export const emailCompanyFields = [
+    { key: 'companyName', label: 'Nome da Empresa', type: 'string', required: true },
+    { key: 'responsibleName', label: 'Nome do Responsável', type: 'string', required: true },
+    { key: 'companyAddress', label: 'Morada da Empresa', type: 'string', required: true },
+    { key: 'companyCity', label: 'Cidade da Empresa', type: 'string', required: true },
+    { key: 'emailContact', label: 'E-Mail de Contacto', type: 'string', required: true },
+    { key: 'language', label: 'Idioma', type: 'string', required: true },
 ];
 
 export const timePeriodFields = [

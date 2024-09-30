@@ -2,7 +2,7 @@ import { SyntheticEvent, useContext, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
-import { TextField, TextFieldProps } from '@mui/material';
+import { Button, TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { AttendanceProvider } from '../context/MovementContext';
@@ -77,7 +77,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   // Busca os dados ao carregar o componente
   useEffect(() => {
     fetchAllData();
-  }, [data]);
+  }, []);
 
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   useEffect(() => {
@@ -229,12 +229,14 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     setSelectedEmployeeIds(Array.from(newSelectedIds));
 
     const employeeIds = Array.from(newSelectedIds).filter(id =>
-      id.includes('emp') || id.includes('-emp-') || id.startsWith('empd-') || id.startsWith('empg-')
+      id.includes('emp') || id.includes('-emp-')
     ).map(id => {
       if (id.includes('-emp-')) {
         return id.substring(id.lastIndexOf('-emp-') + 5);
-      } else if (id.startsWith('empd-') || id.startsWith('empg-')) {
-        return id.substring(5);
+      } else if (id.startsWith('unassigned-empdept-')) {
+        return id.substring(19);
+      } else if (id.startsWith('unassigned-empgrp-')) {
+        return id.substring(18);
       } else if (id.startsWith('emp-')) {
         return id.substring(4);
       }
@@ -264,6 +266,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   return (
     <AttendanceProvider>
       <Box className="TreeViewContainer">
+        <Button style={{ color: '#0050a0' }} onClick={() => fetchAllData()}>Atualizar</Button>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect={true}

@@ -129,6 +129,7 @@ import logs from '../assets/img/navbar/nkiosk/logs.png';
 import bell from '../assets/img/navbar/nkiosk/bell.png';
 import registry from '../assets/img/navbar/nkiosk/registry.png';
 import alert from '../assets/img/navbar/nkiosk/alert.png';
+import accessControl from '../assets/img/navbar/nkiosk/accessControl.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -274,7 +275,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showModal, setShowModal] = useState(false);
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
 	const location = useLocation();
-	const [showAdsModal, setShowAdsModal] = useState(false);
+	const [showPhotoAdsModal, setShowPhotoAdsModal] = useState(false);
+	const [showVideoAdsModal, setShowVideoAdsModal] = useState(false);
 	const [showEmailModal, setShowEmailModal] = useState(false);
 	const [emailConfig, setEmailConfig] = useState<EmailUser>(defaultEmailUser);
 
@@ -904,8 +906,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	const toggleEmailOptionsModal = () => setShowEmailModal(!showEmailModal);
 
-	// Função para abrir o modal de publicidade
-	const toggleAdsModal = () => setShowAdsModal(!showAdsModal);
+	// Função para abrir o modal de publicidade para fotos
+	const togglePhotoAdsModal = () => setShowPhotoAdsModal(!showPhotoAdsModal);
+
+	// Função para abrir o modal de publicidade para vídeos
+	const toggleVideoAdsModal = () => setShowVideoAdsModal(!showVideoAdsModal);
 
 	// Função para adicionar publicidade via contexto
 	const handleUploadClick = (ad: FormData) => {
@@ -1603,6 +1608,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 												<span className="text">Abertura Video Porteiro</span>
 											</Link>
 										</div>
+										<div className="icon-text-pessoas">
+											<Link to="" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={accessControl} alt="botão listagem de movimentos " />
+												</span>
+												<span className="text">Controle de Acessos</span>
+											</Link>
+										</div>
 									</div>
 									<div className="title-container">
 										<span className="title">Acessos</span>
@@ -1634,21 +1647,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div>
-											<Link to="/nkiosk/NkioskAds" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" >
+											<Button /* to="/nkiosk/NkioskAds" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={ads} alt="botão publicidade" />
 												</span>
 												<span className="text">Publicidade</span>
-											</Link>
+											</Button>
 										</div>
 										<div>
-											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button" >
+											<Button onClick={toggleVideoAdsModal} type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={video} alt="botão vídeo" />
 												</span>
 												<span className="text">Vídeo</span>
 											</Button>
-											<Button onClick={toggleAdsModal} type="button" className="btn btn-light ribbon-button" >
+											<Button onClick={togglePhotoAdsModal} type="button" className="btn btn-light ribbon-button" disabled>
 												<span className="icon">
 													<img src={image} alt="botão imagem" />
 												</span>
@@ -2250,14 +2263,26 @@ export const NavBar = ({ style }: NavBarProps) => {
 						title='Opções de E-Mail'
 					/>
 				)}
-				{showAdsModal && (
+				{showPhotoAdsModal && (
 					<CreateModalAds
-						open={showAdsModal}
-						onClose={() => setShowAdsModal(false)}
+						open={showPhotoAdsModal}
+						onClose={() => setShowPhotoAdsModal(false)}
 						onSave={handleUploadClick}
 						fields={adsFields}
 						initialValues={{}}
 						title='Publicidades'
+						entities='photo'
+					/>
+				)}
+				{showVideoAdsModal && (
+					<CreateModalAds
+						open={showVideoAdsModal}
+						onClose={() => setShowVideoAdsModal(false)}
+						onSave={handleUploadClick}
+						fields={adsFields}
+						initialValues={{}}
+						title='Publicidades'
+						entities='video'
 					/>
 				)}
 			</nav>

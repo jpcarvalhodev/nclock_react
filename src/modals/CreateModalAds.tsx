@@ -11,9 +11,10 @@ interface CreateModalProps<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
+    onSave: (data: T | FormData) => void;
     fields: Field[];
     initialValues: Partial<T>;
+    entities: 'all' | 'photo' | 'video';
 }
 
 // Interface para os campos do formulário
@@ -27,7 +28,7 @@ interface Field {
 }
 
 // Define o componente
-export const CreateModalAds = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
+export const CreateModalAds = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, entities, initialValues }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [files, setFiles] = useState<File[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -112,6 +113,20 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
         }
     };
 
+    // Função para obter os tipos de arquivo aceitos com base na entidade
+    const getAcceptedFileTypes = () => {
+        switch (entities) {
+            case 'photo':
+                return allowedImageExtensions.map(ext => `.${ext}`).join(',');
+            case 'video':
+                return allowedVideoExtensions.map(ext => `.${ext}`).join(',');
+            case 'all':
+                return allowedImageExtensions.map(ext => `.${ext}`).join(',') + ',' + allowedVideoExtensions.map(ext => `.${ext}`).join(',');
+            default:
+                return '';
+        }
+    };
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -123,8 +138,20 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
 
     // Função para salvar os dados
     const handleSave = () => {
-        console.log('Salvando:', formData);
-        onSave(formData as T);
+        const formDataToSend = new FormData();
+        files.forEach((file) => formDataToSend.append('files', file));
+
+        Object.entries(formData).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                formDataToSend.append(key, String(value));
+            }
+        });
+
+        for (let pair of formDataToSend.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
+        console.log('Salvando:', formDataToSend);
+        onSave(formDataToSend);
         onClose();
     };
 
@@ -142,7 +169,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
                                     type="file"
-                                    accept={allowedImageExtensions.map(ext => `.${ext}`).join(',') + ',' + allowedVideoExtensions.map(ext => `.${ext}`).join(',')}
+                                    accept={getAcceptedFileTypes()}
                                     multiple
                                     onChange={handleFilesChange}
                                 />
@@ -186,8 +213,8 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                                             value={formData.tipoArquivo}
                                             onChange={handleChange}
                                         >
-                                            <option value={1}>Imagem</option>
-                                            <option value={2}>Vídeo</option>
+                                            {entities !== 'video' && <option value={1}>Imagem</option>}
+                                            {entities !== 'photo' && <option value={2}>Vídeo</option>}
                                         </Form.Control>
                                         {errors['tipoArquivo'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['tipoArquivo']}</div>}
                                     </Form.Group>

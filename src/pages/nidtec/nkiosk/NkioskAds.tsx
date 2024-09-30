@@ -14,6 +14,7 @@ import { Button } from "react-bootstrap";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
+import { UpdateModalAds } from "../../../modals/UpdateModalAds";
 
 export const NkioskAds = () => {
     const { navbarColor, footerColor } = useColor();
@@ -41,7 +42,6 @@ export const NkioskAds = () => {
     // Função para adicionar uma publicidade
     const handleAddAds = async (ad: FormData) => {
         try {
-            console.log("preparando dados para envio", ad);
             const data = await apiService.addAd(ad);
             setAds(ads => [...ads, data]);
             toast.success(data.message || 'publicidade adicionada com sucesso!');
@@ -224,16 +224,18 @@ export const NkioskAds = () => {
                     onSave={handleAddAds}
                     fields={adsFields}
                     initialValues={{}}
+                    entities="all"
                 />
                 {selectedAds && (
-                    {/* <UpdateModalAds
+                    <UpdateModalAds
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onUpdate={handleUpdateAds}
                         entity={selectedAds}
                         fields={adsFields}
                         title="Publicidades"
-                    /> */}
+                        entities="all"
+                    />
                 )}
                 <DeleteModal
                     open={showDeleteModal}

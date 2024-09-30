@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { Ads, Category, Department, Devices, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, TimePeriod, Zone } from "./Types";
+import { Ads, Category, Department, Devices, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -207,45 +207,45 @@ export const fetchAllEmployeeDevices = async () => {
 
 export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
     let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
-        if (employeeID !== null) {
-            url += `?employeeIds=${employeeID}`;
-        }
+    if (employeeID !== null) {
+        url += `?employeeIds=${employeeID}`;
+    }
 
-        let bodyData: BodyData = { zktecoDeviceID };
-        if (employeeID) {
-            bodyData.employeeID = employeeID;
-        }
+    let bodyData: BodyData = { zktecoDeviceID };
+    if (employeeID) {
+        bodyData.employeeID = employeeID;
+    }
 
-        const response = await fetchWithAuth(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(bodyData)
-        });
+    const response = await fetchWithAuth(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyData)
+    });
 
-        if (!response.ok) {
-            return;
-        }
+    if (!response.ok) {
+        return;
+    }
     return response.json();
 };
 
 export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
     let url = `Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`;
-        if (employeeID !== null) {
-            url += `?employeeIds=${employeeID}`;
-        }
+    if (employeeID !== null) {
+        url += `?employeeIds=${employeeID}`;
+    }
 
-        let bodyData: BodyData = { zktecoDeviceID };
-        if (employeeID) {
-            bodyData.employeeID = employeeID;
-        }
+    let bodyData: BodyData = { zktecoDeviceID };
+    if (employeeID) {
+        bodyData.employeeID = employeeID;
+    }
 
-        const response = await fetchWithAuth(url);
+    const response = await fetchWithAuth(url);
 
-        if (!response.ok) {
-            return;
-        }
+    if (!response.ok) {
+        return;
+    }
     return response.json();
 };
 
@@ -283,26 +283,26 @@ export const restartDevice = async (zktecoDeviceID: Devices) => {
 
 export const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
     let url = `Zkteco/DeleteEmployeesToDevice/${zktecoDeviceID}`;
-        if (employeeID !== null) {
-            url += `?employeeIds=${employeeID}`;
-        }
+    if (employeeID !== null) {
+        url += `?employeeIds=${employeeID}`;
+    }
 
-        let bodyData: BodyData = { zktecoDeviceID };
-        if (employeeID) {
-            bodyData.employeeID = employeeID;
-        }
+    let bodyData: BodyData = { zktecoDeviceID };
+    if (employeeID) {
+        bodyData.employeeID = employeeID;
+    }
 
-        const response = await fetchWithAuth(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(bodyData)
-        });
+    const response = await fetchWithAuth(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyData)
+    });
 
-        if (!response.ok) {
-            return;
-        }
+    if (!response.ok) {
+        return;
+    }
     return response.json();
 };
 
@@ -384,8 +384,7 @@ export const updateCategory = async (category: Category) => {
     return response.json();
 };
 
-export const deleteCategory = async (categoryID: string) =>
-{
+export const deleteCategory = async (categoryID: string) => {
     const response = await fetchWithAuth(`Categories/${categoryID}`, {
         method: 'DELETE'
     });
@@ -410,7 +409,7 @@ export const fetchAllDepartments = async () => {
 export const fetchAllSubDepartments = async (parentId: number): Promise<Department[]> => {
     const response = await fetchWithAuth(`Departaments?parentId=${parentId}`);
     if (!response.ok) {
-        return[];
+        return [];
     }
     return response.json();
 };
@@ -772,7 +771,7 @@ export const addEmployeeCard = async (employeeCard: EmployeeCard) => {
 }
 
 export const updateEmployeeCard = async (employeeCard: EmployeeCard) => {
-    
+
     const response = await fetchWithAuth(`Employees/UpdateEmployeeCard/${employeeCard.cardId}`, {
         method: 'PUT',
         headers: {
@@ -827,10 +826,14 @@ export const fetchAdByid = async (id: string) => {
 export const addAd = async (ad: FormData) => {
     const response = await fetchWithAuth(`Publicidade/upload`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data;'
+        },
         body: ad
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Falha ao enviar publicidade: ${response.status}`);
     }
     return response.json();
 };
@@ -839,7 +842,7 @@ export const updateAd = async (ads: Ads) => {
     const response = await fetchWithAuth(`Publicidade/${ads.Id}`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data;'
         },
         body: JSON.stringify(ads)
     });
@@ -939,6 +942,14 @@ export const fetchAllRegisteredUsers = async () => {
     return response.json();
 };
 
+export const fetchAllCompanyConfig = async () => {
+    const response = await fetchWithAuth(`Configuration/GetCompanyConfigurations`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
 export const fetchAllEmailConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetEmailSMTPConfigurations`);
     if (!response.ok) {
@@ -996,6 +1007,20 @@ export const updateUserEmailConfig = async (email: EmailUser) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(email)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const updateCompanyConfig = async (companyEmail: EmailCompany) => {
+    const response = await fetchWithAuth(`Configuration/UpdateCompanyConfigurations`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(companyEmail)
     });
     if (!response.ok) {
         return;
