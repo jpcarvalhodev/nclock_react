@@ -87,6 +87,8 @@ const formatDataItem = (item: DataItem, column: string) => {
             return new Date(item.createTime).toLocaleString() || '';
         case 'updateTime':
             return new Date(item.updateTime).toLocaleString() || '';
+        case 'eventTime':
+            return new Date(item.updateTime).toLocaleString() || '';
         case 'timestamp':
             return item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
         case 'eventDoorId':

@@ -258,6 +258,8 @@ export const emailCompanyFields = [
     { key: 'language', label: 'Idioma', type: 'string', required: true },
 ];
 
+export const emailAndCompanyFields = emailFields.concat(emailCompanyFields);
+
 export const timePeriodFields = [
     { key: 'appId', label: 'ID do App', type: 'string' },
     { key: 'createrName', label: 'Nome do Criador', type: 'string', },

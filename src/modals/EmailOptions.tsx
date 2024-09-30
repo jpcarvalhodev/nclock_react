@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { Col, Form, Nav, OverlayTrigger, Row, Tab, Table, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import { EmailUser } from '../helpers/Types';
+import { EmailUserCompany } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
 
 // Define a interface para as propriedades do componente
@@ -18,52 +18,70 @@ interface FieldConfig {
 }
 
 // Define a interface para as propriedades do componente
-interface Props<T extends EmailUser> {
+interface Props<T extends EmailUserCompany> {
     open: boolean;
     onClose: () => void;
-    onUpdate: (entity: T) => Promise<void>;
-    entity: T;
+    onSave: (emailConfig: T, companyConfig: T) => Promise<void>;
+    onUpdate: (emailConfig: T, companyConfig: T) => Promise<void>;
+    entity: EmailUserCompany;
     fields: FieldConfig[];
     title: string;
 }
 
-export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, onUpdate, entity, fields }: Props<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>({ ...entity });
+export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
+    const [emailFormData, setEmailFormData] = useState<Partial<EmailUserCompany>>({ ...entity });
+    const [companyFormData, setCompanyFormData] = useState<Partial<EmailUserCompany>>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [emailConfig, setEmailConfig] = useState<EmailUser[]>([]);
+    const [emailConfig, setEmailConfig] = useState<EmailUserCompany[]>([]);
+    const [companyConfig, setCompanyConfig] = useState<EmailUserCompany[]>([]);
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
         if (entity) {
-            setFormData({ ...entity });
+            setEmailFormData({ ...entity });
+            setCompanyFormData({ ...entity });
         }
     }, [entity]);
+
+    // Limpa os dados do formulário quando o modal é fechado
+    useEffect(() => {
+        if (!open)
+            setEmailFormData({});
+            setCompanyFormData({});
+    }, [open]);
 
     // Busca os dados iniciais de emails dos utilizadores
     useEffect(() => {
         fetchUserData();
+        fetchCompanyConfig();
     }, []);
 
     // Usa useEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
+        let isValidEmail = true;
+        let isValidCompany = true;
 
-        const isValid = fields.every(field => {
-            const fieldValue = formData[field.key];
-            let valid = true;
-
+        fields.forEach(field => {
+            const fieldValue = emailFormData[field.key];
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
+                isValidEmail = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
-
-            return valid;
         });
 
+        fields.forEach(field => {
+            const fieldValue = companyFormData[field.key];
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                isValidCompany = false;
+                newErrors[field.key] = `${field.label} não pode ser negativo.`;
+            }
+        });
+
+        setIsFormValid(isValidEmail && isValidCompany);
         setErrors(newErrors);
-        setIsFormValid(isValid);
-    }, [formData, fields]);
+    }, [emailFormData, companyFormData, fields]);
 
     // Função para buscar os dados de emails dos utilizadores
     const fetchUserData = async () => {
@@ -76,15 +94,30 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
         }
     }
 
+    // Função para buscar as configurações da empresa
+    const fetchCompanyConfig = async () => {
+        try {
+            const data = await apiService.fetchAllCompanyConfig();
+            const normalizedData = Array.isArray(data) ? data : [data];
+            setCompanyConfig(normalizedData);
+        } catch (error) {
+            console.error('Erro ao carregar as configurações da empresa:', error);
+        }
+    }
+
     // Função para lidar com o clique em um email na tabela
-    const handleEmailClick = (emailUser: EmailUser) => {
-        setFormData(emailUser as Partial<T>);
+    const handleEmailClick = (emailUser: EmailUserCompany) => {
+        setEmailFormData(emailUser as Partial<T>);
     };
+
+    const handleCompanyClick = (emailCompany: EmailUserCompany) => {
+        setCompanyFormData(emailCompany as Partial<T>);
+    }
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const target = e.target as HTMLInputElement;
-        const { name, value, type } = target;
+        const { name, value, type, dataset } = target;
         let parsedValue: string | number | boolean;
 
         if (type === 'checkbox') {
@@ -94,10 +127,19 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
         } else {
             parsedValue = value;
         }
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: parsedValue
-        }));
+
+        const formType = dataset.formType as 'email' | 'company';
+        if (formType === 'email') {
+            setEmailFormData(prevState => ({
+                ...prevState,
+                [name]: parsedValue
+            }));
+        } else if (formType === 'company') {
+            setCompanyFormData(prevState => ({
+                ...prevState,
+                [name]: parsedValue
+            }));
+        }
     };
 
     // Função para lidar com o clique em guardar
@@ -106,9 +148,24 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onUpdate(formData as T);
+        onSave(emailFormData as T, companyFormData as T);
         onClose();
     };
+
+    // Função para lidar com o clique em atualizar
+    const handleUpdateClick = () => {
+        if (!isFormValid) {
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            return;
+        }
+        onUpdate(emailFormData as T, companyFormData as T);
+        onClose();
+    }
+
+    const typeOptions = [
+        { value: 'pt', label: 'Português' },
+        { value: 'en', label: 'Inglês' },
+    ];
 
     return (
         <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable" size='lg'>
@@ -117,7 +174,7 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
-                    <Tab.Container defaultActiveKey="utilizador">
+                    <Tab.Container defaultActiveKey="configCompany">
                         <Nav variant="tabs" className="nav-modal">
                             <Nav.Item>
                                 <Nav.Link eventKey="configCompany">Configuração da Empresa</Nav.Link>
@@ -127,6 +184,153 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                             </Nav.Item>
                         </Nav>
                         <Tab.Content>
+                            <Tab.Pane eventKey="configCompany">
+                                <Form style={{ marginTop: 10, marginBottom: 10, display: 'flex' }}>
+                                    <Row style={{ flex: 1, marginRight: 10 }}>
+                                        <Col md={12}>
+                                            <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
+                                                <Table striped bordered hover size="sm">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nome Empresa</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {companyConfig && companyConfig.map((email: EmailUserCompany) => (
+                                                            <tr key={email.companyName} onClick={() => handleCompanyClick(email)}>
+                                                                <td>{email.companyName}</td>
+                                                                <td>{email.emailContact}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </Table>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ flex: 1.5 }}>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formCompanyName">
+                                                <Form.Label>Nome da Empresa <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        className="custom-input-height custom-select-font-size"
+                                                        type="text"
+                                                        name="companyName"
+                                                        value={companyFormData.companyName || ''}
+                                                        onChange={handleChange}
+                                                        data-form-type="company"
+                                                    />
+                                                </OverlayTrigger>
+                                                {errors.companyName && <Form.Text className="text-danger">{errors.companyName}</Form.Text>}
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formResponsibleName">
+                                                <Form.Label>Nome do Responsável <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        className="custom-input-height custom-select-font-size"
+                                                        type="text"
+                                                        name="responsibleName"
+                                                        value={companyFormData.responsibleName || ''}
+                                                        onChange={handleChange}
+                                                        data-form-type="company"
+                                                    />
+                                                </OverlayTrigger>
+                                                {errors.responsibleName && <Form.Text className="text-danger">{errors.responsibleName}</Form.Text>}
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formCompanyAddress">
+                                                <Form.Label>Morada da Empresa <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        className="custom-input-height custom-select-font-size"
+                                                        type="text"
+                                                        name="companyAddress"
+                                                        value={companyFormData.companyAddress || ''}
+                                                        onChange={handleChange}
+                                                        data-form-type="company"
+                                                    />
+                                                </OverlayTrigger>
+                                                {errors.companyAddress && <Form.Text className="text-danger">{errors.companyAddress}</Form.Text>}
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formCompanyCity">
+                                                <Form.Label>Cidade da Empresa <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        className="custom-input-height custom-select-font-size"
+                                                        type="text"
+                                                        name="companyCity"
+                                                        value={companyFormData.companyCity || ''}
+                                                        onChange={handleChange}
+                                                        data-form-type="company"
+                                                    />
+                                                </OverlayTrigger>
+                                                {errors.companyCity && <Form.Text className="text-danger">{errors.companyCity}</Form.Text>}
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formEmailContact">
+                                                <Form.Label>E-Mail de Contacto <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        className="custom-input-height custom-select-font-size"
+                                                        type='text'
+                                                        name="emailContact"
+                                                        value={companyFormData.emailContact || ''}
+                                                        onChange={handleChange}
+                                                        data-form-type="company"
+                                                    >
+                                                    </Form.Control>
+                                                </OverlayTrigger>
+                                                {errors.emailContact && <Form.Text className="text-danger">{errors.emailContact}</Form.Text>}
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formLanguage">
+                                                <Form.Label>Idioma <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        className="custom-input-height custom-select-font-size"
+                                                        as="select"
+                                                        name="language"
+                                                        value={companyFormData.language || ''}
+                                                        onChange={handleChange}
+                                                        data-form-type="company"
+                                                    >
+                                                        <option value="">Selecione...</option>
+                                                        {typeOptions.map(option => (
+                                                            <option key={option.value} value={option.value}>{option.label}</option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </OverlayTrigger>
+                                                {errors.language && <Form.Text className="text-danger">{errors.language}</Form.Text>}
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            </Tab.Pane>
                             <Tab.Pane eventKey="configEmail">
                                 <Form style={{ marginTop: 10, marginBottom: 10, display: 'flex' }}>
                                     <Row style={{ flex: 1, marginRight: 10 }}>
@@ -139,10 +343,10 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {emailConfig && emailConfig.map((email: EmailUser) => (
+                                                        {emailConfig && emailConfig.map((email: EmailUserCompany) => (
                                                             <tr key={email.usernameEmail} onClick={() => handleEmailClick(email)}>
+                                                                <td>{email.usernameEmail}</td>
                                                                 <td>{email.hostSMTP}</td>
-                                                                <td>{email.portSMTP}</td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
@@ -157,8 +361,9 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                                                 <Form.Check
                                                     type="switch"
                                                     name="enableSSL"
-                                                    checked={!!formData.enableSSL}
+                                                    checked={!!emailFormData.enableSSL}
                                                     onChange={handleChange}
+                                                    data-form-type="email"
                                                 />
                                             </Form.Group>
                                         </Col>
@@ -173,8 +378,9 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                                                         className="custom-input-height custom-select-font-size"
                                                         type="text"
                                                         name="usernameEmail"
-                                                        value={formData.usernameEmail || ''}
+                                                        value={emailFormData.usernameEmail || ''}
                                                         onChange={handleChange}
+                                                        data-form-type="email"
                                                     />
                                                 </OverlayTrigger>
                                                 {errors.usernameEmail && <Form.Text className="text-danger">{errors.usernameEmail}</Form.Text>}
@@ -191,8 +397,9 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                                                         className="custom-input-height custom-select-font-size"
                                                         type="text"
                                                         name="passwordEmail"
-                                                        value={formData.passwordEmail || ''}
+                                                        value={emailFormData.passwordEmail || ''}
                                                         onChange={handleChange}
+                                                        data-form-type="email"
                                                     />
                                                 </OverlayTrigger>
                                                 {errors.passwordEmail && <Form.Text className="text-danger">{errors.passwordEmail}</Form.Text>}
@@ -209,8 +416,9 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                                                         className="custom-input-height custom-select-font-size"
                                                         type="email"
                                                         name="hostSMTP"
-                                                        value={formData.hostSMTP || ''}
+                                                        value={emailFormData.hostSMTP || ''}
                                                         onChange={handleChange}
+                                                        data-form-type="email"
                                                     />
                                                 </OverlayTrigger>
                                                 {errors.hostSMTP && <Form.Text className="text-danger">{errors.hostSMTP}</Form.Text>}
@@ -227,8 +435,9 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                                                         className="custom-input-height custom-select-font-size"
                                                         type='text'
                                                         name="portSMTP"
-                                                        value={formData.portSMTP || ''}
+                                                        value={emailFormData.portSMTP || ''}
                                                         onChange={handleChange}
+                                                        data-form-type="email"
                                                     >
                                                     </Form.Control>
                                                 </OverlayTrigger>
@@ -246,8 +455,9 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
                                                         className="custom-input-height custom-select-font-size"
                                                         type="text"
                                                         name="password"
-                                                        value={formData.password || ''}
+                                                        value={emailFormData.password || ''}
                                                         onChange={handleChange}
+                                                        data-form-type="email"
                                                     />
                                                 </OverlayTrigger>
                                                 {errors.password && <Form.Text className="text-danger">{errors.password}</Form.Text>}
@@ -262,7 +472,8 @@ export const EmailOptionsModal = <T extends EmailUser>({ title, open, onClose, o
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>
+                <Button variant="outline-info" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>
+                <Button variant="outline-primary" onClick={handleUpdateClick} disabled={!isFormValid}>Atualizar</Button>
             </Modal.Footer>
         </Modal >
     );

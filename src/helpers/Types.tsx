@@ -311,6 +311,8 @@ export type EmailCompany = {
     language: string;
 };
 
+export type EmailUserCompany = Partial<EmailUser> & Partial<EmailCompany>;
+
 export type TimePeriod = {
     [key: string]: any;
     id: string;

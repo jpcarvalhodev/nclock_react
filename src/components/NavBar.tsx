@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailUser, Employee } from '../helpers/Types';
+import { EmailCompany, EmailUser, EmailUserCompany, Employee } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -133,7 +133,7 @@ import accessControl from '../assets/img/navbar/nkiosk/accessControl.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailFields } from '../helpers/Fields';
+import { adsFields, emailAndCompanyFields, emailFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -278,7 +278,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showPhotoAdsModal, setShowPhotoAdsModal] = useState(false);
 	const [showVideoAdsModal, setShowVideoAdsModal] = useState(false);
 	const [showEmailModal, setShowEmailModal] = useState(false);
-	const [emailConfig, setEmailConfig] = useState<EmailUser>(defaultEmailUser);
+	const [emailCompanyConfig, setEmailCompanyConfig] = useState<EmailUserCompany>();
 
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
@@ -320,18 +320,40 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const fetchEmailConfig = async () => {
 		try {
 			const data = await apiService.fetchAllEmailConfig();
-			setEmailConfig(data[0]);
+			setEmailCompanyConfig(data);
 		} catch (error) {
 			console.error('Erro ao carregar os emails registados:', error);
 		}
 	}
 
-	// Função de atualização de emails de utilizadores
-	const handleUpdateEmailConfig = async (email: EmailUser) => {
+	// Função para carregar os dados das configurações da empresa
+	const fetchCompanyConfig = async () => {
+		try {
+			const data = await apiService.fetchAllCompanyConfig();
+			setEmailCompanyConfig(data);
+		} catch (error) {
+			console.error('Erro ao carregar os emails registados:', error);
+		}
+	}
+
+	// Função para adicionar emails de utilizadores
+	const handleAddEmailConfig = async (email: EmailUser) => {
+		try {
+			const data = await apiService.addUserEmailConfig(email);
+			setEmailCompanyConfig(data);
+			toast.success('Email adicionado com sucesso!');
+		} catch (error) {
+			console.error('Erro ao adicionar o email registado:', error);
+		}
+	}
+
+	// Função de atualização de emails de utilizadores e as configurações da empresa
+	const handleUpdateEmailConfig = async (email: Partial<EmailUser>, companyConfig: Partial<EmailCompany>) => {
 		try {
             const data = await apiService.updateUserEmailConfig(email);
             const updatedUsers = email.map((u: EmailUser) => u.id === data.id ? data : u);
-            setEmailConfig(updatedUsers);
+            setEmailCompanyConfig(updatedUsers);
+			await apiService.updateCompanyConfig(companyConfig);
             toast.success(data.value || 'Email atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar o email registado:', error);
@@ -341,6 +363,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Carregamento inicial dos dados de configuração de email
 	useEffect(() => {
 		fetchEmailConfig();
+		fetchCompanyConfig();
 	}, []);
 
 	// Função para carregar o estado do ribbon
@@ -2253,13 +2276,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 						initialValues={{}}
 					/>
 				)}
-				{showEmailModal && (
+				{showEmailModal && emailCompanyConfig && (
 					<EmailOptionsModal
 						open={showEmailModal}
 						onClose={() => setShowEmailModal(false)}
+						onSave={handleAddEmailConfig}
 						onUpdate={handleUpdateEmailConfig}
-						entity={emailConfig}
-						fields={emailFields}
+						entity={emailCompanyConfig}
+						fields={emailAndCompanyFields}
 						title='Opções de E-Mail'
 					/>
 				)}

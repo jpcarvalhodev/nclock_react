@@ -1015,7 +1015,7 @@ export const Terminals = () => {
     const handleOpenDoor = async () => {
         if (selectedTerminal) {
             setLoadingOpenDoor(true);
-            await openDeviceDoor(selectedTerminal);
+            await openDeviceDoor(selectedTerminal.zktecoDeviceID);
             setLoadingOpenDoor(false);
         } else {
             toast.error('Selecione um terminal primeiro!');
@@ -1026,7 +1026,7 @@ export const Terminals = () => {
     const handleSyncTime = async () => {
         if (selectedTerminal) {
             setLoadingSyncTime(true);
-            await syncTimeManuallyToDevice(selectedTerminal);
+            await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
             setLoadingSyncTime(false);
         } else {
             toast.error('Selecione um terminal primeiro!');

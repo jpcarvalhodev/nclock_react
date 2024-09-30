@@ -1000,7 +1000,7 @@ export const addUserEmailConfig = async (email: EmailUser) => {
     return response.json();
 }
 
-export const updateUserEmailConfig = async (email: EmailUser) => {
+export const updateUserEmailConfig = async (email: Partial<EmailUser>) => {
     const response = await fetchWithAuth(`Configuration/UpdateEmailConfigurations`, {
         method: 'PUT',
         headers: {
@@ -1014,7 +1014,7 @@ export const updateUserEmailConfig = async (email: EmailUser) => {
     return response.json();
 }
 
-export const updateCompanyConfig = async (companyEmail: EmailCompany) => {
+export const updateCompanyConfig = async (companyEmail: Partial<EmailCompany>) => {
     const response = await fetchWithAuth(`Configuration/UpdateCompanyConfigurations`, {
         method: 'PUT',
         headers: {
