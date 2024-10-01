@@ -382,3 +382,78 @@ export type TimePeriod = {
     holidayType3Start2: string;
     holidayType3Start3: string;
 };
+
+export type Door = {
+    [key: string]: any;
+    id: string;
+    nrDoor: number;
+    time: number;
+}
+
+export type DoorDevice = Partial<Devices> & Partial<Door>;
+
+export type AccessControl = {
+    [key: string]: any;
+    id: string;
+    employeesId: string;
+    shortName: string;
+    enrollNumber: string;
+    doorId: string;
+    doorName: string;
+    timezoneId: string;
+    timezoneName: string;
+    createrName: string;
+    createDate: Date;
+    updateDate: Date;
+};
+
+export type Doors = {
+    [key: string]: any;
+    id: string;
+    companyId: string;
+    createTime: Date;
+    createrCode: string;
+    createrId: string;
+    createrName: string;
+    opVersion: number;
+    updateTime: Date;
+    updaterCode: string;
+    updaterId: string;
+    updaterName: string;
+    actionInterval: number;
+    activeTimesegId: string;
+    allowSuaccessLock: string;
+    backLock: boolean;
+    combopenInterval: number;
+    delayOpenTime: number;
+    doorNo: number;
+    doorSensorStatus: number;
+    enabled: boolean;
+    extDelayDrivertime: number;
+    extDevId: string;
+    forcePwd: string;
+    hostStatus: number;
+    inApbDuration: number;
+    isDisableAudio: boolean;
+    latchDoorType: number;
+    latchTimeOut: number;
+    latchTimesegId: string;
+    lockDelay: number;
+    name: string;
+    passmodeTimesegId: string;
+    readerType: number;
+    sexInputMode: string;
+    sexSupervisedResistor: string;
+    senInputMode: string;
+    senSupervisedResistor: string;
+    sensorDelay: number;
+    supperPwd: string;
+    verifyMode: number;
+    wgInputId: string;
+    wgInputType: number;
+    wgOutputId: string;
+    wgOutputType: number;
+    wgReversed: number;
+    devId: string;
+    devSN: string;
+};

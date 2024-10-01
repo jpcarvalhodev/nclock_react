@@ -130,10 +130,11 @@ import bell from '../assets/img/navbar/nkiosk/bell.png';
 import registry from '../assets/img/navbar/nkiosk/registry.png';
 import alert from '../assets/img/navbar/nkiosk/alert.png';
 import accessControl from '../assets/img/navbar/nkiosk/accessControl.png';
+import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailAndCompanyFields, emailFields } from '../helpers/Fields';
+import { adsFields, emailAndCompanyFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -178,14 +179,21 @@ interface NavBarProps {
 	style?: React.CSSProperties;
 }
 
-const defaultEmailUser: EmailUser = {
-    id: '',
-    usernameEmail: '',
-    passwordEmail: '',
-    hostSMTP: '',
-    portSMTP: '',
-    enableSSL: false
-};
+// Definição dos tipos para os nomes das ribbons e das tabs
+type RibbonKey = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome';
+
+// Interface para os setters das ribbons e das tabs
+interface Setters {
+	setShowRibbon: React.Dispatch<React.SetStateAction<boolean>>;
+	setShowTab: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+// Define a interface para a ul de tabs
+interface TabsInfo {
+	id: string;
+	title: string;
+	show: boolean;
+}
 
 // Define as propriedades do componente
 export const NavBar = ({ style }: NavBarProps) => {
@@ -283,7 +291,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
 		loadInitialToken();
-		loadRibbonState();
+		loadState();
 
 		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
 		setIsRibbonPinned(ribbonPinned);
@@ -350,15 +358,15 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função de atualização de emails de utilizadores e as configurações da empresa
 	const handleUpdateEmailConfig = async (email: Partial<EmailUser>, companyConfig: Partial<EmailCompany>) => {
 		try {
-            const data = await apiService.updateUserEmailConfig(email);
-            const updatedUsers = email.map((u: EmailUser) => u.id === data.id ? data : u);
-            setEmailCompanyConfig(updatedUsers);
+			const data = await apiService.updateUserEmailConfig(email);
+			const updatedUsers = email.map((u: EmailUser) => u.id === data.id ? data : u);
+			setEmailCompanyConfig(updatedUsers);
 			await apiService.updateCompanyConfig(companyConfig);
-            toast.success(data.value || 'Email atualizado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar o email registado:', error);
-        }
-    }
+			toast.success(data.value || 'Email atualizado com sucesso!');
+		} catch (error) {
+			console.error('Erro ao atualizar o email registado:', error);
+		}
+	}
 
 	// Carregamento inicial dos dados de configuração de email
 	useEffect(() => {
@@ -366,138 +374,62 @@ export const NavBar = ({ style }: NavBarProps) => {
 		fetchCompanyConfig();
 	}, []);
 
-	// Função para carregar o estado do ribbon
-	const loadRibbonState = () => {
-		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
-		const nclockShown = localStorage.getItem('showNclockTab') === 'true';
-		const naccessShown = localStorage.getItem('showNaccessTab') === 'true';
-		const nvisitorShown = localStorage.getItem('showNvisitorTab') === 'true';
-		const nparkShown = localStorage.getItem('showNparkTab') === 'true';
-		const ndoorShown = localStorage.getItem('showNdoorTab') === 'true';
-		const npatrolShown = localStorage.getItem('showNpatrolTab') === 'true';
-		const ncardShown = localStorage.getItem('showNcardTab') === 'true';
-		const nviewShown = localStorage.getItem('showNviewTab') === 'true';
-		const nsecurShown = localStorage.getItem('showNsecurTab') === 'true';
-		const nsoftwareShown = localStorage.getItem('showNsoftwareTab') === 'true';
-		const nsystemShown = localStorage.getItem('showNsystemTab') === 'true';
-		const nappShown = localStorage.getItem('showNappTab') === 'true';
-		const ncyberShown = localStorage.getItem('showNcyberTab') === 'true';
-		const ndigitalShown = localStorage.getItem('showNdigitalTab') === 'true';
-		const nserverShown = localStorage.getItem('showNserverTab') === 'true';
-		const nautShown = localStorage.getItem('showNautTab') === 'true';
-		const nequipShown = localStorage.getItem('showNequipTab') === 'true';
-		const nprojectShown = localStorage.getItem('showNprojectTab') === 'true';
-		const nsmartShown = localStorage.getItem('showNsmartTab') === 'true';
-		const nrealityShown = localStorage.getItem('showNrealityTab') === 'true';
-		const nhologramShown = localStorage.getItem('showNhologramTab') === 'true';
-		const npowerShown = localStorage.getItem('showNpowerTab') === 'true';
-		const nchargeShown = localStorage.getItem('showNchargeTab') === 'true';
-		const ncityShown = localStorage.getItem('showNcityTab') === 'true';
-		const nkioskShown = localStorage.getItem('showNkioskTab') === 'true';
-		const nledShown = localStorage.getItem('showNledTab') === 'true';
-		const nfireShown = localStorage.getItem('showNfireTab') === 'true';
-		const nfurnitureShown = localStorage.getItem('showNfurnitureTab') === 'true';
-		const npartitionShown = localStorage.getItem('showNpartitionTab') === 'true';
-		const ndecorShown = localStorage.getItem('showNdecorTab') === 'true';
-		const npingShown = localStorage.getItem('showNpingTab') === 'true';
-		const nconnectShown = localStorage.getItem('showNconnectTab') === 'true';
-		const nlightShown = localStorage.getItem('showNlightTab') === 'true';
-		const ncomfortShown = localStorage.getItem('showNcomfortTab') === 'true';
-		const nsoundShown = localStorage.getItem('showNsoundTab') === 'true';
-		const nhomeShown = localStorage.getItem('showNhomeTab') === 'true';
-
-		setShowNclockTab(nclockShown);
-		setShowNaccessTab(naccessShown);
-		setShowNvisitorTab(nvisitorShown);
-		setShowNparkTab(nparkShown);
-		setShowNdoorTab(ndoorShown);
-		setShowNpatrolTab(npatrolShown);
-		setShowNcardTab(ncardShown);
-		setShowNviewTab(nviewShown);
-		setShowNsecurTab(nsecurShown);
-		setShowNsoftwareTab(nsoftwareShown);
-		setShowNsystemTab(nsystemShown);
-		setShowNappTab(nappShown);
-		setShowNcyberTab(ncyberShown);
-		setShowNdigitalTab(ndigitalShown);
-		setShowNserverTab(nserverShown);
-		setShowNautTab(nautShown);
-		setShowNequipTab(nequipShown);
-		setShowNprojectTab(nprojectShown);
-		setShowNsmartTab(nsmartShown);
-		setShowNrealityTab(nrealityShown);
-		setShowNhologramTab(nhologramShown);
-		setShowNpowerTab(npowerShown);
-		setShowNchargeTab(nchargeShown);
-		setShowNcityTab(ncityShown);
-		setShowNkioskTab(nkioskShown);
-		setShowNledTab(nledShown);
-		setShowNfireTab(nfireShown);
-		setShowNfurnitureTab(nfurnitureShown);
-		setShowNpartitionTab(npartitionShown);
-		setShowNdecorTab(ndecorShown);
-		setShowNpingTab(npingShown);
-		setShowNconnectTab(nconnectShown);
-		setShowNlightTab(nlightShown);
-		setShowNcomfortTab(ncomfortShown);
-		setShowNsoundTab(nsoundShown);
-		setShowNhomeTab(nhomeShown);
-
-		if (!ribbonPinned) {
-			setShowPessoasRibbon(false);
-			setShowDispositivosRibbon(false);
-			setShowConfiguracaoRibbon(false);
-			setShowAjudaRibbon(false);
-			setShowNclockRibbon(false);
-			setShowNaccessRibbon(false);
-			setShowNvisitorRibbon(false);
-			setShowNparkRibbon(false);
-			setShowNdoorRibbon(false);
-			setShowNpatrolRibbon(false);
-			setShowNcardRibbon(false);
-			setShowNviewRibbon(false);
-			setShowNsecurRibbon(false);
-			setShowNsoftwareRibbon(false);
-			setShowNsystemRibbon(false);
-			setShowNappRibbon(false);
-			setShowNcyberRibbon(false);
-			setShowNdigitalRibbon(false);
-			setShowNserverRibbon(false);
-			setShowNautRibbon(false);
-			setShowNequipRibbon(false);
-			setShowNprojectRibbon(false);
-			setShowNsmartRibbon(false);
-			setShowNrealityRibbon(false);
-			setShowNhologramRibbon(false);
-			setShowNpowerRibbon(false);
-			setShowNchargeRibbon(false);
-			setShowNcityRibbon(false);
-			setShowNkioskRibbon(false);
-			setShowNledRibbon(false);
-			setShowNfireRibbon(false);
-			setShowNfurnitureRibbon(false);
-			setShowNpartitionRibbon(false);
-			setShowNdecorRibbon(false);
-			setShowNpingRibbon(false);
-			setShowNconnectRibbon(false);
-			setShowNlightRibbon(false);
-			setShowNcomfortRibbon(false);
-			setShowNsoundRibbon(false);
-			setShowNhomeRibbon(false);
-		} else {
-			const pessoasShown = localStorage.getItem('showPessoasRibbon') === 'true';
-			const dispositivosShown = localStorage.getItem('showDispositivosRibbon') === 'true';
-			const configuracaoShown = localStorage.getItem('showConfiguracaoRibbon') === 'true';
-			const ajudaShown = localStorage.getItem('showAjudaRibbon') === 'true';
-
-			setShowPessoasRibbon(pessoasShown);
-			setShowDispositivosRibbon(dispositivosShown);
-			setShowConfiguracaoRibbon(configuracaoShown);
-			setShowAjudaRibbon(ajudaShown);
-		}
-
-		setIsRibbonPinned(ribbonPinned);
+	// Função para lidar com a renderização dinâmica dos ribbons e tabs
+	const settersMap: Record<RibbonKey, Setters> = {
+		Nclock: { setShowRibbon: setShowNclockRibbon, setShowTab: setShowNclockTab },
+		Naccess: { setShowRibbon: setShowNaccessRibbon, setShowTab: setShowNaccessTab },
+		Nvisitor: { setShowRibbon: setShowNvisitorRibbon, setShowTab: setShowNvisitorTab },
+		Npark: { setShowRibbon: setShowNparkRibbon, setShowTab: setShowNparkTab },
+		Ndoor: { setShowRibbon: setShowNdoorRibbon, setShowTab: setShowNdoorTab },
+		Npatrol: { setShowRibbon: setShowNpatrolRibbon, setShowTab: setShowNpatrolTab },
+		Ncard: { setShowRibbon: setShowNcardRibbon, setShowTab: setShowNcardTab },
+		Nview: { setShowRibbon: setShowNviewRibbon, setShowTab: setShowNviewTab },
+		Nsecur: { setShowRibbon: setShowNsecurRibbon, setShowTab: setShowNsecurTab },
+		Nsoftware: { setShowRibbon: setShowNsoftwareRibbon, setShowTab: setShowNsoftwareTab },
+		Nsystem: { setShowRibbon: setShowNsystemRibbon, setShowTab: setShowNsystemTab },
+		Napp: { setShowRibbon: setShowNappRibbon, setShowTab: setShowNappTab },
+		Ncyber: { setShowRibbon: setShowNcyberRibbon, setShowTab: setShowNcyberTab },
+		Ndigital: { setShowRibbon: setShowNdigitalRibbon, setShowTab: setShowNdigitalTab },
+		Nserver: { setShowRibbon: setShowNserverRibbon, setShowTab: setShowNserverTab },
+		Naut: { setShowRibbon: setShowNautRibbon, setShowTab: setShowNautTab },
+		Nequip: { setShowRibbon: setShowNequipRibbon, setShowTab: setShowNequipTab },
+		Nproject: { setShowRibbon: setShowNprojectRibbon, setShowTab: setShowNprojectTab },
+		Nsmart: { setShowRibbon: setShowNsmartRibbon, setShowTab: setShowNsmartTab },
+		Nreality: { setShowRibbon: setShowNrealityRibbon, setShowTab: setShowNrealityTab },
+		Nhologram: { setShowRibbon: setShowNhologramRibbon, setShowTab: setShowNhologramTab },
+		Npower: { setShowRibbon: setShowNpowerRibbon, setShowTab: setShowNpowerTab },
+		Ncharge: { setShowRibbon: setShowNchargeRibbon, setShowTab: setShowNchargeTab },
+		Ncity: { setShowRibbon: setShowNcityRibbon, setShowTab: setShowNcityTab },
+		Nkiosk: { setShowRibbon: setShowNkioskRibbon, setShowTab: setShowNkioskTab },
+		Nled: { setShowRibbon: setShowNledRibbon, setShowTab: setShowNledTab },
+		Nfire: { setShowRibbon: setShowNfireRibbon, setShowTab: setShowNfireTab },
+		Nfurniture: { setShowRibbon: setShowNfurnitureRibbon, setShowTab: setShowNfurnitureTab },
+		Npartition: { setShowRibbon: setShowNpartitionRibbon, setShowTab: setShowNpartitionTab },
+		Ndecor: { setShowRibbon: setShowNdecorRibbon, setShowTab: setShowNdecorTab },
+		Nping: { setShowRibbon: setShowNpingRibbon, setShowTab: setShowNpingTab },
+		Nconnect: { setShowRibbon: setShowNconnectRibbon, setShowTab: setShowNconnectTab },
+		Nlight: { setShowRibbon: setShowNlightRibbon, setShowTab: setShowNlightTab },
+		Ncomfort: { setShowRibbon: setShowNcomfortRibbon, setShowTab: setShowNcomfortTab },
+		Nsound: { setShowRibbon: setShowNsoundRibbon, setShowTab: setShowNsoundTab },
+		Nhome: { setShowRibbon: setShowNhomeRibbon, setShowTab: setShowNhomeTab },
 	};
+
+	// Função para atualizar o estado a partir do localStorage
+	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix: string = ''): void {
+		const stateValue = localStorage.getItem(`${prefix}${key}`) === 'true';
+		setterFunction(stateValue);
+	}
+
+	// Função para carregar o estado das ribbons e tabs
+	function loadState(): void {
+		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
+		setIsRibbonPinned(ribbonPinned);
+
+		Object.entries(settersMap).forEach(([key, { setShowRibbon, setShowTab }]) => {
+			setItemState(key as RibbonKey, setShowRibbon, ribbonPinned ? '' : 'show');
+			setItemState(key as RibbonKey, setShowTab);
+		});
+	}
 
 	// Define os itens do menu
 	const ribbons: Record<RibbonName, [React.Dispatch<React.SetStateAction<boolean>>, string]> = {
@@ -544,9 +476,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 	};
 
 	// Função para lidar com o clique no ribbon
-	const handleRibbonClick = (tabName: string) => {
+	const handleRibbonClick = (tabName: RibbonName) => {
 		if (tabName in ribbons) {
-			const [setRibbon, ribbonName] = ribbons[tabName as RibbonName];
+			const [setRibbon, ribbonName] = ribbons[tabName];
 
 			if (activeTab === ribbonName) {
 				if (!isRibbonPinned) {
@@ -554,7 +486,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 					setActiveTab('');
 				}
 			} else {
-				Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
+				Object.keys(ribbons).forEach((key) => {
+					const [setOtherRibbon] = ribbons[key as RibbonName];
+					setOtherRibbon(false);
+				});
 				setRibbon(true);
 				setActiveTab(ribbonName);
 			}
@@ -713,16 +648,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const togglePinRibbon = () => {
 		const newState = !isRibbonPinned;
 		setIsRibbonPinned(newState);
-
 		localStorage.setItem('ribbonPinned', String(newState));
 
 		if (!newState) {
 			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
+			Object.values(settersMap).forEach(({ setShowRibbon }) => setShowRibbon(false));
 			setActiveTab('');
 		} else {
 			if (activeTab in ribbons) {
 				const [setRibbon] = ribbons[activeTab as RibbonName];
 				setRibbon(true);
+			} else if (activeTab in settersMap) {
+				const { setShowRibbon } = settersMap[activeTab as RibbonKey];
+				setShowRibbon(true);
 			}
 		}
 	};
@@ -922,7 +860,47 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setActiveTab(tabName);
 			localStorage.setItem('activeTab', tabName);
 		}
-	};	
+	};
+
+	// Função para dinamizar as tabs
+	const tabs: TabsInfo[] = [
+		{ id: 'nclock', title: 'NCLOCK', show: showNclockTab },
+		{ id: 'naccess', title: 'NACCESS', show: showNaccessTab },
+		{ id: 'nvisitor', title: 'NVISITOR', show: showNvisitorTab },
+		{ id: 'npark', title: 'NPARK', show: showNparkTab },
+		{ id: 'ndoor', title: 'NDOOR', show: showNdoorTab },
+		{ id: 'npatrol', title: 'NPATROL', show: showNpatrolTab },
+		{ id: 'ncard', title: 'NCARD', show: showNcardTab },
+		{ id: 'nview', title: 'NVIEW', show: showNviewTab },
+		{ id: 'nsecur', title: 'NSECUR', show: showNsecurTab },
+		{ id: 'nsoftware', title: 'NSOFTWARE', show: showNsoftwareTab },
+		{ id: 'nsystem', title: 'NSYSTEM', show: showNsystemTab },
+		{ id: 'napp', title: 'NAPP', show: showNappTab },
+		{ id: 'ncyber', title: 'NCYBER', show: showNcyberTab },
+		{ id: 'ndigital', title: 'NDIGITAL', show: showNdigitalTab },
+		{ id: 'nserver', title: 'NSERVER', show: showNserverTab },
+		{ id: 'naut', title: 'NAUT', show: showNautTab },
+		{ id: 'nequip', title: 'NEQUIP', show: showNequipTab },
+		{ id: 'nproject', title: 'NPROJECT', show: showNprojectTab },
+		{ id: 'nsmart', title: 'NSMART', show: showNsmartTab },
+		{ id: 'nreality', title: 'NREALITY', show: showNrealityTab },
+		{ id: 'nhologram', title: 'NHOLOGRAM', show: showNhologramTab },
+		{ id: 'npower', title: 'NPOWER', show: showNpowerTab },
+		{ id: 'ncharge', title: 'NCHARGE', show: showNchargeTab },
+		{ id: 'ncity', title: 'NCITY', show: showNcityTab },
+		{ id: 'nkiosk', title: 'NKIOSK', show: showNkioskTab },
+		{ id: 'nled', title: 'NLED', show: showNledTab },
+		{ id: 'nfire', title: 'NFIRE', show: showNfireTab },
+		{ id: 'nfurniture', title: 'NFURNITURE', show: showNfurnitureTab },
+		{ id: 'npartition', title: 'NPARTITION', show: showNpartitionTab },
+		{ id: 'ndecor', title: 'NDECOR', show: showNdecorTab },
+		{ id: 'nping', title: 'NPING', show: showNpingTab },
+		{ id: 'nconnect', title: 'NCONNECT', show: showNconnectTab },
+		{ id: 'nlight', title: 'NLIGHT', show: showNlightTab },
+		{ id: 'ncomfort', title: 'NCOMFORT', show: showNcomfortTab },
+		{ id: 'nsound', title: 'NSOUND', show: showNsoundTab },
+		{ id: 'nhome', title: 'NHOME', show: showNhomeTab }
+	];
 
 	// Função para abrir o modal de opções do terminal
 	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
@@ -940,6 +918,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 		handleAddModalNavbar(ad);
 	};
 
+	// Função para abrir o anydesk em uma nova janela
+	const handleAnydeskWindow = () => {
+		window.open('https://anydesk.com/pt');
+	}
+
 	return (
 		<ColorProvider>
 			<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
@@ -955,186 +938,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</Dropdown.Menu>
 					</Dropdown>
 					<ul className="nav nav-tabs">
-						{showNclockTab && (
-							<li className={`nav-item ${activeTab === 'nclock' ? 'active' : ''}`}>
-								<a className="nav-link nclock-tab" id="nclock-tab" onClick={() => handleTabClick('nclock')}>NCLOCK</a>
+						{tabs.map(tab => tab.show && (
+							<li key={tab.id} className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}>
+								<a className={`nav-link ${tab.id}-tab`} id={`${tab.id}-tab`} onClick={() => handleTabClick(tab.id)}>
+									{tab.title}
+								</a>
 							</li>
-						)}
-						{showNaccessTab && (
-							<li className={`nav-item ${activeTab === 'naccess' ? 'active' : ''}`}>
-								<a className="nav-link naccess-tab" id="naccess-tab" onClick={() => handleTabClick('naccess')}>NACCESS</a>
-							</li>
-						)}
-						{showNvisitorTab && (
-							<li className={`nav-item ${activeTab === 'nvisitor' ? 'active' : ''}`}>
-								<a className="nav-link nvisitor-tab" id="nvisitor-tab" onClick={() => handleTabClick('nvisitor')}>NVISITOR</a>
-							</li>
-						)}
-						{showNparkTab && (
-							<li className={`nav-item ${activeTab === 'npark' ? 'active' : ''}`}>
-								<a className="nav-link npark-tab" id="npark-tab" onClick={() => handleTabClick('npark')}>NPARK</a>
-							</li>
-						)}
-						{showNdoorTab && (
-							<li className={`nav-item ${activeTab === 'ndoor' ? 'active' : ''}`}>
-								<a className="nav-link ndoor-tab" id="ndoor-tab" onClick={() => handleTabClick('ndoor')}>NDOOR</a>
-							</li>
-						)}
-						{showNpatrolTab && (
-							<li className={`nav-item ${activeTab === 'npatrol' ? 'active' : ''}`}>
-								<a className="nav-link npatrol-tab" id="npatrol-tab" onClick={() => handleTabClick('npatrol')}>NPATROL</a>
-							</li>
-						)}
-						{showNcardTab && (
-							<li className={`nav-item ${activeTab === 'ncard' ? 'active' : ''}`}>
-								<a className="nav-link ncard-tab" id="ncard-tab" onClick={() => handleTabClick('ncard')}>NCARD</a>
-							</li>
-						)}
-						{showNviewTab && (
-							<li className={`nav-item ${activeTab === 'nview' ? 'active' : ''}`}>
-								<a className="nav-link nview-tab" id="nview-tab" onClick={() => handleTabClick('nview')}>NVIEW</a>
-							</li>
-						)}
-						{showNsecurTab && (
-							<li className={`nav-item ${activeTab === 'nsecur' ? 'active' : ''}`}>
-								<a className="nav-link nsecur-tab" id="nsecur-tab" onClick={() => handleTabClick('nsecur')}>NSECUR</a>
-							</li>
-						)}
-						{showNsoftwareTab && (
-							<li className={`nav-item ${activeTab === 'nsoftware' ? 'active' : ''}`}>
-								<a className="nav-link nsoftware-tab" id="nsoftware-tab" onClick={() => handleTabClick('nsoftware')}>NSOFTWARE</a>
-							</li>
-						)}
-						{showNsystemTab && (
-							<li className={`nav-item ${activeTab === 'nsystem' ? 'active' : ''}`}>
-								<a className="nav-link nsystem-tab" id="nsystem-tab" onClick={() => handleTabClick('nsystem')}>NSYSTEM</a>
-							</li>
-						)}
-						{showNappTab && (
-							<li className={`nav-item ${activeTab === 'napp' ? 'active' : ''}`}>
-								<a className="nav-link napp-tab" id="napp-tab" onClick={() => handleTabClick('napp')}>NAPP</a>
-							</li>
-						)}
-						{showNcyberTab && (
-							<li className={`nav-item ${activeTab === 'ncyber' ? 'active' : ''}`}>
-								<a className="nav-link ncyber-tab" id="ncyber-tab" onClick={() => handleTabClick('ncyber')}>NCYBER</a>
-							</li>
-						)}
-						{showNdigitalTab && (
-							<li className={`nav-item ${activeTab === 'ndigital' ? 'active' : ''}`}>
-								<a className="nav-link ndigital-tab" id="ndigital-tab" onClick={() => handleTabClick('ndigital')}>NDIGITAL</a>
-							</li>
-						)}
-						{showNserverTab && (
-							<li className={`nav-item ${activeTab === 'nserver' ? 'active' : ''}`}>
-								<a className="nav-link nserver-tab" id="nserver-tab" onClick={() => handleTabClick('nserver')}>NSERVER</a>
-							</li>
-						)}
-						{showNautTab && (
-							<li className={`nav-item ${activeTab === 'naut' ? 'active' : ''}`}>
-								<a className="nav-link naut-tab" id="naut-tab" onClick={() => handleTabClick('naut')}>NAUT</a>
-							</li>
-						)}
-						{showNequipTab && (
-							<li className={`nav-item ${activeTab === 'nequip' ? 'active' : ''}`}>
-								<a className="nav-link nequip-tab" id="nequip-tab" onClick={() => handleTabClick('nequip')}>NEQUIP</a>
-							</li>
-						)}
-						{showNprojectTab && (
-							<li className={`nav-item ${activeTab === 'nproject' ? 'active' : ''}`}>
-								<a className="nav-link nproject-tab" id="nproject-tab" onClick={() => handleTabClick('nproject')}>NPROJECT</a>
-							</li>
-						)}
-						{showNsmartTab && (
-							<li className={`nav-item ${activeTab === 'nsmart' ? 'active' : ''}`}>
-								<a className="nav-link nsmart-tab" id="nsmart-tab" onClick={() => handleTabClick('nsmart')}>NSMART</a>
-							</li>
-						)}
-						{showNrealityTab && (
-							<li className={`nav-item ${activeTab === 'nreality' ? 'active' : ''}`}>
-								<a className="nav-link nreality-tab" id="nreality-tab" onClick={() => handleTabClick('nreality')}>NREALITY</a>
-							</li>
-						)}
-						{showNhologramTab && (
-							<li className={`nav-item ${activeTab === 'nhologram' ? 'active' : ''}`}>
-								<a className="nav-link nhologram-tab" id="nhologram-tab" onClick={() => handleTabClick('nhologram')}>NHOLOGRAM</a>
-							</li>
-						)}
-						{showNpowerTab && (
-							<li className={`nav-item ${activeTab === 'npower' ? 'active' : ''}`}>
-								<a className="nav-link npower-tab" id="npower-tab" onClick={() => handleTabClick('npower')}>NPOWER</a>
-							</li>
-						)}
-						{showNchargeTab && (
-							<li className={`nav-item ${activeTab === 'ncharge' ? 'active' : ''}`}>
-								<a className="nav-link ncharge-tab" id="ncharge-tab" onClick={() => handleTabClick('ncharge')}>NCHARGE</a>
-							</li>
-						)}
-						{showNcityTab && (
-							<li className={`nav-item ${activeTab === 'ncity' ? 'active' : ''}`}>
-								<a className="nav-link ncity-tab" id="ncity-tab" onClick={() => handleTabClick('ncity')}>NCITY</a>
-							</li>
-						)}
-						{showNkioskTab && (
-							<li className={`nav-item ${activeTab === 'nkiosk' ? 'active' : ''}`}>
-								<a className="nav-link nkiosk-tab" id="nkiosk-tab" onClick={() => handleTabClick('nkiosk')}>NKIOSK</a>
-							</li>
-						)}
-						{showNledTab && (
-							<li className={`nav-item ${activeTab === 'nled' ? 'active' : ''}`}>
-								<a className="nav-link nled-tab" id="nled-tab" onClick={() => handleTabClick('nled')}>NLED</a>
-							</li>
-						)}
-						{showNfireTab && (
-							<li className={`nav-item ${activeTab === 'nfire' ? 'active' : ''}`}>
-								<a className="nav-link nfire-tab" id="nfire-tab" onClick={() => handleTabClick('nfire')}>NFIRE</a>
-							</li>
-						)}
-						{showNfurnitureTab && (
-							<li className={`nav-item ${activeTab === 'nfurniture' ? 'active' : ''}`}>
-								<a className="nav-link nfurniture-tab" id="nfurniture-tab" onClick={() => handleTabClick('nfurniture')}>NFURNITURE</a>
-							</li>
-						)}
-						{showNpartitionTab && (
-							<li className={`nav-item ${activeTab === 'npartition' ? 'active' : ''}`}>
-								<a className="nav-link npartition-tab" id="npartition-tab" onClick={() => handleTabClick('npartition')}>NPARTITION</a>
-							</li>
-						)}
-						{showNdecorTab && (
-							<li className={`nav-item ${activeTab === 'ndecor' ? 'active' : ''}`}>
-								<a className="nav-link ndecor-tab" id="ndecor-tab" onClick={() => handleTabClick('ndecor')}>NDECOR</a>
-							</li>
-						)}
-						{showNpingTab && (
-							<li className={`nav-item ${activeTab === 'nping' ? 'active' : ''}`}>
-								<a className="nav-link nping-tab" id="nping-tab" onClick={() => handleTabClick('nping')}>NPING</a>
-							</li>
-						)}
-						{showNconnectTab && (
-							<li className={`nav-item ${activeTab === 'nconnect' ? 'active' : ''}`}>
-								<a className="nav-link nconnect-tab" id="nconnect-tab" onClick={() => handleTabClick('nconnect')}>NCONNECT</a>
-							</li>
-						)}
-						{showNlightTab && (
-							<li className={`nav-item ${activeTab === 'nlight' ? 'active' : ''}`}>
-								<a className="nav-link nlight-tab" id="nlight-tab" onClick={() => handleTabClick('nlight')}>NLIGHT</a>
-							</li>
-						)}
-						{showNcomfortTab && (
-							<li className={`nav-item ${activeTab === 'ncomfort' ? 'active' : ''}`}>
-								<a className="nav-link ncomfort-tab" id="ncomfort-tab" onClick={() => handleTabClick('ncomfort')}>NCOMFORT</a>
-							</li>
-						)}
-						{showNsoundTab && (
-							<li className={`nav-item ${activeTab === 'nsound' ? 'active' : ''}`}>
-								<a className="nav-link nsound-tab" id="nsound-tab" onClick={() => handleTabClick('nsound')}>NSOUND</a>
-							</li>
-						)}
-						{showNhomeTab && (
-							<li className={`nav-item ${activeTab === 'nhome' ? 'active' : ''}`}>
-								<a className="nav-link nhome-tab" id="nhome-tab" onClick={() => handleTabClick('nhome')}>NHOME</a>
-							</li>
-						)}
+						))}
 						<li className={`nav-item ${activeTab === 'pessoas' ? 'active' : ''}`}>
 							<a className="nav-link pessoas-tab" id="pessoas-tab" onClick={() => handleRibbonClick('pessoas')}>PESSOAS</a>
 						</li>
@@ -1616,15 +1426,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</span>
 												<span className="text">Pagamento Moedas</span>
 											</Link>
-											<Link to='#' type="button" className="btn btn-light ribbon-button">
+											{/* <Link to='#' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={kiosk} alt="botão movimentos porteiro" />
 												</span>
 												<span className="text">Movimentos Quiosque</span>
-											</Link>
-										</div>
-										<div className="icon-text-pessoas">
-											<Link to="/nkiosk/nkioskmovedoorman" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											</Link> */}
+											<Link to="/nkiosk/nkioskmovedoorman" type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={intercom} alt="botão listagem de movimentos " />
 												</span>
@@ -1632,7 +1440,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 										</div>
 										<div className="icon-text-pessoas">
-											<Link to="" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/nkiosk/nkioskaccess" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={accessControl} alt="botão listagem de movimentos " />
 												</span>
@@ -1995,7 +1803,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>  
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={accessPlan} alt="botão planos de acesso" />
 												</span>
@@ -2244,11 +2052,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Button>
 										</div>
 										<div className='icon-text-pessoas'>
-											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled> 
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={helpdesk} alt="botão helpdesk" />
 												</span>
 												<span className="text">Helpdesk</span>
+											</Button>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Button onClick={handleAnydeskWindow} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={anydesk} alt="botão anydesk" />
+												</span>
+												<span className="text">Anydesk</span>
 											</Button>
 										</div>
 									</div>

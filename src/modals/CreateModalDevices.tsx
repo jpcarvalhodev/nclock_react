@@ -32,7 +32,6 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, disabled: true });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [ipAddress, setIpAddress] = useState('');
     const [error, setError] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
@@ -56,6 +55,9 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -142,7 +144,6 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         const parsedValue = (name === 'deviceType' || name === 'deviceProtocol') ? Number(value) : (type === 'number' ? Number(value) : value);
         if (name === "ipAddress") {
             if (validateIPAddress(value)) {
-                setIpAddress(value);
                 setError('');
             } else {
                 setError('Endereço IP inválido');

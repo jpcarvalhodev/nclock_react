@@ -89,7 +89,7 @@ import banner_nhome from '../assets/img/carousel/banner_nhome.jpg';
 import { useColor } from "../context/ColorContext";
 
 // Define o tipo TabName
-type TabName = 'NIDGROUP' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
+type TabName = 'CLIENTE' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
 
 // Define o tipo CardTitle
 type CardTitle = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome' | 'Nsoftwares';
@@ -144,7 +144,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 export const Dashboard = () => {
     const { navbarColor, footerColor } = useColor();
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('NIDGROUP');
+    const [activeKey, setActiveKey] = useState<TabName>('CLIENTE');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -152,20 +152,23 @@ export const Dashboard = () => {
             const tab = tabData[title];
             localStorage.setItem(tab.tabKey, 'true');
             localStorage.setItem(tab.ribbonKey, 'true');
+            localStorage.setItem('activeTab', title.toLowerCase());
             navigate(tab.route);
         }
     };
 
     const cardData = {
-        'NIDGROUP': [
-            { title: 'Nvisitor', img: nvisitor },
-            { title: 'Nview', img: nview },
-            { title: 'Nkiosk', img: nkiosk }
+        'CLIENTE': [
+            { title: 'Nkiosk', img: nkiosk, tab: 'nkiosk' },
+            { title: 'Nclock', img: nclock, tab: 'nclock' },
+            { title: 'Naccess', img: naccess, tab: 'naccess' },
+            { title: 'Nvisitor', img: nvisitor, tab: 'nvisitor' },
+            { title: 'Nview', img: nview, tab: 'nview' },
         ],
         'SISNID': [
-            { title: 'Nclock', img: nclock },
-            { title: 'Naccess', img: naccess },
-            { title: 'Nvisitor', img: nvisitor },
+            { title: 'Nclock', img: nclock, tab: 'nclock' },
+            { title: 'Naccess', img: naccess, tab: 'naccess' },
+            { title: 'Nvisitor', img: nvisitor, tab: 'nvisitor' },
             { title: 'Npark', img: npark },
             { title: 'Ndoor', img: ndoor },
             { title: 'Npatrol', img: npatrol },
@@ -264,7 +267,7 @@ export const Dashboard = () => {
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
                     <h5 className="dashboard-title-text-inside">Soluções</h5>
-                    {activeKey === 'NIDGROUP' && (
+                    {activeKey === 'CLIENTE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
                                 <img className="img-carousel" src={banner_nidgroup} alt="NIDGROUP" />
@@ -415,7 +418,7 @@ export const Dashboard = () => {
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
                     <h5 className="dashboard-title-text-inside">Notícias</h5>
-                    {activeKey === 'NIDGROUP' && (
+                    {activeKey === 'CLIENTE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
                                 <img className="img-carousel" src={banner_sisnid} alt="SISNID" />

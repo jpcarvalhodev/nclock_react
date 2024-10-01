@@ -69,6 +69,9 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
                 isValidEmail = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                isValidEmail = false;
+            }
         });
 
         fields.forEach(field => {
@@ -76,6 +79,9 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 isValidCompany = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
+            }
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                isValidCompany = false;
             }
         });
 

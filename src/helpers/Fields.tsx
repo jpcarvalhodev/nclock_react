@@ -327,3 +327,70 @@ export const timePeriodFields = [
     { key: 'holidayType3Start3', label: 'Holiday Type 3 Start 3', type: 'string', required: true },
     { key: 'holidayType3End3', label: 'Holiday Type 3 End 3', type: 'string', required: true }
 ];
+
+export const doorFields = [
+    { key: 'nrDoor', label: 'Número da Porta', type: 'number', required: true },
+    { key: 'time', label: 'Tempo Aberta', type: 'number', required: true }
+];
+
+export const accessControlFields = [
+    { key: 'employeesId', label: 'ID dos Funcionários', type: 'string', required: true },
+    { key: 'shortName', label: 'Nome Curto', type: 'string' },
+    { key: 'enrollNumber', label: 'Número de Matrícula', type: 'string' },
+    { key: 'doorId', label: 'ID da Porta', type: 'string', required: true },
+    { key: 'doorName', label: 'Nome da Porta', type: 'string' },
+    { key: 'timezoneId', label: 'ID do Fuso Horário', type: 'string', required: true },
+    { key: 'timezoneName', label: 'Nome do Fuso Horário', type: 'string' },
+    { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true },
+    { key: 'createDate', label: 'Data de Criação', type: 'date' },
+    { key: 'updateDate', label: 'Data de Atualização', type: 'date' }
+];
+
+export const doorsFields = [
+    { key: 'companyId', label: 'Company ID', type: 'text' },
+    { key: 'createTime', label: 'Create Time', type: 'datetime-local' },
+    { key: 'createrCode', label: 'Creater Code', type: 'text' },
+    { key: 'createrId', label: 'Creater ID', type: 'text' },
+    { key: 'createrName', label: 'Creater Name', type: 'text' },
+    { key: 'opVersion', label: 'Operation Version', type: 'number' },
+    { key: 'updateTime', label: 'Update Time', type: 'datetime-local' },
+    { key: 'updaterCode', label: 'Updater Code', type: 'text' },
+    { key: 'updaterId', label: 'Updater ID', type: 'text' },
+    { key: 'updaterName', label: 'Updater Name', type: 'text' },
+    { key: 'actionInterval', label: 'Action Interval', type: 'number' },
+    { key: 'activeTimesegId', label: 'Active Timeseg ID', type: 'text' },
+    { key: 'allowSuaccessLock', label: 'Allow Suaccess Lock', type: 'checkbox' },
+    { key: 'backLock', label: 'Back Lock', type: 'checkbox' },
+    { key: 'combopenInterval', label: 'Combopen Interval', type: 'number' },
+    { key: 'delayOpenTime', label: 'Delay Open Time', type: 'number' },
+    { key: 'doorNo', label: 'Door No', type: 'number' },
+    { key: 'doorSensorStatus', label: 'Door Sensor Status', type: 'number' },
+    { key: 'enabled', label: 'Enabled', type: 'checkbox' },
+    { key: 'extDelayDrivertime', label: 'Ext. Delay Driver Time', type: 'number' },
+    { key: 'extDevId', label: 'External Device ID', type: 'text' },
+    { key: 'forcePwd', label: 'Force Password', type: 'text' },
+    { key: 'hostStatus', label: 'Host Status', type: 'number' },
+    { key: 'inApbDuration', label: 'In APB Duration', type: 'number' },
+    { key: 'isDisableAudio', label: 'Is Disable Audio', type: 'checkbox' },
+    { key: 'latchDoorType', label: 'Latch Door Type', type: 'number' },
+    { key: 'latchTimeOut', label: 'Latch Time Out', type: 'number' },
+    { key: 'latchTimesegId', label: 'Latch Timeseg ID', type: 'text' },
+    { key: 'lockDelay', label: 'Lock Delay', type: 'number' },
+    { key: 'name', label: 'Name', type: 'text' },
+    { key: 'passmodeTimesegId', label: 'Passmode Timeseg ID', type: 'text' },
+    { key: 'readerType', label: 'Reader Type', type: 'number' },
+    { key: 'sexInputMode', label: 'Sex Input Mode', type: 'text' },
+    { key: 'sexSupervisedResistor', label: 'Sex Supervised Resistor', type: 'text' },
+    { key: 'senInputMode', label: 'Sen Input Mode', type: 'text' },
+    { key: 'senSupervisedResistor', label: 'Sen Supervised Resistor', type: 'text' },
+    { key: 'sensorDelay', label: 'Sensor Delay', type: 'number' },
+    { key: 'supperPwd', label: 'Supper Password', type: 'text' },
+    { key: 'verifyMode', label: 'Verify Mode', type: 'number' },
+    { key: 'wgInputId', label: 'WG Input ID', type: 'text' },
+    { key: 'wgInputType', label: 'WG Input Type', type: 'number' },
+    { key: 'wgOutputId', label: 'WG Output ID', type: 'text' },
+    { key: 'wgOutputType', label: 'WG Output Type', type: 'number' },
+    { key: 'wgReversed', label: 'WG Reversed', type: 'number' },
+    { key: 'devId', label: 'Device ID', type: 'text' },
+    { key: 'devSN', label: 'Device Serial Number', type: 'text' },
+];

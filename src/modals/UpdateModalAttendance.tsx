@@ -49,6 +49,9 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.required && !fieldValue) {
                 newErrors[field.key] = 'Campo obrigatório.';
                 valid = false;

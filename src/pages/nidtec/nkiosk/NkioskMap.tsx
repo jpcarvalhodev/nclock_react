@@ -7,6 +7,7 @@ import { useColor } from "../../../context/ColorContext";
 import marker from '../../../assets/img/map/marker.png';
 import { MapCenterButton } from '../../../components/MapCenterButton';
 import { useEffect } from 'react';
+import '../../../css/PagesStyles.css';
 
 // Icone personalizado para o marcador
 const customIcon = new L.Icon({
@@ -32,15 +33,15 @@ export const NkioskMap = () => {
     const position: [number, number] = [41.145882, -8.614464];
 
     return (
-        <div className="map-container">
+        <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#009739' }}>Mapa do Quiosque</span>
                 </div>
             </div>
-            <div className='d-flex justify-content-center' style={{ height: "90vh" }}>
-                <MapContainer center={position} zoom={15} scrollWheelZoom={true} style={{ height: "80vh", width: "90vw", marginTop: "50px" }}>
+            <div className='d-flex justify-content-center' style={{ minHeight: '70vh' }}>
+                <MapContainer center={position} zoom={15} scrollWheelZoom={true} style={{ minWidth: '80vw' }}>
                     <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

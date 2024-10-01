@@ -77,8 +77,6 @@ const formatDataItem = (item: DataItem, column: string) => {
             return item.cardNumber === 0 ? "" : item.cardNumber;
         case 'productTime':
             return item.productTime ? formatDateAndTime(item[column]) : '';
-        case 'status':
-            return item.status ? 'Activo' : 'Inactivo';
         case 'createDate':
             return new Date(item.createDate).toLocaleString() || '';
         case 'updateDate':

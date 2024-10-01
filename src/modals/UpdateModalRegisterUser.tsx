@@ -52,6 +52,9 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -193,7 +196,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
-                                        type="text"
+                                        type="password"
                                         name="password"
                                         value={formData.password || ''}
                                         onChange={handleChange}
@@ -212,7 +215,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
-                                        type="text"
+                                        type="password"
                                         name="confirmPassword"
                                         value={formData.confirmPassword || ''}
                                         onChange={handleChange}

@@ -46,6 +46,9 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -245,7 +248,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                     Fechar
                 </Button>
                 <Button variant="outline-primary" onClick={handleCheckForSave}>
-                    Salvar
+                    Guardar
                 </Button>
             </Modal.Footer>
         </Modal >

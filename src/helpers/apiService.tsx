@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { Ads, Category, Department, Devices, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Category, Department, Devices, DoorDevice, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -265,8 +265,14 @@ export const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
     return response.json();
 };
 
-export const openDeviceDoor = async (zktecoDeviceID: Devices) => {
-    const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${zktecoDeviceID}`);
+export const openDeviceDoor = async (zktecoDeviceID: DoorDevice, doorData: DoorDevice) => {
+    const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${zktecoDeviceID}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(doorData)
+    });
     if (!response.ok) {
         return;
     }
@@ -1072,6 +1078,68 @@ export const deleteTimePeriod = async (id: string) => {
     const response = await fetchWithAuth(`AccTimeSeg/${id}`, {
         method: 'DELETE'
     });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CONTROLE DE ACESSO////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllAccessControl = async () => {
+    const response = await fetchWithAuth(`AccessControle/GetAllAccessControles`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const addAccessControl = async (accessControl: AccessControl) => {
+    const response = await fetchWithAuth(`AccessControle/CreateAccessControle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(accessControl)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const updateAccessControl = async (accessControl: AccessControl) => {
+    const response = await fetchWithAuth(`AccessControle/UpdateAccessControle/${accessControl.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(accessControl)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const deleteAccessControl = async (id: string) => {
+    const response = await fetchWithAuth(`AccessControle/DeleteAccessControle/${id}`, {
+        method: 'DELETE'
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CONTROLE DE ACESSO//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllDoors = async () => {
+    const response = await fetchWithAuth(`AccDoor`);
     if (!response.ok) {
         return;
     }

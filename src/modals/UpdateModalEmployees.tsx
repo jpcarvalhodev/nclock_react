@@ -60,6 +60,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       const fieldValue = formData[field.key];
       let valid = true;
 
+      if (field.required && (fieldValue === undefined || fieldValue === '')) {
+        valid = false;
+      }
       if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
         valid = false;
         newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -331,6 +334,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   required
                 />
               </OverlayTrigger>
+              {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
             </Form.Group>
             <Form.Group controlId="formShortName">
               <Form.Label>
@@ -349,6 +353,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   required
                 />
               </OverlayTrigger>
+              {errors.shortName && <Form.Text className="text-danger">{errors.shortName}</Form.Text>}
             </Form.Group>
           </Col>
           <Col md={3}>

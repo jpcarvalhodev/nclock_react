@@ -49,10 +49,8 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
-
-            if (field.type === 'string' && field.required && !fieldValue) {
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
-                newErrors[field.key] = `${field.label} é obrigatório.`;
             }
 
             return valid;
@@ -60,14 +58,14 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
 
         setErrors(newErrors);
         setIsFormValid(isValid);
-    }, [formData, fields]);  
+    }, [formData, fields]);
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const target = e.target as HTMLInputElement;
         const { name, value, type } = target;
         let parsedValue: string | number | boolean;
-    
+
         if (type === 'checkbox') {
             parsedValue = target.checked;
         } else if (type === 'number') {

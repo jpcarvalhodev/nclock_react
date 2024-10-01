@@ -40,7 +40,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [ipAddress, setIpAddress] = useState('');
     const [error, setError] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
@@ -54,6 +53,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -156,7 +158,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         const parsedValue = type === 'number' ? Number(value) : value;
         if (name === "ipAddress") {
             if (validateIPAddress(value)) {
-                setIpAddress(value);
                 setError('');
             } else {
                 setError('Endereço IP inválido');
@@ -193,7 +194,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 <Row>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceName">
-                            <Form.Label>Nome <span style={{ color: 'red' }}>*</span></Form.Label>
+                            <Form.Label>Nome<span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
@@ -210,7 +211,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceNumber">
-                            <Form.Label>Número <span style={{ color: 'red' }}>*</span></Form.Label>
+                            <Form.Label>Número<span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
@@ -313,7 +314,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formPort">
-                                                            <Form.Label>Porta</Form.Label>
+                                                            <Form.Label>Porta<span style={{ color: 'red' }}>*</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
                                                                 overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
@@ -344,7 +345,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formDeviceProtocol">
-                                                            <Form.Label>Protocolo<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                            <Form.Label>Protocolo</Form.Label>
                                                             <Form.Select
                                                                 name="deviceProtocol"
                                                                 value={formData['deviceProtocol'] || ''}
@@ -434,13 +435,16 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         </Form.Group>
                                                         <Form.Group controlId="formDeviceType">
                                                             <Form.Label>Tipo</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
+                                                            <Form.Select
                                                                 name="deviceType"
                                                                 value={formData['deviceType'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
-                                                            />
+                                                            >
+                                                                <option value="">Selecione</option>
+                                                                <option value="1">Assiduidade</option>
+                                                                <option value="2">Controle de Acesso</option>
+                                                            </Form.Select>
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
@@ -466,7 +470,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 </Row>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>

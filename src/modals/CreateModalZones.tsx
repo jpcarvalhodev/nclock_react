@@ -28,26 +28,32 @@ interface Props<T> {
 // Define o componente
 export const CreateModalZones = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
-    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Valida o formulário
-    const validateForm = () => {
-        const isValid = fields.every(field => {
-            if (field.required) {
-                const fieldValue = formData?.[field.key];
-                return fieldValue !== null && fieldValue !== undefined && typeof fieldValue === 'string' && fieldValue.trim() !== '';
-            }
-            return true;
-        });
-        setIsFormValid(isValid);
-    };
-
-    // Atualiza a validação do formulário
+    // useEffect para validar o formulário
     useEffect(() => {
-        validateForm();
+        const newErrors: Record<string, string> = {};
+
+        const isValid = fields.every(field => {
+            const fieldValue = formData[field.key];
+            let valid = true;
+
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser negativo.`;
+            }
+
+            return valid;
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
     }, [formData, fields]);
 
     // Atualiza o valor do campo da foto
@@ -145,6 +151,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -165,6 +172,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.acronym && <Form.Text className="text-danger">{errors.acronym}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>

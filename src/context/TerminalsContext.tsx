@@ -1,6 +1,6 @@
 import { createContext, useState, useContext } from 'react';
 import { ReactNode } from 'react';
-import { Devices, Employee, KioskTransaction } from '../helpers/Types';
+import { Devices, DoorDevice, Employee, KioskTransaction } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -19,7 +19,7 @@ export interface DeviceContextType {
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     syncTimeManuallyToDevice: (device: Devices) => Promise<void>;
     deleteAllUsersOnDevice: (device: Devices, employee: string | null) => Promise<void>;
-    openDeviceDoor: (device: Devices) => Promise<void>;
+    openDeviceDoor: (zktecoDeviceID: DoorDevice, doorData: DoorDevice) => Promise<void>;
     restartDevice: (device: Devices) => Promise<void>;
     handleAddDevice: (device: Devices) => Promise<void>;
     handleUpdateDevice: (device: Devices) => Promise<void>;
@@ -73,7 +73,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
         try {
             const data = await apiService.fetchAllEmployeesOnDevice(zktecoDeviceID);
-            toast.success(data.value || 'Funcionários recolhidos com sucesso!');
+            toast.success(data.message || 'Funcionários recolhidos com sucesso!');
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -105,7 +105,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
         try {
             const data = await apiService.sendAllEmployeesToDevice(zktecoDeviceID, employeeID);
-            toast.success(data.value || 'Utilizadores apagados com sucesso!');
+            toast.success(data.message || 'Utilizadores apagados com sucesso!');
 
         } catch (error) {
             console.error('Erro ao enviar os utilizadores:', error);
@@ -117,7 +117,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
         try {
             const data = await apiService.saveAllEmployeesOnDeviceToDB(zktecoDeviceID, employeeID);
-            toast.success(data.value || 'Utilizadores recolhidos com sucesso!');
+            toast.success(data.message || 'Utilizadores recolhidos com sucesso!');
 
         } catch (error) {
             console.error('Erro ao buscar utilizadores:', error);
@@ -128,7 +128,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
         try {
             const data = await apiService.saveAllAttendancesEmployeesOnDevice(zktecoDeviceID);
-            toast.success(data.value || 'Assiduidades recolhidas com sucesso!');
+            toast.success(data.message || 'Assiduidades recolhidas com sucesso!');
 
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -139,7 +139,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
         try {
             const data = await apiService.syncTimeManuallyToDevice(zktecoDeviceID);
-            toast.success(data.value || 'Hora sincronizada com sucesso!');
+            toast.success(data.message || 'Hora sincronizada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao sincronizar a hora:', error);
@@ -148,10 +148,10 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para abrir a porta via dispositivo
-    const openDeviceDoor = async (zktecoDeviceID: Devices) => {
+    const openDeviceDoor = async (zktecoDeviceID: DoorDevice, doorData: DoorDevice) => {
         try {
-            const data = await apiService.openDeviceDoor(zktecoDeviceID);
-            toast.success(data.value || 'Porta aberta com sucesso!');
+            const data = await apiService.openDeviceDoor(zktecoDeviceID, doorData);
+            toast.success(data.message || 'Porta aberta com sucesso!');
 
         } catch (error) {
             console.error('Erro ao abrir a porta:', error);
@@ -163,7 +163,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
         try {
             const data = await apiService.deleteAllUsersOnDevice(zktecoDeviceID, employeeID);
-            toast.success(data.value || 'Utilizadores apagados com sucesso!');
+            toast.success(data.message || 'Utilizadores apagados com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar os utilizadores:', error);
@@ -175,7 +175,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const restartDevice = async (zktecoDeviceID: Devices) => {
         try {
             const data = await apiService.restartDevice(zktecoDeviceID);
-            toast.success(data.value || 'Dispositivo reiniciado com sucesso!');
+            toast.success(data.message || 'Dispositivo reiniciado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao reiniciar o dispositivo:', error);
@@ -188,7 +188,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const deviceData = await apiService.addDevice(device);
             setDevices([...devices, deviceData]);
-            toast.success(deviceData.value || 'dispositivo adicionado com sucesso!');
+            toast.success(deviceData.message || 'dispositivo adicionado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao adicionado dispositivos:', error);
@@ -201,7 +201,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             const updatedDevice = await apiService.updateDevice(device);
             const updatedDevices = devices.map(d => d.zktecoDeviceID === updatedDevice.zktecoDeviceID ? updatedDevice : d);
             setDevices(updatedDevices);
-            toast.success(updatedDevice.value || 'Atualização realizada com sucesso!');
+            toast.success(updatedDevice.message || 'Atualização realizada com sucesso!');
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
@@ -213,7 +213,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const handleDeleteDevice = async (zktecoDeviceID: string) => {
         try {
             const deleteDevice = await apiService.deleteDevice(zktecoDeviceID);
-            toast.success(deleteDevice.value || 'dispositivo apagado com sucesso!');
+            toast.success(deleteDevice.message || 'dispositivo apagado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao apagar dispositivos:', error);

@@ -36,14 +36,28 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Atualiza o estado do componente com as validações dos campos
+    // useEffect para validar o formulário
     useEffect(() => {
+        const newErrors: Record<string, string> = {};
+
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
-            const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
-            return !field.required || (field.required && valueAsString !== '');
+            let valid = true;
+
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser negativo.`;
+            }
+
+            return valid;
         });
+
+        setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
 
@@ -158,6 +172,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -178,6 +193,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.acronym && <Form.Text className="text-danger">{errors.acronym}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>

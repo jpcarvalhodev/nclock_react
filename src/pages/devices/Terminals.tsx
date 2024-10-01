@@ -7,8 +7,8 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, Employee, EmployeeAndCard, EmployeeCard, KioskTransaction } from "../../helpers/Types";
-import { deviceFields, employeeCardFields, employeeFields, transactionFields } from "../../helpers/Fields";
+import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, KioskTransaction } from "../../helpers/Types";
+import { deviceFields, doorFields, employeeCardFields, employeeFields, transactionFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
@@ -24,6 +24,7 @@ import React from "react";
 import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 import { useColor } from "../../context/ColorContext";
+import { DoorModal } from "../../modals/DoorModal";
 
 // Define a interface para os filtros
 interface Filters {
@@ -141,6 +142,7 @@ export const Terminals = () => {
     const fileInputFaceRef = React.createRef<HTMLInputElement>();
     const [movements, setMovements] = useState<Movement[]>([]);
     const [transactions, setTransactions] = useState<KioskTransaction[]>([]);
+    const [showDoorModal, setShowDoorModal] = useState(false);
 
     // Função para mesclar os dados de utilizadores e cartões
     const mergeEmployeeAndCardData = (
@@ -1012,10 +1014,10 @@ export const Terminals = () => {
     }
 
     // Função para abrir a porta ligada ao dispositivo
-    const handleOpenDoor = async () => {
+    const handleOpenDoor = async (doorData: DoorDevice) => {
         if (selectedTerminal) {
             setLoadingOpenDoor(true);
-            await openDeviceDoor(selectedTerminal.zktecoDeviceID);
+            await openDeviceDoor(selectedTerminal.zktecoDeviceID, doorData);
             setLoadingOpenDoor(false);
         } else {
             toast.error('Selecione um terminal primeiro!');
@@ -1114,29 +1116,41 @@ export const Terminals = () => {
                             <Tab eventKey="tasks" title="Actividade">
                                 <div>
                                     <p className="activityTabContent">Actividades</p>
-                                    <DataTable
-                                        columns={transactionColumns}
-                                        data={transactions}
-                                        pagination
-                                        paginationPerPage={5}
-                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                        paginationComponentOptions={paginationOptions}
-                                        noDataComponent={selectedTerminal ? "Não há actividades disponíveis para exibir." : "Selecione um terminal para ver as actividades."}
-                                        customStyles={customStyles}
-                                    />
+                                    {
+                                        selectedTerminal && selectedDeviceRows.length > 0 ? (
+                                            <DataTable
+                                                columns={transactionColumns}
+                                                data={transactions}
+                                                pagination
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                paginationComponentOptions={paginationOptions}
+                                                noDataComponent="Não há actividades disponíveis para exibir."
+                                                customStyles={customStyles}
+                                            />
+                                        ) : (
+                                            <p style={{ textAlign: "center" }}>Selecione um terminal para ver as actividades.</p>
+                                        )
+                                    }
                                 </div>
                                 <div>
                                     <p className="activityTabContent">Movimentos</p>
-                                    <DataTable
-                                        columns={movementColumns}
-                                        data={movements}
-                                        pagination
-                                        paginationPerPage={5}
-                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                        paginationComponentOptions={paginationOptions}
-                                        noDataComponent={selectedTerminal ? "Não há movimentos disponíveis para exibir." : "Selecione um terminal para ver os movimentos."}
-                                        customStyles={customStyles}
-                                    />
+                                    {
+                                        selectedTerminal && selectedDeviceRows.length > 0 ? (
+                                            <DataTable
+                                                columns={movementColumns}
+                                                data={movements}
+                                                pagination
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                paginationComponentOptions={paginationOptions}
+                                                noDataComponent="Não há movimentos disponíveis para exibir."
+                                                customStyles={customStyles}
+                                            />
+                                        ) : (
+                                            <p style={{ textAlign: "center" }}>Selecione um terminal para ver os movimentos.</p>
+                                        )
+                                    }
                                 </div>
                             </Tab>
                             <Tab eventKey="user-track" title="Manutenção de utilizadores">
@@ -1358,7 +1372,7 @@ export const Terminals = () => {
                                     <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Enviar horários
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleOpenDoor}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={() => setShowDoorModal(true)}>
                                     {loadingOpenDoor ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -1478,6 +1492,15 @@ export const Terminals = () => {
                         onClose={() => setShowDeleteModal(false)}
                         onDelete={deleteDevice}
                         entityId={selectedDeviceToDelete}
+                    />
+                )}
+                {selectedTerminal && (
+                    <DoorModal
+                        open={showDoorModal}
+                        onClose={() => setShowDoorModal(false)}
+                        onSave={handleOpenDoor}
+                        fields={doorFields}
+                        title="Abrir Porta"
                     />
                 )}
                 <input

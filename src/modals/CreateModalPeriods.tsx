@@ -60,14 +60,12 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
-            }
-
-            if (field.type === 'string' && field.required && !fieldValue) {
-                valid = false;
-                newErrors[field.key] = `${field.label} é obrigatório.`;
             }
 
             return valid;

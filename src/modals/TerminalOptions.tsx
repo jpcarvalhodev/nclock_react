@@ -16,7 +16,7 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
     const [ipAddress, setIpAddress] = useState('');
     const [show, setShow] = useState(open);
 
-    /* // UseEffect para validar o formulário
+    /* // useEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
 
@@ -24,6 +24,9 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -34,10 +37,9 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
 
         setErrors(newErrors);
         setIsFormValid(isValid);
-        validateForm();
-    }, [formData, fields]);
+    }, [formData, fields]); */
 
-    // Função para validar o formulário
+    /* // Função para validar o formulário
     const validateForm = () => {
         const isValid = fields.every(field => {
             const fieldValue = formData?.[field.key];

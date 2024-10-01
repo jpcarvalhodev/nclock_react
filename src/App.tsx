@@ -84,6 +84,7 @@ import { NkioskListPayments } from './pages/nidtec/nkiosk/NkioskListPayments';
 import { NkioskLogs } from './pages/nidtec/nkiosk/NkioskLogs';
 import { NewUsers } from './pages/configs/NewUsers';
 import { TimePeriods } from './pages/devices/TimePeriods';
+import { NkioskAccess } from './pages/nidtec/nkiosk/NkioskAccess';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -129,8 +130,8 @@ function AnimatedRoutes() {
               <Route path="/" element={<Login />} />
               <Route path="/login&forgot/forgot-password" element={<ForgotPassword />} />
               <Route path='/login&forgot/reset-password' element={<ResetPassword />} />
-              <Route path="*" element={<Unauthorized />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="/errors/unauthorized" element={<Unauthorized />} />
+              <Route path="/errors/notfound" element={<NotFound />} />
               <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
               <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />
               <Route path="/persons/employees" element={<PageProtection><Employees /></PageProtection>} />
@@ -187,6 +188,7 @@ function AnimatedRoutes() {
               <Route path="/nkiosk/NkioskListPayments" element={<PageProtection><NkioskListPayments /></PageProtection>} />
               <Route path="/nkiosk/NkioskListMovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
               <Route path="/nkiosk/NkioskLogs" element={<PageProtection><NkioskLogs /></PageProtection>} />
+              <Route path="/nkiosk/NkioskAccess" element={<PageProtection><NkioskAccess /></PageProtection>} />
               <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
               <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
               <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />
@@ -198,6 +200,7 @@ function AnimatedRoutes() {
               <Route path="/ncomfort/ncomfortdashboard" element={<PageProtection><NcomfortDashboard /></PageProtection>} />
               <Route path="/nsound/nsounddashboard" element={<PageProtection><NsoundDashboard /></PageProtection>} />
               <Route path="/nhome/nhomedashboard" element={<PageProtection><NhomeDashboard /></PageProtection>} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </CSSTransition>
