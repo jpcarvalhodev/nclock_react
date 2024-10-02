@@ -1,6 +1,6 @@
-# Nclock
+# NIDGROUP Software
 
-Nclock assiduity project using React and typescript for SISNID
+NIDGROUP software project using React and typescript for SISNID
 
 ## Prerequisites
 
