@@ -78,7 +78,7 @@ import { NkioskMap } from './pages/nidtec/nkiosk/NkioskMap';
 import { NkioskPayTerminal } from './pages/nidtec/nkiosk/NkioskPayTerminal';
 import { NkioskPayCoins } from './pages/nidtec/nkiosk/NkioskPayCoins';
 import { NkioskMoveCard } from './pages/nidtec/nkiosk/NkioskMoveCard';
-import { NkioskMoveDoorman } from './pages/nidtec/nkiosk/NkioskMoveDoorman';
+import { NkioskMoveKiosk } from './pages/nidtec/nkiosk/NkioskMoveKiosk';
 import { NkioskListMovements } from './pages/nidtec/nkiosk/NkioskListMovements';
 import { NkioskListPayments } from './pages/nidtec/nkiosk/NkioskListPayments';
 import { NkioskLogs } from './pages/nidtec/nkiosk/NkioskLogs';
@@ -184,7 +184,7 @@ function AnimatedRoutes() {
               <Route path="/nkiosk/NkioskPayTerminal" element={<PageProtection><NkioskPayTerminal /></PageProtection>} />
               <Route path="/nkiosk/NkioskPayCoins" element={<PageProtection><NkioskPayCoins /></PageProtection>} />
               <Route path="/nkiosk/NkioskMoveCard" element={<PageProtection><NkioskMoveCard /></PageProtection>} />
-              <Route path="/nkiosk/NkioskMoveDoorman" element={<PageProtection><NkioskMoveDoorman /></PageProtection>} />
+              <Route path="/nkiosk/NkioskMoveKiosk" element={<PageProtection><NkioskMoveKiosk /></PageProtection>} />
               <Route path="/nkiosk/NkioskListPayments" element={<PageProtection><NkioskListPayments /></PageProtection>} />
               <Route path="/nkiosk/NkioskListMovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
               <Route path="/nkiosk/NkioskLogs" element={<PageProtection><NkioskLogs /></PageProtection>} />

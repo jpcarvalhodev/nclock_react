@@ -182,6 +182,9 @@ interface NavBarProps {
 // Definição dos tipos para os nomes das ribbons e das tabs
 type RibbonKey = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome';
 
+// Define os setters para as abas e ribbons
+type RibbonKeys = 'pessoas' | 'dispositivos' | 'configuracao' | 'ajuda';
+
 // Interface para os setters das ribbons e das tabs
 interface Setters {
 	setShowRibbon: React.Dispatch<React.SetStateAction<boolean>>;
@@ -287,6 +290,30 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showVideoAdsModal, setShowVideoAdsModal] = useState(false);
 	const [showEmailModal, setShowEmailModal] = useState(false);
 	const [emailCompanyConfig, setEmailCompanyConfig] = useState<EmailUserCompany>();
+
+	// Função para atualizar o estado da aba
+	const ribbonSetters = {
+		Nclock: setShowNclockRibbon, Naccess: setShowNaccessRibbon, Nvisitor: setShowNvisitorRibbon, Npark: setShowNparkRibbon, Ndoor: setShowNdoorRibbon,
+		Npatrol: setShowNpatrolRibbon, Ncard: setShowNcardRibbon, Nview: setShowNviewRibbon, Nsecur: setShowNsecurRibbon, Nsoftware: setShowNsoftwareRibbon,
+		Nsystem: setShowNsystemRibbon, Napp: setShowNappRibbon, Ncyber: setShowNcyberRibbon, Ndigital: setShowNdigitalRibbon, Nserver: setShowNserverRibbon,
+		Naut: setShowNautRibbon, Nequip: setShowNequipRibbon, Nproject: setShowNprojectRibbon, Nsmart: setShowNsmartRibbon, Nreality: setShowNrealityRibbon,
+		Nhologram: setShowNhologramRibbon, Npower: setShowNpowerRibbon, Ncharge: setShowNchargeRibbon, Ncity: setShowNcityRibbon, Nkiosk: setShowNkioskRibbon,
+		Nled: setShowNledRibbon, Nfire: setShowNfireRibbon, Nfurniture: setShowNfurnitureRibbon, Npartition: setShowNpartitionRibbon, Ndecor: setShowNdecorRibbon,
+		Nping: setShowNpingRibbon, Nconnect: setShowNconnectRibbon, Nlight: setShowNlightRibbon, Ncomfort: setShowNcomfortRibbon, Nsound: setShowNsoundRibbon,
+		Nhome: setShowNhomeRibbon,
+	};
+
+	// Função para atualizar o estado da tab
+	const tabSetters = {
+		Nclock: setShowNclockTab, Naccess: setShowNaccessTab, Nvisitor: setShowNvisitorTab, Npark: setShowNparkTab, Ndoor: setShowNdoorTab,
+		Npatrol: setShowNpatrolTab, Ncard: setShowNcardTab, Nview: setShowNviewTab, Nsecur: setShowNsecurTab, Nsoftware: setShowNsoftwareTab,
+		Nsystem: setShowNsystemTab, Napp: setShowNappTab, Ncyber: setShowNcyberTab, Ndigital: setShowNdigitalTab, Nserver: setShowNserverTab,
+		Naut: setShowNautTab, Nequip: setShowNequipTab, Nproject: setShowNprojectTab, Nsmart: setShowNsmartTab, Nreality: setShowNrealityTab,
+		Nhologram: setShowNhologramTab, Npower: setShowNpowerTab, Ncharge: setShowNchargeTab, Ncity: setShowNcityTab, Nkiosk: setShowNkioskTab,
+		Nled: setShowNledTab, Nfire: setShowNfireTab, Nfurniture: setShowNfurnitureTab, Npartition: setShowNpartitionTab, Ndecor: setShowNdecorTab,
+		Nping: setShowNpingTab, Nconnect: setShowNconnectTab, Nlight: setShowNlightTab, Ncomfort: setShowNcomfortTab, Nsound: setShowNsoundTab,
+		Nhome: setShowNhomeTab,
+	};
 
 	// Carrega o token inicial e o estado do ribbon
 	useEffect(() => {
@@ -497,13 +524,17 @@ export const NavBar = ({ style }: NavBarProps) => {
 	};
 
 	// Função para criar as abas
-	const createTabInfo = (tab: string, route: string): TabInfo => ({
-		setTab: eval(`setShow${tab.charAt(0).toUpperCase() + tab.slice(1)}Tab`),
-		setRibbon: eval(`setShow${tab.charAt(0).toUpperCase() + tab.slice(1)}Ribbon`),
-		localStorageTabKey: `show${tab.charAt(0).toUpperCase() + tab.slice(1)}Tab`,
-		localStorageRibbonKey: `show${tab.charAt(0).toUpperCase() + tab.slice(1)}Ribbon`,
-		route: route,
-	});
+	const createTabInfo = (tab: string, route: string): TabInfo => {
+		const formattedTab = tab.charAt(0).toUpperCase() + tab.slice(1) as RibbonKey;
+
+		return {
+			setTab: tabSetters[formattedTab],
+			setRibbon: ribbonSetters[formattedTab],
+			localStorageTabKey: `show${formattedTab}Tab`,
+			localStorageRibbonKey: `show${formattedTab}Ribbon`,
+			route: route,
+		};
+	};
 
 	// Define os dados das abas
 	const tabData: Record<string, TabInfo> = {
@@ -841,6 +872,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const pathSegments = location.pathname.split('/');
 		const mainSegment = pathSegments[1];
 		const colorConfig = tabColors[mainSegment] || tabColors.default;
+
+		const tabKeys: Record<string, string | undefined> = {
+			pessoas: 'pessoas',
+			dispositivos: 'dispositivos',
+			configuracao: 'configuracao',
+			ajuda: 'ajuda'
+		};
+
+		const matchedTab = tabKeys[mainSegment as RibbonKeys];
+		if (matchedTab) {
+			setActiveTab(matchedTab);
+			localStorage.setItem('activeTab', matchedTab);
+			const ribbonSetter = ribbonSetters[matchedTab as keyof typeof ribbonSetters];
+			if (ribbonSetter) {
+				ribbonSetter(true);
+			}
+		}
 
 		setNavbarColor(colorConfig.navbarColor);
 		setFooterColor(colorConfig.footerColor);
@@ -1426,25 +1474,27 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</span>
 												<span className="text">Pagamento Moedas</span>
 											</Link>
-											{/* <Link to='#' type="button" className="btn btn-light ribbon-button">
+											<Link to='/nkiosk/nkioskmovekiosk' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={kiosk} alt="botão movimentos porteiro" />
 												</span>
 												<span className="text">Movimentos Quiosque</span>
-											</Link> */}
-											<Link to="/nkiosk/nkioskmovedoorman" type="button" className="btn btn-light ribbon-button">
+											</Link>
+										</div>
+										<div className="icon-text-pessoas">
+											<Button /* to="" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={intercom} alt="botão listagem de movimentos " />
 												</span>
-												<span className="text">Abertura Video Porteiro</span>
-											</Link>
+												<span className="text">Video Porteiro</span>
+											</Button>
 										</div>
 										<div className="icon-text-pessoas">
 											<Link to="/nkiosk/nkioskaccess" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
 													<img src={accessControl} alt="botão listagem de movimentos " />
 												</span>
-												<span className="text">Controle de Acessos</span>
+												<span className="text">Controle</span>
 											</Link>
 										</div>
 									</div>
@@ -1580,6 +1630,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<img src={registry} alt="botão registos" />
 												</span>
 												<span className="text">Ocorrências</span>
+											</Button>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<span className="icon">
+													<img src={coin} alt="botão registos" />
+												</span>
+												<span className="text">Recolha Moedeiro</span>
 											</Button>
 										</div>
 									</div>

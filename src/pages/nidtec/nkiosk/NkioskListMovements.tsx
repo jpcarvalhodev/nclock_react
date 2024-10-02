@@ -11,6 +11,8 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { KioskTransactionCard } from "../../../helpers/Types";
 import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
+import Split from "react-split";
+import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -27,7 +29,7 @@ export const NkioskListMovements = () => {
     const currentDate = new Date();
     const [listMovements, setListMovements] = useState<KioskTransactionCard[]>([]);
     const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
-    const [listMovementDoorman, setListMovementDoorman] = useState<KioskTransactionCard[]>([]);
+    const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'eventName', 'nameUser', 'eventDoorId']);
@@ -36,6 +38,8 @@ export const NkioskListMovements = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '3';
     const eventDoorId2 = '4';
     const deviceSN = 'AGB7234900595';
@@ -55,13 +59,13 @@ export const NkioskListMovements = () => {
     };
 
     // Função para buscar as listagens de movimentos de porteiro
-    const fetchAllListMovementsDoorman = async () => {
+    const fetchAllListMovementsKiosk = async () => {
         try {
             const data = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
-                setListMovementDoorman(data);
+                setListMovementKiosk(data);
             } else {
-                setListMovementDoorman([]);
+                setListMovementKiosk([]);
             }
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de movimentos de porteiro:', error);
@@ -72,13 +76,13 @@ export const NkioskListMovements = () => {
     const fetchMovementCardBetweenDates = async () => {
         try {
             const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
-            const dataDoorman = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId2, deviceSN, startDate, endDate);
+            const dataKiosk = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setListMovementCard(data);
-                setListMovementDoorman(dataDoorman);
+                setListMovementKiosk(dataKiosk);
             } else {
                 setListMovementCard([]);
-                setListMovementDoorman([]);
+                setListMovementKiosk([]);
             }
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de movimentos', error);
@@ -101,7 +105,7 @@ export const NkioskListMovements = () => {
                 pin: movement.pin,
                 verifyModeNo: movement.verifyModeNo,
             })),
-            ...listMovementDoorman.map((movement) => ({
+            ...listMovementKiosk.map((movement) => ({
                 id: movement.id,
                 cardNo: movement.cardNo,
                 nameUser: movement.nameUser,
@@ -122,20 +126,30 @@ export const NkioskListMovements = () => {
     // Atualiza a lista de movimentos ao receber novos dados
     useEffect(() => {
         mergeMovementData();
-    }, [listMovementCard, listMovementDoorman]);
+    }, [listMovementCard, listMovementKiosk]);
 
     // Busca as listagens de movimentos ao carregar a página
     useEffect(() => {
         fetchAllListMovementsCard();
-        fetchAllListMovementsDoorman();
+        fetchAllListMovementsKiosk();
     }, []);
 
     // Função para atualizar as listagens de movimentos
     const refreshListMovements = () => {
         fetchAllListMovementsCard();
-        fetchAllListMovementsDoorman();
+        fetchAllListMovementsKiosk();
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = listMovements.filter(listMovement => selectedDevicesIds.includes(listMovement.deviceSN));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(listMovements);
+        }
+    }, [selectedDevicesIds, listMovements]);
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -156,6 +170,11 @@ export const NkioskListMovements = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Define a função de seleção de linhas
     const handleRowSelected = (state: {
         allSelected: boolean;
@@ -172,7 +191,7 @@ export const NkioskListMovements = () => {
     };
 
     // Filtra os dados da tabela com base no filtro de 'eventName'
-    const filteredDataTable = listMovements
+    const filteredDataTable = filteredDevices
         .filter(listMovement =>
             listMovement.eventName === 'Door Opens' || listMovement.eventName === 'Open the door by pressing the exit button'
         )
@@ -224,60 +243,65 @@ export const NkioskListMovements = () => {
         });
 
     return (
-        <div className="dashboard-container">
+        <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Listagem de Movimentos</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={listMovements} selectedData={selectedRows} fields={combinedMovements} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Listagem de Movimentos</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <input
+                                    className='search-input'
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                <ExportButton allData={listMovements} selectedData={selectedRows} fields={combinedMovements} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
+                            </div>
+                        </div>
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não há dados disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
+                        </div>
                     </div>
-                    <div className="date-range-search">
-                        <input
-                            type="datetime-local"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <span> até </span>
-                        <input
-                            type="datetime-local"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
-                    </div>
-                </div>
-            </div>
-            <div className='content-wrapper'>
-                <div className='table-css'>
-                    <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não há dados disponíveis para exibir."
-                        customStyles={customStyles}
-                    />
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (

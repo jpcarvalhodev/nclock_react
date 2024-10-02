@@ -12,7 +12,6 @@ import { KioskTransaction, KioskTransactionMB, KioskTransactionMBCoin, } from ".
 import { transactionFields, transactionMBFields } from "../../../helpers/Fields";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { ExportButton } from "../../../components/ExportButton";
-import { set } from "date-fns";
 
 // URL base das imagens
 const baseURL = "https://localhost:9090/";
@@ -332,7 +331,7 @@ export const NkioskListPayments = () => {
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
-                    <div className="total-amount">
+                    <div style={{ marginLeft: 30 }}>
                         <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                     </div>
                 </div>

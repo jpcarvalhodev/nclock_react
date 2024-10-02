@@ -1111,7 +1111,7 @@ export const addAccessControl = async (accessControl: AccessControl) => {
 }
 
 export const updateAccessControl = async (accessControl: AccessControl) => {
-    const response = await fetchWithAuth(`AccessControle/UpdateAccessControle/${accessControl.id}`, {
+    const response = await fetchWithAuth(`AccessControle/UpdateAccessControle?id=${accessControl.acId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1125,7 +1125,7 @@ export const updateAccessControl = async (accessControl: AccessControl) => {
 }
 
 export const deleteAccessControl = async (id: string) => {
-    const response = await fetchWithAuth(`AccessControle/DeleteAccessControle/${id}`, {
+    const response = await fetchWithAuth(`AccessControle/DeleteAccessControle?id=${id}`, {
         method: 'DELETE'
     });
     if (!response.ok) {

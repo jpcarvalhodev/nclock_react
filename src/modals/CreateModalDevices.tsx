@@ -277,6 +277,12 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                 <Nav.Item>
                                     <Nav.Link eventKey="comunicacao">Modo de Comunicação</Nav.Link>
                                 </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="informacao">Informação</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="portas">Portas</Nav.Link>
+                                </Nav.Item>
                             </Nav>
                             <Tab.Content>
                                 <Tab.Pane eventKey="comunicacao">
@@ -357,15 +363,6 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                         </Row>
                                     </Form>
                                 </Tab.Pane>
-                            </Tab.Content>
-                        </Tab.Container>
-                        <Tab.Container defaultActiveKey="informacao">
-                            <Nav variant="tabs" className="nav-modal">
-                                <Nav.Item>
-                                    <Nav.Link eventKey="informacao">Informação</Nav.Link>
-                                </Nav.Item>
-                            </Nav>
-                            <Tab.Content>
                                 <Tab.Pane eventKey="informacao">
                                     <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                         <Row>
@@ -454,6 +451,13 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                     </Col>
                                                 </Row>
                                             </Col>
+                                        </Row>
+                                    </Form>
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="portas">
+                                    <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                        <Row>
+
                                         </Row>
                                     </Form>
                                 </Tab.Pane>

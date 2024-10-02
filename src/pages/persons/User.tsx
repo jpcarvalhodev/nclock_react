@@ -30,8 +30,10 @@ export const User = () => {
     const {
         employees,
         data,
+        setData,
         setEmployees,
         fetchAllEmployees,
+        fetchAllCardData,
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,
@@ -67,14 +69,24 @@ export const User = () => {
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
-        await handleAddEmployee(employee as Employee);
-        const employees = await fetchAllEmployees();
+        await handleAddEmployee(employee as Employee); 
+        const employees = await fetchAllEmployees(); 
+        const employeeCards = await fetchAllCardData();
         const lastEmployee = employees[employees.length - 1];
-        const employeeCard = {
-            ...card,
-            employeeID: lastEmployee.employeeID
-        };
-        await handleAddEmployeeCard(employeeCard as EmployeeCard);
+
+        const cardExists = employeeCards.some((employeeCard: EmployeeCard) => employeeCard.employeeID === lastEmployee.employeeID);
+        const cardDataProvided = card && Object.keys(card).length > 0;
+
+        if (!cardExists && !cardDataProvided) {
+            console.log('Cartão não adicionado porque os dados não foram fornecidos');
+        } else {
+            const newEmployeeCard = {
+                ...card,
+                employeeID: lastEmployee.employeeID
+            };
+            await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
+            setData({ ...data, employees: employees });
+        }
         refreshEmployees();
         setShowAddModal(false);
     };

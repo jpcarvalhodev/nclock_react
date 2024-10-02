@@ -331,7 +331,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-name">Obrigatório ter 5 caracteres ou mais</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"
@@ -350,7 +350,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-shortName">Obrigatório ter 5 caracteres ou mais</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"
@@ -634,7 +634,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                 <Row>
                                     <Col md={3}>
-                                        <Form.Group controlId="formDeviceEnabled" className="d-flex align-items-center">
+                                        <Form.Group controlId="formDeviceEnabled" className="d-flex align-items-center mt-3">
                                             <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Dispositivo Activado:</Form.Label>
                                             <Form.Check
                                                 type="switch"

@@ -368,16 +368,25 @@ export const Terminals = () => {
 
     // Define as colunas de transações de quiosques
     const transactionColumns: TableColumn<KioskTransaction>[] = transactionFields
-        .filter(field => field.key !== 'id')
+        .filter(field => field.key !== 'id' && field.key !== 'eventId' && field.key !== 'createTime' && field.key !== 'updateTime') 
         .map(field => {
             const formatField = (row: KioskTransaction) => {
                 switch (field.key) {
                     case 'eventTime':
                         return new Date(row[field.key]).toLocaleString() || '';
-                    case 'createTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
-                    case 'updateTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
+                    case 'eventDoorId':
+                        switch (row[field.key]) {
+                            case 1:
+                                return 'Terminal';
+                            case 2:
+                                return 'Moedeiro';
+                            case 3:
+                                return 'Cartão'
+                            case 4:
+                                return 'Video Porteiro'
+                            default:
+                                return row[field.key];
+                        }
                     default:
                         return row[field.key];
                 }
@@ -984,7 +993,7 @@ export const Terminals = () => {
     const handleMovements = async () => {
         if (selectedTerminal) {
             setLoadingMovements(true);
-            await saveAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+            await fetchAllKioskTransaction(selectedTerminal.zktecoDeviceID);
             setLoadingMovements(false);
         } else {
             toast.error('Selecione um terminal primeiro!');

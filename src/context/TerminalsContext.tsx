@@ -106,7 +106,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await apiService.sendAllEmployeesToDevice(zktecoDeviceID, employeeID);
             toast.success(data.message || 'Utilizadores apagados com sucesso!');
-
         } catch (error) {
             console.error('Erro ao enviar os utilizadores:', error);
             toast.error('Erro ao conectar ao servidor');

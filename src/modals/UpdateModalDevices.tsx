@@ -284,6 +284,12 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                 <Nav.Item>
                                     <Nav.Link eventKey="comunicacao">Modo de Comunicação</Nav.Link>
                                 </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="informacao">Informação</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="porta">Portas</Nav.Link>
+                                </Nav.Item>
                             </Nav>
                             <Tab.Content>
                                 <Tab.Pane eventKey="comunicacao">
@@ -364,15 +370,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                         </Row>
                                     </Form>
                                 </Tab.Pane>
-                            </Tab.Content>
-                        </Tab.Container>
-                        <Tab.Container defaultActiveKey="informacao">
-                            <Nav variant="tabs" className="nav-modal">
-                                <Nav.Item>
-                                    <Nav.Link eventKey="informacao">Informação</Nav.Link>
-                                </Nav.Item>
-                            </Nav>
-                            <Tab.Content>
                                 <Tab.Pane eventKey="informacao">
                                     <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                         <Row>

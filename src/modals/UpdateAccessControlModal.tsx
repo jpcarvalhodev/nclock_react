@@ -11,14 +11,21 @@ import { Doors } from '../helpers/Types';
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
+// Define a interface Entity
+export interface Entity {
+    id: string;
+    [key: string]: any;
+}
+
 // Interface para as propriedades do modal
-interface CreateModalProps<T> {
-    title: string;
+interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
+    onDuplicate?: (entity: T) => void;
+    onUpdate: (entity: T) => Promise<void>;
+    entity: T;
     fields: Field[];
-    initialValues: Partial<T>;
+    title: string;
 }
 
 // Interface para os campos do formulário
@@ -32,8 +39,8 @@ interface Field {
 }
 
 // Define o componente
-export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>(initialValues);
+export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClose, onUpdate, fields, entity }: UpdateModalProps<T>) => {
+    const [formData, setFormData] = useState<T>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -82,8 +89,6 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
-        } else {
-            setFormData({});
         }
     }, [open]);
 
@@ -137,7 +142,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData as T);
+        onUpdate(formData as T);
         onClose();
     };
 

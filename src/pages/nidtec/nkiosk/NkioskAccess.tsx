@@ -12,6 +12,10 @@ import { AccessControl } from "../../../helpers/Types";
 import { accessControlFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import { DeleteModal } from "../../../modals/DeleteModal";
+import { CreateAccessControlModal } from "../../../modals/CreateAccessControlModal";
+import { UpdateAccessControlModal } from "../../../modals/UpdateAccessControlModal";
+import { Button } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 export const NkioskAccess = () => {
     const { navbarColor, footerColor } = useColor();
@@ -22,9 +26,11 @@ export const NkioskAccess = () => {
     const [openColumnSelector, setOpenColumnSelector] = useState<boolean>(false);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filterText, setFilterText] = useState('');
-    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-    const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedAccessToDelete, setSelectedAccessToDelete] = useState<string | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
 
     // Função para buscar a listagem de controle de acesso
     const fetchAccessControl = async () => {
@@ -37,10 +43,13 @@ export const NkioskAccess = () => {
     };
 
     // Função para adicionar o controle de acesso
-    const handleAddAccessControl = async (accessControl: AccessControl) => {
+    const handleAddAccessControl = async (newAccessControl: AccessControl) => {
         try {
-            const data = await apiService.addAccessControl(accessControl);
-            setAccessControl(data);
+            const data = await apiService.addAccessControl(newAccessControl);
+            if (data) {
+                setAccessControl(prevAccessControl => [...prevAccessControl, data]);
+            }
+            toast.success(data.message || 'Controle de acesso adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar o controle de acesso:', error);
         } finally {
@@ -49,23 +58,26 @@ export const NkioskAccess = () => {
     };
 
     // Função para editar o controle de acesso
-    const handleUpdateAccessControl = async (accessControl: AccessControl) => {
+    const handleUpdateAccessControl = async (newAccessControl: AccessControl) => {
         try {
-            const data = await apiService.updateAccessControl(accessControl);
-            const updatedAccessControl = accessControl.map((accessControl: AccessControl) => accessControl.id === data.id ? data : accessControl);
-            setAccessControl(updatedAccessControl);
+            const data = await apiService.updateAccessControl(newAccessControl);
+            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.id === data.id ? data : item));
+            toast.success(data.message || 'Controle de acesso atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao editar o controle de acesso:', error);
         } finally {
             refreshAccessControl();
         }
-    }
+    };    
 
     // Função para deletar o controle de acesso
     const handleDeleteAccessControl = async (id: string) => {
         try {
             const data = await apiService.deleteAccessControl(id);
-            setAccessControl(data);
+            if (data) {
+                setAccessControl(prevAccessControl => [...prevAccessControl, data]);
+            }
+            toast.success(data.message || 'Controle de acesso apagado com sucesso!');
         } catch (error) {
             console.error('Erro ao deletar o controle de acesso:', error);
         } finally {
@@ -112,28 +124,42 @@ export const NkioskAccess = () => {
         setSelectedRows(state.selectedRows);
     };
 
+    // Define a função de edição de controle de acesso
+    const handleEditAccessControl = (accessControl: AccessControl) => {
+        setSelectedAccessControl(accessControl);
+        setShowUpdateModal(true);
+    };
+
+    // Define a abertura do modal de apagar controle de acesso
+    const handleOpenDeleteModal = (id: string) => {
+        setSelectedAccessToDelete(id);
+        setShowDeleteModal(true);
+    };
+
     // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
 
-    // Filtra os dados da tabela com base no filtro de 'eventName'
-    const filteredDataTable = accessControl
-        .filter(accessControl =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || (accessControl[key] != null && String(accessControl[key]).toLowerCase().includes(filters[key].toLowerCase()))
-            ) &&
-            Object.values(accessControl).some(value => {
-                if (value == null) {
-                    return false;
-                } else if (value instanceof Date) {
-                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-                } else {
-                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
-                }
-            })
-        );
+    // Filtra os dados da tabela
+    const filteredDataTable = accessControl.filter(accessControls =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (accessControls[key] != null && String(accessControls[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(accessControls).some(value => {
+            if (value == null) {
+                return false;
+            } else if (typeof value === 'number') {
+                return value.toString().includes(filterText);
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else if (typeof value === 'string') {
+                return value.toLowerCase().includes(filterText.toLowerCase());
+            }
+            return false;
+        })
+    );
 
     // Define as colunas que não devem ser exibidas
     const excludedColumns = ['employeesId', 'doorId', 'timezoneId'];
@@ -170,6 +196,21 @@ export const NkioskAccess = () => {
             };
         });
 
+    // Define as colunas de ação
+    const actionColumn: TableColumn<AccessControl> = {
+        name: 'Ações',
+        cell: (row: AccessControl) => (
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAccessControl(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.acId)} >
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
+            </div>
+        ),
+        selector: (row: AccessControl) => row.acId,
+        ignoreRowClick: true,
+    };
+
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -198,10 +239,11 @@ export const NkioskAccess = () => {
             <div className='content-wrapper'>
                 <div className='table-css'>
                     <DataTable
-                        columns={columns}
+                        columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        onRowDoubleClicked={handleEditAccessControl}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         clearSelectedRows={clearSelectionToggle}
@@ -226,8 +268,26 @@ export const NkioskAccess = () => {
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
                 onDelete={handleDeleteAccessControl}
-                entityId={selectedEmployeeToDelete}
+                entityId={selectedAccessToDelete}
             />
+            <CreateAccessControlModal
+                title="Adicionar Acesso"
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={handleAddAccessControl}
+                fields={accessControlFields}
+                initialValues={{}}
+            />
+            {selectedAccessControl && (
+                <UpdateAccessControlModal
+                    title="Atualizar Acesso"
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onUpdate={handleUpdateAccessControl}
+                    fields={accessControlFields}
+                    entity={selectedAccessControl}
+                />
+            )}
         </div>
     );
 }

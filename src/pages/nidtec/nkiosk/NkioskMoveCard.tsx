@@ -11,6 +11,8 @@ import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
+import Split from "react-split";
+import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -34,6 +36,8 @@ export const NkioskMoveCard = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '3';
     const deviceSN = 'AGB7234900595';
 
@@ -76,6 +80,16 @@ export const NkioskMoveCard = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = moveCard.filter(moveCards => selectedDevicesIds.includes(moveCards.deviceSN));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(moveCard);
+        }
+    }, [selectedDevicesIds, moveCard]);
+
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -95,6 +109,11 @@ export const NkioskMoveCard = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };  
+
     // Define a função de seleção de linhas
     const handleRowSelected = (state: {
         allSelected: boolean;
@@ -111,8 +130,7 @@ export const NkioskMoveCard = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = moveCard
-        .filter(moveCards =>
+    const filteredDataTable = filteredDevices.filter(moveCards =>
             Object.keys(filters).every(key =>
                 filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&
@@ -154,60 +172,65 @@ export const NkioskMoveCard = () => {
         });
 
     return (
-        <div className="dashboard-container">
+        <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Movimentos Torniquete</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={moveCard} selectedData={selectedRows} fields={transactionCardFields} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Movimentos do Torniquete</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <input
+                                    className='search-input'
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                <ExportButton allData={moveCard} selectedData={selectedRows} fields={transactionCardFields} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
+                            </div>
+                        </div>
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não há dados disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
+                        </div>
                     </div>
-                    <div className="date-range-search">
-                        <input
-                            type="datetime-local"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <span> até </span>
-                        <input
-                            type="datetime-local"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
-                    </div>
-                </div>
-            </div>
-            <div className='content-wrapper'>
-                <div className='table-css'>
-                    <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não há dados disponíveis para exibir."
-                        customStyles={customStyles}
-                    />
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
