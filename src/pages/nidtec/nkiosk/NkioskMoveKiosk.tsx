@@ -30,7 +30,7 @@ export const NkioskMoveKiosk = () => {
     const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventName', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventName', 'nameUser', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -38,34 +38,34 @@ export const NkioskMoveKiosk = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
-    const eventDoorId = '4';
+    const eventDoorId = '3';
     const deviceSN = 'AGB7234900595';
 
     // Função para buscar os movimentos de videoporteiro
     const fetchAllMoveKiosk = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN);
             if (Array.isArray(data)) {
                 setMoveKiosk(data);
             } else {
                 setMoveKiosk([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de videoporteiro:', error);
+            console.error('Erro ao buscar os dados de movimentos do quiosque:', error);
         }
     };
 
     // Função para buscar os pagamentos do moedeiro entre datas
     const fetchMovementsKioskBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setMoveKiosk(data);
             } else {
                 setMoveKiosk([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de videoporteiro:', error);
+            console.error('Erro ao buscar os dados de movimentos do quiosque:', error);
         }
     }
 
@@ -101,7 +101,7 @@ export const NkioskMoveKiosk = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'eventName', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'eventName', 'nameUser', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -152,7 +152,7 @@ export const NkioskMoveKiosk = () => {
             const formatField = (row: KioskTransactionCard) => {
                 switch (field.key) {
                     case 'eventDoorId':
-                        return 'Video Porteiro';
+                        return 'Quiosque';
                     case 'eventTime':
                         return new Date(row[field.key]).toLocaleString() || '';
                     default:

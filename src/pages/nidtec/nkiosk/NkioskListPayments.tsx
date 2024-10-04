@@ -5,13 +5,13 @@ import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { KioskTransaction, KioskTransactionMB, KioskTransactionMBCoin, } from "../../../helpers/Types";
-import { transactionFields, transactionMBFields } from "../../../helpers/Fields";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { KioskTransactionMB, } from "../../../helpers/Types";
+import { transactionMBFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
+import { Line } from "react-chartjs-2";
 
 // URL base das imagens
 const baseURL = "https://localhost:9090/";
@@ -26,20 +26,33 @@ const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
+// Define a interface ChartData
+interface ChartData {
+    labels: string[];
+    datasets: {
+        label: string;
+        data: number[];
+        fill: boolean;
+        borderColor: string;
+        tension: number;
+    }[];
+}
+
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useColor();
     const currentDate = new Date();
-    const [listPayments, setListPayments] = useState<KioskTransactionMBCoin[]>([]);
+    const [listPayments, setListPayments] = useState<KioskTransactionMB[]>([]);
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
-    const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransaction[]>([]);
+    const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'timestamp', 'transactionType']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-    const [selectedRows, setSelectedRows] = useState<KioskTransactionMBCoin[]>([]);
+    const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [lineChartData, setLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
     const eventDoorId = '1';
     const eventDoorId2 = '2';
     const deviceSN = 'AGB7234900595';
@@ -54,21 +67,21 @@ export const NkioskListPayments = () => {
                 setListPaymentMB([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de pagamentos:', error);
+            console.error('Erro ao buscar os dados de listagem de pagamentos pelo terminal:', error);
         }
     };
 
     // Função para buscar as listagens de pagamentos em moedas
     const fetchAllListPaymentsCoins = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId2, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN);
             if (Array.isArray(data)) {
                 setListPaymentCoin(data);
             } else {
                 setListPaymentCoin([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de pagamentos:', error);
+            console.error('Erro ao buscar os dados de listagem de pagamentos por moedas:', error);
         }
     }
 
@@ -91,7 +104,7 @@ export const NkioskListPayments = () => {
 
     // Unifica os dados de transações MB e moedas
     const mergePaymentData = () => {
-        const unifiedData: KioskTransactionMBCoin[] = [
+        const unifiedData: KioskTransactionMB[] = [
             ...listPaymentMB.map((payment) => ({
                 id: payment.id,
                 transactionType: payment.transactionType,
@@ -105,14 +118,14 @@ export const NkioskListPayments = () => {
             })),
             ...listPaymentCoin.map((payment) => ({
                 id: payment.id,
-                eventTime: payment.eventTime,
-                pin: payment.pin,
-                cardNo: payment.cardNo,
-                eventNo: payment.eventNo,
-                eventName: payment.eventName,
-                eventDoorId: payment.eventDoorId,
-                eventDoorName: payment.eventDoorName,
-                verifyModeNo: payment.verifyModeNo,
+                transactionType: payment.transactionType,
+                amount: payment.amount,
+                statusCode: payment.statusCode,
+                statusMessage: payment.statusMessage,
+                clientTicket: payment.clientTicket,
+                merchantTicket: payment.merchantTicket,
+                email: payment.email,
+                timestamp: payment.timestamp,
             }))
         ];
 
@@ -160,7 +173,7 @@ export const NkioskListPayments = () => {
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: KioskTransactionMBCoin[];
+        selectedRows: KioskTransactionMB[];
     }) => {
         setSelectedRows(state.selectedRows);
     };
@@ -172,7 +185,8 @@ export const NkioskListPayments = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = listPayments.filter(listPayment =>
+    const filteredDataTable = useMemo(() => {
+        return listPayments.filter(listPayment =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (listPayment[key] != null && String(listPayment[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -187,33 +201,19 @@ export const NkioskListPayments = () => {
                 return value.toLowerCase().includes(filterText.toLowerCase());
             }
             return false;
-        })
-    );
-
-    // Combina os campos para a tabela
-    const combinedPayments = [...transactionMBFields, ...transactionFields];
+        }));
+    }, [listPayments, filters, filterText]);
 
     // Define as colunas da tabela
-    const columns: TableColumn<KioskTransactionMBCoin>[] = combinedPayments
+    const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
-        .concat([{ key: 'value', label: 'Valor', type: 'string' }])
         .map((field) => {
-            const formatField = (row: KioskTransactionMBCoin) => {
+            const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
-                    case 'value':
-                        return '0,50€';
                     case 'transactionType':
-                        return row.transactionType === 'Terminal Pagamento' ? 'Terminal' : 'Moedeiro';
-                    case 'eventDoorId':
-                        return row.eventDoorId === 2 ? 'Moedeiro' : 'Terminal';
+                        return row.transactionType === 1 ? 'Terminal' : 'Moedeiro';
                     case 'timestamp':
                         return row.timestamp ? new Date(row.timestamp).toLocaleString() : '';
-                    case 'eventTime':
-                    case 'createTime':
-                    case 'updateTime':
-                        return row[field.key] ? new Date(row[field.key] as string | number | Date).toLocaleString() : '';
-                    case 'eventDoorName':
-                        return row.eventDoorId === 2 ? 'Moedeiro' : 'Terminal';
                     case 'clientTicket':
                     case 'merchantTicket':
                         const imageUrl = row[field.key];
@@ -240,7 +240,7 @@ export const NkioskListPayments = () => {
                 name: (
                     <>
                         {field.label}
-                        {field.key !== 'value' && <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -260,10 +260,40 @@ export const NkioskListPayments = () => {
     // Calcula o total do valor dos pagamentos
     const totalAmount = totalAmountTransactions + totalAmountFixed;
 
-    // Calcula o valor total dos pagamentos no gráfico
-    const data = [
-        { nome: 'Total Recebido - €', valor: totalAmount }
-    ];
+    // Calcula o montante total de pagamentos por mês
+    const calculateMonthlyTotals = (transactions: KioskTransactionMB[]) => {
+        const monthlyTotals = Array(12).fill(0);
+        transactions.forEach(transaction => {
+            if (transaction.timestamp && transaction.amount) {
+                const date = new Date(transaction.timestamp);
+                const month = date.getMonth();
+                const amount = parseFloat(transaction.amount.replace(',', '.'));
+                if (!isNaN(amount)) {
+                    monthlyTotals[month] += amount;
+                }
+            }
+        });
+        return monthlyTotals;
+    };
+
+    // Atualiza os dados do gráfico com base nos pagamentos filtrados
+    useEffect(() => {
+        const monthlyTotals = calculateMonthlyTotals(listPayments);
+        console.log(monthlyTotals);
+        const newLineData = {
+            labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            datasets: [
+                {
+                    label: 'Total de Pagamentos por Mês',
+                    data: monthlyTotals,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }
+            ]
+        };
+        setLineChartData(newLineData);
+    }, [listPayments]);
 
     return (
         <div className="dashboard-container">
@@ -285,7 +315,7 @@ export const NkioskListPayments = () => {
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={listPayments} selectedData={selectedRows} fields={combinedPayments} />
+                        <ExportButton allData={listPayments} selectedData={selectedRows} fields={transactionMBFields} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -306,17 +336,13 @@ export const NkioskListPayments = () => {
                 </div>
             </div>
             <div className='content-wrapper-payment'>
-                <div className='chart-container' style={{ flex: 1 }}>
-                    <BarChart width={500} height={300} data={data}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="nome" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="valor" fill="#009739" />
-                    </BarChart>
+                <div className="chart-container">
+                    <div className="departments-groups-chart" style={{ flex: 1 }}>
+                        <h2 className="departments-groups-chart-text">Total de Pagamentos: { }</h2>
+                        <Line className="departments-groups-chart-data" data={lineChartData} style={{ marginLeft: 50 }} />
+                    </div>
                 </div>
-                <div className='table-css' style={{ flex: 1, overflowX: 'auto' }}>
+                <div className="chart-container" style={{ flex: 1, overflowX: 'auto' }}>
                     <DataTable
                         columns={columns}
                         data={filteredDataTable}
@@ -339,7 +365,7 @@ export const NkioskListPayments = () => {
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={combinedPayments}
+                    columns={transactionMBFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

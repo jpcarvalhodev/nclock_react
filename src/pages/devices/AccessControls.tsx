@@ -1,23 +1,23 @@
 import DataTable, { TableColumn } from "react-data-table-component";
-import { useColor } from "../../../context/ColorContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
+import { useColor } from "../../context/ColorContext";
+import { NavBar } from "../../components/NavBar";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { Footer } from "../../components/Footer";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { SelectFilter } from "../../components/SelectFilter";
 import { useEffect, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
-import { customStyles } from "../../../components/CustomStylesDataTable";
-import { AccessControl } from "../../../helpers/Types";
-import { accessControlFields } from "../../../helpers/Fields";
-import { ExportButton } from "../../../components/ExportButton";
-import { DeleteModal } from "../../../modals/DeleteModal";
-import { CreateAccessControlModal } from "../../../modals/CreateAccessControlModal";
-import { UpdateAccessControlModal } from "../../../modals/UpdateAccessControlModal";
+import * as apiService from "../../helpers/apiService";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { AccessControl } from "../../helpers/Types";
+import { accessControlFields } from "../../helpers/Fields";
+import { ExportButton } from "../../components/ExportButton";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
+import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
 import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-export const NkioskAccess = () => {
+export const AccessControls = () => {
     const { navbarColor, footerColor } = useColor();
     const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['shortName', 'enrollNumber', 'doorName', 'timezoneName', 'createrName']);
@@ -216,7 +216,7 @@ export const NkioskAccess = () => {
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Listagem de Controle de Acesso</span>
+                    <span style={{ color: '#000000' }}>Listagem de Controle de Acesso</span>
                 </div>
                 <div className="datatable-header">
                     <div>

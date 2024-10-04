@@ -7,15 +7,12 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionMB } from "../../../helpers/Types";
-import { transactionMBFields } from "../../../helpers/Fields";
+import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
-
-// URL base das imagens
-const baseURL = "https://localhost:9090/";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -27,71 +24,71 @@ const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
-export const NkioskPayTerminal = () => {
+export const NkioskMoveVP = () => {
     const { navbarColor, footerColor } = useColor();
     const currentDate = new Date();
-    const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
+    const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['transactionType', 'amount', 'timestamp', 'statusMessage']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventDoorId', 'deviceSN', 'eventName', 'eventTime']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-    const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
+    const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
-    const eventDoorId = '1';
+    const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
+    const eventDoorId = '3';
     const deviceSN = 'AGB7234900595';
 
-    // Função para buscar os pagamentos dos terminais
-    const fetchAllPayTerminal = async () => {
+    // Função para buscar as publicidades
+    const fetchAllMoveVP = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, deviceSN);
             if (Array.isArray(data)) {
-                setPayTerminal(data);
+                setMoveVP(data);
             } else {
-                setPayTerminal([]);
+                setMoveVP([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de pagamento dos terminais:', error);
+            console.error('Erro ao buscar os dados de movimentos do video porteiro:', error);
         }
     };
 
-    // Função para buscar os pagamentos dos terminais entre datas
-    const fetchPaymentsBetweenDates = async () => {
+    // Função para buscar os movimentos dos cartões entre datas
+    const fetchMovementVPBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
-                setPayTerminal(data);
+                setMoveVP(data);
             } else {
-                setPayTerminal([]);
+                setMoveVP([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de pagamento dos terminais:', error);
+            console.error('Erro ao buscar os dados de movimentos do video porteiro:', error);
         }
     }
 
-    // Busca os pagamentos dos terminais ao carregar a página
+    // Busca as publicidades ao carregar a página
     useEffect(() => {
-        fetchAllPayTerminal();
+        fetchAllMoveVP();
     }, []);
 
-    // Função para atualizar os pagamentos dos terminais
-    const refreshPayTerminal = () => {
-        fetchAllPayTerminal();
+    // Função para atualizar as publicidades
+    const refreshMoveCard = () => {
+        fetchAllMoveVP();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = payTerminal.filter(payTerminals => selectedDevicesIds.includes(payTerminals.deviceSN));
+            const filtered = moveVP.filter(moveVPs => selectedDevicesIds.includes(moveVPs.deviceSN));
             setFilteredDevices(filtered);
         } else {
-            setFilteredDevices(payTerminal);
+            setFilteredDevices(moveVP);
         }
-    }, [selectedDevicesIds, payTerminal]);
+    }, [selectedDevicesIds, moveVP]);
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -104,7 +101,7 @@ export const NkioskPayTerminal = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['transactionType', 'amount', 'timestamp', 'statusMessage']);
+        setSelectedColumns(['eventDoorId', 'deviceSN', 'eventName', 'eventTime']);
     };
 
     // Função para selecionar todas as colunas
@@ -121,7 +118,7 @@ export const NkioskPayTerminal = () => {
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: KioskTransactionMB[];
+        selectedRows: KioskTransactionCard[];
     }) => {
         setSelectedRows(state.selectedRows);
     };
@@ -132,33 +129,32 @@ export const NkioskPayTerminal = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredDevices.filter(moveCards =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            ) &&
+            Object.values(moveCards).some(value => {
+                if (value == null) {
+                    return false;
+                } else if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            })
+        );
+
     // Define as colunas da tabela
-    const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
+    const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))
-        .sort((a, b) => { if (a.key === 'timestamp') return -1; else if (b.key === 'timestamp') return 1; else return 0; })
         .map(field => {
-            const formatField = (row: KioskTransactionMB) => {
+            const formatField = (row: KioskTransactionCard) => {
                 switch (field.key) {
-                    case 'timestamp':
+                    case 'eventDoorId':
+                        return 'Video Porteiro';
+                    case 'eventTime':
                         return new Date(row[field.key]).toLocaleString() || '';
-                    case 'clientTicket':
-                    case 'merchantTicket':
-                        const imageUrl = row[field.key];
-                        if (imageUrl) {
-                            const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
-                            const fullImageUrl = `${baseURL}${uploadPath}`;
-                            return (
-                                <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
-                                    <img
-                                        src={fullImageUrl}
-                                        alt={field.label}
-                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                                    />
-                                </a>
-                            );
-                        } else {
-                            return 'Sem Ticket';
-                        }
                     default:
                         return row[field.key] || '';
                 }
@@ -167,34 +163,13 @@ export const NkioskPayTerminal = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={payTerminal} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
                 sortable: true,
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = filteredDevices.filter(payTerminals =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (payTerminals[key] != null && String(payTerminals[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(payTerminals).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
-
-    // Calcula o total do valor dos pagamentos
-    const totalAmount = filteredDataTable.reduce((total, transaction) => {
-        return total + (typeof transaction.amount === 'number' ? transaction.amount : parseFloat(transaction.amount) || 0);
-    }, 0);
 
     return (
         <div className="main-container">
@@ -206,7 +181,7 @@ export const NkioskPayTerminal = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Pagamentos no Terminal</span>
+                            <span style={{ color: '#009739' }}>Aberturas do Video Porteiro</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -219,9 +194,9 @@ export const NkioskPayTerminal = () => {
                                 />
                             </div>
                             <div className="buttons-container-others">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayTerminal} />
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                <ExportButton allData={payTerminal} selectedData={selectedRows} fields={transactionMBFields} />
+                                <ExportButton allData={moveVP} selectedData={selectedRows} fields={transactionCardFields} />
                             </div>
                             <div className="date-range-search">
                                 <input
@@ -237,7 +212,7 @@ export const NkioskPayTerminal = () => {
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'
                                 />
-                                <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-search" onClick={fetchMovementVPBetweenDates} iconSize='1.1em' />
                             </div>
                         </div>
                         <div className='table-css'>
@@ -254,16 +229,13 @@ export const NkioskPayTerminal = () => {
                                 customStyles={customStyles}
                             />
                         </div>
-                        <div style={{ marginLeft: 30 }}>
-                            <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
-                        </div>
                     </div>
                 </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={transactionMBFields}
+                    columns={transactionCardFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

@@ -60,14 +60,14 @@ export const NaccessDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={banner_naccess} alt="NAccess" />
+                            <img className="img-carousel-licensed" src={banner_naccess} alt="NAccess" />
                         </div>
                     </Carousel>
                 </div>
                 <div className="chart-container">
                     <div className="departments-groups-chart" style={{ flex: 1 }}>
                         <h2 className="departments-groups-chart-text">Presença de Funcionários</h2>
-                        <Bar data={chartDataEmployees} />
+                        <Bar className="departments-groups-chart-data" data={chartDataEmployees} />
                     </div>
                 </div>
             </div>

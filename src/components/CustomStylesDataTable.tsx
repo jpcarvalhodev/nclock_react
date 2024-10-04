@@ -4,7 +4,7 @@ import { TableStyles } from 'react-data-table-component';
 export const customStyles: TableStyles = {
     rows: {
         style: {
-            minHeight: '35px',
+            minHeight: '30px',
         },
     },
 };

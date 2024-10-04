@@ -25,6 +25,7 @@ import { AttendanceContext, AttendanceContextType } from "../../context/Movement
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 import { useColor } from "../../context/ColorContext";
 import { DoorModal } from "../../modals/DoorModal";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -143,6 +144,7 @@ export const Terminals = () => {
     const [movements, setMovements] = useState<Movement[]>([]);
     const [transactions, setTransactions] = useState<KioskTransaction[]>([]);
     const [showDoorModal, setShowDoorModal] = useState(false);
+    const [loadingActivityData, setLoadingActivityData] = useState(false);
 
     // Função para mesclar os dados de utilizadores e cartões
     const mergeEmployeeAndCardData = (
@@ -187,14 +189,17 @@ export const Terminals = () => {
     useEffect(() => {
         const fetchTransactions = async () => {
             if (selectedTerminal) {
+                setLoadingActivityData(true);
                 try {
                     const fetchedTransactions = await fetchAllKioskTransaction(selectedTerminal.zktecoDeviceID);
                     setTransactions(fetchedTransactions);
+                    setLoadingActivityData(false);
                 } catch (error) {
                     console.error("Erro ao buscar transações:", error);
                 }
             } else {
                 setTransactions([]);
+                setLoadingActivityData(false);
             }
         };
         fetchTransactions();
@@ -368,7 +373,7 @@ export const Terminals = () => {
 
     // Define as colunas de transações de quiosques
     const transactionColumns: TableColumn<KioskTransaction>[] = transactionFields
-        .filter(field => field.key !== 'id' && field.key !== 'eventId' && field.key !== 'createTime' && field.key !== 'updateTime') 
+        .filter(field => field.key !== 'id' && field.key !== 'eventId' && field.key !== 'createTime' && field.key !== 'updateTime')
         .map(field => {
             const formatField = (row: KioskTransaction) => {
                 switch (field.key) {
@@ -1127,16 +1132,20 @@ export const Terminals = () => {
                                     <p className="activityTabContent">Actividades</p>
                                     {
                                         selectedTerminal && selectedDeviceRows.length > 0 ? (
-                                            <DataTable
-                                                columns={transactionColumns}
-                                                data={transactions}
-                                                pagination
-                                                paginationPerPage={5}
-                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                                paginationComponentOptions={paginationOptions}
-                                                noDataComponent="Não há actividades disponíveis para exibir."
-                                                customStyles={customStyles}
-                                            />
+                                            loadingActivityData ?
+                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                </div> :
+                                                <DataTable
+                                                    columns={transactionColumns}
+                                                    data={transactions}
+                                                    pagination
+                                                    paginationPerPage={5}
+                                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                    paginationComponentOptions={paginationOptions}
+                                                    noDataComponent="Não há actividades disponíveis para exibir."
+                                                    customStyles={customStyles}
+                                                />
                                         ) : (
                                             <p style={{ textAlign: "center" }}>Selecione um terminal para ver as actividades.</p>
                                         )

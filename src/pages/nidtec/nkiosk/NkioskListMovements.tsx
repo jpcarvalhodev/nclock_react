@@ -13,6 +13,7 @@ import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { set } from "date-fns";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -58,17 +59,17 @@ export const NkioskListMovements = () => {
         }
     };
 
-    // Função para buscar as listagens de movimentos de porteiro
+    // Função para buscar as listagens de movimentos do quiosque
     const fetchAllListMovementsKiosk = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId2, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, deviceSN);
             if (Array.isArray(data)) {
                 setListMovementKiosk(data);
             } else {
                 setListMovementKiosk([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de movimentos de porteiro:', error);
+            console.error('Erro ao buscar os dados de listagem de movimentos do quiosque:', error);
         }
     };
 
@@ -76,7 +77,7 @@ export const NkioskListMovements = () => {
     const fetchMovementCardBetweenDates = async () => {
         try {
             const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
-            const dataKiosk = await apiService.fetchKioskTransactionsVideoPorteiroByDatesFilters(eventDoorId2, deviceSN, startDate, endDate);
+            const dataKiosk = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setListMovementCard(data);
                 setListMovementKiosk(dataKiosk);
@@ -193,9 +194,6 @@ export const NkioskListMovements = () => {
     // Filtra os dados da tabela com base no filtro de 'eventName'
     const filteredDataTable = filteredDevices
         .filter(listMovement =>
-            listMovement.eventName === 'Door Opens' || listMovement.eventName === 'Open the door by pressing the exit button'
-        )
-        .filter(listMovement =>
             Object.keys(filters).every(key =>
                 filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&
@@ -225,7 +223,9 @@ export const NkioskListMovements = () => {
             const formatField = (row: KioskTransactionCard) => {
                 switch (field.key) {
                     case 'eventDoorId':
-                        return row.eventDoorId === 4 ? 'Video Porteiro' : 'Cartão';
+                        return row.eventDoorId === 4 ? 'Quiosque' : 'Torniquete';
+                    case 'eventTime':
+                        return new Date(row[field.key]).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }

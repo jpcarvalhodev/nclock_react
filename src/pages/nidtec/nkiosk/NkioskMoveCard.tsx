@@ -152,7 +152,7 @@ export const NkioskMoveCard = () => {
             const formatField = (row: KioskTransactionCard) => {
                 switch (field.key) {
                     case 'eventDoorId':
-                        return 'Cartão';
+                        return 'Torniquete';
                     case 'eventTime':
                         return new Date(row[field.key]).toLocaleString() || '';
                     default:

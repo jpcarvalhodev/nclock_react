@@ -84,7 +84,8 @@ import { NkioskListPayments } from './pages/nidtec/nkiosk/NkioskListPayments';
 import { NkioskLogs } from './pages/nidtec/nkiosk/NkioskLogs';
 import { NewUsers } from './pages/configs/NewUsers';
 import { TimePeriods } from './pages/devices/TimePeriods';
-import { NkioskAccess } from './pages/nidtec/nkiosk/NkioskAccess';
+import { AccessControls } from './pages/devices/AccessControls';
+import { NkioskMoveVP } from './pages/nidtec/nkiosk/NkioskMoveVP';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -148,6 +149,7 @@ function AnimatedRoutes() {
               <Route path="/persons/zones" element={<PageProtection><Zones /></PageProtection>} />
               <Route path="/persons/types" element={<PageProtection><Types /></PageProtection>} />
               <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
+              <Route path="/devices/AccessControls" element={<PageProtection><AccessControls /></PageProtection>} />
               <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
               <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
@@ -185,10 +187,10 @@ function AnimatedRoutes() {
               <Route path="/nkiosk/NkioskPayCoins" element={<PageProtection><NkioskPayCoins /></PageProtection>} />
               <Route path="/nkiosk/NkioskMoveCard" element={<PageProtection><NkioskMoveCard /></PageProtection>} />
               <Route path="/nkiosk/NkioskMoveKiosk" element={<PageProtection><NkioskMoveKiosk /></PageProtection>} />
+              <Route path="/nkiosk/NkioskMoveVP" element={<PageProtection><NkioskMoveVP /></PageProtection>} />
               <Route path="/nkiosk/NkioskListPayments" element={<PageProtection><NkioskListPayments /></PageProtection>} />
               <Route path="/nkiosk/NkioskListMovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
               <Route path="/nkiosk/NkioskLogs" element={<PageProtection><NkioskLogs /></PageProtection>} />
-              <Route path="/nkiosk/NkioskAccess" element={<PageProtection><NkioskAccess /></PageProtection>} />
               <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
               <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
               <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />

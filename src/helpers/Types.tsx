@@ -252,7 +252,7 @@ export type KioskTransaction = {
 export type KioskTransactionMB = {
     [key: string]: any;
     id: string;
-    transactionType: string;
+    transactionType: number;
     amount: string;
     statusCode: number;
     statusMessage: string;
@@ -276,8 +276,6 @@ export type KioskTransactionCard = {
     pin: number;
     verifyModeNo: number;
 };
-
-export type KioskTransactionMBCoin = Partial<KioskTransactionMB> & Partial<KioskTransaction>;
 
 export type Register = {
     [key: string]: any;

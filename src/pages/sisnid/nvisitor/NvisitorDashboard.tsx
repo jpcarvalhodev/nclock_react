@@ -17,7 +17,7 @@ export const NvisitorDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_nvisitor} alt="Nvisitor" />
+                            <img className="img-carousel" src={product_nvisitor} alt="Nvisitor"/>
                         </div>
                     </Carousel>
                 </div>
@@ -29,7 +29,7 @@ export const NvisitorDashboard = () => {
                     <p>- Gerir, de forma otimizada, as visitas de fornecedores ou outras pessoas externas;</p>
                     <p>- Criar sistemas automatizados;</p>
                     <p>- Integrar com outros softwares.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

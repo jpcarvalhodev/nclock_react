@@ -209,7 +209,7 @@ export const transactionFields = [
 ];
 
 export const transactionMBFields = [
-    { key: 'transactionType', label: 'Tipo de Transação', type: 'string' },
+    { key: 'transactionType', label: 'Tipo de Transação', type: 'number' },
     { key: 'amount', label: 'Valor', type: 'string' },
     { key: 'statusCode', label: 'Código de Status', type: 'number' },
     { key: 'statusMessage', label: 'Mensagem de Status', type: 'string' },

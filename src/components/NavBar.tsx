@@ -131,6 +131,7 @@ import registry from '../assets/img/navbar/nkiosk/registry.png';
 import alert from '../assets/img/navbar/nkiosk/alert.png';
 import accessControl from '../assets/img/navbar/nkiosk/accessControl.png';
 import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
+import home from '../assets/img/navbar/home.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -867,27 +868,189 @@ export const NavBar = ({ style }: NavBarProps) => {
 		nhome: { navbarColor: '#FEC629', footerColor: '#FEC629' },
 	};
 
-	// useEffect para atualizar as cores da navbar e do footer ao trocar a página
+	// useEffect para atualizar as cores da navbar e do footer e manter a ribbon da tab ativa
 	useEffect(() => {
 		const pathSegments = location.pathname.split('/');
 		const mainSegment = pathSegments[1];
 		const colorConfig = tabColors[mainSegment] || tabColors.default;
+		const path = pathSegments[1];
 
-		const tabKeys: Record<string, string | undefined> = {
-			pessoas: 'pessoas',
-			dispositivos: 'dispositivos',
-			configuracao: 'configuracao',
-			ajuda: 'ajuda'
-		};
-
-		const matchedTab = tabKeys[mainSegment as RibbonKeys];
-		if (matchedTab) {
-			setActiveTab(matchedTab);
-			localStorage.setItem('activeTab', matchedTab);
-			const ribbonSetter = ribbonSetters[matchedTab as keyof typeof ribbonSetters];
-			if (ribbonSetter) {
-				ribbonSetter(true);
-			}
+		switch (path) {
+			case 'persons':
+				setShowPessoasRibbon(true);
+				setShowDispositivosRibbon(false);
+				setShowConfiguracaoRibbon(false);
+				setShowAjudaRibbon(false);
+				setShowNclockRibbon(false);
+				setShowNaccessRibbon(false);
+				setShowNvisitorRibbon(false);
+				setShowNparkRibbon(false);
+				setShowNdoorRibbon(false);
+				setShowNpatrolRibbon(false);
+				setShowNcardRibbon(false);
+				setShowNviewRibbon(false);
+				setShowNsecurRibbon(false);
+				setShowNsoftwareRibbon(false);
+				setShowNsystemRibbon(false);
+				setShowNappRibbon(false);
+				setShowNcyberRibbon(false);
+				setShowNdigitalRibbon(false);
+				setShowNserverRibbon(false);
+				setShowNautRibbon(false);
+				setShowNequipRibbon(false);
+				setShowNprojectRibbon(false);
+				setShowNsmartRibbon(false);
+				setShowNrealityRibbon(false);
+				setShowNhologramRibbon(false);
+				setShowNpowerRibbon(false);
+				setShowNchargeRibbon(false);
+				setShowNcityRibbon(false);
+				setShowNkioskRibbon(false);
+				setShowNledRibbon(false);
+				setShowNfireRibbon(false);
+				setShowNfurnitureRibbon(false);
+				setShowNpartitionRibbon(false);
+				setShowNdecorRibbon(false);
+				setShowNpingRibbon(false);
+				setShowNconnectRibbon(false);
+				setShowNlightRibbon(false);
+				setShowNcomfortRibbon(false);
+				setShowNsoundRibbon(false);
+				setShowNhomeRibbon(false);
+				setActiveTab('pessoas');
+				break;
+			case 'devices':
+				setShowPessoasRibbon(false);
+				setShowDispositivosRibbon(true);
+				setShowConfiguracaoRibbon(false);
+				setShowAjudaRibbon(false);
+				setShowNclockRibbon(false);
+				setShowNaccessRibbon(false);
+				setShowNvisitorRibbon(false);
+				setShowNparkRibbon(false);
+				setShowNdoorRibbon(false);
+				setShowNpatrolRibbon(false);
+				setShowNcardRibbon(false);
+				setShowNviewRibbon(false);
+				setShowNsecurRibbon(false);
+				setShowNsoftwareRibbon(false);
+				setShowNsystemRibbon(false);
+				setShowNappRibbon(false);
+				setShowNcyberRibbon(false);
+				setShowNdigitalRibbon(false);
+				setShowNserverRibbon(false);
+				setShowNautRibbon(false);
+				setShowNequipRibbon(false);
+				setShowNprojectRibbon(false);
+				setShowNsmartRibbon(false);
+				setShowNrealityRibbon(false);
+				setShowNhologramRibbon(false);
+				setShowNpowerRibbon(false);
+				setShowNchargeRibbon(false);
+				setShowNcityRibbon(false);
+				setShowNkioskRibbon(false);
+				setShowNledRibbon(false);
+				setShowNfireRibbon(false);
+				setShowNfurnitureRibbon(false);
+				setShowNpartitionRibbon(false);
+				setShowNdecorRibbon(false);
+				setShowNpingRibbon(false);
+				setShowNconnectRibbon(false);
+				setShowNlightRibbon(false);
+				setShowNcomfortRibbon(false);
+				setShowNsoundRibbon(false);
+				setShowNhomeRibbon(false);
+				setActiveTab('dispositivos');
+				break;
+			case 'configs':
+				setShowPessoasRibbon(false);
+				setShowDispositivosRibbon(false);
+				setShowConfiguracaoRibbon(true);
+				setShowAjudaRibbon(false);
+				setShowNclockRibbon(false);
+				setShowNaccessRibbon(false);
+				setShowNvisitorRibbon(false);
+				setShowNparkRibbon(false);
+				setShowNdoorRibbon(false);
+				setShowNpatrolRibbon(false);
+				setShowNcardRibbon(false);
+				setShowNviewRibbon(false);
+				setShowNsecurRibbon(false);
+				setShowNsoftwareRibbon(false);
+				setShowNsystemRibbon(false);
+				setShowNappRibbon(false);
+				setShowNcyberRibbon(false);
+				setShowNdigitalRibbon(false);
+				setShowNserverRibbon(false);
+				setShowNautRibbon(false);
+				setShowNequipRibbon(false);
+				setShowNprojectRibbon(false);
+				setShowNsmartRibbon(false);
+				setShowNrealityRibbon(false);
+				setShowNhologramRibbon(false);
+				setShowNpowerRibbon(false);
+				setShowNchargeRibbon(false);
+				setShowNcityRibbon(false);
+				setShowNkioskRibbon(false);
+				setShowNledRibbon(false);
+				setShowNfireRibbon(false);
+				setShowNfurnitureRibbon(false);
+				setShowNpartitionRibbon(false);
+				setShowNdecorRibbon(false);
+				setShowNpingRibbon(false);
+				setShowNconnectRibbon(false);
+				setShowNlightRibbon(false);
+				setShowNcomfortRibbon(false);
+				setShowNsoundRibbon(false);
+				setShowNhomeRibbon(false);
+				setActiveTab('configuracao');
+				break;
+			case 'help':
+				setShowPessoasRibbon(false);
+				setShowDispositivosRibbon(false);
+				setShowConfiguracaoRibbon(false);
+				setShowAjudaRibbon(true);
+				setShowNclockRibbon(false);
+				setShowNaccessRibbon(false);
+				setShowNvisitorRibbon(false);
+				setShowNparkRibbon(false);
+				setShowNdoorRibbon(false);
+				setShowNpatrolRibbon(false);
+				setShowNcardRibbon(false);
+				setShowNviewRibbon(false);
+				setShowNsecurRibbon(false);
+				setShowNsoftwareRibbon(false);
+				setShowNsystemRibbon(false);
+				setShowNappRibbon(false);
+				setShowNcyberRibbon(false);
+				setShowNdigitalRibbon(false);
+				setShowNserverRibbon(false);
+				setShowNautRibbon(false);
+				setShowNequipRibbon(false);
+				setShowNprojectRibbon(false);
+				setShowNsmartRibbon(false);
+				setShowNrealityRibbon(false);
+				setShowNhologramRibbon(false);
+				setShowNpowerRibbon(false);
+				setShowNchargeRibbon(false);
+				setShowNcityRibbon(false);
+				setShowNkioskRibbon(false);
+				setShowNledRibbon(false);
+				setShowNfireRibbon(false);
+				setShowNfurnitureRibbon(false);
+				setShowNpartitionRibbon(false);
+				setShowNdecorRibbon(false);
+				setShowNpingRibbon(false);
+				setShowNconnectRibbon(false);
+				setShowNlightRibbon(false);
+				setShowNcomfortRibbon(false);
+				setShowNsoundRibbon(false);
+				setShowNhomeRibbon(false);
+				setActiveTab('ajuda');
+				break;
+			default:
+				setActiveTab('');
+				break;
 		}
 
 		setNavbarColor(colorConfig.navbarColor);
@@ -1026,6 +1189,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content" id="myTabContent">
 						<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
 							<div className="section" id="section-group">
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
+											<Link to="/nkiosk/nclockdashboard" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas mt-2">
+												<span className="icon">
+													<img src={home} alt="botão início" />
+												</span>
+												<span className="text">Destaques</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Início</span>
+									</div>
+								</div>
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
@@ -1331,6 +1509,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className='icon-text-pessoas'>
+											<Link to="/nkiosk/naccessdashboard" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={home} alt="botão início" />
+												</span>
+												<span className="text">Destaques</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className='icon-text-pessoas'>
 											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 												<span className="icon">
 													<img src={movement} alt="botão movimentos" />
@@ -1455,24 +1648,56 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<div className="section" id="section-group">
 								<div className="group">
 									<div className="btn-group" role="group">
-										<div className="grid-container">
+										<div className='icon-text-pessoas'>
+											<Link to="/nkiosk/nkioskdashboard" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={home} alt="botão início" />
+												</span>
+												<span className="text">Destaques</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
 											<Link to="/nkiosk/nkioskpayterminal" type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={payment_card} alt="botão pagamento terminal" />
 												</span>
-												<span className="text">Pagamento Terminal</span>
-											</Link>
-											<Link to='/nkiosk/nkioskmovecard' type="button" className="btn btn-light ribbon-button">
-												<span className="icon">
-													<img src={barrier} alt="botão movimentos cartão" />
-												</span>
-												<span className="text">Movimentos Torniquete</span>
+												<span className="text">Pagamento Multibanco</span>
 											</Link>
 											<Link to='/nkiosk/nkioskpaycoins' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
 													<img src={coin} alt="botão pagamento moedas" />
 												</span>
-												<span className="text">Pagamento Moedas</span>
+												<span className="text">Pagamento Moedeiro</span>
+											</Link>
+										</div>
+										<div className="icon-text-pessoas">
+											<Link to="/nkiosk/nkiosklistpayments" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={card_report} alt="botão listagem de pagamentos" />
+												</span>
+												<span className="text">Pagamentos Totais</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Recebimentos</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
+											<Link to='/nkiosk/nkioskmovecard' type="button" className="btn btn-light ribbon-button">
+												<span className="icon">
+													<img src={barrier} alt="botão movimentos cartão" />
+												</span>
+												<span className="text">Movimentos Torniquete</span>
 											</Link>
 											<Link to='/nkiosk/nkioskmovekiosk' type="button" className="btn btn-light ribbon-button">
 												<span className="icon">
@@ -1482,47 +1707,60 @@ export const NavBar = ({ style }: NavBarProps) => {
 											</Link>
 										</div>
 										<div className="icon-text-pessoas">
-											<Button /* to="" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+											<Link to="/nkiosk/nkiosklistmovements" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
-													<img src={intercom} alt="botão listagem de movimentos " />
+													<img src={coin_report} alt="botão listagem de movimentos " />
 												</span>
-												<span className="text">Video Porteiro</span>
-											</Button>
-										</div>
-										<div className="icon-text-pessoas">
-											<Link to="/nkiosk/nkioskaccess" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-												<span className="icon">
-													<img src={accessControl} alt="botão listagem de movimentos " />
-												</span>
-												<span className="text">Controle</span>
+												<span className="text">Movimentos Totais</span>
 											</Link>
 										</div>
 									</div>
 									<div className="title-container">
-										<span className="title">Acessos</span>
+										<span className="title">Movimentos</span>
 									</div>
 								</div>
 								<div className="group">
 									<div className="btn-group" role="group">
 										<div className="icon-text-pessoas">
-											<Link to="/nkiosk/nkiosklistpayments" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+											<Link to="/nkiosk/nkioskmovevp" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 												<span className="icon">
-													<img src={card_report} alt="botão listagem de pagamentos" />
+													<img src={intercom} alt="botão listagem de movimentos " />
 												</span>
-												<span className="text">Listagem Pagamentos</span>
-											</Link>
-										</div>
-										<div className="icon-text-pessoas">
-											<Link to="/nkiosk/nkiosklistmovements" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-												<span className="icon">
-													<img src={coin_report} alt="botão listagem de movimentos " />
-												</span>
-												<span className="text">Listagem Movimentos</span>
+												<span className="text">Video Porteiro</span>
 											</Link>
 										</div>
 									</div>
 									<div className="title-container">
-										<span className="title">Recebimentos</span>
+										<span className="title">Remota</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
+												<span className="icon">
+													<img src={coin} alt="botão recolha moedeiro" />
+												</span>
+												<span className="text">Recolha Moedeiro</span>
+											</Button>
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
+												<span className="icon">
+													<img src={coin} alt="botão limpeza wc" />
+												</span>
+												<span className="text">Limpeza WC</span>
+											</Button>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<span className="icon">
+													<img src={registry} alt="botão ocorrências gerais" />
+												</span>
+												<span className="text">Ocorrências Gerais</span>
+											</Button>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Registos</span>
 									</div>
 								</div>
 								<div className="group">
@@ -1620,29 +1858,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 									<div className="title-container">
 										<span className="title">Alertas</span>
-									</div>
-								</div>
-								<div className="group">
-									<div className="btn-group" role="group">
-										<div className='icon-text-pessoas'>
-											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
-												<span className="icon">
-													<img src={registry} alt="botão registos" />
-												</span>
-												<span className="text">Ocorrências</span>
-											</Button>
-										</div>
-										<div className='icon-text-pessoas'>
-											<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
-												<span className="icon">
-													<img src={coin} alt="botão registos" />
-												</span>
-												<span className="text">Recolha Moedeiro</span>
-											</Button>
-										</div>
-									</div>
-									<div className="title-container">
-										<span className="title">Registos</span>
 									</div>
 								</div>
 								<div className="group">
@@ -1858,6 +2073,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<img src={terminal} alt="botão terminais" />
 												</span>
 												<span className="text">Terminais</span>
+											</Link>
+										</div>
+										<div className="icon-text-pessoas">
+											<Link to="/devices/accesscontrols" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={accessControl} alt="botão controle de acesso " />
+												</span>
+												<span className="text">Controle de Acesso</span>
 											</Link>
 										</div>
 										<div className='icon-text-pessoas'>

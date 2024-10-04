@@ -239,7 +239,7 @@ export const Dashboard = () => {
             </div>
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
-                    <Nav variant="pills" className="nav-pills mb-1 justify-content-center align-items-center">
+                    <Nav variant="pills" className="nav-pills justify-content-center align-items-center">
                         {Object.keys(cardData).map((key) => (
                             <Nav.Item key={key}>
                                 <Nav.Link eventKey={key}>{key}</Nav.Link>

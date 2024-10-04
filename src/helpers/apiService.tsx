@@ -924,8 +924,20 @@ export const fetchKioskTransactionsByMBAndDeviceSN = async (eventDoorId: string,
     return response.json();
 }
 
-export const fetchKioskTransactionsVideoPorteiroByDatesFilters = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
-    let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
+export const fetchKioskTransactionsByPayCoins = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetTransactionsByPayCoins?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
+    if (startDate && endDate) {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetTransactionsVideoPorteiro?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
     if (startDate && endDate) {
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }

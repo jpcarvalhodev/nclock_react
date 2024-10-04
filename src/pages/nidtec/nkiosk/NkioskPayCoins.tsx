@@ -7,8 +7,8 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransaction } from "../../../helpers/Types";
-import { transactionFields } from "../../../helpers/Fields";
+import { KioskTransactionMB } from "../../../helpers/Types";
+import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
@@ -27,24 +27,24 @@ const formatDateToEndOfDay = (date: Date): string => {
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useColor();
     const currentDate = new Date();
-    const [payCoins, setPayCoins] = useState<KioskTransaction[]>([]);
+    const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['transactionType', 'amount', 'timestamp', 'statusMessage']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-    const [selectedRows, setSelectedRows] = useState<KioskTransaction[]>([]);
+    const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [filteredDevices, setFilteredDevices] = useState<KioskTransaction[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
     const eventDoorId = '2';
     const deviceSN = 'AGB7234900595';
 
     // Função para buscar os pagamentos no moedeiro
     const fetchAllPayCoins = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId, deviceSN);
             if (Array.isArray(data)) {
                 setPayCoins(data);
             } else {
@@ -58,7 +58,7 @@ export const NkioskPayCoins = () => {
     // Função para buscar os pagamentos do moedeiro entre datas
     const fetchPaymentsCoinBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setPayCoins(data);
             } else {
@@ -101,7 +101,7 @@ export const NkioskPayCoins = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['transactionType', 'amount', 'timestamp', 'statusMessage']);
     };
 
     // Função para selecionar todas as colunas
@@ -112,13 +112,13 @@ export const NkioskPayCoins = () => {
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         setSelectedDevicesIds(selectedIds);
-    };  
+    };
 
     // Define a função de seleção de linhas
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: KioskTransaction[];
+        selectedRows: KioskTransactionMB[];
     }) => {
         setSelectedRows(state.selectedRows);
     };
@@ -130,21 +130,12 @@ export const NkioskPayCoins = () => {
     };
 
     // Define as colunas da tabela
-    const columns: TableColumn<KioskTransaction>[] = transactionFields
+    const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
-        .concat({ key: 'value', label: 'Valor', type: 'string' })
         .map(field => {
-            const formatField = (row: KioskTransaction) => {
+            const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
-                    case 'value':
-                        return '0,50';
-                    case 'eventDoorId':
-                        return 'Moedeiro';
-                    case 'eventTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
-                    case 'createTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
-                    case 'updateTime':
+                    case 'timestamp':
                         return new Date(row[field.key]).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
@@ -154,7 +145,7 @@ export const NkioskPayCoins = () => {
                 name: (
                     <>
                         {field.label}
-                        {field.key !== 'value' && <SelectFilter column={field.key} setFilters={setFilters} data={payCoins} />}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={payCoins} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -166,7 +157,7 @@ export const NkioskPayCoins = () => {
     const filteredDataTable = filteredDevices.filter(payCoin =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (payCoin[key] != null && String(payCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) && 
+        ) &&
         Object.values(payCoin).some(value => {
             if (value == null) {
                 return false;
@@ -179,7 +170,7 @@ export const NkioskPayCoins = () => {
     );
 
     // Calcula o total do valor dos pagamentos
-    const totalAmount = filteredDataTable.length * 0.50;  
+    const totalAmount = filteredDataTable.length * 0.50;
 
     return (
         <div className="main-container">
@@ -206,7 +197,7 @@ export const NkioskPayCoins = () => {
                             <div className="buttons-container-others">
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayCoins} />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                <ExportButton allData={payCoins} selectedData={selectedRows} fields={transactionFields} />
+                                <ExportButton allData={payCoins} selectedData={selectedRows} fields={transactionMBFields} />
                             </div>
                             <div className="date-range-search">
                                 <input
@@ -248,7 +239,7 @@ export const NkioskPayCoins = () => {
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={transactionFields}
+                    columns={transactionMBFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

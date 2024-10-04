@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, PieController, Tooltip, Legend, BarElement, BarController, CategoryScale, LinearScale } from 'chart.js';
-import { Bar } from "react-chartjs-2";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { Employee, Department, Group } from "../../../helpers/Types";
@@ -12,6 +9,8 @@ import * as apiService from "../../../helpers/apiService";
 import { Carousel } from "react-responsive-carousel";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { useColor } from "../../../context/ColorContext";
+import { Pie, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController } from 'chart.js';
 
 // Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
@@ -162,18 +161,17 @@ export const NclockDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={banner_nclock} alt="Nclock" />
+                            <img className="img-carousel-licensed" src={banner_nclock} alt="Nclock" />
                         </div>
                     </Carousel>
                 </div>
                 <div className="calendar-container">
-                    <div className="dashboard-calendar" style={{ width: 800 }}>
+                    <div className="dashboard-calendar" style={{ height: 400 }}>
                         <Calendar
                             localizer={localizer}
                             events={events}
                             startAccessor="start"
                             endAccessor="end"
-                            style={{ height: '100%' }}
                             messages={messages}
                             culture="pt"
                         />
@@ -184,13 +182,13 @@ export const NclockDashboard = () => {
                 <div className="chart-container">
                     <div className="employee-pie-chart" style={{ flex: 1 }}>
                         <h2 className="employee-pie-chart-text">Total de Funcionários: {totalEmployees}</h2>
-                        <Pie data={chartData} />
+                        <Pie className="employee-pie-chart-pie" data={chartData} />
                     </div>
                 </div>
                 <div className="chart-container">
                     <div className="departments-groups-chart" style={{ flex: 1 }}>
                         <h2 className="departments-groups-chart-text">Departamentos e Grupos</h2>
-                        <Bar data={chartDataDepartmentsGroups} />
+                        <Bar className="departments-groups-chart-data" data={chartDataDepartmentsGroups} />
                     </div>
                 </div>
             </div>
