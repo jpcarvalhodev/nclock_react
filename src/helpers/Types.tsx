@@ -260,6 +260,7 @@ export type KioskTransactionMB = {
     merchantTicket: string;
     email: string;
     timestamp: Date;
+    deviceSN: string;
 };
 
 export type KioskTransactionCard = {
@@ -454,4 +455,12 @@ export type Doors = {
     wgReversed: number;
     devId: string;
     devSN: string;
+};
+
+export type MBDevice = {
+    [key: string]: any;
+    id: string;
+    nomeQuiosque: string;
+    estadoTerminal: number;
+    timeReboot: string;
 };

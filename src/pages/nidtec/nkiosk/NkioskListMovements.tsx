@@ -77,7 +77,7 @@ export const NkioskListMovements = () => {
     const fetchMovementCardBetweenDates = async () => {
         try {
             const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
-            const dataKiosk = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId2, deviceSN, startDate, endDate);
+            const dataKiosk = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setListMovementCard(data);
                 setListMovementKiosk(dataKiosk);

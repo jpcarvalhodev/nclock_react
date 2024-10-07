@@ -38,7 +38,7 @@ export const NkioskMoveKiosk = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
-    const eventDoorId = '3';
+    const eventDoorId = '4';
     const deviceSN = 'AGB7234900595';
 
     // Função para buscar os movimentos de videoporteiro

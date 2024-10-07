@@ -141,6 +141,8 @@ export const NkioskPayTerminal = () => {
                 switch (field.key) {
                     case 'timestamp':
                         return new Date(row[field.key]).toLocaleString() || '';
+                    case 'transactionType':
+                        return row[field.key] === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'clientTicket':
                     case 'merchantTicket':
                         const imageUrl = row[field.key];

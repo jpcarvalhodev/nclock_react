@@ -4,6 +4,11 @@ import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";
 import { DeviceContextType, TerminalsContext } from "../context/TerminalsContext";
+import DataTable, { TableColumn } from "react-data-table-component";
+import { customStyles } from "../components/CustomStylesDataTable";
+import { Doors } from "../helpers/Types";
+import { SelectFilter } from "../components/SelectFilter";
+import { doorsFields } from "../helpers/Fields";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -36,6 +41,8 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [noData, setNoData] = useState<Doors[]>([]);
+    const [filters, setFilters] = useState<Record<string, string>>({});
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
@@ -155,6 +162,40 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         }));
         validateForm();
     };
+
+    // Define as opções de paginação de EN para PT
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
+    };
+
+    // Define as colunas
+    const columns: TableColumn<Doors>[] = doorsFields
+        .map(field => {
+            const formatField = (row: Doors) => {
+                switch (field.key) {
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={noData} />
+                    </>
+                ),
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
+
+    // Filtra os dados da tabela
+    const filteredDataTable = noData.filter(door =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(door[key]) === String(filters[key])
+        )
+    );
 
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
@@ -457,7 +498,14 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                 <Tab.Pane eventKey="portas">
                                     <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                         <Row>
-
+                                            <DataTable
+                                                columns={columns}
+                                                data={filteredDataTable}
+                                                pagination
+                                                paginationComponentOptions={paginationOptions}
+                                                noDataComponent="Os dados de portas só serão exibidos após adicionar o dispositivo."
+                                                customStyles={customStyles}
+                                            />
                                         </Row>
                                     </Form>
                                 </Tab.Pane>

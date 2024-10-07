@@ -217,6 +217,7 @@ export const transactionMBFields = [
     { key: 'merchantTicket', label: 'Ticket do Comerciante', type: 'string' },
     { key: 'email', label: 'Email', type: 'string' },
     { key: 'timestamp', label: 'Data e Hora', type: 'Date' },
+    { key: 'deviceSN', label: 'Número de Série do Dispositivo', type: 'string' },
 ];
 
 export const transactionCardFields = [
@@ -365,7 +366,7 @@ export const doorsFields = [
     { key: 'delayOpenTime', label: 'Atraso de Tempo de Abertura', type: 'number' },
     { key: 'doorNo', label: 'Número da Porta', type: 'number' },
     { key: 'doorSensorStatus', label: 'Status de Sensor da Porta', type: 'number' },
-    { key: 'enabled', label: 'Activo', type: 'string' },
+    { key: 'enabled', label: 'Activo', type: 'boolean' },
     { key: 'extDelayDrivertime', label: 'Tempo de Atraso do Driver Externo', type: 'number' },
     { key: 'extDevId', label: 'ID de Dispositivo Externo', type: 'string' },
     { key: 'forcePwd', label: 'Forçar Senha', type: 'string' },
@@ -393,4 +394,10 @@ export const doorsFields = [
     { key: 'wgReversed', label: 'WG Inverso', type: 'number' },
     { key: 'devId', label: 'ID do Dispositivo', type: 'string' },
     { key: 'devSN', label: 'Serial do Dispositivo', type: 'string' },
+];
+
+export const mbDeviceFields = [
+    { key: 'nomeQuiosque', label: 'Nome do Terminal', type: 'string', required: true },
+    { key: 'estadoTerminal', label: 'Estado do Terminal', type: 'number' },
+    { key: 'timeReboot', label: 'Tempo de Reinício', type: 'string' },
 ];

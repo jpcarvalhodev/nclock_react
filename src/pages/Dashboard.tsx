@@ -43,6 +43,7 @@ import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
 import nidtec from '../assets/img/navbar/navbar/nidtec.png';
 import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
 import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.png';
+import nidgroup from '../assets/img/navbar/navbar/nidgroup.png';
 import banner_nidgroup from '../assets/img/carousel/banner_nidgroup.jpg';
 import banner_nclock from '../assets/img/carousel/banner_nclock.jpg';
 import banner_naccess from '../assets/img/carousel/banner_naccess.jpg';
@@ -92,10 +93,11 @@ import { useColor } from "../context/ColorContext";
 type TabName = 'CLIENTE' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
 
 // Define o tipo CardTitle
-type CardTitle = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome' | 'Nsoftwares';
+type CardTitle = 'Início' | 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome' | 'Nsoftwares';
 
 // Define o objeto tabData
 const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: string }> = {
+    Início: { route: '/dashboard', tabKey: '', ribbonKey: '' },
     Nclock: { route: '/nclock/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon' },
     Naccess: { route: '/naccess/naccessdashboard', tabKey: 'showNaccessTab', ribbonKey: 'showNaccessRibbon' },
     Nvisitor: { route: '/nvisitor/nvisitordashboard', tabKey: 'showNvisitorTab', ribbonKey: 'showNvisitorRibbon' },
@@ -159,6 +161,7 @@ export const Dashboard = () => {
 
     const cardData = {
         'CLIENTE': [
+            { title: 'Início', img: nidgroup, tab: '' },
             { title: 'Nkiosk', img: nkiosk, tab: 'nkiosk' },
             { title: 'Nclock', img: nclock, tab: 'nclock' },
             { title: 'Naccess', img: naccess, tab: 'naccess' },

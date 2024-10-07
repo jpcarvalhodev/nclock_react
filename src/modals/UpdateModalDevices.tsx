@@ -1,10 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
-import { Devices } from "../helpers/Types";
+import { Devices, Doors } from "../helpers/Types";
 import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";
 import { TerminalsContext, DeviceContextType } from "../context/TerminalsContext";
+import DataTable, { TableColumn } from "react-data-table-component";
+import { customStyles } from "../components/CustomStylesDataTable";
+import { doorsFields } from "../helpers/Fields";
+import { SelectFilter } from "../components/SelectFilter";
+import * as apiService from "../helpers/apiService";
+import { UpdateModalDoor } from "./UpdateModalDoor";
+import { fi } from "date-fns/locale";
 
 // Define a interface Entity
 export interface Entity {
@@ -37,6 +44,7 @@ interface UpdateModalProps<T extends Entity> {
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const {
         fetchAllDevices,
+        fetchAllDoorData,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -44,6 +52,10 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [doors, setDoors] = useState<Doors[]>([]);
+    const [filters, setFilters] = useState<Record<string, string>>({});
+    const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -85,9 +97,32 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         setIsFormValid(isValid);
     };
 
+    // Função para buscar as portas e filtrar pelo SN
+    const fetchDoors = async () => {
+        const data = await fetchAllDoorData();
+        const dataFiltered = data.filter((door: Doors) => door.devSN === formData.serialNumber);
+        setDoors(dataFiltered);
+    }
+
+    // Função para lidar com a atualização das portas
+    const handleUpdateDoor = async (door: Doors) => {
+        try {
+            const data = await apiService.updateDoor(door);
+            const updatedData = { ...door, ...data };
+            const updatedDoors = doors.map(d => d.id === door.id ? { ...d, ...updatedData } : d);
+            setDoors(updatedDoors);
+            toast.success(data?.message || 'Porta atualizada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar a porta:', error);
+        } finally {
+            setShowUpdateModal(false);
+        }
+    }
+
     // UseEffect para atualizar lista de todos os dispositivos
     useEffect(() => {
         fetchAllDevices();
+        fetchDoors();
     }, []);
 
     // Atualiza o estado da foto
@@ -102,9 +137,14 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
-        const { employeeID, ...dataWithoutId } = formData;
+        const { zktecoDeviceID, ...dataWithoutId } = formData;
         onDuplicate(dataWithoutId as T);
     };
+
+    const handleEditDoors = (row: Doors) => {
+        setSelectedDoor(row);
+        setShowUpdateModal(true);
+    }
 
     // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,6 +209,50 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         }));
         validateForm();
     };
+
+    // Define as opções de paginação de EN para PT
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
+    };
+
+    // Filtra os dados da tabela
+    const filteredDataTable = doors.filter(door =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(door[key]) === String(filters[key])
+        )
+    );
+
+    // Define as colunas que serão exibidas
+    const includedColumns = ['enabled', 'name', 'doorNo', 'devSN'];
+
+    // Define as colunas
+    const columns: TableColumn<Doors>[] = doorsFields
+        .filter(field => includedColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: Doors) => {
+                switch (field.key) {
+                    case 'enabled':
+                        return row[field.key] === true ? 'Activo' : 'Inactivo';
+                    case 'createTime':
+                        return new Date(row[field.key]).toLocaleDateString();
+                    case 'updateTime':
+                        return new Date(row[field.key]).toLocaleDateString();
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
+                    </>
+                ),
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
 
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
@@ -288,7 +372,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                     <Nav.Link eventKey="informacao">Informação</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
-                                    <Nav.Link eventKey="porta">Portas</Nav.Link>
+                                    <Nav.Link eventKey="portas">Portas</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                             <Tab.Content>
@@ -461,13 +545,41 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                         </Row>
                                     </Form>
                                 </Tab.Pane>
+                                <Tab.Pane eventKey="portas">
+                                    <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                        <Row>
+                                            <DataTable
+                                                columns={columns}
+                                                data={filteredDataTable}
+                                                pagination
+                                                paginationComponentOptions={paginationOptions}
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[5, 10]}
+                                                onRowDoubleClicked={handleEditDoors}
+                                                noDataComponent="Não há dados disponíveis para exibir."
+                                                customStyles={customStyles}
+                                            />
+                                        </Row>
+                                    </Form>
+                                </Tab.Pane>
                             </Tab.Content>
                         </Tab.Container>
                     </Col>
                 </Row>
             </Modal.Body>
+            {selectedDoor && (
+                <UpdateModalDoor
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onUpdate={handleUpdateDoor}
+                    entity={selectedDoor}
+                    fields={doorsFields}
+                    title="Atualizar Porta"
+                />
+            )}
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>

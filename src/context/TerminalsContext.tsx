@@ -1,12 +1,13 @@
 import { createContext, useState, useContext } from 'react';
 import { ReactNode } from 'react';
-import { Devices, DoorDevice, Employee, KioskTransaction } from '../helpers/Types';
+import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
 // Define o tipo de contexto
 export interface DeviceContextType {
     devices: Devices[];
+    mbDevices: MBDevice[];
     employeeDevices: Employee[];
     deviceStatus: string[];
     deviceStatusCount: StatusCounts;
@@ -14,6 +15,8 @@ export interface DeviceContextType {
     fetchAllEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllEmployeeDevices: () => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
+    fetchAllDoorData: () => Promise<Doors[]>;
+    fetchAllMBDevices: () => Promise<void>;
     sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
@@ -24,6 +27,7 @@ export interface DeviceContextType {
     handleAddDevice: (device: Devices) => Promise<void>;
     handleUpdateDevice: (device: Devices) => Promise<void>;
     handleDeleteDevice: (zktecoDeviceID: string) => Promise<void>;
+    handleAddMBDevice: (device: MBDevice) => Promise<void>;
 }
 
 // Define a interface para o status
@@ -38,6 +42,7 @@ export const TerminalsContext = createContext<DeviceContextType | undefined>(und
 // Provedor do contexto
 export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [devices, setDevices] = useState<Devices[]>([]);
+    const [mbDevices, setMBDevices] = useState<MBDevice[]>([]);
     const [employeeDevices, setEmployeeDevices] = useState<Employee[]>([]);
     const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
     const [deviceStatusCount, setDeviceStatusCount] = useState<StatusCounts>({ Activo: 0, Inactivo: 0 });
@@ -99,6 +104,27 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             console.error('Erro ao buscar transações:', error);
         }
         return [];
+    }
+
+    // Função para buscar todos os dados das portas
+    const fetchAllDoorData = async (): Promise <Doors[]> => {
+        try {
+            const doorData = await apiService.fetchAllDoors();
+            return doorData;
+        } catch (error) {
+            console.error('Erro ao buscar dados da porta:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar todos os dispositivos de multibanco
+    const fetchAllMBDevices = async () => {
+        try {
+            const data = await apiService.fetchAllMBDevices();
+            setMBDevices(data);
+        } catch (error) {
+            console.error('Erro ao buscar dispositivos:', error);
+        }
     }
 
     // Função para enviar todos os funcionários para o dispositivo
@@ -219,9 +245,21 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para adicionar um dispositivo de multibanco
+    const handleAddMBDevice = async (device: MBDevice) => {
+        try {
+            const deviceData = await apiService.addMBDevice(device);
+            setMBDevices([...mbDevices, deviceData]);
+            toast.success(deviceData.message || 'dispositivo adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionado dispositivos:', error);
+        }
+    }
+
     // Define o valor do contexto
     const contextValue: DeviceContextType = {
         devices,
+        mbDevices,
         employeeDevices,
         deviceStatus,
         deviceStatusCount,
@@ -229,6 +267,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
         fetchAllKioskTransaction,
+        fetchAllDoorData,
+        fetchAllMBDevices,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,
@@ -239,6 +279,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
+        handleAddMBDevice
     };
 
     return (

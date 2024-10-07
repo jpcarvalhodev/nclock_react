@@ -1370,10 +1370,6 @@ export const Terminals = () => {
                         </Tab>
                         <Tab eventKey="onOff" title="Ligação">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    Ligar
-                                </Button> */}
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
                                     {loadingRestartDevice ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />

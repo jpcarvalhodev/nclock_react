@@ -137,6 +137,8 @@ export const NkioskPayCoins = () => {
                 switch (field.key) {
                     case 'timestamp':
                         return new Date(row[field.key]).toLocaleString() || '';
+                    case 'transactionType':
+                        return row[field.key] === 1 ? 'Multibanco' : 'Moedeiro';
                     default:
                         return row[field.key] || '';
                 }

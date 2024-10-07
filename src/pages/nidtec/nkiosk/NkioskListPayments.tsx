@@ -46,7 +46,7 @@ export const NkioskListPayments = () => {
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'timestamp', 'transactionType']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceSN', 'timestamp', 'transactionType']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -89,7 +89,7 @@ export const NkioskListPayments = () => {
     const fetchPaymentsBetweenDates = async () => {
         try {
             const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
-            const dataCoin = await apiService.fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync(eventDoorId2, deviceSN, startDate, endDate);
+            const dataCoin = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setListPaymentMB(data);
                 setListPaymentCoin(dataCoin);
@@ -115,6 +115,7 @@ export const NkioskListPayments = () => {
                 merchantTicket: payment.merchantTicket,
                 email: payment.email,
                 timestamp: payment.timestamp,
+                deviceSN: payment.deviceSN,
             })),
             ...listPaymentCoin.map((payment) => ({
                 id: payment.id,
@@ -126,6 +127,7 @@ export const NkioskListPayments = () => {
                 merchantTicket: payment.merchantTicket,
                 email: payment.email,
                 timestamp: payment.timestamp,
+                deviceSN: payment.deviceSN,
             }))
         ];
 
@@ -161,7 +163,7 @@ export const NkioskListPayments = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'timestamp', 'transactionType']);
+        setSelectedColumns(['deviceSN', 'timestamp', 'transactionType']);
     };
 
     // Função para selecionar todas as colunas
@@ -211,7 +213,7 @@ export const NkioskListPayments = () => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
                     case 'transactionType':
-                        return row.transactionType === 1 ? 'Terminal' : 'Moedeiro';
+                        return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
                         return row.timestamp ? new Date(row.timestamp).toLocaleString() : '';
                     case 'clientTicket':

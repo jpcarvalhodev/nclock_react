@@ -256,12 +256,18 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
         return id.substring(18);
       } else if (id.startsWith('emp-')) {
         return id.substring(4);
+      } else if (id.startsWith('empd-')) {
+        return id.substring(5);
+      } else if (id.startsWith('empg-')) {
+        return id.substring(5);
       }
       return null;
     }).filter(id => id !== null);
 
     onSelectEmployees(employeeIds as string[]);
   };
+
+  console.log(selectedEmployeeIds);
 
   // Atualiza a referência de mudança de seleção
   useEffect(() => {

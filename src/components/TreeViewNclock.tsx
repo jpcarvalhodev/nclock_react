@@ -239,6 +239,10 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         return id.substring(18);
       } else if (id.startsWith('emp-')) {
         return id.substring(4);
+      } else if (id.startsWith('empd-')) {
+        return id.substring(5);
+      } else if (id.startsWith('empg-')) {
+        return id.substring(5);
       }
       return null;
     }).filter(id => id !== null);

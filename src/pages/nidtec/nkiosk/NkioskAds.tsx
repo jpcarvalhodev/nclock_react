@@ -142,7 +142,7 @@ export const NkioskAds = () => {
             const formatField = (row: Ads) => {
                 switch (field.key) {
                     case 'tipoArquivo':
-                        return (row[field.key] === 1) ? 'Imagem' : 'Vídeo' || '';
+                        return (row[field.key] === 1) ? 'Imagem' : 'Vídeo';
                     case 'createDate':
                         return new Date(row[field.key]).toLocaleString() || '';
                     case 'updateDate':

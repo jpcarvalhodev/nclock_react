@@ -86,6 +86,7 @@ import { NewUsers } from './pages/configs/NewUsers';
 import { TimePeriods } from './pages/devices/TimePeriods';
 import { AccessControls } from './pages/devices/AccessControls';
 import { NkioskMoveVP } from './pages/nidtec/nkiosk/NkioskMoveVP';
+import { TerminalsMB } from './pages/devices/TerminalsMB';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -149,6 +150,7 @@ function AnimatedRoutes() {
               <Route path="/persons/zones" element={<PageProtection><Zones /></PageProtection>} />
               <Route path="/persons/types" element={<PageProtection><Types /></PageProtection>} />
               <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
+              <Route path="/devices/terminalsmb" element={<PageProtection><TerminalsMB /></PageProtection>} />
               <Route path="/devices/AccessControls" element={<PageProtection><AccessControls /></PageProtection>} />
               <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
               <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />

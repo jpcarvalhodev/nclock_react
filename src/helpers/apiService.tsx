@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Category, Department, Devices, DoorDevice, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, MBDevice, Profession, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -205,6 +205,14 @@ export const fetchAllEmployeeDevices = async () => {
     return response.json();
 };
 
+export const fetchAllMBDevices = async () => {
+    const response = await fetchWithAuth(`KioskTransaction/GetAllTerminalPagamentoAsync`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
 export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
     let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
     if (employeeID !== null) {
@@ -349,6 +357,28 @@ export const deleteDevice = async (zktecoDeviceID: string) => {
     }
     return response.json();
 };
+
+export const addMBDevice = async (mbDevice: MBDevice) => {
+    const response = await fetchWithAuth(`KioskTransaction/CreatTerminalPagamentoAsync`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mbDevice)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const restartMBDevice = async (id: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/CreateTPFunctionl`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DAS CATEGORIAS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1154,6 +1184,23 @@ export const fetchAllDoors = async () => {
     const response = await fetchWithAuth(`AccDoor`);
     if (!response.ok) {
         return;
+    }
+    return response.json();
+}
+
+export const updateDoor = async (door: Doors) => {
+    const response = await fetchWithAuth(`AccDoor/${door.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(door)
+    });
+    if (!response.ok) {
+        return;
+    }
+    if (response.status === 204) {
+        return { ...door, message: 'Porta atualizada com sucesso!'};
     }
     return response.json();
 }

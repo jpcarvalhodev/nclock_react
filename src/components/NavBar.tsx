@@ -132,6 +132,7 @@ import alert from '../assets/img/navbar/nkiosk/alert.png';
 import accessControl from '../assets/img/navbar/nkiosk/accessControl.png';
 import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
 import home from '../assets/img/navbar/home.png';
+import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -708,7 +709,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Define o componente do item de menu
 	const menuStructure: MenuStructure = {
-		dashboard: { label: 'NIDGROUP', image: nidgroup, alt: 'NIDGROUP', key: 'dashboard' },
+		dashboard: { label: 'INÍCIO', image: nidgroup, alt: 'INÍCIO', key: 'dashboard' },
 		sisnid: {
 			label: 'SISNID',
 			image: sisnidlogo,
@@ -2073,6 +2074,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<img src={terminal} alt="botão terminais" />
 												</span>
 												<span className="text">Terminais</span>
+											</Link>
+										</div>
+										<div className='icon-text-pessoas'>
+											<Link to="/devices/terminalsmb" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={terminalmb} alt="botão terminais multibanco" />
+												</span>
+												<span className="text">Terminais MB</span>
 											</Link>
 										</div>
 										<div className="icon-text-pessoas">

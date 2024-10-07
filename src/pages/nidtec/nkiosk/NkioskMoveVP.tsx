@@ -58,7 +58,7 @@ export const NkioskMoveVP = () => {
     // Função para buscar os movimentos dos cartões entre datas
     const fetchMovementVPBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setMoveVP(data);
             } else {
