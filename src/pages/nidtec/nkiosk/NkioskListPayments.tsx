@@ -13,17 +13,14 @@ import { transactionMBFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import { Line } from "react-chartjs-2";
 
-// URL base das imagens
-const baseURL = "https://localhost:9090/";
-
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T00:00`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T23:59`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 // Define a interface ChartData
@@ -46,7 +43,7 @@ export const NkioskListPayments = () => {
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceSN', 'timestamp', 'transactionType']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -163,7 +160,7 @@ export const NkioskListPayments = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['deviceSN', 'timestamp', 'transactionType']);
+        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -189,29 +186,37 @@ export const NkioskListPayments = () => {
     // Filtra os dados da tabela
     const filteredDataTable = useMemo(() => {
         return listPayments.filter(listPayment =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (listPayment[key] != null && String(listPayment[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(listPayment).some(value => {
-            if (value == null) {
+            Object.keys(filters).every(key =>
+                filters[key] === "" || (listPayment[key] != null && String(listPayment[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            ) &&
+            Object.values(listPayment).some(value => {
+                if (value == null) {
+                    return false;
+                } else if (typeof value === 'number') {
+                    return value.toString().includes(filterText);
+                } else if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else if (typeof value === 'string') {
+                    return value.toLowerCase().includes(filterText.toLowerCase());
+                }
                 return false;
-            } else if (typeof value === 'number') {
-                return value.toString().includes(filterText);
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else if (typeof value === 'string') {
-                return value.toLowerCase().includes(filterText.toLowerCase());
-            }
-            return false;
-        }));
+            }));
     }, [listPayments, filters, filterText]);
+
+    // Remove IDs duplicados na tabela caso existam
+    const uniqueFilteredDataTable = Array.from(
+        new Map(filteredDataTable.map(item => [item.id, item])).values()
+    );
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'timestamp') return -1; else if (b.key === 'timestamp') return 1; else return 0; })
         .map((field) => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
+                    case 'deviceSN':
+                        return row[field.key] === deviceSN ? 'Quiosque Clérigos Porto' : '';
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
@@ -221,7 +226,7 @@ export const NkioskListPayments = () => {
                         const imageUrl = row[field.key];
                         if (imageUrl) {
                             const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
-                            const fullImageUrl = `${baseURL}${uploadPath}`;
+                            const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
                             return (
                                 <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
                                     <img
@@ -239,14 +244,26 @@ export const NkioskListPayments = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: KioskTransactionMB) => {
+                    if (field.key === 'timestamp') {
+                        return new Date(row[field.key]).getTime();
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: KioskTransactionMB) => {
+                    if (field.key === 'timestamp') {
+                        return new Date(row.timestamp).toLocaleString();
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -321,14 +338,14 @@ export const NkioskListPayments = () => {
                     </div>
                     <div className="date-range-search">
                         <input
-                            type="datetime-local"
+                            type="date"
                             value={startDate}
                             onChange={e => setStartDate(e.target.value)}
                             className='search-input'
                         />
                         <span> até </span>
                         <input
-                            type="datetime-local"
+                            type="date"
                             value={endDate}
                             onChange={e => setEndDate(e.target.value)}
                             className='search-input'
@@ -347,7 +364,7 @@ export const NkioskListPayments = () => {
                 <div className="chart-container" style={{ flex: 1, overflowX: 'auto' }}>
                     <DataTable
                         columns={columns}
-                        data={filteredDataTable}
+                        data={uniqueFilteredDataTable}
                         pagination
                         paginationPerPage={5}
                         paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
@@ -358,6 +375,8 @@ export const NkioskListPayments = () => {
                         selectableRowsHighlight
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={false}
+                        defaultSortFieldId="timestamp"
                     />
                     <div style={{ marginLeft: 30 }}>
                         <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€

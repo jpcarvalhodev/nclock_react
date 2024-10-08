@@ -14,26 +14,23 @@ import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 
-// URL base das imagens
-const baseURL = "https://localhost:9090/";
-
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T00:00`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T23:59`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 export const NkioskPayTerminal = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useColor(); 
     const currentDate = new Date();
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['transactionType', 'amount', 'timestamp', 'statusMessage']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -104,7 +101,7 @@ export const NkioskPayTerminal = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['transactionType', 'amount', 'timestamp', 'statusMessage']);
+        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -139,6 +136,8 @@ export const NkioskPayTerminal = () => {
         .map(field => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
+                    case 'deviceSN':
+                        return row[field.key] === deviceSN ? 'Quiosque Clérigos Porto' : '';
                     case 'timestamp':
                         return new Date(row[field.key]).toLocaleString() || '';
                     case 'transactionType':
@@ -148,7 +147,7 @@ export const NkioskPayTerminal = () => {
                         const imageUrl = row[field.key];
                         if (imageUrl) {
                             const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
-                            const fullImageUrl = `${baseURL}${uploadPath}`;
+                            const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
                             return (
                                 <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
                                     <img
@@ -166,14 +165,26 @@ export const NkioskPayTerminal = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={payTerminal} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: KioskTransactionMB) => {
+                    if (field.key === 'timestamp') {
+                        return new Date(row[field.key]).getTime();
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: KioskTransactionMB) => {
+                    if (field.key === 'timestamp') {
+                        return new Date(row.timestamp).toLocaleString();
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -193,6 +204,11 @@ export const NkioskPayTerminal = () => {
         })
     );
 
+    // Remove IDs duplicados na tabela caso existam
+    const uniqueFilteredDataTable = Array.from(
+        new Map(filteredDataTable.map(item => [item.id, item])).values()
+    );    
+
     // Calcula o total do valor dos pagamentos
     const totalAmount = filteredDataTable.reduce((total, transaction) => {
         return total + (typeof transaction.amount === 'number' ? transaction.amount : parseFloat(transaction.amount) || 0);
@@ -202,13 +218,13 @@ export const NkioskPayTerminal = () => {
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='content-container'>
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Pagamentos no Terminal</span>
+                            <span style={{ color: '#009739' }}>Pagamentos Multibanco</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -227,14 +243,14 @@ export const NkioskPayTerminal = () => {
                             </div>
                             <div className="date-range-search">
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className='search-input'
                                 />
                                 <span> até </span>
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={endDate}
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'
@@ -245,15 +261,18 @@ export const NkioskPayTerminal = () => {
                         <div className='table-css'>
                             <DataTable
                                 columns={columns}
-                                data={filteredDataTable}
+                                data={uniqueFilteredDataTable}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
                                 selectableRows
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                defaultSortAsc={false}
+                                defaultSortFieldId="timestamp"
                             />
                         </div>
                         <div style={{ marginLeft: 30 }}>

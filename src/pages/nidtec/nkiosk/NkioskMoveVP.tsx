@@ -16,12 +16,12 @@ import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T00:00`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T23:59`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 export const NkioskMoveVP = () => {
@@ -112,7 +112,7 @@ export const NkioskMoveVP = () => {
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         setSelectedDevicesIds(selectedIds);
-    };  
+    };
 
     // Define a função de seleção de linhas
     const handleRowSelected = (state: {
@@ -131,43 +131,83 @@ export const NkioskMoveVP = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(moveCards =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
-            ) &&
-            Object.values(moveCards).some(value => {
-                if (value == null) {
-                    return false;
-                } else if (value instanceof Date) {
-                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-                } else {
-                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
-                }
-            })
-        );
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(moveCards).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
+    );
+
+    // Remove IDs duplicados na tabela caso existam
+    const uniqueFilteredDataTable = Array.from(
+        new Map(filteredDataTable.map(item => [item.id, item])).values()
+    );
+
+    console.log(uniqueFilteredDataTable);
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))
+        .sort((a, b) => (a.key === 'eventTime' ? -1 : b.key === 'eventTime' ? 1 : 0))
+        .sort((a, b) => (a.key === 'deviceSN' ? 1 : b.key === 'deviceSN' ? -1 : 0))
         .map(field => {
             const formatField = (row: KioskTransactionCard) => {
+                const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
+                    case 'deviceSN':
+                        return row[field.key] === deviceSN ? 'Quiosque Clérigos Porto' : '';
                     case 'eventDoorId':
                         return 'Video Porteiro';
                     case 'eventTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
+                        if (typeof value === 'string') {
+                            const [datePart, timePart] = value.split(' ');
+                            const [day, month, year] = datePart.split('/');
+                            const formattedDateString = `${year}-${month}-${day}T${timePart}`;
+                            return new Date(formattedDateString).toLocaleString() || '';
+                        } else if (value instanceof Date) {
+                            return value.toLocaleString() || '';
+                        }
+                        return '';
                     default:
-                        return row[field.key] || '';
+                        return value ?? '';
                 }
             };
+
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: KioskTransactionCard) => {
+                    const value = row[field.key as keyof KioskTransactionCard];
+
+                    if (field.key === 'eventTime') {
+                        if (typeof value === 'string') {
+                            const [datePart, timePart] = value.split(' ');
+                            const [day, month, year] = datePart.split('/');
+                            const formattedDateString = `${year}-${month}-${day}T${timePart}`;
+                            return new Date(formattedDateString).getTime();
+                        } else if (value instanceof Date) {
+                            return value.getTime();
+                        }
+                        return '';
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: KioskTransactionCard) => {
+                    return formatField(row);
+                }
             };
         });
 
@@ -175,7 +215,7 @@ export const NkioskMoveVP = () => {
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='content-container'>
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
@@ -200,14 +240,14 @@ export const NkioskMoveVP = () => {
                             </div>
                             <div className="date-range-search">
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className='search-input'
                                 />
                                 <span> até </span>
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={endDate}
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'
@@ -218,15 +258,18 @@ export const NkioskMoveVP = () => {
                         <div className='table-css'>
                             <DataTable
                                 columns={columns}
-                                data={filteredDataTable}
+                                data={uniqueFilteredDataTable}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
                                 selectableRows
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                defaultSortAsc={false}
+                                defaultSortFieldId="eventTime"
                             />
                         </div>
                     </div>

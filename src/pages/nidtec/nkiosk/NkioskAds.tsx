@@ -152,6 +152,7 @@ export const NkioskAds = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
@@ -167,7 +168,7 @@ export const NkioskAds = () => {
     const filteredDataTable = ads.filter(ad =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (ad[key] != null && String(ad[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) && 
+        ) &&
         Object.values(ad).some(value => {
             if (value == null) {
                 return false;
@@ -177,7 +178,7 @@ export const NkioskAds = () => {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
             }
         })
-    );  
+    );
 
     // Define a coluna de ações
     const actionColumn: TableColumn<Ads> = {
@@ -254,6 +255,8 @@ export const NkioskAds = () => {
                         paginationComponentOptions={paginationOptions}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={false}
+                        defaultSortFieldId="nomeArquivo"
                     />
                 </div>
             </div>

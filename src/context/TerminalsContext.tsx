@@ -16,7 +16,7 @@ export interface DeviceContextType {
     fetchAllEmployeeDevices: () => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllDoorData: () => Promise<Doors[]>;
-    fetchAllMBDevices: () => Promise<void>;
+    fetchAllMBDevices: () => Promise<MBDevice[]>;
     sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
@@ -24,6 +24,7 @@ export interface DeviceContextType {
     deleteAllUsersOnDevice: (device: Devices, employee: string | null) => Promise<void>;
     openDeviceDoor: (zktecoDeviceID: DoorDevice, doorData: DoorDevice) => Promise<void>;
     restartDevice: (device: Devices) => Promise<void>;
+    restartMBDevice: (mbDevice: Partial<MBDevice>) => Promise<void>;
     handleAddDevice: (device: Devices) => Promise<void>;
     handleUpdateDevice: (device: Devices) => Promise<void>;
     handleDeleteDevice: (zktecoDeviceID: string) => Promise<void>;
@@ -118,13 +119,14 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os dispositivos de multibanco
-    const fetchAllMBDevices = async () => {
+    const fetchAllMBDevices = async (): Promise <MBDevice[]> => {
         try {
             const data = await apiService.fetchAllMBDevices();
-            setMBDevices(data);
+            return data;
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
         }
+        return [];
     }
 
     // Função para enviar todos os funcionários para o dispositivo
@@ -208,6 +210,18 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para reiniciar o dispositivo de multibanco
+    const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
+        try {
+            const data = await apiService.restartMBDevice(mbDevice);
+            toast.success(data.message || 'Dispositivo reiniciado com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao reiniciar o dispositivo:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    }
+
     // Define a função de adição de dispositivos
     const handleAddDevice = async (device: Devices) => {
         try {
@@ -276,6 +290,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         deleteAllUsersOnDevice,
         openDeviceDoor,
         restartDevice,
+        restartMBDevice,
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,

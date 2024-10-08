@@ -13,16 +13,15 @@ import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
-import { set } from "date-fns";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T00:00`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T23:59`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 export const NkioskListMovements = () => {
@@ -33,7 +32,7 @@ export const NkioskListMovements = () => {
     const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'eventName', 'nameUser', 'eventDoorId']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'nameUser', 'eventDoorId']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -163,7 +162,7 @@ export const NkioskListMovements = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'cardNo', 'eventName', 'nameUser', 'eventDoorId']);
+        setSelectedColumns(['eventTime', 'cardNo', 'nameUser', 'eventDoorId']);
     };
 
     // Função para selecionar todas as colunas
@@ -208,6 +207,11 @@ export const NkioskListMovements = () => {
             })
         );
 
+    // Remove IDs duplicados na tabela caso existam
+    const uniqueFilteredDataTable = Array.from(
+        new Map(filteredDataTable.map(item => [item.id, item])).values()
+    ); 
+
     // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
     const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {
         if (!acc.some(field => field.key === current.key)) {
@@ -216,29 +220,54 @@ export const NkioskListMovements = () => {
         return acc;
     }, [] as typeof transactionCardFields);
 
-    // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = combinedMovements
         .filter(field => selectedColumns.includes(field.key))
+        .sort((a, b) => (a.key === 'eventTime' ? -1 : b.key === 'eventTime' ? 1 : 0))
         .map(field => {
             const formatField = (row: KioskTransactionCard) => {
+                const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'eventDoorId':
                         return row.eventDoorId === 4 ? 'Quiosque' : 'Torniquete';
                     case 'eventTime':
-                        return new Date(row[field.key]).toLocaleString() || '';
+                        if (typeof value === 'string') {
+                            const dateString = value.replace(' ', 'T');
+                            return new Date(dateString).toLocaleString() || '';
+                        } else if (value instanceof Date) {
+                            return value.toLocaleString() || '';
+                        }
+                        return '';
                     default:
-                        return row[field.key] || '';
+                        return value ?? '';
                 }
             };
+
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: KioskTransactionCard) => {
+                    const value = row[field.key as keyof KioskTransactionCard];
+
+                    if (field.key === 'eventTime') {
+                        if (typeof value === 'string') {
+                            const dateString = value.replace(' ', 'T');
+                            return new Date(dateString).getTime();
+                        } else if (value instanceof Date) {
+                            return value.getTime();
+                        }
+                        return '';
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: KioskTransactionCard) => {
+                    return formatField(row);
+                }
             };
         });
 
@@ -246,7 +275,7 @@ export const NkioskListMovements = () => {
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='content-container'>
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
@@ -271,14 +300,14 @@ export const NkioskListMovements = () => {
                             </div>
                             <div className="date-range-search">
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className='search-input'
                                 />
                                 <span> até </span>
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={endDate}
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'
@@ -289,15 +318,18 @@ export const NkioskListMovements = () => {
                         <div className='table-css'>
                             <DataTable
                                 columns={columns}
-                                data={filteredDataTable}
+                                data={uniqueFilteredDataTable}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
                                 selectableRows
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                defaultSortAsc={false}
+                                defaultSortFieldId="eventTime"
                             />
                         </div>
                     </div>

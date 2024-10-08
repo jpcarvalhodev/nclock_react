@@ -104,7 +104,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 export const NdigitalDashboard = () => {
     const { navbarColor, footerColor } = useColor();
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('CLIENTE');
+    const [activeKey, setActiveKey] = useState<TabName>('NIDSOF');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {

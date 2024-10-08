@@ -7,6 +7,12 @@ interface BodyData {
     employeeID?: string;
 }
 
+// URL base para as APIs
+export const BASE_URL = 'https://localhost:9090/api/';
+
+// URL base para os tickets
+export const baseURL = "https://localhost:9090/";
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DO CONTEXTO DOS MOVIMENTOS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -372,8 +378,14 @@ export const addMBDevice = async (mbDevice: MBDevice) => {
     return response.json();
 }
 
-export const restartMBDevice = async (id: string) => {
-    const response = await fetchWithAuth(`KioskTransaction/CreateTPFunctionl`);
+export const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
+    const response = await fetchWithAuth(`KioskTransaction/CreateTPFunctionl`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mbDevice)
+    });
     if (!response.ok) {
         return;
     }
@@ -1200,7 +1212,7 @@ export const updateDoor = async (door: Doors) => {
         return;
     }
     if (response.status === 204) {
-        return { ...door, message: 'Porta atualizada com sucesso!'};
+        return { ...door, message: 'Porta atualizada com sucesso!' };
     }
     return response.json();
 }

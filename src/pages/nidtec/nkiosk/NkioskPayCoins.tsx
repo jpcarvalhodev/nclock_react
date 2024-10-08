@@ -16,12 +16,12 @@ import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T00:00`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T23:59`;
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 export const NkioskPayCoins = () => {
@@ -30,7 +30,7 @@ export const NkioskPayCoins = () => {
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['transactionType', 'amount', 'timestamp', 'statusMessage']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -101,7 +101,7 @@ export const NkioskPayCoins = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['transactionType', 'amount', 'timestamp', 'statusMessage']);
+        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -132,9 +132,12 @@ export const NkioskPayCoins = () => {
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'timestamp') return -1; else if (b.key === 'timestamp') return 1; else return 0; })
         .map(field => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
+                    case 'deviceSN':
+                        return row[field.key] === deviceSN ? 'Quiosque Clérigos Porto' : '';
                     case 'timestamp':
                         return new Date(row[field.key]).toLocaleString() || '';
                     case 'transactionType':
@@ -144,14 +147,26 @@ export const NkioskPayCoins = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={payCoins} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: KioskTransactionMB) => {
+                    if (field.key === 'timestamp') {
+                        return new Date(row[field.key]).getTime();
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: KioskTransactionMB) => {
+                    if (field.key === 'timestamp') {
+                        return new Date(row.timestamp).toLocaleString();
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -171,6 +186,11 @@ export const NkioskPayCoins = () => {
         })
     );
 
+    // Remove IDs duplicados na tabela caso existam
+    const uniqueFilteredDataTable = Array.from(
+        new Map(filteredDataTable.map(item => [item.id, item])).values()
+    ); 
+
     // Calcula o total do valor dos pagamentos
     const totalAmount = filteredDataTable.length * 0.50;
 
@@ -178,7 +198,7 @@ export const NkioskPayCoins = () => {
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='content-container'>
-                <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
@@ -203,14 +223,14 @@ export const NkioskPayCoins = () => {
                             </div>
                             <div className="date-range-search">
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className='search-input'
                                 />
                                 <span> até </span>
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={endDate}
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'
@@ -221,15 +241,18 @@ export const NkioskPayCoins = () => {
                         <div className='table-css'>
                             <DataTable
                                 columns={columns}
-                                data={filteredDataTable}
+                                data={uniqueFilteredDataTable}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
                                 selectableRows
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                defaultSortAsc={false}
+                                defaultSortFieldId="timestamp"
                             />
                         </div>
                         <div style={{ marginLeft: 30 }}>

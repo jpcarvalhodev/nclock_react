@@ -226,8 +226,19 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         <SelectFilter column={field.key} setFilters={setFilters} data={data.employees} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -272,6 +283,8 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         clearSelectedRows={resetSelectionInternal}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={false}
+                        defaultSortFieldId='enrollNumber'
                     />
                     {selectedEmployee && (
                         <UpdateModalEmployees

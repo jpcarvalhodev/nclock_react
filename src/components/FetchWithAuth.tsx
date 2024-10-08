@@ -1,7 +1,5 @@
 import { toast } from "react-toastify";
-
-// Define a URL base da API
-const BASE_URL = 'https://localhost:9090/api/';
+import * as apiService from "../helpers/apiService";
 
 // Define as opções de requisição
 interface FetchOptions extends RequestInit {
@@ -10,7 +8,7 @@ interface FetchOptions extends RequestInit {
 
 // Função para fazer requisições à API com autenticação
 export const fetchWithAuth = async (endpoint: string, options: FetchOptions = {}): Promise<Response> => {
-    const url = `${BASE_URL}${endpoint}`;
+    const url = `${apiService.BASE_URL}${endpoint}`;
     const token = localStorage.getItem('token');
 
     if (token) {

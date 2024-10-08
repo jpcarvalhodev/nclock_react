@@ -133,6 +133,8 @@ import accessControl from '../assets/img/navbar/nkiosk/accessControl.png';
 import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
 import home from '../assets/img/navbar/home.png';
 import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
+import close from '../assets/img/navbar/nkiosk/close.png';
+import open from '../assets/img/navbar/nkiosk/open.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -1689,6 +1691,29 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 									<div className="title-container">
 										<span className="title">Recebimentos</span>
+									</div>
+								</div>
+								<div className="group">
+									<div className="btn-group" role="group">
+										<div className="icon-text-pessoas">
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={close} alt="botão encerrar pagamentos" />
+												</span>
+												<span className="text">Fechamento</span>
+											</Link>
+										</div>
+										<div className="icon-text-pessoas">
+											<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<span className="icon">
+													<img src={open} alt="botão abrir pagamentos" />
+												</span>
+												<span className="text">Abertura</span>
+											</Link>
+										</div>
+									</div>
+									<div className="title-container">
+										<span className="title">Fechamento/Abertura</span>
 									</div>
 								</div>
 								<div className="group">

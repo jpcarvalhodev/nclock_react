@@ -110,7 +110,7 @@ export const NaccessDashboard = () => {
     const { navbarColor, footerColor } = useColor();
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('CLIENTE');
+    const [activeKey, setActiveKey] = useState<TabName>('SISNID');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {

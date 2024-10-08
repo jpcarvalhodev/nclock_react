@@ -196,14 +196,26 @@ export const NclockPresence = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: EmployeeAttendanceTimes) => {
+                    if (field.key === 'attendanceTime') {
+                        return new Date(row[field.key]).getTime();
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: EmployeeAttendanceTimes) => {
+                    if (field.key === 'attendanceTime') {
+                        return new Date(row.timestamp).toLocaleString();
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -237,7 +249,7 @@ export const NclockPresence = () => {
             <div className="main-container">
                 <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className="content-container">
-                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
                             <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
                         </div>
@@ -271,6 +283,8 @@ export const NclockPresence = () => {
                                 selectableRowsHighlight
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                defaultSortAsc={false}
+                                defaultSortFieldId="attendanceTime"
                             />
                         </div>
                     </Split>

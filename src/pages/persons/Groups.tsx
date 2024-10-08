@@ -18,6 +18,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
+import { id } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {
@@ -161,6 +162,7 @@ export const Groups = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
+            id: columnKey,
             name: (
                 <>
                     {columnNamesMap[columnKey]}
@@ -256,6 +258,8 @@ export const Groups = () => {
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={false}
+                        defaultSortFieldId="name"
                     />
                 </div>
             </div>

@@ -6,8 +6,8 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { Button, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, MBDevice } from "../../helpers/Types";
-import { deviceFields, mbDeviceFields } from "../../helpers/Fields";
+import { MBDevice } from "../../helpers/Types";
+import { mbDeviceFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { toast } from "react-toastify";
 import { Spinner } from 'react-bootstrap';
@@ -23,40 +23,48 @@ interface Filters {
 // Define o componente de terminais
 export const TerminalsMB = () => {
     const {
-        mbDevices,
-        deviceStatus,
-        deviceStatusCount,
-        fetchAllDevices,
-        restartDevice,
+        fetchAllMBDevices,
+        restartMBDevice,
         handleAddMBDevice
     } = useContext(TerminalsContext) as DeviceContextType;
     const { navbarColor, footerColor } = useColor();
+    const [mbDevices, setMBDevices] = useState<MBDevice[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [userTabKey, setUserTabKey] = useState('onOff');
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['nomeQuiosque', 'estadoTerminal', 'timeReboot']);
-    const [selectedDeviceToDelete, setSelectedDeviceToDelete] = useState<string>('');
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedDeviceRows, setSelectedDeviceRows] = useState<MBDevice[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<MBDevice | null>(null);
     const [loadingRestartDevice, setLoadingRestartDevice] = useState(false);
 
-    // Função para adicionar um dispositivo
-    const addDevice = async (device: MBDevice) => {
-        await handleAddMBDevice(device);
-        setShowAddModal(false);
-        refreshAll();
+    // Função para buscar todos os dispositivos multibanco
+    const fetchAllDevices = async () => {
+        try {
+            const data = await fetchAllMBDevices();
+            setMBDevices(data);
+        } catch (error) {
+            console.error('Erro ao buscar terminais multibanco:', error);
+        }
     }
 
-    /* // Função para atualizar um dispositivo
-    const updateDevice = async (device: Devices) => {
-        await handleUpdateDevice(device);
-        setShowUpdateModal(false);
-        refreshAll();
-    } */
+    // Função para atualizar todos os dispositivos
+    const refreshMBDevices = () => {
+        fetchAllDevices();
+    }
+
+    // Função para adicionar um dispositivo
+    const addDevice = async (device: MBDevice) => {
+        try {
+            await handleAddMBDevice(device);
+            setShowAddModal(false);
+        } catch (error) {
+            console.error('Erro ao adicionar dispositivo multibanco:', error);
+        } finally {
+            refreshMBDevices();
+        }
+    }
 
     // Atualiza os dados de renderização
     useEffect(() => {
@@ -70,16 +78,10 @@ export const TerminalsMB = () => {
         }
     }, [resetSelection]);
 
-    // Função para atualizar todos os dispositivos
-    const refreshAll = () => {
-        fetchAllDevices();
-    }
-
     // Função para resetar as colunas
     const handleResetColumns = () => {
         setSelectedColumns(['nomeQuiosque', 'estadoTerminal', 'timeReboot']);
     };
-
 
     // Função para alternar a visibilidade das abas
     const handleUserSelect = (k: string | null) => {
@@ -99,7 +101,7 @@ export const TerminalsMB = () => {
 
     // Função para selecionar todas as colunas
     const handleSelectAllColumns = () => {
-        const allColumnKeys = deviceFields.map(field => field.key);
+        const allColumnKeys = mbDeviceFields.map(field => field.key);
         setSelectedColumns(allColumnKeys);
     };
 
@@ -114,13 +116,15 @@ export const TerminalsMB = () => {
     };
 
     // Define as colunas de dispositivos
-    const deviceColumns: TableColumn<MBDevice>[] = mbDeviceFields
+    const columns: TableColumn<MBDevice>[] = mbDeviceFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
             const formatField = (row: MBDevice) => {
                 switch (field.key) {
                     case 'estadoTerminal':
-                        return row.disabled === 1 ? 'Activo' : 'Inactivo';
+                        return row[field.key] ? 'Ligado' : 'Desligado';
+                    case 'timeReboot':
+                        return row[field.key] === '00:00:00' ? 'Sem tempo de reinício' : row[field.key];
                     default:
                         return row[field.key];
                 }
@@ -150,44 +154,15 @@ export const TerminalsMB = () => {
         rangeSeparatorText: 'de',
     };
 
-    // Define a função de abertura do modal de edição dos dispositivos
-    const handleEditDevices = (row: MBDevice) => {
-        setSelectedTerminal(row);
-        setShowUpdateModal(true);
-    };
-
-    // Define a função de fechamento do modal de atualização
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-        setSelectedTerminal(null);
-    }
-
-    // Define as colunas de ação de dispositivos
-    const devicesActionColumn: TableColumn<MBDevice> = {
-        name: 'Ações',
-        cell: (row: MBDevice) => (
-            <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
-            </div>
-        ),
-        selector: (row: MBDevice) => row.id,
-        ignoreRowClick: true,
-    };
-
-    // Define a cor do status
-    const getStatusColor = (statuses: string[]): string => {
-        const isActive = statuses.some(status => status === 'Activo');
-        return isActive ? 'green' : 'red';
-    };
-
-    // Define a cor de fundo do status
-    const backgroundColor = getStatusColor(deviceStatus);
-
     // Função para reiniciar o dispositivo
     const handleRestartDevice = async () => {
         if (selectedTerminal) {
             setLoadingRestartDevice(true);
-            await restartMBDevice(selectedTerminal.id);
+            const mbDeviceId = selectedTerminal.id;
+            const mbDeviceType = 0;
+            const mbDeviceStatus = 0;
+            const mbDevice = { mbDeviceId, mbDeviceType, mbDeviceStatus };
+            await restartMBDevice(mbDevice);
             setLoadingRestartDevice(false);
         } else {
             toast.error('Selecione um terminal primeiro!');
@@ -203,33 +178,19 @@ export const TerminalsMB = () => {
                         <span>Terminais Multibanco</span>
                     </div>
                     <div className="datatable-header">
-                        <div className="buttons-container-others" style={{ flexGrow: 1 }}>
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAll} />
+                        <div className="buttons-container-others">
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                             <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                            <span style={{
-                                color: 'white',
-                                backgroundColor: backgroundColor,
-                                borderRadius: '4px',
-                                padding: '2px 10px',
-                                display: 'inline-block',
-                                marginLeft: 'auto',
-                                marginRight: '30px'
-                            }}>
-                                Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Online, ${deviceStatusCount['Inactivo'] || 0} Offline`}
-                            </span>
                         </div>
                     </div>
                 </div>
                 <div className="content-section deviceTabsMobile" style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
                     <div className="deviceMobile">
                         <DataTable
-                            columns={[...deviceColumns, devicesActionColumn]}
+                            columns={columns}
                             data={filteredDeviceDataTable}
-                            onRowDoubleClicked={handleEditDevices}
                             pagination
-                            paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                             paginationComponentOptions={paginationOptions}
                             selectableRows
                             onSelectedRowsChange={handleDeviceRowSelected}
@@ -264,7 +225,7 @@ export const TerminalsMB = () => {
                 <Footer style={{ backgroundColor: footerColor }} />
                 {showColumnSelector && (
                     <ColumnSelectorModal
-                        columns={deviceFields}
+                        columns={mbDeviceFields}
                         selectedColumns={selectedColumns}
                         onClose={() => setShowColumnSelector(false)}
                         onColumnToggle={handleColumnToggle}
@@ -280,25 +241,6 @@ export const TerminalsMB = () => {
                     fields={deviceFields}
                     initialValues={initialData || {}}
                 /> */}
-                {/* {selectedTerminal && (
-                    <UpdateModalDevices
-                        open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
-                        onDuplicate={handleDuplicate}
-                        onUpdate={updateDevice}
-                        entity={selectedTerminal}
-                        fields={deviceFields}
-                        title="Atualizar Terminal"
-                    />
-                )} */}
-                {/* {showDeleteModal && (
-                    <DeleteModal
-                        open={showDeleteModal}
-                        onClose={() => setShowDeleteModal(false)}
-                        onDelete={deleteDevice}
-                        entityId={selectedDeviceToDelete}
-                    />
-                )} */}
             </div>
         </TerminalsProvider>
     );

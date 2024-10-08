@@ -16,6 +16,7 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
+import { id } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {
@@ -159,6 +160,7 @@ export const Types = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
+            id: columnKey,
             name: (
                 <>
                     {columnNamesMap[columnKey]}
@@ -226,6 +228,8 @@ export const Types = () => {
                         paginationComponentOptions={paginationOptions}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={false}
+                        defaultSortFieldId="order"
                     />
                 </div>
             </div>

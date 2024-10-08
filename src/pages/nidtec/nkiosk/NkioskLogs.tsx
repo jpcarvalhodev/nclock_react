@@ -115,6 +115,8 @@ export const NkioskLogs = () => {
                         paginationComponentOptions={paginationOptions}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId="createDate"
                     />
                 </div>
             </div>

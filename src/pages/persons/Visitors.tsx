@@ -239,14 +239,26 @@ export const Visitors = () => {
             };
 
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={data.employees} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -300,7 +312,7 @@ export const Visitors = () => {
             <div className="main-container">
                 <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className="content-container">
-                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
                             <TreeViewData onSelectEmployees={handleSelectFromTreeView} entity='visitors' />
                         </div>
@@ -339,6 +351,8 @@ export const Visitors = () => {
                                 selectableRowsHighlight
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                defaultSortAsc={false}
+                                defaultSortFieldId="enrollNumber"
                             />
                         </div>
                     </Split>

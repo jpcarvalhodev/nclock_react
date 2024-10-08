@@ -4,7 +4,9 @@ import { NavBar } from "../../../components/NavBar";
 import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
 import { useColor } from "../../../context/ColorContext";
 import { PolarArea } from "react-chartjs-2";
-import { Line } from "react-chartjs-2";
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Card, Nav, Tab } from "react-bootstrap";
@@ -109,25 +111,58 @@ const isValidCardTitle = (title: string): title is CardTitle => {
     return title in tabData;
 };
 
-// Define a interface Transaction
-interface Transaction {
-    [key: string]: any;
-    value: number;
-    timestamp?: string;
-    eventTime?: string;
+// Define a linguagem do calendário
+const locales = {
+    'pt': ptBR,
+};
+
+// Define o localizador de datas
+const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales,
+});
+
+// Define a interface CalendarEvent
+interface CalendarEvent {
+    id: string;
+    title: string;
+    start: Date;
+    end: Date;
+    allDay: boolean;
+    uniqueId?: string;
 }
+
+// Define as mensagens do calendário em português
+const messages = {
+    allDay: 'Todo o dia',
+    previous: '<',
+    next: '>',
+    today: 'Hoje',
+    month: 'Mês',
+    week: 'Semana',
+    day: 'Dia',
+    agenda: 'Agenda',
+    date: 'Data',
+    time: 'Hora',
+    event: 'Evento',
+    noEventsInRange: 'Não há eventos neste intervalo',
+    showMore: (total: number) => `+ Ver mais (${total})`
+};
 
 export const NkioskDashboard = () => {
     const { navbarColor, footerColor } = useColor();
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('CLIENTE');
+    const [activeKey, setActiveKey] = useState<TabName>('NIDTEC');
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
     const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
     const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
-    const [totalPayments, setTotalPayments] = useState<KioskTransactionMB[]>([]);
     const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
     const deviceSN = 'AGB7234900595';
     const eventDoorId = '1';
     const eventDoorId2 = '2';
@@ -218,11 +253,30 @@ export const NkioskDashboard = () => {
             setMoveKiosk(kioskData);
             setMoveVP(vpData);
 
-            const totalPay = mbData.concat(coinData);
             const totalMove = cardData.concat(kioskData);
 
-            setTotalPayments(totalPay);
             setTotalMovements(totalMove);
+
+            const eventSet = new Set();
+            const newEvents = totalMove.reduce((acc: CalendarEvent[], item: KioskTransactionCard) => {
+                const eventDate = new Date(item.eventTime);
+                const uniqueId = item.eventTime + item.eventName;
+                if (!eventSet.has(uniqueId)) {
+                    eventSet.add(uniqueId);
+                    acc.push({
+                        id: uniqueId,
+                        title: item.eventName,
+                        start: eventDate,
+                        end: eventDate,
+                        allDay: true,
+                        uniqueId: uniqueId
+                    });
+                }
+                return acc;
+            }, [] as CalendarEvent[]);
+
+
+            setEvents(newEvents);
         } catch (error) {
             console.error(error);
         }
@@ -303,20 +357,6 @@ export const NkioskDashboard = () => {
         ],
     };
 
-    // Dados para o gráfico Line
-    const lineData = {
-        labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-        datasets: [
-            {
-                label: 'Total de Pagamentos',
-                data: groupByMonth(totalPayments, 'timestamp'),
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }
-        ]
-    };
-
     // Dados para o gráfico Bar
     const barData = {
         labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
@@ -387,18 +427,24 @@ export const NkioskDashboard = () => {
                         </div>
                     </Carousel>
                 </div>
-                <div className="chart-container">
-                    <div className="employee-pie-chart" style={{ flex: 1 }}>
-                        <h2 className="employee-pie-chart-text">Total de Pagamentos e Movimentos: { }</h2>
-                        <PolarArea className="employee-pie-chart-pie" data={polarData} />
+                <div className="calendar-container">
+                    <div className="dashboard-calendar" style={{ height: 400 }}>
+                        <Calendar
+                            localizer={localizer}
+                            events={events}
+                            startAccessor="start"
+                            endAccessor="end"
+                            messages={messages}
+                            culture="pt"
+                        />
                     </div>
                 </div>
             </div>
             <div className="dashboard-content">
                 <div className="chart-container">
-                    <div className="departments-groups-chart" style={{ flex: 1 }}>
-                        <h2 className="departments-groups-chart-text">Total de Pagamentos: { }</h2>
-                        <Line className="departments-groups-chart-data" data={lineData} style={{ marginLeft: 50 }} />
+                    <div className="employee-pie-chart" style={{ flex: 1 }}>
+                        <h2 className="employee-pie-chart-text">Total de Pagamentos e Movimentos: { }</h2>
+                        <PolarArea className="employee-pie-chart-pie" data={polarData} />
                     </div>
                 </div>
                 <div className="chart-container">

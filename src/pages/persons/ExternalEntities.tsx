@@ -194,14 +194,26 @@ export const ExternalEntities = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={data.externalEntity} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: ExternalEntity) => {
+                    if (field.key === 'name') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: ExternalEntity) => {
+                    if (field.key === 'name') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -293,6 +305,8 @@ export const ExternalEntities = () => {
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={false}
+                        defaultSortFieldId="name"
                     />
                 </div>
             </div>
