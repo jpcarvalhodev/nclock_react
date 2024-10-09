@@ -192,7 +192,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 <Form.Label>Senha <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caracter especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -211,7 +211,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 <Form.Label>Confirmar Senha <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caracter especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"

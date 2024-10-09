@@ -27,10 +27,16 @@ interface Field {
     errorMessage?: string;
 }
 
+// Interface para os ficheiros com ordem
+interface FileWithOrder {
+    file: File;
+    ordem: number;
+}
+
 // Define o componente
 export const CreateModalAds = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, entities, initialValues }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
-    const [files, setFiles] = useState<File[]>([]);
+    const [files, setFiles] = useState<FileWithOrder[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
 
@@ -91,8 +97,13 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     // Função para lidar com a mudança de ficheiros
     const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const uploadedFiles = e.target.files ? Array.from(e.target.files) : [];
+        const maxOrder = files.reduce((max, file) => Math.max(max, file.ordem), 0);
 
-        // Filtra apenas os arquivos permitidos
+        const newFilesWithOrder = uploadedFiles.map((file, index) => ({
+            file,
+            ordem: maxOrder + index + 1
+        }));
+
         const validFiles = uploadedFiles.filter((file) => {
             const extension = file.name.split('.').pop()?.toLowerCase();
             return allowedImageExtensions.includes(extension || '') || allowedVideoExtensions.includes(extension || '');
@@ -106,7 +117,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
             const tipoArquivo = detectFileType(validFiles[0].name);
             const createDate = new Date().toISOString().replace('Z', '').split('.')[0];
 
-            setFiles(validFiles);
+            setFiles((prevFiles) => [...prevFiles, ...newFilesWithOrder]);
             setFormData((prevData) => ({
                 ...prevData,
                 NomeArquivo: validFiles.map((file) => file.name).join(', '),
@@ -114,6 +125,21 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                 createDate: createDate,
             }));
         }
+    };
+
+    const handleOrderChange = (index: number, newOrder: number) => {
+        if (newOrder <= 0 || isNaN(newOrder)) return;
+    
+        const newFiles = files.map((file, idx) => {
+            if (idx === index) {
+                return { ...file, ordem: newOrder };
+            }
+            return file;
+        });
+    
+        newFiles.sort((a, b) => a.ordem - b.ordem);
+    
+        setFiles(newFiles);
     };
 
     // Função para obter os tipos de arquivo aceitos com base na entidade
@@ -141,20 +167,8 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
 
     // Função para salvar os dados
     const handleSave = () => {
-        const formDataToSend = new FormData();
-        files.forEach((file) => formDataToSend.append('files', file));
-
-        Object.entries(formData).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                formDataToSend.append(key, String(value));
-            }
-        });
-
-        for (let pair of formDataToSend.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-        console.log('Salvando:', formDataToSend);
-        onSave(formDataToSend);
+        console.log('Salvando:', formData);
+        onSave(formData as T);
         onClose();
     };
 
@@ -177,6 +191,21 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                                     onChange={handleFilesChange}
                                 />
                             </Form.Group>
+                            {files.map((fileObj, index) => (
+                                <Row key={fileObj.file.name} className="align-items-center">
+                                    <Col md={8}>
+                                        <div>{fileObj.file.name}</div>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Form.Control
+                                            type="number"
+                                            value={fileObj.ordem}
+                                            onChange={(e) => handleOrderChange(index, parseInt(e.target.value))}
+                                            className="custom-input-height custom-select-font-size"
+                                        />
+                                    </Col>
+                                </Row>
+                            ))}
                         </Col>
                         <Col md={6}>
                             <Row>

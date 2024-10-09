@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { Spinner } from 'react-bootstrap';
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 import { useColor } from "../../context/ColorContext";
-import { restartMBDevice } from "../../helpers/apiService";
+import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
 
 // Define a interface para os filtros
 interface Filters {
@@ -158,10 +158,10 @@ export const TerminalsMB = () => {
     const handleRestartDevice = async () => {
         if (selectedTerminal) {
             setLoadingRestartDevice(true);
-            const mbDeviceId = selectedTerminal.id;
-            const mbDeviceType = 0;
-            const mbDeviceStatus = 0;
-            const mbDevice = { mbDeviceId, mbDeviceType, mbDeviceStatus };
+            const tpId = selectedTerminal.id;
+            const type = 0;
+            const status = 0;
+            const mbDevice = { tpId, type, status };
             await restartMBDevice(mbDevice);
             setLoadingRestartDevice(false);
         } else {
@@ -233,14 +233,14 @@ export const TerminalsMB = () => {
                         onSelectAllColumns={handleSelectAllColumns}
                     />
                 )}
-                {/* <CreateModalDevices
-                    title="Adicionar Terminal"
+                <CreateModalDeviceMB
+                    title="Adicionar Terminal Multibanco"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
                     onSave={addDevice}
-                    fields={deviceFields}
-                    initialValues={initialData || {}}
-                /> */}
+                    fields={mbDeviceFields}
+                    initialValues={{}}
+                />
             </div>
         </TerminalsProvider>
     );

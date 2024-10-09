@@ -146,9 +146,11 @@ export const NkioskMoveVP = () => {
     );
 
     // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable = Array.from(
-        new Map(filteredDataTable.map(item => [item.id, item])).values()
-    );
+    const uniqueFilteredDataTable: KioskTransactionCard[] = Array.from(
+        new Set(filteredDataTable.map(item => item.eventTime))
+    ).map(eventTime => {
+        return filteredDataTable.find(item => item.eventTime === eventTime);
+    }).filter((item): item is KioskTransactionCard => item !== undefined);  
 
     console.log(uniqueFilteredDataTable);
 

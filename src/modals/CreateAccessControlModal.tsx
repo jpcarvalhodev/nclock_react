@@ -81,6 +81,10 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
         if (open) {
+            setFormData((prevState) => ({
+                ...prevState,
+                createrName: localStorage.getItem('username') || '',
+            }));
             fetchDropdownOptions();
         } else {
             setFormData({});
@@ -189,7 +193,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         break;
                                                     case 'doorId':
                                                         optionId = option.id;
-                                                        optionName = option.doorNo;
+                                                        optionName = option.name;
                                                         break;
                                                     case 'timezoneId':
                                                         optionId = option.id;

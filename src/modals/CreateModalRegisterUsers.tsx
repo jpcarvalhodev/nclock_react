@@ -184,7 +184,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Senha <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caracter especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -203,7 +203,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Confirmar Senha <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caracter especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"

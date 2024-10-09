@@ -206,8 +206,8 @@ body {
 .content-container {
     display: flex;
     flex-grow: 1;
-    overflow: hidden;
-    margin: 20px 0;
+    padding: 20px;
+    overflow: auto;
 }
 
 .treeview-container {
@@ -492,6 +492,10 @@ body {
 
 @media (max-width: 500px) {
 
+    .main-container {
+        min-height: 100vh;
+    }
+
     .profile-avatar {
         max-width: 20px;
         max-height: 20px;
@@ -545,6 +549,12 @@ body {
         width: 100% !important;
     }
 
+    .nav.nav-pills {
+        flex-direction: column;
+        height: auto;
+        margin-top: 20px;
+    }
+
     .card {
         margin: 10px auto;
         width: 90%;
@@ -557,6 +567,21 @@ body {
     .dashboard-title-text {
         font-size: 18px;
     }
+
+    .date-range-search {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin: 0;
+        align-items: flex-start;
+    }
+
+    .date-range-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
 }
 
 @media (min-width: 501px) and (max-width: 1200px) {
@@ -578,18 +603,21 @@ body {
         margin-bottom: 100px;
     }
 
-    .datatable-header,
     .dashboard-container {
+        flex-direction: column;
+    }
+
+    .datatable-header {
         flex-direction: column;
     }
 
     .buttons-container,
     .buttons-container-others {
-        justify-content: unset;
+        justify-content: flex-start;
     }
 
-    .date-range-search {
-        margin-left: 0;
+    .nav.nav-pills {
+        margin-top: 20px;
     }
 
     .cards-container {
@@ -607,5 +635,12 @@ body {
 
     .dashboard-content-wrapper {
         flex-direction: column;
+    }
+
+    .date-range-search {
+        display: flex;
+        flex-direction: row;
+        margin-left: 0;
+        justify-content: flex-start;
     }
 }

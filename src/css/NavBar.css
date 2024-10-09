@@ -56,6 +56,11 @@
     color: white;
 }
 
+.tab-content-navbar {
+    background-color: white;
+    overflow-x: auto;
+}
+
 .section {
     display: flex;
     border-bottom: 1px solid #ccc;
@@ -313,12 +318,16 @@
 
     .tab-content {
         max-height: calc(100vh - 200px);
-        overflow-y: auto;
+        overflow: auto;
     }
 
     .nav-container {
         flex-direction: column;
         align-items: center;
+    }
+
+    .title-container {
+        height: 30px;
     }
 
     .nav-link {
@@ -377,10 +386,14 @@
 
 }
 
-@media (min-width: 501px) and (max-width: 1300px) {
+@media (min-width: 501px) and (max-width: 1200px) {
 
     .logo {
         font-size: 15px;
+    }
+
+    .title-container {
+        height: 30px;
     }
 
     .section {
