@@ -473,3 +473,12 @@ export type MBDeviceStatus = {
     nomeStatus: string;
     timespam: Date;
 };
+
+export type MBDeviceCloseOpen = {
+    [key: string]: any;
+    id: string;
+    tpId: string;
+    timestamp: Date;
+    fechoImage: string;
+    aberturaImage: string;
+};

@@ -21,19 +21,9 @@ export const fetchWithoutAuth = async (endpoint: string, options: FetchOptions =
         return response;
     } catch (error) {
         console.error('Fetch error:', error);
-        toast.error('Erro de rede. Por favor, verifique sua conexão ou tente novamente mais tarde.');
         throw error;
     }
 };
-
-// Função para lidar com erros 401 quando tiver dados no localStorage
-const handle401Error = () => {
-    const data = localStorage.getItem('rememberMeUser');
-    if (data !== null && data !== undefined && data.length > 0) {
-        toast.error('Você não tem permissão para acessar esta página');
-        window.location.href = '/unauthorized';
-    }
-}
 
 // Função para lidar com erros HTTP
 const handleHTTPError = async (response: Response) => {

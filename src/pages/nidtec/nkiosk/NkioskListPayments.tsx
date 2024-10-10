@@ -5,13 +5,14 @@ import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { KioskTransactionMB, } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import { Line } from "react-chartjs-2";
+import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -37,6 +38,7 @@ interface ChartData {
 
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useColor();
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const [listPayments, setListPayments] = useState<KioskTransactionMB[]>([]);
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
@@ -50,14 +52,16 @@ export const NkioskListPayments = () => {
     const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [lineChartData, setLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
-    const eventDoorId = '1';
     const eventDoorId2 = '2';
+
     const deviceSN = 'AGB7234900595';
+    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
+    const deviceName = matchedDevice?.name || 'Quiosque Clérigos Porto';
 
     // Função para buscar as listagens de pagamentos em MB
     const fetchAllListPaymentsMB = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
             if (Array.isArray(data)) {
                 setListPaymentMB(data);
             } else {
@@ -85,7 +89,7 @@ export const NkioskListPayments = () => {
     // Função para buscar os pagamentos dos terminais entre datas
     const fetchPaymentsBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(startDate, endDate);
             const dataCoin = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setListPaymentMB(data);
@@ -215,8 +219,10 @@ export const NkioskListPayments = () => {
         .map((field) => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
+                    case 'tpId':
+                        return row.tpId === '00000000-0000-0000-0000-000000000000' ? 'Sem Terminal' : row.tpId;
                     case 'deviceSN':
-                        return row[field.key] === deviceSN ? 'Quiosque Clérigos Porto' : '';
+                        return deviceName;
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
@@ -229,15 +235,11 @@ export const NkioskListPayments = () => {
                             const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
                             return (
                                 <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
-                                    <img
-                                        src={fullImageUrl}
-                                        alt={field.label}
-                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                                    />
+                                    Visualizar ticket
                                 </a>
                             );
                         } else {
-                            return 'Sem Ticket';
+                            return '';
                         }
                     default:
                         return row[field.key] || '';
@@ -315,85 +317,87 @@ export const NkioskListPayments = () => {
     }, [listPayments]);
 
     return (
-        <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Listagem de Pagamentos</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+        <TerminalsProvider>
+            <div className="dashboard-container">
+                <NavBar style={{ backgroundColor: navbarColor }} />
+                <div className='filter-refresh-add-edit-upper-class'>
+                    <div className="datatable-title-text">
+                        <span style={{ color: '#009739' }}>Listagem de Pagamentos</span>
                     </div>
-                    <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={listPayments} selectedData={selectedRows} fields={transactionMBFields} />
-                    </div>
-                    <div className="date-range-search">
-                        <input
-                            type="date"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <span> até </span>
-                        <input
-                            type="date"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
-                    </div>
-                </div>
-            </div>
-            <div className='content-wrapper-payment'>
-                <div className="chart-container">
-                    <div className="departments-groups-chart" style={{ flex: 1 }}>
-                        <h2 className="departments-groups-chart-text">Total de Pagamentos: { }</h2>
-                        <Line className="departments-groups-chart-data" data={lineChartData} style={{ marginLeft: 50 }} />
+                    <div className="datatable-header">
+                        <div>
+                            <input
+                                className='search-input'
+                                type="text"
+                                placeholder="Pesquisa"
+                                value={filterText}
+                                onChange={e => setFilterText(e.target.value)}
+                            />
+                        </div>
+                        <div className="buttons-container-others">
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                            <ExportButton allData={listPayments} selectedData={selectedRows} fields={transactionMBFields} />
+                        </div>
+                        <div className="date-range-search">
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={e => setStartDate(e.target.value)}
+                                className='search-input'
+                            />
+                            <span> até </span>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={e => setEndDate(e.target.value)}
+                                className='search-input'
+                            />
+                            <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
+                        </div>
                     </div>
                 </div>
-                <div className="chart-container" style={{ flex: 1, overflowX: 'auto' }}>
-                    <DataTable
-                        columns={columns}
-                        data={uniqueFilteredDataTable}
-                        pagination
-                        paginationPerPage={5}
-                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                        paginationComponentOptions={paginationOptions}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não há dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        defaultSortAsc={false}
-                        defaultSortFieldId="timestamp"
+                <div className='content-wrapper-payment'>
+                    <div className="chart-container">
+                        <div className="departments-groups-chart" style={{ flex: 1 }}>
+                            <h2 className="departments-groups-chart-text">Total de Pagamentos: { }</h2>
+                            <Line className="departments-groups-chart-data" data={lineChartData} style={{ marginLeft: 50 }} />
+                        </div>
+                    </div>
+                    <div className="chart-container" style={{ flex: 1, overflowX: 'auto' }}>
+                        <DataTable
+                            columns={columns}
+                            data={uniqueFilteredDataTable}
+                            pagination
+                            paginationPerPage={5}
+                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
+                            noDataComponent="Não há dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            defaultSortAsc={false}
+                            defaultSortFieldId="timestamp"
+                        />
+                        <div style={{ marginLeft: 30 }}>
+                            <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
+                        </div>
+                    </div>
+                </div>
+                <Footer style={{ backgroundColor: footerColor }} />
+                {openColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={transactionMBFields}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setOpenColumnSelector(false)}
+                        onColumnToggle={toggleColumn}
+                        onResetColumns={resetColumns}
+                        onSelectAllColumns={onSelectAllColumns}
                     />
-                    <div style={{ marginLeft: 30 }}>
-                        <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
-                    </div>
-                </div>
+                )}
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
-            {openColumnSelector && (
-                <ColumnSelectorModal
-                    columns={transactionMBFields}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setOpenColumnSelector(false)}
-                    onColumnToggle={toggleColumn}
-                    onResetColumns={resetColumns}
-                    onSelectAllColumns={onSelectAllColumns}
-                />
-            )}
-        </div>
+        </TerminalsProvider>
     );
 }

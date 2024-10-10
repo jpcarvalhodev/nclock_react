@@ -5,7 +5,7 @@ import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard } from "../../../helpers/Types";
 import { transactionCardFields } from "../../../helpers/Fields";
@@ -13,6 +13,7 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -26,6 +27,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskMoveKiosk = () => {
     const { navbarColor, footerColor } = useColor();
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
@@ -39,7 +41,10 @@ export const NkioskMoveKiosk = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '4';
+    
     const deviceSN = 'AGB7234900595';
+    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
+    const deviceName = matchedDevice?.name || 'Quiosque Clérigos Porto';
 
     // Função para buscar os movimentos de videoporteiro
     const fetchAllMoveKiosk = async () => {
@@ -160,6 +165,8 @@ export const NkioskMoveKiosk = () => {
             const formatField = (row: KioskTransactionCard) => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
+                    case 'deviceSN':
+                        return deviceName;
                     case 'eventDoorId':
                         return 'Quiosque';
                     case 'eventTime':

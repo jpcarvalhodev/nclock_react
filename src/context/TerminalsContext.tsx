@@ -1,6 +1,6 @@
 import { createContext, useState, useContext } from 'react';
 import { ReactNode } from 'react';
-import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice, MBDeviceStatus } from '../helpers/Types';
+import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -19,6 +19,7 @@ export interface DeviceContextType {
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllDoorData: () => Promise<Doors[]>;
     fetchAllMBDevices: () => Promise<MBDevice[]>;
+    fetchAllMBCloseOpen: () => Promise<MBDeviceCloseOpen[]>;
     sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
@@ -133,6 +134,17 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             const statusCounts = countStatus(filteredStatus);
             setDeviceMBStatusCount(statusCounts);
 
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar dispositivos:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar o fecho e abertura de todos os dispositivos multibanco
+    const fetchAllMBCloseOpen = async (): Promise <MBDeviceCloseOpen[]> => {
+        try {
+            const data = await apiService.fetchAllTPCloseOpen();
             return data;
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -296,6 +308,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         fetchAllKioskTransaction,
         fetchAllDoorData,
         fetchAllMBDevices,
+        fetchAllMBCloseOpen,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,

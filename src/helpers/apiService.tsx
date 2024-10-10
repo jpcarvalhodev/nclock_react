@@ -219,6 +219,14 @@ export const fetchAllMBDevices = async () => {
     return response.json();
 }
 
+export const fetchAllTPCloseOpen = async () => {
+    const response = await fetchWithAuth(`TerminalPagamento/GetAllTPFechoAberturaAsync`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
 export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
     let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
     if (employeeID !== null) {
@@ -954,10 +962,10 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: strin
     return response.json();
 }
 
-export const fetchKioskTransactionsByMBAndDeviceSN = async (eventDoorId: string, deviceSN: string, startDate?: string, endDate?: string) => {
-    let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
-    if (startDate && endDate) {
-        url += `&startDate=${startDate}&endDate=${endDate}`;
+export const fetchKioskTransactionsByMBAndDeviceSN = async (tpId?: string, startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN`;
+    if (tpId && startDate && endDate) {
+        url += `?TPId=${tpId}&startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
     if (!response.ok) {

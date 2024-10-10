@@ -5,7 +5,7 @@ import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
@@ -13,6 +13,7 @@ import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -26,6 +27,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskMoveVP = () => {
     const { navbarColor, footerColor } = useColor();
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
@@ -39,7 +41,10 @@ export const NkioskMoveVP = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '3';
+
     const deviceSN = 'AGB7234900595';
+    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
+    const deviceName = matchedDevice?.name || 'Quiosque Clérigos Porto';
 
     // Função para buscar as publicidades
     const fetchAllMoveVP = async () => {
@@ -150,7 +155,7 @@ export const NkioskMoveVP = () => {
         new Set(filteredDataTable.map(item => item.eventTime))
     ).map(eventTime => {
         return filteredDataTable.find(item => item.eventTime === eventTime);
-    }).filter((item): item is KioskTransactionCard => item !== undefined);  
+    }).filter((item): item is KioskTransactionCard => item !== undefined);
 
     console.log(uniqueFilteredDataTable);
 
@@ -164,7 +169,7 @@ export const NkioskMoveVP = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return row[field.key] === deviceSN ? 'Quiosque Clérigos Porto' : '';
+                        return deviceName;
                     case 'eventDoorId':
                         return 'Video Porteiro';
                     case 'eventTime':
@@ -214,80 +219,82 @@ export const NkioskMoveVP = () => {
         });
 
     return (
-        <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='content-container'>
-                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
-                    </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Aberturas do Video Porteiro</span>
+        <TerminalsProvider>
+            <div className="main-container">
+                <NavBar style={{ backgroundColor: navbarColor }} />
+                <div className='content-container'>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                         </div>
-                        <div className="datatable-header">
-                            <div>
-                                <input
-                                    className='search-input'
-                                    type="text"
-                                    placeholder="Pesquisa"
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
+                        <div className="datatable-container">
+                            <div className="datatable-title-text">
+                                <span style={{ color: '#009739' }}>Aberturas do Video Porteiro</span>
+                            </div>
+                            <div className="datatable-header">
+                                <div>
+                                    <input
+                                        className='search-input'
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                    />
+                                </div>
+                                <div className="buttons-container-others">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    <ExportButton allData={moveVP} selectedData={selectedRows} fields={transactionCardFields} />
+                                </div>
+                                <div className="date-range-search">
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <span> até </span>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchMovementVPBetweenDates} iconSize='1.1em' />
+                                </div>
+                            </div>
+                            <div className='table-css'>
+                                <DataTable
+                                    columns={columns}
+                                    data={uniqueFilteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={15}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não há dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    defaultSortAsc={false}
+                                    defaultSortFieldId="eventTime"
                                 />
                             </div>
-                            <div className="buttons-container-others">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                <ExportButton allData={moveVP} selectedData={selectedRows} fields={transactionCardFields} />
-                            </div>
-                            <div className="date-range-search">
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <span> até </span>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={e => setEndDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <CustomOutlineButton icon="bi-search" onClick={fetchMovementVPBetweenDates} iconSize='1.1em' />
-                            </div>
                         </div>
-                        <div className='table-css'>
-                            <DataTable
-                                columns={columns}
-                                data={uniqueFilteredDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={15}
-                                selectableRows
-                                onSelectedRowsChange={handleRowSelected}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                noDataComponent="Não há dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                defaultSortAsc={false}
-                                defaultSortFieldId="eventTime"
-                            />
-                        </div>
-                    </div>
-                </Split>
+                    </Split>
+                </div>
+                <Footer style={{ backgroundColor: footerColor }} />
+                {openColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={transactionCardFields}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setOpenColumnSelector(false)}
+                        onColumnToggle={toggleColumn}
+                        onResetColumns={resetColumns}
+                        onSelectAllColumns={onSelectAllColumns}
+                    />
+                )}
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
-            {openColumnSelector && (
-                <ColumnSelectorModal
-                    columns={transactionCardFields}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setOpenColumnSelector(false)}
-                    onColumnToggle={toggleColumn}
-                    onResetColumns={resetColumns}
-                    onSelectAllColumns={onSelectAllColumns}
-                />
-            )}
-        </div>
+        </TerminalsProvider>
     );
 }

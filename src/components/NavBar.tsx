@@ -133,8 +133,8 @@ import accessControl from '../assets/img/navbar/nkiosk/accessControl.png';
 import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
 import home from '../assets/img/navbar/home.png';
 import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
-import close from '../assets/img/navbar/nkiosk/close.png';
 import open from '../assets/img/navbar/nkiosk/open.png';
+import print from '../assets/img/navbar/nkiosk/print.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -1825,31 +1825,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
-									{(!isMobile || visibleGroup === 'banco nkiosk') && (
-										<div className="btn-group" role="group">
-											<div className="icon-text-pessoas">
-												<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={close} alt="botão fecho pagamentos" />
-													</span>
-													<span className="text">Fecho</span>
-												</Link>
-											</div>
-											<div className="icon-text-pessoas">
-												<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={open} alt="botão abertura pagamentos" />
-													</span>
-													<span className="text">Abertura</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('banco nkiosk')}>
-										<span className="title">Banco</span>
-									</div>
-								</div>
-								<div className="group">
 									{(!isMobile || visibleGroup === 'anuncios nkiosk') && (
 										<div className="btn-group" role="group">
 											<div>
@@ -1945,7 +1920,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
-														<img src={bell} alt="botão alertas" />
+														<img src={bell} alt="botão avisos" />
 													</span>
 													<span className="text">Avisos</span>
 												</Link>
@@ -1962,7 +1937,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
-														<img src={alert} alt="botão registos" />
+														<img src={alert} alt="botão intrusão" />
 													</span>
 													<span className="text">Intrusão</span>
 												</Button>
@@ -1971,6 +1946,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('alarmes nkiosk')}>
 										<span className="title">Alarmes</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nkiosk') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagem geral" />
+													</span>
+													<span className="text">Listagem Geral</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nkiosk')}>
+										<span className="title">Relatório</span>
 									</div>
 								</div>
 							</div>
@@ -2234,6 +2226,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('terminais terminais')}>
 										<span className="title">Terminais</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'banco terminais') && (
+										<div className="btn-group" role="group">
+											<div className="icon-text-pessoas">
+												<Link to="/devices/terminalcloseopen" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={open} alt="botão fecho/abertura pagamentos" />
+													</span>
+													<span className="text">Fecho/Abertura</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('banco terminais')}>
+										<span className="title">Banco</span>
 									</div>
 								</div>
 								<div className="group">

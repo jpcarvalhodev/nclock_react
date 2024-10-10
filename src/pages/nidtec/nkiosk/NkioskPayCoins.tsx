@@ -5,7 +5,7 @@ import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionMB } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
@@ -13,6 +13,7 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -26,6 +27,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useColor();
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
@@ -39,7 +41,10 @@ export const NkioskPayCoins = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
     const eventDoorId = '2';
+
     const deviceSN = 'AGB7234900595';
+    const matchedDevice = devices.find(device => device.serialNumber === deviceSN)
+    const deviceName = matchedDevice?.name || 'Quiosque Clérigos Porto';
 
     // Função para buscar os pagamentos no moedeiro
     const fetchAllPayCoins = async () => {
@@ -72,7 +77,7 @@ export const NkioskPayCoins = () => {
     // Busca os pagamentos no moedeiro ao carregar a página
     useEffect(() => {
         fetchAllPayCoins();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {
@@ -136,8 +141,10 @@ export const NkioskPayCoins = () => {
         .map(field => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
+                    case 'tpId':
+                        return row.tpId === '00000000-0000-0000-0000-000000000000' ? 'Sem Terminal' : row.tpId;
                     case 'deviceSN':
-                        return row[field.key] === deviceSN ? 'Quiosque Clérigos Porto' : '';
+                        return deviceName;
                     case 'timestamp':
                         return new Date(row[field.key]).toLocaleString() || '';
                     case 'transactionType':
@@ -189,89 +196,91 @@ export const NkioskPayCoins = () => {
     // Remove IDs duplicados na tabela caso existam
     const uniqueFilteredDataTable = Array.from(
         new Map(filteredDataTable.map(item => [item.id, item])).values()
-    ); 
+    );
 
     // Calcula o total do valor dos pagamentos
     const totalAmount = filteredDataTable.length * 0.50;
 
     return (
-        <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='content-container'>
-                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
-                    </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Pagamentos no Moedeiro</span>
+        <TerminalsProvider>
+            <div className="main-container">
+                <NavBar style={{ backgroundColor: navbarColor }} />
+                <div className='content-container'>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                         </div>
-                        <div className="datatable-header">
-                            <div>
-                                <input
-                                    className='search-input'
-                                    type="text"
-                                    placeholder="Pesquisa"
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
+                        <div className="datatable-container">
+                            <div className="datatable-title-text">
+                                <span style={{ color: '#009739' }}>Pagamentos no Moedeiro</span>
+                            </div>
+                            <div className="datatable-header">
+                                <div>
+                                    <input
+                                        className='search-input'
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                    />
+                                </div>
+                                <div className="buttons-container-others">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayCoins} />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    <ExportButton allData={payCoins} selectedData={selectedRows} fields={transactionMBFields} />
+                                </div>
+                                <div className="date-range-search">
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <span> até </span>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsCoinBetweenDates} iconSize='1.1em' />
+                                </div>
+                            </div>
+                            <div className='table-css'>
+                                <DataTable
+                                    columns={columns}
+                                    data={uniqueFilteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={15}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não há dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    defaultSortAsc={false}
+                                    defaultSortFieldId="timestamp"
                                 />
                             </div>
-                            <div className="buttons-container-others">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayCoins} />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                <ExportButton allData={payCoins} selectedData={selectedRows} fields={transactionMBFields} />
-                            </div>
-                            <div className="date-range-search">
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <span> até </span>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={e => setEndDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsCoinBetweenDates} iconSize='1.1em' />
+                            <div style={{ marginLeft: 30 }}>
+                                <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                             </div>
                         </div>
-                        <div className='table-css'>
-                            <DataTable
-                                columns={columns}
-                                data={uniqueFilteredDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={15}
-                                selectableRows
-                                onSelectedRowsChange={handleRowSelected}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                noDataComponent="Não há dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                defaultSortAsc={false}
-                                defaultSortFieldId="timestamp"
-                            />
-                        </div>
-                        <div style={{ marginLeft: 30 }}>
-                            <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
-                        </div>
-                    </div>
-                </Split>
+                    </Split>
+                </div>
+                <Footer style={{ backgroundColor: footerColor }} />
+                {openColumnSelector && (
+                    <ColumnSelectorModal
+                        columns={transactionMBFields}
+                        selectedColumns={selectedColumns}
+                        onClose={() => setOpenColumnSelector(false)}
+                        onColumnToggle={toggleColumn}
+                        onResetColumns={resetColumns}
+                        onSelectAllColumns={onSelectAllColumns}
+                    />
+                )}
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
-            {openColumnSelector && (
-                <ColumnSelectorModal
-                    columns={transactionMBFields}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setOpenColumnSelector(false)}
-                    onColumnToggle={toggleColumn}
-                    onResetColumns={resetColumns}
-                    onSelectAllColumns={onSelectAllColumns}
-                />
-            )}
-        </div>
+        </TerminalsProvider>
     );
 }

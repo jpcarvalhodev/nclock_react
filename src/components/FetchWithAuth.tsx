@@ -29,7 +29,6 @@ export const fetchWithAuth = async (endpoint: string, options: FetchOptions = {}
         return response;
     } catch (error) {
         console.error('Fetch error:', error);
-        toast.error('Erro de rede. Por favor, verifique sua conexão ou tente novamente mais tarde.');
         throw error;
     }
 };
@@ -38,6 +37,10 @@ export const fetchWithAuth = async (endpoint: string, options: FetchOptions = {}
 const handleHTTPError = async (response: Response) => {
 
     switch (response.status) {
+        case 400:
+            const badRequest = await response.json();
+            toast.error(badRequest.message || 'Requisição inválida');
+            break;
         case 401:
             toast.error('Você não tem permissão para acessar esta página');
             window.location.href = '/unauthorized';

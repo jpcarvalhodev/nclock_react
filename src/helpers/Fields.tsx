@@ -217,6 +217,7 @@ export const transactionMBFields = [
     { key: 'merchantTicket', label: 'Ticket do Comerciante', type: 'string' },
     { key: 'email', label: 'Email', type: 'string' },
     { key: 'timestamp', label: 'Data e Hora', type: 'Date' },
+    { key: 'tpId', label: 'Terminal', type: 'string' },
     { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
 ];
 
@@ -406,4 +407,11 @@ export const mbDeviceStatusFields = [
     { key: 'tipoStatus', label: 'Status', type: 'number' },
     { key: 'nomeStatus', label: 'Nome', type: 'string' },
     { key: 'timespam', label: 'Horário', type: 'date' },
+];
+
+export const mbDeviceCloseOpenFields = [
+    { key: 'tpId', label: 'Dispositivo', type: 'string' },
+    { key: 'timestamp', label: 'Horário', type: 'date' },
+    { key: 'fechoImage', label: 'Fecho', type: 'string' },
+    { key: 'aberturaImage', label: 'Abertura', type: 'string' },
 ];
