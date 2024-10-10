@@ -309,7 +309,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                     <Col md={3}>
                         <Form.Group controlId="formEnrollNumber">
                             <Form.Label>
-                                Número de Matrícula <span style={{ color: 'red' }}>*</span>
+                                Número da Pessoa <span style={{ color: 'red' }}>*</span>
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"

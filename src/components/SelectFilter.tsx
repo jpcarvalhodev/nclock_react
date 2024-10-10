@@ -1,10 +1,11 @@
-import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction, KioskTransactionCard, KioskTransactionMB, Register, Doors } from "../helpers/Types";
+import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction, KioskTransactionCard, KioskTransactionMB, Register, Doors, MBDevice } from "../helpers/Types";
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
 import ReactDOM from "react-dom";
+import * as apiService from "../helpers/apiService";
 
 // Tipos de dados
-type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionCard | KioskTransactionMB | Register | Doors;
+type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionCard | KioskTransactionMB | Register | Doors | MBDevice;
 
 // Propriedades do componente de filtro de seleção
 interface SelectFilterProps {
@@ -96,6 +97,22 @@ const formatDataItem = (item: DataItem, column: string) => {
                 case 3: return 'Cartão';
                 case 4: return 'Video Porteiro';
                 default: return '';
+            }
+        case 'transactionType':
+            return item[item.transactionType] === 1 ? 'Multibanco' : 'Moedeiro';
+        case 'estadoTerminal':
+            return item[item.estadoTerminal] ? 'Ligado' : 'Desligado';
+        case 'timeReboot':
+            return item[item.timeReboot] === '00:00:00' ? 'Sem tempo de reinício' : item[item.timeReboot];
+        case 'clientTicket':
+        case 'merchantTicket':
+            const imageUrl = item[item.clientTicket || item.merchantTicket];
+            if (imageUrl) {
+                const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
+                const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
+                return fullImageUrl;
+            } else {
+                return 'Sem Ticket';
             }
         default:
             return item[column]?.toString();

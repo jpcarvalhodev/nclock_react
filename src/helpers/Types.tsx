@@ -464,3 +464,12 @@ export type MBDevice = {
     estadoTerminal: number;
     timeReboot: string;
 };
+
+export type MBDeviceStatus = {
+    [key: string]: any;
+    id: string;
+    tpId: string;
+    tipoStatus: number;
+    nomeStatus: string;
+    timespam: Date;
+};

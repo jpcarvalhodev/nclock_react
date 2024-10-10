@@ -212,7 +212,7 @@ export const fetchAllEmployeeDevices = async () => {
 };
 
 export const fetchAllMBDevices = async () => {
-    const response = await fetchWithAuth(`KioskTransaction/GetAllTerminalPagamentoAsync`);
+    const response = await fetchWithAuth(`TerminalPagamento/GetAllTerminalPagamentoAsync`);
     if (!response.ok) {
         return;
     }
@@ -365,7 +365,7 @@ export const deleteDevice = async (zktecoDeviceID: string) => {
 };
 
 export const addMBDevice = async (mbDevice: MBDevice) => {
-    const response = await fetchWithAuth(`KioskTransaction/CreatTerminalPagamentoAsync`, {
+    const response = await fetchWithAuth(`TerminalPagamento/CreatTerminalPagamentoAsync`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -379,7 +379,7 @@ export const addMBDevice = async (mbDevice: MBDevice) => {
 }
 
 export const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
-    const response = await fetchWithAuth(`KioskTransaction/CreateTPFunctionl`, {
+    const response = await fetchWithAuth(`TerminalPagamento/CreateTPFunctions`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

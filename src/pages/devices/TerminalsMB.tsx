@@ -23,6 +23,8 @@ interface Filters {
 // Define o componente de terminais
 export const TerminalsMB = () => {
     const {
+        deviceMBStatus,
+        deviceMBStatusCount,
         fetchAllMBDevices,
         restartMBDevice,
         handleAddMBDevice
@@ -169,6 +171,15 @@ export const TerminalsMB = () => {
         }
     }
 
+    // Define a cor do status
+    const getStatusColor = (statuses: string[]): string => {
+        const isActive = statuses.some(status => status === 'Activo');
+        return isActive ? 'green' : 'red';
+    };
+
+    // Define a cor de fundo do status
+    const backgroundColor = getStatusColor(deviceMBStatus);
+
     return (
         <TerminalsProvider>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -178,10 +189,21 @@ export const TerminalsMB = () => {
                         <span>Terminais Multibanco</span>
                     </div>
                     <div className="datatable-header">
-                        <div className="buttons-container-others">
+                        <div className="buttons-container-others" style={{ flexGrow: 1 }}>
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                             <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                            <span style={{
+                                color: 'white',
+                                backgroundColor: backgroundColor,
+                                borderRadius: '4px',
+                                padding: '2px 10px',
+                                display: 'inline-block',
+                                marginLeft: 'auto',
+                                marginRight: '30px'
+                            }}>
+                                Status: {deviceMBStatusCount && `${deviceMBStatusCount['Activo'] || 0} Online, ${deviceMBStatusCount['Inactivo'] || 0} Offline`}
+                            </span>
                         </div>
                     </div>
                 </div>

@@ -1746,31 +1746,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
-									{(!isMobile || visibleGroup === 'fechamento/abertura nkiosk') && (
-										<div className="btn-group" role="group">
-											<div className="icon-text-pessoas">
-												<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={close} alt="botão encerrar pagamentos" />
-													</span>
-													<span className="text">Fechamento</span>
-												</Link>
-											</div>
-											<div className="icon-text-pessoas">
-												<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={open} alt="botão abrir pagamentos" />
-													</span>
-													<span className="text">Abertura</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('fechamento/abertura nkiosk')}>
-										<span className="title">Fechamento/Abertura</span>
-									</div>
-								</div>
-								<div className="group">
 									{(!isMobile || visibleGroup === 'movimentos nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
@@ -1847,6 +1822,31 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('registos nkiosk')}>
 										<span className="title">Registos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'banco nkiosk') && (
+										<div className="btn-group" role="group">
+											<div className="icon-text-pessoas">
+												<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={close} alt="botão fecho pagamentos" />
+													</span>
+													<span className="text">Fecho</span>
+												</Link>
+											</div>
+											<div className="icon-text-pessoas">
+												<Link to="#" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={open} alt="botão abertura pagamentos" />
+													</span>
+													<span className="text">Abertura</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('banco nkiosk')}>
+										<span className="title">Banco</span>
 									</div>
 								</div>
 								<div className="group">

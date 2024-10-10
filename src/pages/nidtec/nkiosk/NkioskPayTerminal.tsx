@@ -129,6 +129,8 @@ export const NkioskPayTerminal = () => {
         rangeSeparatorText: 'de',
     };
 
+    console.log(payTerminal);
+
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))

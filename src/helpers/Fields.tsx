@@ -37,11 +37,11 @@ export const employeeFields = [
     { label: 'Grupo', key: 'groupId', type: 'dropdown', },
     { label: 'Zona', key: 'zoneId', type: 'dropdown', },
     { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', },
-    { label: 'Nome', key: 'companyName', type: 'string' },
-    { label: 'NIF', key: 'companyNif', type: 'number' },
-    { label: 'Morada', key: 'companyAddress', type: 'string' },
-    { label: 'Localidade', key: 'companyLocality', type: 'string' },
-    { label: 'Código Postal', key: 'companyZipCode', type: 'string' },
+    { label: 'Nome da Empresa', key: 'companyName', type: 'string' },
+    { label: 'NIF da Empresa', key: 'companyNif', type: 'number' },
+    { label: 'Morada da Empresa', key: 'companyAddress', type: 'string' },
+    { label: 'Localidade da Empresa', key: 'companyLocality', type: 'string' },
+    { label: 'Código Postal da Empresa', key: 'companyZipCode', type: 'string' },
 ];
 
 export const departmentFields = [
@@ -203,7 +203,7 @@ export const transactionFields = [
     { key: 'eventId', label: 'ID do Evento', type: 'number' },
     { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
     { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
-    { key: 'deviceSN', label: 'Número de Série do Dispositivo', type: 'string' },
+    { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
     { key: 'createTime', label: 'Data de Criação', type: 'Date' },
     { key: 'updateTime', label: 'Data de Atualização', type: 'Date' },
 ];
@@ -217,13 +217,13 @@ export const transactionMBFields = [
     { key: 'merchantTicket', label: 'Ticket do Comerciante', type: 'string' },
     { key: 'email', label: 'Email', type: 'string' },
     { key: 'timestamp', label: 'Data e Hora', type: 'Date' },
-    { key: 'deviceSN', label: 'Número de Série do Dispositivo', type: 'string' },
+    { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
 ];
 
 export const transactionCardFields = [
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
     { key: 'nameUser', label: 'Nome do Usuário', type: 'string' },
-    { key: 'deviceSN', label: 'Número de Série do Dispositivo', type: 'string' },
+    { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
     { key: 'eventNo', label: 'Número do Evento', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
@@ -400,4 +400,10 @@ export const mbDeviceFields = [
     { key: 'nomeQuiosque', label: 'Nome do Terminal', type: 'string', required: true },
     { key: 'estadoTerminal', label: 'Estado do Terminal', type: 'number' },
     { key: 'timeReboot', label: 'Tempo de Reinício', type: 'string' },
+];
+
+export const mbDeviceStatusFields = [
+    { key: 'tipoStatus', label: 'Status', type: 'number' },
+    { key: 'nomeStatus', label: 'Nome', type: 'string' },
+    { key: 'timespam', label: 'Horário', type: 'date' },
 ];

@@ -1,6 +1,6 @@
 import { createContext, useState, useContext } from 'react';
 import { ReactNode } from 'react';
-import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice } from '../helpers/Types';
+import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice, MBDeviceStatus } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -11,6 +11,8 @@ export interface DeviceContextType {
     employeeDevices: Employee[];
     deviceStatus: string[];
     deviceStatusCount: StatusCounts;
+    deviceMBStatus: string[];
+    deviceMBStatusCount: StatusCounts;
     fetchAllDevices: () => Promise<void>;
     fetchAllEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllEmployeeDevices: () => Promise<void>;
@@ -47,6 +49,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [employeeDevices, setEmployeeDevices] = useState<Employee[]>([]);
     const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
     const [deviceStatusCount, setDeviceStatusCount] = useState<StatusCounts>({ Activo: 0, Inactivo: 0 });
+    const [deviceMBStatus, setDeviceMBStatus] = useState<string[]>([]);
+    const [deviceMBStatusCount, setDeviceMBStatusCount] = useState<StatusCounts>({ Activo: 0, Inactivo: 0 });
 
     // Função para contar o status
     const countStatus = (statusArray: string[]): StatusCounts => {
@@ -122,6 +126,13 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllMBDevices = async (): Promise <MBDevice[]> => {
         try {
             const data = await apiService.fetchAllMBDevices();
+
+            const filteredStatus = data.map((device: MBDeviceStatus) => device.tipoStatus === 1 ? 'Activo' : 'Inactivo');
+            setDeviceMBStatus(filteredStatus);
+
+            const statusCounts = countStatus(filteredStatus);
+            setDeviceMBStatusCount(statusCounts);
+
             return data;
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -277,6 +288,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         employeeDevices,
         deviceStatus,
         deviceStatusCount,
+        deviceMBStatus,
+        deviceMBStatusCount,
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
