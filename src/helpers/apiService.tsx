@@ -962,10 +962,10 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: strin
     return response.json();
 }
 
-export const fetchKioskTransactionsByMBAndDeviceSN = async (tpId?: string, startDate?: string, endDate?: string) => {
+export const fetchKioskTransactionsByMBAndDeviceSN = async (startDate?: string, endDate?: string) => {
     let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN`;
-    if (tpId && startDate && endDate) {
-        url += `?TPId=${tpId}&startDate=${startDate}&endDate=${endDate}`;
+    if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
     if (!response.ok) {

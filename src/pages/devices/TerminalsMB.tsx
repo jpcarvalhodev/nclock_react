@@ -161,7 +161,7 @@ export const TerminalsMB = () => {
         if (selectedTerminal) {
             setLoadingRestartDevice(true);
             const tpId = selectedTerminal.id;
-            const type = 0;
+            const type = 1;
             const status = 0;
             const mbDevice = { tpId, type, status };
             await restartMBDevice(mbDevice);

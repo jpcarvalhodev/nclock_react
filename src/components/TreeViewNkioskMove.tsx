@@ -25,7 +25,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 // Define a interface para as propriedades do componente TreeViewData
-interface TreeViewDataNkioskProps {
+interface TreeViewDataNkioskMoveProps {
     onSelectDevices: (selectedDevices: string[]) => void;
 }
 
@@ -64,7 +64,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps) {
+export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskMoveProps) {
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);

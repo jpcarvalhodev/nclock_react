@@ -43,7 +43,6 @@ import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
 import nidtec from '../assets/img/navbar/navbar/nidtec.png';
 import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
 import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.png';
-import nidgroup from '../assets/img/navbar/navbar/nidgroup.png';
 import banner_nidgroup from '../assets/img/carousel/banner_nidgroup.jpg';
 import banner_nclock from '../assets/img/carousel/banner_nclock.jpg';
 import banner_naccess from '../assets/img/carousel/banner_naccess.jpg';

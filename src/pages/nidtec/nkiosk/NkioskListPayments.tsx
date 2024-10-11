@@ -8,7 +8,7 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useMemo, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { KioskTransactionMB, } from "../../../helpers/Types";
+import { KioskTransactionMB, MBDevice, } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import { Line } from "react-chartjs-2";
@@ -38,11 +38,12 @@ interface ChartData {
 
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const [listPayments, setListPayments] = useState<KioskTransactionMB[]>([]);
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
+    const [terminalData, setTerminalData] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'deviceSN']);
@@ -103,6 +104,20 @@ export const NkioskListPayments = () => {
         }
     }
 
+    // Função para buscar os dados dos terminais
+    const fetchTerminalData = async () => {
+        try {
+            const data = await fetchAllMBDevices();
+            if (Array.isArray(data)) {
+                setTerminalData(data);
+            } else {
+                setTerminalData([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados dos terminais:', error);
+        }
+    }   
+
     // Unifica os dados de transações MB e moedas
     const mergePaymentData = () => {
         const unifiedData: KioskTransactionMB[] = [
@@ -116,6 +131,7 @@ export const NkioskListPayments = () => {
                 merchantTicket: payment.merchantTicket,
                 email: payment.email,
                 timestamp: payment.timestamp,
+                tpId: payment.tpId,
                 deviceSN: payment.deviceSN,
             })),
             ...listPaymentCoin.map((payment) => ({
@@ -128,6 +144,7 @@ export const NkioskListPayments = () => {
                 merchantTicket: payment.merchantTicket,
                 email: payment.email,
                 timestamp: payment.timestamp,
+                tpId: payment.tpId,
                 deviceSN: payment.deviceSN,
             }))
         ];
@@ -144,6 +161,7 @@ export const NkioskListPayments = () => {
     useEffect(() => {
         fetchAllListPaymentsMB();
         fetchAllListPaymentsCoins();
+        fetchTerminalData();
     }, []);
 
     // Função para atualizar as listagens de pagamentos
@@ -220,7 +238,9 @@ export const NkioskListPayments = () => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
                     case 'tpId':
-                        return row.tpId === '00000000-0000-0000-0000-000000000000' ? 'Sem Terminal' : row.tpId;
+                        const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
+                        const terminalName = terminalMatch?.nomeQuiosque || '';
+                        return terminalName || 'Sem Terminal';    
                     case 'deviceSN':
                         return deviceName;
                     case 'transactionType':
@@ -300,7 +320,6 @@ export const NkioskListPayments = () => {
     // Atualiza os dados do gráfico com base nos pagamentos filtrados
     useEffect(() => {
         const monthlyTotals = calculateMonthlyTotals(listPayments);
-        console.log(monthlyTotals);
         const newLineData = {
             labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
             datasets: [
@@ -338,6 +357,7 @@ export const NkioskListPayments = () => {
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                             <ExportButton allData={listPayments} selectedData={selectedRows} fields={transactionMBFields} />
+                            <CustomOutlineButton icon="bi-printer" />
                         </div>
                         <div className="date-range-search">
                             <input
@@ -369,8 +389,7 @@ export const NkioskListPayments = () => {
                             columns={columns}
                             data={uniqueFilteredDataTable}
                             pagination
-                            paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                            paginationPerPage={10}
                             paginationComponentOptions={paginationOptions}
                             selectableRows
                             onSelectedRowsChange={handleRowSelected}
@@ -381,7 +400,7 @@ export const NkioskListPayments = () => {
                             defaultSortAsc={false}
                             defaultSortFieldId="timestamp"
                         />
-                        <div style={{ marginLeft: 30 }}>
+                        <div style={{ marginLeft: 10 }}>
                             <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                         </div>
                     </div>

@@ -12,7 +12,7 @@ import { transactionCardFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
@@ -217,7 +217,7 @@ export const NkioskMoveKiosk = () => {
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                        <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
@@ -237,6 +237,7 @@ export const NkioskMoveKiosk = () => {
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveKiosk} />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 <ExportButton allData={moveKiosk} selectedData={selectedRows} fields={transactionCardFields} />
+                                <CustomOutlineButton icon="bi-printer" />
                             </div>
                             <div className="date-range-search">
                                 <input

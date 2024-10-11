@@ -9,7 +9,7 @@ interface DeleteModalProps {
     entityId: string | null;
 }
 
-// Exporta o componente
+// Define o componente
 export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalProps) => {
 
     // Função para apagar a entidade

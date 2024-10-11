@@ -260,6 +260,7 @@ export type KioskTransactionMB = {
     merchantTicket: string;
     email: string;
     timestamp: Date;
+    tpId: string;
     deviceSN: string;
 };
 

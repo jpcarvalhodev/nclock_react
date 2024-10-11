@@ -7,12 +7,12 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionMB } from "../../../helpers/Types";
+import { KioskTransactionMB, MBDevice } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
@@ -27,12 +27,13 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
+    const [terminalData, setTerminalData] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'tpId']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -43,7 +44,7 @@ export const NkioskPayCoins = () => {
     const eventDoorId = '2';
 
     const deviceSN = 'AGB7234900595';
-    const matchedDevice = devices.find(device => device.serialNumber === deviceSN)
+    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
     const deviceName = matchedDevice?.name || 'Quiosque Clérigos Porto';
 
     // Função para buscar os pagamentos no moedeiro
@@ -74,10 +75,25 @@ export const NkioskPayCoins = () => {
         }
     }
 
+    // Função para buscar os dados dos terminais
+    const fetchTerminalData = async () => {
+        try {
+            const data = await fetchAllMBDevices();
+            if (Array.isArray(data)) {
+                setTerminalData(data);
+            } else {
+                setTerminalData([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados dos terminais:', error);
+        }
+    }  
+
     // Busca os pagamentos no moedeiro ao carregar a página
     useEffect(() => {
         fetchAllPayCoins();
-    }, [devices]);
+        fetchTerminalData();
+    }, []);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {
@@ -88,7 +104,7 @@ export const NkioskPayCoins = () => {
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = payCoins.filter(payCoin => selectedDevicesIds.includes(payCoin.deviceSN));
+            const filtered = payCoins.filter(payCoin => selectedDevicesIds.includes(payCoin.tpId));
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(payCoins);
@@ -106,7 +122,7 @@ export const NkioskPayCoins = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'deviceSN']);
+        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'tpId']);
     };
 
     // Função para selecionar todas as colunas
@@ -142,7 +158,9 @@ export const NkioskPayCoins = () => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
                     case 'tpId':
-                        return row.tpId === '00000000-0000-0000-0000-000000000000' ? 'Sem Terminal' : row.tpId;
+                        const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
+                        const terminalName = terminalMatch?.nomeQuiosque || '';
+                        return terminalName || 'Sem Terminal';
                     case 'deviceSN':
                         return deviceName;
                     case 'timestamp':
@@ -208,7 +226,7 @@ export const NkioskPayCoins = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkioskPay onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
@@ -228,6 +246,7 @@ export const NkioskPayCoins = () => {
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayCoins} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     <ExportButton allData={payCoins} selectedData={selectedRows} fields={transactionMBFields} />
+                                    <CustomOutlineButton icon="bi-printer" />
                                 </div>
                                 <div className="date-range-search">
                                     <input

@@ -135,6 +135,8 @@ import home from '../assets/img/navbar/home.png';
 import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
 import open from '../assets/img/navbar/nkiosk/open.png';
 import print from '../assets/img/navbar/nkiosk/print.png';
+import graphs from '../assets/img/navbar/nkiosk/graphs.png';
+import version from '../assets/img/navbar/ajuda/version.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -143,6 +145,7 @@ import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
 import { toast } from 'react-toastify';
+import { AboutModal } from '../modals/AboutModal';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -296,6 +299,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [emailCompanyConfig, setEmailCompanyConfig] = useState<EmailUserCompany>();
 	const [visibleGroup, setVisibleGroup] = useState<string | null>(null);
 	const [isMobile, setIsMobile] = useState<boolean>(false);
+	const [showAboutModal, setShowAboutModal] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -1136,6 +1140,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para abrir o modal de opções do terminal
 	const toggleTerminalOptionsModal = () => setShowModal(!showModal);
 
+	// Função para abrir o modal de opções de email
 	const toggleEmailOptionsModal = () => setShowEmailModal(!showEmailModal);
 
 	// Função para abrir o modal de publicidade para fotos
@@ -1143,6 +1148,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para abrir o modal de publicidade para vídeos
 	const toggleVideoAdsModal = () => setShowVideoAdsModal(!showVideoAdsModal);
+
+	// Função para abrir o modal de acerca de
+	const toggleAboutModalOpen = () => setShowAboutModal(!showAboutModal);
 
 	// Função para adicionar publicidade via contexto
 	const handleUploadClick = (ad: FormData) => {
@@ -1954,15 +1962,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
-														<img src={print} alt="botão listagem geral" />
+														<img src={print} alt="botão listagens" />
 													</span>
-													<span className="text">Listagem Geral</span>
+													<span className="text">Listagens</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
 												</Button>
 											</div>
 										</div>
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nkiosk')}>
-										<span className="title">Relatório</span>
+										<span className="title">Relatórios</span>
 									</div>
 								</div>
 							</div>
@@ -2455,7 +2471,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'suporte ajuda') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Button onClick={toggleAboutModalOpen} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={about} alt="botão acerca de" />
 													</span>
@@ -2468,6 +2484,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<img src={manual} alt="botão manual" />
 													</span>
 													<span className="text">Manual</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={version} alt="botão versão" />
+													</span>
+													<span className="text">Versão</span>
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
@@ -2543,6 +2567,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 						initialValues={{}}
 						title='Publicidades'
 						entities='video'
+					/>
+				)}
+				{showAboutModal && (
+					<AboutModal
+						open={showAboutModal}
+						onClose={() => setShowAboutModal(false)}
 					/>
 				)}
 			</nav>

@@ -12,7 +12,7 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
@@ -157,8 +157,6 @@ export const NkioskMoveVP = () => {
         return filteredDataTable.find(item => item.eventTime === eventTime);
     }).filter((item): item is KioskTransactionCard => item !== undefined);
 
-    console.log(uniqueFilteredDataTable);
-
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))
@@ -225,7 +223,7 @@ export const NkioskMoveVP = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
@@ -245,6 +243,7 @@ export const NkioskMoveVP = () => {
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     <ExportButton allData={moveVP} selectedData={selectedRows} fields={transactionCardFields} />
+                                    <CustomOutlineButton icon="bi-printer" />
                                 </div>
                                 <div className="date-range-search">
                                     <input

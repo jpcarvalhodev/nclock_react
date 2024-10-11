@@ -242,7 +242,7 @@ export const NkioskDashboard = () => {
     // Função para buscar os dados para os gráficos
     const fetchAllData = async () => {
         try {
-            const mbData = await apiService.fetchKioskTransactionsByMBAndDeviceSN(eventDoorId, deviceSN);
+            const mbData = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
             const coinData = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN);
             const cardData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, deviceSN);
             const kioskData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, deviceSN);
