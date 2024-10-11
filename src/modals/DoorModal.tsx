@@ -7,12 +7,20 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { DoorDevice } from '../helpers/Types';
 
+// Define a interface Entity
+export interface Entity {
+    id: string;
+    [key: string]: any;
+}
+
 // Interface para as propriedades do modal
-interface DoorModalProps<T> {
+interface DoorModalProps<T extends Entity> {
+    key: string;
     title: string;
     open: boolean;
     onClose: () => void;
     onSave: (data: T) => void;
+    entity: T;
     fields: Field[];
 }
 
@@ -32,10 +40,17 @@ const initialValues: Partial<DoorDevice> = {
 }
 
 // Define o componente
-export const DoorModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: DoorModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<DoorDevice>>(initialValues);
+export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, entity, fields }: DoorModalProps<T>) => {
+    const [formData, setFormData] = useState<Partial<DoorDevice>>({ ...entity, ...initialValues });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
+
+    // UseEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity, ...initialValues });
+        }
+    }, [entity]);
 
     // UseEffect para validar o formulário
     useEffect(() => {

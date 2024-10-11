@@ -44,7 +44,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             const fieldValue = formData[field.key];
             let valid = true;
 
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+            if (field.required && (fieldValue === null || fieldValue === '')) {
                 valid = false;
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
@@ -64,10 +64,8 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         const target = e.target as HTMLInputElement;
         const { name, value, type } = target;
         let parsedValue: string | number | boolean;
-
-        if (type === 'checkbox') {
-            parsedValue = target.checked;
-        } else if (type === 'number') {
+        
+        if (type === 'number') {
             parsedValue = Number(value);
         } else {
             parsedValue = value;
@@ -80,6 +78,8 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
 
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
+        console.log(formData);
+        console.log(isFormValid);
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
@@ -222,7 +222,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>
+                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

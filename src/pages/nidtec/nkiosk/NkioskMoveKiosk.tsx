@@ -12,7 +12,7 @@ import { transactionCardFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
+import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
@@ -29,12 +29,14 @@ export const NkioskMoveKiosk = () => {
     const { navbarColor, footerColor } = useColor();
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'cardNo', 'eventDoorId']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'cardNo', 'eventDoorId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
-    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -44,7 +46,7 @@ export const NkioskMoveKiosk = () => {
     
     const deviceSN = 'AGB7234900595';
     const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
-    const deviceName = matchedDevice?.name || 'Quiosque Clérigos Porto';
+    const deviceName = matchedDevice?.deviceName || '';
 
     // Função para buscar os movimentos de videoporteiro
     const fetchAllMoveKiosk = async () => {
@@ -106,7 +108,7 @@ export const NkioskMoveKiosk = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'nameUser', 'cardNo', 'eventDoorId']);
+        setSelectedColumns(['eventTime', 'nameUser', 'cardNo', 'eventDoorId', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -217,7 +219,7 @@ export const NkioskMoveKiosk = () => {
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
+                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">

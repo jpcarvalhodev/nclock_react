@@ -4,8 +4,6 @@ import Button from 'react-bootstrap/Button';
 import { Col, Form, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import { TimePeriod } from '../helpers/Types';
-import * as apiService from "../helpers/apiService";
 
 // Define a interface Entity
 export interface Entity {
@@ -36,6 +34,13 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
 
     // Usa useEffect para validar o formulário
     useEffect(() => {

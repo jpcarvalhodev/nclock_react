@@ -40,6 +40,7 @@ export const TerminalsMB = () => {
     const [selectedDeviceRows, setSelectedDeviceRows] = useState<MBDevice[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<MBDevice | null>(null);
     const [loadingRestartDevice, setLoadingRestartDevice] = useState(false);
+    const [loadingTurnOffDevice, setLoadingTurnOffDevice] = useState(false);
 
     // Função para buscar todos os dispositivos multibanco
     const fetchAllDevices = async () => {
@@ -171,6 +172,21 @@ export const TerminalsMB = () => {
         }
     }
 
+    // Função para desligar o dispositivo
+    const handleTurnOffDevice = async () => {
+        if (selectedTerminal) {
+            setLoadingTurnOffDevice(true);
+            const tpId = selectedTerminal.id;
+            const type = 2;
+            const status = 0;
+            const mbDevice = { tpId, type, status };
+            await restartMBDevice(mbDevice);
+            setLoadingTurnOffDevice(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
     // Define a cor do status
     const getStatusColor = (statuses: string[]): string => {
         const isActive = statuses.some(status => status === 'Activo');
@@ -231,6 +247,14 @@ export const TerminalsMB = () => {
                         >
                             <Tab eventKey="onOff" title="Ligação">
                                 <div style={{ display: "flex", marginTop: 10, marginBottom: 10 }}>
+                                    <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleTurnOffDevice}>
+                                        {loadingTurnOffDevice ? (
+                                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                        ) : (
+                                            <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                        )}
+                                        Desligar
+                                    </Button>
                                     <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
                                         {loadingRestartDevice ? (
                                             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />

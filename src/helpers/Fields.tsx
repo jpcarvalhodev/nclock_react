@@ -338,14 +338,12 @@ export const doorFields = [
 export const accessControlFields = [
     { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
     { key: 'shortName', label: 'Nome Curto', type: 'string' },
-    { key: 'enrollNumber', label: 'Número de Matrícula', type: 'string' },
+    { key: 'enrollNumber', label: 'Número', type: 'string' },
     { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
     { key: 'doorName', label: 'Nome da Porta', type: 'string' },
     { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
     { key: 'timezoneName', label: 'Nome do Fuso Horário', type: 'string' },
-    { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true },
-    { key: 'createDate', label: 'Data de Criação', type: 'date' },
-    { key: 'updateDate', label: 'Data de Atualização', type: 'date' }
+    { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true }
 ];
 
 export const doorsFields = [

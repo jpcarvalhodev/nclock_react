@@ -57,6 +57,11 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
+    // UseEffect para atualizar o estado do formulário
+    useEffect(() => {
+        setFormData({ ...entity } as T);
+    }, [entity]);
+
     // UseEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -141,6 +146,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         onDuplicate(dataWithoutId as T);
     };
 
+    // Função para lidar com a edição das portas
     const handleEditDoors = (row: Doors) => {
         setSelectedDoor(row);
         setShowUpdateModal(true);
@@ -249,8 +255,19 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: Doors) => {
+                    if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: Doors) => {
+                    if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -558,6 +575,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                 onRowDoubleClicked={handleEditDoors}
                                                 noDataComponent="Não há dados disponíveis para exibir."
                                                 customStyles={customStyles}
+                                                defaultSortAsc={true}
+                                                defaultSortFieldId="doorNo"
                                             />
                                         </Row>
                                     </Form>
@@ -569,6 +588,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             </Modal.Body>
             {selectedDoor && (
                 <UpdateModalDoor
+                    key={selectedDoor ? selectedDoor.id : null}
                     open={showUpdateModal}
                     onClose={() => setShowUpdateModal(false)}
                     onUpdate={handleUpdateDoor}

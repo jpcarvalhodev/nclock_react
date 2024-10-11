@@ -4,7 +4,6 @@ import Button from 'react-bootstrap/Button';
 import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import { EmailUser } from '../helpers/Types';
 
 // Define a interface Entity
 export interface Entity {

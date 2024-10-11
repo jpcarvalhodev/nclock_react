@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { Button, TextField, TextFieldProps } from '@mui/material';
-import { Devices, KioskTransactionMB } from '../helpers/Types';
+import { Devices, KioskTransactionMB, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 
@@ -25,7 +25,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 // Define a interface para as propriedades do componente TreeViewData
-interface TreeViewDataNkioskMoveProps {
+interface TreeViewDataNkioskProps {
     onSelectDevices: (selectedDevices: string[]) => void;
 }
 
@@ -64,35 +64,53 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskMoveProps) {
+export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps) {
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [data, setData] = useState<Devices[]>([]);
+    const [deviceData, setDeviceData] = useState<Devices[]>([]);
+    const [mbData, setMBData] = useState<MBDevice[]>([]);
     const selectionChangedRef = { current: false };
 
     // Função para buscar os dados dos dispositivos
     const fetchAllData = async () => {
         try {
             const deviceData = await apiService.fetchAllDevices();
-            setData(deviceData);
+            setDeviceData(deviceData);
         } catch (error) {
             console.error('Erro ao buscar os dados dos dispositivos:', error);
         }
     };
 
+    // Função para buscar os dados dos dispositivos multibanco
+    const fetchAllMBDevices = async () => {
+        try {
+            const deviceData = await apiService.fetchAllMBDevices();
+            setMBData(deviceData);
+        } catch (error) {
+            console.error('Erro ao buscar os dados dos dispositivos:', error);
+        }
+    }
+
     // Busca os dados ao carregar o componente
     useEffect(() => {
         fetchAllData();
+        fetchAllMBDevices();
     }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
-        const buildDeviceTree = data.map(device => ({
+        const buildDeviceTree = deviceData.map(device => ({
             id: device.serialNumber,
             label: device.deviceName || 'Sem Nome',
+            children: []
+        }));
+
+        const buildTerminalTree = mbData.map(device => ({
+            id: device.id,
+            label: device.nomeQuiosque || 'Sem Nome',
             children: []
         }));
 
@@ -106,6 +124,11 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskMo
                         label: 'DISPOSITIVOS',
                         children: buildDeviceTree
                     },
+                    {
+                        id: 'terminais',
+                        label: 'TERMINAIS',
+                        children: buildTerminalTree
+                    },
                 ],
             },
         ];
@@ -113,7 +136,7 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskMo
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [data]);
+    }, [deviceData, mbData]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {

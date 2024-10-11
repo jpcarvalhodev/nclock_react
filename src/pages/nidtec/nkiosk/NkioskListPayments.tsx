@@ -40,15 +40,17 @@ export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useColor();
     const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [listPayments, setListPayments] = useState<KioskTransactionMB[]>([]);
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
     const [terminalData, setTerminalData] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
-    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -57,7 +59,7 @@ export const NkioskListPayments = () => {
 
     const deviceSN = 'AGB7234900595';
     const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
-    const deviceName = matchedDevice?.name || 'Quiosque Clérigos Porto';
+    const deviceName = matchedDevice?.deviceName || '';
 
     // Função para buscar as listagens de pagamentos em MB
     const fetchAllListPaymentsMB = async () => {
@@ -182,7 +184,7 @@ export const NkioskListPayments = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'deviceSN']);
+        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -240,9 +242,9 @@ export const NkioskListPayments = () => {
                     case 'tpId':
                         const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
                         const terminalName = terminalMatch?.nomeQuiosque || '';
-                        return terminalName || 'Sem Terminal';    
+                        return terminalName || 'Sem Dados';    
                     case 'deviceSN':
-                        return deviceName;
+                        return deviceName || 'Sem Dados';
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
@@ -381,7 +383,7 @@ export const NkioskListPayments = () => {
                     <div className="chart-container">
                         <div className="departments-groups-chart" style={{ flex: 1 }}>
                             <h2 className="departments-groups-chart-text">Total de Pagamentos: { }</h2>
-                            <Line className="departments-groups-chart-data" data={lineChartData} style={{ marginLeft: 50 }} />
+                            <Line className="departments-groups-chart-data" data={lineChartData} />
                         </div>
                     </div>
                     <div className="chart-container" style={{ flex: 1, overflowX: 'auto' }}>

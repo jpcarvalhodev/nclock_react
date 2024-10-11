@@ -175,7 +175,7 @@ export const AccessControls = () => {
             const formatField = (row: AccessControl) => {
                 switch (field.key) {
                     case 'doorName':
-                        return row.doorName === 'C3 Pro-door4' ? 'Video Porteiro' : 'Cartão';
+                        return row.doorName === 'C3 Pro-door4' ? 'Video Porteiro' : 'Torniquete';
                     case 'createDate':
                         return new Date(row.createDate).toLocaleString();
                     case 'updateDate':

@@ -38,6 +38,13 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
     // useEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};

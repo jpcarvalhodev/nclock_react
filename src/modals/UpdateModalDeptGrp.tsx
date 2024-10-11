@@ -65,6 +65,13 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         groups: []
     });
 
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
         const newErrors: Record<string, string> = {};

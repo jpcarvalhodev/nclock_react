@@ -41,6 +41,13 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
 
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
     // UseEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -172,6 +179,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                             name="attendanceTime"
                                         />
                                     </OverlayTrigger>
+                                    {errors.attendanceTime && <div style={{ color: 'red', fontSize: 'small' }}>{errors.attendanceTime}</div>}
                                 </Form.Group>
                             </div>
                             <div className="col-md-6">
@@ -198,6 +206,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                             ))}
                                         </Form.Control>
                                     </OverlayTrigger>
+                                    {errors.employeeId && <div style={{ color: 'red', fontSize: 'small' }}>{errors.employeeId}</div>}
                                 </Form.Group>
                             </div>
                         </div>
@@ -285,6 +294,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                                 name={field.key}
                                             />
                                         )))}
+                                        {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
                             </Form.Group>
                         );
                     }

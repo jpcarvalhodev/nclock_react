@@ -265,7 +265,7 @@ export const NkioskDashboard = () => {
                     eventSet.add(uniqueId);
                     acc.push({
                         id: uniqueId,
-                        title: item.eventName,
+                        title: item.eventDoorId === 3 ? 'Torniquete' : 'Quiosque',
                         start: eventDate,
                         end: eventDate,
                         allDay: true,

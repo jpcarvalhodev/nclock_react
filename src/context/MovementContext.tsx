@@ -48,8 +48,10 @@ export const AttendanceContext = createContext<AttendanceContextType | undefined
 // Criando o provedor do contexto
 export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
-    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [data, setData] = useState<DataState>({
         departments: [],

@@ -38,6 +38,13 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
 
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
     // UseEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};

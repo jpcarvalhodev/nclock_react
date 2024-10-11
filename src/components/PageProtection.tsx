@@ -22,7 +22,7 @@ export const PageProtection: React.FC<PageProtectionProps> = ({ children }) => {
         const payload = JSON.parse(atob(token.split('.')[1]));
         if (payload.exp && Date.now() >= payload.exp * 1000) {
           localStorage.removeItem('token');
-          setRedirectTo('/errors/unauthorized'); 
+          setRedirectTo('/'); 
           return false;
         }
       } catch {

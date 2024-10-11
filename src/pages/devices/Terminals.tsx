@@ -8,7 +8,7 @@ import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
 import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, KioskTransaction } from "../../helpers/Types";
-import { deviceFields, doorFields, employeeCardFields, employeeFields, transactionFields } from "../../helpers/Fields";
+import { deviceFields, employeeCardFields, employeeFields, transactionFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
@@ -24,8 +24,6 @@ import React from "react";
 import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 import { useColor } from "../../context/ColorContext";
-import { DoorModal } from "../../modals/DoorModal";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -934,7 +932,7 @@ export const Terminals = () => {
             const userId = selectedUserRows[0].employeeID;
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
             setLoadingSendSelectedUsers(false);
-            fetchAllEmployeeDevices();
+            await fetchAllEmployeeDevices();
         }
     }
 
@@ -957,7 +955,7 @@ export const Terminals = () => {
             const userId = selectedUserRows[0].employeeID;
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
             setLoadingFetchSelectedUsers(false);
-            fetchAllEmployeeDevices();
+            await fetchAllEmployeeDevices();
         }
     }
 
@@ -1506,15 +1504,6 @@ export const Terminals = () => {
                         onClose={() => setShowDeleteModal(false)}
                         onDelete={deleteDevice}
                         entityId={selectedDeviceToDelete}
-                    />
-                )}
-                {selectedTerminal && (
-                    <DoorModal
-                        open={showDoorModal}
-                        onClose={() => setShowDoorModal(false)}
-                        onSave={handleOpenDoor}
-                        fields={doorFields}
-                        title="Abrir Porta"
                     />
                 )}
                 <input

@@ -13,7 +13,6 @@ import { Groups } from './pages/persons/Groups';
 import { Professions } from './pages/persons/Professions';
 import { Zones } from './pages/persons/Zones';
 import { NotFound } from './pages/errors/NotFound';
-import { Unauthorized } from './pages/errors/Unauthorized';
 import { Persons } from './pages/persons/Persons';
 import { ResetPassword } from './pages/login&forgot/PasswordReset';
 import { ExternalEmployees } from './pages/persons/ExternalEmployees';
@@ -133,7 +132,6 @@ function AnimatedRoutes() {
               <Route path="/" element={<Login />} />
               <Route path="/login&forgot/forgot-password" element={<ForgotPassword />} />
               <Route path='/login&forgot/reset-password' element={<ResetPassword />} />
-              <Route path="/errors/unauthorized" element={<Unauthorized />} />
               <Route path="/errors/notfound" element={<NotFound />} />
               <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
               <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />

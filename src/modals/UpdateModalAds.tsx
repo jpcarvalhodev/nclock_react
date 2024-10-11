@@ -40,6 +40,13 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
 
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
     // Extensões permitidas para imagens e vídeos
     const allowedImageExtensions = ['jpg', 'jpeg', 'png'];
     const allowedVideoExtensions = ['mp4', 'avi', 'mov', 'mkv'];

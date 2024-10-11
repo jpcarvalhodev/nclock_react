@@ -43,6 +43,8 @@ export const NewUsers = () => {
             toast.success(data.value || 'Usuário adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar o usuário registado:', error);
+        } finally {
+            refreshUsers();
         }
     }
 
@@ -55,6 +57,8 @@ export const NewUsers = () => {
             toast.success(data.value || 'Usuário atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar o usuário registado:', error);
+        } finally {
+            refreshUsers();
         }
     }
 

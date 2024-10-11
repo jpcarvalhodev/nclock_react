@@ -45,6 +45,11 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
 
+    // UseEffect para atualizar o estado do formulário
+    useEffect(() => {
+        setFormData({ ...entity });
+    }, [entity]);    
+
     // UseEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -194,7 +199,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                                                         break;
                                                     case 'doorId':
                                                         optionId = option.id;
-                                                        optionName = option.doorNo;
+                                                        optionName = option.name;
                                                         break;
                                                     case 'timezoneId':
                                                         optionId = option.id;

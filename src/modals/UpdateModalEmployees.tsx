@@ -52,6 +52,13 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const fileInputRef = React.createRef<HTMLInputElement>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Usa useEffect para inicializar o formulário
+  useEffect(() => {
+    if (entity) {
+      setFormData({ ...entity });
+    }
+  }, [entity]);
+
   // Atualiza o estado do componente com parte das validações dos campos
   useEffect(() => {
     const newErrors: Record<string, string> = {};

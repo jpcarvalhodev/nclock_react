@@ -43,7 +43,7 @@ const handleHTTPError = async (response: Response) => {
             break;
         case 401:
             toast.error('Você não tem permissão para acessar esta página');
-            window.location.href = '/unauthorized';
+            window.location.href = '/';
             break;
         case 404:
             toast.error('Página não encontrada');

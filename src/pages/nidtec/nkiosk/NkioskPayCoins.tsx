@@ -12,7 +12,7 @@ import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
+import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
@@ -29,13 +29,15 @@ export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useColor();
     const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [terminalData, setTerminalData] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'tpId']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
-    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -45,7 +47,7 @@ export const NkioskPayCoins = () => {
 
     const deviceSN = 'AGB7234900595';
     const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
-    const deviceName = matchedDevice?.name || 'Quiosque Clérigos Porto';
+    const deviceName = matchedDevice?.deviceName || '';
 
     // Função para buscar os pagamentos no moedeiro
     const fetchAllPayCoins = async () => {
@@ -122,7 +124,7 @@ export const NkioskPayCoins = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'tpId']);
+        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -160,7 +162,7 @@ export const NkioskPayCoins = () => {
                     case 'tpId':
                         const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
                         const terminalName = terminalMatch?.nomeQuiosque || '';
-                        return terminalName || 'Sem Terminal';
+                        return terminalName || 'Sem Dados';
                     case 'deviceSN':
                         return deviceName;
                     case 'timestamp':
@@ -226,7 +228,7 @@ export const NkioskPayCoins = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkioskPay onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">

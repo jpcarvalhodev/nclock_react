@@ -44,6 +44,13 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
         const newErrors: Record<string, string> = {};
