@@ -247,7 +247,7 @@ export const TimePeriods = () => {
                         onRowDoubleClicked={handleEditPeriod}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
                 </div>

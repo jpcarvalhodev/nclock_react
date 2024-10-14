@@ -259,7 +259,7 @@ export const Zones = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={false}
                         defaultSortFieldId="name"

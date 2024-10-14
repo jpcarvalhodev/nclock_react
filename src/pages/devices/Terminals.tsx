@@ -1113,7 +1113,7 @@ export const Terminals = () => {
                             selectableRows
                             onSelectedRowsChange={handleDeviceRowSelected}
                             selectableRowsHighlight
-                            noDataComponent="Não há dados disponíveis para exibir."
+                            noDataComponent="Não existem dados disponíveis para exibir."
                             customStyles={customStyles}
                         />
                     </div>
@@ -1190,7 +1190,7 @@ export const Terminals = () => {
                                                     selectableRows
                                                     onSelectedRowsChange={handleUserRowSelected}
                                                     selectableRowsHighlight
-                                                    noDataComponent="Não há dados disponíveis para exibir."
+                                                    noDataComponent="Não existem dados disponíveis para exibir."
                                                     customStyles={customStyles}
                                                 />
                                             </div>
@@ -1248,7 +1248,7 @@ export const Terminals = () => {
                                             selectableRows
                                             onSelectedRowsChange={handleUserRowSelected}
                                             selectableRowsHighlight
-                                            noDataComponent="Não há dados disponíveis para exibir."
+                                            noDataComponent="Não existem dados disponíveis para exibir."
                                             customStyles={customStyles}
                                         />
                                     </Tab>
@@ -1263,7 +1263,7 @@ export const Terminals = () => {
                                             selectableRows
                                             onSelectedRowsChange={handleUserRowSelected}
                                             selectableRowsHighlight
-                                            noDataComponent="Não há dados disponíveis para exibir."
+                                            noDataComponent="Não existem dados disponíveis para exibir."
                                             customStyles={customStyles}
                                         />
                                     </Tab>
@@ -1280,7 +1280,7 @@ export const Terminals = () => {
                                     selectableRows
                                     onSelectedRowsChange={handleDeviceRowSelected}
                                     selectableRowsHighlight
-                                    noDataComponent="Não há dados disponíveis para exibir."
+                                    noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
                                 />
                             </Tab>

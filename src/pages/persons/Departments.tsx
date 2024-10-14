@@ -287,7 +287,7 @@ export const Departments = () => {
                         expandableRowsComponent={(props) => (
                             <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />
                         )}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={false}
                         defaultSortFieldId="code"

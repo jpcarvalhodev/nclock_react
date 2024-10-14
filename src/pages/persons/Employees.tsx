@@ -70,8 +70,8 @@ export const Employees = () => {
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
-        await handleAddEmployee(employee as Employee); 
-        const employees = await fetchAllEmployees(); 
+        await handleAddEmployee(employee as Employee);
+        const employees = await fetchAllEmployees();
         const employeeCards = await fetchAllCardData();
         const lastEmployee = employees[employees.length - 1];
 
@@ -91,7 +91,7 @@ export const Employees = () => {
         refreshEmployees();
         setShowAddModal(false);
     };
- 
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
         await handleUpdateEmployee(employee);
@@ -145,7 +145,7 @@ export const Employees = () => {
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         setSelectedEmployeeIds(selectedIds);
-    };    
+    };
 
     // Atualiza os funcionários filtrados
     useEffect(() => {
@@ -349,7 +349,7 @@ export const Employees = () => {
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
-                                noDataComponent="Não há dados disponíveis para exibir."
+                                noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
                                 defaultSortAsc={false}
                                 defaultSortFieldId="enrollNumber"

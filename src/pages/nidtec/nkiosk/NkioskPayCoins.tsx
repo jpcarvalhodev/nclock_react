@@ -89,7 +89,7 @@ export const NkioskPayCoins = () => {
         } catch (error) {
             console.error('Erro ao buscar os dados dos terminais:', error);
         }
-    }  
+    }
 
     // Busca os pagamentos no moedeiro ao carregar a página
     useEffect(() => {
@@ -164,7 +164,7 @@ export const NkioskPayCoins = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        return deviceName;
+                        return deviceName || 'Sem Dados';
                     case 'timestamp':
                         return new Date(row[field.key]).toLocaleString() || '';
                     case 'transactionType':
@@ -278,7 +278,7 @@ export const NkioskPayCoins = () => {
                                     onSelectedRowsChange={handleRowSelected}
                                     clearSelectedRows={clearSelectionToggle}
                                     selectableRowsHighlight
-                                    noDataComponent="Não há dados disponíveis para exibir."
+                                    noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
                                     defaultSortAsc={false}
                                     defaultSortFieldId="timestamp"

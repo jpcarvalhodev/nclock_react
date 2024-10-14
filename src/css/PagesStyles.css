@@ -50,6 +50,37 @@ body {
     background-color: transparent;
 }
 
+.card-container.cards-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 60vw;
+}
+
+.card-container.cards-left {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 60vw;
+}
+
+.arrows-cards {
+    background-color: transparent;
+    color: black;
+    border-color: black;
+    margin: 0 10px 0 10px;
+}
+
+.arrows-cards:hover {
+    background-color: black;
+    color: white;
+    border-color: black;
+}
+
 .card {
     display: flex;
     justify-content: center;
@@ -168,7 +199,7 @@ body {
 }
 
 .content-wrapper-payment {
-    display:flex;
+    display: flex;
     flex-grow: 1;
 }
 
@@ -360,15 +391,21 @@ body {
     max-height: 450px;
 }
 
-.img-carousel{
-    margin-top: 10px;
-    max-width: 600px;
-    max-height: 450px;
+.img-carousel {
+    margin-top: -75px;
+    max-width: 500px;
+}
+
+.img-carousel-dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 650px;
+    margin-top: 5px;
 }
 
 .img-carousel-licensed {
-    margin-top: 30px;
-    max-width: 600px;
+    max-width: 700px;
 }
 
 .dashboard-tabs-container {
@@ -384,7 +421,7 @@ body {
 }
 
 .nav.nav-pills {
-    width: 75%;
+    width: 65%;
     height: 50px;
     margin: 0 auto;
     border-radius: 10px;
@@ -454,7 +491,7 @@ body {
     resize: none !important;
 }
 
-.nav-container li:hover > .submenu {
+.nav-container li:hover>.submenu {
     display: block;
 }
 
@@ -469,9 +506,9 @@ body {
 .center-map-button {
     position: absolute;
     top: 15px;
-    right: 15px; 
+    right: 15px;
     z-Index: 1000;
-    width: 40px; 
+    width: 40px;
     height: 40px;
     background-color: white;
     border-radius: 10%;
@@ -488,6 +525,9 @@ body {
     justify-content: space-between;
 }
 
+.calendar-event {
+    font-size: 10px;
+}
 
 @media (max-width: 500px) {
 
@@ -580,7 +620,7 @@ body {
         align-items: center;
         justify-content: center;
     }
-    
+
 }
 
 @media (min-width: 501px) and (max-width: 1200px) {

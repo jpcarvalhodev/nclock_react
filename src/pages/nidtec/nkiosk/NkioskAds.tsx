@@ -253,7 +253,7 @@ export const NkioskAds = () => {
                         onRowDoubleClicked={handleEditAds}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={false}
                         defaultSortFieldId="nomeArquivo"

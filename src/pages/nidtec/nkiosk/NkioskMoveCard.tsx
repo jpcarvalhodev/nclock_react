@@ -168,7 +168,7 @@ export const NkioskMoveCard = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return deviceName;
+                        return deviceName || 'Sem Dados';
                     case 'eventDoorId':
                         return 'Torniquete';
                     case 'eventTime':
@@ -270,7 +270,7 @@ export const NkioskMoveCard = () => {
                                     onSelectedRowsChange={handleRowSelected}
                                     clearSelectedRows={clearSelectionToggle}
                                     selectableRowsHighlight
-                                    noDataComponent="Não há dados disponíveis para exibir."
+                                    noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
                                     defaultSortAsc={false}
                                     defaultSortFieldId="eventTime"

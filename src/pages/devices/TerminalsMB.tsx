@@ -233,7 +233,7 @@ export const TerminalsMB = () => {
                             selectableRows
                             onSelectedRowsChange={handleDeviceRowSelected}
                             selectableRowsHighlight
-                            noDataComponent="Não há dados disponíveis para exibir."
+                            noDataComponent="Não existem dados disponíveis para exibir."
                             customStyles={customStyles}
                         />
                     </div>

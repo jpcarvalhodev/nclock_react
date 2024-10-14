@@ -349,7 +349,7 @@ export const Visitors = () => {
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
-                                noDataComponent="Não há dados disponíveis para exibir."
+                                noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
                                 defaultSortAsc={false}
                                 defaultSortFieldId="enrollNumber"

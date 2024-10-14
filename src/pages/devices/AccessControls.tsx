@@ -68,7 +68,7 @@ export const AccessControls = () => {
         } finally {
             refreshAccessControl();
         }
-    };    
+    };
 
     // Função para deletar o controle de acesso
     const handleDeleteAccessControl = async (id: string) => {
@@ -248,7 +248,7 @@ export const AccessControls = () => {
                         onSelectedRowsChange={handleRowSelected}
                         clearSelectedRows={clearSelectionToggle}
                         selectableRowsHighlight
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
                 </div>

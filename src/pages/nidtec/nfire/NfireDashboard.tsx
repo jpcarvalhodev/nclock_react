@@ -47,12 +47,30 @@ import nidtec from '../../../assets/img/navbar/navbar/nidtec.png';
 import nidplace from '../../../assets/img/navbar/navbar/nidplace.webp';
 import sisnidlogo from '../../../assets/img/navbar/navbar/sisnidlogo.png';
 import nidgroup from '../../../assets/img/navbar/navbar/nidgroup.png';
+import ncount from '../../../assets/img/navbar/navbar/ncount.png';
+import nbuild from '../../../assets/img/navbar/navbar/nbuild.png';
+import ncaravan from '../../../assets/img/navbar/navbar/ncaravan.png';
+import nmechanic from '../../../assets/img/navbar/navbar/nmechanic.png';
+import nevents from '../../../assets/img/navbar/navbar/nevents.png';
+import nservice from '../../../assets/img/navbar/navbar/nservice.png';
+import ntask from '../../../assets/img/navbar/navbar/ntask.png';
+import nproduction from '../../../assets/img/navbar/navbar/nproduction.png';
+import nticket from '../../../assets/img/navbar/navbar/nticket.png';
+import nsales from '../../../assets/img/navbar/navbar/nsales.png';
+import ninvoice from '../../../assets/img/navbar/navbar/ninvoice.png';
+import ndoc from '../../../assets/img/navbar/navbar/ndoc.png';
+import nsports from '../../../assets/img/navbar/navbar/nsports.png';
+import ngym from '../../../assets/img/navbar/navbar/ngym.png';
+import nschool from '../../../assets/img/navbar/navbar/nschool.png';
+import nclinic from '../../../assets/img/navbar/navbar/nclinic.png';
+import noptics from '../../../assets/img/navbar/navbar/noptics.png';
+import ngold from '../../../assets/img/navbar/navbar/ngold.png';
 
 // Define o tipo TabName
 type TabName = 'CLIENTE' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
 
 // Define o tipo CardTitle
-type CardTitle = 'Início' | 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome' | 'Nsoftwares';
+type CardTitle = 'Início' | 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Ncount' | 'Nbuild' | 'Ncaravan' | 'Nmechanic' | 'Nevents' | 'Nservice' | 'Ntask' | 'Nproduction' | 'Nticket' | 'Nsales' | 'Ninvoice' | 'Ndoc' | 'Nsports' | 'Ngym' | 'Nschool' | 'Nclinic' | 'Noptics' | 'Ngold' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome' | 'Nsoftwares';
 
 // Define o objeto tabData
 const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: string }> = {
@@ -75,6 +93,24 @@ const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: str
     Naut: { route: '/naut/nautdashboard', tabKey: 'showNautTab', ribbonKey: 'showNautRibbon' },
     Nequip: { route: '/nequip/nequipdashboard', tabKey: 'showNequipTab', ribbonKey: 'showNequipRibbon' },
     Nproject: { route: '/nproject/nprojectdashboard', tabKey: 'showNprojectTab', ribbonKey: 'showNprojectRibbon' },
+    Ncount: { route: '/ncount/ncountdashboard', tabKey: 'showNcountTab', ribbonKey: 'showNcountRibbon' },
+    Nbuild: { route: '/nbuild/nbuilddashboard', tabKey: 'showNbuildTab', ribbonKey: 'showNbuildRibbon' },
+    Ncaravan: { route: '/ncaravan/ncaravandashboard', tabKey: 'showNcaravanTab', ribbonKey: 'showNcaravanRibbon' },
+    Nmechanic: { route: '/nmechanic/nmechanicdashboard', tabKey: 'showNmechanicTab', ribbonKey: 'showNmechanicRibbon' },
+    Nevents: { route: '/nevents/neventsdashboard', tabKey: 'showNeventsTab', ribbonKey: 'showNeventsRibbon' },
+    Nservice: { route: '/nservice/nservicedashboard', tabKey: 'showNserviceTab', ribbonKey: 'showNserviceRibbon' },
+    Ntask: { route: '/ntask/ntaskdashboard', tabKey: 'showNtaskTab', ribbonKey: 'showNtaskRibbon' },
+    Nproduction: { route: '/nproduction/nproductiondashboard', tabKey: 'showNproductionTab', ribbonKey: 'showNproductionRibbon' },
+    Nticket: { route: '/nticket/nticketdashboard', tabKey: 'showNticketTab', ribbonKey: 'showNticketRibbon' },
+    Nsales: { route: '/nsales/nsalesdashboard', tabKey: 'showNsalesTab', ribbonKey: 'showNsalesRibbon' },
+    Ninvoice: { route: '/ninvoice/ninvoicedashboard', tabKey: 'showNinvoiceTab', ribbonKey: 'showNinvoiceRibbon' },
+    Ndoc: { route: '/ndoc/ndocdashboard', tabKey: 'showNdocTab', ribbonKey: 'showNdocRibbon' },
+    Nsports: { route: '/nsports/nsportsdashboard', tabKey: 'showNsportsTab', ribbonKey: 'showNsportsRibbon' },
+    Ngym: { route: '/ngym/ngymdashboard', tabKey: 'showNgymTab', ribbonKey: 'showNgymRibbon' },
+    Nschool: { route: '/nschool/nschooldashboard', tabKey: 'showNschoolTab', ribbonKey: 'showNschoolRibbon' },
+    Nclinic: { route: '/nclinic/nclinicdashboard', tabKey: 'showNclinicTab', ribbonKey: 'showNclinicRibbon' },
+    Noptics: { route: '/noptics/nopticsdashboard', tabKey: 'showNopticsTab', ribbonKey: 'showNopticsRibbon' },
+    Ngold: { route: '/ngold/ngolddashboard', tabKey: 'showNgoldTab', ribbonKey: 'showNgoldRibbon' },
     Nsmart: { route: '/nsmart/nsmartdashboard', tabKey: 'showNsmartTab', ribbonKey: 'showNsmartRibbon' },
     Nreality: { route: '/nreality/nrealitydashboard', tabKey: 'showNrealityTab', ribbonKey: 'showNrealityRibbon' },
     Nhologram: { route: '/nhologram/nhologramdashboard', tabKey: 'showNhologramTab', ribbonKey: 'showNhologramRibbon' },
@@ -148,6 +184,24 @@ export const NfireDashboard = () => {
             { title: 'Naut', img: naut },
             { title: 'Nequip', img: nequip },
             { title: 'Nproject', img: nproject },
+            { title: 'Ncount', img: ncount },
+            { title: 'Nbuild', img: nbuild },
+            { title: 'Ncaravan', img: ncaravan },
+            { title: 'Nmechanic', img: nmechanic },
+            { title: 'Nevents', img: nevents },
+            { title: 'Nservice', img: nservice },
+            { title: 'Ntask', img: ntask },
+            { title: 'Nproduction', img: nproduction },
+            { title: 'Nticket', img: nticket },
+            { title: 'Nsales', img: nsales },
+            { title: 'Ninvoice', img: ninvoice },
+            { title: 'Ndoc', img: ndoc },
+            { title: 'Nsports', img: nsports },
+            { title: 'Ngym', img: ngym },
+            { title: 'Nschool', img: nschool },
+            { title: 'Nclinic', img: nclinic },
+            { title: 'Noptics', img: noptics },
+            { title: 'Ngold', img: ngold },
             { title: 'Nsoftwares', img: nidsof }
         ],
         'NIDTEC': [

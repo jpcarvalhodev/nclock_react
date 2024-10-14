@@ -137,6 +137,7 @@ import open from '../assets/img/navbar/nkiosk/open.png';
 import print from '../assets/img/navbar/nkiosk/print.png';
 import graphs from '../assets/img/navbar/nkiosk/graphs.png';
 import version from '../assets/img/navbar/ajuda/version.png';
+import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
@@ -146,6 +147,24 @@ import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
 import { toast } from 'react-toastify';
 import { AboutModal } from '../modals/AboutModal';
+import ncount from '../assets/img/navbar/navbar/ncount.png';
+import nbuild from '../assets/img/navbar/navbar/nbuild.png';
+import ncaravan from '../assets/img/navbar/navbar/ncaravan.png';
+import nmechanic from '../assets/img/navbar/navbar/nmechanic.png';
+import nevents from '../assets/img/navbar/navbar/nevents.png';
+import nservice from '../assets/img/navbar/navbar/nservice.png';
+import ntask from '../assets/img/navbar/navbar/ntask.png';
+import nproduction from '../assets/img/navbar/navbar/nproduction.png';
+import nticket from '../assets/img/navbar/navbar/nticket.png';
+import nsales from '../assets/img/navbar/navbar/nsales.png';
+import ninvoice from '../assets/img/navbar/navbar/ninvoice.png';
+import ndoc from '../assets/img/navbar/navbar/ndoc.png';
+import nsports from '../assets/img/navbar/navbar/nsports.png';
+import ngym from '../assets/img/navbar/navbar/ngym.png';
+import nschool from '../assets/img/navbar/navbar/nschool.png';
+import nclinic from '../assets/img/navbar/navbar/nclinic.png';
+import noptics from '../assets/img/navbar/navbar/noptics.png';
+import ngold from '../assets/img/navbar/navbar/ngold.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -154,7 +173,7 @@ interface MyTokenPayload extends JwtPayload {
 }
 
 // Define os nomes das abas
-type RibbonName = 'pessoas' | 'dispositivos' | 'configuracao' | 'ajuda' | 'nclock' | 'naccess' | 'nvisitor' | 'npark' | 'ndoor' | 'npatrol' | 'ncard' | 'nview' | 'nsecur' | 'nsoftware' | 'nsystem' | 'napp' | 'ncyber' | 'ndigital' | 'nserver' | 'naut' | 'nequip' | 'nproject' | 'nsmart' | 'nreality' | 'nhologram' | 'npower' | 'ncharge' | 'ncity' | 'nkiosk' | 'nled' | 'nfire' | 'nfurniture' | 'npartition' | 'ndecor' | 'nping' | 'nconnect' | 'nlight' | 'ncomfort' | 'nsound' | 'nhome';
+type RibbonName = 'pessoas' | 'dispositivos' | 'configuracao' | 'ajuda' | 'nclock' | 'naccess' | 'nvisitor' | 'npark' | 'ndoor' | 'npatrol' | 'ncard' | 'nview' | 'nsecur' | 'nsoftware' | 'nsystem' | 'napp' | 'ncyber' | 'ndigital' | 'nserver' | 'naut' | 'nequip' | 'nproject' | 'ncount' | 'nbuild' | 'ncaravan' | 'nmechanic' | 'nevents' | 'nservice' | 'ntask' | 'nproduction' | 'nticket' | 'nsales' | 'ninvoice' | 'ndoc' | 'nsports' | 'ngym' | 'nschool' | 'nclinic' | 'noptics' | 'ngold' | 'nsmart' | 'nreality' | 'nhologram' | 'npower' | 'ncharge' | 'ncity' | 'nkiosk' | 'nled' | 'nfire' | 'nfurniture' | 'npartition' | 'ndecor' | 'nping' | 'nconnect' | 'nlight' | 'ncomfort' | 'nsound' | 'nhome';
 
 // Define a interface para as informações da aba
 type TabInfo = {
@@ -187,10 +206,7 @@ interface NavBarProps {
 }
 
 // Definição dos tipos para os nomes das ribbons e das tabs
-type RibbonKey = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome';
-
-// Define os setters para as abas e ribbons
-type RibbonKeys = 'pessoas' | 'dispositivos' | 'configuracao' | 'ajuda';
+type RibbonKey = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Ncount' | 'Nbuild' | 'Ncaravan' | 'Nmechanic' | 'Nevents' | 'Nservice' | 'Ntask' | 'Nproduction' | 'Nticket' | 'Nsales' | 'Ninvoice' | 'Ndoc' | 'Nsports' | 'Ngym' | 'Nschool' | 'Nclinic' | 'Noptics' | 'Ngold' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome';
 
 // Interface para os setters das ribbons e das tabs
 interface Setters {
@@ -236,6 +252,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showNautRibbon, setShowNautRibbon] = useState(false);
 	const [showNequipRibbon, setShowNequipRibbon] = useState(false);
 	const [showNprojectRibbon, setShowNprojectRibbon] = useState(false);
+	const [showNcountRibbon, setShowNcountRibbon] = useState(false);
+	const [showNbuildRibbon, setShowNbuildRibbon] = useState(false);
+	const [showNcaravanRibbon, setShowNcaravanRibbon] = useState(false);
+	const [showNmechanicRibbon, setShowNmechanicRibbon] = useState(false);
+	const [showNeventsRibbon, setShowNeventsRibbon] = useState(false);
+	const [showNserviceRibbon, setShowNserviceRibbon] = useState(false);
+	const [showNtaskRibbon, setShowNtaskRibbon] = useState(false);
+	const [showNproductionRibbon, setShowNproductionRibbon] = useState(false);
+	const [showNticketRibbon, setShowNticketRibbon] = useState(false);
+	const [showNsalesRibbon, setShowNsalesRibbon] = useState(false);
+	const [showNinvoiceRibbon, setShowNinvoiceRibbon] = useState(false);
+	const [showNdocRibbon, setShowNdocRibbon] = useState(false);
+	const [showNsportsRibbon, setShowNsportsRibbon] = useState(false);
+	const [showNgymRibbon, setShowNgymRibbon] = useState(false);
+	const [showNschoolRibbon, setShowNschoolRibbon] = useState(false);
+	const [showNclinicRibbon, setShowNclinicRibbon] = useState(false);
+	const [showNopticsRibbon, setShowNopticsRibbon] = useState(false);
+	const [showNgoldRibbon, setShowNgoldRibbon] = useState(false);
 	const [showNsmartRibbon, setShowNsmartRibbon] = useState(false);
 	const [showNrealityRibbon, setShowNrealityRibbon] = useState(false);
 	const [showNhologramRibbon, setShowNhologramRibbon] = useState(false);
@@ -272,6 +306,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showNautTab, setShowNautTab] = useState(false);
 	const [showNequipTab, setShowNequipTab] = useState(false);
 	const [showNprojectTab, setShowNprojectTab] = useState(false);
+	const [showNcountTab, setShowNcountTab] = useState(false);
+	const [showNbuildTab, setShowNbuildTab] = useState(false);
+	const [showNcaravanTab, setShowNcaravanTab] = useState(false);
+	const [showNmechanicTab, setShowNmechanicTab] = useState(false);
+	const [showNeventsTab, setShowNeventsTab] = useState(false);
+	const [showNserviceTab, setShowNserviceTab] = useState(false);
+	const [showNtaskTab, setShowNtaskTab] = useState(false);
+	const [showNproductionTab, setShowNproductionTab] = useState(false);
+	const [showNticketTab, setShowNticketTab] = useState(false);
+	const [showNsalesTab, setShowNsalesTab] = useState(false);
+	const [showNinvoiceTab, setShowNinvoiceTab] = useState(false);
+	const [showNdocTab, setShowNdocTab] = useState(false);
+	const [showNsportsTab, setShowNsportsTab] = useState(false);
+	const [showNgymTab, setShowNgymTab] = useState(false);
+	const [showNschoolTab, setShowNschoolTab] = useState(false);
+	const [showNclinicTab, setShowNclinicTab] = useState(false);
+	const [showNopticsTab, setShowNopticsTab] = useState(false);
+	const [showNgoldTab, setShowNgoldTab] = useState(false);
 	const [showNsmartTab, setShowNsmartTab] = useState(false);
 	const [showNrealityTab, setShowNrealityTab] = useState(false);
 	const [showNhologramTab, setShowNhologramTab] = useState(false);
@@ -306,7 +358,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 		Nclock: setShowNclockRibbon, Naccess: setShowNaccessRibbon, Nvisitor: setShowNvisitorRibbon, Npark: setShowNparkRibbon, Ndoor: setShowNdoorRibbon,
 		Npatrol: setShowNpatrolRibbon, Ncard: setShowNcardRibbon, Nview: setShowNviewRibbon, Nsecur: setShowNsecurRibbon, Nsoftware: setShowNsoftwareRibbon,
 		Nsystem: setShowNsystemRibbon, Napp: setShowNappRibbon, Ncyber: setShowNcyberRibbon, Ndigital: setShowNdigitalRibbon, Nserver: setShowNserverRibbon,
-		Naut: setShowNautRibbon, Nequip: setShowNequipRibbon, Nproject: setShowNprojectRibbon, Nsmart: setShowNsmartRibbon, Nreality: setShowNrealityRibbon,
+		Naut: setShowNautRibbon, Nequip: setShowNequipRibbon, Nproject: setShowNprojectRibbon, Ncount: setShowNcountRibbon, Nbuild: setShowNbuildRibbon, Ncaravan: setShowNcaravanRibbon, Nmechanic: setShowNmechanicRibbon,
+		Nevents: setShowNeventsRibbon, Nservice: setShowNserviceRibbon, Ntask: setShowNtaskRibbon, Nproduction: setShowNproductionRibbon,
+		Nticket: setShowNticketRibbon, Nsales: setShowNsalesRibbon, Ninvoice: setShowNinvoiceRibbon, Ndoc: setShowNdocRibbon,
+		Nsports: setShowNsportsRibbon, Ngym: setShowNgymRibbon, Nschool: setShowNschoolRibbon, Nclinic: setShowNclinicRibbon,
+		Noptics: setShowNopticsRibbon, Ngold: setShowNgoldRibbon, Nsmart: setShowNsmartRibbon, Nreality: setShowNrealityRibbon,
 		Nhologram: setShowNhologramRibbon, Npower: setShowNpowerRibbon, Ncharge: setShowNchargeRibbon, Ncity: setShowNcityRibbon, Nkiosk: setShowNkioskRibbon,
 		Nled: setShowNledRibbon, Nfire: setShowNfireRibbon, Nfurniture: setShowNfurnitureRibbon, Npartition: setShowNpartitionRibbon, Ndecor: setShowNdecorRibbon,
 		Nping: setShowNpingRibbon, Nconnect: setShowNconnectRibbon, Nlight: setShowNlightRibbon, Ncomfort: setShowNcomfortRibbon, Nsound: setShowNsoundRibbon,
@@ -318,7 +374,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 		Nclock: setShowNclockTab, Naccess: setShowNaccessTab, Nvisitor: setShowNvisitorTab, Npark: setShowNparkTab, Ndoor: setShowNdoorTab,
 		Npatrol: setShowNpatrolTab, Ncard: setShowNcardTab, Nview: setShowNviewTab, Nsecur: setShowNsecurTab, Nsoftware: setShowNsoftwareTab,
 		Nsystem: setShowNsystemTab, Napp: setShowNappTab, Ncyber: setShowNcyberTab, Ndigital: setShowNdigitalTab, Nserver: setShowNserverTab,
-		Naut: setShowNautTab, Nequip: setShowNequipTab, Nproject: setShowNprojectTab, Nsmart: setShowNsmartTab, Nreality: setShowNrealityTab,
+		Naut: setShowNautTab, Nequip: setShowNequipTab, Nproject: setShowNprojectTab, Ncount: setShowNcountTab, Nbuild: setShowNbuildTab, Ncaravan: setShowNcaravanTab, Nmechanic: setShowNmechanicTab,
+		Nevents: setShowNeventsTab, Nservice: setShowNserviceTab, Ntask: setShowNtaskTab, Nproduction: setShowNproductionTab,
+		Nticket: setShowNticketTab, Nsales: setShowNsalesTab, Ninvoice: setShowNinvoiceTab, Ndoc: setShowNdocTab,
+		Nsports: setShowNsportsTab, Ngym: setShowNgymTab, Nschool: setShowNschoolTab, Nclinic: setShowNclinicTab,
+		Noptics: setShowNopticsTab, Ngold: setShowNgoldTab, Nsmart: setShowNsmartTab, Nreality: setShowNrealityTab,
 		Nhologram: setShowNhologramTab, Npower: setShowNpowerTab, Ncharge: setShowNchargeTab, Ncity: setShowNcityTab, Nkiosk: setShowNkioskTab,
 		Nled: setShowNledTab, Nfire: setShowNfireTab, Nfurniture: setShowNfurnitureTab, Npartition: setShowNpartitionTab, Ndecor: setShowNdecorTab,
 		Nping: setShowNpingTab, Nconnect: setShowNconnectTab, Nlight: setShowNlightTab, Ncomfort: setShowNcomfortTab, Nsound: setShowNsoundTab,
@@ -446,6 +506,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 		Naut: { setShowRibbon: setShowNautRibbon, setShowTab: setShowNautTab },
 		Nequip: { setShowRibbon: setShowNequipRibbon, setShowTab: setShowNequipTab },
 		Nproject: { setShowRibbon: setShowNprojectRibbon, setShowTab: setShowNprojectTab },
+		Ncount: { setShowRibbon: setShowNcountRibbon, setShowTab: setShowNcountTab },
+		Nbuild: { setShowRibbon: setShowNbuildRibbon, setShowTab: setShowNbuildTab },
+		Ncaravan: { setShowRibbon: setShowNcaravanRibbon, setShowTab: setShowNcaravanTab },
+		Nmechanic: { setShowRibbon: setShowNmechanicRibbon, setShowTab: setShowNmechanicTab },
+		Nevents: { setShowRibbon: setShowNeventsRibbon, setShowTab: setShowNeventsTab },
+		Nservice: { setShowRibbon: setShowNserviceRibbon, setShowTab: setShowNserviceTab },
+		Ntask: { setShowRibbon: setShowNtaskRibbon, setShowTab: setShowNtaskTab },
+		Nproduction: { setShowRibbon: setShowNproductionRibbon, setShowTab: setShowNproductionTab },
+		Nticket: { setShowRibbon: setShowNticketRibbon, setShowTab: setShowNticketTab },
+		Nsales: { setShowRibbon: setShowNsalesRibbon, setShowTab: setShowNsalesTab },
+		Ninvoice: { setShowRibbon: setShowNinvoiceRibbon, setShowTab: setShowNinvoiceTab },
+		Ndoc: { setShowRibbon: setShowNdocRibbon, setShowTab: setShowNdocTab },
+		Nsports: { setShowRibbon: setShowNsportsRibbon, setShowTab: setShowNsportsTab },
+		Ngym: { setShowRibbon: setShowNgymRibbon, setShowTab: setShowNgymTab },
+		Nschool: { setShowRibbon: setShowNschoolRibbon, setShowTab: setShowNschoolTab },
+		Nclinic: { setShowRibbon: setShowNclinicRibbon, setShowTab: setShowNclinicTab },
+		Noptics: { setShowRibbon: setShowNopticsRibbon, setShowTab: setShowNopticsTab },
+		Ngold: { setShowRibbon: setShowNgoldRibbon, setShowTab: setShowNgoldTab },
 		Nsmart: { setShowRibbon: setShowNsmartRibbon, setShowTab: setShowNsmartTab },
 		Nreality: { setShowRibbon: setShowNrealityRibbon, setShowTab: setShowNrealityTab },
 		Nhologram: { setShowRibbon: setShowNhologramRibbon, setShowTab: setShowNhologramTab },
@@ -507,6 +585,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 		'naut': [setShowNautRibbon, 'naut'],
 		'nequip': [setShowNequipRibbon, 'nequip'],
 		'nproject': [setShowNprojectRibbon, 'nproject'],
+		'ncount': [setShowNcountRibbon, 'ncount'],
+		'nbuild': [setShowNbuildRibbon, 'nbuild'],
+		'ncaravan': [setShowNcaravanRibbon, 'ncaravan'],
+		'nmechanic': [setShowNmechanicRibbon, 'nmechanic'],
+		'nevents': [setShowNeventsRibbon, 'nevents'],
+		'nservice': [setShowNserviceRibbon, 'nservice'],
+		'ntask': [setShowNtaskRibbon, 'ntask'],
+		'nproduction': [setShowNproductionRibbon, 'nproduction'],
+		'nticket': [setShowNticketRibbon, 'nticket'],
+		'nsales': [setShowNsalesRibbon, 'nsales'],
+		'ninvoice': [setShowNinvoiceRibbon, 'ninvoice'],
+		'ndoc': [setShowNdocRibbon, 'ndoc'],
+		'nsports': [setShowNsportsRibbon, 'nsports'],
+		'ngym': [setShowNgymRibbon, 'ngym'],
+		'nschool': [setShowNschoolRibbon, 'nschool'],
+		'nclinic': [setShowNclinicRibbon, 'nclinic'],
+		'noptics': [setShowNopticsRibbon, 'noptics'],
+		'ngold': [setShowNgoldRibbon, 'ngold'],
 		'nsmart': [setShowNsmartRibbon, 'nsmart'],
 		'nreality': [setShowNrealityRibbon, 'nreality'],
 		'nhologram': [setShowNhologramRibbon, 'nhologram'],
@@ -581,6 +677,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 		naut: createTabInfo('naut', '/naut/nautdashboard'),
 		nequip: createTabInfo('nequip', '/nequip/nequipdashboard'),
 		nproject: createTabInfo('nproject', '/nproject/nprojectdashboard'),
+		ncount: createTabInfo('ncount', '/ncount/ncountdashboard'),
+		nbuild: createTabInfo('nbuild', '/nbuild/nbuilddashboard'),
+		ncaravan: createTabInfo('ncaravan', '/ncaravan/ncaravandashboard'),
+		nmechanic: createTabInfo('nmechanic', '/nmechanic/nmechanicdashboard'),
+		nevents: createTabInfo('nevents', '/nevents/neventsdashboard'),
+		nservice: createTabInfo('nservice', '/nservice/nservicedashboard'),
+		ntask: createTabInfo('ntask', '/ntask/ntaskdashboard'),
+		nproduction: createTabInfo('nproduction', '/nproduction/nproductiondashboard'),
+		nticket: createTabInfo('nticket', '/nticket/nticketdashboard'),
+		nsales: createTabInfo('nsales', '/nsales/nsalesdashboard'),
+		ninvoice: createTabInfo('ninvoice', '/ninvoice/ninvoicedashboard'),
+		ndoc: createTabInfo('ndoc', '/ndoc/ndocdashboard'),
+		nsports: createTabInfo('nsports', '/nsports/nsportsdashboard'),
+		ngym: createTabInfo('ngym', '/ngym/ngymdashboard'),
+		nschool: createTabInfo('nschool', '/nschool/nschooldashboard'),
+		nclinic: createTabInfo('nclinic', '/nclinic/nclinicdashboard'),
+		noptics: createTabInfo('noptics', '/noptics/nopticsdashboard'),
+		ngold: createTabInfo('ngold', '/ngold/ngolddashboard'),
 		nsmart: createTabInfo('nsmart', '/nsmart/nsmartdashboard'),
 		nreality: createTabInfo('nreality', '/nreality/nrealitydashboard'),
 		nhologram: createTabInfo('nhologram', '/nhologram/nhologramdashboard'),
@@ -674,6 +788,25 @@ export const NavBar = ({ style }: NavBarProps) => {
 			localStorage.setItem('showNautRibbon', String(showNautRibbon));
 			localStorage.setItem('showNequipRibbon', String(showNequipRibbon));
 			localStorage.setItem('showNprojectRibbon', String(showNprojectRibbon));
+			localStorage.setItem('showNcountRibbon', String(showNcountRibbon));
+			localStorage.setItem('showNbuildRibbon', String(showNbuildRibbon));
+			localStorage.setItem('showNcaravanRibbon', String(showNcaravanRibbon));
+			localStorage.setItem('showNmechanicRibbon', String(showNmechanicRibbon));
+			localStorage.setItem('showNeventsRibbon', String(showNeventsRibbon));
+			localStorage.setItem('showNserviceRibbon', String(showNserviceRibbon));
+			localStorage.setItem('showNtaskRibbon', String(showNtaskRibbon));
+			localStorage.setItem('showNproductionRibbon', String(showNproductionRibbon));
+			localStorage.setItem('showNticketRibbon', String(showNticketRibbon));
+			localStorage.setItem('showNsalesRibbon', String(showNsalesRibbon));
+			localStorage.setItem('showNinvoiceRibbon', String(showNinvoiceRibbon));
+			localStorage.setItem('showNdocRibbon', String(showNdocRibbon));
+			localStorage.setItem('showNsportsRibbon', String(showNsportsRibbon));
+			localStorage.setItem('showNgymRibbon', String(showNgymRibbon));
+			localStorage.setItem('showNschoolRibbon', String(showNschoolRibbon));
+			localStorage.setItem('showNclinicRibbon', String(showNclinicRibbon));
+			localStorage.setItem('showNopticsRibbon', String(showNopticsRibbon));
+			localStorage.setItem('showNgoldRibbon', String(showNgoldRibbon));
+			localStorage.setItem('ribbonPinned', String(isRibbonPinned));
 			localStorage.setItem('showNsmartRibbon', String(showNsmartRibbon));
 			localStorage.setItem('showNrealityRibbon', String(showNrealityRibbon));
 			localStorage.setItem('showNhologramRibbon', String(showNhologramRibbon));
@@ -733,6 +866,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Define o componente do item de menu
 	const menuStructure: MenuStructure = {
 		dashboard: { label: 'INÍCIO', image: nidgroup, alt: 'INÍCIO', key: 'dashboard' },
+		cliente: {
+			label: 'CLIENTE',
+			image: nidgroup,
+			alt: 'CLIENTE',
+			key: 'cliente',
+			submenu: [
+				{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
+				{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
+				{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
+				{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
+				{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
+			],
+		},
 		sisnid: {
 			label: 'SISNID',
 			image: sisnidlogo,
@@ -766,6 +912,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 				{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
 				{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
 				{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
+				{ label: 'Ncount', image: ncount, alt: 'ncount', key: 'ncount' },
+				{ label: 'Nbuild', image: nbuild, alt: 'nbuild', key: 'nbuild' },
+				{ label: 'Ncaravan', image: ncaravan, alt: 'ncaravan', key: 'ncaravan' },
+				{ label: 'Nmechanic', image: nmechanic, alt: 'nmechanic', key: 'nmechanic' },
+				{ label: 'Nevents', image: nevents, alt: 'nevents', key: 'nevents' },
+				{ label: 'Nservice', image: nservice, alt: 'nservice', key: 'nservice' },
+				{ label: 'Ntask', image: ntask, alt: 'ntask', key: 'ntask' },
+				{ label: 'Nproduction', image: nproduction, alt: 'nproduction', key: 'nproduction' },
+				{ label: 'Nticket', image: nticket, alt: 'nticket', key: 'nticket' },
+				{ label: 'Nsales', image: nsales, alt: 'nsales', key: 'nsales' },
+				{ label: 'Ninvoice', image: ninvoice, alt: 'ninvoice', key: 'ninvoice' },
+				{ label: 'Ndoc', image: ndoc, alt: 'ndoc', key: 'ndoc' },
+				{ label: 'Nsports', image: nsports, alt: 'nsports', key: 'nsports' },
+				{ label: 'Ngym', image: ngym, alt: 'ngym', key: 'ngym' },
+				{ label: 'Nschool', image: nschool, alt: 'nschool', key: 'nschool' },
+				{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
+				{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
+				{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
 				{ label: 'Nsoftwares', image: nidsof, alt: 'nsoftwares', key: 'nsoftwares' }
 			],
 		},
@@ -872,6 +1036,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 		naut: { navbarColor: '#D01313', footerColor: '#D01313' },
 		nequip: { navbarColor: '#D01313', footerColor: '#D01313' },
 		nproject: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ncount: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nbuild: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ncaravan: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nmechanic: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nevents: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nservice: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ntask: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nproduction: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nticket: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nsales: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ninvoice: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ndoc: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nsports: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ngym: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nschool: { navbarColor: '#D01313', footerColor: '#D01313' },
+		nclinic: { navbarColor: '#D01313', footerColor: '#D01313' },
+		noptics: { navbarColor: '#D01313', footerColor: '#D01313' },
+		ngold: { navbarColor: '#D01313', footerColor: '#D01313' },
 		nsmart: { navbarColor: '#009739', footerColor: '#009739' },
 		nreality: { navbarColor: '#009739', footerColor: '#009739' },
 		nhologram: { navbarColor: '#009739', footerColor: '#009739' },
@@ -923,6 +1105,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 				setShowNautRibbon(false);
 				setShowNequipRibbon(false);
 				setShowNprojectRibbon(false);
+				setShowNcountRibbon(false);
+				setShowNbuildRibbon(false);
+				setShowNcaravanRibbon(false);
+				setShowNmechanicRibbon(false);
+				setShowNeventsRibbon(false);
+				setShowNserviceRibbon(false);
+				setShowNtaskRibbon(false);
+				setShowNproductionRibbon(false);
+				setShowNticketRibbon(false);
+				setShowNsalesRibbon(false);
+				setShowNinvoiceRibbon(false);
+				setShowNdocRibbon(false);
+				setShowNsportsRibbon(false);
+				setShowNgymRibbon(false);
+				setShowNschoolRibbon(false);
+				setShowNclinicRibbon(false);
+				setShowNopticsRibbon(false);
+				setShowNgoldRibbon(false);
 				setShowNsmartRibbon(false);
 				setShowNrealityRibbon(false);
 				setShowNhologramRibbon(false);
@@ -966,6 +1166,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 				setShowNautRibbon(false);
 				setShowNequipRibbon(false);
 				setShowNprojectRibbon(false);
+				setShowNcountRibbon(false);
+				setShowNbuildRibbon(false);
+				setShowNcaravanRibbon(false);
+				setShowNmechanicRibbon(false);
+				setShowNeventsRibbon(false);
+				setShowNserviceRibbon(false);
+				setShowNtaskRibbon(false);
+				setShowNproductionRibbon(false);
+				setShowNticketRibbon(false);
+				setShowNsalesRibbon(false);
+				setShowNinvoiceRibbon(false);
+				setShowNdocRibbon(false);
+				setShowNsportsRibbon(false);
+				setShowNgymRibbon(false);
+				setShowNschoolRibbon(false);
+				setShowNclinicRibbon(false);
+				setShowNopticsRibbon(false);
+				setShowNgoldRibbon(false);
 				setShowNsmartRibbon(false);
 				setShowNrealityRibbon(false);
 				setShowNhologramRibbon(false);
@@ -1009,6 +1227,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 				setShowNautRibbon(false);
 				setShowNequipRibbon(false);
 				setShowNprojectRibbon(false);
+				setShowNcountRibbon(false);
+				setShowNbuildRibbon(false);
+				setShowNcaravanRibbon(false);
+				setShowNmechanicRibbon(false);
+				setShowNeventsRibbon(false);
+				setShowNserviceRibbon(false);
+				setShowNtaskRibbon(false);
+				setShowNproductionRibbon(false);
+				setShowNticketRibbon(false);
+				setShowNsalesRibbon(false);
+				setShowNinvoiceRibbon(false);
+				setShowNdocRibbon(false);
+				setShowNsportsRibbon(false);
+				setShowNgymRibbon(false);
+				setShowNschoolRibbon(false);
+				setShowNclinicRibbon(false);
+				setShowNopticsRibbon(false);
+				setShowNgoldRibbon(false);
 				setShowNsmartRibbon(false);
 				setShowNrealityRibbon(false);
 				setShowNhologramRibbon(false);
@@ -1052,6 +1288,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 				setShowNautRibbon(false);
 				setShowNequipRibbon(false);
 				setShowNprojectRibbon(false);
+				setShowNcountRibbon(false);
+				setShowNbuildRibbon(false);
+				setShowNcaravanRibbon(false);
+				setShowNmechanicRibbon(false);
+				setShowNeventsRibbon(false);
+				setShowNserviceRibbon(false);
+				setShowNtaskRibbon(false);
+				setShowNproductionRibbon(false);
+				setShowNticketRibbon(false);
+				setShowNsalesRibbon(false);
+				setShowNinvoiceRibbon(false);
+				setShowNdocRibbon(false);
+				setShowNsportsRibbon(false);
+				setShowNgymRibbon(false);
+				setShowNschoolRibbon(false);
+				setShowNclinicRibbon(false);
+				setShowNopticsRibbon(false);
+				setShowNgoldRibbon(false);
 				setShowNsmartRibbon(false);
 				setShowNrealityRibbon(false);
 				setShowNhologramRibbon(false);
@@ -1117,6 +1371,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 		{ id: 'naut', title: 'NAUT', show: showNautTab },
 		{ id: 'nequip', title: 'NEQUIP', show: showNequipTab },
 		{ id: 'nproject', title: 'NPROJECT', show: showNprojectTab },
+		{ id: 'ncount', title: 'NCOUNT', show: showNcountTab },
+		{ id: 'nbuild', title: 'NBUILD', show: showNbuildTab },
+		{ id: 'ncaravan', title: 'NCARAVAN', show: showNcaravanTab },
+		{ id: 'nmechanic', title: 'NMECHANIC', show: showNmechanicTab },
+		{ id: 'nevents', title: 'NEVENTS', show: showNeventsTab },
+		{ id: 'nservice', title: 'NSERVICE', show: showNserviceTab },
+		{ id: 'ntask', title: 'NTASK', show: showNtaskTab },
+		{ id: 'nproduction', title: 'NPRODUCTION', show: showNproductionTab },
+		{ id: 'nticket', title: 'NTICKET', show: showNticketTab },
+		{ id: 'nsales', title: 'NSALES', show: showNsalesTab },
+		{ id: 'ninvoice', title: 'NINVOICE', show: showNinvoiceTab },
+		{ id: 'ndoc', title: 'NDOC', show: showNdocTab },
+		{ id: 'nsports', title: 'NSPORTS', show: showNsportsTab },
+		{ id: 'ngym', title: 'NGYM', show: showNgymTab },
+		{ id: 'nschool', title: 'NSCHOOL', show: showNschoolTab },
+		{ id: 'nclinic', title: 'NCLINIC', show: showNclinicTab },
+		{ id: 'noptics', title: 'NOPTICS', show: showNopticsTab },
+		{ id: 'ngold', title: 'NGOLD', show: showNgoldTab },
 		{ id: 'nsmart', title: 'NSMART', show: showNsmartTab },
 		{ id: 'nreality', title: 'NREALITY', show: showNrealityTab },
 		{ id: 'nhologram', title: 'NHOLOGRAM', show: showNhologramTab },
@@ -1968,17 +2240,34 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/nkiosk/nkioskgraph" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={graphs} alt="botão gráficos" />
 													</span>
 													<span className="text">Gráficos</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nkiosk')}>
 										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nkiosk') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nkiosk')}>
+										<span className="title">Módulos</span>
 									</div>
 								</div>
 							</div>

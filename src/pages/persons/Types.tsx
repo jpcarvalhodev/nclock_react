@@ -226,7 +226,7 @@ export const Types = () => {
                         onRowDoubleClicked={handleEditExternalEntity}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={false}
                         defaultSortFieldId="order"

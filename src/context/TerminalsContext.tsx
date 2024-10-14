@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import { ReactNode } from 'react';
 import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus } from '../helpers/Types';
 import { toast } from 'react-toastify';
@@ -292,6 +292,11 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             console.error('Erro ao adicionado dispositivos:', error);
         }
     }
+
+    // Busca todos os dispositivos ao carregar o componente
+    useEffect(() => {
+        fetchAllDevices();
+    }, []);
 
     // Define o valor do contexto
     const contextValue: DeviceContextType = {

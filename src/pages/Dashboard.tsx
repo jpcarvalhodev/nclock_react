@@ -9,9 +9,9 @@ import npatrol from '../assets/img/navbar/navbar/npatrol.webp';
 import ncard from '../assets/img/navbar/navbar/ncard.webp';
 import nview from '../assets/img/navbar/navbar/nview.webp';
 import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
-import { Card, Tab, Nav } from "react-bootstrap";
+import { Card, Tab, Nav, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import nsoftware from '../assets/img/navbar/navbar/nsoftware.webp';
 import nsystem from '../assets/img/navbar/navbar/nsystem.webp';
 import napp from '../assets/img/navbar/navbar/napp.webp';
@@ -21,6 +21,24 @@ import nserver from '../assets/img/navbar/navbar/nserver.webp';
 import naut from '../assets/img/navbar/navbar/naut.webp';
 import nequip from '../assets/img/navbar/navbar/nequip.webp';
 import nproject from '../assets/img/navbar/navbar/nproject.webp';
+import ncount from '../assets/img/navbar/navbar/ncount.png';
+import nbuild from '../assets/img/navbar/navbar/nbuild.png';
+import ncaravan from '../assets/img/navbar/navbar/ncaravan.png';
+import nmechanic from '../assets/img/navbar/navbar/nmechanic.png';
+import nevents from '../assets/img/navbar/navbar/nevents.png';
+import nservice from '../assets/img/navbar/navbar/nservice.png';
+import ntask from '../assets/img/navbar/navbar/ntask.png';
+import nproduction from '../assets/img/navbar/navbar/nproduction.png';
+import nticket from '../assets/img/navbar/navbar/nticket.png';
+import nsales from '../assets/img/navbar/navbar/nsales.png';
+import ninvoice from '../assets/img/navbar/navbar/ninvoice.png';
+import ndoc from '../assets/img/navbar/navbar/ndoc.png';
+import nsports from '../assets/img/navbar/navbar/nsports.png';
+import ngym from '../assets/img/navbar/navbar/ngym.png';
+import nschool from '../assets/img/navbar/navbar/nschool.png';
+import nclinic from '../assets/img/navbar/navbar/nclinic.png';
+import noptics from '../assets/img/navbar/navbar/noptics.png';
+import ngold from '../assets/img/navbar/navbar/ngold.png';
 import nsmart from '../assets/img/navbar/navbar/nsmart.webp';
 import nreality from '../assets/img/navbar/navbar/nreality.webp';
 import nhologram from '../assets/img/navbar/navbar/nhologram.webp';
@@ -187,7 +205,25 @@ export const Dashboard = () => {
             { title: 'Naut', img: naut },
             { title: 'Nequip', img: nequip },
             { title: 'Nproject', img: nproject },
-            { title: 'Nsoftwares', img: nidsof }
+            { title: 'Ncount', img: ncount },
+            { title: 'Nbuild', img: nbuild },
+            { title: 'Ncaravan', img: ncaravan },
+            { title: 'Nmechanic', img: nmechanic },
+            { title: 'Nevents', img: nevents },
+            { title: 'Nservice', img: nservice },
+            { title: 'Ntask', img: ntask },
+            { title: 'Nproduction', img: nproduction },
+            { title: 'Nticket', img: nticket },
+            { title: 'Nsales', img: nsales },
+            { title: 'Ninvoice', img: ninvoice },
+            { title: 'Ndoc', img: ndoc },
+            { title: 'Nsports', img: nsports },
+            { title: 'Ngym', img: ngym },
+            { title: 'Nschool', img: nschool },
+            { title: 'Nclinic', img: nclinic },
+            { title: 'Noptics', img: noptics },
+            { title: 'Ngold', img: ngold },
+            { title: 'Nsoftwares', img: nidsof },
         ],
         'NIDTEC': [
             { title: 'Nsmart', img: nsmart },
@@ -216,20 +252,45 @@ export const Dashboard = () => {
     };
 
     // Função para renderizar os cards com base na aba ativa
-    const renderCards = (tabKey: TabName) => (
-        <div className="dashboard-cards-container">
-            {cardData[tabKey].map((card, index) => (
-                <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
-                    <Card className="card">
-                        <Card.Img variant="top" src={card.img} className="card-img" />
-                        <Card.Body>
-                            <Card.Title className="card-title">{card.title}</Card.Title>
-                        </Card.Body>
-                    </Card>
+    const RenderCards = (tabKey: TabName) => {
+        const cardContainerRef = useRef<HTMLDivElement>(null);
+
+        const scrollLeft = () => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollBy({ left: -250, behavior: 'smooth' });
+            }
+        };
+
+        const scrollRight = () => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollBy({ left: 250, behavior: 'smooth' });
+            }
+        };
+
+        const cards = cardData[tabKey];
+        const numCards = cards.length;
+
+        const alignmentClass = numCards < 10 ? 'cards-center' : 'cards-left';
+
+        return (
+            <div className="dashboard-cards-container">
+                <Button className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
+                <div id="cardContainer" className={`card-container ${alignmentClass}`} ref={cardContainerRef}>
+                    {cardData[tabKey].map((card, index) => (
+                        <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
+                            <Card className="card">
+                                <Card.Img variant="top" src={card.img} className="card-img" />
+                                <Card.Body>
+                                    <Card.Title className="card-title">{card.title}</Card.Title>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
-    );
+                <Button className="arrows-cards" onClick={scrollRight}>{">"}</Button>
+            </div>
+        );
+    };
 
     return (
         <div className="dashboard-container">
@@ -251,7 +312,7 @@ export const Dashboard = () => {
                             <Tab.Pane eventKey={key} key={key}>
                                 <div className='tab-content-wrapper'>
                                     <div className="row d-flex justify-content-center">
-                                        {renderCards(key as TabName)}
+                                        {RenderCards(key as TabName)}
                                     </div>
                                 </div>
                             </Tab.Pane>
@@ -270,143 +331,143 @@ export const Dashboard = () => {
                     {activeKey === 'CLIENTE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_nidgroup} alt="NIDGROUP" />
+                                <img className="img-carousel-dashboard" src={banner_nidgroup} alt="NIDGROUP" />
                             </div>
                         </Carousel>
                     )}
                     {activeKey === 'SISNID' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_sisnid} alt="SISNID" />
+                                <img className="img-carousel-dashboard" src={banner_sisnid} alt="SISNID" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nclock} alt="Nclock" />
+                                <img className="img-carousel-dashboard" src={banner_nclock} alt="Nclock" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_naccess} alt="Naccess" />
+                                <img className="img-carousel-dashboard" src={banner_naccess} alt="Naccess" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nvisitor} alt="Nvisitor" />
+                                <img className="img-carousel-dashboard" src={banner_nvisitor} alt="Nvisitor" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_npark} alt="Npark" />
+                                <img className="img-carousel-dashboard" src={banner_npark} alt="Npark" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_ndoor} alt="Ndoor" />
+                                <img className="img-carousel-dashboard" src={banner_ndoor} alt="Ndoor" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_npatrol} alt="Npatrol" />
+                                <img className="img-carousel-dashboard" src={banner_npatrol} alt="Npatrol" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_ncard} alt="Ncard" />
+                                <img className="img-carousel-dashboard" src={banner_ncard} alt="Ncard" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nview} alt="Nview" />
+                                <img className="img-carousel-dashboard" src={banner_nview} alt="Nview" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nsecur} alt="Nsecur" />
+                                <img className="img-carousel-dashboard" src={banner_nsecur} alt="Nsecur" />
                             </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDSOF' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_nidsof} alt="NIDSOF" />
+                                <img className="img-carousel-dashboard" src={banner_nidsof} alt="NIDSOF" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nsoftware} alt="Nsoftware" />
+                                <img className="img-carousel-dashboard" src={banner_nsoftware} alt="Nsoftware" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nsystem} alt="Nsystem" />
+                                <img className="img-carousel-dashboard" src={banner_nsystem} alt="Nsystem" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_napp} alt="Napp" />
+                                <img className="img-carousel-dashboard" src={banner_napp} alt="Napp" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_ncyber} alt="Ncyber" />
+                                <img className="img-carousel-dashboard" src={banner_ncyber} alt="Ncyber" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_ndigital} alt="Ndigital" />
+                                <img className="img-carousel-dashboard" src={banner_ndigital} alt="Ndigital" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nserver} alt="Nserver" />
+                                <img className="img-carousel-dashboard" src={banner_nserver} alt="Nserver" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_naut} alt="Naut" />
+                                <img className="img-carousel-dashboard" src={banner_naut} alt="Naut" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nequip} alt="Nequip" />
+                                <img className="img-carousel-dashboard" src={banner_nequip} alt="Nequip" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nproject} alt="Nproject" />
+                                <img className="img-carousel-dashboard" src={banner_nproject} alt="Nproject" />
                             </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDTEC' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_nidtec} alt="NIDTEC" />
+                                <img className="img-carousel-dashboard" src={banner_nidtec} alt="NIDTEC" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nsmart} alt="Nsmart" />
+                                <img className="img-carousel-dashboard" src={banner_nsmart} alt="Nsmart" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nreality} alt="Nreality" />
+                                <img className="img-carousel-dashboard" src={banner_nreality} alt="Nreality" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nhologram} alt="Nhologram" />
+                                <img className="img-carousel-dashboard" src={banner_nhologram} alt="Nhologram" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_npower} alt="Npower" />
+                                <img className="img-carousel-dashboard" src={banner_npower} alt="Npower" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_ncharge} alt="Ncharge" />
+                                <img className="img-carousel-dashboard" src={banner_ncharge} alt="Ncharge" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_ncity} alt="Ncity" />
+                                <img className="img-carousel-dashboard" src={banner_ncity} alt="Ncity" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nkiosk} alt="Nkiosk" />
+                                <img className="img-carousel-dashboard" src={banner_nkiosk} alt="Nkiosk" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nled} alt="Nled" />
+                                <img className="img-carousel-dashboard" src={banner_nled} alt="Nled" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nfire} alt="Nfire" />
+                                <img className="img-carousel-dashboard" src={banner_nfire} alt="Nfire" />
                             </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDPLACE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_nidplace} alt="NIDPLACE" />
+                                <img className="img-carousel-dashboard" src={banner_nidplace} alt="NIDPLACE" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nfurniture} alt="Nfurniture" />
+                                <img className="img-carousel-dashboard" src={banner_nfurniture} alt="Nfurniture" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_npartition} alt="Npartition" />
+                                <img className="img-carousel-dashboard" src={banner_npartition} alt="Npartition" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_ndecor} alt="Ndecor" />
+                                <img className="img-carousel-dashboard" src={banner_ndecor} alt="Ndecor" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nping} alt="Nping" />
+                                <img className="img-carousel-dashboard" src={banner_nping} alt="Nping" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nconnect} alt="Nconnect" />
+                                <img className="img-carousel-dashboard" src={banner_nconnect} alt="Nconnect" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nlight} alt="Nlight" />
+                                <img className="img-carousel-dashboard" src={banner_nlight} alt="Nlight" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_ncomfort} alt="Ncomfort" />
+                                <img className="img-carousel-dashboard" src={banner_ncomfort} alt="Ncomfort" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nsound} alt="Nsound" />
+                                <img className="img-carousel-dashboard" src={banner_nsound} alt="Nsound" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nhome} alt="Nhome" />
+                                <img className="img-carousel-dashboard" src={banner_nhome} alt="Nhome" />
                             </div>
                         </Carousel>
                     )}
@@ -421,44 +482,44 @@ export const Dashboard = () => {
                     {activeKey === 'CLIENTE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_sisnid} alt="SISNID" />
+                                <img className="img-carousel-dashboard" src={banner_sisnid} alt="SISNID" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nidsof} alt="NIDSOF" />
+                                <img className="img-carousel-dashboard" src={banner_nidsof} alt="NIDSOF" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nidtec} alt="NIDTEC" />
+                                <img className="img-carousel-dashboard" src={banner_nidtec} alt="NIDTEC" />
                             </div>
                             <div>
-                                <img className="img-carousel" src={banner_nidplace} alt="NIDPLACE" />
+                                <img className="img-carousel-dashboard" src={banner_nidplace} alt="NIDPLACE" />
                             </div>
                         </Carousel>
                     )}
                     {activeKey === 'SISNID' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_sisnid} alt="SISNID" />
+                                <img className="img-carousel-dashboard" src={banner_sisnid} alt="SISNID" />
                             </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDSOF' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_nidsof} alt="NIDSOF" />
+                                <img className="img-carousel-dashboard" src={banner_nidsof} alt="NIDSOF" />
                             </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDTEC' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_nidtec} alt="NIDTEC" />
+                                <img className="img-carousel-dashboard" src={banner_nidtec} alt="NIDTEC" />
                             </div>
                         </Carousel>
                     )}
                     {activeKey === 'NIDPLACE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
-                                <img className="img-carousel" src={banner_nidplace} alt="NIDPLACE" />
+                                <img className="img-carousel-dashboard" src={banner_nidplace} alt="NIDPLACE" />
                             </div>
                         </Carousel>
                     )}
