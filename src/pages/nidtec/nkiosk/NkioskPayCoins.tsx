@@ -166,7 +166,13 @@ export const NkioskPayCoins = () => {
                     case 'deviceSN':
                         return deviceName || 'Sem Dados';
                     case 'timestamp':
-                        return new Date(row[field.key]).toLocaleString() || '';
+                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        });
                     case 'transactionType':
                         return row[field.key] === 1 ? 'Multibanco' : 'Moedeiro';
                     default:
@@ -190,7 +196,13 @@ export const NkioskPayCoins = () => {
                 sortable: true,
                 cell: (row: KioskTransactionMB) => {
                     if (field.key === 'timestamp') {
-                        return new Date(row.timestamp).toLocaleString();
+                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        });
                     }
                     return formatField(row);
                 }

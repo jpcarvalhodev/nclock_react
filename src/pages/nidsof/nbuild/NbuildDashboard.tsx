@@ -1,10 +1,10 @@
 import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import product_napp from "../../../assets/img/carousel/product_napp.webp";
+import product_nbuild from "../../../assets/img/carousel/product_nbuild.png";
 import { useColor } from "../../../context/ColorContext";
-import { Card, Nav, Tab } from "react-bootstrap";
-import { useState } from "react";
+import { Button, Card, Nav, Tab } from "react-bootstrap";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import nclock from '../../../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../../../assets/img/navbar/navbar/naccess.webp';
@@ -137,7 +137,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
     return title in tabData;
 };
 
-export const NappDashboard = () => {
+export const NbuildDashboard = () => {
     const { navbarColor, footerColor } = useColor();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDSOF');
@@ -231,26 +231,51 @@ export const NappDashboard = () => {
     };
 
     // Função para renderizar os cards com base na aba ativa
-    const renderCards = (tabKey: TabName) => (
-        <div className="dashboard-cards-container">
-            {cardData[tabKey].map((card, index) => (
-                <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
-                    <Card className="card">
-                        <Card.Img variant="top" src={card.img} className="card-img" />
-                        <Card.Body>
-                            <Card.Title className="card-title">{card.title}</Card.Title>
-                        </Card.Body>
-                    </Card>
+    const RenderCards = (tabKey: TabName) => {
+        const cardContainerRef = useRef<HTMLDivElement>(null);
+
+        const scrollLeft = () => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollBy({ left: -250, behavior: 'smooth' });
+            }
+        };
+
+        const scrollRight = () => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollBy({ left: 250, behavior: 'smooth' });
+            }
+        };
+
+        const cards = cardData[tabKey];
+        const numCards = cards.length;
+
+        const alignmentClass = numCards < 10 ? 'cards-center' : 'cards-left';
+
+        return (
+            <div className="dashboard-cards-container">
+                <Button className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
+                <div id="cardContainer" className={`card-container ${alignmentClass}`} ref={cardContainerRef}>
+                    {cardData[tabKey].map((card, index) => (
+                        <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
+                            <Card className="card">
+                                <Card.Img variant="top" src={card.img} className="card-img" />
+                                <Card.Body>
+                                    <Card.Title className="card-title">{card.title}</Card.Title>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
-    );
+                <Button className="arrows-cards" onClick={scrollRight}>{">"}</Button>
+            </div>
+        );
+    };
 
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text" style={{ color: '#D01313' }}>
-                <span>Napp Dashboard</span>
+                <span>Nbuild Dashboard</span>
             </div>
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
@@ -266,7 +291,7 @@ export const NappDashboard = () => {
                             <Tab.Pane eventKey={key} key={key}>
                                 <div className='tab-content-wrapper'>
                                     <div className="row d-flex justify-content-center">
-                                        {renderCards(key as TabName)}
+                                        {RenderCards(key as TabName)}
                                     </div>
                                 </div>
                             </Tab.Pane>
@@ -278,20 +303,21 @@ export const NappDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_napp} alt="Napp" />
+                            <img className="img-carousel" src={product_nbuild} alt="Nbuild" />
                         </div>
                     </Carousel>
                 </div>
                 <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">Software Napp</h3>
+                    <h3 className="dashboard-title-text-inside">Software Nbuild</h3>
                     <p className="dashboard-text-inside">
-                        O Napp é um software pensado para as diferentes necessidades tecnológicas das empresas, na esfera das Aplicações Móveis. Ele permite-lhe:
+                        O Nbuild é um software pensado para as diferentes necessidades de controlo das empresas, no âmbito da Gestão de Obras. Ele permite-lhe:
                     </p>
-                    <p>- Facilitar o acesso por outros dispositivos;</p>
-                    <p>- Aumentar a credibilidade;</p>
-                    <p>- Garantir maior produtividade;</p>
-                    <p>- Aumentar a notoriedade;</p>
-                    <p>- Aumentar o reconhecimento da marca.</p>
+                    <p>- Registar as fichas dos funcionários;</p>
+                    <p>- Controlar e validar documentos;</p>
+                    <p>- Produzir relatórios relacionados com a obra;</p>
+                    <p>- Registar responsáveis por tarefas;</p>
+                    <p>- Aceder através de qualquer dispositivo;</p>
+                    <p>- Efetuar backups diários para total segurança da informação.</p>
                     <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>

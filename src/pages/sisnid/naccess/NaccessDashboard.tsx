@@ -1,14 +1,14 @@
 import { Bar } from "react-chartjs-2";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EmployeeAttendanceTimes } from "../../../helpers/Types";
 import '../../../css/PagesStyles.css';
 import * as apiService from "../../../helpers/apiService";
 import { Carousel } from "react-responsive-carousel";
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
 import { useColor } from "../../../context/ColorContext";
-import { Card, Nav, Tab } from "react-bootstrap";
+import { Button, Card, Nav, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import nclock from '../../../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../../../assets/img/navbar/navbar/naccess.webp';
@@ -273,20 +273,45 @@ export const NaccessDashboard = () => {
     };
 
     // Função para renderizar os cards com base na aba ativa
-    const renderCards = (tabKey: TabName) => (
-        <div className="dashboard-cards-container">
-            {cardData[tabKey].map((card, index) => (
-                <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
-                    <Card className="card">
-                        <Card.Img variant="top" src={card.img} className="card-img" />
-                        <Card.Body>
-                            <Card.Title className="card-title">{card.title}</Card.Title>
-                        </Card.Body>
-                    </Card>
+    const RenderCards = (tabKey: TabName) => {
+        const cardContainerRef = useRef<HTMLDivElement>(null);
+
+        const scrollLeft = () => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollBy({ left: -250, behavior: 'smooth' });
+            }
+        };
+
+        const scrollRight = () => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollBy({ left: 250, behavior: 'smooth' });
+            }
+        };
+
+        const cards = cardData[tabKey];
+        const numCards = cards.length;
+
+        const alignmentClass = numCards < 10 ? 'cards-center' : 'cards-left';
+
+        return (
+            <div className="dashboard-cards-container">
+                <Button className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
+                <div id="cardContainer" className={`card-container ${alignmentClass}`} ref={cardContainerRef}>
+                    {cardData[tabKey].map((card, index) => (
+                        <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
+                            <Card className="card">
+                                <Card.Img variant="top" src={card.img} className="card-img" />
+                                <Card.Body>
+                                    <Card.Title className="card-title">{card.title}</Card.Title>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
-    );
+                <Button className="arrows-cards" onClick={scrollRight}>{">"}</Button>
+            </div>
+        );
+    };
 
     return (
         <div className="dashboard-container">
@@ -308,7 +333,7 @@ export const NaccessDashboard = () => {
                             <Tab.Pane eventKey={key} key={key}>
                                 <div className='tab-content-wrapper'>
                                     <div className="row d-flex justify-content-center">
-                                        {renderCards(key as TabName)}
+                                        {RenderCards(key as TabName)}
                                     </div>
                                 </div>
                             </Tab.Pane>

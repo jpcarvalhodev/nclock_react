@@ -248,7 +248,13 @@ export const NkioskListPayments = () => {
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
-                        return row.timestamp ? new Date(row.timestamp).toLocaleString() : '';
+                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        });
                     case 'clientTicket':
                     case 'merchantTicket':
                         const imageUrl = row[field.key];
@@ -284,7 +290,13 @@ export const NkioskListPayments = () => {
                 sortable: true,
                 cell: (row: KioskTransactionMB) => {
                     if (field.key === 'timestamp') {
-                        return new Date(row.timestamp).toLocaleString();
+                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        });
                     }
                     return formatField(row);
                 }

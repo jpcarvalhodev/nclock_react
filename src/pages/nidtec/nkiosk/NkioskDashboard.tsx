@@ -9,8 +9,8 @@ import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Card, Nav, Tab } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { Button, Card, Nav, Tab } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import nclock from '../../../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../../../assets/img/navbar/navbar/naccess.webp';
@@ -435,20 +435,45 @@ export const NkioskDashboard = () => {
     };
 
     // Função para renderizar os cards com base na aba ativa
-    const renderCards = (tabKey: TabName) => (
-        <div className="dashboard-cards-container">
-            {cardData[tabKey].map((card, index) => (
-                <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
-                    <Card className="card">
-                        <Card.Img variant="top" src={card.img} className="card-img" />
-                        <Card.Body>
-                            <Card.Title className="card-title">{card.title}</Card.Title>
-                        </Card.Body>
-                    </Card>
+    const RenderCards = (tabKey: TabName) => {
+        const cardContainerRef = useRef<HTMLDivElement>(null);
+
+        const scrollLeft = () => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollBy({ left: -250, behavior: 'smooth' });
+            }
+        };
+
+        const scrollRight = () => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollBy({ left: 250, behavior: 'smooth' });
+            }
+        };
+
+        const cards = cardData[tabKey];
+        const numCards = cards.length;
+
+        const alignmentClass = numCards < 10 ? 'cards-center' : 'cards-left';
+
+        return (
+            <div className="dashboard-cards-container">
+                <Button className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
+                <div id="cardContainer" className={`card-container ${alignmentClass}`} ref={cardContainerRef}>
+                    {cardData[tabKey].map((card, index) => (
+                        <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
+                            <Card className="card">
+                                <Card.Img variant="top" src={card.img} className="card-img" />
+                                <Card.Body>
+                                    <Card.Title className="card-title">{card.title}</Card.Title>
+                                </Card.Body>
+                            </Card>
+                        </div>
+                    ))}
                 </div>
-            ))}
-        </div>
-    );
+                <Button className="arrows-cards" onClick={scrollRight}>{">"}</Button>
+            </div>
+        );
+    };
 
     // Função para renderizar os eventos no calendário
     const MyEvent = ({ event }: MyEventProps) => {
@@ -479,7 +504,7 @@ export const NkioskDashboard = () => {
                             <Tab.Pane eventKey={key} key={key}>
                                 <div className='tab-content-wrapper'>
                                     <div className="row d-flex justify-content-center">
-                                        {renderCards(key as TabName)}
+                                        {RenderCards(key as TabName)}
                                     </div>
                                 </div>
                             </Tab.Pane>

@@ -88,6 +88,24 @@ import { NkioskMoveVP } from './pages/nidtec/nkiosk/NkioskMoveVP';
 import { TerminalsMB } from './pages/devices/TerminalsMB';
 import { TerminalCloseOpen } from './pages/devices/TerminalCloseOpen';
 import { NkioskGraph } from './pages/nidtec/nkiosk/NkioskGraph';
+import { NcaravanDashboard } from './pages/nidsof/ncaravan/NcaravanDashboard';
+import { NclinicDashboard } from './pages/nidsof/nclinic/NclinicDashboard';
+import { NcountDashboard } from './pages/nidsof/ncount/NcountDashboard';
+import { NdocDashboard } from './pages/nidsof/ndoc/NdocDashboard';
+import { NeventsDashboard } from './pages/nidsof/nevents/NeventsDashboard';
+import { NgoldDashboard } from './pages/nidsof/ngold/NgoldDashboard';
+import { NgymDashboard } from './pages/nidsof/ngym/NgymDashboard';
+import { NinvoiceDashboard } from './pages/nidsof/ninvoice/NinvoiceDashboard';
+import { NmechanicDashboard } from './pages/nidsof/nmechanic/NmechanicDashboard';
+import { NopticsDashboard } from './pages/nidsof/noptics/NopticsDashboard';
+import { NproductionDashboard } from './pages/nidsof/nproduction/NproductionDashboard';
+import { NsalesDashboard } from './pages/nidsof/nsales/NsalesDashboard';
+import { NschoolDashboard } from './pages/nidsof/nschool/NschoolDashboard';
+import { NserviceDashboard } from './pages/nidsof/nservice/NserviceDashboard';
+import { NsportsDashboard } from './pages/nidsof/nsports/NsportsDashboard';
+import { NtaskDashboard } from './pages/nidsof/ntask/NtaskDashboard';
+import { NticketDashboard } from './pages/nidsof/nticket/NticketDashboard';
+import { NbuildDashboard } from './pages/nidsof/nbuild/NbuildDashboard';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -177,6 +195,24 @@ function AnimatedRoutes() {
               <Route path="/naut/nautdashboard" element={<PageProtection><NautDashboard /></PageProtection>} />
               <Route path="/nequip/nequipdashboard" element={<PageProtection><NequipDashboard /></PageProtection>} />
               <Route path="/nproject/nprojectdashboard" element={<PageProtection><NprojectDashboard /></PageProtection>} />
+              <Route path="/ncount/ncountdashboard" element={<PageProtection><NcountDashboard /></PageProtection>} />
+              <Route path="/nbuild/nbuilddashboard" element={<PageProtection><NbuildDashboard /></PageProtection>} />
+              <Route path="/ncaravan/ncaravandashboard" element={<PageProtection><NcaravanDashboard /></PageProtection>} />
+              <Route path="/nmechanic/nmechanicdashboard" element={<PageProtection><NmechanicDashboard /></PageProtection>} />
+              <Route path="/nevents/neventsdashboard" element={<PageProtection><NeventsDashboard /></PageProtection>} />
+              <Route path="/nservice/nservicedashboard" element={<PageProtection><NserviceDashboard /></PageProtection>} />
+              <Route path="/ntask/ntaskdashboard" element={<PageProtection><NtaskDashboard /></PageProtection>} />
+              <Route path="/nproduction/nproductiondashboard" element={<PageProtection><NproductionDashboard /></PageProtection>} />
+              <Route path="/nticket/nticketdashboard" element={<PageProtection><NticketDashboard /></PageProtection>} />
+              <Route path="/nsales/nsalesdashboard" element={<PageProtection><NsalesDashboard /></PageProtection>} />
+              <Route path="/ninvoice/ninvoicedashboard" element={<PageProtection><NinvoiceDashboard /></PageProtection>} />
+              <Route path="/ndoc/ndocdashboard" element={<PageProtection><NdocDashboard /></PageProtection>} />
+              <Route path="/nsports/nsportsdashboard" element={<PageProtection><NsportsDashboard /></PageProtection>} />
+              <Route path="/ngym/ngymdashboard" element={<PageProtection><NgymDashboard /></PageProtection>} />
+              <Route path="/nschool/nschooldashboard" element={<PageProtection><NschoolDashboard /></PageProtection>} />
+              <Route path="/nclinic/nclinicdashboard" element={<PageProtection><NclinicDashboard /></PageProtection>} />
+              <Route path="/noptics/nopticsdashboard" element={<PageProtection><NopticsDashboard /></PageProtection>} />
+              <Route path="/ngold/ngolddashboard" element={<PageProtection><NgoldDashboard /></PageProtection>} />
               <Route path="/nsmart/nsmartdashboard" element={<PageProtection><NsmartDashboard /></PageProtection>} />
               <Route path="/nreality/nrealitydashboard" element={<PageProtection><NrealityDashboard /></PageProtection>} />
               <Route path="/nhologram/nhologramdashboard" element={<PageProtection><NhologramDashboard /></PageProtection>} />

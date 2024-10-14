@@ -176,10 +176,19 @@ export const NkioskMoveVP = () => {
                         if (typeof value === 'string') {
                             const [datePart, timePart] = value.split(' ');
                             const [day, month, year] = datePart.split('/');
-                            const formattedDateString = `${year}-${month}-${day}T${timePart}`;
-                            return new Date(formattedDateString).toLocaleString() || '';
+                            const [hour, minute] = timePart.split(':');
+                            const formattedDateString = `${year}-${month}-${day} ${hour}:${minute}`;
+                            return formattedDateString;
                         } else if (value instanceof Date) {
-                            return value.toLocaleString() || '';
+                            return value.toLocaleString('pt-PT', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: undefined,
+                                hour12: false
+                            });
                         }
                         return '';
                     default:
@@ -202,10 +211,19 @@ export const NkioskMoveVP = () => {
                         if (typeof value === 'string') {
                             const [datePart, timePart] = value.split(' ');
                             const [day, month, year] = datePart.split('/');
-                            const formattedDateString = `${year}-${month}-${day}T${timePart}`;
-                            return new Date(formattedDateString).getTime();
+                            const [hour, minute] = timePart.split(':');
+                            const formattedDateString = `${year}-${month}-${day} ${hour}:${minute}`;
+                            return formattedDateString;
                         } else if (value instanceof Date) {
-                            return value.getTime();
+                            return value.toLocaleString('pt-PT', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: undefined,
+                                hour12: false
+                            });
                         }
                         return '';
                     }

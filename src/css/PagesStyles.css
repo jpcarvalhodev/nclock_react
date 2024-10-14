@@ -388,11 +388,11 @@ body {
     border-radius: 5px;
     background: white;
     margin: 10px;
-    max-height: 450px;
+    max-height: 500px;
 }
 
 .img-carousel {
-    margin-top: -75px;
+    margin-top: -40px;
     max-width: 500px;
 }
 
@@ -400,7 +400,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    max-width: 650px;
+    max-width: 750px;
     margin-top: 5px;
 }
 
@@ -580,8 +580,11 @@ body {
     }
 
     .dashboard-cards-container {
-        display: grid;
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-carousel-container {
+        max-height: 800px;
     }
 
     .nav-pills .nav-item {
@@ -619,6 +622,10 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .card-container {
+        justify-content: flex-start !important;
     }
 
 }
@@ -681,5 +688,9 @@ body {
         flex-direction: row;
         margin-left: 0;
         justify-content: flex-start;
+    }
+
+    .card-container {
+        justify-content: flex-start !important;
     }
 }
