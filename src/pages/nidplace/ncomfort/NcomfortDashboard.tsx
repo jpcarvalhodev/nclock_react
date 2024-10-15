@@ -303,7 +303,7 @@ export const NcomfortDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_ncomfort} alt="Ncomfort" />
+                            <img className="img-carousel-place" src={product_ncomfort} alt="Ncomfort" />
                         </div>
                     </Carousel>
                 </div>

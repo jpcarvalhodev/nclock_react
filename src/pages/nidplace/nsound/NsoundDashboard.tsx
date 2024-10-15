@@ -303,7 +303,7 @@ export const NsoundDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_nsound} alt="Nsound" />
+                            <img className="img-carousel-place" src={product_nsound} alt="Nsound" />
                         </div>
                     </Carousel>
                 </div>

@@ -303,7 +303,7 @@ export const NlightDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_nlight} alt="Nlight" />
+                            <img className="img-carousel-place" src={product_nlight} alt="Nlight" />
                         </div>
                     </Carousel>
                 </div>

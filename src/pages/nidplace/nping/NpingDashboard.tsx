@@ -303,7 +303,7 @@ export const NpingDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_nping} alt="Nping" />
+                            <img className="img-carousel-place" src={product_nping} alt="Nping" />
                         </div>
                     </Carousel>
                 </div>

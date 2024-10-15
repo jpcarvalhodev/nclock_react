@@ -177,17 +177,15 @@ export const NkioskMoveVP = () => {
                             const [datePart, timePart] = value.split(' ');
                             const [day, month, year] = datePart.split('/');
                             const [hour, minute] = timePart.split(':');
-                            const formattedDateString = `${year}-${month}-${day} ${hour}:${minute}`;
+                            const formattedDateString = `${day}-${month}-${year} ${hour}:${minute}`;
                             return formattedDateString;
                         } else if (value instanceof Date) {
                             return value.toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         }
                         return '';
@@ -212,17 +210,15 @@ export const NkioskMoveVP = () => {
                             const [datePart, timePart] = value.split(' ');
                             const [day, month, year] = datePart.split('/');
                             const [hour, minute] = timePart.split(':');
-                            const formattedDateString = `${year}-${month}-${day} ${hour}:${minute}`;
+                            const formattedDateString = `${day}-${month}-${year} ${hour}:${minute}`;
                             return formattedDateString;
                         } else if (value instanceof Date) {
                             return value.toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         }
                         return '';

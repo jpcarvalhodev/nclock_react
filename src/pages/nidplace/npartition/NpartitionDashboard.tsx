@@ -303,7 +303,7 @@ export const NpartitionDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_npartition} alt="Npartition" />
+                            <img className="img-carousel-place" src={product_npartition} alt="Npartition" />
                         </div>
                     </Carousel>
                 </div>

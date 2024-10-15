@@ -175,23 +175,19 @@ export const NkioskMoveCard = () => {
                         if (typeof value === 'string') {
                             const dateString = value.replace(' ', 'T');
                             return new Date(dateString).toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         } else if (value instanceof Date) {
                             return value.toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         }
                         return '';
@@ -215,23 +211,19 @@ export const NkioskMoveCard = () => {
                         if (typeof value === 'string') {
                             const dateString = value.replace(' ', 'T');
                             return new Date(dateString).toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         } else if (value instanceof Date) {
                             return value.toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         }
                         return '';
@@ -240,6 +232,29 @@ export const NkioskMoveCard = () => {
                 },
                 sortable: true,
                 cell: (row: KioskTransactionCard) => {
+                    const value = row[field.key as keyof KioskTransactionCard];
+
+                    if (field.key === 'eventTime') {
+                        if (typeof value === 'string') {
+                            const dateString = value.replace(' ', 'T');
+                            return new Date(dateString).toLocaleString('pt-PT', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        } else if (value instanceof Date) {
+                            return value.toLocaleString('pt-PT', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        }
+                        return '';
+                    }
                     return formatField(row);
                 }
             };

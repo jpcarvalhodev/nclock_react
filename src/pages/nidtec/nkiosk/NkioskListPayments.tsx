@@ -118,7 +118,7 @@ export const NkioskListPayments = () => {
         } catch (error) {
             console.error('Erro ao buscar os dados dos terminais:', error);
         }
-    }   
+    }
 
     // Unifica os dados de transações MB e moedas
     const mergePaymentData = () => {
@@ -242,16 +242,16 @@ export const NkioskListPayments = () => {
                     case 'tpId':
                         const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
                         const terminalName = terminalMatch?.nomeQuiosque || '';
-                        return terminalName || 'Sem Dados';    
+                        return terminalName || 'Sem Dados';
                     case 'deviceSN':
                         return deviceName || 'Sem Dados';
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
-                            year: 'numeric',
-                            month: '2-digit',
                             day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
                         });
@@ -283,7 +283,13 @@ export const NkioskListPayments = () => {
                 ),
                 selector: (row: KioskTransactionMB) => {
                     if (field.key === 'timestamp') {
-                        return new Date(row[field.key]).getTime();
+                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        });
                     }
                     return formatField(row);
                 },
@@ -291,9 +297,9 @@ export const NkioskListPayments = () => {
                 cell: (row: KioskTransactionMB) => {
                     if (field.key === 'timestamp') {
                         return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
-                            year: 'numeric',
-                            month: '2-digit',
                             day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
                         });

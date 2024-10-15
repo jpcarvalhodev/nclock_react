@@ -303,7 +303,7 @@ export const NhomeDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_nhome} alt="Nhome" />
+                            <img className="img-carousel-place" src={product_nhome} alt="Nhome" />
                         </div>
                     </Carousel>
                 </div>

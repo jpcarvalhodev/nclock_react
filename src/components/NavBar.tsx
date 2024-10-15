@@ -165,6 +165,7 @@ import nschool from '../assets/img/navbar/navbar/nschool.png';
 import nclinic from '../assets/img/navbar/navbar/nclinic.png';
 import noptics from '../assets/img/navbar/navbar/noptics.png';
 import ngold from '../assets/img/navbar/navbar/ngold.png';
+import open_door from '../assets/img/navbar/nkiosk/open_door.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -2014,7 +2015,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="icon-text-pessoas">
 												<Link to="/nkiosk/nkiosklistpayments" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
-														<img src={card_report} alt="botão listagem de pagamentos" />
+														<img src={card_report} alt="botão pagamentos totais" />
 													</span>
 													<span className="text">Pagamentos Totais</span>
 												</Link>
@@ -2045,7 +2046,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="icon-text-pessoas">
 												<Link to="/nkiosk/nkiosklistmovements" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
-														<img src={coin_report} alt="botão listagem de movimentos " />
+														<img src={coin_report} alt="botão movimentos totais" />
 													</span>
 													<span className="text">Movimentos Totais</span>
 												</Link>
@@ -2062,10 +2063,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="icon-text-pessoas">
 												<Link to="/nkiosk/nkioskmovevp" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
-														<img src={intercom} alt="botão listagem de movimentos " />
+														<img src={intercom} alt="botão vídeo porteiro" />
 													</span>
 													<span className="text">Video Porteiro</span>
 												</Link>
+											</div>
+											<div className="icon-text-pessoas">
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={open_door} alt="botão abertura manual" />
+													</span>
+													<span className="text">Abertura Manual</span>
+												</Button>
 											</div>
 										</div>
 									)}

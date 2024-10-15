@@ -43,7 +43,7 @@ export const NkioskMoveKiosk = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '4';
-    
+
     const deviceSN = 'AGB7234900595';
     const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
     const deviceName = matchedDevice?.deviceName || '';
@@ -157,7 +157,7 @@ export const NkioskMoveKiosk = () => {
         new Set(filteredDataTable.map(item => item.eventTime))
     ).map(eventTime => {
         return filteredDataTable.find(item => item.eventTime === eventTime);
-    }).filter((item): item is KioskTransactionCard => item !== undefined);  
+    }).filter((item): item is KioskTransactionCard => item !== undefined);
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
@@ -175,23 +175,19 @@ export const NkioskMoveKiosk = () => {
                         if (typeof value === 'string') {
                             const dateString = value.replace(' ', 'T');
                             return new Date(dateString).toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         } else if (value instanceof Date) {
                             return value.toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         }
                         return '';
@@ -215,23 +211,19 @@ export const NkioskMoveKiosk = () => {
                         if (typeof value === 'string') {
                             const dateString = value.replace(' ', 'T');
                             return new Date(dateString).toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         } else if (value instanceof Date) {
                             return value.toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         }
                         return '';

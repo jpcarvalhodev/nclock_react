@@ -303,7 +303,7 @@ export const NdecorDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_ndecor} alt="Ndecor" />
+                            <img className="img-carousel-place" src={product_ndecor} alt="Ndecor" />
                         </div>
                     </Carousel>
                 </div>

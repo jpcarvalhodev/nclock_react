@@ -303,7 +303,7 @@ export const NconnectDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel" src={product_nconnect} alt="Nconnect" />
+                            <img className="img-carousel-place" src={product_nconnect} alt="Nconnect" />
                         </div>
                     </Carousel>
                 </div>

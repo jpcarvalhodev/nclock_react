@@ -244,23 +244,19 @@ export const NkioskListMovements = () => {
                         if (typeof value === 'string') {
                             const dateString = value.replace(' ', 'T');
                             return new Date(dateString).toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         } else if (value instanceof Date) {
                             return value.toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         }
                         return '';
@@ -284,23 +280,19 @@ export const NkioskListMovements = () => {
                         if (typeof value === 'string') {
                             const dateString = value.replace(' ', 'T');
                             return new Date(dateString).toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         } else if (value instanceof Date) {
                             return value.toLocaleString('pt-PT', {
-                                year: 'numeric',
-                                month: '2-digit',
                                 day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit',
-                                second: undefined,
-                                hour12: false
+                                minute: '2-digit'
                             });
                         }
                         return '';

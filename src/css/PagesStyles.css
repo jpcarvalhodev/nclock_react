@@ -56,7 +56,7 @@ body {
     align-items: center;
     scroll-behavior: smooth;
     overflow-x: hidden;
-    width: 60vw;
+    width: 70vw;
 }
 
 .card-container.cards-left {
@@ -65,7 +65,7 @@ body {
     align-items: center;
     scroll-behavior: smooth;
     overflow-x: hidden;
-    width: 60vw;
+    width: 70vw;
 }
 
 .arrows-cards {
@@ -406,6 +406,11 @@ body {
 
 .img-carousel-licensed {
     max-width: 700px;
+}
+
+.img-carousel-place {
+    margin-top: -40px;
+    width: 600px !important;
 }
 
 .dashboard-tabs-container {
