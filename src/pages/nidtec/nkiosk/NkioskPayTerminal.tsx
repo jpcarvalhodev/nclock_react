@@ -161,13 +161,7 @@ export const NkioskPayTerminal = () => {
                     case 'deviceSN':
                         return 'Sem Dados';
                     case 'timestamp':
-                        return new Date(row[field.key]).toLocaleString('pt-PT', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        }) || '';
+                        return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':
                         return row[field.key] === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'clientTicket':
@@ -196,31 +190,9 @@ export const NkioskPayTerminal = () => {
                         <SelectFilter column={field.key} setFilters={setFilters} data={payTerminal} />
                     </>
                 ),
-                selector: (row: KioskTransactionMB) => {
-                    if (field.key === 'timestamp') {
-                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        });
-                    }
-                    return formatField(row);
-                },
+                selector: row => formatField(row),
                 sortable: true,
-                cell: (row: KioskTransactionMB) => {
-                    if (field.key === 'timestamp') {
-                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        });
-                    }
-                    return formatField(row);
-                }
+                sortFunction: (rowA, rowB) => new Date(rowB.timestamp).getTime() - new Date(rowA.timestamp).getTime()
             };
         });
 
@@ -309,7 +281,7 @@ export const NkioskPayTerminal = () => {
                                     selectableRowsHighlight
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
-                                    defaultSortAsc={false}
+                                    defaultSortAsc={true}
                                     defaultSortFieldId="timestamp"
                                 />
                             </div>

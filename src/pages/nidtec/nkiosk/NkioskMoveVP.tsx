@@ -173,22 +173,10 @@ export const NkioskMoveVP = () => {
                     case 'eventDoorId':
                         return 'Video Porteiro';
                     case 'eventTime':
-                        if (typeof value === 'string') {
-                            const [datePart, timePart] = value.split(' ');
-                            const [day, month, year] = datePart.split('/');
-                            const [hour, minute] = timePart.split(':');
-                            const formattedDateString = `${day}-${month}-${year} ${hour}:${minute}`;
-                            return formattedDateString;
-                        } else if (value instanceof Date) {
-                            return value.toLocaleString('pt-PT', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                        }
-                        return '';
+                        const dateString = typeof value === 'string' ? value : value instanceof Date ? value.toISOString() : '';
+                        const [datePart, timePart] = dateString.split(' ');
+                        const formattedDatePart = datePart.replace(/\//g, '/');
+                        return `${formattedDatePart} ${timePart}`;
                     default:
                         return value ?? '';
                 }
@@ -202,32 +190,12 @@ export const NkioskMoveVP = () => {
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
-                selector: (row: KioskTransactionCard) => {
-                    const value = row[field.key as keyof KioskTransactionCard];
-
-                    if (field.key === 'eventTime') {
-                        if (typeof value === 'string') {
-                            const [datePart, timePart] = value.split(' ');
-                            const [day, month, year] = datePart.split('/');
-                            const [hour, minute] = timePart.split(':');
-                            const formattedDateString = `${day}-${month}-${year} ${hour}:${minute}`;
-                            return formattedDateString;
-                        } else if (value instanceof Date) {
-                            return value.toLocaleString('pt-PT', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                        }
-                        return '';
-                    }
-                    return formatField(row);
-                },
+                selector: row => formatField(row),
                 sortable: true,
-                cell: (row: KioskTransactionCard) => {
-                    return formatField(row);
+                sortFunction: (rowA, rowB) => {
+                    const dateA = new Date(formatField(rowA).replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
+                    const dateB = new Date(formatField(rowB).replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
+                    return dateB.getTime() - dateA.getTime();
                 }
             };
         });
@@ -291,7 +259,7 @@ export const NkioskMoveVP = () => {
                                     selectableRowsHighlight
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
-                                    defaultSortAsc={false}
+                                    defaultSortAsc={true}
                                     defaultSortFieldId="eventTime"
                                 />
                             </div>

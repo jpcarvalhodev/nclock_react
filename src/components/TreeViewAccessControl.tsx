@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { Button, TextField, TextFieldProps } from '@mui/material';
-import { Devices, MBDevice } from '../helpers/Types';
+import { AccessControl } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 
@@ -25,7 +25,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 // Define a interface para as propriedades do componente TreeViewData
-interface TreeViewDataNkioskProps {
+interface TreeViewDataACProps {
     onSelectDevices: (selectedDevices: string[]) => void;
 }
 
@@ -64,70 +64,48 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps) {
+export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [deviceData, setDeviceData] = useState<Devices[]>([]);
-    const [mbData, setMBData] = useState<MBDevice[]>([]);
+    const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
     const selectionChangedRef = { current: false };
 
     // Função para buscar os dados dos dispositivos
     const fetchAllData = async () => {
         try {
-            const deviceData = await apiService.fetchAllDevices();
-            setDeviceData(deviceData);
+            const accessData = await apiService.fetchAllAccessControl();
+            console.log('Dados dos dispositivos:', accessData);
+            setAccessControl(accessData);
         } catch (error) {
             console.error('Erro ao buscar os dados dos dispositivos:', error);
         }
     };
 
-    // Função para buscar os dados dos dispositivos multibanco
-    const fetchAllMBDevices = async () => {
-        try {
-            const deviceData = await apiService.fetchAllMBDevices();
-            setMBData(deviceData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos dispositivos:', error);
-        }
-    }
-
     // Busca os dados ao carregar o componente
     useEffect(() => {
         fetchAllData();
-        fetchAllMBDevices();
     }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
-        const buildDeviceTree = deviceData.map(device => ({
-            id: device.serialNumber,
-            label: device.deviceName || 'Sem Nome',
-            children: []
-        }));
-
-        const buildTerminalTree = mbData.map(device => ({
-            id: device.id,
-            label: device.nomeQuiosque || 'Sem Nome',
+        const buildDeviceTree = accessControl.map(ac => ({
+            id: ac.acId,
+            label: ac.shortName || 'Sem Nome',
             children: []
         }));
 
         const treeItems = [
             {
-                id: 'nkiosk',
-                label: 'NKIOSK',
+                id: 'accessControl',
+                label: 'CONTROLE DE ACESSO',
                 children: [
                     {
-                        id: 'dispositivos',
-                        label: 'DISPOSITIVOS',
+                        id: 'accessControlNames',
+                        label: 'NOMES',
                         children: buildDeviceTree
-                    },
-                    {
-                        id: 'terminais',
-                        label: 'TERMINAIS',
-                        children: buildTerminalTree
                     },
                 ],
             },
@@ -136,7 +114,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [deviceData, mbData]);
+    }, [accessControl]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {

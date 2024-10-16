@@ -15,6 +15,8 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { Button } from "react-bootstrap";
 import { CreateModalPeriods } from "../../modals/CreateModalPeriods";
 import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
+import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
+import Split from "react-split";
 
 export const TimePeriods = () => {
     const { navbarColor, footerColor } = useColor();
@@ -28,6 +30,8 @@ export const TimePeriods = () => {
     const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedPeriodToDelete, setSelectedPeriodToDelete] = useState<string | null>(null);
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredPeriods, setFilteredPeriods] = useState<TimePeriod[]>([]);
 
     // Função para buscar os dados dos períodos
     const fetchTimePeriods = async () => {
@@ -83,9 +87,24 @@ export const TimePeriods = () => {
         fetchTimePeriods();
     }, []);
 
+    // Atualiza os nomes filtrados da treeview
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = period.filter(periods => selectedDevicesIds.includes(periods.id));
+            setFilteredPeriods(filtered);
+        } else {
+            setFilteredPeriods(period);
+        }
+    }, [selectedDevicesIds, period]);
+
     // Função para atualizar os utilizadores
     const refreshPeriods = () => {
         fetchTimePeriods();
+    };
+
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
     };
 
     // Função para editar um utilizador
@@ -132,7 +151,7 @@ export const TimePeriods = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = period.filter(periods =>
+    const filteredDataTable = filteredPeriods.filter(periods =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(periods[key]) === String(filters[key])
         )
@@ -218,39 +237,44 @@ export const TimePeriods = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <div className="datatable-title-text">
-                    <span style={{ color: '#000000' }}>Períodos</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataPeriods onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPeriods} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#000000' }}>Períodos</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <input
+                                    className='search-input'
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPeriods} />
+                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                            </div>
+                        </div>
+                        <div className='table-css'>
+                            <DataTable
+                                columns={[...columns, actionColumn]}
+                                data={filteredDataTable}
+                                onRowDoubleClicked={handleEditPeriod}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div className='content-wrapper'>
-                <div className='table-css'>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredDataTable}
-                        onRowDoubleClicked={handleEditPeriod}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                    />
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             <CreateModalPeriods

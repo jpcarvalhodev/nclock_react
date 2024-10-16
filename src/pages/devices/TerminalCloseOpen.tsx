@@ -11,10 +11,22 @@ import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 import { useColor } from "../../context/ColorContext";
 import * as apiService from "../../helpers/apiService";
+import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
+import Split from "react-split";
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
+}
+
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
 }
 
 // Define o componente de terminais
@@ -31,6 +43,13 @@ export const TerminalCloseOpen = () => {
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedDeviceRows, setSelectedDeviceRows] = useState<MBDeviceCloseOpen[]>([]);
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<MBDeviceCloseOpen[]>([]);
 
     // Função para buscar todos os dispositivos multibanco
     const fetchAllDevices = async () => {
@@ -61,6 +80,21 @@ export const TerminalCloseOpen = () => {
             setResetSelection(false);
         }
     }, [resetSelection]);
+
+    // Atualiza os dispositivos filtrados da treeview
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = mbOpenCloseDevices.filter(devices => selectedDevicesIds.includes(devices.tpId));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(mbOpenCloseDevices);
+        }
+    }, [selectedDevicesIds, mbOpenCloseDevices]);
+
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
@@ -94,6 +128,7 @@ export const TerminalCloseOpen = () => {
     // Define as colunas de dispositivos
     const columns: TableColumn<MBDeviceCloseOpen>[] = mbDeviceCloseOpenFields
         .filter(field => selectedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'timestamp') return -1; else if (b.key === 'timestamp') return 1; else return 0; })
         .map(field => {
             const formatField = (row: MBDeviceCloseOpen) => {
                 switch (field.key) {
@@ -103,14 +138,26 @@ export const TerminalCloseOpen = () => {
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleString();
                     case 'fechoImage':
-                    case 'aberturaImage':
-                        const imageUrl = row[field.key];
-                        if (imageUrl) {
-                            const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
+                        const imageUrlFecho = row[field.key];
+                        if (imageUrlFecho) {
+                            const uploadPath = imageUrlFecho.substring(imageUrlFecho.indexOf('/Uploads'));
                             const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
                             return (
                                 <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
-                                    Visualizar ticket
+                                    Ticket Fecho
+                                </a>
+                            );
+                        } else {
+                            return '';
+                        }
+                    case 'aberturaImage':
+                        const imageUrlAbertura = row[field.key];
+                        if (imageUrlAbertura) {
+                            const uploadPath = imageUrlAbertura.substring(imageUrlAbertura.indexOf('/Uploads'));
+                            const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
+                            return (
+                                <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
+                                    Ticket Abertura
                                 </a>
                             );
                         } else {
@@ -129,11 +176,12 @@ export const TerminalCloseOpen = () => {
                 ),
                 selector: row => formatField(row),
                 sortable: true,
+                sortFunction: (rowA, rowB) => new Date(rowB.timestamp).getTime() - new Date(rowA.timestamp).getTime()
             };
         });
 
     // Filtra os dados da tabela de dispositivos
-    const filteredDeviceDataTable = mbOpenCloseDevices.filter(device =>
+    const filteredDeviceDataTable = filteredDevices.filter(device =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(device[key]) === String(filters[key])
         )
@@ -149,32 +197,55 @@ export const TerminalCloseOpen = () => {
         <TerminalsProvider>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                 <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='filter-refresh-add-edit-upper-class'>
-                    <div className="datatable-title-text" style={{ color: '#000000' }}>
-                        <span>Fechos e Aberturas dos Terminais Multibanco</span>
-                    </div>
-                    <div className="datatable-header">
-                        <div className="buttons-container-others">
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOpenCloseDevices} />
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                <div className='content-container'>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                         </div>
-                    </div>
-                </div>
-                <div className="content-section deviceTabsMobile" style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-                    <div className="deviceMobile">
-                        <DataTable
-                            columns={columns}
-                            data={filteredDeviceDataTable}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={15}
-                            selectableRows
-                            onSelectedRowsChange={handleDeviceRowSelected}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                        />
-                    </div>
+                        <div className="datatable-container">
+                            <div className="datatable-title-text" style={{ color: '#000000' }}>
+                                <span>Fechos e Aberturas dos Terminais Multibanco</span>
+                            </div>
+                            <div className="datatable-header">
+                                <div className="buttons-container-others">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOpenCloseDevices} />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                </div>
+                                <div className="date-range-search">
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <span> até </span>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    {/* <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' /> */}
+                                </div>
+                            </div>
+                            <div className="deviceMobile">
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredDeviceDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={15}
+                                    selectableRows
+                                    onSelectedRowsChange={handleDeviceRowSelected}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="timestamp"
+                                />
+                            </div>
+                        </div>
+                    </Split>
                 </div>
                 <Footer style={{ backgroundColor: footerColor }} />
                 {showColumnSelector && (

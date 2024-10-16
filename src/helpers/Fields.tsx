@@ -128,7 +128,7 @@ export const employeeAttendanceTimesFields = [
 
 export const deviceFields = [
     { key: "deviceNumber", label: "Número", type: "number", required: true },
-    { key: "deviceName", label: "Nome", type: "string", required: true },
+    { key: "deviceName", label: "Nome do Dispositivo", type: "string", required: true },
     { key: "ipAddress", label: "Endereço IP", type: "string", required: true },
     { key: "port", label: "Porta", type: "number", required: true },
     { key: "photo", label: "Foto", type: "string" },
@@ -343,7 +343,9 @@ export const accessControlFields = [
     { key: 'doorName', label: 'Nome da Porta', type: 'string' },
     { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
     { key: 'timezoneName', label: 'Nome do Fuso Horário', type: 'string' },
-    { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true }
+    { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true },
+    { key: 'createDate', label: 'Data de Criação', type: 'Date' },
+    { key: 'updateDate', label: 'Data de Atualização', type: 'Date' },
 ];
 
 export const doorsFields = [

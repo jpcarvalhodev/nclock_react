@@ -172,25 +172,7 @@ export const NkioskMoveKiosk = () => {
                     case 'eventDoorId':
                         return 'Quiosque';
                     case 'eventTime':
-                        if (typeof value === 'string') {
-                            const dateString = value.replace(' ', 'T');
-                            return new Date(dateString).toLocaleString('pt-PT', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                        } else if (value instanceof Date) {
-                            return value.toLocaleString('pt-PT', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                        }
-                        return '';
+                        return new Date(row.eventTime).toLocaleString();
                     default:
                         return value ?? '';
                 }
@@ -204,36 +186,9 @@ export const NkioskMoveKiosk = () => {
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
-                selector: (row: KioskTransactionCard) => {
-                    const value = row[field.key as keyof KioskTransactionCard];
-
-                    if (field.key === 'eventTime') {
-                        if (typeof value === 'string') {
-                            const dateString = value.replace(' ', 'T');
-                            return new Date(dateString).toLocaleString('pt-PT', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                        } else if (value instanceof Date) {
-                            return value.toLocaleString('pt-PT', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                        }
-                        return '';
-                    }
-                    return formatField(row);
-                },
+                selector: row => formatField(row),
                 sortable: true,
-                cell: (row: KioskTransactionCard) => {
-                    return formatField(row);
-                }
+                sortFunction: (rowA, rowB) => new Date(rowB.eventTime).getTime() - new Date(rowA.eventTime).getTime()
             };
         });
 
@@ -295,7 +250,7 @@ export const NkioskMoveKiosk = () => {
                                 selectableRowsHighlight
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
-                                defaultSortAsc={false}
+                                defaultSortAsc={true}
                                 defaultSortFieldId="eventTime"
                             />
                         </div>

@@ -24,6 +24,8 @@ import React from "react";
 import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 import { useColor } from "../../context/ColorContext";
+import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
+import Split from "react-split";
 
 // Define a interface para os filtros
 interface Filters {
@@ -141,8 +143,10 @@ export const Terminals = () => {
     const fileInputFaceRef = React.createRef<HTMLInputElement>();
     const [movements, setMovements] = useState<Movement[]>([]);
     const [transactions, setTransactions] = useState<KioskTransaction[]>([]);
-    const [showDoorModal, setShowDoorModal] = useState(false);
     const [loadingActivityData, setLoadingActivityData] = useState(false);
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<Devices[]>([]);
+    const [filterText, setFilterText] = useState<string>('');
 
     // Função para mesclar os dados de utilizadores e cartões
     const mergeEmployeeAndCardData = (
@@ -238,6 +242,16 @@ export const Terminals = () => {
             setResetSelection(false);
         }
     }, [resetSelection]);
+
+    // Atualiza os dispositivos filtrados da treeview
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = devices.filter(devices => selectedDevicesIds.includes(devices.serialNumber));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(devices);
+        }
+    }, [selectedDevicesIds, devices]);
 
     // Função para atualizar todos os dispositivos
     const refreshAll = () => {
@@ -363,7 +377,7 @@ export const Terminals = () => {
         });
 
     // Filtra os dados da tabela de dispositivos
-    const filteredDeviceDataTable = devices.filter(device =>
+    const filteredDeviceDataTable = filteredDevices.filter(device =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(device[key]) === String(filters[key])
         )
@@ -614,6 +628,11 @@ export const Terminals = () => {
         setShowUpdateModal(false);
         setSelectedTerminal(null);
     }
+
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
 
     // Define a função de abertura do modal de exclusão dos dispositivos
     const handleOpenDeleteModal = async (zktecoDeviceID: string, type: 'device' | 'user') => {
@@ -1075,398 +1094,410 @@ export const Terminals = () => {
 
     return (
         <TerminalsProvider>
-            <div className="main-container">
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                 <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='filter-refresh-add-edit-upper-class'>
-                    <div className="datatable-title-text" style={{ color: '#000000' }}>
-                        <span>Terminais</span>
-                    </div>
-                    <div className="datatable-header">
-                        <div className="buttons-container-others" style={{ flexGrow: 1 }}>
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAll} />
-                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                            <span style={{
-                                color: 'white',
-                                backgroundColor: backgroundColor,
-                                borderRadius: '4px',
-                                padding: '2px 10px',
-                                display: 'inline-block',
-                                marginLeft: 'auto',
-                                marginRight: '30px'
-                            }}>
-                                Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Online, ${deviceStatusCount['Inactivo'] || 0} Offline`}
-                            </span>
+                <div className='content-container'>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                         </div>
-                    </div>
-                </div>
-                <div className="content-section deviceTabsMobile" style={{ display: 'flex', flex: 1 }}>
-                    <div style={{ flex: 1.5, overflow: "auto" }} className="deviceMobile">
-                        <DataTable
-                            columns={[...deviceColumns, devicesActionColumn]}
-                            data={filteredDeviceDataTable}
-                            onRowDoubleClicked={handleEditDevices}
-                            pagination
-                            paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            onSelectedRowsChange={handleDeviceRowSelected}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                        />
-                    </div>
-                    <div style={{ flex: 2, overflow: "auto" }}>
-                        <Tabs
-                            id="controlled-tab-terminals"
-                            activeKey={mainTabKey}
-                            onSelect={handleMainSelect}
-                            className="nav-modal"
-                            style={{ marginBottom: 10 }}
-                        >
-                            <Tab eventKey="tasks" title="Actividade">
-                                <div>
-                                    <p className="activityTabContent">Actividades</p>
-                                    {
-                                        selectedTerminal && selectedDeviceRows.length > 0 ? (
-                                            loadingActivityData ?
-                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                                </div> :
-                                                <DataTable
-                                                    columns={transactionColumns}
-                                                    data={transactions}
-                                                    pagination
-                                                    paginationPerPage={5}
-                                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                                    paginationComponentOptions={paginationOptions}
-                                                    noDataComponent="Não há actividades disponíveis para exibir."
-                                                    customStyles={customStyles}
-                                                />
-                                        ) : (
-                                            <p style={{ textAlign: "center" }}>Selecione um terminal para ver as actividades.</p>
-                                        )
-                                    }
+                        <div className="datatable-container">
+                            <div className="datatable-title-text" style={{ color: '#000000' }}>
+                                <span>Terminais</span>
+                            </div>
+                            <div className="datatable-header">
+                                <div className="buttons-container-others" style={{ flexGrow: 1 }}>
+                                    <input
+                                        className='search-input'
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                    />
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAll} />
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <span className="status-text" style={{
+                                        color: 'white',
+                                        backgroundColor: backgroundColor,
+                                        borderRadius: '4px',
+                                        padding: '2px 14px',
+                                        marginRight: '30px',
+                                    }}>
+                                        Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Online, ${deviceStatusCount['Inactivo'] || 0} Offline`}
+                                    </span>
                                 </div>
-                                <div>
-                                    <p className="activityTabContent">Movimentos</p>
-                                    {
-                                        selectedTerminal && selectedDeviceRows.length > 0 ? (
+                            </div>
+                            <div className="content-section deviceTabsMobile" style={{ display: 'flex', flex: 1 }}>
+                                <div style={{ flex: 1.5, overflow: "auto" }} className="deviceMobile">
+                                    <DataTable
+                                        columns={[...deviceColumns, devicesActionColumn]}
+                                        data={filteredDeviceDataTable}
+                                        onRowDoubleClicked={handleEditDevices}
+                                        pagination
+                                        paginationPerPage={5}
+                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                        paginationComponentOptions={paginationOptions}
+                                        selectableRows
+                                        onSelectedRowsChange={handleDeviceRowSelected}
+                                        selectableRowsHighlight
+                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                        customStyles={customStyles}
+                                    />
+                                </div>
+                                <div style={{ flex: 2, overflow: "auto" }}>
+                                    <Tabs
+                                        id="controlled-tab-terminals"
+                                        activeKey={mainTabKey}
+                                        onSelect={handleMainSelect}
+                                        className="nav-modal"
+                                        style={{ marginBottom: 10 }}
+                                    >
+                                        <Tab eventKey="tasks" title="Actividade">
+                                            <div>
+                                                <p className="activityTabContent">Actividades</p>
+                                                {
+                                                    selectedTerminal && selectedDeviceRows.length > 0 ? (
+                                                        loadingActivityData ?
+                                                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                                <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                            </div> :
+                                                            <DataTable
+                                                                columns={transactionColumns}
+                                                                data={transactions}
+                                                                pagination
+                                                                paginationPerPage={5}
+                                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                                paginationComponentOptions={paginationOptions}
+                                                                noDataComponent="Não há actividades disponíveis para exibir."
+                                                                customStyles={customStyles}
+                                                            />
+                                                    ) : (
+                                                        <p style={{ textAlign: "center" }}>Selecione um terminal para ver as actividades.</p>
+                                                    )
+                                                }
+                                            </div>
+                                            <div>
+                                                <p className="activityTabContent">Movimentos</p>
+                                                {
+                                                    selectedTerminal && selectedDeviceRows.length > 0 ? (
+                                                        <DataTable
+                                                            columns={movementColumns}
+                                                            data={movements}
+                                                            pagination
+                                                            paginationPerPage={5}
+                                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                            paginationComponentOptions={paginationOptions}
+                                                            noDataComponent="Não há movimentos disponíveis para exibir."
+                                                            customStyles={customStyles}
+                                                        />
+                                                    ) : (
+                                                        <p style={{ textAlign: "center" }}>Selecione um terminal para ver os movimentos.</p>
+                                                    )
+                                                }
+                                            </div>
+                                        </Tab>
+                                        <Tab eventKey="user-track" title="Manutenção de utilizadores">
+                                            <Tabs
+                                                id="controlled-tab-terminals-user-track"
+                                                activeKey={userTrackTabKey}
+                                                onSelect={handleUserTrackSelect}
+                                                className="nav-modal"
+                                                style={{ marginBottom: 10 }}
+                                            >
+                                                <Tab eventKey="users-software" title="Utilizadores no software">
+                                                    <div style={{ display: "flex" }}>
+                                                        <div style={{ overflowX: "auto", flex: 5 }}>
+                                                            <DataTable
+                                                                columns={userColumns}
+                                                                data={filteredUserDataTable}
+                                                                pagination
+                                                                paginationPerPage={5}
+                                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                                paginationComponentOptions={paginationOptions}
+                                                                selectableRows
+                                                                onSelectedRowsChange={handleUserRowSelected}
+                                                                selectableRowsHighlight
+                                                                noDataComponent="Não existem dados disponíveis para exibir."
+                                                                customStyles={customStyles}
+                                                            />
+                                                        </div>
+                                                        <div style={{ flex: 1, flexDirection: "column" }}>
+                                                            <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleSendSelectedUsers}>
+                                                                {loadingSendSelectedUsers ? (
+                                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                                ) : (
+                                                                    <i className="bi bi-person-fill-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                                )}
+                                                                Enviar utilizadores seleccionados
+                                                            </Button>
+                                                            <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleDeleteSelectedUsers}>
+                                                                {loadingDeleteSelectedUsers ? (
+                                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                                ) : (
+                                                                    <i className="bi bi-person-x-fill" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                                )}
+                                                                Remover utilizadores seleccionados
+                                                            </Button>
+                                                            <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleFetchSelectedUsers}>
+                                                                {loadingFetchSelectedUsers ? (
+                                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                                ) : (
+                                                                    <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                                )}
+                                                                Recolher utilizadores seleccionados
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </Tab>
+                                                <Tab eventKey="users-terminal" title="Utilizadores no terminal">
+                                                    <DataTable
+                                                        columns={userColumns}
+                                                        data={filteredUsersInTerminal}
+                                                        pagination
+                                                        paginationPerPage={5}
+                                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                        paginationComponentOptions={paginationOptions}
+                                                        selectableRows
+                                                        onSelectedRowsChange={handleUserRowSelected}
+                                                        selectableRowsHighlight
+                                                        noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
+                                                        customStyles={customStyles}
+                                                    />
+                                                </Tab>
+                                                <Tab eventKey="facial-taken" title="Biometria recolhida">
+                                                    <DataTable
+                                                        columns={bioColumns}
+                                                        data={filteredBioDataTable}
+                                                        pagination
+                                                        paginationPerPage={5}
+                                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                        paginationComponentOptions={paginationOptions}
+                                                        selectableRows
+                                                        onSelectedRowsChange={handleUserRowSelected}
+                                                        selectableRowsHighlight
+                                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                                        customStyles={customStyles}
+                                                    />
+                                                </Tab>
+                                                <Tab eventKey="cards-taken" title="Cartões recolhidos">
+                                                    <DataTable
+                                                        columns={cardColumns}
+                                                        data={filteredCardDataTable}
+                                                        pagination
+                                                        paginationPerPage={5}
+                                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                        paginationComponentOptions={paginationOptions}
+                                                        selectableRows
+                                                        onSelectedRowsChange={handleUserRowSelected}
+                                                        selectableRowsHighlight
+                                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                                        customStyles={customStyles}
+                                                    />
+                                                </Tab>
+                                            </Tabs>
+                                        </Tab>
+                                        <Tab eventKey="state" title="Estado">
                                             <DataTable
-                                                columns={movementColumns}
-                                                data={movements}
+                                                columns={stateColumns}
+                                                data={filteredStateDataTable}
                                                 pagination
                                                 paginationPerPage={5}
                                                 paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                                 paginationComponentOptions={paginationOptions}
-                                                noDataComponent="Não há movimentos disponíveis para exibir."
+                                                selectableRows
+                                                onSelectedRowsChange={handleDeviceRowSelected}
+                                                selectableRowsHighlight
+                                                noDataComponent="Não existem dados disponíveis para exibir."
                                                 customStyles={customStyles}
                                             />
-                                        ) : (
-                                            <p style={{ textAlign: "center" }}>Selecione um terminal para ver os movimentos.</p>
-                                        )
-                                    }
+                                        </Tab>
+                                    </Tabs>
                                 </div>
-                            </Tab>
-                            <Tab eventKey="user-track" title="Manutenção de utilizadores">
+                            </div>
+                            <div>
                                 <Tabs
-                                    id="controlled-tab-terminals-user-track"
-                                    activeKey={userTrackTabKey}
-                                    onSelect={handleUserTrackSelect}
+                                    id="controlled-tab-terminals-buttons"
+                                    activeKey={userTabKey}
+                                    onSelect={handleUserSelect}
                                     className="nav-modal"
-                                    style={{ marginBottom: 10 }}
+                                    style={{ marginBottom: 10, marginTop: 10 }}
                                 >
-                                    <Tab eventKey="users-software" title="Utilizadores no software">
-                                        <div style={{ display: "flex" }}>
-                                            <div style={{ overflowX: "auto", flex: 5 }}>
-                                                <DataTable
-                                                    columns={userColumns}
-                                                    data={filteredUserDataTable}
-                                                    pagination
-                                                    paginationPerPage={5}
-                                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                                    paginationComponentOptions={paginationOptions}
-                                                    selectableRows
-                                                    onSelectedRowsChange={handleUserRowSelected}
-                                                    selectableRowsHighlight
-                                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                                    customStyles={customStyles}
+                                    <Tab eventKey="users" title="Utilizadores">
+                                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                            <Button
+                                                variant="outline-primary"
+                                                size="sm"
+                                                className="button-terminals-users"
+                                                onClick={handleUsers}>
+                                                {loadingUser ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-arrow-down-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Recolher utilizadores
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleAllUsers}>
+                                                {loadingAllUser ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-arrow-up-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Enviar todos os utilizadores
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncAllUsers}>
+                                                {loadingSyncAllUser ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Sincronizar utilizadores
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleMovements}>
+                                                {loadingMovements ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-arrow-left-right" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Recolher movimentos
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleDeleteAllUsers}>
+                                                {loadingDeleteAllUsers ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-trash" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Apagar utilizadores
+                                            </Button>
+                                            <div className="col-3">
+                                                <Form.Check
+                                                    type="checkbox"
+                                                    label="Utilizadores"
+                                                    checked={showAllUsers}
+                                                    onChange={handleAllUsersChange}
+                                                    className="mb-2"
                                                 />
-                                            </div>
-                                            <div style={{ flex: 1, flexDirection: "column" }}>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleSendSelectedUsers}>
-                                                    {loadingSendSelectedUsers ? (
-                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                                    ) : (
-                                                        <i className="bi bi-person-fill-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                    )}
-                                                    Enviar utilizadores seleccionados
-                                                </Button>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleDeleteSelectedUsers}>
-                                                    {loadingDeleteSelectedUsers ? (
-                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                                    ) : (
-                                                        <i className="bi bi-person-x-fill" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                    )}
-                                                    Remover utilizadores seleccionados
-                                                </Button>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleFetchSelectedUsers}>
-                                                    {loadingFetchSelectedUsers ? (
-                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                                    ) : (
-                                                        <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                    )}
-                                                    Recolher utilizadores seleccionados
-                                                </Button>
+                                                <Form.Check
+                                                    type="checkbox"
+                                                    label="Biometria digital"
+                                                    checked={showFingerprintUsers}
+                                                    onChange={handleFingerprintUsersChange}
+                                                    className="mb-2"
+                                                />
+                                                <Form.Check
+                                                    type="checkbox"
+                                                    label="Biometria facial"
+                                                    checked={showFacialRecognitionUsers}
+                                                    onChange={handleFacialRecognitionUsersChange}
+                                                    className="mb-2"
+                                                />
                                             </div>
                                         </div>
                                     </Tab>
-                                    <Tab eventKey="users-terminal" title="Utilizadores no terminal">
-                                        <DataTable
-                                            columns={userColumns}
-                                            data={filteredUsersInTerminal}
-                                            pagination
-                                            paginationPerPage={5}
-                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                            paginationComponentOptions={paginationOptions}
-                                            selectableRows
-                                            onSelectedRowsChange={handleUserRowSelected}
-                                            selectableRowsHighlight
-                                            noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
-                                            customStyles={customStyles}
-                                        />
+                                    <Tab eventKey="onOff" title="Ligação">
+                                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
+                                                {loadingRestartDevice ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Reiniciar
+                                            </Button>
+                                        </div>
                                     </Tab>
-                                    <Tab eventKey="facial-taken" title="Biometria recolhida">
-                                        <DataTable
-                                            columns={bioColumns}
-                                            data={filteredBioDataTable}
-                                            pagination
-                                            paginationPerPage={5}
-                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                            paginationComponentOptions={paginationOptions}
-                                            selectableRows
-                                            onSelectedRowsChange={handleUserRowSelected}
-                                            selectableRowsHighlight
-                                            noDataComponent="Não existem dados disponíveis para exibir."
-                                            customStyles={customStyles}
-                                        />
+                                    <Tab eventKey="access" title="Acessos">
+                                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                                <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                Enviar horários
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleOpenDoor}>
+                                                {loadingOpenDoor ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-door-open" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Abrir porta
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                                <i className="bi bi-pc" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                Actualizar multiverificação
+                                            </Button>
+                                        </div>
                                     </Tab>
-                                    <Tab eventKey="cards-taken" title="Cartões recolhidos">
-                                        <DataTable
-                                            columns={cardColumns}
-                                            data={filteredCardDataTable}
-                                            pagination
-                                            paginationPerPage={5}
-                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                            paginationComponentOptions={paginationOptions}
-                                            selectableRows
-                                            onSelectedRowsChange={handleUserRowSelected}
-                                            selectableRowsHighlight
-                                            noDataComponent="Não existem dados disponíveis para exibir."
-                                            customStyles={customStyles}
-                                        />
-                                    </Tab>
-                                </Tabs>
-                            </Tab>
-                            <Tab eventKey="state" title="Estado">
-                                <DataTable
-                                    columns={stateColumns}
-                                    data={filteredStateDataTable}
-                                    pagination
-                                    paginationPerPage={5}
-                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                    paginationComponentOptions={paginationOptions}
-                                    selectableRows
-                                    onSelectedRowsChange={handleDeviceRowSelected}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                />
-                            </Tab>
-                        </Tabs>
-                    </div>
-                </div>
-                <div>
-                    <Tabs
-                        id="controlled-tab-terminals-buttons"
-                        activeKey={userTabKey}
-                        onSelect={handleUserSelect}
-                        className="nav-modal"
-                        style={{ marginBottom: 10, marginTop: 10 }}
-                    >
-                        <Tab eventKey="users" title="Utilizadores">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button
-                                    variant="outline-primary"
-                                    size="sm"
-                                    className="button-terminals-users"
-                                    onClick={handleUsers}>
-                                    {loadingUser ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-arrow-down-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Recolher utilizadores
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleAllUsers}>
-                                    {loadingAllUser ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-arrow-up-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Enviar todos os utilizadores
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncAllUsers}>
-                                    {loadingSyncAllUser ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Sincronizar utilizadores
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleMovements}>
-                                    {loadingMovements ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-arrow-left-right" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Recolher movimentos
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleDeleteAllUsers}>
-                                    {loadingDeleteAllUsers ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-trash" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Apagar utilizadores
-                                </Button>
-                                <div className="col-3">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Utilizadores"
-                                        checked={showAllUsers}
-                                        onChange={handleAllUsersChange}
-                                        className="mb-2"
-                                    />
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Biometria digital"
-                                        checked={showFingerprintUsers}
-                                        onChange={handleFingerprintUsersChange}
-                                        className="mb-2"
-                                    />
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Biometria facial"
-                                        checked={showFacialRecognitionUsers}
-                                        onChange={handleFacialRecognitionUsersChange}
-                                        className="mb-2"
-                                    />
-                                </div>
-                            </div>
-                        </Tab>
-                        <Tab eventKey="onOff" title="Ligação">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
-                                    {loadingRestartDevice ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Reiniciar
-                                </Button>
-                            </div>
-                        </Tab>
-                        <Tab eventKey="access" title="Acessos">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    Enviar horários
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={() => setShowDoorModal(true)}>
-                                    {loadingOpenDoor ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-door-open" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Abrir porta
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-pc" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    Actualizar multiverificação
-                                </Button>
-                            </div>
-                        </Tab>
-                        <Tab eventKey="configuration" title="Configurações">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncTime}>
-                                    {loadingSyncTime ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-calendar-check" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Acertar a hora
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-gear-wide" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    Enviar configurações
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-send-arrow-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    Enviar códigos de tarefas
-                                </Button>
-                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                    <Tab eventKey="configuration" title="Configurações">
+                                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncTime}>
+                                                {loadingSyncTime ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-calendar-check" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Acertar a hora
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                                <i className="bi bi-gear-wide" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                Enviar configurações
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                                <i className="bi bi-send-arrow-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                Enviar códigos de tarefas
+                                            </Button>
+                                            {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-bell" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Sincronizar toques da sirene
                                 </Button> */}
+                                        </div>
+                                    </Tab>
+                                    <Tab eventKey="files" title="Ficheiros">
+                                        <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
+                                                {loadingImportAttendance ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Importar movimentos
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileUserSelectPopup}>
+                                                {loadingImportUsers ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Importar utilizadores
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileFPSelectPopup}>
+                                                {loadingImportBio ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Importar biometria digital
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileFaceSelectPopup}>
+                                                {loadingImportFace ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-person-square" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Importar biometria Facial
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceLogSelectPopup}>
+                                                {loadingImportAttendanceLog ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Importar movimentos do log
+                                            </Button>
+                                        </div>
+                                    </Tab>
+                                </Tabs>
                             </div>
-                        </Tab>
-                        <Tab eventKey="files" title="Ficheiros">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
-                                    {loadingImportAttendance ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Importar movimentos
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileUserSelectPopup}>
-                                    {loadingImportUsers ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Importar utilizadores
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileFPSelectPopup}>
-                                    {loadingImportBio ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Importar biometria digital
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileFaceSelectPopup}>
-                                    {loadingImportFace ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-person-square" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Importar biometria Facial
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceLogSelectPopup}>
-                                    {loadingImportAttendanceLog ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Importar movimentos do log
-                                </Button>
-                            </div>
-                        </Tab>
-                    </Tabs>
+                        </div>
+                    </Split>
                 </div>
                 <Footer style={{ backgroundColor: footerColor }} />
                 {showColumnSelector && (
@@ -1535,6 +1566,6 @@ export const Terminals = () => {
                     onChange={handleFaceFileChange}
                 />
             </div>
-        </TerminalsProvider>
+        </TerminalsProvider >
     );
 };

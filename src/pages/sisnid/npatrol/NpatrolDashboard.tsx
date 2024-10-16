@@ -249,11 +249,13 @@ export const NpatrolDashboard = () => {
         const cards = cardData[tabKey];
         const numCards = cards.length;
 
-        const alignmentClass = numCards < 10 ? 'cards-center' : 'cards-left';
+        const alignmentClass = numCards <= 10 ? 'cards-center' : 'cards-left';
 
         return (
             <div className="dashboard-cards-container">
-                <Button className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
+                {numCards > 10 && (
+                    <Button id="arrow-cards" className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
+                )}
                 <div id="cardContainer" className={`card-container ${alignmentClass}`} ref={cardContainerRef}>
                     {cardData[tabKey].map((card, index) => (
                         <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
@@ -266,7 +268,9 @@ export const NpatrolDashboard = () => {
                         </div>
                     ))}
                 </div>
-                <Button className="arrows-cards" onClick={scrollRight}>{">"}</Button>
+                {numCards > 10 && (
+                    <Button className="arrows-cards" onClick={scrollRight}>{">"}</Button>
+                )}
             </div>
         );
     };

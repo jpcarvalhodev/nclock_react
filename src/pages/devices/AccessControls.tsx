@@ -16,6 +16,18 @@ import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal"
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
 import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
+import Split from "react-split";
+
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
 
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useColor();
@@ -31,6 +43,13 @@ export const AccessControls = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredAccessControl, setFilteredAccessControl] = useState<AccessControl[]>([]);
 
     // Função para buscar a listagem de controle de acesso
     const fetchAccessControl = async () => {
@@ -90,6 +109,16 @@ export const AccessControls = () => {
         fetchAccessControl();
     }, []);
 
+    // Atualiza os nomes filtrados da treeview
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = accessControl.filter(ac => selectedDevicesIds.includes(ac.acId));
+            setFilteredAccessControl(filtered);
+        } else {
+            setFilteredAccessControl(accessControl);
+        }
+    }, [selectedDevicesIds, accessControl]);
+
     // Função para atualizar as listagens de movimentos
     const refreshAccessControl = () => {
         fetchAccessControl();
@@ -142,8 +171,13 @@ export const AccessControls = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Filtra os dados da tabela
-    const filteredDataTable = accessControl.filter(accessControls =>
+    const filteredDataTable = filteredAccessControl.filter(accessControls =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (accessControls[key] != null && String(accessControls[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -214,44 +248,64 @@ export const AccessControls = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <div className="datatable-title-text">
-                    <span style={{ color: '#000000' }}>Listagem de Controle de Acesso</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataAC onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAccessControl} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={accessControl} selectedData={selectedRows} fields={accessControlFields} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#000000' }}>Controle de Acesso</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <input
+                                    className='search-input'
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAccessControl} />
+                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                <ExportButton allData={accessControl} selectedData={selectedRows} fields={accessControlFields} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                            </div>
+                        </div>
+                        <div className='table-css'>
+                            <DataTable
+                                columns={[...columns, actionColumn]}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                onRowDoubleClicked={handleEditAccessControl}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                            />
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div className='content-wrapper'>
-                <div className='table-css'>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        onRowDoubleClicked={handleEditAccessControl}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                    />
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (

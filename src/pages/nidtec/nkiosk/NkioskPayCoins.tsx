@@ -106,7 +106,7 @@ export const NkioskPayCoins = () => {
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = payCoins.filter(payCoin => selectedDevicesIds.includes(payCoin.tpId));
+            const filtered = payCoins.filter(payCoin => selectedDevicesIds.includes(payCoin.deviceSN));
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(payCoins);
@@ -166,13 +166,7 @@ export const NkioskPayCoins = () => {
                     case 'deviceSN':
                         return deviceName || 'Sem Dados';
                     case 'timestamp':
-                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        });
+                        return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':
                         return row[field.key] === 1 ? 'Multibanco' : 'Moedeiro';
                     default:
@@ -187,31 +181,9 @@ export const NkioskPayCoins = () => {
                         <SelectFilter column={field.key} setFilters={setFilters} data={payCoins} />
                     </>
                 ),
-                selector: (row: KioskTransactionMB) => {
-                    if (field.key === 'timestamp') {
-                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        });
-                    }
-                    return formatField(row);
-                },
+                selector: row => formatField(row),
                 sortable: true,
-                cell: (row: KioskTransactionMB) => {
-                    if (field.key === 'timestamp') {
-                        return new Date(row.timestamp).toLocaleTimeString('pt-PT', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        });
-                    }
-                    return formatField(row);
-                }
+                sortFunction: (rowA, rowB) => new Date(rowB.timestamp).getTime() - new Date(rowA.timestamp).getTime()
             };
         });
 
@@ -298,7 +270,7 @@ export const NkioskPayCoins = () => {
                                     selectableRowsHighlight
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
-                                    defaultSortAsc={false}
+                                    defaultSortAsc={true}
                                     defaultSortFieldId="timestamp"
                                 />
                             </div>

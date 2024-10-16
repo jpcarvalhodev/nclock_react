@@ -403,6 +403,8 @@ export type AccessControl = {
     timezoneId: string;
     timezoneName: string;
     createrName: string;
+    createDate: Date;
+    updateDate: Date;
 };
 
 export type Doors = {

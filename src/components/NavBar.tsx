@@ -166,6 +166,8 @@ import nclinic from '../assets/img/navbar/navbar/nclinic.png';
 import noptics from '../assets/img/navbar/navbar/noptics.png';
 import ngold from '../assets/img/navbar/navbar/ngold.png';
 import open_door from '../assets/img/navbar/nkiosk/open_door.png';
+import count from '../assets/img/navbar/nkiosk/count.png';
+import cleaning from '../assets/img/navbar/nkiosk/cleaning.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -2003,13 +2005,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={payment_card} alt="botão pagamento terminal" />
 													</span>
-													<span className="text">Pagamento Multibanco</span>
+													<span className="text">Multibanco</span>
 												</Link>
 												<Link to='/nkiosk/nkioskpaycoins' type="button" className="btn btn-light ribbon-button">
 													<span className="icon">
 														<img src={coin} alt="botão pagamento moedas" />
 													</span>
-													<span className="text">Pagamento Moedeiro</span>
+													<span className="text">Moedeiro</span>
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
@@ -2017,7 +2019,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={card_report} alt="botão pagamentos totais" />
 													</span>
-													<span className="text">Pagamentos Totais</span>
+													<span className="text">Totais</span>
 												</Link>
 											</div>
 										</div>
@@ -2034,13 +2036,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={barrier} alt="botão movimentos cartão" />
 													</span>
-													<span className="text">Movimentos Torniquete</span>
+													<span className="text">Torniquete</span>
 												</Link>
 												<Link to='/nkiosk/nkioskmovekiosk' type="button" className="btn btn-light ribbon-button">
 													<span className="icon">
 														<img src={kiosk} alt="botão movimentos porteiro" />
 													</span>
-													<span className="text">Movimentos Quiosque</span>
+													<span className="text">Quiosque</span>
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
@@ -2048,7 +2050,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={coin_report} alt="botão movimentos totais" />
 													</span>
-													<span className="text">Movimentos Totais</span>
+													<span className="text">Totais</span>
 												</Link>
 											</div>
 										</div>
@@ -2065,7 +2067,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={intercom} alt="botão vídeo porteiro" />
 													</span>
-													<span className="text">Video Porteiro</span>
+													<span className="text">Videoporteiro</span>
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
@@ -2090,21 +2092,29 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={coin} alt="botão recolha moedeiro" />
 													</span>
-													<span className="text">Recolha Moedeiro</span>
+													<span className="text">Recolha Moedas</span>
 												</Button>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 													<span className="icon">
-														<img src={coin} alt="botão limpeza wc" />
+														<img src={cleaning} alt="botão limpeza wc" />
 													</span>
-													<span className="text">Limpeza WC</span>
+													<span className="text">Limpeza Geral</span>
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
-														<img src={registry} alt="botão ocorrências gerais" />
+														<img src={count} alt="botão contador" />
 													</span>
-													<span className="text">Ocorrências Gerais</span>
+													<span className="text">Contador</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={registry} alt="botão ocorrências" />
+													</span>
+													<span className="text">Ocorrências</span>
 												</Button>
 											</div>
 										</div>
@@ -2116,15 +2126,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'anuncios nkiosk') && (
 										<div className="btn-group" role="group">
-											<div>
-												<Button /* to="/nkiosk/NkioskAds" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
-													<span className="icon">
-														<img src={ads} alt="botão publicidade" />
-													</span>
-													<span className="text">Publicidade</span>
-												</Button>
-											</div>
-											<div>
+											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
 												<Button onClick={toggleVideoAdsModal} type="button" className="btn btn-light ribbon-button" disabled>
 													<span className="icon">
 														<img src={video} alt="botão vídeo" />
@@ -2136,6 +2138,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<img src={image} alt="botão imagem" />
 													</span>
 													<span className="text">Imagem</span>
+												</Button>
+											</div>
+											<div>
+												<Button /* to="/nkiosk/NkioskAds" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={ads} alt="botão publicidade" />
+													</span>
+													<span className="text">Publicidade</span>
 												</Button>
 											</div>
 										</div>
@@ -2190,12 +2200,28 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'logs nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de utilizadores" />
+													</span>
+													<span className="text">Logins</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
 												<Link to="/nkiosk/nkiosklogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de utilizadores" />
 													</span>
-													<span className="text">Log de Utilizadores</span>
+													<span className="text">Publicidade</span>
 												</Link>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de utilizadores" />
+													</span>
+													<span className="text">Histórico</span>
+												</Button>
 											</div>
 										</div>
 									)}
@@ -2874,6 +2900,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 					/>
 				)}
 			</nav>
-		</ColorProvider>
+		</ColorProvider >
 	);
 };

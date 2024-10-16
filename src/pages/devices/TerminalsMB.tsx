@@ -14,6 +14,8 @@ import { Spinner } from 'react-bootstrap';
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 import { useColor } from "../../context/ColorContext";
 import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
+import Split from "react-split";
+import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
 
 // Define a interface para os filtros
 interface Filters {
@@ -37,10 +39,12 @@ export const TerminalsMB = () => {
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['nomeQuiosque', 'estadoTerminal', 'timeReboot']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
-    const [selectedDeviceRows, setSelectedDeviceRows] = useState<MBDevice[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<MBDevice | null>(null);
     const [loadingRestartDevice, setLoadingRestartDevice] = useState(false);
     const [loadingTurnOffDevice, setLoadingTurnOffDevice] = useState(false);
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<MBDevice[]>([]);
+    const [filterText, setFilterText] = useState<string>('');
 
     // Função para buscar todos os dispositivos multibanco
     const fetchAllDevices = async () => {
@@ -81,6 +85,16 @@ export const TerminalsMB = () => {
         }
     }, [resetSelection]);
 
+    // Atualiza os dispositivos filtrados da treeview
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = mbDevices.filter(mbDevices => selectedDevicesIds.includes(mbDevices.id));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(mbDevices);
+        }
+    }, [selectedDevicesIds, mbDevices]);
+
     // Função para resetar as colunas
     const handleResetColumns = () => {
         setSelectedColumns(['nomeQuiosque', 'estadoTerminal', 'timeReboot']);
@@ -108,13 +122,17 @@ export const TerminalsMB = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Define a função de seleção de linhas de dispositivos
     const handleDeviceRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
         selectedRows: MBDevice[];
     }) => {
-        setSelectedDeviceRows(state.selectedRows);
         setSelectedTerminal(state.selectedRows[0] || null);
     };
 
@@ -125,7 +143,7 @@ export const TerminalsMB = () => {
             const formatField = (row: MBDevice) => {
                 switch (field.key) {
                     case 'estadoTerminal':
-                        return row[field.key] ? 'Ligado' : 'Desligado';
+                        return row[field.key] === 1 ? 'Ligado' : 'Desligado';
                     case 'timeReboot':
                         return row[field.key] === '00:00:00' ? 'Sem tempo de reinício' : row[field.key];
                     default:
@@ -145,10 +163,19 @@ export const TerminalsMB = () => {
         });
 
     // Filtra os dados da tabela de dispositivos
-    const filteredDeviceDataTable = mbDevices.filter(device =>
+    const filteredDataTable = filteredDevices.filter(device =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(device[key]) === String(filters[key])
-        )
+            filters[key] === "" || (device[key] != null && String(device[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(device).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
     );
 
     // Define as opções de paginação de EN para PT
@@ -200,73 +227,86 @@ export const TerminalsMB = () => {
         <TerminalsProvider>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                 <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='filter-refresh-add-edit-upper-class'>
-                    <div className="datatable-title-text" style={{ color: '#000000' }}>
-                        <span>Terminais Multibanco</span>
-                    </div>
-                    <div className="datatable-header">
-                        <div className="buttons-container-others" style={{ flexGrow: 1 }}>
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
-                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                            <span style={{
-                                color: 'white',
-                                backgroundColor: backgroundColor,
-                                borderRadius: '4px',
-                                padding: '2px 10px',
-                                display: 'inline-block',
-                                marginLeft: 'auto',
-                                marginRight: '30px'
-                            }}>
-                                Status: {deviceMBStatusCount && `${deviceMBStatusCount['Activo'] || 0} Online, ${deviceMBStatusCount['Inactivo'] || 0} Offline`}
-                            </span>
+                <div className='content-container'>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                         </div>
-                    </div>
-                </div>
-                <div className="content-section deviceTabsMobile" style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-                    <div className="deviceMobile">
-                        <DataTable
-                            columns={columns}
-                            data={filteredDeviceDataTable}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            onSelectedRowsChange={handleDeviceRowSelected}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                        />
-                    </div>
-                    <div style={{ marginTop: 'auto' }}>
-                        <Tabs
-                            id="controlled-tab-terminals-buttons"
-                            activeKey={userTabKey}
-                            onSelect={handleUserSelect}
-                            className="nav-modal"
-                            style={{ marginBottom: 10, marginTop: 10 }}
-                        >
-                            <Tab eventKey="onOff" title="Ligação">
-                                <div style={{ display: "flex", marginTop: 10, marginBottom: 10 }}>
-                                    <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleTurnOffDevice}>
-                                        {loadingTurnOffDevice ? (
-                                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                        ) : (
-                                            <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                        )}
-                                        Desligar
-                                    </Button>
-                                    <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
-                                        {loadingRestartDevice ? (
-                                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                        ) : (
-                                            <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                        )}
-                                        Reiniciar
-                                    </Button>
+                        <div className="datatable-container">
+                            <div className="datatable-title-text" style={{ color: '#000000' }}>
+                                <span>Terminais Multibanco</span>
+                            </div>
+                            <div className="datatable-header">
+                                <div className="buttons-container-others-mb">
+                                    <input
+                                        className='search-input'
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                    />
+                                    <div className="custom-buttons">
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
+                                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    </div>
+                                    <span className="status-text" style={{
+                                        color: 'white',
+                                        backgroundColor: backgroundColor,
+                                        borderRadius: '4px',
+                                        padding: '2px 14px',
+                                        marginRight: '30px',
+                                    }}>
+                                        Status: {deviceMBStatusCount && `${deviceMBStatusCount['Activo'] || 0} Online, ${deviceMBStatusCount['Inactivo'] || 0} Offline`}
+                                    </span>
                                 </div>
-                            </Tab>
-                        </Tabs>
-                    </div>
+                            </div>
+                            <div className="deviceMobile">
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    selectableRows
+                                    onSelectedRowsChange={handleDeviceRowSelected}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                />
+                            </div>
+                            <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
+                                <div>
+                                    <Tabs
+                                        id="controlled-tab-terminals-buttons"
+                                        activeKey={userTabKey}
+                                        onSelect={handleUserSelect}
+                                        className="nav-modal"
+                                    >
+                                        <Tab eventKey="onOff" title="Ligação">
+                                            <div style={{ display: "flex", marginTop: 10 }}>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleTurnOffDevice}>
+                                                    {loadingTurnOffDevice ? (
+                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                    ) : (
+                                                        <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    )}
+                                                    Executar Fecho
+                                                </Button>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
+                                                    {loadingRestartDevice ? (
+                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                    ) : (
+                                                        <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                    )}
+                                                    Reiniciar
+                                                </Button>
+                                            </div>
+                                        </Tab>
+                                    </Tabs>
+                                </div>
+                            </div>
+                        </div>
+                    </Split>
                 </div>
                 <Footer style={{ backgroundColor: footerColor }} />
                 {showColumnSelector && (
