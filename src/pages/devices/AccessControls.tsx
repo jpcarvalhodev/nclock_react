@@ -8,7 +8,7 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../helpers/apiService";
 import { customStyles } from "../../components/CustomStylesDataTable";
-import { AccessControl } from "../../helpers/Types";
+import { AccessControl, Doors } from "../../helpers/Types";
 import { accessControlFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -18,6 +18,7 @@ import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import Split from "react-split";
+import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -32,7 +33,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useColor();
     const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['shortName', 'enrollNumber', 'doorName', 'timezoneName', 'createrName']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
     const [selectedRows, setSelectedRows] = useState<AccessControl[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState<boolean>(false);
     const [openColumnSelector, setOpenColumnSelector] = useState<boolean>(false);
@@ -62,37 +63,34 @@ export const AccessControls = () => {
     };
 
     // Função para adicionar o controle de acesso
-    const handleAddAccessControl = async (newAccessControl: AccessControl) => {
+    const handleAddAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         try {
             const data = await apiService.addAccessControl(newAccessControl);
-            if (data) {
-                setAccessControl(prevAccessControl => [...prevAccessControl, data]);
-            }
             toast.success(data.message || 'Controle de acesso adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar o controle de acesso:', error);
         } finally {
-            refreshAccessControl();
+            fetchAccessControl();
         }
     };
 
     // Função para editar o controle de acesso
-    const handleUpdateAccessControl = async (newAccessControl: AccessControl) => {
+    const handleUpdateAccessControl = async (newAccessControl: Partial<AccessControl>, door?: Partial<Doors>) => {
         try {
-            const data = await apiService.updateAccessControl(newAccessControl);
+            const data = await apiService.updateAccessControl(newAccessControl, door);
             setAccessControl(prevAccessControls => prevAccessControls.map(item => item.id === data.id ? data : item));
             toast.success(data.message || 'Controle de acesso atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao editar o controle de acesso:', error);
         } finally {
-            refreshAccessControl();
+            fetchAccessControl();
         }
     };
 
     // Função para deletar o controle de acesso
-    const handleDeleteAccessControl = async (id: string) => {
+    const handleDeleteAccessControl = async (id: string, doorId?: Doors) => {
         try {
-            const data = await apiService.deleteAccessControl(id);
+            const data = await apiService.deleteAccessControl(id, doorId);
             if (data) {
                 setAccessControl(prevAccessControl => [...prevAccessControl, data]);
             }
@@ -100,7 +98,7 @@ export const AccessControls = () => {
         } catch (error) {
             console.error('Erro ao deletar o controle de acesso:', error);
         } finally {
-            refreshAccessControl();
+            fetchAccessControl();
         }
     }
 
@@ -112,7 +110,7 @@ export const AccessControls = () => {
     // Atualiza os nomes filtrados da treeview
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = accessControl.filter(ac => selectedDevicesIds.includes(ac.acId));
+            const filtered = accessControl.filter(ac => selectedDevicesIds.includes(ac.employeesId));
             setFilteredAccessControl(filtered);
         } else {
             setFilteredAccessControl(accessControl);
@@ -136,7 +134,7 @@ export const AccessControls = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['shortName', 'enrollNumber', 'doorName', 'timezoneName', 'createrName']);
+        setSelectedColumns(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
     };
 
     // Função para selecionar todas as colunas
@@ -196,7 +194,7 @@ export const AccessControls = () => {
     );
 
     // Define as colunas que não devem ser exibidas
-    const excludedColumns = ['employeesId', 'doorId', 'timezoneId'];
+    const excludedColumns = ['employeesId', 'timezoneId'];
 
     // Filtra as colunas para remover as colunas excluídas
     const filteredColumns = accessControlFields.filter(column => !excludedColumns.includes(column.key));
@@ -300,6 +298,19 @@ export const AccessControls = () => {
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
+                                expandableRows
+                                expandableRowsComponent={(props) => {
+                                    const doors = props.data.doors || [];
+                                    return (
+                                        <ExpandedComponentAC
+                                            data={doors}
+                                            fields={[
+                                                { key: 'doorName', label: 'Nome da Porta' },
+                                                { key: 'timezoneName', label: 'Nome do Fuso Horário' }
+                                            ]}
+                                        />
+                                    );
+                                }}
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
                             />

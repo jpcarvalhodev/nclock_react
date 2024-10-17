@@ -16,7 +16,7 @@ interface CreateModalProps<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
+    onSave: (data: Partial<T>) => void;
     fields: Field[];
     initialValues: Partial<T>;
 }
@@ -33,7 +33,7 @@ interface Field {
 
 // Define o componente
 export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>(initialValues);
+    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({...initialValues, doorTimezoneList: []});
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -87,7 +87,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
             }));
             fetchDropdownOptions();
         } else {
-            setFormData({});
+            setFormData({ ...initialValues, doorTimezoneList: [] });
         }
     }, [open]);
 
@@ -141,9 +141,22 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData as T);
+        const doorTimeEntry = {
+            doorId: formData.doorId,
+            timezoneId: formData.timezoneId,
+        };
+    
+        const { doorId, timezoneId, ...restFormData } = formData;
+    
+        const updatedFormData = {
+            ...restFormData,
+            doorTimezoneList: [...(restFormData.doorTimezoneList || []), doorTimeEntry]
+        };
+    
+        onSave(updatedFormData as Partial<T>);
         onClose();
     };
+      
 
     return (
         <Modal show={open} onHide={onClose} size="xl">

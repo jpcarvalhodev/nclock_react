@@ -34,7 +34,7 @@ export const NkioskMoveVP = () => {
     const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventDoorId', 'deviceSN', 'eventName', 'eventTime']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventDoorId', 'deviceSN', 'eventName', 'eventTime', 'eventNo']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -108,7 +108,7 @@ export const NkioskMoveVP = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventDoorId', 'deviceSN', 'eventName', 'eventTime']);
+        setSelectedColumns(['eventDoorId', 'deviceSN', 'eventName', 'eventTime', 'eventNo']);
     };
 
     // Função para selecionar todas as colunas
@@ -164,6 +164,7 @@ export const NkioskMoveVP = () => {
         .filter(field => selectedColumns.includes(field.key))
         .sort((a, b) => (a.key === 'eventTime' ? -1 : b.key === 'eventTime' ? 1 : 0))
         .sort((a, b) => (a.key === 'deviceSN' ? 1 : b.key === 'deviceSN' ? -1 : 0))
+        .sort((a, b) => (a.key === 'eventNo' ? 1 : b.key === 'eventNo' ? -1 : 0))
         .map(field => {
             const formatField = (row: KioskTransactionCard) => {
                 const value = row[field.key as keyof KioskTransactionCard];

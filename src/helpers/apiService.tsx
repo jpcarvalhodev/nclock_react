@@ -923,7 +923,7 @@ export const deleteAd = async (id: string) => {
 
 
 export const fetchAllKioskTransactions = async (zktecoDeviceID: Devices) => {
-    const response = await fetchWithAuth(`KioskTransaction/?deviceID=${zktecoDeviceID}`);
+    const response = await fetchWithAuth(`KioskTransaction/GetAllTransactions?deviceID=${zktecoDeviceID}`);
     if (!response.ok) {
         return;
     }
@@ -1101,7 +1101,7 @@ export const updateCompanyConfig = async (companyEmail: Partial<EmailCompany>) =
 
 
 export const fetchAllTimePeriods = async () => {
-    const response = await fetchWithAuth(`AccTimeSeg`);
+    const response = await fetchWithAuth(`AccTimeSeg/GetAllTimezone`);
     if (!response.ok) {
         return;
     }
@@ -1109,7 +1109,7 @@ export const fetchAllTimePeriods = async () => {
 }
 
 export const addTimePeriod = async (timePeriod: TimePeriod) => {
-    const response = await fetchWithAuth(`AccTimeSeg`, {
+    const response = await fetchWithAuth(`AccTimeSeg/CreateTimezone`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1123,7 +1123,7 @@ export const addTimePeriod = async (timePeriod: TimePeriod) => {
 }
 
 export const updateTimePeriod = async (timePeriod: TimePeriod) => {
-    const response = await fetchWithAuth(`AccTimeSeg/${timePeriod.id}`, {
+    const response = await fetchWithAuth(`AccTimeSeg/UpdateTimezone/${timePeriod.id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1137,7 +1137,7 @@ export const updateTimePeriod = async (timePeriod: TimePeriod) => {
 }
 
 export const deleteTimePeriod = async (id: string) => {
-    const response = await fetchWithAuth(`AccTimeSeg/${id}`, {
+    const response = await fetchWithAuth(`AccTimeSeg/DeleteTimezone/${id}`, {
         method: 'DELETE'
     });
     if (!response.ok) {
@@ -1158,7 +1158,7 @@ export const fetchAllAccessControl = async () => {
     return response.json();
 }
 
-export const addAccessControl = async (accessControl: AccessControl) => {
+export const addAccessControl = async (accessControl: Partial<AccessControl>) => {
     const response = await fetchWithAuth(`AccessControle/CreateAccessControle`, {
         method: 'POST',
         headers: {
@@ -1172,8 +1172,12 @@ export const addAccessControl = async (accessControl: AccessControl) => {
     return response.json();
 }
 
-export const updateAccessControl = async (accessControl: AccessControl) => {
-    const response = await fetchWithAuth(`AccessControle/UpdateAccessControle?id=${accessControl.acId}`, {
+export const updateAccessControl = async (accessControl: Partial<AccessControl>, door?: Partial<Doors>) => {
+    let url = `AccessControle/UpdateAccessControle?id=${accessControl.employeesId}`;
+    if (door) {
+        url += `&doorId=${door.id}`;
+    }
+    const response = await fetchWithAuth(url, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1186,8 +1190,12 @@ export const updateAccessControl = async (accessControl: AccessControl) => {
     return response.json();
 }
 
-export const deleteAccessControl = async (id: string) => {
-    const response = await fetchWithAuth(`AccessControle/DeleteAccessControle?id=${id}`, {
+export const deleteAccessControl = async (id: string, doorId?: Doors) => {
+    let url = `AccessControle/DeleteAccessControle?id=${id}`;
+    if (doorId) {
+        url += `&doorId=${doorId}`;
+    }
+    const response = await fetchWithAuth(url, {
         method: 'DELETE'
     });
     if (!response.ok) {

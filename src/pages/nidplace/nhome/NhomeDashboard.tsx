@@ -70,66 +70,74 @@ import ngold from '../../../assets/img/navbar/navbar/ngold.png';
 type TabName = 'CLIENTE' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
 
 // Define o tipo CardTitle
-type CardTitle = 'Início' | 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Ncount' | 'Nbuild' | 'Ncaravan' | 'Nmechanic' | 'Nevents' | 'Nservice' | 'Ntask' | 'Nproduction' | 'Nticket' | 'Nsales' | 'Ninvoice' | 'Ndoc' | 'Nsports' | 'Ngym' | 'Nschool' | 'Nclinic' | 'Noptics' | 'Ngold' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome' | 'Nsoftwares';
+type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
+    'Assiduidade' | 'Acessos' | 'Parques' | 'Automatismos' | 'Rondas' | 'Cartões' | 'NSoftwares' | 
+    'Programação' | 'Sistemas' | 'Aplicativos' | 'Cibernética' | 'Transformação' | 'Integração' |
+    'Automação' | 'Equipamentos' | 'Projetos' | 'Contador' | 'Obras' | 'Autocaravanas' | 'Oficinas' |
+    'Eventos' | 'Serviços' | 'Tarefas' | 'Produção' | 'Bilhetes' | 'CRM' | 'Faturação' | 'Documental' |
+    'Desporto' | 'Ginásios' | 'Escolar' | 'Clínicas' | 'Ópticas' | 'Ourivesarias' |
+    'Inteligência' | 'Virtual' | 'Hologramas' | 'Energias' | 'Recarga' | 'Mobilidade' |
+    'Painéis' | 'Incêndios' |
+    'Mobiliário' | 'Divisórias' | 'Decoração' | 'Redes' | 'Electricidade' | 'Iluminação' |
+    'Climatização' | 'Áudio' | 'Domótica';
 
 // Define o objeto tabData
 const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: string }> = {
-    Início: { route: '/dashboard', tabKey: '', ribbonKey: '' },
-    Nclock: { route: '/nclock/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon' },
-    Naccess: { route: '/naccess/naccessdashboard', tabKey: 'showNaccessTab', ribbonKey: 'showNaccessRibbon' },
-    Nvisitor: { route: '/nvisitor/nvisitordashboard', tabKey: 'showNvisitorTab', ribbonKey: 'showNvisitorRibbon' },
-    Npark: { route: '/npark/nparkdashboard', tabKey: 'showNparkTab', ribbonKey: 'showNparkRibbon' },
-    Ndoor: { route: '/ndoor/ndoordashboard', tabKey: 'showNdoorTab', ribbonKey: 'showNdoorRibbon' },
-    Npatrol: { route: '/npatrol/npatroldashboard', tabKey: 'showNpatrolTab', ribbonKey: 'showNpatrolRibbon' },
-    Ncard: { route: '/ncard/ncarddashboard', tabKey: 'showNcardTab', ribbonKey: 'showNcardRibbon' },
-    Nview: { route: '/nview/nviewdashboard', tabKey: 'showNviewTab', ribbonKey: 'showNviewRibbon' },
-    Nsecur: { route: '/nsecur/nsecurdashboard', tabKey: 'showNsecurTab', ribbonKey: 'showNsecurRibbon' },
-    Nsoftware: { route: '/nsoftware/nsoftwaredashboard', tabKey: 'showNsoftwareTab', ribbonKey: 'showNsoftwareRibbon' },
-    Nsystem: { route: '/nsystem/nsystemdashboard', tabKey: 'showNsystemTab', ribbonKey: 'showNsystemRibbon' },
-    Napp: { route: '/napp/nappdashboard', tabKey: 'showNappTab', ribbonKey: 'showNappRibbon' },
-    Ncyber: { route: '/ncyber/ncyberdashboard', tabKey: 'showNcyberTab', ribbonKey: 'showNcyberRibbon' },
-    Ndigital: { route: '/ndigital/ndigitaldashboard', tabKey: 'showNdigitalTab', ribbonKey: 'showNdigitalRibbon' },
-    Nserver: { route: '/nserver/nserverdashboard', tabKey: 'showNserverTab', ribbonKey: 'showNserverRibbon' },
-    Naut: { route: '/naut/nautdashboard', tabKey: 'showNautTab', ribbonKey: 'showNautRibbon' },
-    Nequip: { route: '/nequip/nequipdashboard', tabKey: 'showNequipTab', ribbonKey: 'showNequipRibbon' },
-    Nproject: { route: '/nproject/nprojectdashboard', tabKey: 'showNprojectTab', ribbonKey: 'showNprojectRibbon' },
-    Ncount: { route: '/ncount/ncountdashboard', tabKey: 'showNcountTab', ribbonKey: 'showNcountRibbon' },
-    Nbuild: { route: '/nbuild/nbuilddashboard', tabKey: 'showNbuildTab', ribbonKey: 'showNbuildRibbon' },
-    Ncaravan: { route: '/ncaravan/ncaravandashboard', tabKey: 'showNcaravanTab', ribbonKey: 'showNcaravanRibbon' },
-    Nmechanic: { route: '/nmechanic/nmechanicdashboard', tabKey: 'showNmechanicTab', ribbonKey: 'showNmechanicRibbon' },
-    Nevents: { route: '/nevents/neventsdashboard', tabKey: 'showNeventsTab', ribbonKey: 'showNeventsRibbon' },
-    Nservice: { route: '/nservice/nservicedashboard', tabKey: 'showNserviceTab', ribbonKey: 'showNserviceRibbon' },
-    Ntask: { route: '/ntask/ntaskdashboard', tabKey: 'showNtaskTab', ribbonKey: 'showNtaskRibbon' },
-    Nproduction: { route: '/nproduction/nproductiondashboard', tabKey: 'showNproductionTab', ribbonKey: 'showNproductionRibbon' },
-    Nticket: { route: '/nticket/nticketdashboard', tabKey: 'showNticketTab', ribbonKey: 'showNticketRibbon' },
-    Nsales: { route: '/nsales/nsalesdashboard', tabKey: 'showNsalesTab', ribbonKey: 'showNsalesRibbon' },
-    Ninvoice: { route: '/ninvoice/ninvoicedashboard', tabKey: 'showNinvoiceTab', ribbonKey: 'showNinvoiceRibbon' },
-    Ndoc: { route: '/ndoc/ndocdashboard', tabKey: 'showNdocTab', ribbonKey: 'showNdocRibbon' },
-    Nsports: { route: '/nsports/nsportsdashboard', tabKey: 'showNsportsTab', ribbonKey: 'showNsportsRibbon' },
-    Ngym: { route: '/ngym/ngymdashboard', tabKey: 'showNgymTab', ribbonKey: 'showNgymRibbon' },
-    Nschool: { route: '/nschool/nschooldashboard', tabKey: 'showNschoolTab', ribbonKey: 'showNschoolRibbon' },
-    Nclinic: { route: '/nclinic/nclinicdashboard', tabKey: 'showNclinicTab', ribbonKey: 'showNclinicRibbon' },
-    Noptics: { route: '/noptics/nopticsdashboard', tabKey: 'showNopticsTab', ribbonKey: 'showNopticsRibbon' },
-    Ngold: { route: '/ngold/ngolddashboard', tabKey: 'showNgoldTab', ribbonKey: 'showNgoldRibbon' },
-    Nsmart: { route: '/nsmart/nsmartdashboard', tabKey: 'showNsmartTab', ribbonKey: 'showNsmartRibbon' },
-    Nreality: { route: '/nreality/nrealitydashboard', tabKey: 'showNrealityTab', ribbonKey: 'showNrealityRibbon' },
-    Nhologram: { route: '/nhologram/nhologramdashboard', tabKey: 'showNhologramTab', ribbonKey: 'showNhologramRibbon' },
-    Npower: { route: '/npower/npowerdashboard', tabKey: 'showNpowerTab', ribbonKey: 'showNpowerRibbon' },
-    Ncharge: { route: '/ncharge/nchargedashboard', tabKey: 'showNchargeTab', ribbonKey: 'showNchargeRibbon' },
-    Ncity: { route: '/ncity/ncitydashboard', tabKey: 'showNcityTab', ribbonKey: 'showNcityRibbon' },
-    Nkiosk: { route: '/nkiosk/nkioskdashboard', tabKey: 'showNkioskTab', ribbonKey: 'showNkioskRibbon' },
-    Nled: { route: '/nled/nleddashboard', tabKey: 'showNledTab', ribbonKey: 'showNledRibbon' },
-    Nfire: { route: '/nfire/nfiredashboard', tabKey: 'showNfireTab', ribbonKey: 'showNfireRibbon' },
-    Nfurniture: { route: '/nfurniture/nfurnituredashboard', tabKey: 'showNfurnitureTab', ribbonKey: 'showNfurnitureRibbon' },
-    Npartition: { route: '/npartition/npartitiondashboard', tabKey: 'showNpartitionTab', ribbonKey: 'showNpartitionRibbon' },
-    Ndecor: { route: '/ndecor/ndecordashboard', tabKey: 'showNdecorTab', ribbonKey: 'showNdecorRibbon' },
-    Nping: { route: '/nping/npingdashboard', tabKey: 'showNpingTab', ribbonKey: 'showNpingRibbon' },
-    Nconnect: { route: '/nconnect/nconnectdashboard', tabKey: 'showNconnectTab', ribbonKey: 'showNconnectRibbon' },
-    Nlight: { route: '/nlight/nlightdashboard', tabKey: 'showNlightTab', ribbonKey: 'showNlightRibbon' },
-    Ncomfort: { route: '/ncomfort/ncomfortdashboard', tabKey: 'showNcomfortTab', ribbonKey: 'showNcomfortRibbon' },
-    Nsound: { route: '/nsound/nsounddashboard', tabKey: 'showNsoundTab', ribbonKey: 'showNsoundRibbon' },
-    Nhome: { route: '/nhome/nhomedashboard', tabKey: 'showNhomeTab', ribbonKey: 'showNhomeRibbon' },
-    Nsoftwares: { route: '#', tabKey: 'showSoftwaresTab', ribbonKey: 'showSoftwaresRibbon' }
+    Quiosques: { route: '/nkiosk/nkioskdashboard', tabKey: 'showNkioskTab', ribbonKey: 'showNkioskRibbon' },
+    Torniquetes: { route: '/nvisitor/nvisitordashboard', tabKey: 'showNvisitorTab', ribbonKey: 'showNvisitorRibbon' },
+    Vigilância: { route: '/nview/nviewdashboard', tabKey: 'showNviewTab', ribbonKey: 'showNviewRibbon' },
+    Alarmes: { route: '/nsecur/nsecurdashboard', tabKey: 'showNsecurTab', ribbonKey: 'showNsecurRibbon' },
+    Assiduidade: { route: '/nclock/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon' },
+    Acessos: { route: '/naccess/naccessdashboard', tabKey: 'showNaccessTab', ribbonKey: 'showNaccessRibbon' },
+    Parques: { route: '/npark/nparkdashboard', tabKey: 'showNparkTab', ribbonKey: 'showNparkRibbon' },
+    Automatismos: { route: '/ndoor/ndoordashboard', tabKey: 'showNdoorTab', ribbonKey: 'showNdoorRibbon' },
+    Rondas: { route: '/npatrol/npatroldashboard', tabKey: 'showNpatrolTab', ribbonKey: 'showNpatrolRibbon' },
+    Cartões: { route: '/ncard/ncarddashboard', tabKey: 'showNcardTab', ribbonKey: 'showNcardRibbon' },
+    Programação: { route: '/nsoftware/nsoftwaredashboard', tabKey: 'showNsoftwareTab', ribbonKey: 'showNsoftwareRibbon' },
+    Sistemas: { route: '/nsystem/nsystemdashboard', tabKey: 'showNsystemTab', ribbonKey: 'showNsystemRibbon' },
+    Aplicativos: { route: '/napp/nappdashboard', tabKey: 'showNappTab', ribbonKey: 'showNappRibbon' },
+    Cibernética: { route: '/ncyber/ncyberdashboard', tabKey: 'showNcyberTab', ribbonKey: 'showNcyberRibbon' },
+    Transformação: { route: '/ndigital/ndigitaldashboard', tabKey: 'showNdigitalTab', ribbonKey: 'showNdigitalRibbon' },
+    Integração: { route: '/nserver/nserverdashboard', tabKey: 'showNserverTab', ribbonKey: 'showNserverRibbon' },
+    Automação: { route: '/naut/nautdashboard', tabKey: 'showNautTab', ribbonKey: 'showNautRibbon' },
+    Equipamentos: { route: '/nequip/nequipdashboard', tabKey: 'showNequipTab', ribbonKey: 'showNequipRibbon' },
+    Projetos: { route: '/nproject/nprojectdashboard', tabKey: 'showNprojectTab', ribbonKey: 'showNprojectRibbon' },
+    Contador: { route: '/ncount/ncountdashboard', tabKey: 'showNcountTab', ribbonKey: 'showNcountRibbon' },
+    Obras: { route: '/nbuild/nbuilddashboard', tabKey: 'showNbuildTab', ribbonKey: 'showNbuildRibbon' },
+    Autocaravanas: { route: '/ncaravan/ncaravandashboard', tabKey: 'showNcaravanTab', ribbonKey: 'showNcaravanRibbon' },
+    Oficinas: { route: '/nmechanic/nmechanicdashboard', tabKey: 'showNmechanicTab', ribbonKey: 'showNmechanicRibbon' },
+    Eventos: { route: '/nevents/neventsdashboard', tabKey: 'showNeventsTab', ribbonKey: 'showNeventsRibbon' },
+    Serviços: { route: '/nservice/nservicedashboard', tabKey: 'showNserviceTab', ribbonKey: 'showNserviceRibbon' },
+    Tarefas: { route: '/ntask/ntaskdashboard', tabKey: 'showNtaskTab', ribbonKey: 'showNtaskRibbon' },
+    Produção: { route: '/nproduction/nproductiondashboard', tabKey: 'showNproductionTab', ribbonKey: 'showNproductionRibbon' },
+    Bilhetes: { route: '/nticket/nticketdashboard', tabKey: 'showNticketTab', ribbonKey: 'showNticketRibbon' },
+    CRM: { route: '/nsales/nsalesdashboard', tabKey: 'showNsalesTab', ribbonKey: 'showNsalesRibbon' },
+    Faturação: { route: '/ninvoice/ninvoicedashboard', tabKey: 'showNinvoiceTab', ribbonKey: 'showNinvoiceRibbon' },
+    Documental: { route: '/ndoc/ndocdashboard', tabKey: 'showNdocTab', ribbonKey: 'showNdocRibbon' },
+    Desporto: { route: '/nsports/nsportsdashboard', tabKey: 'showNsportsTab', ribbonKey: 'showNsportsRibbon' },
+    Ginásios: { route: '/ngym/ngymdashboard', tabKey: 'showNgymTab', ribbonKey: 'showNgymRibbon' },
+    Escolar: { route: '/nschool/nschooldashboard', tabKey: 'showNschoolTab', ribbonKey: 'showNschoolRibbon' },
+    Clínicas: { route: '/nclinic/nclinicdashboard', tabKey: 'showNclinicTab', ribbonKey: 'showNclinicRibbon' },
+    Ópticas: { route: '/noptics/nopticsdashboard', tabKey: 'showNopticsTab', ribbonKey: 'showNopticsRibbon' },
+    Ourivesarias: { route: '/ngold/ngolddashboard', tabKey: 'showNgoldTab', ribbonKey: 'showNgoldRibbon' },
+    Inteligência: { route: '/nsmart/nsmartdashboard', tabKey: 'showNsmartTab', ribbonKey: 'showNsmartRibbon' },
+    Virtual: { route: '/nreality/nrealitydashboard', tabKey: 'showNrealityTab', ribbonKey: 'showNrealityRibbon' },
+    Hologramas: { route: '/nhologram/nhologramdashboard', tabKey: 'showNhologramTab', ribbonKey: 'showNhologramRibbon' },
+    Energias: { route: '/npower/npowerdashboard', tabKey: 'showNpowerTab', ribbonKey: 'showNpowerRibbon' },
+    Recarga: { route: '/ncharge/nchargedashboard', tabKey: 'showNchargeTab', ribbonKey: 'showNchargeRibbon' },
+    Mobilidade: { route: '/ncity/ncitydashboard', tabKey: 'showNcityTab', ribbonKey: 'showNcityRibbon' },
+    Painéis: { route: '/nled/nleddashboard', tabKey: 'showNledTab', ribbonKey: 'showNledRibbon' },
+    Incêndios: { route: '/nfire/nfiredashboard', tabKey: 'showNfireTab', ribbonKey: 'showNfireRibbon' },
+    Mobiliário: { route: '/nfurniture/nfurnituredashboard', tabKey: 'showNfurnitureTab', ribbonKey: 'showNfurnitureRibbon' },
+    Divisórias: { route: '/npartition/npartitiondashboard', tabKey: 'showNpartitionTab', ribbonKey: 'showNpartitionRibbon' },
+    Decoração: { route: '/ndecor/ndecordashboard', tabKey: 'showNdecorTab', ribbonKey: 'showNdecorRibbon' },
+    Redes: { route: '/nping/npingdashboard', tabKey: 'showNpingTab', ribbonKey: 'showNpingRibbon' },
+    Electricidade: { route: '/nconnect/nconnectdashboard', tabKey: 'showNconnectTab', ribbonKey: 'showNconnectRibbon' },
+    Iluminação: { route: '/nlight/nlightdashboard', tabKey: 'showNlightTab', ribbonKey: 'showNlightRibbon' },
+    Climatização: { route: '/ncomfort/ncomfortdashboard', tabKey: 'showNcomfortTab', ribbonKey: 'showNcomfortRibbon' },
+    Áudio: { route: '/nsound/nsounddashboard', tabKey: 'showNsoundTab', ribbonKey: 'showNsoundRibbon' },
+    Domótica: { route: '/nhome/nhomedashboard', tabKey: 'showNhomeTab', ribbonKey: 'showNhomeRibbon' },
+    NSoftwares: { route: '/nsoftwares/nsoftwaresdashboard', tabKey: 'showSoftwaresTab', ribbonKey: 'showSoftwaresRibbon' }
 };
 
 // Função para verificar se o título é válido
@@ -148,85 +156,86 @@ export const NhomeDashboard = () => {
             const tab = tabData[title];
             localStorage.setItem(tab.tabKey, 'true');
             localStorage.setItem(tab.ribbonKey, 'true');
-            localStorage.setItem('activeTab', title.toLowerCase());
+            const str = tab.tabKey
+            const match = str.match(/show(.*)Tab/);
+            const result = match ? match[1] : '';
+            localStorage.setItem('activeTab', result.toLowerCase());
             navigate(tab.route);
         }
     };
 
     const cardData = {
         'CLIENTE': [
-            { title: 'Início', img: nidgroup, tab: '' },
-            { title: 'Nkiosk', img: nkiosk, tab: 'nkiosk' },
-            { title: 'Nclock', img: nclock, tab: 'nclock' },
-            { title: 'Naccess', img: naccess, tab: 'naccess' },
-            { title: 'Nvisitor', img: nvisitor, tab: 'nvisitor' },
-            { title: 'Nview', img: nview, tab: 'nview' },
+            { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
+            { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
+            { title: 'Vigilância', img: nview, tab: 'nview' },
+            { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
         ],
         'SISNID': [
-            { title: 'Nclock', img: nclock, tab: 'nclock' },
-            { title: 'Naccess', img: naccess, tab: 'naccess' },
-            { title: 'Nvisitor', img: nvisitor, tab: 'nvisitor' },
-            { title: 'Npark', img: npark },
-            { title: 'Ndoor', img: ndoor },
-            { title: 'Npatrol', img: npatrol },
-            { title: 'Ncard', img: ncard },
-            { title: 'Nview', img: nview },
-            { title: 'Nsecur', img: nsecur },
-            { title: 'Nsoftwares', img: sisnidlogo }
+            { title: 'Assiduidade', img: nclock, tab: 'nclock' },
+            { title: 'Acessos', img: naccess, tab: 'naccess' },
+            { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
+            { title: 'Parques', img: npark, tab: 'npark' },
+            { title: 'Automatismos', img: ndoor, tab: 'ndoor' },
+            { title: 'Rondas', img: npatrol, tab: 'npatrol' },
+            { title: 'Cartões', img: ncard, tab: 'ncard' },
+            { title: 'Vigilância', img: nview, tab: 'nview' },
+            { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
+            { title: 'NSoftwares', img: sisnidlogo }
         ],
         'NIDSOF': [
-            { title: 'Nsoftware', img: nsoftware },
-            { title: 'Nsystem', img: nsystem },
-            { title: 'Napp', img: napp },
-            { title: 'Ncyber', img: ncyber },
-            { title: 'Ndigital', img: ndigital },
-            { title: 'Nserver', img: nserver },
-            { title: 'Naut', img: naut },
-            { title: 'Nequip', img: nequip },
-            { title: 'Nproject', img: nproject },
-            { title: 'Ncount', img: ncount },
-            { title: 'Nbuild', img: nbuild },
-            { title: 'Ncaravan', img: ncaravan },
-            { title: 'Nmechanic', img: nmechanic },
-            { title: 'Nevents', img: nevents },
-            { title: 'Nservice', img: nservice },
-            { title: 'Ntask', img: ntask },
-            { title: 'Nproduction', img: nproduction },
-            { title: 'Nticket', img: nticket },
-            { title: 'Nsales', img: nsales },
-            { title: 'Ninvoice', img: ninvoice },
-            { title: 'Ndoc', img: ndoc },
-            { title: 'Nsports', img: nsports },
-            { title: 'Ngym', img: ngym },
-            { title: 'Nschool', img: nschool },
-            { title: 'Nclinic', img: nclinic },
-            { title: 'Noptics', img: noptics },
-            { title: 'Ngold', img: ngold },
-            { title: 'Nsoftwares', img: nidsof }
+            { title: 'Programação', img: nsoftware, tab: 'nsoftware' },
+            { title: 'Sistemas', img: nsystem, tab: 'nsystem' },
+            { title: 'Aplicativos', img: napp, tab: 'napp' },
+            { title: 'Cibernética', img: ncyber, tab: 'ncyber' },
+            { title: 'Transformação', img: ndigital, tab: 'ndigital' },
+            { title: 'Integração', img: nserver, tab: 'nserver' },
+            { title: 'Automação', img: naut, tab: 'naut' },
+            { title: 'Equipamentos', img: nequip, tab: 'nequip' },
+            { title: 'Projetos', img: nproject, tab: 'nproject' },
+            { title: 'Contador', img: ncount, tab: 'ncount' },
+            { title: 'Obras', img: nbuild, tab: 'nbuild' },
+            { title: 'Autocaravanas', img: ncaravan, tab: 'ncaravan' },
+            { title: 'Oficinas', img: nmechanic, tab: 'nmechanic' },
+            { title: 'Eventos', img: nevents, tab: 'nevents' },
+            { title: 'Serviços', img: nservice, tab: 'nservice' },
+            { title: 'Tarefas', img: ntask, tab: 'ntask' },
+            { title: 'Produção', img: nproduction, tab: 'nproduction' },
+            { title: 'Bilhetes', img: nticket, tab: 'nticket' },
+            { title: 'CRM', img: nsales, tab: 'nsales' },
+            { title: 'Faturação', img: ninvoice, tab: 'ninvoice' },
+            { title: 'Documental', img: ndoc, tab: 'ndoc' },
+            { title: 'Desporto', img: nsports, tab: 'nsports' },
+            { title: 'Ginásios', img: ngym, tab: 'ngym' },
+            { title: 'Escolar', img: nschool, tab: 'nschool' },
+            { title: 'Clínicas', img: nclinic, tab: 'nclinic' },
+            { title: 'Ópticas', img: noptics, tab: 'noptics' },
+            { title: 'Ourivesarias', img: ngold, tab: 'ngold' },
+            { title: 'NSoftwares', img: nidsof },
         ],
         'NIDTEC': [
-            { title: 'Nsmart', img: nsmart },
-            { title: 'Nreality', img: nreality },
-            { title: 'Nhologram', img: nhologram },
-            { title: 'Npower', img: npower },
-            { title: 'Ncharge', img: ncharge },
-            { title: 'Ncity', img: ncity },
-            { title: 'Nkiosk', img: nkiosk },
-            { title: 'Nled', img: nled },
-            { title: 'Nfire', img: nfire },
-            { title: 'Nsoftwares', img: nidtec }
+            { title: 'Inteligência', img: nsmart, tab: 'nsmart' },
+            { title: 'Virtual', img: nreality, tab: 'nreality' },
+            { title: 'Hologramas', img: nhologram, tab: 'nhologram' },
+            { title: 'Energias', img: npower, tab: 'npower' },
+            { title: 'Recarga', img: ncharge, tab: 'ncharge' },
+            { title: 'Mobilidade', img: ncity, tab: 'ncity' },
+            { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
+            { title: 'Painéis', img: nled, tab: 'nled' },
+            { title: 'Incêndios', img: nfire, tab: 'nfire' },
+            { title: 'NSoftwares', img: nidtec, tab: 'nidtec' }
         ],
         'NIDPLACE': [
-            { title: 'Nfurniture', img: nfurniture },
-            { title: 'Npartition', img: npartition },
-            { title: 'Ndecor', img: ndecor },
-            { title: 'Nping', img: nping },
-            { title: 'Nconnect', img: nconnect },
-            { title: 'Nlight', img: nlight },
-            { title: 'Ncomfort', img: ncomfort },
-            { title: 'Nsound', img: nsound },
-            { title: 'Nhome', img: nhome },
-            { title: 'Nsoftwares', img: nidplace }
+            { title: 'Mobiliário', img: nfurniture, tab: 'nfurniture' },
+            { title: 'Divisórias', img: npartition, tab: 'npartition' },
+            { title: 'Decoração', img: ndecor, tab: 'ndecor' },
+            { title: 'Redes', img: nping, tab: 'nping' },
+            { title: 'Electricidade', img: nconnect, tab: 'nconnect' },
+            { title: 'Iluminação', img: nlight, tab: 'nlight' },
+            { title: 'Climatização', img: ncomfort, tab: 'ncomfort' },
+            { title: 'Áudio', img: nsound, tab: 'nsound' },
+            { title: 'Domótica', img: nhome, tab: 'nhome' },
+            { title: 'NSoftwares', img: nidplace }
         ]
     };
 
@@ -312,7 +321,7 @@ export const NhomeDashboard = () => {
                     </Carousel>
                 </div>
                 <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">SOFTWARE NHOME</h3>
+                    <h3 className="dashboard-title-text-inside">SOFTWARE NHOME - Automação e Domótica</h3>
                     <p className="dashboard-text-inside">
                         O Nhome é um software dedicado à Automação e Domótica da sua empresa. Ele permite-lhe:
                     </p>

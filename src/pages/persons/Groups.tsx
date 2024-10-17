@@ -18,7 +18,6 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
-import { id } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {

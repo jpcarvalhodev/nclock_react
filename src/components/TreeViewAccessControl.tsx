@@ -77,7 +77,6 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
     const fetchAllData = async () => {
         try {
             const accessData = await apiService.fetchAllAccessControl();
-            console.log('Dados dos dispositivos:', accessData);
             setAccessControl(accessData);
         } catch (error) {
             console.error('Erro ao buscar os dados dos dispositivos:', error);
@@ -92,7 +91,7 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = accessControl.map(ac => ({
-            id: ac.acId,
+            id: ac.employeesId,
             label: ac.shortName || 'Sem Nome',
             children: []
         }));
