@@ -106,6 +106,7 @@ import { NsportsDashboard } from './pages/nidsof/nsports/NsportsDashboard';
 import { NtaskDashboard } from './pages/nidsof/ntask/NtaskDashboard';
 import { NticketDashboard } from './pages/nidsof/nticket/NticketDashboard';
 import { NbuildDashboard } from './pages/nidsof/nbuild/NbuildDashboard';
+import { LicenseProvider } from './context/LicenseContext';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -253,12 +254,14 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <ColorProvider>
-      <Router>
-        <ToastContainer />
-        <AnimatedRoutes />
-      </Router>
-    </ColorProvider>
+    <LicenseProvider>
+      <ColorProvider>
+        <Router>
+          <ToastContainer />
+          <AnimatedRoutes />
+        </Router>
+      </ColorProvider>
+    </LicenseProvider>
   );
 }
 

@@ -77,7 +77,7 @@ export const Login = () => {
           localStorage.removeItem('rememberMePassword');
         }
 
-        toast(`Seja bem vindo ${username}!`, { progressClassName: 'custom-progress-bar' });
+        toast.info(`Seja bem vindo aos softwares do NIDGROUP ${username}!`);
         navigate('/dashboard');
       }
     } catch (error) {

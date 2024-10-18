@@ -14,6 +14,7 @@ import { ExportButton } from '../../components/ExportButton';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
 import { useColor } from '../../context/ColorContext';
 import { set } from 'date-fns';
+import { PrintButton } from '../../components/PrintButton';
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -152,6 +153,7 @@ export const Persons = () => {
                                     <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                     <ExportButton allData={employees} selectedData={filteredData} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                                    <PrintButton data={employees} fields={employeeFields} />
                                 </div>
                             </div>
                             <PersonsDataTable

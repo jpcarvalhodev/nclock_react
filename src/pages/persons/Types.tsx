@@ -16,7 +16,7 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
-import { id } from "date-fns/locale";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -215,6 +215,7 @@ export const Types = () => {
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={externalEntityTypes} selectedData={filteredItems} fields={externalEntityTypeFields} />
+                        <PrintButton data={externalEntityTypes} fields={externalEntityTypeFields} />
                     </div>
                 </div>
             </div>

@@ -154,7 +154,6 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
 
     // Função para salvar os dados
     const handleSave = () => {
-        console.log('Salvando:', formData);
         onUpdate(formData as T);
         onClose();
     };

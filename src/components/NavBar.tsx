@@ -72,7 +72,7 @@ import accessPlan from '../assets/img/navbar/dispositivos/accessPlan.png';
 import timePlan from '../assets/img/navbar/dispositivos/timePlan.png';
 import camera from '../assets/img/navbar/dispositivos/camera.png';
 import database from '../assets/img/navbar/configuracao/database.png';
-import license from '../assets/img/navbar/configuracao/license.png';
+import licenses from '../assets/img/navbar/configuracao/license.png';
 import timeZone from '../assets/img/navbar/configuracao/timeZone.png';
 import nacionalities from '../assets/img/navbar/configuracao/nacionalities.png';
 import document from '../assets/img/navbar/configuracao/document.png';
@@ -168,6 +168,8 @@ import ngold from '../assets/img/navbar/navbar/ngold.png';
 import open_door from '../assets/img/navbar/nkiosk/open_door.png';
 import count from '../assets/img/navbar/nkiosk/count.png';
 import cleaning from '../assets/img/navbar/nkiosk/cleaning.png';
+import { LicenseModal } from '../modals/LicenseModal';
+import { useLicense } from '../context/LicenseContext';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -228,6 +230,7 @@ interface TabsInfo {
 export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
 	const { handleAddModalNavbar } = useAds();
+	const { license } = useLicense();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -355,6 +358,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [visibleGroup, setVisibleGroup] = useState<string | null>(null);
 	const [isMobile, setIsMobile] = useState<boolean>(false);
 	const [showAboutModal, setShowAboutModal] = useState(false);
+	const [showLicenseModal, setShowLicenseModal] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -1426,6 +1430,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para abrir o modal de acerca de
 	const toggleAboutModalOpen = () => setShowAboutModal(!showAboutModal);
+
+	// Função para abrir o modal de licença
+	const toggleLicenseModal = () => setShowLicenseModal(!showLicenseModal);
 
 	// Função para adicionar publicidade via contexto
 	const handleUploadClick = (ad: FormData) => {
@@ -2646,9 +2653,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Button onClick={toggleLicenseModal} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" >
 													<span className="icon">
-														<img src={license} alt="botão licença" />
+														<img src={licenses} alt="botão licença" />
 													</span>
 													<span className="text">Licença</span>
 												</Button>
@@ -2897,6 +2904,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<AboutModal
 						open={showAboutModal}
 						onClose={() => setShowAboutModal(false)}
+					/>
+				)}
+				{showLicenseModal && (
+					<LicenseModal
+						open={showLicenseModal}
+						onClose={() => setShowLicenseModal(false)}
 					/>
 				)}
 			</nav>

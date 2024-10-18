@@ -18,6 +18,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
+import { PrintButton } from "../../components/PrintButton";
 
 interface DataState {
     externalEntity: ExternalEntity[];
@@ -266,6 +267,7 @@ export const ExternalEntities = () => {
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={externalEntities} selectedData={filteredItems} fields={externalEntityFields} />
+                        <PrintButton data={externalEntities} fields={externalEntityFields} />
                     </div>
                 </div>
                 <CreateModalExtEnt

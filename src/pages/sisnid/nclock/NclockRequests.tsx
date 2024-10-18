@@ -19,6 +19,7 @@ import { Button } from 'react-bootstrap';
 import { SelectFilter } from '../../../components/SelectFilter';
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../../context/MovementContext';
 import { useColor } from '../../../context/ColorContext';
+import { PrintButton } from '../../../components/PrintButton';
 
 // Define a interface para os filtros
 interface Filters {
@@ -311,6 +312,7 @@ export const NclockRequests = () => {
                                     <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                     <ExportButton allData={filteredAttendances} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
+                                    <PrintButton data={filteredAttendances} fields={employeeAttendanceTimesFields} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

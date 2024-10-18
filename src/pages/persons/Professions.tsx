@@ -19,6 +19,7 @@ import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { id } from "date-fns/locale";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -220,6 +221,7 @@ export const Professions = () => {
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={professions} selectedData={selectedRows} fields={professionFields} />
+                        <PrintButton data={professions} fields={professionFields} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes

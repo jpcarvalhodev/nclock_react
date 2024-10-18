@@ -1,58 +1,10 @@
 import Dropdown from 'react-bootstrap/Dropdown';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
-import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { CustomOutlineButton } from './CustomOutlineButton';
 import * as apiService from "../helpers/apiService";
-
-// Define os estilos para o PDF
-const styles = StyleSheet.create({
-    page: {
-        padding: 40,
-        backgroundColor: '#FFF',
-    },
-    table: {
-        display: 'table',
-        width: 'auto',
-        maxWidth: 'auto',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        borderRightWidth: 0,
-        borderBottomWidth: 0,
-    },
-    tableRow: {
-        flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderColor: '#E4E4E4',
-        borderBottomStyle: 'solid',
-    },
-    tableColHeader: {
-        width: '20%',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        borderLeftWidth: 0,
-        borderTopWidth: 0,
-        backgroundColor: '#f2f2f2',
-        padding: 5,
-        textAlign: 'center',
-    },
-    tableCol: {
-        width: '20%',
-        borderStyle: 'solid',
-        borderWidth: 1,
-        borderLeftWidth: 0,
-        borderTopWidth: 0,
-        padding: 5,
-        textAlign: 'center',
-    },
-    tableCellHeader: {
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    tableCell: {
-        fontSize: 10,
-    }
-});
+import { PDFDocument } from './PDFDocument';
 
 // Define a interface para os itens de dados
 interface DataItem {
@@ -69,12 +21,6 @@ interface Field {
 interface ExportButtonProps {
     allData: DataItem[];
     selectedData: DataItem[];
-    fields: Field[];
-}
-
-// Define as propriedades do documento PDF
-interface PDFDocumentProps {
-    data: DataItem[];
     fields: Field[];
 }
 
@@ -241,54 +187,6 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: fileType });
     saveAs(blob, fileName + fileExtension);
-};
-
-// Função para renderizar o documento PDF com as colunas divididas corretamente
-const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
-    const maxColsPerPage = 4;
-
-    const columnsToIgnore = ['clientTicket', 'merchantTicket'];
-
-    const splitFieldsIntoGroups = (fields: Field[], maxColsPerPage: number) => {
-        const groups: Field[][] = [];
-        for (let i = 0; i < fields.length; i += maxColsPerPage) {
-            groups.push(fields.slice(i, i + maxColsPerPage));
-        }
-        return groups;
-    };
-
-    const filteredFields = fields.filter(field => !columnsToIgnore.includes(field.key));
-    const fieldGroups = splitFieldsIntoGroups(filteredFields, maxColsPerPage);
-
-    return (
-        <Document>
-            {fieldGroups.map((fieldGroup, groupIndex) => (
-                <Page size="A4" orientation="landscape" style={styles.page} key={groupIndex}>
-                    <View style={styles.table}>
-                        <View style={styles.tableRow}>
-                            {fieldGroup.map((field) => (
-                                <View key={field.key} style={styles.tableColHeader}>
-                                    <Text style={styles.tableCellHeader}>{field.label}</Text>
-                                </View>
-                            ))}
-                        </View>
-                        {data.map((item, rowIndex) => (
-                            <View key={rowIndex} style={styles.tableRow}>
-                                {fieldGroup.map((field) => {
-                                    const value = formatField(item, field.key);
-                                    return (
-                                        <View key={field.key} style={styles.tableCol}>
-                                            <Text style={styles.tableCell}>{value}</Text>
-                                        </View>
-                                    );
-                                })}
-                            </View>
-                        ))}
-                    </View>
-                </Page>
-            ))}
-        </Document>
-    );
 };
 
 // Função para exportar os dados para TXT

@@ -9,7 +9,7 @@ import { Carousel } from "react-responsive-carousel";
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
 import { useColor } from "../../../context/ColorContext";
 import { Button, Card, Nav, Tab } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import nclock from '../../../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../../../assets/img/navbar/navbar/naccess.webp';
 import nvisitor from '../../../assets/img/navbar/navbar/nvisitor.webp';
@@ -82,7 +82,7 @@ type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
     'Desporto' | 'Ginásios' | 'Escolar' | 'Clínicas' | 'Ópticas' | 'Ourivesarias' |
     'Inteligência' | 'Virtual' | 'Hologramas' | 'Energias' | 'Recarga' | 'Mobilidade' |
     'Painéis' | 'Incêndios' |
-    'Mobiliário' | 'Divisórias' | 'Decoração' | 'Redes' | 'Electricidade' | 'Iluminação' |
+    'Mobiliário' | 'Divisórias' | 'Design' | 'Redes' | 'Electricidade' | 'Iluminação' |
     'Climatização' | 'Áudio' | 'Domótica';
 
 // Define o objeto tabData
@@ -134,7 +134,7 @@ const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: str
     Incêndios: { route: '/nfire/nfiredashboard', tabKey: 'showNfireTab', ribbonKey: 'showNfireRibbon' },
     Mobiliário: { route: '/nfurniture/nfurnituredashboard', tabKey: 'showNfurnitureTab', ribbonKey: 'showNfurnitureRibbon' },
     Divisórias: { route: '/npartition/npartitiondashboard', tabKey: 'showNpartitionTab', ribbonKey: 'showNpartitionRibbon' },
-    Decoração: { route: '/ndecor/ndecordashboard', tabKey: 'showNdecorTab', ribbonKey: 'showNdecorRibbon' },
+    Design: { route: '/ndecor/ndecordashboard', tabKey: 'showNdecorTab', ribbonKey: 'showNdecorRibbon' },
     Redes: { route: '/nping/npingdashboard', tabKey: 'showNpingTab', ribbonKey: 'showNpingRibbon' },
     Electricidade: { route: '/nconnect/nconnectdashboard', tabKey: 'showNconnectTab', ribbonKey: 'showNconnectRibbon' },
     Iluminação: { route: '/nlight/nlightdashboard', tabKey: 'showNlightTab', ribbonKey: 'showNlightRibbon' },
@@ -172,10 +172,11 @@ export const NaccessDashboard = () => {
 
     const cardData = {
         'CLIENTE': [
-            { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
             { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
             { title: 'Vigilância', img: nview, tab: 'nview' },
             { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
+            { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
+            { title: 'Painéis', img: nled, tab: 'nled' },
         ],
         'SISNID': [
             { title: 'Assiduidade', img: nclock, tab: 'nclock' },
@@ -199,6 +200,7 @@ export const NaccessDashboard = () => {
             { title: 'Automação', img: naut, tab: 'naut' },
             { title: 'Equipamentos', img: nequip, tab: 'nequip' },
             { title: 'Projetos', img: nproject, tab: 'nproject' },
+            { title: 'NSoftwares', img: nidsof },
             { title: 'Contador', img: ncount, tab: 'ncount' },
             { title: 'Obras', img: nbuild, tab: 'nbuild' },
             { title: 'Autocaravanas', img: ncaravan, tab: 'ncaravan' },
@@ -217,7 +219,6 @@ export const NaccessDashboard = () => {
             { title: 'Clínicas', img: nclinic, tab: 'nclinic' },
             { title: 'Ópticas', img: noptics, tab: 'noptics' },
             { title: 'Ourivesarias', img: ngold, tab: 'ngold' },
-            { title: 'NSoftwares', img: nidsof },
         ],
         'NIDTEC': [
             { title: 'Inteligência', img: nsmart, tab: 'nsmart' },
@@ -234,7 +235,7 @@ export const NaccessDashboard = () => {
         'NIDPLACE': [
             { title: 'Mobiliário', img: nfurniture, tab: 'nfurniture' },
             { title: 'Divisórias', img: npartition, tab: 'npartition' },
-            { title: 'Decoração', img: ndecor, tab: 'ndecor' },
+            { title: 'Design', img: ndecor, tab: 'ndecor' },
             { title: 'Redes', img: nping, tab: 'nping' },
             { title: 'Electricidade', img: nconnect, tab: 'nconnect' },
             { title: 'Iluminação', img: nlight, tab: 'nlight' },
@@ -283,6 +284,7 @@ export const NaccessDashboard = () => {
 
     // Função para renderizar os cards com base na aba ativa
     const RenderCards = (tabKey: TabName) => {
+        const location = useLocation();
         const cardContainerRef = useRef<HTMLDivElement>(null);
 
         const scrollLeft = () => {
@@ -308,16 +310,19 @@ export const NaccessDashboard = () => {
                     <Button id="arrow-cards" className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
                 )}
                 <div id="cardContainer" className={`card-container ${alignmentClass}`} ref={cardContainerRef}>
-                    {cardData[tabKey].map((card, index) => (
-                        <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
-                            <Card className="card">
-                                <Card.Img variant="top" src={card.img} className="card-img" />
-                                <Card.Body>
-                                    <Card.Title className="card-title">{card.title}</Card.Title>
-                                </Card.Body>
-                            </Card>
-                        </div>
-                    ))}
+                    {cardData[tabKey].map((card, index) => {
+                        const isCurrentPage = isValidCardTitle(card.title) && location.pathname === tabData[card.title].route;
+                        return (
+                            <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
+                                <Card className={`card ${isCurrentPage ? 'current-card' : ''}`}>
+                                    <Card.Img variant="top" src={card.img} className="card-img" />
+                                    <Card.Body>
+                                        <Card.Title className="card-title">{card.title}</Card.Title>
+                                    </Card.Body>
+                                </Card>
+                            </div>
+                        );
+                    })}
                 </div>
                 {numCards > 10 && (
                     <Button className="arrows-cards" onClick={scrollRight}>{">"}</Button>

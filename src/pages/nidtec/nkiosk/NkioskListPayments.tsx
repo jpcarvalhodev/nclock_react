@@ -13,6 +13,7 @@ import { transactionMBFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import { Line } from "react-chartjs-2";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
+import { PrintButton } from "../../../components/PrintButton";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -349,7 +350,7 @@ export const NkioskListPayments = () => {
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                             <ExportButton allData={listPayments} selectedData={selectedRows} fields={transactionMBFields} />
-                            <CustomOutlineButton icon="bi-printer" />
+                            <PrintButton data={listPayments} fields={transactionMBFields} />
                         </div>
                         <div className="date-range-search">
                             <input

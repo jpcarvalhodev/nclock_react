@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, MBDevice, Profession, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, MBDevice, Profession, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -1229,6 +1229,34 @@ export const updateDoor = async (door: Doors) => {
     }
     if (response.status === 204) {
         return { ...door, message: 'Porta atualizada com sucesso!' };
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE LICENÇAS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+export const fetchLicenses = async (key: string) => {
+    const response = await fetchWithAuth(`Configuration/GetLisence?key=${key}`);
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
+export const updateLicenses = async (key: string, licences: License) => {
+    const response = await fetchWithAuth(`Configuration/AddUpdateLisence?key=${key}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(licences)
+    });
+    
+    if (!response.ok) {
+        return;
     }
     return response.json();
 }

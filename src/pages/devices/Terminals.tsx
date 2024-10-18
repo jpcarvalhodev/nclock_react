@@ -66,8 +66,6 @@ const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
 export const Terminals = () => {
     const {
         devices,
-        deviceStatus,
-        deviceStatusCount,
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
@@ -922,7 +920,6 @@ export const Terminals = () => {
             const userId = selectedUserRows[0].employeeID;
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
             setLoadingSendSelectedUsers(false);
-            await fetchAllEmployeeDevices();
         }
     }
 
@@ -945,7 +942,6 @@ export const Terminals = () => {
             const userId = selectedUserRows[0].employeeID;
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
             setLoadingFetchSelectedUsers(false);
-            await fetchAllEmployeeDevices();
         }
     }
 

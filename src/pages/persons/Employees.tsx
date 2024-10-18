@@ -19,6 +19,7 @@ import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
 import { useColor } from '../../context/ColorContext';
+import { PrintButton } from '../../components/PrintButton';
 
 // Define a interface para os filtros
 interface Filters {
@@ -335,6 +336,7 @@ export const Employees = () => {
                                     <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                                     <ExportButton allData={employees} selectedData={selectedRows} fields={employeeFields} />
+                                    <PrintButton data={employees} fields={employeeFields} />
                                 </div>
                             </div>
                             <DataTable

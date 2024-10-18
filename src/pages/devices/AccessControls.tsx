@@ -10,7 +10,6 @@ import * as apiService from "../../helpers/apiService";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { AccessControl, Doors } from "../../helpers/Types";
 import { accessControlFields } from "../../helpers/Fields";
-import { ExportButton } from "../../components/ExportButton";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
@@ -269,7 +268,6 @@ export const AccessControls = () => {
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAccessControl} />
                                 <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                <ExportButton allData={accessControl} selectedData={selectedRows} fields={accessControlFields} />
                             </div>
                             <div className="date-range-search">
                                 <input

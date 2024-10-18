@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import { Modal, Button } from 'react-bootstrap';
 import { PDFDocument } from './PDFDocument';
+import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Interfaces para os itens de dados e campos
 interface DataItem {
     [key: string]: any;
 }
 
+// Interface para os campos
 interface Field {
     label: string;
     key: string;
@@ -15,16 +17,10 @@ interface Field {
 
 // Props para o componente
 interface PrintButtonProps {
+    icon?: string;
+    iconSize?: string;
     data: DataItem[];
     fields: Field[];
-}
-
-// Interface para o retorno do PDFDownloadLink
-interface PDFDownloadLinkState {
-    blob?: Blob;
-    url?: string;
-    loading: boolean;
-    error?: Error;
 }
 
 // Componente para visualizar e imprimir ou salvar o PDF
@@ -34,9 +30,19 @@ export const PrintButton = ({ data, fields }: PrintButtonProps) => {
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
 
+    const handlePrint = () => {
+        return (
+            <PDFDownloadLink
+                document={<PDFDocument data={data} fields={fields} />}
+                fileName="dados_impressos.pdf"
+            >
+            </PDFDownloadLink>
+        )
+    }
+
     return (
         <>
-            <Button variant="primary" onClick={handleShowModal}>Imprimir/Guardar PDF</Button>
+            <CustomOutlineButton onClick={handleShowModal} icon='bi-printer' iconSize='1.1em'></CustomOutlineButton >
 
             <Modal show={showModal} onHide={handleCloseModal} size="lg">
                 <Modal.Header closeButton>
@@ -48,18 +54,15 @@ export const PrintButton = ({ data, fields }: PrintButtonProps) => {
                     </PDFViewer>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={window.print}>
+                    <Button variant="outline-info" onClick={handleCloseModal}>
+                        Fechar
+                    </Button>
+                    <Button variant="outline-secondary" onClick={handlePrint}>
+                        Guardar
+                    </Button>
+                    <Button variant="outline-primary" onClick={window.print}>
                         Imprimir
                     </Button>
-                    <PDFDownloadLink
-                        document={<PDFDocument data={data} fields={fields} />}
-                        fileName="dados_impressos.pdf"
-                        style={{ textDecoration: 'none' }}
-                    >
-                        {({ loading }: PDFDownloadLinkState) =>
-                            loading ? 'Carregando documento...' : 'Guardar como PDF'
-                        }
-                    </PDFDownloadLink>
                 </Modal.Footer>
             </Modal>
         </>

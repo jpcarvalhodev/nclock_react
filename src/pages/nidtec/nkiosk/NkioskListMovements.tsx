@@ -14,6 +14,7 @@ import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
+import { PrintButton } from "../../../components/PrintButton";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -291,7 +292,7 @@ export const NkioskListMovements = () => {
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     <ExportButton allData={listMovements} selectedData={selectedRows} fields={combinedMovements} />
-                                    <CustomOutlineButton icon="bi-printer" />
+                                    <PrintButton data={listMovements} fields={combinedMovements} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

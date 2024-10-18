@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
-import { Devices, Doors } from "../helpers/Types";
+import { Doors } from "../helpers/Types";
 import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";
@@ -11,7 +11,16 @@ import { doorsFields } from "../helpers/Fields";
 import { SelectFilter } from "../components/SelectFilter";
 import * as apiService from "../helpers/apiService";
 import { UpdateModalDoor } from "./UpdateModalDoor";
-import { fi } from "date-fns/locale";
+import nface from "../assets/img/terminais/nface.webp";
+import c3_100 from "../assets/img/terminais/c3_100.webp";
+import c3_200 from "../assets/img/terminais/c3_200.webp";
+import c3_400 from "../assets/img/terminais/c3_400.webp";
+import inbio160 from "../assets/img/terminais/inbio160.webp";
+import inbio260 from "../assets/img/terminais/inbio260.webp";
+import inbio460 from "../assets/img/terminais/inbio460.webp";
+import profacex from "../assets/img/terminais/profacex.webp";
+import rfid_td from "../assets/img/terminais/rfid_td.webp";
+import v5l_td from "../assets/img/terminais/v5l_td.webp";
 
 // Define a interface Entity
 export interface Entity {
@@ -56,6 +65,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedDevice, setSelectedDevice] = useState('');
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
@@ -163,25 +173,25 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     let width = image.width;
                     let height = image.height;
 
-                    if (width > 512 || height > 512) {
+                    if (width > 768 || height > 768) {
                         if (width > height) {
-                            height *= 512 / width;
-                            width = 512;
+                            height *= 768 / width;
+                            width = 768;
                         } else {
-                            width *= 512 / height;
-                            height = 512;
+                            width *= 768 / height;
+                            height = 768;
                         }
                     }
 
                     const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
                     const ctx = canvas.getContext('2d');
-                    ctx?.drawImage(image, 0, 0, width, height);
-
+                    ctx?.drawImage(image, 0, 0, image.width, image.height);
                     const dataUrl = canvas.toDataURL('image/png');
                     setDeviceImage(dataUrl);
-                    setFormData({ ...formData, photo: dataUrl });
+                    setFormData(prevFormData => ({
+                        ...prevFormData,
+                        photo: dataUrl
+                    }));
                 };
                 image.src = readerEvent.target?.result as string;
             };
@@ -196,6 +206,21 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const validateIPAddress = (ip: string) => {
         const regex = /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])$/;
         return regex.test(ip);
+    };
+
+    // Função para lidar com a mudança de imagem
+    const handleDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selected = e.target.value;
+        setSelectedDevice(selected);
+
+        const deviceOption = deviceOptions.find(option => option.value === selected);
+        setDeviceImage(deviceOption?.img || no_image);
+
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            deviceName: deviceOption ? deviceOption.label : '',
+            photo: deviceOption?.img || no_image
+        }));
     };
 
     // Função para lidar com a mudança de valor
@@ -286,6 +311,20 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         onClose();
     };
 
+    // Opções de dispositivos
+    const deviceOptions = [
+        { value: 'Nface-204_SISNID-1', label: 'Nface-204_SISNID-1', img: nface },
+        { value: 'SISNID-C3-100', label: 'SISNID-C3-100', img: c3_100 },
+        { value: 'SISNID-C3-200', label: 'SISNID-C3-200', img: c3_200 },
+        { value: 'SISNID-C3-400', label: 'SISNID-C3-400', img: c3_400 },
+        { value: 'SISNID-INBIO160', label: 'SISNID-INBIO160', img: inbio160 },
+        { value: 'SISNID-INBIO260', label: 'SISNID-INBIO160', img: inbio260 },
+        { value: 'SISNID-INBIO460', label: 'SISNID-INBIO460', img: inbio460 },
+        { value: 'SISNID-PROFACEX-TD', label: 'SISNID-PROFACEX-TD', img: profacex },
+        { value: 'SpeedFace-RFID-TD', label: 'SpeedFace-RFID-TD', img: rfid_td },
+        { value: 'Speedface-V5L-TD-1', label: 'Speedface-V5L-TD-1', img: v5l_td },
+    ];
+
     return (
         <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable" size="xl">
             <Modal.Header closeButton>
@@ -298,16 +337,21 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                             <Form.Label>Nome<span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>}
                             >
-                                <Form.Control
-                                    type="string"
+                                <Form.Select
                                     name="deviceName"
-                                    value={formData['deviceName'] || ''}
-                                    onChange={handleChange}
+                                    value={selectedDevice}
+                                    onChange={handleDeviceChange}
                                     className="custom-input-height custom-select-font-size"
-                                />
+                                >
+                                    <option value="">Selecione</option>
+                                    {deviceOptions.map(option => (
+                                        <option key={option.value} value={option.value}>{option.label}</option>
+                                    ))}
+                                </Form.Select>
                             </OverlayTrigger>
+                            {errors['deviceName'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceName']}</div>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -315,7 +359,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                             <Form.Label>Número<span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-deviceNumber">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     type="number"
@@ -344,7 +388,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                             <Col className='img-modal'>
                                                 <img
                                                     src={deviceImage || no_image}
-                                                    alt="Profile Avatar"
+                                                    alt="Imagem do dispositivo"
                                                     style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '25%' }}
                                                     onClick={triggerFileSelectPopup}
                                                 />
@@ -403,7 +447,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                             <Form.Label>IP<span style={{ color: 'red' }}>*</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
-                                                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                                                                overlay={<Tooltip id="tooltip-ipAddress">Campo obrigatório</Tooltip>}
                                                             >
                                                                 <Form.Control
                                                                     type="string"
@@ -424,7 +468,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                             <Form.Label>Porta<span style={{ color: 'red' }}>*</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
-                                                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                                                                overlay={<Tooltip id="tooltip-port">Campo obrigatório</Tooltip>}
                                                             >
                                                                 <Form.Control
                                                                     type="number"
