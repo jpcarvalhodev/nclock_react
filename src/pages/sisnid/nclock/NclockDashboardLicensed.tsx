@@ -1,10 +1,17 @@
-import { Carousel } from "react-responsive-carousel";
+import { useEffect, useRef, useState } from "react";
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import product_nlight from "../../../assets/img/carousel/product_nlight.png";
+import { Employee, Department, Group } from "../../../helpers/Types";
+import * as apiService from "../../../helpers/apiService";
+import { Carousel } from "react-responsive-carousel";
+import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { useColor } from "../../../context/ColorContext";
+import { Pie, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController } from 'chart.js';
 import { Button, Card, Nav, Tab } from "react-bootstrap";
-import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import nclock from '../../../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../../../assets/img/navbar/navbar/naccess.webp';
@@ -65,6 +72,9 @@ import nclinic from '../../../assets/img/navbar/navbar/nclinic.png';
 import noptics from '../../../assets/img/navbar/navbar/noptics.png';
 import ngold from '../../../assets/img/navbar/navbar/ngold.png';
 import { useLicense } from "../../../context/LicenseContext";
+
+// Registra os elementos do ChartJS
+ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
 
 // Define o tipo TabName
 type TabName = 'CLIENTE' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
@@ -145,11 +155,55 @@ const isValidCardTitle = (title: string): title is CardTitle => {
     return title in tabData;
 };
 
-export const NlightDashboard = () => {
+// Define a linguagem do calendário
+const locales = {
+    'pt': ptBR,
+};
+
+// Define o localizador de datas
+const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales,
+});
+
+// Define a interface CalendarEvent
+interface CalendarEvent {
+    id: string;
+    title: string;
+    start: Date;
+    end: Date;
+    allDay: boolean;
+}
+
+// Define as mensagens do calendário em português
+const messages = {
+    allDay: 'Todo o dia',
+    previous: '<',
+    next: '>',
+    today: 'Hoje',
+    month: 'Mês',
+    week: 'Semana',
+    day: 'Dia',
+    agenda: 'Agenda',
+    date: 'Data',
+    time: 'Hora',
+    event: 'Evento',
+    noEventsInRange: 'Não há eventos neste intervalo',
+    showMore: (total: number) => `+ Ver mais (${total})`
+};
+
+// Define a página principal
+export const NclockDashboardLicensed = () => {
     const { navbarColor, footerColor } = useColor();
-    const { setIsLicensed } = useLicense();
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [totalEmployees, setTotalEmployees] = useState<number>(0);
+    const [totalDepartments, setTotalDepartments] = useState<number>(0);
+    const [totalGroups, setTotalGroups] = useState<number>(0);
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('NIDPLACE');
+    const [activeKey, setActiveKey] = useState<TabName>('SISNID');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -159,7 +213,6 @@ export const NlightDashboard = () => {
 
             if (activeKey === 'CLIENTE' && tab.licensed) {
                 route = route.replace('dashboard', 'dashboardlicensed');
-                setIsLicensed(true);
             }
 
             localStorage.setItem(tab.tabKey, 'true');
@@ -248,6 +301,94 @@ export const NlightDashboard = () => {
         ]
     };
 
+    // Função para buscar os eventos dos funcionários
+    const fetchEvents = async (): Promise<CalendarEvent[]> => {
+        try {
+            const employees: Employee[] = await apiService.fetchAllEmployees();
+            setTotalEmployees(employees.length);
+            const currentYear = new Date().getFullYear();
+            return employees.map(employee => {
+                const birthday = new Date(employee.birthday);
+                const birthdayThisYear = setYear(birthday, currentYear);
+                return {
+                    id: employee.id,
+                    title: `Aniversário de ${employee.name}`,
+                    start: birthdayThisYear,
+                    end: birthdayThisYear,
+                    allDay: true,
+                };
+            });
+        } catch (error) {
+            console.error('Erro ao buscar eventos:', error);
+            return [];
+        }
+    };
+
+    // Função para buscar os departamentos
+    const fetchDepartments = async (): Promise<void> => {
+        try {
+            const departments: Department[] = await apiService.fetchAllDepartments();
+            setTotalDepartments(departments.length);
+        } catch (error) {
+            console.error('Erro ao buscar departamentos:', error);
+        }
+    };
+
+    // Função para buscar os grupos
+    const fetchGroups = async (): Promise<void> => {
+        try {
+            const groups: Group[] = await apiService.fetchAllGroups();
+            setTotalGroups(groups.length);
+        } catch (error) {
+            console.error('Erro ao buscar grupos:', error);
+        }
+    };
+
+    // Define os dados do gráfico circular
+    const chartData = {
+        labels: ['Total de Funcionários'],
+        datasets: [{
+            label: 'Contagem de Funcionários',
+            data: [totalEmployees],
+            backgroundColor: [
+                '#0050a0'
+            ],
+            borderColor: [
+                '#0080ff'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // Define os dados do gráfico de barras
+    const chartDataDepartmentsGroups = {
+        labels: ['Departamentos', 'Grupos'],
+        datasets: [{
+            label: 'Contagem de Departamentos e Grupos',
+            data: [totalDepartments, totalGroups],
+            backgroundColor: ['#0050a0'],
+            borderColor: ['#0080ff'],
+            borderWidth: 1
+        }]
+    };
+
+    // Carrega os dados
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    // Função para carregar os dados
+    const loadData = async () => {
+        try {
+            const employeeEvents = await fetchEvents();
+            setEvents(employeeEvents);
+            await fetchDepartments();
+            await fetchGroups();
+        } catch (error) {
+            console.error("Erro ao carregar dados: ", error);
+        }
+    };
+
     // Função para renderizar os cards com base na aba ativa
     const RenderCards = (tabKey: TabName) => {
         const location = useLocation();
@@ -300,8 +441,8 @@ export const NlightDashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="dashboard-title-text" style={{ color: '#FEC629' }}>
-                <span>Nlight Dashboard</span>
+            <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
+                <span>Nclock dashboard</span>
             </div>
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
@@ -325,29 +466,42 @@ export const NlightDashboard = () => {
                     </Tab.Content>
                 </Tab.Container>
             </div>
-            <div className="dashboard-content-wrapper">
+            <div className="dashboard-content">
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel-place" src={product_nlight} alt="Nlight" />
+                            <img className="img-carousel-licensed" src={banner_nclock} alt="Nclock" />
                         </div>
                     </Carousel>
                 </div>
-                <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">SOFTWARE NLIGHT - Controlo de Iluminação</h3>
-                    <p className="dashboard-text-inside">
-                        O Nlight é um software dedicado ao Controlo de Iluminação da sua empresa. Ele permite-lhe:
-                    </p>
-                    <p>- Controlar remotamente equipamentos integrados e inteligentes;</p>
-                    <p>- Usufruir de interfaces intuitivas e personalizadas;</p>
-                    <p>- Automatizar ações e relatórios de rotina;</p>
-                    <p>- Consultar históricos dos dispositivos;</p>
-                    <p>- Identificar rapidamente anomalias através de notificações.</p>
-                    <p>- Definir a luz certa e maximizar as suas poupanças.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                <div className="calendar-container">
+                    <div className="dashboard-calendar" style={{ height: 400 }}>
+                        <Calendar
+                            localizer={localizer}
+                            events={events}
+                            startAccessor="start"
+                            endAccessor="end"
+                            messages={messages}
+                            culture="pt"
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="dashboard-content">
+                <div className="chart-container">
+                    <div className="employee-pie-chart" style={{ flex: 1 }}>
+                        <h2 className="employee-pie-chart-text">Total de Funcionários: {totalEmployees}</h2>
+                        <Pie className="employee-pie-chart-pie" data={chartData} />
+                    </div>
+                </div>
+                <div className="chart-container">
+                    <div className="departments-groups-chart" style={{ flex: 1 }}>
+                        <h2 className="departments-groups-chart-text">Departamentos e Grupos</h2>
+                        <Bar className="departments-groups-chart-data" data={chartDataDepartmentsGroups} />
+                    </div>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
-}
+};

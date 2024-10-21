@@ -1,16 +1,10 @@
 import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
+import product_nkiosk from "../../../assets/img/carousel/product_nkiosk.webp";
 import { useColor } from "../../../context/ColorContext";
-import { PolarArea } from "react-chartjs-2";
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Button, Card, Nav, Tab } from "react-bootstrap";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import nclock from '../../../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../../../assets/img/navbar/navbar/naccess.webp';
@@ -52,9 +46,6 @@ import nidsof from '../../../assets/img/navbar/navbar/nidsof.webp';
 import nidtec from '../../../assets/img/navbar/navbar/nidtec.png';
 import nidplace from '../../../assets/img/navbar/navbar/nidplace.webp';
 import sisnidlogo from '../../../assets/img/navbar/navbar/sisnidlogo.png';
-import nidgroup from '../../../assets/img/navbar/navbar/nidgroup.png';
-import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
 import ncount from '../../../assets/img/navbar/navbar/ncount.png';
 import nbuild from '../../../assets/img/navbar/navbar/nbuild.png';
 import ncaravan from '../../../assets/img/navbar/navbar/ncaravan.png';
@@ -73,15 +64,14 @@ import nschool from '../../../assets/img/navbar/navbar/nschool.png';
 import nclinic from '../../../assets/img/navbar/navbar/nclinic.png';
 import noptics from '../../../assets/img/navbar/navbar/noptics.png';
 import ngold from '../../../assets/img/navbar/navbar/ngold.png';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
+import { useLicense } from "../../../context/LicenseContext";
 
 // Define o tipo TabName
 type TabName = 'CLIENTE' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
 
 // Define o tipo CardTitle
 type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
-    'Assiduidade' | 'Acessos' | 'Parques' | 'Automatismos' | 'Rondas' | 'Cartões' | 'NSoftwares' | 
+    'Assiduidade' | 'Acessos' | 'Parques' | 'Automatismos' | 'Rondas' | 'Cartões' | 'NSoftwares' |
     'Programação' | 'Sistemas' | 'Aplicativos' | 'Cibernética' | 'Transformação' | 'Integração' |
     'Automação' | 'Equipamentos' | 'Projetos' | 'Contador' | 'Obras' | 'Autocaravanas' | 'Oficinas' |
     'Eventos' | 'Serviços' | 'Tarefas' | 'Produção' | 'Bilhetes' | 'CRM' | 'Faturação' | 'Documental' |
@@ -92,62 +82,62 @@ type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
     'Climatização' | 'Áudio' | 'Domótica';
 
 // Define o objeto tabData
-const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: string }> = {
-    Quiosques: { route: '/nkiosk/nkioskdashboard', tabKey: 'showNkioskTab', ribbonKey: 'showNkioskRibbon' },
-    Torniquetes: { route: '/nvisitor/nvisitordashboard', tabKey: 'showNvisitorTab', ribbonKey: 'showNvisitorRibbon' },
-    Vigilância: { route: '/nview/nviewdashboard', tabKey: 'showNviewTab', ribbonKey: 'showNviewRibbon' },
-    Alarmes: { route: '/nsecur/nsecurdashboard', tabKey: 'showNsecurTab', ribbonKey: 'showNsecurRibbon' },
-    Assiduidade: { route: '/nclock/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon' },
-    Acessos: { route: '/naccess/naccessdashboard', tabKey: 'showNaccessTab', ribbonKey: 'showNaccessRibbon' },
-    Parques: { route: '/npark/nparkdashboard', tabKey: 'showNparkTab', ribbonKey: 'showNparkRibbon' },
-    Automatismos: { route: '/ndoor/ndoordashboard', tabKey: 'showNdoorTab', ribbonKey: 'showNdoorRibbon' },
-    Rondas: { route: '/npatrol/npatroldashboard', tabKey: 'showNpatrolTab', ribbonKey: 'showNpatrolRibbon' },
-    Cartões: { route: '/ncard/ncarddashboard', tabKey: 'showNcardTab', ribbonKey: 'showNcardRibbon' },
-    Programação: { route: '/nsoftware/nsoftwaredashboard', tabKey: 'showNsoftwareTab', ribbonKey: 'showNsoftwareRibbon' },
-    Sistemas: { route: '/nsystem/nsystemdashboard', tabKey: 'showNsystemTab', ribbonKey: 'showNsystemRibbon' },
-    Aplicativos: { route: '/napp/nappdashboard', tabKey: 'showNappTab', ribbonKey: 'showNappRibbon' },
-    Cibernética: { route: '/ncyber/ncyberdashboard', tabKey: 'showNcyberTab', ribbonKey: 'showNcyberRibbon' },
-    Transformação: { route: '/ndigital/ndigitaldashboard', tabKey: 'showNdigitalTab', ribbonKey: 'showNdigitalRibbon' },
-    Integração: { route: '/nserver/nserverdashboard', tabKey: 'showNserverTab', ribbonKey: 'showNserverRibbon' },
-    Automação: { route: '/naut/nautdashboard', tabKey: 'showNautTab', ribbonKey: 'showNautRibbon' },
-    Equipamentos: { route: '/nequip/nequipdashboard', tabKey: 'showNequipTab', ribbonKey: 'showNequipRibbon' },
-    Projetos: { route: '/nproject/nprojectdashboard', tabKey: 'showNprojectTab', ribbonKey: 'showNprojectRibbon' },
-    Contador: { route: '/ncount/ncountdashboard', tabKey: 'showNcountTab', ribbonKey: 'showNcountRibbon' },
-    Obras: { route: '/nbuild/nbuilddashboard', tabKey: 'showNbuildTab', ribbonKey: 'showNbuildRibbon' },
-    Autocaravanas: { route: '/ncaravan/ncaravandashboard', tabKey: 'showNcaravanTab', ribbonKey: 'showNcaravanRibbon' },
-    Oficinas: { route: '/nmechanic/nmechanicdashboard', tabKey: 'showNmechanicTab', ribbonKey: 'showNmechanicRibbon' },
-    Eventos: { route: '/nevents/neventsdashboard', tabKey: 'showNeventsTab', ribbonKey: 'showNeventsRibbon' },
-    Serviços: { route: '/nservice/nservicedashboard', tabKey: 'showNserviceTab', ribbonKey: 'showNserviceRibbon' },
-    Tarefas: { route: '/ntask/ntaskdashboard', tabKey: 'showNtaskTab', ribbonKey: 'showNtaskRibbon' },
-    Produção: { route: '/nproduction/nproductiondashboard', tabKey: 'showNproductionTab', ribbonKey: 'showNproductionRibbon' },
-    Bilhetes: { route: '/nticket/nticketdashboard', tabKey: 'showNticketTab', ribbonKey: 'showNticketRibbon' },
-    CRM: { route: '/nsales/nsalesdashboard', tabKey: 'showNsalesTab', ribbonKey: 'showNsalesRibbon' },
-    Faturação: { route: '/ninvoice/ninvoicedashboard', tabKey: 'showNinvoiceTab', ribbonKey: 'showNinvoiceRibbon' },
-    Documental: { route: '/ndoc/ndocdashboard', tabKey: 'showNdocTab', ribbonKey: 'showNdocRibbon' },
-    Desporto: { route: '/nsports/nsportsdashboard', tabKey: 'showNsportsTab', ribbonKey: 'showNsportsRibbon' },
-    Ginásios: { route: '/ngym/ngymdashboard', tabKey: 'showNgymTab', ribbonKey: 'showNgymRibbon' },
-    Escolar: { route: '/nschool/nschooldashboard', tabKey: 'showNschoolTab', ribbonKey: 'showNschoolRibbon' },
-    Clínicas: { route: '/nclinic/nclinicdashboard', tabKey: 'showNclinicTab', ribbonKey: 'showNclinicRibbon' },
-    Ópticas: { route: '/noptics/nopticsdashboard', tabKey: 'showNopticsTab', ribbonKey: 'showNopticsRibbon' },
-    Ourivesarias: { route: '/ngold/ngolddashboard', tabKey: 'showNgoldTab', ribbonKey: 'showNgoldRibbon' },
-    Inteligência: { route: '/nsmart/nsmartdashboard', tabKey: 'showNsmartTab', ribbonKey: 'showNsmartRibbon' },
-    Virtual: { route: '/nreality/nrealitydashboard', tabKey: 'showNrealityTab', ribbonKey: 'showNrealityRibbon' },
-    Hologramas: { route: '/nhologram/nhologramdashboard', tabKey: 'showNhologramTab', ribbonKey: 'showNhologramRibbon' },
-    Energias: { route: '/npower/npowerdashboard', tabKey: 'showNpowerTab', ribbonKey: 'showNpowerRibbon' },
-    Recarga: { route: '/ncharge/nchargedashboard', tabKey: 'showNchargeTab', ribbonKey: 'showNchargeRibbon' },
-    Mobilidade: { route: '/ncity/ncitydashboard', tabKey: 'showNcityTab', ribbonKey: 'showNcityRibbon' },
-    Painéis: { route: '/nled/nleddashboard', tabKey: 'showNledTab', ribbonKey: 'showNledRibbon' },
-    Incêndios: { route: '/nfire/nfiredashboard', tabKey: 'showNfireTab', ribbonKey: 'showNfireRibbon' },
-    Mobiliário: { route: '/nfurniture/nfurnituredashboard', tabKey: 'showNfurnitureTab', ribbonKey: 'showNfurnitureRibbon' },
-    Divisórias: { route: '/npartition/npartitiondashboard', tabKey: 'showNpartitionTab', ribbonKey: 'showNpartitionRibbon' },
-    Design: { route: '/ndecor/ndecordashboard', tabKey: 'showNdecorTab', ribbonKey: 'showNdecorRibbon' },
-    Redes: { route: '/nping/npingdashboard', tabKey: 'showNpingTab', ribbonKey: 'showNpingRibbon' },
-    Electricidade: { route: '/nconnect/nconnectdashboard', tabKey: 'showNconnectTab', ribbonKey: 'showNconnectRibbon' },
-    Iluminação: { route: '/nlight/nlightdashboard', tabKey: 'showNlightTab', ribbonKey: 'showNlightRibbon' },
-    Climatização: { route: '/ncomfort/ncomfortdashboard', tabKey: 'showNcomfortTab', ribbonKey: 'showNcomfortRibbon' },
-    Áudio: { route: '/nsound/nsounddashboard', tabKey: 'showNsoundTab', ribbonKey: 'showNsoundRibbon' },
-    Domótica: { route: '/nhome/nhomedashboard', tabKey: 'showNhomeTab', ribbonKey: 'showNhomeRibbon' },
-    NSoftwares: { route: '/nsoftwares/nsoftwaresdashboard', tabKey: 'showSoftwaresTab', ribbonKey: 'showSoftwaresRibbon' }
+const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: string, licensed: boolean }> = {
+    Quiosques: { route: '/nkiosk/nkioskdashboard', tabKey: 'showNkioskTab', ribbonKey: 'showNkioskRibbon', licensed: true },
+    Torniquetes: { route: '/nvisitor/nvisitordashboard', tabKey: 'showNvisitorTab', ribbonKey: 'showNvisitorRibbon', licensed: true },
+    Vigilância: { route: '/nview/nviewdashboard', tabKey: 'showNviewTab', ribbonKey: 'showNviewRibbon', licensed: true },
+    Alarmes: { route: '/nsecur/nsecurdashboard', tabKey: 'showNsecurTab', ribbonKey: 'showNsecurRibbon', licensed: true },
+    Assiduidade: { route: '/nclock/nclockdashboard', tabKey: 'showNclockTab', ribbonKey: 'showNclockRibbon', licensed: false },
+    Acessos: { route: '/naccess/naccessdashboard', tabKey: 'showNaccessTab', ribbonKey: 'showNaccessRibbon', licensed: false },
+    Parques: { route: '/npark/nparkdashboard', tabKey: 'showNparkTab', ribbonKey: 'showNparkRibbon', licensed: false },
+    Automatismos: { route: '/ndoor/ndoordashboard', tabKey: 'showNdoorTab', ribbonKey: 'showNdoorRibbon', licensed: false },
+    Rondas: { route: '/npatrol/npatroldashboard', tabKey: 'showNpatrolTab', ribbonKey: 'showNpatrolRibbon', licensed: false },
+    Cartões: { route: '/ncard/ncarddashboard', tabKey: 'showNcardTab', ribbonKey: 'showNcardRibbon', licensed: false },
+    Programação: { route: '/nsoftware/nsoftwaredashboard', tabKey: 'showNsoftwareTab', ribbonKey: 'showNsoftwareRibbon', licensed: false },
+    Sistemas: { route: '/nsystem/nsystemdashboard', tabKey: 'showNsystemTab', ribbonKey: 'showNsystemRibbon', licensed: false },
+    Aplicativos: { route: '/napp/nappdashboard', tabKey: 'showNappTab', ribbonKey: 'showNappRibbon', licensed: false },
+    Cibernética: { route: '/ncyber/ncyberdashboard', tabKey: 'showNcyberTab', ribbonKey: 'showNcyberRibbon', licensed: false },
+    Transformação: { route: '/ndigital/ndigitaldashboard', tabKey: 'showNdigitalTab', ribbonKey: 'showNdigitalRibbon', licensed: false },
+    Integração: { route: '/nserver/nserverdashboard', tabKey: 'showNserverTab', ribbonKey: 'showNserverRibbon', licensed: false },
+    Automação: { route: '/naut/nautdashboard', tabKey: 'showNautTab', ribbonKey: 'showNautRibbon', licensed: false },
+    Equipamentos: { route: '/nequip/nequipdashboard', tabKey: 'showNequipTab', ribbonKey: 'showNequipRibbon', licensed: false },
+    Projetos: { route: '/nproject/nprojectdashboard', tabKey: 'showNprojectTab', ribbonKey: 'showNprojectRibbon', licensed: false },
+    Contador: { route: '/ncount/ncountdashboard', tabKey: 'showNcountTab', ribbonKey: 'showNcountRibbon', licensed: false },
+    Obras: { route: '/nbuild/nbuilddashboard', tabKey: 'showNbuildTab', ribbonKey: 'showNbuildRibbon', licensed: false },
+    Autocaravanas: { route: '/ncaravan/ncaravandashboard', tabKey: 'showNcaravanTab', ribbonKey: 'showNcaravanRibbon', licensed: false },
+    Oficinas: { route: '/nmechanic/nmechanicdashboard', tabKey: 'showNmechanicTab', ribbonKey: 'showNmechanicRibbon', licensed: false },
+    Eventos: { route: '/nevents/neventsdashboard', tabKey: 'showNeventsTab', ribbonKey: 'showNeventsRibbon', licensed: false },
+    Serviços: { route: '/nservice/nservicedashboard', tabKey: 'showNserviceTab', ribbonKey: 'showNserviceRibbon', licensed: false },
+    Tarefas: { route: '/ntask/ntaskdashboard', tabKey: 'showNtaskTab', ribbonKey: 'showNtaskRibbon', licensed: false },
+    Produção: { route: '/nproduction/nproductiondashboard', tabKey: 'showNproductionTab', ribbonKey: 'showNproductionRibbon', licensed: false },
+    Bilhetes: { route: '/nticket/nticketdashboard', tabKey: 'showNticketTab', ribbonKey: 'showNticketRibbon', licensed: false },
+    CRM: { route: '/nsales/nsalesdashboard', tabKey: 'showNsalesTab', ribbonKey: 'showNsalesRibbon', licensed: false },
+    Faturação: { route: '/ninvoice/ninvoicedashboard', tabKey: 'showNinvoiceTab', ribbonKey: 'showNinvoiceRibbon', licensed: false },
+    Documental: { route: '/ndoc/ndocdashboard', tabKey: 'showNdocTab', ribbonKey: 'showNdocRibbon', licensed: false },
+    Desporto: { route: '/nsports/nsportsdashboard', tabKey: 'showNsportsTab', ribbonKey: 'showNsportsRibbon', licensed: false },
+    Ginásios: { route: '/ngym/ngymdashboard', tabKey: 'showNgymTab', ribbonKey: 'showNgymRibbon', licensed: false },
+    Escolar: { route: '/nschool/nschooldashboard', tabKey: 'showNschoolTab', ribbonKey: 'showNschoolRibbon', licensed: false },
+    Clínicas: { route: '/nclinic/nclinicdashboard', tabKey: 'showNclinicTab', ribbonKey: 'showNclinicRibbon', licensed: false },
+    Ópticas: { route: '/noptics/nopticsdashboard', tabKey: 'showNopticsTab', ribbonKey: 'showNopticsRibbon', licensed: false },
+    Ourivesarias: { route: '/ngold/ngolddashboard', tabKey: 'showNgoldTab', ribbonKey: 'showNgoldRibbon', licensed: false },
+    Inteligência: { route: '/nsmart/nsmartdashboard', tabKey: 'showNsmartTab', ribbonKey: 'showNsmartRibbon', licensed: false },
+    Virtual: { route: '/nreality/nrealitydashboard', tabKey: 'showNrealityTab', ribbonKey: 'showNrealityRibbon', licensed: false },
+    Hologramas: { route: '/nhologram/nhologramdashboard', tabKey: 'showNhologramTab', ribbonKey: 'showNhologramRibbon', licensed: false },
+    Energias: { route: '/npower/npowerdashboard', tabKey: 'showNpowerTab', ribbonKey: 'showNpowerRibbon', licensed: false },
+    Recarga: { route: '/ncharge/nchargedashboard', tabKey: 'showNchargeTab', ribbonKey: 'showNchargeRibbon', licensed: false },
+    Mobilidade: { route: '/ncity/ncitydashboard', tabKey: 'showNcityTab', ribbonKey: 'showNcityRibbon', licensed: false },
+    Painéis: { route: '/nled/nleddashboard', tabKey: 'showNledTab', ribbonKey: 'showNledRibbon', licensed: true },
+    Incêndios: { route: '/nfire/nfiredashboard', tabKey: 'showNfireTab', ribbonKey: 'showNfireRibbon', licensed: false },
+    Mobiliário: { route: '/nfurniture/nfurnituredashboard', tabKey: 'showNfurnitureTab', ribbonKey: 'showNfurnitureRibbon', licensed: false },
+    Divisórias: { route: '/npartition/npartitiondashboard', tabKey: 'showNpartitionTab', ribbonKey: 'showNpartitionRibbon', licensed: false },
+    Design: { route: '/ndecor/ndecordashboard', tabKey: 'showNdecorTab', ribbonKey: 'showNdecorRibbon', licensed: false },
+    Redes: { route: '/nping/npingdashboard', tabKey: 'showNpingTab', ribbonKey: 'showNpingRibbon', licensed: false },
+    Electricidade: { route: '/nconnect/nconnectdashboard', tabKey: 'showNconnectTab', ribbonKey: 'showNconnectRibbon', licensed: false },
+    Iluminação: { route: '/nlight/nlightdashboard', tabKey: 'showNlightTab', ribbonKey: 'showNlightRibbon', licensed: false },
+    Climatização: { route: '/ncomfort/ncomfortdashboard', tabKey: 'showNcomfortTab', ribbonKey: 'showNcomfortRibbon', licensed: false },
+    Áudio: { route: '/nsound/nsounddashboard', tabKey: 'showNsoundTab', ribbonKey: 'showNsoundRibbon', licensed: false },
+    Domótica: { route: '/nhome/nhomedashboard', tabKey: 'showNhomeTab', ribbonKey: 'showNhomeRibbon', licensed: false },
+    NSoftwares: { route: '/nsoftwares/nsoftwaresdashboard', tabKey: 'showSoftwaresTab', ribbonKey: 'showSoftwaresRibbon', licensed: false }
 };
 
 // Função para verificar se o título é válido
@@ -155,79 +145,30 @@ const isValidCardTitle = (title: string): title is CardTitle => {
     return title in tabData;
 };
 
-// Define a linguagem do calendário
-const locales = {
-    'pt': ptBR,
-};
-
-// Define o localizador de datas
-const localizer = dateFnsLocalizer({
-    format,
-    parse,
-    startOfWeek,
-    getDay,
-    locales,
-});
-
-// Define a interface CalendarEvent
-interface CalendarEvent {
-    id: string;
-    title: string;
-    start: Date;
-    end: Date;
-    allDay: boolean;
-    uniqueId?: string;
-}
-
-// Define a interface dos eventos
-interface MyEventProps {
-    event: CalendarEvent;
-}
-
-// Define as mensagens do calendário em português
-const messages = {
-    allDay: 'Todo o dia',
-    previous: '<',
-    next: '>',
-    today: 'Hoje',
-    month: 'Mês',
-    week: 'Semana',
-    day: 'Dia',
-    agenda: 'Agenda',
-    date: 'Data',
-    time: 'Hora',
-    event: 'Evento',
-    noEventsInRange: 'Não há eventos neste intervalo',
-    showMore: (total: number) => `+ Ver mais (${total})`
-};
-
 export const NkioskDashboard = () => {
     const { navbarColor, footerColor } = useColor();
+    const { setIsLicensed } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDTEC');
-    const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
-    const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
-    const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
-    const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
-    const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
-    const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
-    const [events, setEvents] = useState<CalendarEvent[]>([]);
-    const deviceSN = 'AGB7234900595';
-    const eventDoorId2 = '2';
-    const eventDoorId3 = '3';
-    const eventDoorId4 = '4';
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
         if (isValidCardTitle(title)) {
             const tab = tabData[title];
+            let route = tab.route;
+
+            if (activeKey === 'CLIENTE' && tab.licensed) {
+                route = route.replace('dashboard', 'dashboardlicensed');
+                setIsLicensed(true);
+            }
+
             localStorage.setItem(tab.tabKey, 'true');
             localStorage.setItem(tab.ribbonKey, 'true');
-            const str = tab.tabKey
+            const str = tab.tabKey;
             const match = str.match(/show(.*)Tab/);
             const result = match ? match[1] : '';
             localStorage.setItem('activeTab', result.toLowerCase());
-            navigate(tab.route);
+            navigate(route);
         }
     };
 
@@ -307,143 +248,6 @@ export const NkioskDashboard = () => {
         ]
     };
 
-    // Função para buscar os dados para os gráficos
-    const fetchAllData = async () => {
-        try {
-            const mbData = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
-            const coinData = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN);
-            const cardData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, deviceSN);
-            const kioskData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, deviceSN);
-            const vpData = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId3, deviceSN);
-            setPayTerminal(mbData);
-            setPayCoins(coinData);
-            setMoveCard(cardData);
-            setMoveKiosk(kioskData);
-            setMoveVP(vpData);
-
-            const totalMove = cardData.concat(kioskData);
-
-            setTotalMovements(totalMove);
-
-            const eventSet = new Set();
-            const newEvents = totalMove.reduce((acc: CalendarEvent[], item: KioskTransactionCard) => {
-                const eventDate = new Date(item.eventTime);
-                const dateKey = eventDate.toISOString().split('T')[0];
-                const eventKey = dateKey + '|' + item.eventName + '|' + item.eventDoorId;
-    
-                if (!eventSet.has(eventKey)) {
-                    eventSet.add(eventKey);
-                    acc.push({
-                        id: item.eventTime + item.eventName,
-                        title: item.eventDoorId === 3 ? 'Torniquete' : 'Quiosque',
-                        start: eventDate,
-                        end: eventDate,
-                        allDay: true,
-                        uniqueId: item.eventTime + item.eventName
-                    });
-                }
-                return acc;
-            }, [] as CalendarEvent[]);
-
-            setEvents(newEvents);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    // UseEffect para buscar os dados
-    useEffect(() => {
-        fetchAllData();
-    }, []);
-
-    // Função para agrupar os dados por mês com base no campo correto
-    const groupByMonth = <T extends KioskTransactionMB | KioskTransactionCard>(
-        data: T[],
-        dateField: keyof T
-    ): number[] => {
-        const months = Array(12).fill(0);
-
-        data.forEach((item, index) => {
-            const dateValue = item[dateField];
-            let parsedDate: Date | null = null;
-
-            if (typeof dateValue === 'string') {
-                if (dateField === 'eventTime') {
-                    try {
-                        const formattedDate = dateValue.replace(' ', 'T');
-                        parsedDate = new Date(formattedDate);
-
-                        if (isNaN(parsedDate.getTime())) {
-                            console.warn(`Data inválida encontrada no campo 'eventTime' no item ${index}: ${dateValue}`);
-                            return;
-                        }
-                    } catch (error) {
-                        console.error(`Erro ao converter 'eventTime' no item ${index}: ${dateValue}`, error);
-                        return;
-                    }
-                } else {
-                    parsedDate = new Date(dateValue);
-
-                    if (isNaN(parsedDate.getTime())) {
-                        console.warn(`Data inválida encontrada no campo 'timestamp' no item ${index}: ${dateValue}`);
-                        return;
-                    }
-                }
-
-                if (parsedDate) {
-                    const monthIndex = parsedDate.getMonth();
-
-                    if ('cardNo' in item) {
-                        months[monthIndex] += 1;
-                    } else if ('amount' in item) {
-                        months[monthIndex] += parseFloat(item.amount.replace(',', '.'));
-                    }
-                }
-            } else {
-                console.warn(`Campo ${String(dateField)} inválido ou não é string no item ${index}`, item);
-            }
-        });
-
-        return months;
-    };
-
-    // Dados para o gráfico PolarArea
-    const polarData = {
-        labels: ['Multibanco', 'Moedeiro', 'Torniquete', 'Quiosque', 'Video Porteiro'],
-        datasets: [
-            {
-                label: 'Total',
-                data: [payTerminal.length, payCoins.length, moveCard.length, moveKiosk.length, moveVP.length],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)'
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    // Dados para o gráfico Bar
-    const barData = {
-        labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-        datasets: [
-            {
-                label: 'Total de Movimentos',
-                data: groupByMonth(totalMovements, 'eventTime'),
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(75, 192, 192, 1)'
-                ],
-                borderWidth: 1
-            }
-        ]
-    };
-
     // Função para renderizar os cards com base na aba ativa
     const RenderCards = (tabKey: TabName) => {
         const location = useLocation();
@@ -493,15 +297,6 @@ export const NkioskDashboard = () => {
         );
     };
 
-    // Função para renderizar os eventos no calendário
-    const MyEvent = ({ event }: MyEventProps) => {
-        return (
-            <div className="calendar-event">
-                {event.title}
-            </div>
-        );
-    };    
-
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -530,42 +325,25 @@ export const NkioskDashboard = () => {
                     </Tab.Content>
                 </Tab.Container>
             </div>
-            <div className="dashboard-content">
+            <div className="dashboard-content-wrapper">
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel-licensed" src={banner_nkiosk} alt="Nkiosk" />
+                            <img className="img-carousel" src={product_nkiosk} alt="Nkiosk" />
                         </div>
                     </Carousel>
                 </div>
-                <div className="calendar-container">
-                    <div className="dashboard-calendar" style={{ height: 400 }}>
-                        <Calendar
-                            localizer={localizer}
-                            events={events}
-                            startAccessor="start"
-                            endAccessor="end"
-                            messages={messages}
-                            culture="pt"
-                            components={{
-                                event: MyEvent
-                            }}
-                        />
-                    </div>
-                </div>
-            </div>
-            <div className="dashboard-content">
-                <div className="chart-container">
-                    <div className="employee-pie-chart" style={{ flex: 1 }}>
-                        <h2 className="employee-pie-chart-text">Total de Pagamentos e Movimentos: { }</h2>
-                        <PolarArea className="employee-pie-chart-pie" data={polarData} />
-                    </div>
-                </div>
-                <div className="chart-container">
-                    <div className="departments-groups-chart" style={{ flex: 1 }}>
-                        <h2 className="departments-groups-chart-text">Total de Movimentos: { }</h2>
-                        <Bar className="departments-groups-chart-data" data={barData} />
-                    </div>
+                <div className="dashboard-carousel-container">
+                    <h3 className="dashboard-title-text-inside">SOFTWARE NKiosk - Quiosques Multimédia</h3>
+                    <p className="dashboard-text-inside">
+                        O Nkiosk é um software dedicado aos Quiosques Digitais da sua empresa. Ele permite-lhe:
+                    </p>
+                    <p>- Reduzir os gastos com a impressão;</p>
+                    <p>- Editar o conteúdo de forma mais automatizada;</p>
+                    <p>- Tornar o ambiente mais moderno e agradável;</p>
+                    <p>- Interagir de forma eficiente com a jornada do cliente;</p>
+                    <p>- Automatizar os processos e sistemas self-service.</p>
+                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

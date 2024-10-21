@@ -11,9 +11,8 @@ export const NotFound = () => {
           <Col md={7} sm={8} xs={10}>
             <Alert variant="light" className='alert'>
               <img className='logo-img' src="/logo_login.png" alt="logo" />
-              <Alert.Heading className='error-title'>Erro 404</Alert.Heading>
               <p>
-                Essa página não existe ou o servidor está fora do ar. Se necessário, contacte o administrador do sistema.
+                Encontramos um problema. Se necessário, contacte o administrador do sistema.
               </p>
               <Link to="/">
                 <Button className='link-button'>Voltar para o login</Button>

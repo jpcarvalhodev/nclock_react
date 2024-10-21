@@ -31,9 +31,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Types } from './pages/persons/Types';
 import { Terminals } from './pages/devices/Terminals';
-import { NkioskDashboard } from './pages/nidtec/nkiosk/NkioskDashboard';
-import { NclockDashboard } from './pages/sisnid/nclock/NclockDashboard';
-import { NaccessDashboard } from './pages/sisnid/naccess/NaccessDashboard';
+import { NkioskDashboardLicensed } from './pages/nidtec/nkiosk/NkioskDashboardLicensed';
+import { NclockDashboardLicensed } from './pages/sisnid/nclock/NclockDashboardLicensed';
+import { NaccessDashboardLicensed } from './pages/sisnid/naccess/NaccessDashboardLicensed';
 import { NclockAll } from './pages/sisnid/nclock/NclockAll';
 import { NclockMovement } from './pages/sisnid/nclock/NclockMovement';
 import { NclockPresence } from './pages/sisnid/nclock/NclockPresence';
@@ -107,6 +107,10 @@ import { NtaskDashboard } from './pages/nidsof/ntask/NtaskDashboard';
 import { NticketDashboard } from './pages/nidsof/nticket/NticketDashboard';
 import { NbuildDashboard } from './pages/nidsof/nbuild/NbuildDashboard';
 import { LicenseProvider } from './context/LicenseContext';
+import { NclockDashboard } from './pages/sisnid/nclock/NclockDashboard';
+import { NaccessDashboard } from './pages/sisnid/naccess/NaccessDashboard';
+import { NkioskDashboard } from './pages/nidtec/nkiosk/NkioskDashboard';
+import { Forbidden } from './pages/errors/Forbidden';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -152,6 +156,7 @@ function AnimatedRoutes() {
               <Route path="/" element={<Login />} />
               <Route path="/login&forgot/forgot-password" element={<ForgotPassword />} />
               <Route path='/login&forgot/reset-password' element={<ResetPassword />} />
+              <Route path="/errors/forbidden" element={<Forbidden />} />
               <Route path="/errors/notfound" element={<NotFound />} />
               <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
               <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />
@@ -175,11 +180,13 @@ function AnimatedRoutes() {
               <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
               <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
+              <Route path="/nclock/nclockdashboardlicenced" element={<PageProtection><NclockDashboardLicensed /></PageProtection>} />
               <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />
               <Route path="/nclock/nclockpresence" element={<PageProtection><NclockPresence /></PageProtection>} />
               <Route path="/nclock/nclockrequests" element={<PageProtection><NclockRequests /></PageProtection>} />
               <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
               <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
+              <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
               <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
               <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
               <Route path="/ncard/ncarddashboard" element={<PageProtection><NcardDashboard /></PageProtection>} />
@@ -221,6 +228,7 @@ function AnimatedRoutes() {
               <Route path="/ncharge/nchargedashboard" element={<PageProtection><NchargeDashboard /></PageProtection>} />
               <Route path="/ncity/ncitydashboard" element={<PageProtection><NcityDashboard /></PageProtection>} />
               <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
+              <Route path="/nkiosk/nkioskdashboardlicensed" element={<PageProtection><NkioskDashboardLicensed /></PageProtection>} />
               <Route path="/nkiosk/nkioskAds" element={<PageProtection><NkioskAds /></PageProtection>} />
               <Route path="/nkiosk/nkioskMap" element={<PageProtection><NkioskMap /></PageProtection>} />
               <Route path="/nkiosk/nkioskPayTerminal" element={<PageProtection><NkioskPayTerminal /></PageProtection>} />
@@ -243,7 +251,7 @@ function AnimatedRoutes() {
               <Route path="/ncomfort/ncomfortdashboard" element={<PageProtection><NcomfortDashboard /></PageProtection>} />
               <Route path="/nsound/nsounddashboard" element={<PageProtection><NsoundDashboard /></PageProtection>} />
               <Route path="/nhome/nhomedashboard" element={<PageProtection><NhomeDashboard /></PageProtection>} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<Forbidden />} />
             </Routes>
           </div>
         </CSSTransition>

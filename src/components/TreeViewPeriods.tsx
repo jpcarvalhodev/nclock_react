@@ -99,7 +99,7 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
         const treeItems = [
             {
                 id: 'periods',
-                label: 'Períodos',
+                label: 'PERÍODOS',
                 children: [
                     {
                         id: 'periodNames',

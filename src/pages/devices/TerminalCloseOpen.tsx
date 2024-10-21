@@ -64,6 +64,16 @@ export const TerminalCloseOpen = () => {
         }
     }
 
+    // Função para buscar todos os dispositivos multibanco entre datas
+    const fetchAllDevicesBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchAllTPCloseOpen(startDate, endDate);
+            setOpenCloseDevices(data);
+        } catch (error) {
+            console.error('Erro ao buscar terminais multibanco:', error);
+        }
+    }
+
     // Função para atualizar todos os dispositivos
     const refreshOpenCloseDevices = () => {
         fetchAllDevices();
@@ -168,6 +178,7 @@ export const TerminalCloseOpen = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
@@ -225,7 +236,7 @@ export const TerminalCloseOpen = () => {
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
                                     />
-                                    {/* <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' /> */}
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchAllDevicesBetweenDates} iconSize='1.1em' />
                                 </div>
                             </div>
                             <div className="deviceMobile">

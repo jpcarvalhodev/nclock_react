@@ -472,3 +472,20 @@ export const licenseFields = [
     { key: 'nsound', label: 'Nsound', type: 'number' },
     { key: 'nhome', label: 'Nhome', type: 'number' }
 ];
+
+export const entityFields = [
+    { key: 'nome', label: 'Nome', type: 'string', required: true },
+    { key: 'morada', label: 'Morada', type: 'string' },
+    { key: 'cPostal', label: 'Código Postal', type: 'string' },
+    { key: 'localidade', label: 'Localidade', type: 'string' },
+    { key: 'telefone', label: 'Telefone', type: 'string' },
+    { key: 'telemovel', label: 'Telemóvel', type: 'string' },
+    { key: 'email', label: 'Email', type: 'string' },
+    { key: 'nif', label: 'NIF', type: 'number', required: true },
+    { key: 'www', label: 'Website', type: 'string' },
+    { key: 'observacoes', label: 'Observações', type: 'string' },
+    { key: 'logotipo', label: 'Logotipo', type: 'string' },
+    { key: 'createdDate', label: 'Data de Criação', type: 'date' },
+    { key: 'updatedDate', label: 'Data de Atualização', type: 'date' },
+    { key: 'enabled', label: 'Ativo', type: 'boolean' }
+];

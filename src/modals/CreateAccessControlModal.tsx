@@ -7,6 +7,7 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
 import { Doors } from '../helpers/Types';
+import { read } from 'xlsx';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -170,9 +171,6 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                             { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
                             { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
                             { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
-                            { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true },
-                            { key: 'createDate', label: 'Data de Criação', type: 'date' },
-                            { key: 'updateDate', label: 'Data de Atualização', type: 'date' }
                         ].map((field) => (
                             <Col md={3} key={field.key}>
                                 <Form.Group controlId={`form${field.key}`}>

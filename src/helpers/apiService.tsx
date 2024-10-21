@@ -219,8 +219,12 @@ export const fetchAllMBDevices = async () => {
     return response.json();
 }
 
-export const fetchAllTPCloseOpen = async () => {
-    const response = await fetchWithAuth(`TerminalPagamento/GetAllTPFechoAberturaAsync`);
+export const fetchAllTPCloseOpen = async (startDate?: string, endDate?: string) => {
+    let url = `TerminalPagamento/GetAllTPFechoAberturaAsync`;
+    if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         return;
     }
@@ -1011,7 +1015,7 @@ export const fetchAllRegisteredUsers = async () => {
 };
 
 export const fetchAllCompanyConfig = async () => {
-    const response = await fetchWithAuth(`Configuration/GetCompanyConfigurations`);
+    const response = await fetchWithAuth(`Configuration/GetAllCompany`);
     if (!response.ok) {
         return;
     }
@@ -1082,8 +1086,22 @@ export const updateUserEmailConfig = async (email: Partial<EmailUser>) => {
     return response.json();
 }
 
+export const addCompanyConfig = async (companyEmail: Partial<EmailCompany>) => {
+    const response = await fetchWithAuth(`Configuration/CreateEntidade`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(companyEmail)
+    });
+    if (!response.ok) {
+        return;
+    }
+    return response.json();
+}
+
 export const updateCompanyConfig = async (companyEmail: Partial<EmailCompany>) => {
-    const response = await fetchWithAuth(`Configuration/UpdateCompanyConfigurations`, {
+    const response = await fetchWithAuth(`Configuration/UpdateCompany`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

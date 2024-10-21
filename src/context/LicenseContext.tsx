@@ -7,6 +7,8 @@ import { License } from '../helpers/Types';
 interface LicenseContextType {
     license: License[];
     setLicense: (license: License[]) => void;
+    isLicensed: boolean;
+    setIsLicensed: (isLicensed: boolean) => void;
     fetchAllLicenses: (license: string) => Promise<License[]>;
     handleUpdateLicense: (license: string, licenses: License) => Promise<void>;
 }
@@ -17,12 +19,18 @@ const LicenseContext = createContext<LicenseContextType | undefined>(undefined);
 // Provider do contexto
 export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     const [license, setLicense] = useState<any[]>([]);
+    const [isLicensed, setIsLicensed] = useState<boolean>(false);
 
     // Função para buscar todas as licenças
     const fetchAllLicenses = async (license: string): Promise<License[]> => {
         try {
             const data = await apiService.fetchLicenses(license);
-            setLicense(data);
+            if (data.length > 0) {
+                setLicense(data);
+                setIsLicensed(true);
+            } else {
+                setIsLicensed(false);
+            }
             return data;
         } catch (error) {
             console.error('Erro ao buscar licenças:', error);
@@ -36,8 +44,10 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
             const data = await apiService.updateLicenses(key, licenses);
             if (data) {
                 setLicense(data);
+                setIsLicensed(true);
                 toast.success(data.message || 'Licença atualizada com sucesso!');
             } else {
+                setIsLicensed(false);
                 console.error('Nenhum dado retornado da API.');
             }
         } catch (error) {
@@ -46,7 +56,7 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <LicenseContext.Provider value={{ license, setLicense, fetchAllLicenses, handleUpdateLicense }}>
+        <LicenseContext.Provider value={{ license, setLicense, isLicensed, setIsLicensed, fetchAllLicenses, handleUpdateLicense }}>
             {children}
         </LicenseContext.Provider>
     );

@@ -45,7 +45,7 @@ interface UpdateModalProps<T extends Entity> {
     onClose: () => void;
     onDuplicate?: (entity: T) => void;
     onUpdate: (entity: T) => Promise<void>;
-    entity: T | null;
+    entity: T;
     fields: Field[];
     title: string;
 }
@@ -70,6 +70,14 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         setFormData({ ...entity } as T);
+        const matchedDevice = deviceOptions.find(option => option.label === entity.deviceName);
+        if (matchedDevice) {
+            setSelectedDevice(matchedDevice.value);
+            setDeviceImage(matchedDevice.img);
+        } else {
+            setSelectedDevice('');
+            setDeviceImage(no_image);
+        }
     }, [entity]);
 
     // UseEffect para validar o formulário
@@ -334,7 +342,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 <Row>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceName">
-                            <Form.Label>Nome<span style={{ color: 'red' }}>*</span></Form.Label>
+                            <Form.Label>Nome<span style={{ color: 'red' }}> *</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>}
@@ -356,7 +364,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceNumber">
-                            <Form.Label>Número<span style={{ color: 'red' }}>*</span></Form.Label>
+                            <Form.Label>Número<span style={{ color: 'red' }}> *</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-deviceNumber">Campo obrigatório</Tooltip>}
@@ -444,7 +452,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                 <Row>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formIpAddress">
-                                                            <Form.Label>IP<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                            <Form.Label>IP<span style={{ color: 'red' }}> *</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
                                                                 overlay={<Tooltip id="tooltip-ipAddress">Campo obrigatório</Tooltip>}
@@ -465,7 +473,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formPort">
-                                                            <Form.Label>Porta<span style={{ color: 'red' }}>*</span></Form.Label>
+                                                            <Form.Label>Porta<span style={{ color: 'red' }}> *</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
                                                                 overlay={<Tooltip id="tooltip-port">Campo obrigatório</Tooltip>}
@@ -496,18 +504,24 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formDeviceProtocol">
-                                                            <Form.Label>Protocolo</Form.Label>
-                                                            <Form.Select
-                                                                name="deviceProtocol"
-                                                                value={formData['deviceProtocol'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
+                                                            <Form.Label>Protocolo <span style={{ color: 'red' }}> *</span></Form.Label>
+                                                            <OverlayTrigger
+                                                                placement="right"
+                                                                overlay={<Tooltip id="tooltip-deviceProtocol">Campo obrigatório</Tooltip>}
                                                             >
-                                                                <option value="">Selecione</option>
-                                                                <option value="1">Standalone</option>
-                                                                <option value="2">Pull</option>
-                                                                <option value="3">Push</option>
-                                                            </Form.Select>
+                                                                <Form.Select
+                                                                    name="deviceProtocol"
+                                                                    value={formData['deviceProtocol'] || ''}
+                                                                    onChange={handleChange}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                >
+                                                                    <option value="">Selecione</option>
+                                                                    <option value="1">Standalone</option>
+                                                                    <option value="2">Pull</option>
+                                                                    <option value="3">Push</option>
+                                                                </Form.Select>
+                                                            </OverlayTrigger>
+                                                            {errors['deviceProtocol'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceProtocol']}</div>}
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
@@ -576,29 +590,41 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                             />
                                                         </Form.Group>
                                                         <Form.Group controlId="formDeviceType">
-                                                            <Form.Label>Tipo</Form.Label>
-                                                            <Form.Select
-                                                                name="deviceType"
-                                                                value={formData['deviceType'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
+                                                            <Form.Label>Tipo <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                            <OverlayTrigger
+                                                                placement="right"
+                                                                overlay={<Tooltip id="tooltip-deviceType">Campo obrigatório</Tooltip>}
                                                             >
-                                                                <option value="">Selecione</option>
-                                                                <option value="1">Assiduidade</option>
-                                                                <option value="2">Controle de Acesso</option>
-                                                            </Form.Select>
+                                                                <Form.Select
+                                                                    name="deviceType"
+                                                                    value={formData['deviceType'] || ''}
+                                                                    onChange={handleChange}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                >
+                                                                    <option value="">Selecione</option>
+                                                                    <option value="1">Assiduidade</option>
+                                                                    <option value="2">Controle de Acesso</option>
+                                                                </Form.Select>
+                                                            </OverlayTrigger>
+                                                            {errors['deviceType'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceType']}</div>}
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formSerialNumber">
-                                                            <Form.Label>Número de Série<span style={{ color: 'red' }}>*</span></Form.Label>
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="serialNumber"
-                                                                value={formData['serialNumber'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
+                                                            <Form.Label>Número de Série<span style={{ color: 'red' }}> *</span></Form.Label>
+                                                            <OverlayTrigger
+                                                                placement="right"
+                                                                overlay={<Tooltip id="tooltip-serialNumber">Campo obrigatório</Tooltip>}
+                                                            >
+                                                                <Form.Control
+                                                                    type="string"
+                                                                    name="serialNumber"
+                                                                    value={formData['serialNumber'] || ''}
+                                                                    onChange={handleChange}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                />
+                                                            </OverlayTrigger>
+                                                            {errors['serialNumber'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['serialNumber']}</div>}
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>

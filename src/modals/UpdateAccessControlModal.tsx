@@ -175,9 +175,6 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                             { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
                             { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
                             { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
-                            { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true },
-                            { key: 'createDate', label: 'Data de Criação', type: 'date' },
-                            { key: 'updateDate', label: 'Data de Atualização', type: 'date' }
                         ].map((field) => (
                             <Col md={3} key={field.key}>
                                 <Form.Group controlId={`form${field.key}`}>

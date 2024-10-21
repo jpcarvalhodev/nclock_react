@@ -484,7 +484,7 @@ export type MBDeviceCloseOpen = {
     aberturaImage: string;
 };
 
-export interface License {
+export type License = {
     [key: string]: any;
     id: string;
     nclock: number;
@@ -541,4 +541,23 @@ export interface License {
     nclinics: number;
     noptics: number;
     ngold: number;
+}
+
+export type Entity = {
+    [key: string]: any;
+    id: string;
+    nome: string;
+    morada: string;
+    cPostal: string;
+    localidade: string;
+    telefone: string;
+    telemovel: string;
+    email: string;
+    nif: number;
+    www: string;
+    observacoes: string;
+    logotipo: string;
+    createdDate: Date;
+    updatedDate: Date;
+    enabled: boolean;
 }

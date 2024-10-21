@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailCompany, EmailUser, EmailUserCompany, Employee } from '../helpers/Types';
+import { EmailCompany, EmailUser, EmailUserCompany, Employee, Entity } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -141,7 +141,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailAndCompanyFields } from '../helpers/Fields';
+import { adsFields, emailAndCompanyFields, entityFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -170,6 +170,8 @@ import count from '../assets/img/navbar/nkiosk/count.png';
 import cleaning from '../assets/img/navbar/nkiosk/cleaning.png';
 import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
+import { EntityModal } from '../modals/EntityModal';
+import { set } from 'date-fns';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -230,7 +232,7 @@ interface TabsInfo {
 export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
 	const { handleAddModalNavbar } = useAds();
-	const { license } = useLicense();
+	const { isLicensed } = useLicense();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -359,6 +361,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [isMobile, setIsMobile] = useState<boolean>(false);
 	const [showAboutModal, setShowAboutModal] = useState(false);
 	const [showLicenseModal, setShowLicenseModal] = useState(false);
+	const [showEntityModal, setShowEntityModal] = useState(false);
+	const [entityData, setEntityData] = useState<Entity>();
+	const [entitiesData, setEntitiesData] = useState<Entity[]>();
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -443,6 +448,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 		try {
 			const data = await apiService.fetchAllCompanyConfig();
 			setEmailCompanyConfig(data);
+			setEntityData(data);
+			setEntitiesData(data);
 		} catch (error) {
 			console.error('Erro ao carregar os emails registados:', error);
 		}
@@ -469,6 +476,17 @@ export const NavBar = ({ style }: NavBarProps) => {
 			toast.success(data.value || 'Email atualizado com sucesso!');
 		} catch (error) {
 			console.error('Erro ao atualizar o email registado:', error);
+		}
+	}
+
+	// Função para atualizar os dados da empresa
+	const handleUpdateCompanyData = async (entityData: Partial<Entity>) => {
+		try {
+			const data = await apiService.updateCompanyConfig(entityData);
+			setEntityData(data);
+			toast.success(data.value || 'Dados da empresa atualizados com sucesso!');
+		} catch (error) {
+			console.error('Erro ao atualizar os dados da empresa:', error);
 		}
 	}
 
@@ -1434,6 +1452,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para abrir o modal de licença
 	const toggleLicenseModal = () => setShowLicenseModal(!showLicenseModal);
 
+	// Função para abrir o modal da entidade
+	const toggleEntityModal = () => setShowEntityModal(!showEntityModal);
+
 	// Função para adicionar publicidade via contexto
 	const handleUploadClick = (ad: FormData) => {
 		handleAddModalNavbar(ad);
@@ -1500,7 +1521,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</Dropdown>
 					</div>
 				</div>
-				{showNclockRibbon && (
+				{showNclockRibbon && isLicensed && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
 							<div className="section" id="section-group">
@@ -1835,7 +1856,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNaccessRibbon && (
+				{showNaccessRibbon && isLicensed && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="naccess" role="tabpanel" aria-labelledby="naccess-tab">
 							<div className="section" id="section-group">
@@ -1983,7 +2004,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNkioskRibbon && (
+				{showNkioskRibbon && isLicensed && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
 							<div className="section" id="section-group">
@@ -2645,7 +2666,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Button onClick={toggleEntityModal} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={departments} alt="botão entidade" />
 													</span>
@@ -2910,6 +2931,17 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<LicenseModal
 						open={showLicenseModal}
 						onClose={() => setShowLicenseModal(false)}
+					/>
+				)}
+				{showEntityModal && entityData && entitiesData && (
+					<EntityModal
+						open={showEntityModal}
+						onClose={() => setShowEntityModal(false)}
+						onUpdate={handleUpdateCompanyData}
+						entity={entityData}
+						entities={entitiesData}
+						fields={entityFields}
+						title='Entidades'
 					/>
 				)}
 			</nav>
