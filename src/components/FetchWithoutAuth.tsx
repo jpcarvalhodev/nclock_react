@@ -31,7 +31,7 @@ const handleHTTPError = async (response: Response) => {
     switch (response.status) {
         case 404:
             toast.error('Página não encontrada');
-            window.location.href = '/notfound';
+            window.location.href = '/errors/notfound';
             break;
         case 500:
         case 501:

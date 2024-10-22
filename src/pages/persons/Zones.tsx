@@ -263,7 +263,7 @@ export const Zones = () => {
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
-                        defaultSortAsc={false}
+                        defaultSortAsc={true}
                         defaultSortFieldId="name"
                     />
                 </div>

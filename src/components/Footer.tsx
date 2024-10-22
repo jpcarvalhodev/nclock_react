@@ -11,7 +11,12 @@ export const Footer = ({ style }: FooterProps) => {
   return (
     <ColorProvider>
       <footer className="footer" style={{ backgroundColor: footerColor }}>
-        <p>{currentYear} ®NIDGROUP by SISNID - All Rights Reserved</p>
+        <div className="footer-left">
+          <p>{currentYear} ®NIDGROUP por SISNID - Todos os direitos reservados</p>
+        </div>
+        <div className="footer-right">
+          <p>Versão: 1</p>
+        </div>
       </footer>
     </ColorProvider>
   );

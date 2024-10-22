@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { DeviceContextType, TerminalsContext } from "../context/TerminalsContext";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../components/CustomStylesDataTable";
-import { Doors } from "../helpers/Types";
+import { Devices, Doors } from "../helpers/Types";
 import { SelectFilter } from "../components/SelectFilter";
 import { doorsFields } from "../helpers/Fields";
 import nface from "../assets/img/terminais/nface.webp";
@@ -43,6 +43,7 @@ interface Props<T> {
 
 export const CreateModalDevices = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const {
+        devices,
         fetchAllDevices,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, disabled: true });
@@ -107,8 +108,27 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // UseEffect para atualizar lista de todos os dispositivos
     useEffect(() => {
-        fetchAllDevices();
-    }, []);
+        const fetchDevicesAndSetNextNumber = async () => {
+            try {
+                if (devices && devices.length > 0) {
+                    const maxNumber = devices.reduce((max: number, device: Devices) => Math.max(max, device.deviceNumber), 0);
+                    const nextDeviceNumber = maxNumber + 1;
+    
+                    if (!initialValues.deviceNumber) {
+                        setFormData(prevState => ({
+                            ...prevState,
+                            deviceNumber: nextDeviceNumber
+                        }));
+                    }
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dispositivos e calcular o próximo número:", error);
+            }
+        };
+        if (open) {
+            fetchDevicesAndSetNextNumber();
+        }
+    }, [open, initialValues, devices]); 
 
     // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

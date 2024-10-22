@@ -18,7 +18,6 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
-import { id } from "date-fns/locale";
 import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
@@ -260,7 +259,7 @@ export const Categories = () => {
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
-                        defaultSortAsc={false}
+                        defaultSortAsc={true}
                         defaultSortFieldId="code"
                     />
                 </div>

@@ -2236,12 +2236,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Link to="/nkiosk/nkiosklogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<Button /* to="" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
 														<img src={logs} alt="botão log de utilizadores" />
 													</span>
 													<span className="text">Publicidade</span>
-												</Link>
+												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>

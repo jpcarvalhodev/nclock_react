@@ -4,7 +4,6 @@ import { licenseFields } from '../helpers/Fields';
 import { useLicense } from '../context/LicenseContext';
 import { License } from '../helpers/Types';
 import { toast } from 'react-toastify';
-import { is } from 'date-fns/locale';
 
 // Define a interface Entity
 export interface Entity {
@@ -19,12 +18,11 @@ interface UpdateModalProps<T> {
 }
 
 export const LicenseModal = <T extends Entity>({ open, onClose }: UpdateModalProps<T>) => {
-    const { fetchAllLicenses, handleUpdateLicense } = useLicense();
+    const { isLicensed, fetchAllLicenses, handleUpdateLicense } = useLicense();
     const [formData, setFormData] = useState<Partial<License>>([]);
     const [isCheckVisible, setIsCheckVisible] = useState<boolean>(false);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
     const [key, setKey] = useState<string>('');
-    const [isValidKey, setIsValidKey] = useState<boolean>(false);
     const [licenseOptions, setLicenseOptions] = useState<boolean[]>(new Array(licenseFields.length).fill(false));
 
     // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
@@ -39,8 +37,8 @@ export const LicenseModal = <T extends Entity>({ open, onClose }: UpdateModalPro
     const verifyKey = async () => {
         try {
             const isValid = await fetchAllLicenses(key);
-            setIsValidKey(isValidKey);
-            if (isValid) {
+            console.log('isValid:', isValid);
+            if (isValid && isLicensed) {
                 const data: Partial<License> = await fetchAllLicenses(key);
                 setFormData(data);
                 const updatedOptions = licenseFields.map(field => data[field.key]);

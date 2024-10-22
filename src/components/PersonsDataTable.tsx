@@ -283,7 +283,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         clearSelectedRows={resetSelectionInternal}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
-                        defaultSortAsc={false}
+                        defaultSortAsc={true}
                         defaultSortFieldId='enrollNumber'
                     />
                     {selectedEmployee && (

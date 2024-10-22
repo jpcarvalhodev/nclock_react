@@ -29,7 +29,8 @@ interface Props<T> {
 
 // Define a interface para os itens de código
 interface CodeItem {
-    code: number;
+    code?: number;
+    order?: number;
 }
 
 // Define o componente
@@ -71,15 +72,20 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     // Função para buscar os dados de categoria, profissão ou tipo
     const fetchEntityData = async () => {
         let url;
+        let requiresNextCode = false;
+        let requiresNextOrder = false;
         switch (entityType) {
             case 'categorias':
                 url = apiService.fetchAllCategories;
+                requiresNextCode = true;
                 break;
             case 'profissões':
                 url = apiService.fetchAllProfessions;
+                requiresNextCode = true;
                 break;
             case 'tipos':
                 url = apiService.fetchAllExternalEntityTypes;
+                requiresNextOrder = true;
                 break;
             default:
                 toast.error(`Tipo de entidade '${entityType}' não existe.`);
@@ -87,16 +93,34 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
         }
         try {
             const response = await url();
-            if (response.ok) {
-                const data: CodeItem[] = await response.json();
-                const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code), 0) + 1;
-                setFormData(prevState => ({
-                    ...prevState,
-                    code: maxCode
-                }));
-            } else {
-                return;
-            }
+            if (response) {
+                const data: CodeItem[] = response
+                
+                if (requiresNextCode) {
+                    const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code ?? 0), 0) + 1;
+                    
+                    setFormData(prevState => ({
+                        ...prevState,
+                        code: maxCode
+                    }));
+                } else {
+                    setFormData(prevState => ({
+                        ...prevState,
+                    }));
+                }
+                if (requiresNextOrder) {
+                    const maxOrder = data.reduce((max: number, item: CodeItem) => Math.max(max, item.order ?? 0), 0) + 1;
+                    
+                    setFormData(prevState => ({
+                        ...prevState,
+                        order: maxOrder
+                    }));
+                } else {
+                    setFormData(prevState => ({
+                        ...prevState,
+                    }));
+                }
+            } 
         } catch (error) {
             console.error(`Erro ao buscar dados de ${entityType}:`, error);
             toast.error(`Erro ao conectar ao servidor para ${entityType}`);

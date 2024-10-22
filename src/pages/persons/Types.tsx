@@ -229,7 +229,7 @@ export const Types = () => {
                         paginationComponentOptions={paginationOptions}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
-                        defaultSortAsc={false}
+                        defaultSortAsc={true}
                         defaultSortFieldId="order"
                     />
                 </div>

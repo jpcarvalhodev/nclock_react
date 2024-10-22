@@ -291,7 +291,7 @@ export const Departments = () => {
                         )}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
-                        defaultSortAsc={false}
+                        defaultSortAsc={true}
                         defaultSortFieldId="code"
                     />
                 </div>

@@ -110,7 +110,6 @@ import { LicenseProvider } from './context/LicenseContext';
 import { NclockDashboard } from './pages/sisnid/nclock/NclockDashboard';
 import { NaccessDashboard } from './pages/sisnid/naccess/NaccessDashboard';
 import { NkioskDashboard } from './pages/nidtec/nkiosk/NkioskDashboard';
-import { Forbidden } from './pages/errors/Forbidden';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -156,7 +155,6 @@ function AnimatedRoutes() {
               <Route path="/" element={<Login />} />
               <Route path="/login&forgot/forgot-password" element={<ForgotPassword />} />
               <Route path='/login&forgot/reset-password' element={<ResetPassword />} />
-              <Route path="/errors/forbidden" element={<Forbidden />} />
               <Route path="/errors/notfound" element={<NotFound />} />
               <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
               <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />
@@ -251,7 +249,7 @@ function AnimatedRoutes() {
               <Route path="/ncomfort/ncomfortdashboard" element={<PageProtection><NcomfortDashboard /></PageProtection>} />
               <Route path="/nsound/nsounddashboard" element={<PageProtection><NsoundDashboard /></PageProtection>} />
               <Route path="/nhome/nhomedashboard" element={<PageProtection><NhomeDashboard /></PageProtection>} />
-              <Route path="*" element={<Forbidden />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </CSSTransition>

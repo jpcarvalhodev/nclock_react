@@ -25,7 +25,8 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllLicenses = async (license: string): Promise<License[]> => {
         try {
             const data = await apiService.fetchLicenses(license);
-            if (data.length > 0) {
+            console.log('fetchAllLicenses:', data);
+            if (data) {
                 setLicense(data);
                 setIsLicensed(true);
             } else {

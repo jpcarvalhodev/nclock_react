@@ -353,7 +353,7 @@ export const Visitors = () => {
                                 selectableRowsHighlight
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
-                                defaultSortAsc={false}
+                                defaultSortAsc={true}
                                 defaultSortFieldId="enrollNumber"
                             />
                         </div>

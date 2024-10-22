@@ -60,7 +60,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
     flex: 1;
     padding: 10px;
     border-radius: 5px;
@@ -73,8 +72,8 @@ body {
     justify-content: center;
     align-items: center;
     scroll-behavior: smooth;
-    overflow-x: hidden;
-    width: 68vw;
+    overflow: hidden;
+    width: 71vw;
     height: 20vh;
 }
 
@@ -83,8 +82,8 @@ body {
     justify-content: left;
     align-items: center;
     scroll-behavior: smooth;
-    overflow-x: hidden;
-    width: 68vw;
+    overflow: hidden;
+    width: 71vw;
     height: 20vh;
 }
 
@@ -230,13 +229,24 @@ body {
     padding: 10px;
     display: flex;
     align-items: center;
-    flex-direction: column;
+    justify-content: space-between;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .footer p {
     margin: 0;
     font-size: 14px;
+}
+
+.footer-left {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.footer-right {
+    flex-shrink: 0;
+    margin-left: auto;
 }
 
 .modal-scrollable .modal-dialog {
@@ -444,7 +454,7 @@ body {
 }
 
 .nav.nav-pills {
-    width: 68%;
+    width: 71%;
     height: 50px;
     margin: 0 auto;
     border-radius: 10px;
@@ -583,6 +593,25 @@ body {
 }
 
 @media (max-width: 500px) {
+
+    .footer {
+        flex-direction: column;
+    }
+
+    .footer p {
+        font-size: 13px;
+    }
+
+    .footer-left, 
+    .footer-right {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .footer-right {
+        margin-top: 10px;
+    }
 
     .main-container {
         min-height: 100vh;
@@ -769,4 +798,58 @@ body {
     .arrows-cards {
         display: none;
     }
+}
+
+@media (max-width: 1920px) {
+
+    .card-container.cards-center {
+        width: 67.5vw;
+    }
+
+    .card-container.cards-left {
+        width: 67.5vw;
+    }
+
+    .nav.nav-pills {
+        width: 67.5%;
+    }
+
+}
+
+@media (max-width: 1600px) {
+
+    .card-container.cards-center {
+        width: 81vw;
+    }
+
+    .card-container.cards-left {
+        width: 81vw;
+    }
+
+    .nav.nav-pills {
+        width: 81%;
+    }
+
+}
+
+@media (max-width: 1366px) {
+
+    .dashboard-cards-container {
+        height: 30vh;
+    }
+
+    .card-container.cards-center {
+        width: 86vw;
+        height: 20vh;
+    }
+
+    .card-container.cards-left {
+        width: 86vw;
+        height: 20vh;
+    }
+
+    .nav.nav-pills {
+        width: 86%;
+    }
+
 }

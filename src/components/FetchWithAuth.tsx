@@ -39,19 +39,19 @@ const handleHTTPError = async (response: Response) => {
     switch (response.status) {
         case 400:
             const badRequest = await response.json();
-            toast.error(badRequest.message || 'Requisição inválida');
+            toast.error(badRequest.message || badRequest.text || badRequest.error || 'Requisição inválida');
             break;
         case 401:
             toast.error('Você não tem permissão para acessar esta página');
             window.location.href = '/';
             break;
         case 403:
-            toast.error('Você não tem licenciamento para acessar esta página');
-            window.location.href = '/forbidden';
+            const forbidden = await response.json();
+            toast.error(forbidden.message || forbidden.text || forbidden.error || 'Você não tem licenciamento para acessar esta página');
             break;
         case 404:
             toast.error('Página não encontrada');
-            window.location.href = '/notfound';
+            window.location.href = '/errors/notfound';
             break;
         case 500:
         case 501:
