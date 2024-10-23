@@ -284,7 +284,7 @@ export type Register = {
     id: string;
     name: string;
     userName: string;
-    emailAddress: string;
+    email: string;
     password: string;
     confirmPassword: string;
     role: string;

@@ -162,7 +162,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
             <Modal.Body className="modal-body-scrollable">
                 <Form style={{ display: 'flex' }}>
                     <Row style={{ flex: 1 }}>
-                        <Col md={10}>
+                        <Col md={12}>
                             <Table striped bordered hover size="md">
                                 <thead>
                                     <tr>
@@ -181,137 +181,74 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                         </Col>
                     </Row>
                     <Row style={{ flex: 2 }}>
-                        <Col className='img-modal'>
-                            <img
-                                src={deviceImage || no_image}
-                                alt="Logo da entidade"
-                                style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '25%' }}
-                                onClick={triggerFileSelectPopup}
-                            />
-                            <div>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                    onChange={handleImageChange}
-                                    ref={fileInputRef}
+                        <Row>
+                            <Col md={12} className='img-modal'>
+                                <img
+                                    src={deviceImage || no_image}
+                                    alt="Logo da entidade"
+                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '25%' }}
+                                    onClick={triggerFileSelectPopup}
                                 />
-                            </div>
-                        </Col>
-                        <Form.Group as={Row} className="mb-3" controlId="formEnabled">
-                            <Col sm={{ span: 10, offset: 2 }}>
+                                <div>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        onChange={handleImageChange}
+                                        ref={fileInputRef}
+                                    />
+                                </div>
+                            </Col>
+                        </Row>
+                        <Col md={6}>
+                            <Form.Group controlId="formEnabled" className='mt-4' style={{ marginBottom: 14 }}>
                                 <Form.Check
-                                    type="checkbox"
-                                    label="Ativar?"
+                                    type="switch"
+                                    label="Activa?"
                                     name="enabled"
                                     checked={formData.enabled}
                                     onChange={handleChange}
+                                    style={{ width: '100%', display: 'flex', justifyContent: 'space-between', flexDirection: 'row-reverse', padding: 0 }}
                                 />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3" controlId="formNome">
-                            <Form.Label column sm="2">Nome<span style={{ color: 'red' }}> *</span></Form.Label>
-                            <Col sm="10">
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-nome">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        type="text"
-                                        name="nome"
-                                        value={formData.nome}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['nome'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nome']}</div>}
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3" controlId="formMorada">
-                            <Form.Label column sm="2">Morada</Form.Label>
-                            <Col sm="10">
+                            </Form.Group>
+                            <Form.Group controlId="formMorada">
+                                <Form.Label>Morada</Form.Label>
                                 <Form.Control
+                                    className="custom-input-height custom-select-font-size"
                                     type="text"
                                     name="morada"
                                     value={formData.morada}
                                     onChange={handleChange}
                                 />
-                            </Col>
-                        </Form.Group>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group as={Row} className="mb-3" controlId="formCPostal">
-                                    <Form.Label column sm="4">C.Postal</Form.Label>
-                                    <Col sm="8">
-                                        <Form.Control
-                                            type="text"
-                                            name="cPostal"
-                                            value={formData.cPostal}
-                                            onChange={handleChange}
-                                        />
-                                    </Col>
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group as={Row} className="mb-3" controlId="formLocalidade">
-                                    <Form.Label column sm="4">Localidade</Form.Label>
-                                    <Col sm="8">
-                                        <Form.Control
-                                            type="text"
-                                            name="localidade"
-                                            value={formData.localidade}
-                                            onChange={handleChange}
-                                        />
-                                    </Col>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group as={Row} className="mb-3" controlId="formTelefone">
-                                    <Form.Label column sm="4">Telefone</Form.Label>
-                                    <Col sm="8">
-                                        <Form.Control
-                                            type="text"
-                                            name="telefone"
-                                            value={formData.telefone}
-                                            onChange={handleChange}
-                                        />
-                                    </Col>
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group as={Row} className="mb-3" controlId="formTelemovel">
-                                    <Form.Label column sm="4">Telemóvel</Form.Label>
-                                    <Col sm="8">
-                                        <Form.Control
-                                            type="text"
-                                            name="telemovel"
-                                            value={formData.telemovel}
-                                            onChange={handleChange}
-                                        />
-                                    </Col>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Form.Group as={Row} className="mb-3" controlId="formEmail">
-                            <Form.Label column sm="2">Email</Form.Label>
-                            <Col sm="10">
+                            </Form.Group>
+                            <Form.Group controlId="formCPostal">
+                                <Form.Label>Código Postal</Form.Label>
                                 <Form.Control
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
+                                    className="custom-input-height custom-select-font-size"
+                                    type="text"
+                                    name="cPostal"
+                                    value={formData.cPostal}
                                     onChange={handleChange}
                                 />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3" controlId="formNif">
-                            <Form.Label column sm="2">NIF<span style={{ color: 'red' }}> *</span></Form.Label>
-                            <Col sm="10">
+                            </Form.Group>
+                            <Form.Group controlId="formTelemovel">
+                                <Form.Label>Telemóvel</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="text"
+                                    name="telemovel"
+                                    value={formData.telemovel}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formNif">
+                                <Form.Label>NIF<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
                                     overlay={<Tooltip id="tooltip-nif">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
+                                        className="custom-input-height custom-select-font-size"
                                         type="number"
                                         name="nif"
                                         value={formData.nif}
@@ -319,22 +256,69 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                                     />
                                 </OverlayTrigger>
                                 {errors['nif'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nif']}</div>}
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3" controlId="formWww">
-                            <Form.Label column sm="2">Website</Form.Label>
-                            <Col sm="10">
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group controlId="formNome">
+                                <Form.Label>Nome<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-nome">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="text"
+                                        name="nome"
+                                        value={formData.nome}
+                                        onChange={handleChange}
+                                    />
+                                </OverlayTrigger>
+                                {errors['nome'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nome']}</div>}
+                            </Form.Group>
+                            <Form.Group controlId="formLocalidade">
+                                <Form.Label>Localidade</Form.Label>
                                 <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="text"
+                                    name="localidade"
+                                    value={formData.localidade}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formTelefone">
+                                <Form.Label>Telefone</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="text"
+                                    name="telefone"
+                                    value={formData.telefone}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formEmail">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formWww">
+                                <Form.Label>Website</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
                                     type="url"
                                     name="www"
                                     value={formData.www}
                                     onChange={handleChange}
                                 />
-                            </Col>
-                        </Form.Group>
-                        <Form.Group as={Row} className="mb-3" controlId="formObservacoes">
-                            <Form.Label column sm="2">Observações</Form.Label>
-                            <Col sm="10">
+                            </Form.Group>
+                        </Col>
+                        <Row>
+                            <Form.Group controlId="formObservacoes">
+                                <Form.Label>Observações</Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     rows={3}
@@ -342,16 +326,16 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                                     value={formData.observacoes}
                                     onChange={handleChange}
                                 />
-                            </Col>
-                        </Form.Group>
+                            </Form.Group>
+                        </Row>
                     </Row>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>
+                <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="primary" onClick={handleSaveClick}>
+                <Button variant="outline-primary" onClick={handleSaveClick}>
                     Guardar
                 </Button>
             </Modal.Footer>

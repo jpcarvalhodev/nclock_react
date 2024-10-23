@@ -78,8 +78,6 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
 
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
-        console.log(formData);
-        console.log(isFormValid);
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
@@ -107,7 +105,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Nome <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -125,7 +123,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Nome de Usuário <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-userName">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -139,17 +137,17 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                             </Form.Group>
                         </Col>
                         <Col md={6}>
-                            <Form.Group controlId="formEmailAddress">
+                            <Form.Group controlId="formEmail">
                                 <Form.Label>E-Mail <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-email">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
                                         type="email"
-                                        name="emailAddress"
-                                        value={formData.emailAddress || ''}
+                                        name="email"
+                                        value={formData.email || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
@@ -161,7 +159,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Tipo de Conta <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-roles">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -184,7 +182,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Senha <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-password">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -203,7 +201,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Confirmar Senha <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"

@@ -167,7 +167,6 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
 
     // Função para salvar os dados
     const handleSave = () => {
-        console.log('Salvando:', formData);
         onSave(formData as T);
         onClose();
     };

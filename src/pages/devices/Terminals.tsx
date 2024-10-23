@@ -795,7 +795,6 @@ export const Terminals = () => {
             reader.onload = async (e) => {
                 const buffer = e.target?.result as ArrayBuffer;
                 const data = parseFPData(buffer);
-                console.log(data);
                 await handleImportEmployeeFP(data);
             };
             setLoadingImportUsers(false);
@@ -836,7 +835,6 @@ export const Terminals = () => {
             reader.onload = async (e) => {
                 const content = e.target?.result as string;
                 const parsedData = parseFaceData(content);
-                console.log(parsedData);
                 await handleImportEmployeeFace(parsedData);
             };
             reader.readAsText(file);

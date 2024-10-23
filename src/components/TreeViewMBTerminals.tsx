@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { AccessControl } from '../helpers/Types';
+import { Devices, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
@@ -26,7 +26,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 // Define a interface para as propriedades do componente TreeViewData
-interface TreeViewDataACProps {
+interface TreeViewDataMBTerminalsProps {
     onSelectDevices: (selectedDevices: string[]) => void;
 }
 
@@ -65,35 +65,35 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
+export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTerminalsProps) {
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
+    const [mbData, setMBData] = useState<MBDevice[]>([]);
     const selectionChangedRef = { current: false };
 
-    // Função para buscar os dados dos dispositivos
-    const fetchAllData = async () => {
+    // Função para buscar os dados dos dispositivos multibanco
+    const fetchAllMBDevices = async () => {
         try {
-            const accessData = await apiService.fetchAllAccessControl();
-            setAccessControl(accessData);
+            const deviceData = await apiService.fetchAllMBDevices();
+            setMBData(deviceData);
         } catch (error) {
             console.error('Erro ao buscar os dados dos dispositivos:', error);
         }
-    };
+    }
 
     // Busca os dados ao carregar o componente
     useEffect(() => {
-        fetchAllData();
+        fetchAllMBDevices();
     }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
-        const buildDeviceTree = accessControl.map(ac => ({
-            id: ac.employeesId,
-            label: ac.shortName || 'Sem Nome',
+        const buildTerminalTree = mbData.map(device => ({
+            id: device.id,
+            label: device.nomeQuiosque || 'Sem Nome',
             children: []
         }));
 
@@ -103,9 +103,9 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
                 label: 'NIDGROUP',
                 children: [
                     {
-                        id: 'accessControlNames',
-                        label: 'NOMES',
-                        children: buildDeviceTree
+                        id: 'terminais',
+                        label: 'TERMINAIS',
+                        children: buildTerminalTree
                     },
                 ],
             },
@@ -114,7 +114,7 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [accessControl]);
+    }, [mbData]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {
@@ -182,7 +182,7 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
 
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text'>Árvore de Acessos</p>
+            <p className='treeview-title-text' style={{ color: 'black' }}>Árvore de Dispositivos</p>
             <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
             <Box className="treeViewFlexItem">
                 <RichTreeView

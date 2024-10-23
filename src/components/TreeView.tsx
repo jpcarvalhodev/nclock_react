@@ -2,7 +2,7 @@ import { SyntheticEvent, useContext, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
-import { Button, TextField, TextFieldProps } from '@mui/material';
+import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
@@ -267,8 +267,6 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
 
     onSelectEmployees(employeeIds as string[]);
   };
-
-  console.log(selectedEmployeeIds);
 
   // Atualiza a referência de mudança de seleção
   useEffect(() => {

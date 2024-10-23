@@ -377,7 +377,7 @@ export const restartDevice = async (zktecoDeviceID: Devices) => {
 };
 
 export const sendClockToDevice = async (serialNumber: string, timeZoneId: string) => {
-    const response = await fetchWithAuth(`Zkteco/SendTimezoneResponse`, {
+    const response = await fetchWithAuth(`Zkteco/SendTimezoneResponse?SN=${serialNumber}&Id=${timeZoneId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -464,12 +464,40 @@ export const deleteDevice = async (zktecoDeviceID: string) => {
 };
 
 export const addMBDevice = async (mbDevice: MBDevice) => {
-    const response = await fetchWithAuth(`TerminalPagamento/CreatTerminalPagamentoAsync`, {
+    const response = await fetchWithAuth(`TerminalPagamento/CreatTerminalPagamento`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(mbDevice)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const updateMBDevice = async (mbDevice: MBDevice) => {
+    const response = await fetchWithAuth(`TerminalPagamento/UpdateTerminalPagamento`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mbDevice)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const deleteMBDevice = async (mbDeviceID: string) => {
+    const response = await fetchWithAuth(`TerminalPagamento/DeleteTerminalPagamento?id=${mbDeviceID}`, {
+        method: 'DELETE'
     });
     if (!response.ok) {
         const errorData = await response.json();

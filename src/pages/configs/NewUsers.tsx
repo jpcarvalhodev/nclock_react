@@ -18,7 +18,7 @@ export const NewUsers = () => {
     const { navbarColor, footerColor } = useColor();
     const [users, setUsers] = useState<Register[]>([]);
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'userName', 'emailAddress', 'roles']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'userName', 'email', 'roles']);
     const [filterText, setFilterText] = useState("");
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [showAddModal, setShowAddModal] = useState(false);
@@ -95,7 +95,7 @@ export const NewUsers = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['name', 'userName', 'emailAddress', 'roles']);
+        setSelectedColumns(['name', 'userName', 'email', 'roles']);
     };
 
     // Função para selecionar todas as colunas

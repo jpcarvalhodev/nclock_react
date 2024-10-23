@@ -33,6 +33,8 @@ export interface DeviceContextType {
     handleUpdateDevice: (device: Devices) => Promise<void>;
     handleDeleteDevice: (zktecoDeviceID: string) => Promise<void>;
     handleAddMBDevice: (device: MBDevice) => Promise<void>;
+    handleUpdateMBDevice: (device: MBDevice) => Promise<void>;
+    handleDeleteMBDevice: (id: string) => Promise<void>;
 }
 
 // Define a interface para o status
@@ -306,6 +308,31 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para atualizar um dispositivo de multibanco
+    const handleUpdateMBDevice = async (device: MBDevice) => {
+        try {
+            const updatedDevice = await apiService.updateMBDevice(device);
+            const updatedDevices = mbDevices.map(d => d.id === updatedDevice.id ? updatedDevice : d);
+            setMBDevices(updatedDevices);
+            toast.success(updatedDevice.message || 'Atualização realizada com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao atualizar funcionário:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    }
+
+    // Função para apagar um dispositivo de multibanco
+    const handleDeleteMBDevice = async (id: string) => {
+        try {
+            const deleteDevice = await apiService.deleteMBDevice(id);
+            toast.success(deleteDevice.message || 'dispositivo apagado com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao apagar dispositivos:', error);
+        }
+    }
+
     // Busca todos os dispositivos ao carregar o componente
     useEffect(() => {
         fetchAllDevices();
@@ -339,7 +366,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
-        handleAddMBDevice
+        handleAddMBDevice,
+        handleUpdateMBDevice,
+        handleDeleteMBDevice
     };
 
     return (

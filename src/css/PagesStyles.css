@@ -53,7 +53,7 @@ body {
     border-radius: 5px;
     background: white;
     margin: 10px;
-    max-height: 450px;
+    max-height: 550px;
 }
 
 .dashboard-cards-container {
@@ -812,15 +812,15 @@ body {
 @media (max-width: 1920px) {
 
     .card-container.cards-center {
-        width: 67.5vw;
+        width: 68vw;
     }
 
     .card-container.cards-left {
-        width: 67.5vw;
+        width: 68vw;
     }
 
     .nav.nav-pills {
-        width: 67.5%;
+        width: 68%;
     }
 
 }

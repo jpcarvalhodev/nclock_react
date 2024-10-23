@@ -237,7 +237,7 @@ export const transactionCardFields = [
 export const registerFields = [
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'userName', label: 'Nome de Usuário', type: 'string', required: true },
-    { key: 'emailAddress', label: 'E-Mail', type: 'string', required: true },
+    { key: 'email', label: 'E-Mail', type: 'string', required: true },
     { key: 'password', label: 'Senha', type: 'string', required: true },
     { key: 'confirmPassword', label: 'Confirmar Senha', type: 'string', required: true },
     { key: 'role', label: 'Tipo de Conta', type: 'string', required: true },

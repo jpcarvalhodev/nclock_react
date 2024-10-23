@@ -2,7 +2,7 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
-import { Button, TextField, TextFieldProps } from '@mui/material';
+import { TextField, TextFieldProps } from '@mui/material';
 import { Devices, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
@@ -205,7 +205,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
 
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text'>Árvore de Dispositivos</p>
+            <p className='treeview-title-text' style={{ color: '#009739' }}>Árvore de Dispositivos</p>
             <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
             <Box className="treeViewFlexItem">
                 <RichTreeView

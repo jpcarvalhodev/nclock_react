@@ -16,6 +16,8 @@ import { useColor } from "../../context/ColorContext";
 import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
+import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
+import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
 
 // Define a interface para os filtros
 interface Filters {
@@ -45,6 +47,9 @@ export const TerminalsMB = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
+    const [selectedMBDeviceToDelete, setSelectedMBDeviceToDelete] = useState<string | null>(null);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     // Função para buscar todos os dispositivos multibanco
     const fetchAllDevices = async () => {
@@ -127,6 +132,18 @@ export const TerminalsMB = () => {
         setSelectedDevicesIds(selectedIds);
     };
 
+    // Define a função de abertura do modal de edição dos dispositivos
+    const handleEditDevices = (row: MBDevice) => {
+        setSelectedTerminal(row);
+        setShowUpdateModal(true);
+    };
+
+    // Define a abertura do modal de apagar controle de acesso
+    const handleOpenDeleteModal = (id: string) => {
+        setSelectedMBDeviceToDelete(id);
+        setShowDeleteModal(true);
+    };
+
     // Define a função de seleção de linhas de dispositivos
     const handleDeviceRowSelected = (state: {
         allSelected: boolean;
@@ -178,6 +195,21 @@ export const TerminalsMB = () => {
         })
     );
 
+    // Define as colunas de ação de dispositivos
+    const devicesActionColumn: TableColumn<MBDevice> = {
+        name: 'Ações',
+        cell: (row: MBDevice) => (
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)}>
+                    <i className="bi bi-trash-fill"></i>
+                </Button>
+            </div>
+        ),
+        selector: (row: MBDevice) => row.id,
+        ignoreRowClick: true,
+    };
+
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -221,7 +253,7 @@ export const TerminalsMB = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataMBTerminals onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text" style={{ color: '#000000' }}>
@@ -245,13 +277,14 @@ export const TerminalsMB = () => {
                             </div>
                             <div className="deviceMobile">
                                 <DataTable
-                                    columns={columns}
+                                    columns={[...columns, devicesActionColumn]}
                                     data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     selectableRows
                                     onSelectedRowsChange={handleDeviceRowSelected}
                                     selectableRowsHighlight
+                                    onRowDoubleClicked={handleEditDevices}
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
                                 />
@@ -309,6 +342,16 @@ export const TerminalsMB = () => {
                     fields={mbDeviceFields}
                     initialValues={{}}
                 />
+                {selectedTerminal && (
+                    <UpdateModalDeviceMB
+                        title="Editar Terminal Multibanco"
+                        open={showUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
+                        onUpdate={addDevice}
+                        entity={selectedTerminal}
+                        fields={mbDeviceFields}
+                    />
+                )}
             </div>
         </TerminalsProvider>
     );

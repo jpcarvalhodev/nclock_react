@@ -37,7 +37,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose }: UpdateModalPro
     const verifyKey = async () => {
         try {
             const isValid = await fetchAllLicenses(key);
-            console.log('isValid:', isValid);
             if (isValid && isLicensed) {
                 const data: Partial<License> = await fetchAllLicenses(key);
                 setFormData(data);

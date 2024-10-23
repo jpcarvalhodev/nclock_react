@@ -114,7 +114,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 <Form.Label>Nome <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -132,7 +132,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 <Form.Label>Nome de Usuário <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-userName">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -146,21 +146,21 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                             </Form.Group>
                         </Col>
                         <Col md={6}>
-                            <Form.Group controlId="formEmailAddress">
+                            <Form.Group controlId="formEmail">
                                 <Form.Label>E-Mail <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-email">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
                                         type="email"
-                                        name="emailAddress"
-                                        value={formData.emailAddress || ''}
+                                        name="email"
+                                        value={formData.email || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
+                                {errors.email && <Form.Text className="text-danger">{errors.email}</Form.Text>}
                             </Form.Group>
                         </Col>
                         <Col md={6}>
@@ -168,7 +168,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 <Form.Label>Tipo de Conta <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-roles">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -191,7 +191,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 <Form.Label>Senha <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-password">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -210,7 +210,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 <Form.Label>Confirmar Senha <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"

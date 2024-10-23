@@ -2,7 +2,7 @@ import { SyntheticEvent, useContext, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
-import { Button, TextField, TextFieldProps } from '@mui/material';
+import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { AttendanceProvider } from '../context/MovementContext';
@@ -271,7 +271,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   return (
     <AttendanceProvider>
       <Box className="TreeViewContainer">
-      <p className='treeview-title-text'>Árvore de Assiduidade</p>
+      <p className='treeview-title-text' style={{ color: '#0050a0' }}>Árvore de Assiduidade</p>
       <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
         <Box className="treeViewFlexItem">
           <RichTreeView

@@ -6,14 +6,20 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-// Interface para as propriedades do modal
-interface CreateModalProps<T> {
-    title: string;
+// Define a interface Entity
+export interface Entity {
+    id: string;
+    [key: string]: any;
+}
+
+// Define as propriedades do componente
+interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
+    onUpdate: (entity: T) => Promise<void>;
+    entity: T;
     fields: Field[];
-    initialValues: Partial<T>;
+    title: string;
 }
 
 // Interface para os campos do formulário
@@ -27,8 +33,8 @@ interface Field {
 }
 
 // Define o componente
-export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>(initialValues);
+export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+    const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
 
@@ -64,7 +70,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
                 timeReboot: '00:00:00',
             }));
         } else {
-            setFormData({});
+            setFormData({ ...entity } as T);
         }
     }, [open]);
 
@@ -88,7 +94,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData as T);
+        onUpdate(formData as T);
         onClose();
     };
 

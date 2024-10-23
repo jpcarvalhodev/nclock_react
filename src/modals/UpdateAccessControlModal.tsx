@@ -40,15 +40,26 @@ interface Field {
 
 // Define o componente
 export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClose, onUpdate, fields, entity }: UpdateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({...entity, doorTimezoneList: []});
+    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...entity, doorTimezoneList: [] });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+    const [showSelectionModal, setShowSelectionModal] = useState(false);
+    const [selectedDoor, setSelectedDoor] = useState(null);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
-        setFormData({ ...entity, doorTimezoneList: [] });
-    }, [entity]);    
+        if (entity.doors && entity.doors.length > 1) {
+            setSelectedDoor(null);
+        } else if (entity.doors.length === 1) {
+            setSelectedDoor(entity.doors[0]);
+            setFormData({
+                ...formData,
+                doorId: entity.doors[0].doorId,
+                timezoneId: entity.doors[0].timezoneId
+            });
+        }
+    }, [entity.doors]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -151,14 +162,14 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
             doorId: formData.doorId,
             timezoneId: formData.timezoneId,
         };
-    
+
         const { doorId, timezoneId, ...restFormData } = formData;
-    
+
         const updatedFormData = {
             ...restFormData,
             doorTimezoneList: [...(restFormData.doorTimezoneList || []), doorTimeEntry]
         };
-    
+
         onUpdate(updatedFormData as Partial<T>);
         onClose();
     };
