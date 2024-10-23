@@ -19,6 +19,7 @@ import inbio460 from "../assets/img/terminais/inbio460.webp";
 import profacex from "../assets/img/terminais/profacex.webp";
 import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
+import { set } from "date-fns";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -120,6 +121,11 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                             deviceNumber: nextDeviceNumber
                         }));
                     }
+                } else {
+                    setFormData(prevState => ({
+                        ...prevState,
+                        deviceNumber: 1
+                    }));
                 }
             } catch (error) {
                 console.error("Erro ao buscar dispositivos e calcular o próximo número:", error);

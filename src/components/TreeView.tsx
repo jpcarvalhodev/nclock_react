@@ -6,6 +6,7 @@ import { Button, TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
+import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -165,8 +166,8 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
 
     const treeItems = [
       {
-        id: 'nclock',
-        label: 'NCLOCK',
+        id: 'nidgroup',
+        label: 'NIDGROUP',
         children: [
           { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
           ...(unassignedDepartmentItems.length > 0 ? [{
@@ -279,7 +280,8 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
   return (
     <PersonsProvider>
       <Box className="TreeViewContainer">
-        <Button style={{ color: '#0050a0' }} onClick={() => fetchAllData(entity)}>Atualizar</Button>
+      <p className='treeview-title-text'>Árvore de Pessoas</p>
+      <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect

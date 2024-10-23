@@ -6,6 +6,7 @@ import { Button, TextField, TextFieldProps } from '@mui/material';
 import { AccessControl, TimePeriod } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
+import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -98,8 +99,8 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
 
         const treeItems = [
             {
-                id: 'periods',
-                label: 'PERÍODOS',
+                id: 'nidgroup',
+                label: 'NIDGROUP',
                 children: [
                     {
                         id: 'periodNames',
@@ -181,7 +182,8 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
 
     return (
         <Box className="TreeViewContainer">
-            <Button style={{ color: '#0050a0' }} onClick={() => fetchAllData()}>Atualizar</Button>
+            <p className='treeview-title-text'>Árvore de Períodos</p>
+            <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

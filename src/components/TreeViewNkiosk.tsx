@@ -6,6 +6,7 @@ import { Button, TextField, TextFieldProps } from '@mui/material';
 import { Devices, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
+import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -116,8 +117,8 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
 
         const treeItems = [
             {
-                id: 'nkiosk',
-                label: 'NKIOSK',
+                id: 'nidgroup',
+                label: 'NIDGROUP',
                 children: [
                     {
                         id: 'dispositivos',
@@ -204,7 +205,8 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
 
     return (
         <Box className="TreeViewContainer">
-            <Button style={{ color: '#0050a0' }} onClick={() => fetchAllData()}>Atualizar</Button>
+            <p className='treeview-title-text'>Árvore de Dispositivos</p>
+            <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

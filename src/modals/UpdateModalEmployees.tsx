@@ -448,9 +448,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Nav.Link eventKey="dadosProfissionais">Dados Profissionais</Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="dadosDaEmpresa">Dados da Empresa</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
               <Nav.Link eventKey="cartoes">Cartões</Nav.Link>
             </Nav.Item>
           </Nav>
@@ -562,70 +559,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                       </Form.Group>
                     </Col>
                   ))}
-                </Row>
-              </Form>
-            </Tab.Pane>
-            <Tab.Pane eventKey="dadosDaEmpresa">
-              <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                <Row>
-                  <Col md={3}>
-                    <Form.Group controlId="companyName">
-                      <Form.Label>Nome da Empresa</Form.Label>
-                      <Form.Control
-                        type="string"
-                        className="custom-input-height custom-select-font-size"
-                        value={formData.companyName || ''}
-                        onChange={handleChange}
-                        name="companyName"
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="companyAddress">
-                      <Form.Label>Morada da Empresa</Form.Label>
-                      <Form.Control
-                        type="textarea"
-                        className="custom-input-height custom-select-font-size"
-                        value={formData.companyAddress || ''}
-                        onChange={handleChange}
-                        name="companyAddress"
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group controlId="companyNif">
-                      <Form.Label>NIF da Empresa</Form.Label>
-                      <Form.Control
-                        type="number"
-                        className="custom-input-height custom-select-font-size"
-                        value={formData.companyNif || ''}
-                        onChange={handleChange}
-                        name="companyNif"
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group controlId="companyAddress">
-                      <Form.Label>Morada da Empresa</Form.Label>
-                      <Form.Control
-                        type="text"
-                        className="custom-input-height custom-select-font-size"
-                        value={formData.companyAddress || ''}
-                        onChange={handleChange}
-                        name="companyAddress"
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
-                    <Form.Group controlId="companyLocality">
-                      <Form.Label>Localidade da Empresa</Form.Label>
-                      <Form.Control
-                        type="text"
-                        className="custom-input-height custom-select-font-size"
-                        value={formData.companyLocality || ''}
-                        onChange={handleChange}
-                        name="companyLocality"
-                      />
-                    </Form.Group>
-                  </Col>
                 </Row>
               </Form>
             </Tab.Pane>

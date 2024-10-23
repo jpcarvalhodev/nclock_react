@@ -269,21 +269,6 @@ export const AccessControls = () => {
                                 <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                             </div>
-                            <div className="date-range-search">
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    className='search-input'
-                                />
-                                <span> até </span>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={e => setEndDate(e.target.value)}
-                                    className='search-input'
-                                />
-                            </div>
                         </div>
                         <div className='table-css'>
                             <DataTable

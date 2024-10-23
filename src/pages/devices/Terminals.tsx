@@ -24,6 +24,7 @@ import React from "react";
 import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 import { useColor } from "../../context/ColorContext";
+import * as apiService from "../../helpers/apiService";
 
 // Define a interface para os filtros
 interface Filters {
@@ -77,6 +78,7 @@ export const Terminals = () => {
         deleteAllUsersOnDevice,
         openDeviceDoor,
         restartDevice,
+        sendClockToDevice,
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
@@ -140,6 +142,7 @@ export const Terminals = () => {
     const [movements, setMovements] = useState<Movement[]>([]);
     const [transactions, setTransactions] = useState<KioskTransaction[]>([]);
     const [loadingActivityData, setLoadingActivityData] = useState(false);
+    const [loadingSendClock, setLoadingSendClock] = useState(false);
 
     // Função para mesclar os dados de utilizadores e cartões
     const mergeEmployeeAndCardData = (
@@ -1011,6 +1014,20 @@ export const Terminals = () => {
         }
     }
 
+    // Função para enviar o horário ao dispositivo
+    const handleSendClock = async () => {
+        if (selectedTerminal) {
+            setLoadingSendClock(true);
+            const timePeriods = await apiService.fetchAllTimePeriods();
+            for (const period of timePeriods) {
+                await sendClockToDevice(selectedTerminal.serialNumber, period.id);
+            }
+            setLoadingSendClock(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
     // Função para abrir a porta ligada ao dispositivo
     const handleOpenDoor = async (doorData: DoorDevice) => {
         if (selectedTerminal) {
@@ -1292,14 +1309,14 @@ export const Terminals = () => {
                                     )}
                                     Enviar todos os utilizadores
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncAllUsers}>
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncAllUsers}>
                                     {loadingSyncAllUser ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
                                         <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     )}
                                     Sincronizar utilizadores
-                                </Button>
+                                </Button> */}
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleMovements}>
                                     {loadingMovements ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -1355,8 +1372,12 @@ export const Terminals = () => {
                         </Tab>
                         <Tab eventKey="access" title="Acessos">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSendClock}>
+                                    {loadingSendClock ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Enviar horários
                                 </Button>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleOpenDoor}>
@@ -1367,10 +1388,10 @@ export const Terminals = () => {
                                     )}
                                     Abrir porta
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-pc" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Actualizar multiverificação
-                                </Button>
+                                </Button> */}
                             </div>
                         </Tab>
                         <Tab eventKey="configuration" title="Configurações">
@@ -1383,21 +1404,21 @@ export const Terminals = () => {
                                     )}
                                     Acertar a hora
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-gear-wide" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Enviar configurações
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                </Button> */}
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-send-arrow-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Enviar códigos de tarefas
-                                </Button>
+                                </Button> */}
                                 {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-bell" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Sincronizar toques da sirene
                                 </Button> */}
                             </div>
                         </Tab>
-                        <Tab eventKey="files" title="Ficheiros">
+                        {/* <Tab eventKey="files" title="Ficheiros">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
                                     {loadingImportAttendance ? (
@@ -1440,7 +1461,7 @@ export const Terminals = () => {
                                     Importar movimentos do log
                                 </Button>
                             </div>
-                        </Tab>
+                        </Tab> */}
                     </Tabs>
                 </div>
                 <Footer style={{ backgroundColor: footerColor }} />

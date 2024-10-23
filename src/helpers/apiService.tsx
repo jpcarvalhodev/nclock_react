@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
 import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, MBDevice, Profession, Register, TimePeriod, Zone } from "./Types";
 
@@ -19,13 +20,21 @@ export const baseURL = "https://localhost:9090/";
 
 export const fetchAllAttendances = async () => {
     const response = await fetchWithAuth(`Attendances/GetAllAttendances`);
-    if (!response.ok) return;
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
     return response.json();
 };
 
 export const fetchAllAttendancesBetweenDates = async (startDate: string, endDate: string) => {
     const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
-    if (!response.ok) return;
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
     return response.json();
 };
 
@@ -37,7 +46,11 @@ export const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
         },
         body: JSON.stringify(attendance)
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
     return response.json();
 };
 
@@ -49,7 +62,11 @@ export const addImportedAttendance = async (attendance: Partial<EmployeeAttendan
         },
         body: JSON.stringify(attendance)
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
     return response.json();
 };
 
@@ -61,7 +78,11 @@ export const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
         },
         body: JSON.stringify(attendance)
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
     return response.json();
 };
 
@@ -69,7 +90,11 @@ export const deleteAttendance = async (attendanceTimeId: string) => {
     const response = await fetchWithAuth(`Attendances/DeleteAttendanceTime?attendanceTimeId=${attendanceTimeId}`, {
         method: 'DELETE',
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
     return response.json();
 };
 
@@ -83,7 +108,9 @@ export const fetchAllData = async () => {
     const employeesResponse = await fetchWithAuth(`Employees/GetAllEmployees`);
 
     if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
-        return;
+        const errorData = await deptResponse.json() || await groupResponse.json() || await employeesResponse.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
 
     const [departments, groups, employees] = await Promise.all([
@@ -98,7 +125,9 @@ export const fetchAllData = async () => {
 export const fetchAllEmployees = async () => {
     const response = await fetchWithAuth(`Employees/GetAllEmployees`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -112,7 +141,9 @@ export const addEmployee = async (employee: Employee) => {
         body: JSON.stringify(employee)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -126,7 +157,9 @@ export const updateEmployee = async (employee: Employee) => {
         body: JSON.stringify(employee)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -136,7 +169,9 @@ export const deleteEmployee = async (employeeID: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -150,7 +185,9 @@ export const employeeImportFP = async (employeeFP: Partial<EmployeeFP>) => {
         body: JSON.stringify(employeeFP)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -164,7 +201,9 @@ export const employeeImportFace = async (employeeFace: Partial<EmployeeFace>) =>
         body: JSON.stringify(employeeFace)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -178,7 +217,9 @@ export const employeeImportCard = async (employeeCard: Partial<EmployeeCard>) =>
         body: JSON.stringify(employeeCard)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -190,7 +231,9 @@ export const employeeImportCard = async (employeeCard: Partial<EmployeeCard>) =>
 export const fetchAllDevices = async () => {
     const response = await fetchWithAuth(`Zkteco/GetAllDevices`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -198,7 +241,9 @@ export const fetchAllDevices = async () => {
 export const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -206,7 +251,9 @@ export const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
 export const fetchAllEmployeeDevices = async () => {
     const response = await fetchWithAuth(`Employees/GetAllEmployeesDevice`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -214,7 +261,9 @@ export const fetchAllEmployeeDevices = async () => {
 export const fetchAllMBDevices = async () => {
     const response = await fetchWithAuth(`TerminalPagamento/GetAllTerminalPagamentoAsync`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -226,7 +275,9 @@ export const fetchAllTPCloseOpen = async (startDate?: string, endDate?: string) 
     }
     const response = await fetchWithAuth(url);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -251,7 +302,9 @@ export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employee
     });
 
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -270,7 +323,9 @@ export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, empl
     const response = await fetchWithAuth(url);
 
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -278,7 +333,9 @@ export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, empl
 export const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/SaveAllAttendancesEmployeesOnDeviceToDB/${zktecoDeviceID}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -286,7 +343,9 @@ export const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Device
 export const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice/${zktecoDeviceID}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -300,7 +359,9 @@ export const openDeviceDoor = async (zktecoDeviceID: DoorDevice, doorData: DoorD
         body: JSON.stringify(doorData)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -308,7 +369,25 @@ export const openDeviceDoor = async (zktecoDeviceID: DoorDevice, doorData: DoorD
 export const restartDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/RestartDevice/${zktecoDeviceID}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+};
+
+export const sendClockToDevice = async (serialNumber: string, timeZoneId: string) => {
+    const response = await fetchWithAuth(`Zkteco/SendTimezoneResponse`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ serialNumber, timeZoneId })
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -333,7 +412,9 @@ export const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID
     });
 
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Erro ao apagar utilizadores');
+        throw new Error('Erro ao apagar utilizadores');
     }
     return response.json();
 };
@@ -347,7 +428,9 @@ export const addDevice = async (device: Devices) => {
         body: JSON.stringify(device)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Erro ao adicionar dispositivo');
+        throw new Error('Erro ao adicionar dispositivo');
     }
     return response.json();
 };
@@ -361,7 +444,9 @@ export const updateDevice = async (device: Devices) => {
         body: JSON.stringify(device)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -371,7 +456,9 @@ export const deleteDevice = async (zktecoDeviceID: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -385,7 +472,9 @@ export const addMBDevice = async (mbDevice: MBDevice) => {
         body: JSON.stringify(mbDevice)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -399,7 +488,9 @@ export const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
         body: JSON.stringify(mbDevice)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -411,7 +502,9 @@ export const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
 export const fetchAllCategories = async () => {
     const response = await fetchWithAuth(`Categories`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -425,7 +518,9 @@ export const addCategory = async (category: Category) => {
         body: JSON.stringify(category)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -439,7 +534,9 @@ export const updateCategory = async (category: Category) => {
         body: JSON.stringify(category)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -449,7 +546,9 @@ export const deleteCategory = async (categoryID: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -461,7 +560,9 @@ export const deleteCategory = async (categoryID: string) => {
 export const fetchAllDepartments = async () => {
     const response = await fetchWithAuth(`Departaments`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -477,7 +578,9 @@ export const fetchAllSubDepartments = async (parentId: number): Promise<Departme
 export const fetchAllDepartmentsEmployees = async () => {
     const response = await fetchWithAuth(`Departaments/Employees`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -491,7 +594,9 @@ export const addDepartment = async (department: Department) => {
         body: JSON.stringify(department)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -505,7 +610,9 @@ export const updateDepartment = async (department: Department) => {
         body: JSON.stringify(department)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -515,7 +622,9 @@ export const deleteDepartment = async (departmentID: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -527,7 +636,9 @@ export const deleteDepartment = async (departmentID: string) => {
 export const fetchAllExternalEntities = async () => {
     const response = await fetchWithAuth(`ExternalEntities`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -559,7 +670,9 @@ export const addExternalEntity = async (entity: ExternalEntity) => {
         body: JSON.stringify(entity)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -573,7 +686,9 @@ export const updateExternalEntity = async (entity: ExternalEntity) => {
         body: JSON.stringify(entity)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -583,7 +698,9 @@ export const deleteExternalEntity = async (externalEntityID: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -595,7 +712,9 @@ export const deleteExternalEntity = async (externalEntityID: string) => {
 export const fetchAllGroups = async () => {
     const response = await fetchWithAuth(`Groups`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -603,7 +722,9 @@ export const fetchAllGroups = async () => {
 export const fetchAllGroupsEmployees = async () => {
     const response = await fetchWithAuth(`Groups/Employees`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -617,7 +738,9 @@ export const addGroup = async (group: Group) => {
         body: JSON.stringify(group)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -631,7 +754,9 @@ export const updateGroup = async (group: Group) => {
         body: JSON.stringify(group)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -641,7 +766,9 @@ export const deleteGroup = async (groupID: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -653,7 +780,9 @@ export const deleteGroup = async (groupID: string) => {
 export const fetchAllProfessions = async () => {
     const response = await fetchWithAuth(`Professions`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -667,7 +796,9 @@ export const addProfession = async (profession: Profession) => {
         body: JSON.stringify(profession)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -681,7 +812,9 @@ export const updateProfession = async (profession: Profession) => {
         body: JSON.stringify(profession)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -691,7 +824,9 @@ export const deleteProfession = async (profession: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -703,7 +838,9 @@ export const deleteProfession = async (profession: string) => {
 export const fetchAllExternalEntityTypes = async () => {
     const response = await fetchWithAuth(`ExternalEntityTypes`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -717,7 +854,9 @@ export const addExternalEntityTypes = async (externalEntityType: ExternalEntityT
         body: JSON.stringify(externalEntityType)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -731,7 +870,9 @@ export const updateExternalEntityTypes = async (externalEntityType: ExternalEnti
         body: JSON.stringify(externalEntityType)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -741,7 +882,9 @@ export const deleteExternalEntityTypes = async (externalEntityID: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -753,7 +896,9 @@ export const deleteExternalEntityTypes = async (externalEntityID: string) => {
 export const fetchAllZones = async () => {
     const response = await fetchWithAuth(`Zones`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -767,7 +912,9 @@ export const addZone = async (zone: Zone) => {
         body: JSON.stringify(zone)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -781,7 +928,9 @@ export const updateZone = async (zone: Zone) => {
         body: JSON.stringify(zone)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -791,7 +940,9 @@ export const deleteZone = async (zoneID: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -803,7 +954,9 @@ export const deleteZone = async (zoneID: string) => {
 export const fetchAllEmployeeCards = async () => {
     const response = await fetchWithAuth(`Employees/GetAllCardsEmployees`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -811,7 +964,9 @@ export const fetchAllEmployeeCards = async () => {
 export const fetchEmployeeCardDataByEmployeeID = async (employeeID: string) => {
     const response = await fetchWithAuth(`Employees/GetEmployeeByIdCard/${employeeID}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -825,7 +980,9 @@ export const addEmployeeCard = async (employeeCard: EmployeeCard) => {
         body: JSON.stringify(employeeCard)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -840,7 +997,9 @@ export const updateEmployeeCard = async (employeeCard: EmployeeCard) => {
         body: JSON.stringify(employeeCard)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -850,7 +1009,9 @@ export const deleteEmployeeCard = async (cardId: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -862,7 +1023,9 @@ export const deleteEmployeeCard = async (cardId: string) => {
 export const fetchAllAds = async () => {
     const response = await fetchWithAuth(`Publicidade`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -870,7 +1033,9 @@ export const fetchAllAds = async () => {
 export const fetchAllAdsByType = async (tipoArquivo: number) => {
     const response = await fetchWithAuth(`Publicidade/tipo/${tipoArquivo}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -878,7 +1043,9 @@ export const fetchAllAdsByType = async (tipoArquivo: number) => {
 export const fetchAdByid = async (id: string) => {
     const response = await fetchWithAuth(`Publicidade/${id}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -907,7 +1074,9 @@ export const updateAd = async (ads: Ads) => {
         body: JSON.stringify(ads)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -917,7 +1086,9 @@ export const deleteAd = async (id: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -929,7 +1100,9 @@ export const deleteAd = async (id: string) => {
 export const fetchAllKioskTransactions = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactions?deviceID=${zktecoDeviceID}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -937,7 +1110,9 @@ export const fetchAllKioskTransactions = async (zktecoDeviceID: Devices) => {
 export const fetchKioskTransactionDoorAsync = async () => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactionDoorAsync`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -949,7 +1124,9 @@ export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventD
     }
     const response = await fetchWithAuth(url);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -961,7 +1138,9 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: strin
     }
     const response = await fetchWithAuth(url);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -973,7 +1152,9 @@ export const fetchKioskTransactionsByMBAndDeviceSN = async (startDate?: string, 
     }
     const response = await fetchWithAuth(url);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -985,7 +1166,9 @@ export const fetchKioskTransactionsByPayCoins = async (eventDoorId: string, devi
     }
     const response = await fetchWithAuth(url);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -997,7 +1180,9 @@ export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, d
     }
     const response = await fetchWithAuth(url);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1009,7 +1194,9 @@ export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, d
 export const fetchAllRegisteredUsers = async () => {
     const response = await fetchWithAuth(`Authentication/GetAllUsersWithRoles`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 };
@@ -1017,7 +1204,9 @@ export const fetchAllRegisteredUsers = async () => {
 export const fetchAllCompanyConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetAllCompany`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1025,7 +1214,9 @@ export const fetchAllCompanyConfig = async () => {
 export const fetchAllEmailConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetEmailSMTPConfigurations`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1039,7 +1230,9 @@ export const addNewRegisteredUser = async (registeredUser: Register) => {
         body: JSON.stringify(registeredUser)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1053,7 +1246,9 @@ export const updateRegisteredUser = async (registeredUser: Register) => {
         body: JSON.stringify(registeredUser)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1067,7 +1262,9 @@ export const addUserEmailConfig = async (email: EmailUser) => {
         body: JSON.stringify(email)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1081,7 +1278,9 @@ export const updateUserEmailConfig = async (email: Partial<EmailUser>) => {
         body: JSON.stringify(email)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1095,7 +1294,9 @@ export const addCompanyConfig = async (companyEmail: Partial<EmailCompany>) => {
         body: JSON.stringify(companyEmail)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1109,7 +1310,9 @@ export const updateCompanyConfig = async (companyEmail: Partial<EmailCompany>) =
         body: JSON.stringify(companyEmail)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1121,7 +1324,9 @@ export const updateCompanyConfig = async (companyEmail: Partial<EmailCompany>) =
 export const fetchAllTimePeriods = async () => {
     const response = await fetchWithAuth(`AccTimeSeg/GetAllTimezone`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1135,7 +1340,9 @@ export const addTimePeriod = async (timePeriod: TimePeriod) => {
         body: JSON.stringify(timePeriod)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1149,7 +1356,9 @@ export const updateTimePeriod = async (timePeriod: TimePeriod) => {
         body: JSON.stringify(timePeriod)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1159,7 +1368,9 @@ export const deleteTimePeriod = async (id: string) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1171,7 +1382,9 @@ export const deleteTimePeriod = async (id: string) => {
 export const fetchAllAccessControl = async () => {
     const response = await fetchWithAuth(`AccessControle/GetAllAccessControles`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1185,7 +1398,9 @@ export const addAccessControl = async (accessControl: Partial<AccessControl>) =>
         body: JSON.stringify(accessControl)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1203,7 +1418,9 @@ export const updateAccessControl = async (accessControl: Partial<AccessControl>,
         body: JSON.stringify(accessControl)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1217,7 +1434,9 @@ export const deleteAccessControl = async (id: string, doorId?: Doors) => {
         method: 'DELETE'
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1229,7 +1448,9 @@ export const deleteAccessControl = async (id: string, doorId?: Doors) => {
 export const fetchAllDoors = async () => {
     const response = await fetchWithAuth(`AccDoor`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1243,7 +1464,9 @@ export const updateDoor = async (door: Doors) => {
         body: JSON.stringify(door)
     });
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     if (response.status === 204) {
         return { ...door, message: 'Porta atualizada com sucesso!' };
@@ -1259,7 +1482,9 @@ export const updateDoor = async (door: Doors) => {
 export const fetchLicenses = async (key: string) => {
     const response = await fetchWithAuth(`Configuration/GetLisence?key=${key}`);
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }
@@ -1274,7 +1499,9 @@ export const updateLicenses = async (key: string, licences: License) => {
     });
     
     if (!response.ok) {
-        return;
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
     }
     return response.json();
 }

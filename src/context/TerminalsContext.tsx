@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { ReactNode } from 'react';
-import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus } from '../helpers/Types';
+import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -28,6 +28,7 @@ export interface DeviceContextType {
     openDeviceDoor: (zktecoDeviceID: DoorDevice, doorData: DoorDevice) => Promise<void>;
     restartDevice: (device: Devices) => Promise<void>;
     restartMBDevice: (mbDevice: Partial<MBDevice>) => Promise<void>;
+    sendClockToDevice: (serialNumber: string, timeZoneId: string) => Promise<void>;
     handleAddDevice: (device: Devices) => Promise<void>;
     handleUpdateDevice: (device: Devices) => Promise<void>;
     handleDeleteDevice: (zktecoDeviceID: string) => Promise<void>;
@@ -245,6 +246,18 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para enviar o horário para o dispositivo
+    const sendClockToDevice = async (serialNumber: string, timeZoneId: string) => {
+        try {
+            const data = await apiService.sendClockToDevice(serialNumber, timeZoneId);
+            toast.success(data.message || 'Hora enviada com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao enviar a hora:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    };
+
     // Define a função de adição de dispositivos
     const handleAddDevice = async (device: Devices) => {
         try {
@@ -322,6 +335,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         openDeviceDoor,
         restartDevice,
         restartMBDevice,
+        sendClockToDevice,
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
