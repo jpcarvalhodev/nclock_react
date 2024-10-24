@@ -19,16 +19,6 @@ import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import Split from "react-split";
 import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
 
-// Formata a data para o início do dia às 00:00
-const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
-}
-
-// Formata a data para o final do dia às 23:59
-const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
-}
-
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useColor();
     const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
@@ -43,11 +33,6 @@ export const AccessControls = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
-    const currentDate = new Date();
-    const pastDate = new Date();
-    pastDate.setDate(currentDate.getDate() - 30);
-    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
-    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredAccessControl, setFilteredAccessControl] = useState<AccessControl[]>([]);
 
@@ -65,6 +50,7 @@ export const AccessControls = () => {
     const handleAddAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         try {
             const data = await apiService.addAccessControl(newAccessControl);
+            setAccessControl(prevAccessControls => [...prevAccessControls, data]);
             toast.success(data.message || 'Controle de acesso adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar o controle de acesso:', error);

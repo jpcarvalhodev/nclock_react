@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, MBDevice, Profession, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, MBDevice, Profession, RecolhaMoedeiro, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -1517,7 +1517,17 @@ export const fetchLicenses = async (key: string) => {
     return response.json();
 }
 
-export const updateLicenses = async (key: string, licences: License) => {
+export const fetchLicensesWithoutKey = async () => {
+    const response = await fetchWithAuth(`Configuration/GetValidLisence`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const updateLicenses = async (key: string, licences: License[]) => {
     const response = await fetchWithAuth(`Configuration/AddUpdateLisence?key=${key}`, {
         method: 'POST',
         headers: {
@@ -1526,6 +1536,52 @@ export const updateLicenses = async (key: string, licences: License) => {
         body: JSON.stringify(licences)
     });
     
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE RECOLHA MOEDEIRO///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchRecolhasMoedeiro = async () => {
+    const response = await fetchWithAuth(`KioskTransaction/GetAllRecolhasMoedeiro`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiro) => {
+    const response = await fetchWithAuth(`KioskTransaction/CreateRecolhasMoedeiro`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(recolhaMoedeiro)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiro) => {
+    const response = await fetchWithAuth(`KioskTransaction/UpdateRecolhasMoedeiro?id=${recolhaMoedeiro.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(recolhaMoedeiro)
+    });
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);

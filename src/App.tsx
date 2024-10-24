@@ -110,6 +110,11 @@ import { LicenseProvider } from './context/LicenseContext';
 import { NclockDashboard } from './pages/sisnid/nclock/NclockDashboard';
 import { NaccessDashboard } from './pages/sisnid/naccess/NaccessDashboard';
 import { NkioskDashboard } from './pages/nidtec/nkiosk/NkioskDashboard';
+import { NkioskGetCoins } from './pages/nidtec/nkiosk/NkioskGetCoins';
+import { NvisitorDashboardLicensed } from './pages/sisnid/nvisitor/NvisitorDashboardLicensed';
+import { NviewDashboardLicensed } from './pages/sisnid/nview/NviewDashboardLicensed';
+import { NsecurDashboardLicensed } from './pages/sisnid/nsecur/NsecurDashboardLicensed';
+import { NledDashboardLicensed } from './pages/nidtec/nled/NledDashboardLicensed';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -186,12 +191,15 @@ function AnimatedRoutes() {
               <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
               <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
               <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
+              <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />
               <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
+              <Route path="/nview/nviewdashboardlicensed" element={<PageProtection><NviewDashboardLicensed /></PageProtection>} />
               <Route path="/ncard/ncarddashboard" element={<PageProtection><NcardDashboard /></PageProtection>} />
               <Route path="/ndoor/ndoordashboard" element={<PageProtection><NdoorDashboard /></PageProtection>} />
               <Route path="/npark/nparkdashboard" element={<PageProtection><NparkDashboard /></PageProtection>} />
               <Route path="/npatrol/npatroldashboard" element={<PageProtection><NpatrolDashboard /></PageProtection>} />
               <Route path="/nsecur/nsecurdashboard" element={<PageProtection><NsecurDashboard /></PageProtection>} />
+              <Route path="/nsecur/nsecurdashboardlicensed" element={<PageProtection><NsecurDashboardLicensed /></PageProtection>} />
               <Route path="/nsoftware/nsoftwaredashboard" element={<PageProtection><NsoftwareDashboard /></PageProtection>} />
               <Route path="/nsystem/nsystemdashboard" element={<PageProtection><NsystemDashboard /></PageProtection>} />
               <Route path="/napp/nappdashboard" element={<PageProtection><NappDashboard /></PageProtection>} />
@@ -238,7 +246,9 @@ function AnimatedRoutes() {
               <Route path="/nkiosk/nkioskListMovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
               <Route path="/nkiosk/nkioskLogs" element={<PageProtection><NkioskLogs /></PageProtection>} />
               <Route path="/nkiosk/nkioskgraph" element={<PageProtection><NkioskGraph /></PageProtection>} />
+              <Route path="/nkiosk/nkioskgetcoins" element={<PageProtection><NkioskGetCoins /></PageProtection>} />
               <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
+              <Route path="/nled/nleddashboardlicensed" element={<PageProtection><NledDashboardLicensed /></PageProtection>} />
               <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
               <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />
               <Route path="/npartition/npartitiondashboard" element={<PageProtection><NpartitionDashboard /></PageProtection>} />

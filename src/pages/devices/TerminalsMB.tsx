@@ -15,9 +15,9 @@ import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../co
 import { useColor } from "../../context/ColorContext";
 import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
 import Split from "react-split";
-import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
 import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
 import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
+import { DeleteModal } from "../../modals/DeleteModal";
 
 // Define a interface para os filtros
 interface Filters {
@@ -27,14 +27,14 @@ interface Filters {
 // Define o componente de terminais
 export const TerminalsMB = () => {
     const {
-        deviceMBStatus,
-        deviceMBStatusCount,
+        mbDevices,
         fetchAllMBDevices,
         restartMBDevice,
-        handleAddMBDevice
+        handleAddMBDevice,
+        handleUpdateMBDevice,
+        handleDeleteMBDevice,
     } = useContext(TerminalsContext) as DeviceContextType;
     const { navbarColor, footerColor } = useColor();
-    const [mbDevices, setMBDevices] = useState<MBDevice[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [userTabKey, setUserTabKey] = useState('onOff');
     const [filters, setFilters] = useState<Filters>({});
@@ -51,36 +51,31 @@ export const TerminalsMB = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // Função para buscar todos os dispositivos multibanco
-    const fetchAllDevices = async () => {
-        try {
-            const data = await fetchAllMBDevices();
-            setMBDevices(data);
-        } catch (error) {
-            console.error('Erro ao buscar terminais multibanco:', error);
-        }
-    }
-
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
-        fetchAllDevices();
+        fetchAllMBDevices();
     }
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: MBDevice) => {
-        try {
-            await handleAddMBDevice(device);
-            setShowAddModal(false);
-        } catch (error) {
-            console.error('Erro ao adicionar dispositivo multibanco:', error);
-        } finally {
-            refreshMBDevices();
-        }
+        await handleAddMBDevice(device);
+        refreshMBDevices();
+    }
+
+    // Função para atualizar um dispositivo
+    const updateDevice = async (device: MBDevice) => {
+        await handleUpdateMBDevice(device);
+        refreshMBDevices();
+    }
+
+    const deleteDevice = async (id: string) => {
+        await handleDeleteMBDevice(id);
+        refreshMBDevices();
     }
 
     // Atualiza os dados de renderização
     useEffect(() => {
-        fetchAllDevices();
+        fetchAllMBDevices();
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -347,11 +342,20 @@ export const TerminalsMB = () => {
                         title="Editar Terminal Multibanco"
                         open={showUpdateModal}
                         onClose={() => setShowUpdateModal(false)}
-                        onUpdate={addDevice}
+                        onUpdate={updateDevice}
                         entity={selectedTerminal}
                         fields={mbDeviceFields}
                     />
                 )}
+                {showDeleteModal && (
+                    <DeleteModal
+                        open={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        onDelete={deleteDevice}
+                        entityId={selectedMBDeviceToDelete}
+                    />
+                )
+                }
             </div>
         </TerminalsProvider>
     );

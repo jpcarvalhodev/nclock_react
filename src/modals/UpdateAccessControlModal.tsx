@@ -7,6 +7,7 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
 import { Doors } from '../helpers/Types';
+import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -44,8 +45,9 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
-    const [showSelectionModal, setShowSelectionModal] = useState(false);
-    const [selectedDoor, setSelectedDoor] = useState(null);
+    const [showDoorSelectionModal, setShowDoorSelectionModal] = useState(false);
+    const [showDoorUpdateModal, setShowDoorUpdateModal] = useState(false);
+    const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
@@ -103,10 +105,55 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (open) {
+        if (open && selectedDoor) {
             fetchDropdownOptions();
+        } else {
+            handleOpen();
         }
-    }, [open]);
+    }, [open, selectedDoor]);    
+
+    // UseEffect para atualizar a seleção de porta
+    useEffect(() => {
+        if (selectedDoor) {
+            setFormData({
+                ...formData,
+                doorId: selectedDoor.doorId,
+                timezoneId: selectedDoor.timezoneId
+            });
+        }
+    }, [selectedDoor]);
+    
+    // Função para lidar com a seleção de porta caso haja mais de uma
+    const handleOpen = () => {
+        if (entity.doors && entity.doors.length > 1) {
+            setShowDoorSelectionModal(true);
+        } else if (entity.doors.length === 1) {
+            setSelectedDoor(entity.doors[0]);
+            setShowDoorUpdateModal(true);
+            setShowDoorSelectionModal(false);
+        }
+    };
+
+    // Função para lidar com a seleção de porta
+    const handleDoorSelection = (e: React.ChangeEvent<FormControlElement>) => {
+        const doorId = e.target.value;
+        const door = entity.doors.find((d: Doors) => d.doorId === doorId);
+        if (door) {
+            setSelectedDoor(door);
+            setShowDoorUpdateModal(true);
+            setShowDoorSelectionModal(false);
+        }
+    };    
+    
+    // Função para lidar com a confirmação da seleção de porta
+    const handleConfirmDoorSelection = () => {
+        if (selectedDoor) {
+            setShowDoorSelectionModal(false);
+            setShowDoorUpdateModal(true);
+        } else {
+            toast.warn("Por favor, selecione uma porta antes de continuar.");
+        }
+    };
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: ChangeEvent<any>) => {
@@ -147,6 +194,12 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
         }
     };
 
+    // Função para fechar o modal
+    const handleClose = () => {
+        setShowDoorSelectionModal(false);
+        setShowDoorUpdateModal(false);
+    }
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -175,92 +228,114 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
     };
 
     return (
-        <Modal show={open} onHide={onClose} size="xl">
-            <Modal.Header closeButton>
-                <Modal.Title>{title}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="modal-body-scrollable">
-                <div className="container-fluid">
-                    <Row>
-                        {[
-                            { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
-                            { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
-                            { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
-                        ].map((field) => (
-                            <Col md={3} key={field.key}>
-                                <Form.Group controlId={`form${field.key}`}>
-                                    {field.required ? (
-                                        <OverlayTrigger
-                                            placement="right"
-                                            overlay={<Tooltip id={`tooltip-${field.key}`}>Campo obrigatório</Tooltip>}
-                                        >
-                                            <Form.Label>
-                                                {field.label}
-                                                <span style={{ color: 'red' }}>*</span>
-                                            </Form.Label>
-                                        </OverlayTrigger>
-                                    ) : (
-                                        <Form.Label>{field.label}</Form.Label>
-                                    )}
-                                    {field.type === 'dropdown' ? (
-                                        <Form.Control
-                                            as="select"
-                                            className="custom-input-height custom-select-font-size"
-                                            value={formData[field.key] || ''}
-                                            onChange={(e) => handleDropdownChange(field.key, e)}
-                                        >
-                                            <option value="">Selecione...</option>
-                                            {dropdownData[field.key]?.map((option) => {
-                                                let optionId, optionName;
-                                                switch (field.key) {
-                                                    case 'employeesId':
-                                                        optionId = option.employeeID;
-                                                        optionName = option.shortName;
-                                                        break;
-                                                    case 'doorId':
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
-                                                    case 'timezoneId':
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
-                                                    default:
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
-                                                }
-                                                return (
-                                                    <option key={optionId} value={optionId}>
-                                                        {optionName}
-                                                    </option>
-                                                );
-                                            })}
-                                        </Form.Control>
-                                    ) : (
-                                        <Form.Control
-                                            type={field.type}
-                                            className="custom-input-height custom-select-font-size"
-                                            value={formData[field.key] || ''}
-                                            onChange={handleChange}
-                                            name={field.key}
-                                        />
-                                    )}
-                                    {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
-                                </Form.Group>
-                            </Col>
-                        ))}
-                    </Row>
-                </div>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
-                    Fechar
-                </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
-                    Guardar
-                </Button>
-            </Modal.Footer>
-        </Modal >
+        <div>
+            <Modal show={showDoorSelectionModal} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Selecione uma Porta</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="doorSelection">
+                        <Form.Label>Porta</Form.Label>
+                        <Form.Control as="select" value={selectedDoor?.doorId || ''} onChange={(e) => handleDoorSelection(e)}>
+                            <option>Selecione...</option>
+                            {entity.doors.map((door: Doors, index: number) => (
+                                <option key={index} value={door.doorId}>{door.doorName}</option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
+                    <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showDoorUpdateModal} onHide={handleClose} size="xl">
+                <Modal.Header closeButton>
+                    <Modal.Title>{title}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="modal-body-scrollable">
+                    <div className="container-fluid">
+                        <Row>
+                            {[
+                                { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
+                                { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
+                                { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
+                            ].map((field) => (
+                                <Col md={3} key={field.key}>
+                                    <Form.Group controlId={`form${field.key}`}>
+                                        {field.required ? (
+                                            <OverlayTrigger
+                                                placement="right"
+                                                overlay={<Tooltip id={`tooltip-${field.key}`}>Campo obrigatório</Tooltip>}
+                                            >
+                                                <Form.Label>
+                                                    {field.label}
+                                                    <span style={{ color: 'red' }}>*</span>
+                                                </Form.Label>
+                                            </OverlayTrigger>
+                                        ) : (
+                                            <Form.Label>{field.label}</Form.Label>
+                                        )}
+                                        {field.type === 'dropdown' ? (
+                                            <Form.Control
+                                                as="select"
+                                                className="custom-input-height custom-select-font-size"
+                                                value={formData[field.key] || ''}
+                                                onChange={(e) => handleDropdownChange(field.key, e)}
+                                            >
+                                                <option value="">Selecione...</option>
+                                                {dropdownData[field.key]?.map((option) => {
+                                                    let optionId, optionName;
+                                                    switch (field.key) {
+                                                        case 'employeesId':
+                                                            optionId = option.employeeID;
+                                                            optionName = option.shortName;
+                                                            break;
+                                                        case 'doorId':
+                                                            optionId = option.id;
+                                                            optionName = option.name;
+                                                            break;
+                                                        case 'timezoneId':
+                                                            optionId = option.id;
+                                                            optionName = option.name;
+                                                            break;
+                                                        default:
+                                                            optionId = option.id;
+                                                            optionName = option.name;
+                                                            break;
+                                                    }
+                                                    return (
+                                                        <option key={optionId} value={optionId}>
+                                                            {optionName}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </Form.Control>
+                                        ) : (
+                                            <Form.Control
+                                                type={field.type}
+                                                className="custom-input-height custom-select-font-size"
+                                                value={formData[field.key] || ''}
+                                                onChange={handleChange}
+                                                name={field.key}
+                                            />
+                                        )}
+                                        {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
+                                    </Form.Group>
+                                </Col>
+                            ))}
+                        </Row>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-secondary" onClick={handleClose}>
+                        Fechar
+                    </Button>
+                    <Button variant="outline-primary" onClick={handleCheckForSave}>
+                        Guardar
+                    </Button>
+                </Modal.Footer>
+            </Modal >
+        </div>
     );
 };

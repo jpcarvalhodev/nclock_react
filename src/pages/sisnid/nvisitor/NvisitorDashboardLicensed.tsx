@@ -1,9 +1,8 @@
 import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
+import banner_nvisitor from "../../../assets/img/carousel/banner_nvisitor.jpg";
 import { useColor } from "../../../context/ColorContext";
-import { PolarArea } from "react-chartjs-2";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -61,33 +60,19 @@ const messages = {
     showMore: (total: number) => `+ Ver mais (${total})`
 };
 
-export const NkioskDashboardLicensed = () => {
+export const NvisitorDashboardLicensed = () => {
     const { navbarColor, footerColor } = useColor();
-    const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
-    const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
-    const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
-    const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
-    const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
     const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const deviceSN = 'AGB7234900595';
-    const eventDoorId2 = '2';
     const eventDoorId3 = '3';
     const eventDoorId4 = '4';
 
     // Função para buscar os dados para os gráficos
     const fetchAllData = async () => {
         try {
-            const mbData = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
-            const coinData = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN);
             const cardData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, deviceSN);
             const kioskData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, deviceSN);
-            const vpData = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId3, deviceSN);
-            setPayTerminal(mbData);
-            setPayCoins(coinData);
-            setMoveCard(cardData);
-            setMoveKiosk(kioskData);
-            setMoveVP(vpData);
 
             const totalMove = cardData.concat(kioskData);
 
@@ -175,25 +160,6 @@ export const NkioskDashboardLicensed = () => {
         return months;
     };
 
-    // Dados para o gráfico PolarArea
-    const polarData = {
-        labels: ['Multibanco', 'Moedeiro', 'Torniquete', 'Quiosque', 'Video Porteiro'],
-        datasets: [
-            {
-                label: 'Total',
-                data: [payTerminal.length, payCoins.length, moveCard.length, moveKiosk.length, moveVP.length],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)'
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
-
     // Dados para o gráfico Bar
     const barData = {
         labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
@@ -202,10 +168,10 @@ export const NkioskDashboardLicensed = () => {
                 label: 'Total de Movimentos',
                 data: groupByMonth(totalMovements, 'eventTime'),
                 backgroundColor: [
-                    'rgba(75, 192, 192, 0.2)'
+                    'rgba(54, 162, 235, 0.2)',
                 ],
                 borderColor: [
-                    'rgba(75, 192, 192, 1)'
+                    'rgba(54, 162, 235, 1)',
                 ],
                 borderWidth: 1
             }
@@ -224,19 +190,19 @@ export const NkioskDashboardLicensed = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="dashboard-title-text" style={{ color: '#009739' }}>
-                <span>Nkiosk Dashboard</span>
+            <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
+                <span>Nvisitor Dashboard</span>
             </div>
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel-licensed" src={banner_nkiosk} alt="Nkiosk" />
+                            <img className="img-carousel-licensed" src={banner_nvisitor} alt="Nvisitor" />
                         </div>
                     </Carousel>
                 </div>
                 <div className="calendar-container">
-                    <div className="dashboard-calendar" style={{ height: 400 }}>
+                    <div className="dashboard-calendar" style={{ height: 450 }}>
                         <Calendar
                             localizer={localizer}
                             events={events}
@@ -252,12 +218,6 @@ export const NkioskDashboardLicensed = () => {
                 </div>
             </div>
             <div className="dashboard-content">
-                <div className="chart-container">
-                    <div className="employee-pie-chart" style={{ flex: 1 }}>
-                        <h2 className="employee-pie-chart-text">Total de Pagamentos e Movimentos: { }</h2>
-                        <PolarArea className="employee-pie-chart-pie" data={polarData} />
-                    </div>
-                </div>
                 <div className="chart-container">
                     <div className="departments-groups-chart" style={{ flex: 1 }}>
                         <h2 className="departments-groups-chart-text">Total de Movimentos: { }</h2>

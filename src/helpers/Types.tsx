@@ -45,11 +45,7 @@ export type Employee = {
     zoneName: string;
     externalEntityId: string;
     externalEntityName: string;
-    companyName: string;
-    companyNif: number;
-    companyAddress: string;
-    companyLocality: string;
-    companyZipCode: string;
+    modulos: string
 };
 
 export type Department = {
@@ -485,63 +481,20 @@ export type MBDeviceCloseOpen = {
 };
 
 export type License = {
-    [key: string]: any;
     id: string;
-    nclock: number;
-    naccess: number;
-    nvisitor: number;
-    npark: number;
-    ndoor: number;
-    npatrol: number;
-    ncard: number;
-    nview: number;
-    nsecur: number;
-    nsmart: number;
-    nreality: number;
-    nhologram: number;
-    npower: number;
-    ncharge: number;
-    ncity: number;
-    nkiosk: number;
-    nled: number;
-    nfire: number;
-    nfurniture: number;
-    npartition: number;
-    ndecor: number;
-    nping: number;
-    nconnect: number;
-    nlight: number;
-    ncomfort: number;
-    nsound: number;
-    nhome: number;
-    nsoftware: number;
-    nsystem: number;
-    napp: number;
-    nciber: number;
-    ndigital: number;
-    nserver: number;
-    naut: number;
-    nequip: number;
-    nproject: number;
-    ncount: number;
-    nconstruction: number;
-    ncaravans: number;
-    nwork: number;
-    nevents: number;
-    nservice: number;
-    ntask: number;
-    nproductions: number;
-    nticket: number;
-    nsales: number;
-    ninvoice: number;
-    ndoc: number;
-    nsports: number;
-    nacademy: number;
-    nshcool: number;
-    nclinics: number;
-    noptics: number;
-    ngold: number;
-}
+    entidadeNumber: number;
+    nif: number;
+    products: {
+        [key: string]: {
+            enable: boolean;
+            users: number;
+            validacao: number;
+            createDate: string;
+            devices: number;
+            sn: string;
+        }
+    };
+};
 
 export type Entity = {
     [key: string]: any;
@@ -560,4 +513,13 @@ export type Entity = {
     createdDate: Date;
     updatedDate: Date;
     enabled: boolean;
+}
+
+export type RecolhaMoedeiro = {
+    [key: string]: any;
+    id: string;
+    dataRecolha: Date;
+    pessoaResponsavel: string;
+    numeroMoedas: number;
+    valorTotal: number;
 }

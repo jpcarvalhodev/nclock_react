@@ -147,7 +147,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 
 export const NsystemDashboard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { setIsLicensed } = useLicense();
+    const { license } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDSOF');
 
@@ -159,7 +159,6 @@ export const NsystemDashboard = () => {
 
             if (activeKey === 'CLIENTE') {
                 route = route.replace('dashboard', 'dashboardlicensed');
-                setIsLicensed(true);
             }
 
             localStorage.setItem(tab.tabKey, 'true');

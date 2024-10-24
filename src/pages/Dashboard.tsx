@@ -189,7 +189,6 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 // Define a página principal
 export const Dashboard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { setIsLicensed } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('CLIENTE');
 
@@ -201,7 +200,8 @@ export const Dashboard = () => {
 
             if (activeKey === 'CLIENTE') {
                 route = route.replace('dashboard', 'dashboardlicensed');
-                setIsLicensed(true);
+            } else {
+                navigate(route);
             }
 
             localStorage.setItem(tab.tabKey, 'true');

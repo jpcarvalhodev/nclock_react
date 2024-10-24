@@ -3,16 +3,13 @@ import { ReactNode } from 'react';
 import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
+import { set } from 'date-fns';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
     devices: Devices[];
     mbDevices: MBDevice[];
     employeeDevices: Employee[];
-    deviceStatus: string[];
-    deviceStatusCount: StatusCounts;
-    deviceMBStatus: string[];
-    deviceMBStatusCount: StatusCounts;
     fetchAllDevices: () => Promise<void>;
     fetchAllEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllEmployeeDevices: () => Promise<void>;
@@ -37,12 +34,6 @@ export interface DeviceContextType {
     handleDeleteMBDevice: (id: string) => Promise<void>;
 }
 
-// Define a interface para o status
-interface StatusCounts {
-    Activo: number;
-    Inactivo: number;
-}
-
 // Cria o contexto	
 export const TerminalsContext = createContext<DeviceContextType | undefined>(undefined);
 
@@ -51,33 +42,12 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [devices, setDevices] = useState<Devices[]>([]);
     const [mbDevices, setMBDevices] = useState<MBDevice[]>([]);
     const [employeeDevices, setEmployeeDevices] = useState<Employee[]>([]);
-    const [deviceStatus, setDeviceStatus] = useState<string[]>([]);
-    const [deviceStatusCount, setDeviceStatusCount] = useState<StatusCounts>({ Activo: 0, Inactivo: 0 });
-    const [deviceMBStatus, setDeviceMBStatus] = useState<string[]>([]);
-    const [deviceMBStatusCount, setDeviceMBStatusCount] = useState<StatusCounts>({ Activo: 0, Inactivo: 0 });
-
-    // Função para contar o status
-    const countStatus = (statusArray: string[]): StatusCounts => {
-        const counts: StatusCounts = { Activo: 0, Inactivo: 0 };
-        statusArray.forEach(status => {
-            if (status in counts) {
-                counts[status as keyof StatusCounts]++;
-            }
-        });
-        return counts;
-    };
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async () => {
         try {
             const data = await apiService.fetchAllDevices();
             setDevices(data);
-
-            const filteredStatus = data.map((device: Devices) => device.status ? 'Activo' : 'Inactivo');
-            setDeviceStatus(filteredStatus);
-            const statusCounts = countStatus(filteredStatus);
-            setDeviceStatusCount(statusCounts);
-
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
         }
@@ -130,13 +100,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllMBDevices = async (): Promise <MBDevice[]> => {
         try {
             const data = await apiService.fetchAllMBDevices();
-
-            const filteredStatus = data.map((device: MBDeviceStatus) => device.tipoStatus === 1 ? 'Activo' : 'Inactivo');
-            setDeviceMBStatus(filteredStatus);
-
-            const statusCounts = countStatus(filteredStatus);
-            setDeviceMBStatusCount(statusCounts);
-
+            setMBDevices(data);
             return data;
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -336,6 +300,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Busca todos os dispositivos ao carregar o componente
     useEffect(() => {
         fetchAllDevices();
+        fetchAllMBDevices();
     }, []);
 
     // Define o valor do contexto
@@ -343,10 +308,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         devices,
         mbDevices,
         employeeDevices,
-        deviceStatus,
-        deviceStatusCount,
-        deviceMBStatus,
-        deviceMBStatusCount,
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,

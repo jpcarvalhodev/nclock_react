@@ -37,11 +37,7 @@ export const employeeFields = [
     { label: 'Grupo', key: 'groupId', type: 'dropdown', },
     { label: 'Zona', key: 'zoneId', type: 'dropdown', },
     { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', },
-    { label: 'Nome da Empresa', key: 'companyName', type: 'string' },
-    { label: 'NIF da Empresa', key: 'companyNif', type: 'number' },
-    { label: 'Morada da Empresa', key: 'companyAddress', type: 'string' },
-    { label: 'Localidade da Empresa', key: 'companyLocality', type: 'string' },
-    { label: 'Código Postal da Empresa', key: 'companyZipCode', type: 'string' },
+    { label: 'Módulo', key: 'modulos', type: 'string' },
 ];
 
 export const departmentFields = [
@@ -416,62 +412,36 @@ export const mbDeviceCloseOpenFields = [
     { key: 'aberturaImage', label: 'Abertura', type: 'string' },
 ];
 
-export const licenseFields = [
-    { key: 'nclock', label: 'Nclock', type: 'number' },
-    { key: 'naccess', label: 'Naccess', type: 'number' },
-    { key: 'nvisitor', label: 'Nvisitor', type: 'number' },
-    { key: 'npark', label: 'Npark', type: 'number' },
-    { key: 'ndoor', label: 'Ndoor', type: 'number' },
-    { key: 'npatrol', label: 'Npatrol', type: 'number' },
-    { key: 'ncard', label: 'Ncard', type: 'number' },
-    { key: 'nview', label: 'Nview', type: 'number' },
-    { key: 'nsecur', label: 'Nsecur', type: 'number' },
-    { key: 'nsoftware', label: 'Nsoftware', type: 'number' },
-    { key: 'nsystem', label: 'Nsystem', type: 'number' },
-    { key: 'napp', label: 'Napp', type: 'number' },
-    { key: 'ncyber', label: 'Ncyber', type: 'number' },
-    { key: 'ndigital', label: 'Ndigital', type: 'number' },
-    { key: 'nserver', label: 'Nserver', type: 'number' },
-    { key: 'naut', label: 'Naut', type: 'number' },
-    { key: 'nequip', label: 'Nequip', type: 'number' },
-    { key: 'nproject', label: 'Nproject', type: 'number' },
-    { key: 'ncount', label: 'Ncount', type: 'number' },
-    { key: 'nbuild', label: 'Nbuild', type: 'number' },
-    { key: 'ncaravan', label: 'Ncaravan', type: 'number' },
-    { key: 'nmechanic', label: 'Nmechanic', type: 'number' },
-    { key: 'nevents', label: 'Nevents', type: 'number' },
-    { key: 'nservice', label: 'Nservice', type: 'number' },
-    { key: 'ntask', label: 'Ntask', type: 'number' },
-    { key: 'nproduction', label: 'Nproduction', type: 'number' },
-    { key: 'nticket', label: 'Nticket', type: 'number' },
-    { key: 'nsales', label: 'Nsales', type: 'number' },
-    { key: 'ninvoice', label: 'Ninvoice', type: 'number' },
-    { key: 'ndoc', label: 'Ndoc', type: 'number' },
-    { key: 'nsports', label: 'Nsports', type: 'number' },
-    { key: 'ngym', label: 'Ngym', type: 'number' },
-    { key: 'nschool', label: 'Nschool', type: 'number' },
-    { key: 'nclinic', label: 'Nclinic', type: 'number' },
-    { key: 'noptics', label: 'Noptics', type: 'number' },
-    { key: 'ngold', label: 'Ngold', type: 'number' },
-    { key: 'nsmart', label: 'Nsmart', type: 'number' },
-    { key: 'nreality', label: 'Nreality', type: 'number' },
-    { key: 'nhologram', label: 'Nhologram', type: 'number' },
-    { key: 'npower', label: 'Npower', type: 'number' },
-    { key: 'ncharge', label: 'Ncharge', type: 'number' },
-    { key: 'ncity', label: 'Ncity', type: 'number' },
-    { key: 'nkiosk', label: 'Nkiosk', type: 'number' },
-    { key: 'nled', label: 'Nled', type: 'number' },
-    { key: 'nfire', label: 'Nfire', type: 'number' },
-    { key: 'nfurniture', label: 'Nfurniture', type: 'number' },
-    { key: 'npartition', label: 'Npartition', type: 'number' },
-    { key: 'ndecor', label: 'Ndecor', type: 'number' },
-    { key: 'nping', label: 'Nping', type: 'number' },
-    { key: 'nconnect', label: 'Nconnect', type: 'number' },
-    { key: 'nlight', label: 'Nlight', type: 'number' },
-    { key: 'ncomfort', label: 'Ncomfort', type: 'number' },
-    { key: 'nsound', label: 'Nsound', type: 'number' },
-    { key: 'nhome', label: 'Nhome', type: 'number' }
+const products = [
+    'nclock', 'naccess', 'nvisitor', 'npark', 'ndoor', 'npatrol', 'ncard', 'nview', 'nsecur',
+    'nsoftware', 'nsystem', 'napp', 'ncyber', 'ndigital', 'nserver', 'naut', 'nequip', 'nproject',
+    'ncount', 'nbuild', 'ncaravan', 'nmechanic', 'nevents', 'nservice', 'ntask', 'nproduction',
+    'nticket', 'nsales', 'ninvoice', 'ndoc', 'nsports', 'ngym', 'nschool', 'nclinic', 'noptics',
+    'ngold', 'nsmart', 'nreality', 'nhologram', 'npower', 'ncharge', 'ncity', 'nkiosk', 'nled',
+    'nfire', 'nfurniture', 'npartition', 'ndecor', 'nping', 'nconnect', 'nlight', 'ncomfort',
+    'nsound', 'nhome'
 ];
+
+const createLicenseFields = (products: string[]) => {
+    const fields = [
+        { key: 'entidadeNumber', label: 'Entidade Number', type: 'number' },
+        { key: 'nif', label: 'NIF', type: 'number' }
+    ];
+    products.forEach(product => {
+        fields.push(
+            { key: `${product}.enable`, label: `${product} Enable`, type: 'switch' },
+            { key: `${product}.users`, label: `${product} Users`, type: 'number' },
+            { key: `${product}.validacao`, label: `${product} Validação`, type: 'number' },
+            { key: `${product}.createDate`, label: `${product} Create Date`, type: 'date' },
+            { key: `${product}.devices`, label: `${product} Devices`, type: 'number' },
+            { key: `${product}.sn`, label: `${product} SN`, type: 'string' }
+        );
+    });
+
+    return fields;
+};
+
+export const licenseFields = createLicenseFields(products);
 
 export const entityFields = [
     { key: 'nome', label: 'Nome', type: 'string', required: true },
@@ -488,4 +458,11 @@ export const entityFields = [
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
     { key: 'updatedDate', label: 'Data de Atualização', type: 'date' },
     { key: 'enabled', label: 'Ativo', type: 'boolean' }
+];
+
+export const recolhaMoedeiroFields = [
+    { key: 'dataRecolha', label: 'Data da Recolha', type: 'datetime-local', required: true },
+    { key: 'pessoaResponsavel', label: 'Pessoa Responsável', type: 'string', required: true },
+    { key: 'numeroMoedas', label: 'Número de Moedas', type: 'number', required: true },
+    { key: 'valorTotal', label: 'Valor Total', type: 'number', required: true },
 ];

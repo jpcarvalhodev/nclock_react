@@ -147,7 +147,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 
 export const NdecorDashboard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { setIsLicensed } = useLicense();
+    const { license } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDPLACE');
 
@@ -159,7 +159,6 @@ export const NdecorDashboard = () => {
 
             if (activeKey === 'CLIENTE') {
                 route = route.replace('dashboard', 'dashboardlicensed');
-                setIsLicensed(true);
             }
 
             localStorage.setItem(tab.tabKey, 'true');

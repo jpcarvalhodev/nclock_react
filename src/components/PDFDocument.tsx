@@ -169,6 +169,8 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
             } else {
                 return 'Sem Ticket';
             }
+        case 'dataRecolha':
+            return new Date(item.dataRecolha).toLocaleString();
         default:
             return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
     }

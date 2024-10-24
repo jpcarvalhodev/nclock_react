@@ -4,6 +4,7 @@ import { licenseFields } from '../helpers/Fields';
 import { useLicense } from '../context/LicenseContext';
 import { License } from '../helpers/Types';
 import { toast } from 'react-toastify';
+import React from 'react';
 
 // Define a interface Entity
 export interface Entity {
@@ -18,8 +19,8 @@ interface UpdateModalProps<T> {
 }
 
 export const LicenseModal = <T extends Entity>({ open, onClose }: UpdateModalProps<T>) => {
-    const { isLicensed, fetchAllLicenses, handleUpdateLicense } = useLicense();
-    const [formData, setFormData] = useState<Partial<License>>([]);
+    const { fetchAllLicenses, handleUpdateLicense } = useLicense();
+    const [formData, setFormData] = useState<License[]>([]);
     const [isCheckVisible, setIsCheckVisible] = useState<boolean>(false);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
     const [key, setKey] = useState<string>('');
@@ -37,11 +38,9 @@ export const LicenseModal = <T extends Entity>({ open, onClose }: UpdateModalPro
     const verifyKey = async () => {
         try {
             const isValid = await fetchAllLicenses(key);
-            if (isValid && isLicensed) {
-                const data: Partial<License> = await fetchAllLicenses(key);
-                setFormData(data);
-                const updatedOptions = licenseFields.map(field => data[field.key]);
-                setLicenseOptions(updatedOptions);
+            const dataValid = isValid.find((data: License) => data.products.enabled);
+            if (dataValid) {
+                setFormData(isValid);
                 setIsCheckVisible(false);
                 showModal();
             } else {
@@ -52,15 +51,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose }: UpdateModalPro
             toast.warn('Não foi possível verificar a chave, tente novamente.');
         }
     };
-
-    // Função para atualizar os softwares da licença
-    const handleUpdate = async (key: string, licenses: License) => {
-        try {
-            await handleUpdateLicense(key, licenses);
-        } catch (error) {
-            console.error('Não foi possível atualizar as licenças:', error);
-        }
-    }
 
     // Função para mostrar o modal
     const showModal = () => {
@@ -74,26 +64,20 @@ export const LicenseModal = <T extends Entity>({ open, onClose }: UpdateModalPro
     };
 
     // Função para atualizar os checkboxes
-    const handleCheckChange = (index: number) => {
-        const fieldKey = licenseFields[index].key;
-        const updatedOptions = [...licenseOptions];
-        updatedOptions[index] = !updatedOptions[index];
-
-        setLicenseOptions(updatedOptions);
-
+    /* const handleInputChange = (product, key, value) => {
         setFormData(prev => ({
             ...prev,
-            [fieldKey]: updatedOptions[index]
+            [product]: {
+                ...prev[product],
+                [key]: value
+            }
         }));
-    };
+    }; */
 
     // Função para salvar os dados
     const handleSave = () => {
-        const formattedData = Object.keys(formData).reduce((acc: { [key: string]: number }, key) => {
-            acc[key] = formData[key] ? 1 : 0;
-            return acc;
-        }, {});
-        handleUpdate(key, formattedData as License);
+        handleUpdateLicense(key, formData);
+        setIsModalVisible(false);
         onClose();
     };
 
@@ -118,18 +102,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose }: UpdateModalPro
                     <Modal.Title>Licenciamento</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form className='license-list-modal'>
-                        {licenseFields.map((field, index) => (
-                            <Form.Group key={field.key}>
-                                <Form.Check
-                                    type="checkbox"
-                                    label={field.label}
-                                    checked={licenseOptions[index]}
-                                    onChange={() => handleCheckChange(index)}
-                                />
-                            </Form.Group>
-                        ))}
-                    </Form>
+                    
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-secondary" onClick={onClose}>

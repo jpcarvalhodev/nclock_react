@@ -282,6 +282,64 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         { value: 'Provisório', label: 'Provisório' }
     ];
 
+    // Opções do módulo
+    const moduleOptions = [
+        { value: 'nclock', label: 'Nclock' },
+        { value: 'naccess', label: 'Naccess' },
+        { value: 'nvisitor', label: 'Nvisitor' },
+        { value: 'npark', label: 'Npark' },
+        { value: 'ndoor', label: 'Ndoor' },
+        { value: 'npatrol', label: 'Npatrol' },
+        { value: 'ncard', label: 'Ncard' },
+        { value: 'nview', label: 'Nview' },
+        { value: 'nsecur', label: 'Nsecur' },
+        { value: 'nsmart', label: 'Nsmart' },
+        { value: 'nreality', label: 'Nreality' },
+        { value: 'nhologram', label: 'Nhologram' },
+        { value: 'npower', label: 'Npower' },
+        { value: 'ncharge', label: 'Ncharge' },
+        { value: 'ncity', label: 'Ncity' },
+        { value: 'nkiosk', label: 'Nkiosk' },
+        { value: 'nled', label: 'Nled' },
+        { value: 'nfire', label: 'Nfire' },
+        { value: 'nfurniture', label: 'Nfurniture' },
+        { value: 'npartition', label: 'Npartition' },
+        { value: 'ndecor', label: 'Ndecor' },
+        { value: 'nping', label: 'Nping' },
+        { value: 'nconnect', label: 'Nconnect' },
+        { value: 'nlight', label: 'Nlight' },
+        { value: 'ncomfort', label: 'Ncomfort' },
+        { value: 'nsound', label: 'Nsound' },
+        { value: 'nhome', label: 'Nhome' },
+        { value: 'nsoftware', label: 'Nsoftware' },
+        { value: 'nsystem', label: 'Nsystem' },
+        { value: 'napp', label: 'Napp' },
+        { value: 'nciber', label: 'Nciber' },
+        { value: 'ndigital', label: 'Ndigital' },
+        { value: 'nserver', label: 'Nserver' },
+        { value: 'naut', label: 'Naut' },
+        { value: 'nequip', label: 'Nequip' },
+        { value: 'nproject', label: 'Nproject' },
+        { value: 'ncount', label: 'Ncount' },
+        { value: 'nconstruction', label: 'Nconstruction' },
+        { value: 'ncaravans', label: 'Ncaravans' },
+        { value: 'nwork', label: 'Nwork' },
+        { value: 'nevents', label: 'Nevents' },
+        { value: 'nservice', label: 'Nservice' },
+        { value: 'ntask', label: 'Ntask' },
+        { value: 'nproductions', label: 'Nproductions' },
+        { value: 'nticket', label: 'Nticket' },
+        { value: 'nsales', label: 'Nsales' },
+        { value: 'ninvoice', label: 'Ninvoice' },
+        { value: 'ndoc', label: 'Ndoc' },
+        { value: 'nsports', label: 'Nsports' },
+        { value: 'nacademy', label: 'Nacademy' },
+        { value: 'nshcool', label: 'Nshcool' },
+        { value: 'nclinics', label: 'Nclinics' },
+        { value: 'noptics', label: 'Noptics' },
+        { value: 'ngold', label: 'Ngold' }
+    ];    
+
     return (
         <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
@@ -402,8 +460,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                         </Form.Group>
                     </Col>
                     <Col md={3}>
-                        <Form.Group controlId="formStatus" className="d-flex align-items-center mb-3">
-                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Status:</Form.Label>
+                        <Form.Group controlId="formStatus" className="d-flex align-items-center mb-2">
+                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo:</Form.Label>
                             <Form.Check
                                 type="switch"
                                 id="custom-switch-status"
@@ -414,8 +472,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 name="status"
                             />
                         </Form.Group>
-                        <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-3">
-                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Status de E-Mail:</Form.Label>
+                        <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-2">
+                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo para E-Mail:</Form.Label>
                             <Form.Check
                                 type="switch"
                                 id="custom-switch-status-email"
@@ -426,7 +484,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 name="statusEmail"
                             />
                         </Form.Group>
-                        <Form.Group controlId="formRgptAut" className="d-flex align-items-center mb-3">
+                        <Form.Group controlId="formRgptAut" className="d-flex align-items-center">
                             <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Autorização RGPD:</Form.Label>
                             <Form.Check
                                 type="switch"
@@ -437,6 +495,21 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 label=""
                                 name="rgpdAut"
                             />
+                        </Form.Group>
+                        <Form.Group controlId="formModulos" style={{ marginTop: 12 }}>
+                            <Form.Label>Módulo</Form.Label>
+                            <Form.Control
+                                as="select"
+                                className="custom-input-height custom-select-font-size"
+                                value={formData.modulos || ''}
+                                onChange={handleChange}
+                                name="modulos"
+                            >
+                                <option value="">Selecione...</option>
+                                {moduleOptions.map(option => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </Form.Control>
                         </Form.Group>
                     </Col>
                 </Row>

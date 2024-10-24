@@ -147,7 +147,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 
 export const NledDashboard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { setIsLicensed } = useLicense();
+    const { license } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDTEC');
 
@@ -159,7 +159,6 @@ export const NledDashboard = () => {
 
             if (activeKey === 'CLIENTE') {
                 route = route.replace('dashboard', 'dashboardlicensed');
-                setIsLicensed(true);
             }
 
             localStorage.setItem(tab.tabKey, 'true');
