@@ -307,7 +307,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSubmit();

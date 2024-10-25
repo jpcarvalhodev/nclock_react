@@ -104,7 +104,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                 />
                             </Form.Group>
                         </Col>
-                        {fields.filter(field => field.key !== 'devId' && field.key !== 'enabled').map((field) => (
+                        {fields.filter(field => field.key !== 'devId' && field.key !== 'enabled' && field.key !== 'companyId' && field.key !== 'createTime' && field.key !== 'createrCode' && field.key !== 'createrId' && field.key !== 'opVersion' && field.key !== 'updateTime' && field.key !== 'updaterCode' && field.key !== 'updaterId' && field.key !== 'updaterName' && field.key !== 'activeTimesegId' && field.key !== 'extDevId' && field.key !== 'hostStatus' && field.key !== 'latchTimesegId' && field.key !== 'passmodeTimesegId' && field.key !== 'wgInputId' && field.key !== 'wgOutputId').map((field) => (
                             <Col md={6} key={field.key} className="mb-3">
                                 <Form.Group controlId={field.key}>
                                     <Form.Label>{field.label}</Form.Label>

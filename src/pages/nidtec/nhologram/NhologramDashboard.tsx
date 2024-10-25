@@ -64,10 +64,9 @@ import nschool from '../../../assets/img/navbar/navbar/nschool.png';
 import nclinic from '../../../assets/img/navbar/navbar/nclinic.png';
 import noptics from '../../../assets/img/navbar/navbar/noptics.png';
 import ngold from '../../../assets/img/navbar/navbar/ngold.png';
-import { useLicense } from "../../../context/LicenseContext";
 
 // Define o tipo TabName
-type TabName = 'CLIENTE' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
+type TabName = 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
 
 // Define o tipo CardTitle
 type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
@@ -147,7 +146,6 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 
 export const NhologramDashboard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { license } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDTEC');
 
@@ -155,11 +153,7 @@ export const NhologramDashboard = () => {
     const handleCardClick = (title: string) => {
         if (isValidCardTitle(title)) {
             const tab = tabData[title];
-            let route = tab.route;
-
-            if (activeKey === 'CLIENTE') {
-                route = route.replace('dashboard', 'dashboardlicensed');
-            }
+            let route = tab.route;          
 
             localStorage.setItem(tab.tabKey, 'true');
             localStorage.setItem(tab.ribbonKey, 'true');
@@ -172,13 +166,6 @@ export const NhologramDashboard = () => {
     };
 
     const cardData = {
-        'CLIENTE': [
-            { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
-            { title: 'Vigilância', img: nview, tab: 'nview' },
-            { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
-            { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
-            { title: 'Painéis', img: nled, tab: 'nled' },
-        ],
         'SISNID': [
             { title: 'Assiduidade', img: nclock, tab: 'nclock' },
             { title: 'Acessos', img: naccess, tab: 'naccess' },
@@ -318,9 +305,6 @@ export const NhologramDashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="dashboard-title-text" style={{ color: '#009739' }}>
-                <span>Nhologram Dashboard</span>
-            </div>
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
                     <Nav variant="pills" className="nav-pills justify-content-center align-items-center">

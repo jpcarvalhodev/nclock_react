@@ -155,7 +155,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     // Define o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSave();

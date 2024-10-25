@@ -186,9 +186,16 @@ const isValidCardTitle = (title: string): title is CardTitle => {
     return title in tabData;
 };
 
+// Função auxiliar para extrair o nome do software da tabKey
+const extractSoftwareNameFromTabKey = (tabKey: string) => {
+    const match = tabKey.match(/show(.*)Tab/);
+    return match ? match[1] : null;
+};
+
 // Define a página principal
 export const Dashboard = () => {
     const { navbarColor, footerColor } = useColor();
+    const { license, getSoftwareEnabledStatus } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('CLIENTE');
 
@@ -198,11 +205,13 @@ export const Dashboard = () => {
             const tab = tabData[title];
             let route = tab.route;
 
-            if (activeKey === 'CLIENTE') {
+            const softwareName = extractSoftwareNameFromTabKey(tab.tabKey);
+
+            const softwareEnabled = getSoftwareEnabledStatus(license);
+
+            if (activeKey === 'CLIENTE' && softwareName && softwareEnabled[softwareName]) {
                 route = route.replace('dashboard', 'dashboardlicensed');
-            } else {
-                navigate(route);
-            }
+            }            
 
             localStorage.setItem(tab.tabKey, 'true');
             localStorage.setItem(tab.ribbonKey, 'true');
@@ -216,11 +225,11 @@ export const Dashboard = () => {
 
     const cardData = {
         'CLIENTE': [
+            { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
+            { title: 'Painéis', img: nled, tab: 'nled' },
             { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
             { title: 'Vigilância', img: nview, tab: 'nview' },
             { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
-            { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
-            { title: 'Painéis', img: nled, tab: 'nled' },
         ],
         'SISNID': [
             { title: 'Assiduidade', img: nclock, tab: 'nclock' },
@@ -366,7 +375,7 @@ export const Dashboard = () => {
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
                     <Nav variant="pills" className="nav-pills justify-content-center align-items-center">
                         {Object.keys(cardData).map((key) => (
-                            <Nav.Item key={key}>
+                            <Nav.Item key={key} style={{ width: '20%' }}>
                                 <Nav.Link eventKey={key}>{key}</Nav.Link>
                             </Nav.Item>
                         ))}

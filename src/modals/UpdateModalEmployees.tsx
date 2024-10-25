@@ -253,7 +253,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   // Define a função para salvar
   const handleSaveClick = () => {
     if (!isFormValid) {
-      toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+      toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
       return;
     }
     handleSubmit();

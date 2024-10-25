@@ -5,9 +5,10 @@ import { License } from '../helpers/Types';
 
 // Define o tipo do contexto
 interface LicenseContextType {
-    license: License[];
-    setLicense: (license: License[]) => void;
-    fetchAllLicenses: (license: string) => Promise<License[]>;
+    license: Partial<License>;
+    setLicense: (license: Partial<License>) => void;
+    getSoftwareEnabledStatus: (license: Partial<License>) => { [key: string]: boolean };
+    fetchAllLicenses: (license: string) => Promise<Partial<License>>;
     fetchAllLicensesWithoutKey: () => Promise<void>;
     handleUpdateLicense: (license: string, licenses: License[]) => Promise<void>;
 }
@@ -17,10 +18,24 @@ const LicenseContext = createContext<LicenseContextType | undefined>(undefined);
 
 // Provider do contexto
 export const LicenseProvider = ({ children }: { children: ReactNode }) => {
-    const [license, setLicense] = useState<License[]>([]);
+    const [license, setLicense] = useState<Partial<License>>({});
+
+    // Função para verificar se o software está habilitado
+    const getSoftwareEnabledStatus = (license: Partial<License>) => {
+        const softwareEnabled: { [key: string]: boolean } = {};
+        
+        Object.keys(license).forEach(key => {
+            const item = license[key];
+            if (typeof item === 'object' && item !== null && 'enable' in item) {
+                softwareEnabled[key] = item.enable;
+            }
+        });
+    
+        return softwareEnabled;
+    };
 
     // Função para buscar todas as licenças
-    const fetchAllLicenses = async (license: string): Promise<License[]> => {
+    const fetchAllLicenses = async (license: string): Promise<Partial<License>> => {
         try {
             const data = await apiService.fetchLicenses(license);
             setLicense(data);
@@ -62,7 +77,7 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <LicenseContext.Provider value={{ license, setLicense, fetchAllLicenses, fetchAllLicensesWithoutKey, handleUpdateLicense }}>
+        <LicenseContext.Provider value={{ license, setLicense, getSoftwareEnabledStatus, fetchAllLicenses, fetchAllLicensesWithoutKey, handleUpdateLicense }}>
             {children}
         </LicenseContext.Provider>
     );

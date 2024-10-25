@@ -193,12 +193,10 @@ export const adsFields = [
 
 export const transactionFields = [
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'pin', label: 'PIN', type: 'number' },
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'ID do Evento', type: 'number' },
     { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
-    { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
     { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
     { key: 'createTime', label: 'Data de Criação', type: 'Date' },
     { key: 'updateTime', label: 'Data de Atualização', type: 'Date' },
@@ -207,7 +205,6 @@ export const transactionFields = [
 export const transactionMBFields = [
     { key: 'transactionType', label: 'Tipo de Transação', type: 'number' },
     { key: 'amount', label: 'Valor', type: 'string' },
-    { key: 'statusCode', label: 'Código de Status', type: 'number' },
     { key: 'statusMessage', label: 'Mensagem de Status', type: 'string' },
     { key: 'clientTicket', label: 'Ticket do Cliente', type: 'string' },
     { key: 'merchantTicket', label: 'Ticket do Comerciante', type: 'string' },
@@ -221,13 +218,9 @@ export const transactionCardFields = [
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
     { key: 'nameUser', label: 'Nome do Usuário', type: 'string' },
     { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
-    { key: 'eventNo', label: 'Número do Evento', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
-    { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
-    { key: 'eventDoorName', label: 'Nome da Porta do Evento', type: 'string' },
+    { key: 'eventDoorId', label: 'Nome da Porta', type: 'number' },
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'pin', label: 'PIN', type: 'number' },
-    { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'number' },
 ];
 
 export const registerFields = [
@@ -432,7 +425,6 @@ const createLicenseFields = (products: string[]) => {
             { key: `${product}.enable`, label: `${product} Enable`, type: 'switch' },
             { key: `${product}.users`, label: `${product} Users`, type: 'number' },
             { key: `${product}.validacao`, label: `${product} Validação`, type: 'number' },
-            { key: `${product}.createDate`, label: `${product} Create Date`, type: 'date' },
             { key: `${product}.devices`, label: `${product} Devices`, type: 'number' },
             { key: `${product}.sn`, label: `${product} SN`, type: 'string' }
         );

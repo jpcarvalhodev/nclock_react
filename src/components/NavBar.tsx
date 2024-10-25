@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailCompany, EmailUser, EmailUserCompany, Employee, Entity } from '../helpers/Types';
+import { EmailCompany, EmailUser, EmailUserCompany, Employee, Entity, License } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -141,7 +141,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailAndCompanyFields, entityFields } from '../helpers/Fields';
+import { adsFields, emailAndCompanyFields, entityFields, licenseFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -171,7 +171,6 @@ import cleaning from '../assets/img/navbar/nkiosk/cleaning.png';
 import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
 import { EntityModal } from '../modals/EntityModal';
-import { set } from 'date-fns';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -232,7 +231,7 @@ interface TabsInfo {
 export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
 	const { handleAddModalNavbar } = useAds();
-	const { license } = useLicense();
+	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -489,7 +488,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			console.error('Erro ao atualizar os dados da empresa:', error);
 		}
 	}
-
+		
 	// Carregamento inicial dos dados de configuração de email
 	useEffect(() => {
 		fetchEmailConfig();
@@ -568,6 +567,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 		Nsound: { setShowRibbon: setShowNsoundRibbon, setShowTab: setShowNsoundTab },
 		Nhome: { setShowRibbon: setShowNhomeRibbon, setShowTab: setShowNhomeTab },
 	};
+
+	// Cria variáveis para verificar se o software está habilitado
+	const softwareEnabled = getSoftwareEnabledStatus(license);
 
 	// Função para atualizar o estado a partir do localStorage
 	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix: string = ''): void {
@@ -754,6 +756,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 		localStorage.removeItem('activeTab');
 	};
 
+	// Função para capitalizar a primeira letra da tabName
+	const capitalizeFirstLetter = (string: string) => {
+		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+	};
+
 	// Função para lidar com a aba
 	const handleTab = (tabName: string) => {
 		clearAllTabs();
@@ -764,7 +771,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 			navigate('/dashboard');
 		} else if (tabData[tabName]) {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
-			const finalRoute = (tabName === 'cliente') ? `${route}licensed` : route;
+			const softwareName = capitalizeFirstLetter(tabName);
+			const isSoftwareEnabled = softwareName ? softwareEnabled[softwareName] : false;
+			const finalRoute = (tabName && softwareName && isSoftwareEnabled) ? `${route}licensed` : route;
 
 			if (activeTab === tabName) {
 				setTab(false);
@@ -896,21 +905,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	};
 
 	// Define o componente do item de menu
-	const menuStructure: MenuStructure = {
-		dashboard: { label: 'INÍCIO', image: nidgroup, alt: 'INÍCIO', key: 'dashboard' },
-		cliente: {
-			label: 'CLIENTE',
-			image: nidgroup,
-			alt: 'CLIENTE',
-			key: 'cliente',
-			submenu: [
-				{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
-				{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
-				{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
-				{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
-				{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
-			],
-		},
+	const menuStructureNG: MenuStructure = {
 		sisnid: {
 			label: 'SISNID',
 			image: sisnidlogo,
@@ -1003,6 +998,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 		},
 	};
 
+	// Define a estrutura do menu inicial
+	const menuStructureStart: MenuStructure = {
+		dashboard: { label: 'CLIENTE', image: nidgroup, alt: 'CLIENTE', key: 'dashboard' },
+		cliente: {
+			label: 'SOFTWARES',
+			image: nidgroup,
+			alt: 'SOFTWARES',
+			key: 'cliente',
+			submenu: [
+				{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
+				{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
+				{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
+				{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
+				{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
+			],
+		},
+	};
+
 	// Define o componente do item de menu
 	const MenuItem = ({ active, onClick, image, alt, label }: MenuItem) => (
 		<li
@@ -1016,7 +1029,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	);
 
 	// Função genérica para renderizar o menu
-	const renderMenu = (menuKey: keyof MenuStructure) => {
+	const renderMenu = (menuKey: keyof MenuStructure, menuStructure: MenuStructure) => {
 		const menu = menuStructure[String(menuKey)];
 		return (
 			<div key={menuKey as string}>
@@ -1045,6 +1058,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 			</div>
 		);
 	};
+
+	renderMenu('dashboard', menuStructureStart);
+	renderMenu('cliente', menuStructureStart);
+	renderMenu('sisnid', menuStructureNG);
+	renderMenu('nidsof', menuStructureNG);
+	renderMenu('nidtec', menuStructureNG);
+	renderMenu('nidplace', menuStructureNG);
 
 	// Defina o mapeamento das cores para cada aba
 	const tabColors: Record<string, { navbarColor: string; footerColor: string }> = {
@@ -1481,16 +1501,28 @@ export const NavBar = ({ style }: NavBarProps) => {
 		<ColorProvider>
 			<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
 				<div className="nav-container">
-					<Dropdown className='dropdown-icon'>
-						<Dropdown.Toggle variant="basic" id="dropdown-basic">
-							<span className="logo">NIDGROUP</span>
-						</Dropdown.Toggle>
-						<Dropdown.Menu>
-							<div style={{ position: 'relative' }}>
-								{Object.keys(menuStructure).map((menuKey) => renderMenu(menuKey))}
-							</div>
-						</Dropdown.Menu>
-					</Dropdown>
+					<div className='logos'>
+						<Dropdown className='dropdown-icon'>
+							<Dropdown.Toggle variant="basic" id="dropdown-basic">
+								<span className="logo">INÍCIO</span>
+							</Dropdown.Toggle>
+							<Dropdown.Menu>
+								<div style={{ position: 'relative' }}>
+									{Object.keys(menuStructureStart).map((menuKey) => renderMenu(menuKey, menuStructureStart))}
+								</div>
+							</Dropdown.Menu>
+						</Dropdown>
+						<Dropdown className='dropdown-icon'>
+							<Dropdown.Toggle variant="basic" id="dropdown-basic">
+								<span className="logoNG">NIDGROUP</span>
+							</Dropdown.Toggle>
+							<Dropdown.Menu>
+								<div style={{ position: 'relative' }}>
+									{Object.keys(menuStructureNG).map((menuKey) => renderMenu(menuKey, menuStructureNG))}
+								</div>
+							</Dropdown.Menu>
+						</Dropdown>
+					</div>
 					<ul className="nav nav-tabs">
 						{tabs.map(tab => tab.show && (
 							<li key={tab.id} className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}>
@@ -1528,7 +1560,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</Dropdown>
 					</div>
 				</div>
-				{showNclockRibbon && (
+				{showNclockRibbon && softwareEnabled['Nclock'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclock')?.label && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
 							<div className="section" id="section-group">
@@ -1863,7 +1895,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNaccessRibbon && (
+				{showNaccessRibbon && softwareEnabled['Naccess'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'naccess')?.label && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="naccess" role="tabpanel" aria-labelledby="naccess-tab">
 							<div className="section" id="section-group">
@@ -2062,7 +2094,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNvisitorRibbon && (
+				{showNvisitorRibbon && softwareEnabled['Nvisitor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nvisitor')?.label && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nvisitor" role="tabpanel" aria-labelledby="nvisitor-tab">
 							<div className="section" id="section-group">
@@ -2177,7 +2209,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNviewRibbon && (
+				{showNviewRibbon && softwareEnabled['Nview'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nview')?.label && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nview" role="tabpanel" aria-labelledby="nview-tab">
 							<div className="section" id="section-group">
@@ -2286,7 +2318,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsecurRibbon && (
+				{showNsecurRibbon && softwareEnabled['Nsecur'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsecur')?.label && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsecur" role="tabpanel" aria-labelledby="nsecur-tab">
 							<div className="section" id="section-group">
@@ -2387,7 +2419,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNkioskRibbon && (
+				{showNkioskRibbon && softwareEnabled['Nkiosk'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nkiosk')?.label && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
 							<div className="section" id="section-group">
@@ -2647,7 +2679,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNledRibbon && (
+				{showNledRibbon && softwareEnabled['Nled'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nled')?.label && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nled" role="tabpanel" aria-labelledby="nled-tab">
 							<div className="section" id="section-group">
@@ -3365,6 +3397,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<LicenseModal
 						open={showLicenseModal}
 						onClose={() => setShowLicenseModal(false)}
+						onUpdate={handleUpdateLicense}
+						fields={licenseFields}
 					/>
 				)}
 				{showEntityModal && entityData && entitiesData && (

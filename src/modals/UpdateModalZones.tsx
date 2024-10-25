@@ -135,7 +135,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
     // Atualiza o estado do componente com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSubmit();

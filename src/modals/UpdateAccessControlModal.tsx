@@ -105,12 +105,11 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (open && selectedDoor) {
-            fetchDropdownOptions();
-        } else {
+        if (open) {
             handleOpen();
+            fetchDropdownOptions();
         }
-    }, [open, selectedDoor]);    
+    }, [open]);
 
     // UseEffect para atualizar a seleção de porta
     useEffect(() => {
@@ -122,7 +121,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
             });
         }
     }, [selectedDoor]);
-    
+
     // Função para lidar com a seleção de porta caso haja mais de uma
     const handleOpen = () => {
         if (entity.doors && entity.doors.length > 1) {
@@ -143,8 +142,8 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
             setShowDoorUpdateModal(true);
             setShowDoorSelectionModal(false);
         }
-    };    
-    
+    };
+
     // Função para lidar com a confirmação da seleção de porta
     const handleConfirmDoorSelection = () => {
         if (selectedDoor) {
@@ -194,11 +193,13 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
         }
     };
 
-    // Função para fechar o modal
-    const handleClose = () => {
+    // Função de fechamento para ambos os modais, para garantir que tudo esteja fechado
+    const handleCloseAllModals = () => {
         setShowDoorSelectionModal(false);
         setShowDoorUpdateModal(false);
-    }
+        setSelectedDoor(null);
+        onClose();
+    };
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
@@ -224,12 +225,12 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
         };
 
         onUpdate(updatedFormData as Partial<T>);
-        onClose();
+        handleCloseAllModals();
     };
 
     return (
         <div>
-            <Modal show={showDoorSelectionModal} onHide={handleClose}>
+            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals}>
                 <Modal.Header closeButton>
                     <Modal.Title>Selecione uma Porta</Modal.Title>
                 </Modal.Header>
@@ -245,11 +246,11 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
+                    <Button variant="outline-secondary" onClick={handleCloseAllModals}>Fechar</Button>
                     <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showDoorUpdateModal} onHide={handleClose} size="xl">
+            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} size="xl">
                 <Modal.Header closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
@@ -328,7 +329,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-secondary" onClick={handleClose}>
+                    <Button variant="outline-secondary" onClick={handleCloseAllModals}>
                         Fechar
                     </Button>
                     <Button variant="outline-primary" onClick={handleCheckForSave}>

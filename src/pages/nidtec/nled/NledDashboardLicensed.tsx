@@ -103,9 +103,6 @@ export const NledDashboardLicensed = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="dashboard-title-text" style={{ color: '#009739' }}>
-                <span>Nled Dashboard</span>
-            </div>
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>

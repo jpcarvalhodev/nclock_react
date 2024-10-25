@@ -55,7 +55,7 @@ export const AccessControls = () => {
         } catch (error) {
             console.error('Erro ao adicionar o controle de acesso:', error);
         } finally {
-            fetchAccessControl();
+            refreshAccessControl();
         }
     };
 
@@ -68,7 +68,7 @@ export const AccessControls = () => {
         } catch (error) {
             console.error('Erro ao editar o controle de acesso:', error);
         } finally {
-            fetchAccessControl();
+            refreshAccessControl();
         }
     };
 
@@ -83,7 +83,7 @@ export const AccessControls = () => {
         } catch (error) {
             console.error('Erro ao deletar o controle de acesso:', error);
         } finally {
-            fetchAccessControl();
+            refreshAccessControl();
         }
     }
 
@@ -146,6 +146,13 @@ export const AccessControls = () => {
     const handleOpenDeleteModal = (id: string) => {
         setSelectedAccessToDelete(id);
         setShowDeleteModal(true);
+    };
+
+    // Fecha o modal de atualização de controle de acesso
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setSelectedAccessControl(null);
+        refreshAccessControl();
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -316,7 +323,7 @@ export const AccessControls = () => {
                 <UpdateAccessControlModal
                     title="Atualizar Acesso"
                     open={showUpdateModal}
-                    onClose={() => setShowUpdateModal(false)}
+                    onClose={handleCloseUpdateModal}
                     onUpdate={handleUpdateAccessControl}
                     fields={accessControlFields}
                     entity={selectedAccessControl}

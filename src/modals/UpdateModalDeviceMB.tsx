@@ -99,7 +99,7 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
     };
 
     return (
-        <Modal show={open} onHide={onClose} size='xl'>
+        <Modal show={open} onHide={onClose}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -108,10 +108,8 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
                     <Row>
                         {[
                             { key: 'nomeQuiosque', label: 'Nome do Terminal', type: 'string', required: true },
-                            { key: 'estadoTerminal', label: 'Estado do Terminal', type: 'number' },
-                            { key: 'timeReboot', label: 'Tempo de Reinício', type: 'string' },
                         ].map((field) => (
-                            <Col md={3} key={field.key}>
+                            <Col md={12} key={field.key}>
                                 <Form.Group controlId={`form${field.key}`}>
                                     {field.required ? (
                                         <OverlayTrigger

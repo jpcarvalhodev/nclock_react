@@ -5,6 +5,8 @@ export const customStyles: TableStyles = {
     rows: {
         style: {
             minHeight: '30px',
+            paddingLeft: '5px',
+            paddingRight: '5px',
         },
     },
     headCells: {
@@ -14,17 +16,23 @@ export const customStyles: TableStyles = {
             fontWeight: 'bold',
             height: '30px',
             border: 'none',
+            paddingLeft: '5px',
+            paddingRight: '5px',
         },
     },
     headRow: {
         style: {
             minHeight: '30px',
             backgroundColor: '#f0f0f0',
+            paddingLeft: '5px',
+            paddingRight: '5px',
         },
     },
     cells: {
         style: {
             border: 'none',
+            paddingLeft: '5px',
+            paddingRight: '5px',
         },
     },
 };

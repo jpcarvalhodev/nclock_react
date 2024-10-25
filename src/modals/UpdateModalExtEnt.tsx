@@ -182,7 +182,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
     // Função para lidar com os dados dos campos
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSubmit();
