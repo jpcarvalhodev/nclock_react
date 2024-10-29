@@ -62,7 +62,7 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
             const data = await apiService.updateLicenses(key, licenses);
             if (data) {
                 setLicense(data);
-                toast.success(data.message || 'Licença atualizada com sucesso!');
+                toast.success(data.message || 'Licença atualizada com sucesso! Atualize a página para ver as alterações.');
             } else {
                 console.error('Nenhum dado retornado da API.');
             }
@@ -75,6 +75,11 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         fetchAllLicensesWithoutKey();
     }, []);
+
+    // Atualiza o estado da licença ao mudar a licença
+    useEffect(() => {
+        getSoftwareEnabledStatus(license);
+    }, [license]);
 
     return (
         <LicenseContext.Provider value={{ license, setLicense, getSoftwareEnabledStatus, fetchAllLicenses, fetchAllLicensesWithoutKey, handleUpdateLicense }}>

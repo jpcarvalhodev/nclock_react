@@ -774,7 +774,7 @@ export const addGroup = async (group: Group) => {
 };
 
 export const updateGroup = async (group: Group) => {
-    const response = await fetchWithAuth(`Groups/${group.departmentID}`, {
+    const response = await fetchWithAuth(`Groups/${group.groupID}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

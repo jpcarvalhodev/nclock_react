@@ -58,10 +58,6 @@ export const NkioskListPayments = () => {
     const [lineChartData, setLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
     const eventDoorId2 = '2';
 
-    const deviceSN = 'AGB7234900595';
-    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
-    const deviceName = matchedDevice?.deviceName || '';
-
     // Função para buscar as listagens de pagamentos em MB
     const fetchAllListPaymentsMB = async () => {
         try {
@@ -79,7 +75,7 @@ export const NkioskListPayments = () => {
     // Função para buscar as listagens de pagamentos em moedas
     const fetchAllListPaymentsCoins = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, devices[0].deviceSN);
             if (Array.isArray(data)) {
                 setListPaymentCoin(data);
             } else {
@@ -94,7 +90,7 @@ export const NkioskListPayments = () => {
     const fetchPaymentsBetweenDates = async () => {
         try {
             const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(startDate, endDate);
-            const dataCoin = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN, startDate, endDate);
+            const dataCoin = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, devices[0].deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setListPaymentMB(data);
                 setListPaymentCoin(dataCoin);
@@ -245,7 +241,7 @@ export const NkioskListPayments = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        return deviceName || 'Sem Dados';
+                        return devices[0].deviceName || 'Sem Dados';
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':

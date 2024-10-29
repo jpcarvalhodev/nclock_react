@@ -7,6 +7,7 @@ import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import { Employee, EmployeeCard } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
+import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -108,7 +109,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             }));
 
         } catch {
-            toast.error('Erro ao buscar o número de matrícula dos funcionários.');
+            setFormData(prevState => ({ ...prevState, enrollNumber: 1 }));
         }
     };
 
@@ -137,6 +138,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         if (open) {
             fetchEmployeesAndSetNextEnrollNumber();
             fetchDropdownOptions();
+        } else {
+            setFormData({});
+            setCardFormData({});
         }
     }, [open]);
 

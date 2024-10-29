@@ -104,15 +104,15 @@ export const NledDashboardLicensed = () => {
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-content">
-                <div className="dashboard-carousel-container">
+                <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
                             <img className="img-carousel-licensed" src={banner_nled} alt="nled" />
                         </div>
                     </Carousel>
                 </div>
-                <div className="calendar-container">
-                    <div className="dashboard-calendar" style={{ height: 450 }}>
+                <div className="calendar-container" style={{ marginTop: 70 }}>
+                    <div className="dashboard-calendar" style={{ height: 495 }}>
                         <Calendar
                             localizer={localizer}
                             events={events}
@@ -124,14 +124,6 @@ export const NledDashboardLicensed = () => {
                                 event: MyEvent
                             }}
                         />
-                    </div>
-                </div>
-            </div>
-            <div className="dashboard-content">
-                <div className="chart-container">
-                    <div className="departments-groups-chart" style={{ flex: 1 }}>
-                        <h2 className="departments-groups-chart-text">Total: { }</h2>
-                        <Bar className="departments-groups-chart-data" data={barData} />
                     </div>
                 </div>
             </div>

@@ -45,14 +45,10 @@ export const NkioskMoveVP = () => {
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '3';
 
-    const deviceSN = 'AGB7234900595';
-    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
-    const deviceName = matchedDevice?.deviceName || '';
-
     // Função para buscar as publicidades
     const fetchAllMoveVP = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, devices[0].deviceSN);
             if (Array.isArray(data)) {
                 setMoveVP(data);
             } else {
@@ -66,7 +62,7 @@ export const NkioskMoveVP = () => {
     // Função para buscar os movimentos dos cartões entre datas
     const fetchMovementVPBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, devices[0].deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setMoveVP(data);
             } else {
@@ -171,7 +167,7 @@ export const NkioskMoveVP = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return deviceName || 'Sem Dados';
+                        return devices[0].deviceName || 'Sem Dados';
                     case 'eventDoorId':
                         return 'Video Porteiro';
                     case 'eventTime':

@@ -48,14 +48,10 @@ export const NkioskListMovements = () => {
     const eventDoorId = '3';
     const eventDoorId2 = '4';
 
-    const deviceSN = 'AGB7234900595';
-    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
-    const deviceName = matchedDevice?.deviceName || '';
-
     // Função para buscar as listagens de movimentos de cartão
     const fetchAllListMovementsCard = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN);
             if (Array.isArray(data)) {
                 setListMovementCard(data);
             } else {
@@ -69,7 +65,7 @@ export const NkioskListMovements = () => {
     // Função para buscar as listagens de movimentos do quiosque
     const fetchAllListMovementsKiosk = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, devices[0].deviceSN);
             if (Array.isArray(data)) {
                 setListMovementKiosk(data);
             } else {
@@ -83,8 +79,8 @@ export const NkioskListMovements = () => {
     // Função para buscar os movimentos dos cartões entre datas
     const fetchMovementCardBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
-            const dataKiosk = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN, startDate, endDate);
+            const dataKiosk = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, devices[0].deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setListMovementCard(data);
                 setListMovementKiosk(dataKiosk);
@@ -238,7 +234,7 @@ export const NkioskListMovements = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return deviceName || 'Sem Dados';
+                        return devices[0].deviceName || 'Sem Dados';
                     case 'eventDoorId':
                         return row.eventDoorId === 4 ? 'Quiosque' : 'Torniquete';
                     case 'eventTime':

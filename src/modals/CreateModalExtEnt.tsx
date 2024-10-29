@@ -55,6 +55,10 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
+            if (field.label === 'NIF' && fieldValue != null && fieldValue.toString().length < 9) {
+                valid = false;
+                newErrors[field.key] = 'NIF deve ter no mínimo 9 números.';
+            }
 
             return valid;
         });
@@ -212,7 +216,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-nif">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-nif">Campo deve ter no mínimo 9 números</Tooltip>}
                             >
                                 <Form.Control
                                     type="number"

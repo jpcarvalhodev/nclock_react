@@ -198,6 +198,7 @@ interface MenuItem {
 	image: any;
 	alt: string;
 	key: string;
+	className?: string;
 	submenu?: MenuItem[];
 }
 
@@ -363,6 +364,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showEntityModal, setShowEntityModal] = useState(false);
 	const [entityData, setEntityData] = useState<Entity>();
 	const [entitiesData, setEntitiesData] = useState<Entity[]>();
+	const [showDropdown, setShowDropdown] = useState(false);
+	const [showSoftwaresDropdown, setShowSoftwaresDropdown] = useState(false);
+	const [menuStructureStart, setMenuStructureStart] = useState<MenuStructure>({});
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -488,7 +492,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			console.error('Erro ao atualizar os dados da empresa:', error);
 		}
 	}
-		
+
 	// Carregamento inicial dos dados de configuração de email
 	useEffect(() => {
 		fetchEmailConfig();
@@ -773,7 +777,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
 			const softwareName = capitalizeFirstLetter(tabName);
 			const isSoftwareEnabled = softwareName ? softwareEnabled[softwareName] : false;
-			const finalRoute = (tabName && softwareName && isSoftwareEnabled) ? `${route}licensed` : route;
+			const isSoftwareCliente = menuStructureStart.cliente?.submenu?.filter(item => softwareEnabled[item.label]);
+			const finalRoute = (tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) ? `${route}licensed` : route;
 
 			if (activeTab === tabName) {
 				setTab(false);
@@ -999,25 +1004,82 @@ export const NavBar = ({ style }: NavBarProps) => {
 	};
 
 	// Define a estrutura do menu inicial
-	const menuStructureStart: MenuStructure = {
-		dashboard: { label: 'CLIENTE', image: nidgroup, alt: 'CLIENTE', key: 'dashboard' },
-		cliente: {
-			label: 'SOFTWARES',
-			image: nidgroup,
-			alt: 'SOFTWARES',
-			key: 'cliente',
-			submenu: [
-				{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
-				{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
-				{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
-				{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
-				{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
-			],
-		},
-	};
+	useEffect(() => {
+		const enabledSoftware = getSoftwareEnabledStatus(license);
+
+		const filteredSubmenu = [
+			{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
+			{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
+			{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
+			{ label: 'Npark', image: npark, alt: 'npark', key: 'npark' },
+			{ label: 'Ndoor', image: ndoor, alt: 'ndoor', key: 'ndoor' },
+			{ label: 'Npatrol', image: npatrol, alt: 'npatrol', key: 'npatrol' },
+			{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
+			{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
+			{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
+			{ label: 'Nsoftware', image: nsoftware, alt: 'nsoftware', key: 'nsoftware' },
+			{ label: 'Nsystem', image: nsystem, alt: 'nsystem', key: 'nsystem' },
+			{ label: 'Napp', image: napp, alt: 'napp', key: 'napp' },
+			{ label: 'Ncyber', image: ncyber, alt: 'ncyber', key: 'ncyber' },
+			{ label: 'Ndigital', image: ndigital, alt: 'ndigital', key: 'ndigital' },
+			{ label: 'Nserver', image: nserver, alt: 'nserver', key: 'nserver' },
+			{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
+			{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
+			{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
+			{ label: 'Ncount', image: ncount, alt: 'ncount', key: 'ncount' },
+			{ label: 'Nbuild', image: nbuild, alt: 'nbuild', key: 'nbuild' },
+			{ label: 'Ncaravan', image: ncaravan, alt: 'ncaravan', key: 'ncaravan' },
+			{ label: 'Nmechanic', image: nmechanic, alt: 'nmechanic', key: 'nmechanic' },
+			{ label: 'Nevents', image: nevents, alt: 'nevents', key: 'nevents' },
+			{ label: 'Nservice', image: nservice, alt: 'nservice', key: 'nservice' },
+			{ label: 'Ntask', image: ntask, alt: 'ntask', key: 'ntask' },
+			{ label: 'Nproduction', image: nproduction, alt: 'nproduction', key: 'nproduction' },
+			{ label: 'Nticket', image: nticket, alt: 'nticket', key: 'nticket' },
+			{ label: 'Nsales', image: nsales, alt: 'nsales', key: 'nsales' },
+			{ label: 'Ninvoice', image: ninvoice, alt: 'ninvoice', key: 'ninvoice' },
+			{ label: 'Ndoc', image: ndoc, alt: 'ndoc', key: 'ndoc' },
+			{ label: 'Nsports', image: nsports, alt: 'nsports', key: 'nsports' },
+			{ label: 'Ngym', image: ngym, alt: 'ngym', key: 'ngym' },
+			{ label: 'Nschool', image: nschool, alt: 'nschool', key: 'nschool' },
+			{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
+			{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
+			{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
+			{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
+			{ label: 'Nreality', image: nreality, alt: 'nreality', key: 'nreality' },
+			{ label: 'Nhologram', image: nhologram, alt: 'nhologram', key: 'nhologram' },
+			{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
+			{ label: 'Ncharge', image: ncharge, alt: 'ncharge', key: 'ncharge' },
+			{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
+			{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
+			{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
+			{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
+			{ label: 'Nfurniture', image: nfurniture, alt: 'nfurniture', key: 'nfurniture' },
+			{ label: 'Npartition', image: npartition, alt: 'npartition', key: 'npartition' },
+			{ label: 'Ndecor', image: ndecor, alt: 'ndecor', key: 'ndecor' },
+			{ label: 'Nping', image: nping, alt: 'nping', key: 'nping' },
+			{ label: 'Nconnect', image: nconnect, alt: 'nconnect', key: 'nconnect' },
+			{ label: 'Nlight', image: nlight, alt: 'nlight', key: 'nlight' },
+			{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
+			{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
+			{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
+		].filter(item => enabledSoftware[item.label]);
+
+		const dynamicMenuStructure = {
+			dashboard: { label: 'INÍCIO', image: nidgroup, alt: 'INÍCIO', key: 'dashboard' },
+			cliente: {
+				label: 'LICENÇAS',
+				image: nidgroup,
+				alt: 'LICENÇAS',
+				key: 'cliente',
+				submenu: filteredSubmenu,
+			},
+		};
+
+		setMenuStructureStart(dynamicMenuStructure);
+	}, [license]);
 
 	// Define o componente do item de menu
-	const MenuItem = ({ active, onClick, image, alt, label }: MenuItem) => (
+	const MenuItem = ({ active, onClick, image, alt, label, className }: MenuItem) => (
 		<li
 			className={`image-text ${active ? 'active' : ''}`}
 			onClick={onClick}
@@ -1031,8 +1093,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função genérica para renderizar o menu
 	const renderMenu = (menuKey: keyof MenuStructure, menuStructure: MenuStructure) => {
 		const menu = menuStructure[String(menuKey)];
+		if (!menu) {
+			return null;
+		}
 		return (
-			<div key={menuKey as string}>
+			<div key={menuKey as string} className='menu'>
 				<MenuItem
 					key={menuKey as string}
 					active={activeMenu === menuKey}
@@ -1051,6 +1116,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								image={item.image}
 								alt={item.alt}
 								label={item.label}
+								className="menu-item"
 							/>
 						))}
 					</div>
@@ -1502,23 +1568,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 			<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
 				<div className="nav-container">
 					<div className='logos'>
-						<Dropdown className='dropdown-icon'>
+						<Dropdown onMouseOver={() => setShowDropdown(true)} onMouseLeave={() => setShowDropdown(false)} show={showDropdown} className='dropdown-icon'>
 							<Dropdown.Toggle variant="basic" id="dropdown-basic">
-								<span className="logo">INÍCIO</span>
+								<span className="logo">NIDGROUP</span>
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<div style={{ position: 'relative' }}>
 									{Object.keys(menuStructureStart).map((menuKey) => renderMenu(menuKey, menuStructureStart))}
-								</div>
-							</Dropdown.Menu>
-						</Dropdown>
-						<Dropdown className='dropdown-icon'>
-							<Dropdown.Toggle variant="basic" id="dropdown-basic">
-								<span className="logoNG">NIDGROUP</span>
-							</Dropdown.Toggle>
-							<Dropdown.Menu>
-								<div style={{ position: 'relative' }}>
-									{Object.keys(menuStructureNG).map((menuKey) => renderMenu(menuKey, menuStructureNG))}
 								</div>
 							</Dropdown.Menu>
 						</Dropdown>
@@ -1540,6 +1596,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 						<li className={`nav-item ${activeTab === 'configuracao' ? 'active' : ''}`}>
 							<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={() => handleRibbonClick('configuracao')}>CONFIGURAÇÃO</a>
 						</li>
+						<div className='logos'>
+							<Dropdown onMouseOver={() => setShowSoftwaresDropdown(true)} onMouseLeave={() => setShowSoftwaresDropdown(false)} show={showSoftwaresDropdown} className='dropdown-icon'>
+								<Dropdown.Toggle variant="basic" id="dropdown-basic">
+									<span className="logoNG">NSOFTWARES</span>
+								</Dropdown.Toggle>
+								<Dropdown.Menu>
+									<div style={{ position: 'relative' }}>
+										{Object.keys(menuStructureNG).map((menuKey) => renderMenu(menuKey, menuStructureNG))}
+									</div>
+								</Dropdown.Menu>
+							</Dropdown>
+						</div>
 						<li className={`nav-item ${activeTab === 'ajuda' ? 'active' : ''}`}>
 							<a className="nav-link ajuda-tab" id="ajuda-tab" onClick={() => handleRibbonClick('ajuda')}>AJUDA</a>
 						</li>
@@ -2059,6 +2127,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="text">Listagens</span>
 												</Button>
 											</div>
+
 										</div>
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio naccess')}>
@@ -2147,6 +2216,31 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
+									{(!isMobile || visibleGroup === 'logs nvisitor') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de logins" />
+													</span>
+													<span className="text">Logins</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de histórico" />
+													</span>
+													<span className="text">Histórico</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('logs nvisitor')}>
+										<span className="title">Logs</span>
+									</div>
+								</div>
+								<div className="group">
 									{(!isMobile || visibleGroup === 'alertas nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2173,6 +2267,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Listagens</span>
 												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nvisitor/nvisitorgraph" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2256,6 +2358,31 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
+									{(!isMobile || visibleGroup === 'logs nview') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de logins" />
+													</span>
+													<span className="text">Logins</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de histórico" />
+													</span>
+													<span className="text">Histórico</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('logs nview')}>
+										<span className="title">Logs</span>
+									</div>
+								</div>
+								<div className="group">
 									{(!isMobile || visibleGroup === 'alertas nview') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2282,6 +2409,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Listagens</span>
 												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nview/nviewgraph" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2357,6 +2492,31 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
+									{(!isMobile || visibleGroup === 'logs nsecur') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de logins" />
+													</span>
+													<span className="text">Logins</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de histórico" />
+													</span>
+													<span className="text">Histórico</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('logs nsecur')}>
+										<span className="title">Logs</span>
+									</div>
+								</div>
+								<div className="group">
 									{(!isMobile || visibleGroup === 'alertas nsecur') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2383,6 +2543,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Listagens</span>
 												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nsecur/nsecurgraph" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2589,7 +2757,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
-														<img src={logs} alt="botão log de utilizadores" />
+														<img src={logs} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
 												</Button>
@@ -2597,7 +2765,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
-														<img src={logs} alt="botão log de utilizadores" />
+														<img src={logs} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
 												</Button>
@@ -2737,9 +2905,25 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
-														<img src={logs} alt="botão log de utilizadores" />
+														<img src={logs} alt="botão log de publicidade" />
 													</span>
 													<span className="text">Publicidade</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de logins" />
+													</span>
+													<span className="text">Logins</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de histórico" />
+													</span>
+													<span className="text">Histórico</span>
 												</Button>
 											</div>
 										</div>
@@ -2775,6 +2959,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Listagens</span>
 												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nled/nledgraph" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
 											</div>
 										</div>
 									)}

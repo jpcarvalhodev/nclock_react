@@ -45,14 +45,10 @@ export const NkioskMoveCard = () => {
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '3';
 
-    const deviceSN = 'AGB7234900595';
-    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
-    const deviceName = matchedDevice?.deviceName || '';
-
     // Função para buscar as publicidades
     const fetchAllMoveCard = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN);
             if (Array.isArray(data)) {
                 setMoveCard(data);
             } else {
@@ -66,7 +62,7 @@ export const NkioskMoveCard = () => {
     // Função para buscar os movimentos dos cartões entre datas
     const fetchMovementCardBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setMoveCard(data);
             } else {
@@ -169,7 +165,7 @@ export const NkioskMoveCard = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return deviceName || 'Sem Dados';
+                        return devices[0].deviceName || 'Sem Dados';
                     case 'eventDoorId':
                         return 'Torniquete';
                     case 'eventTime':

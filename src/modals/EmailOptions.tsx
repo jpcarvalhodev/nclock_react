@@ -251,7 +251,7 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
                                                 >
                                                     <Form.Control
                                                         className="custom-input-height custom-select-font-size"
-                                                        type="text"
+                                                        type="password"
                                                         name="passwordEmail"
                                                         value={emailFormData.passwordEmail || ''}
                                                         onChange={handleChange}
@@ -298,25 +298,6 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
                                                     </Form.Control>
                                                 </OverlayTrigger>
                                                 {errors.portSMTP && <Form.Text className="text-danger">{errors.portSMTP}</Form.Text>}
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group controlId="formPassword">
-                                                <Form.Label>Senha <span style={{ color: 'red' }}>*</span></Form.Label>
-                                                <OverlayTrigger
-                                                    placement="right"
-                                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
-                                                >
-                                                    <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
-                                                        type="text"
-                                                        name="password"
-                                                        value={emailFormData.password || ''}
-                                                        onChange={handleChange}
-                                                        data-form-type="email"
-                                                    />
-                                                </OverlayTrigger>
-                                                {errors.password && <Form.Text className="text-danger">{errors.password}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                     </Row>

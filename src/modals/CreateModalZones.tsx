@@ -5,6 +5,7 @@ import '../css/PagesStyles.css';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
+import { set } from 'date-fns';
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -117,13 +118,15 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     // Salva os dados
     const handleSave = () => {
         onSave(formData as T);
+        onClose();
+        setFormData(initialValues);
     };
 
     // Opções de tipo
     const typeOptions = [
-        { value: 'zona', label: 'Zona' },
-        { value: 'local_de_trabalho', label: 'Local de Trabalho' },
-        { value: 'cantina', label: 'Cantina' },
+        { value: 0, label: 'Zona' },
+        { value: 1, label: 'Local de Trabalho' },
+        { value: 2, label: 'Cantina' },
     ];
 
     return (
@@ -161,7 +164,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-acronym">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-acronym">Campo deve ter no máximo 4 caracteres</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"

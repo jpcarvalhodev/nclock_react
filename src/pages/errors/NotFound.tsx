@@ -1,9 +1,15 @@
 import { Container, Row, Col, Alert, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import '../../css/ErrorPages.css';
 
 // Define a página de erro 404
 export const NotFound = () => {
+
+  // Remove o token do localStorage e redireciona para a página de login
+  const returnToLogin = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  }
+
   return (
     <div className='background'>
       <Container className="d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
@@ -12,11 +18,9 @@ export const NotFound = () => {
             <Alert variant="light" className='alert'>
               <img className='logo-img' src="/logo_login.png" alt="logo" />
               <p>
-                Encontramos um problema. Se necessário, contacte o administrador do sistema.
+                Funcionalidade não disponível. Contacte o administrador do sistema.
               </p>
-              <Link to="/">
-                <Button className='link-button'>Voltar para o login</Button>
-              </Link>
+              <Button onClick={returnToLogin} className='link-button'>Voltar para o login</Button>
             </Alert>
           </Col>
         </Row>

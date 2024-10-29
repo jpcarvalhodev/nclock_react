@@ -296,7 +296,6 @@ body {
 }
 
 .dashboard-title-text-inside {
-    border-bottom: 1px solid #ccc;
     text-align: center;
     text-transform: uppercase;
 }
@@ -421,26 +420,53 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
     margin: 10px;
+    max-height: 550px;
+}
+
+.dashboard-carousel-container-pages-no-title {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
+    border-radius: 5px;
+    background: white;
+    margin: 10px;
+    max-height: 550px;
+    margin-top: 70px;
+}
+
+.dashboard-carousel-container-main {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
+    border-radius: 5px;
+    background: white;
 }
 
 .img-carousel {
-    max-width: 800px;
+    max-width: 515px;
 }
 
 .img-carousel-dashboard {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 5px;
+    max-width: 900px;
 }
 
 .img-carousel-licensed {
-    max-width: 800px;
+    padding: 10px;
+    max-width: 900px;
 }
 
 .dashboard-tabs-container {
@@ -453,11 +479,12 @@ body {
     border-radius: 5px;
     background: white;
     margin: 10px;
+    margin-top: 15px;
 }
 
 .nav.nav-pills {
     width: 71%;
-    height: 50px;
+    height: 40px;
     margin: 0 auto;
     border-radius: 10px;
     background-color: #D9D9D9;
@@ -467,7 +494,6 @@ body {
 .tab-content-wrapper {
     background-color: rgb(255 255 255 / 10%);
     border-radius: 30px;
-    padding: 10px;
     margin: 0 auto;
 }
 
@@ -478,7 +504,6 @@ body {
 .nav.nav-pills .nav-link {
     background-color: transparent;
     border-radius: 0;
-    padding: 17px 0;
     color: black;
     width: 100%;
     font-size: 17px;
@@ -488,7 +513,6 @@ body {
     transition: 0.3s ease-in-out;
     text-align: center;
     z-index: 0;
-    margin-top: -5px;
 }
 
 .nav.nav-pills .nav-link::before {
@@ -528,6 +552,28 @@ body {
 
 .nav-container li:hover>.submenu {
     display: block;
+}
+
+.menu:hover {
+    background-color: #d9d9d9;
+}
+
+.submenu {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.submenu .menu-item {
+    padding: 0;
+    margin: 0;
+}
+
+.submenu .menu-item:hover {
+    background-color: #d9d9d9;
+}
+
+.image-text:hover {
+    background-color: #d9d9d9;
 }
 
 .btn-selector-modal-close {

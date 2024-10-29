@@ -108,12 +108,10 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
                     code: maxCode
                 }));
             } else {
-                toast.error(`Erro ao buscar dados de ${entityType}`);
                 return;
             }
         } catch (error) {
             console.error(`Erro ao buscar dados de ${entityType}:`, error);
-            toast.error(`Erro ao conectar ao servidor para ${entityType}`);
         }
     };
 

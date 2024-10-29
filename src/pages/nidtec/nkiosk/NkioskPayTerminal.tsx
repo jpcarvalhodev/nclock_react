@@ -160,7 +160,7 @@ export const NkioskPayTerminal = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        return 'Sem Dados';
+                        /* const deviceMatch = devices.find(device => device.serialNumber === row.deviceSN) */
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':

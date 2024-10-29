@@ -136,7 +136,7 @@ const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: str
     Climatização: { route: '/ncomfort/ncomfortdashboard', tabKey: 'showNcomfortTab', ribbonKey: 'showNcomfortRibbon' },
     Áudio: { route: '/nsound/nsounddashboard', tabKey: 'showNsoundTab', ribbonKey: 'showNsoundRibbon' },
     Domótica: { route: '/nhome/nhomedashboard', tabKey: 'showNhomeTab', ribbonKey: 'showNhomeRibbon' },
-    NSoftwares: { route: '/nsoftwares/nsoftwaresdashboard', tabKey: 'showSoftwaresTab', ribbonKey: 'showSoftwaresRibbon' }
+    NSoftwares: { route: '/nsoftware/nsoftwaredashboard', tabKey: 'showSoftwaresTab', ribbonKey: 'showSoftwaresRibbon' }
 };
 
 // Função para verificar se o título é válido
@@ -260,13 +260,13 @@ export const NdocDashboard = () => {
 
         const scrollLeft = () => {
             if (cardContainerRef.current) {
-                cardContainerRef.current.scrollBy({ left: -250, behavior: 'smooth' });
+                cardContainerRef.current.scrollBy({ left: -130, behavior: 'smooth' });
             }
         };
 
         const scrollRight = () => {
             if (cardContainerRef.current) {
-                cardContainerRef.current.scrollBy({ left: 250, behavior: 'smooth' });
+                cardContainerRef.current.scrollBy({ left: 130, behavior: 'smooth' });
             }
         };
 
@@ -305,6 +305,7 @@ export const NdocDashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
+            <div style={{ marginBottom: 10 }}></div>
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
                     <Nav variant="pills" className="nav-pills justify-content-center align-items-center">

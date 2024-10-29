@@ -149,9 +149,9 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
 
     // Define as opções de tipo
     const typeOptions = [
-        { value: 'zona', label: 'Zona' },
-        { value: 'local_de_trabalho', label: 'Local de Trabalho' },
-        { value: 'cantina', label: 'Cantina' },
+        { value: 1, label: 'Zona' },
+        { value: 2, label: 'Local de Trabalho' },
+        { value: 3, label: 'Cantina' },
     ];
 
     return (
@@ -189,7 +189,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-acronym">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-acronym">Campo deve ter no máximo 4 caracteres</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"

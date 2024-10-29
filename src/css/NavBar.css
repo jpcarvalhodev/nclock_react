@@ -26,6 +26,15 @@
     cursor: pointer;
 }
 
+.dropdown-toggle:focus {
+    outline: none;
+    border: none;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
 .pessoas-tab,
 .dispositivos-tab,
 .configuracao-tab,
@@ -267,15 +276,20 @@
 
 .user-info {
     font-size: 15px;
-    padding: .375rem;
+    padding: .650rem;
     color: white;
     text-transform: uppercase;
 }
 
+.user-info:hover {
+    border: 1px solid white;
+    border-radius: 5px 5px 0 0;
+}
+
 .image-text {
     align-items: center;
-    margin-left: 30px;
-    margin-right: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
     margin-top: 5px;
     margin-bottom: 5px;
     cursor: pointer;

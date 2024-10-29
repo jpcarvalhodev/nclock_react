@@ -108,7 +108,7 @@ import { useColor } from "../context/ColorContext";
 import { useLicense } from "../context/LicenseContext";
 
 // Define o tipo TabName
-type TabName = 'CLIENTE' | 'SISNID' | 'NIDSOF' | 'NIDTEC' | 'NIDPLACE';
+type TabName = 'LICENÇAS SOFTWARES CLIENTE';
 
 // Define o tipo CardTitle
 type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
@@ -178,7 +178,7 @@ const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: str
     Climatização: { route: '/ncomfort/ncomfortdashboard', tabKey: 'showNcomfortTab', ribbonKey: 'showNcomfortRibbon' },
     Áudio: { route: '/nsound/nsounddashboard', tabKey: 'showNsoundTab', ribbonKey: 'showNsoundRibbon' },
     Domótica: { route: '/nhome/nhomedashboard', tabKey: 'showNhomeTab', ribbonKey: 'showNhomeRibbon' },
-    NSoftwares: { route: '/nsoftwares/nsoftwaresdashboard', tabKey: 'showSoftwaresTab', ribbonKey: 'showSoftwaresRibbon' }
+    NSoftwares: { route: '/nsoftware/nsoftwaredashboard', tabKey: 'showSoftwaresTab', ribbonKey: 'showSoftwaresRibbon' }
 };
 
 // Função para verificar se o título é válido
@@ -197,7 +197,7 @@ export const Dashboard = () => {
     const { navbarColor, footerColor } = useColor();
     const { license, getSoftwareEnabledStatus } = useLicense();
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('CLIENTE');
+    const [activeKey, setActiveKey] = useState<TabName>('LICENÇAS SOFTWARES CLIENTE');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -209,9 +209,9 @@ export const Dashboard = () => {
 
             const softwareEnabled = getSoftwareEnabledStatus(license);
 
-            if (activeKey === 'CLIENTE' && softwareName && softwareEnabled[softwareName]) {
+            if (activeKey === 'LICENÇAS SOFTWARES CLIENTE' && softwareName && softwareEnabled[softwareName]) {
                 route = route.replace('dashboard', 'dashboardlicensed');
-            }            
+            }
 
             localStorage.setItem(tab.tabKey, 'true');
             localStorage.setItem(tab.ribbonKey, 'true');
@@ -224,14 +224,7 @@ export const Dashboard = () => {
     };
 
     const cardData = {
-        'CLIENTE': [
-            { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
-            { title: 'Painéis', img: nled, tab: 'nled' },
-            { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
-            { title: 'Vigilância', img: nview, tab: 'nview' },
-            { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
-        ],
-        'SISNID': [
+        'LICENÇAS SOFTWARES CLIENTE': [
             { title: 'Assiduidade', img: nclock, tab: 'nclock' },
             { title: 'Acessos', img: naccess, tab: 'naccess' },
             { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
@@ -241,9 +234,6 @@ export const Dashboard = () => {
             { title: 'Cartões', img: ncard, tab: 'ncard' },
             { title: 'Vigilância', img: nview, tab: 'nview' },
             { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
-            { title: 'NSoftwares', img: sisnidlogo }
-        ],
-        'NIDSOF': [
             { title: 'Programação', img: nsoftware, tab: 'nsoftware' },
             { title: 'Sistemas', img: nsystem, tab: 'nsystem' },
             { title: 'Aplicativos', img: napp, tab: 'napp' },
@@ -253,7 +243,6 @@ export const Dashboard = () => {
             { title: 'Automação', img: naut, tab: 'naut' },
             { title: 'Equipamentos', img: nequip, tab: 'nequip' },
             { title: 'Projetos', img: nproject, tab: 'nproject' },
-            { title: 'NSoftwares', img: nidsof },
             { title: 'Contador', img: ncount, tab: 'ncount' },
             { title: 'Obras', img: nbuild, tab: 'nbuild' },
             { title: 'Autocaravanas', img: ncaravan, tab: 'ncaravan' },
@@ -272,8 +261,6 @@ export const Dashboard = () => {
             { title: 'Clínicas', img: nclinic, tab: 'nclinic' },
             { title: 'Ópticas', img: noptics, tab: 'noptics' },
             { title: 'Ourivesarias', img: ngold, tab: 'ngold' },
-        ],
-        'NIDTEC': [
             { title: 'Inteligência', img: nsmart, tab: 'nsmart' },
             { title: 'Virtual', img: nreality, tab: 'nreality' },
             { title: 'Hologramas', img: nhologram, tab: 'nhologram' },
@@ -283,9 +270,6 @@ export const Dashboard = () => {
             { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
             { title: 'Painéis', img: nled, tab: 'nled' },
             { title: 'Incêndios', img: nfire, tab: 'nfire' },
-            { title: 'NSoftwares', img: nidtec, tab: 'nidtec' }
-        ],
-        'NIDPLACE': [
             { title: 'Mobiliário', img: nfurniture, tab: 'nfurniture' },
             { title: 'Divisórias', img: npartition, tab: 'npartition' },
             { title: 'Design', img: ndecor, tab: 'ndecor' },
@@ -295,7 +279,6 @@ export const Dashboard = () => {
             { title: 'Climatização', img: ncomfort, tab: 'ncomfort' },
             { title: 'Áudio', img: nsound, tab: 'nsound' },
             { title: 'Domótica', img: nhome, tab: 'nhome' },
-            { title: 'NSoftwares', img: nidplace }
         ]
     };
 
@@ -325,19 +308,21 @@ export const Dashboard = () => {
 
         const scrollLeft = () => {
             if (cardContainerRef.current) {
-                cardContainerRef.current.scrollBy({ left: -250, behavior: 'smooth' });
+                cardContainerRef.current.scrollBy({ left: -130, behavior: 'smooth' });
             }
         };
 
         const scrollRight = () => {
             if (cardContainerRef.current) {
-                cardContainerRef.current.scrollBy({ left: 250, behavior: 'smooth' });
+                cardContainerRef.current.scrollBy({ left: 130, behavior: 'smooth' });
             }
         };
 
-        const cards = cardData[tabKey];
+        const softwareEnabledStatus = getSoftwareEnabledStatus(license);
+        const cards = cardData[tabKey].filter(card => {
+            return softwareEnabledStatus[`${card.tab.charAt(0).toUpperCase()}${card.tab.slice(1)}`];
+        });
         const numCards = cards.length;
-
         const alignmentClass = numCards <= maxVisibleCards ? 'cards-center' : 'cards-left';
 
         return (
@@ -370,12 +355,12 @@ export const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div style={{ marginBottom: 20 }}></div>
+            <div style={{ marginBottom: 10 }}></div>
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
                     <Nav variant="pills" className="nav-pills justify-content-center align-items-center">
                         {Object.keys(cardData).map((key) => (
-                            <Nav.Item key={key} style={{ width: '20%' }}>
+                            <Nav.Item key={key} style={{ width: '100%' }}>
                                 <Nav.Link eventKey={key}>{key}</Nav.Link>
                             </Nav.Item>
                         ))}
@@ -395,164 +380,28 @@ export const Dashboard = () => {
             </div>
             <div className="dashboard-content-wrapper">
                 <motion.div
-                    className="dashboard-carousel-container"
+                    className="dashboard-carousel-container-main"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
                     <h5 className="dashboard-title-text-inside">Soluções</h5>
-                    {activeKey === 'CLIENTE' && (
+                    {activeKey === 'LICENÇAS SOFTWARES CLIENTE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_nidgroup} alt="NIDGROUP" />
                             </div>
                         </Carousel>
                     )}
-                    {activeKey === 'SISNID' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_sisnid} alt="SISNID" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nclock} alt="Nclock" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_naccess} alt="Naccess" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nvisitor} alt="Nvisitor" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_npark} alt="Npark" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_ndoor} alt="Ndoor" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_npatrol} alt="Npatrol" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_ncard} alt="Ncard" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nview} alt="Nview" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nsecur} alt="Nsecur" />
-                            </div>
-                        </Carousel>
-                    )}
-                    {activeKey === 'NIDSOF' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nidsof} alt="NIDSOF" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nsoftware} alt="Nsoftware" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nsystem} alt="Nsystem" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_napp} alt="Napp" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_ncyber} alt="Ncyber" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_ndigital} alt="Ndigital" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nserver} alt="Nserver" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_naut} alt="Naut" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nequip} alt="Nequip" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nproject} alt="Nproject" />
-                            </div>
-                        </Carousel>
-                    )}
-                    {activeKey === 'NIDTEC' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nidtec} alt="NIDTEC" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nsmart} alt="Nsmart" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nreality} alt="Nreality" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nhologram} alt="Nhologram" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_npower} alt="Npower" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_ncharge} alt="Ncharge" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_ncity} alt="Ncity" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nkiosk} alt="Nkiosk" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nled} alt="Nled" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nfire} alt="Nfire" />
-                            </div>
-                        </Carousel>
-                    )}
-                    {activeKey === 'NIDPLACE' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nidplace} alt="NIDPLACE" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nfurniture} alt="Nfurniture" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_npartition} alt="Npartition" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_ndecor} alt="Ndecor" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nping} alt="Nping" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nconnect} alt="Nconnect" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nlight} alt="Nlight" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_ncomfort} alt="Ncomfort" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nsound} alt="Nsound" />
-                            </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nhome} alt="Nhome" />
-                            </div>
-                        </Carousel>
-                    )}
                 </motion.div>
                 <motion.div
-                    className="dashboard-carousel-container"
+                    className="dashboard-carousel-container-main"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
                     <h5 className="dashboard-title-text-inside">Notícias</h5>
-                    {activeKey === 'CLIENTE' && (
+                    {activeKey === 'LICENÇAS SOFTWARES CLIENTE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_sisnid} alt="SISNID" />
@@ -563,34 +412,6 @@ export const Dashboard = () => {
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_nidtec} alt="NIDTEC" />
                             </div>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nidplace} alt="NIDPLACE" />
-                            </div>
-                        </Carousel>
-                    )}
-                    {activeKey === 'SISNID' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_sisnid} alt="SISNID" />
-                            </div>
-                        </Carousel>
-                    )}
-                    {activeKey === 'NIDSOF' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nidsof} alt="NIDSOF" />
-                            </div>
-                        </Carousel>
-                    )}
-                    {activeKey === 'NIDTEC' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                            <div>
-                                <img className="img-carousel-dashboard" src={banner_nidtec} alt="NIDTEC" />
-                            </div>
-                        </Carousel>
-                    )}
-                    {activeKey === 'NIDPLACE' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_nidplace} alt="NIDPLACE" />
                             </div>

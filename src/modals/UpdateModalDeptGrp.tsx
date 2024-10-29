@@ -10,7 +10,6 @@ import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
 import * as apiService from "../helpers/apiService";
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
-import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

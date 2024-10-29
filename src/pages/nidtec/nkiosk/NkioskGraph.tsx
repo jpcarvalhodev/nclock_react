@@ -5,7 +5,6 @@ import { PolarArea } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
 

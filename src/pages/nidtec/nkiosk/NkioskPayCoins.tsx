@@ -46,14 +46,10 @@ export const NkioskPayCoins = () => {
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
     const eventDoorId = '2';
 
-    const deviceSN = 'AGB7234900595';
-    const matchedDevice = devices.find(device => device.serialNumber === deviceSN);
-    const deviceName = matchedDevice?.deviceName || '';
-
     // Função para buscar os pagamentos no moedeiro
     const fetchAllPayCoins = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId, deviceSN);
+            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId, devices[0].deviceSN);
             if (Array.isArray(data)) {
                 setPayCoins(data);
             } else {
@@ -67,7 +63,7 @@ export const NkioskPayCoins = () => {
     // Função para buscar os pagamentos do moedeiro entre datas
     const fetchPaymentsCoinBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId, deviceSN, startDate, endDate);
+            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId, devices[0].deviceSN, startDate, endDate);
             if (Array.isArray(data)) {
                 setPayCoins(data);
             } else {
@@ -165,7 +161,7 @@ export const NkioskPayCoins = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        return deviceName || 'Sem Dados';
+                        return devices[0].deviceName || 'Sem Dados';
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':
