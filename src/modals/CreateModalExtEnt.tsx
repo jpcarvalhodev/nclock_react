@@ -93,8 +93,12 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
 
     // Atualiza com a busca de funcionários
     useEffect(() => {
-        fetchEmployees();
-        fetchDropdownOptions();
+        if (!open) {
+            fetchEmployees();
+            fetchDropdownOptions();
+        } else {
+            setFormData({});
+        }
     }, []);
 
     // Define a mudança de foto
@@ -171,7 +175,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

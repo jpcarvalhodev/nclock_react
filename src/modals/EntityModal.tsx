@@ -155,7 +155,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

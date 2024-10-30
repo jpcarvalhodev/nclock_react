@@ -105,6 +105,7 @@
     display: flex;
     border-bottom: 1px solid #ccc;
     background-color: white;
+    overflow-x: auto;
 }
 
 .group {

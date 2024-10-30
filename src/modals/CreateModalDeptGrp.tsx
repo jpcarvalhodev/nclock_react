@@ -182,6 +182,8 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
+        } else {
+            setFormData({});
         }
     }, [open]);
 
@@ -247,7 +249,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     }
 
     return (
-        <Modal show={open} onHide={onClose} size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{entityType === 'department' ? 'Criar Departamento' : 'Criar Grupo'}</Modal.Title>
             </Modal.Header>

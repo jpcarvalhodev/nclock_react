@@ -159,7 +159,7 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
     };
 
     return (
-        <Modal show={open} onHide={onClose} size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

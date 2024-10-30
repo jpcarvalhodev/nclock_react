@@ -93,7 +93,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     };
 
     return (
-        <Modal show={open} onHide={onClose}>
+        <Modal show={open} onHide={onClose} backdrop="static">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

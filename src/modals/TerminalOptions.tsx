@@ -91,7 +91,7 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
 
     return (
         <>
-            <Modal show={show} onHide={handleClose} size="lg">
+            <Modal show={show} onHide={handleClose} backdrop="static" size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>Opções</Modal.Title>
                 </Modal.Header>

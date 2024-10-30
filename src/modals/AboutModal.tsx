@@ -12,7 +12,7 @@ interface AboutModalProps {
 export const AboutModal = ({ open, onClose }: AboutModalProps) => {
 
     return (
-        <Modal show={open} onHide={onClose} size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>Acerca de</Modal.Title>
             </Modal.Header>

@@ -199,7 +199,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

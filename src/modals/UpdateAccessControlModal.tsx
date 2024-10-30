@@ -230,7 +230,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
 
     return (
         <div>
-            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals}>
+            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static">
                 <Modal.Header closeButton>
                     <Modal.Title>Selecione uma Porta</Modal.Title>
                 </Modal.Header>

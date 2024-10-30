@@ -342,10 +342,10 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         { value: 'nclinics', label: 'Nclinics' },
         { value: 'noptics', label: 'Noptics' },
         { value: 'ngold', label: 'Ngold' }
-    ];    
+    ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -672,13 +672,16 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                     <Col md={3}>
                                         <Form.Group controlId="formDevicePrivelage">
                                             <Form.Label>Privilégio do Dispositivo</Form.Label>
-                                            <Form.Control
-                                                type="number"
+                                            <Form.Select
                                                 className="custom-input-height custom-select-font-size"
                                                 value={cardFormData.devicePrivelage || ''}
                                                 onChange={handleCardChange}
                                                 name="devicePrivelage"
-                                            />
+                                            >
+                                                <option value="">Selecione...</option>
+                                                <option value="0">Não</option>
+                                                <option value="1">Sim</option>
+                                            </Form.Select>
                                         </Form.Group>
                                     </Col>
                                     <Col md={3}>

@@ -341,7 +341,7 @@ export const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Device
 };
 
 export const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
-    const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice/${zktecoDeviceID}`);
+    const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice?deviceId=${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -350,8 +350,8 @@ export const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
     return response.json();
 };
 
-export const openDeviceDoor = async (zktecoDeviceID: DoorDevice, doorData: DoorDevice) => {
-    const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${zktecoDeviceID}`, {
+export const openDeviceDoor = async (deviceSN: DoorDevice, doorData: DoorDevice) => {
+    const response = await fetchWithAuth(`Zkteco/OpenDevice1Door/${deviceSN}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -9,7 +9,6 @@ import * as apiService from "../../../helpers/apiService";
 import { Carousel } from "react-responsive-carousel";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { useColor } from "../../../context/ColorContext";
-import { Pie, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController } from 'chart.js';
 
 // Registra os elementos do ChartJS
@@ -106,34 +105,6 @@ export const NclockDashboardLicensed = () => {
         }
     };
 
-    // Define os dados do gráfico circular
-    const chartData = {
-        labels: ['Total de Funcionários'],
-        datasets: [{
-            label: 'Contagem de Funcionários',
-            data: [totalEmployees],
-            backgroundColor: [
-                '#0050a0'
-            ],
-            borderColor: [
-                '#0080ff'
-            ],
-            borderWidth: 1
-        }]
-    };
-
-    // Define os dados do gráfico de barras
-    const chartDataDepartmentsGroups = {
-        labels: ['Departamentos', 'Grupos'],
-        datasets: [{
-            label: 'Contagem de Departamentos e Grupos',
-            data: [totalDepartments, totalGroups],
-            backgroundColor: ['#0050a0'],
-            borderColor: ['#0080ff'],
-            borderWidth: 1
-        }]
-    };
-
     // Carrega os dados
     useEffect(() => {
         loadData();
@@ -155,15 +126,15 @@ export const NclockDashboardLicensed = () => {
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-content">
-                <div className="dashboard-carousel-container">
+                <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
                             <img className="img-carousel-licensed" src={banner_nclock} alt="Nclock" />
                         </div>
                     </Carousel>
                 </div>
-                <div className="calendar-container">
-                    <div className="dashboard-calendar" style={{ height: 400 }}>
+                <div className="calendar-container" style={{ marginTop: 70 }}>
+                    <div className="dashboard-calendar" style={{ height: 495 }}>
                         <Calendar
                             localizer={localizer}
                             events={events}
@@ -172,20 +143,6 @@ export const NclockDashboardLicensed = () => {
                             messages={messages}
                             culture="pt"
                         />
-                    </div>
-                </div>
-            </div>
-            <div className="dashboard-content">
-                <div className="chart-container">
-                    <div className="employee-pie-chart" style={{ flex: 1 }}>
-                        <h2 className="employee-pie-chart-text">Total de Funcionários: {totalEmployees}</h2>
-                        <Pie className="employee-pie-chart-pie" data={chartData} />
-                    </div>
-                </div>
-                <div className="chart-container">
-                    <div className="departments-groups-chart" style={{ flex: 1 }}>
-                        <h2 className="departments-groups-chart-text">Departamentos e Grupos</h2>
-                        <Bar className="departments-groups-chart-data" data={chartDataDepartmentsGroups} />
                     </div>
                 </div>
             </div>

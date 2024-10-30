@@ -31,7 +31,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
 
     // useEffect para limpar o formulário quando o modal é fechado
     useEffect(() => {
-        if(!open) {
+        if (!open) {
             setFormData({});
         }
     }, [open]);
@@ -64,7 +64,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         const target = e.target as HTMLInputElement;
         const { name, value, type } = target;
         let parsedValue: string | number | boolean;
-        
+
         if (type === 'number') {
             parsedValue = Number(value);
         } else {
@@ -93,7 +93,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

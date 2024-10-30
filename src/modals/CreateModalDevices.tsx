@@ -45,7 +45,6 @@ interface Props<T> {
 export const CreateModalDevices = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const {
         devices,
-        fetchAllDevices,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, disabled: true });
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -114,7 +113,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                 if (devices && devices.length > 0) {
                     const maxNumber = devices.reduce((max: number, device: Devices) => Math.max(max, device.deviceNumber), 0);
                     const nextDeviceNumber = maxNumber + 1;
-    
+
                     if (!initialValues.deviceNumber) {
                         setFormData(prevState => ({
                             ...prevState,
@@ -134,7 +133,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         if (open) {
             fetchDevicesAndSetNextNumber();
         }
-    }, [open, initialValues, devices]); 
+    }, [open, initialValues, devices]);
 
     // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,7 +191,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
         setFormData(prevFormData => ({
             ...prevFormData,
-            deviceName: deviceOption ? deviceOption.label : '',
+            model: deviceOption ? deviceOption.label : '',
             photo: deviceOption?.img || no_image
         }));
     };
@@ -262,6 +261,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const handleClose = () => {
         setFormData({});
         setDeviceImage(null);
+        setSelectedDevice('');
         onClose();
     }
 
@@ -286,7 +286,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -299,8 +299,27 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                 placement="right"
                                 overlay={<Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>}
                             >
-                                <Form.Select
+                                <Form.Control
+                                    type="text"
                                     name="deviceName"
+                                    value={formData['deviceName'] || ''}
+                                    onChange={handleChange}
+                                    className="custom-input-height custom-select-font-size"
+                                >
+                                </Form.Control>
+                            </OverlayTrigger>
+                            {errors['deviceName'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceName']}</div>}
+                        </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                        <Form.Group controlId="formModel">
+                            <Form.Label>Modelo<span style={{ color: 'red' }}> *</span></Form.Label>
+                            <OverlayTrigger
+                                placement="right"
+                                overlay={<Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>}
+                            >
+                                <Form.Select
+                                    name="model"
                                     value={selectedDevice}
                                     onChange={handleDeviceChange}
                                     className="custom-input-height custom-select-font-size"
@@ -311,7 +330,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                     ))}
                                 </Form.Select>
                             </OverlayTrigger>
-                            {errors['deviceName'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceName']}</div>}
+                            {errors['model'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['model']}</div>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>

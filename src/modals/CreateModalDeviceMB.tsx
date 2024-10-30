@@ -93,7 +93,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
     };
 
     return (
-        <Modal show={open} onHide={onClose} size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

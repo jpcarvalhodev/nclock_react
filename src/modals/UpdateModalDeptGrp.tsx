@@ -256,7 +256,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     }
 
     return (
-        <Modal show={open} onHide={onClose} size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{entityType === 'department' ? 'Atualizar Departamento' : 'Atualizar Grupo'}</Modal.Title>
             </Modal.Header>

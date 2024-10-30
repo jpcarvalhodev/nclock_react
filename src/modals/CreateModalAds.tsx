@@ -70,8 +70,10 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     // UseEffect para definir o campo "Criador" automaticamente a partir do localStorage
     useEffect(() => {
         const username = localStorage.getItem('username');
-        if (username) {
+        if (open && username) {
             setFormData((prevData) => ({ ...prevData, Creador: username }));
+        } else {
+            setFormData({});
         }
     }, [open]);
 
@@ -172,7 +174,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     };
 
     return (
-        <Modal show={open} onHide={onClose} size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

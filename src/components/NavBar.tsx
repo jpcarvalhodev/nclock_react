@@ -240,7 +240,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showConfiguracaoRibbon, setShowConfiguracaoRibbon] = useState(false);
 	const [showAjudaRibbon, setShowAjudaRibbon] = useState(false);
 	const [activeTab, setActiveTab] = useState('');
-	const [isRibbonPinned, setIsRibbonPinned] = useState(false);
 	const navigate = useNavigate();
 	const [showNclockRibbon, setShowNclockRibbon] = useState(false);
 	const [showNaccessRibbon, setShowNaccessRibbon] = useState(false);
@@ -367,6 +366,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [showSoftwaresDropdown, setShowSoftwaresDropdown] = useState(false);
 	const [menuStructureStart, setMenuStructureStart] = useState<MenuStructure>({});
+	const [menuStructureNG, setMenuStructureNG] = useState<MenuStructure>({});
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -405,9 +405,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		loadInitialToken();
 		loadState();
 
-		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
-		setIsRibbonPinned(ribbonPinned);
-
 		const savedActiveTab = localStorage.getItem('activeTab');
 		if (savedActiveTab && tabData[savedActiveTab]) {
 			setActiveTab(savedActiveTab);
@@ -416,7 +413,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setRibbon(true);
 		}
 
-		if (ribbonPinned && activeTab in ribbons) {
+		if (activeTab in ribbons) {
 			const [setRibbon] = ribbons[activeTab as RibbonName];
 			setRibbon(true);
 		}
@@ -583,11 +580,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para carregar o estado das ribbons e tabs
 	function loadState(): void {
-		const ribbonPinned = localStorage.getItem('ribbonPinned') === 'true';
-		setIsRibbonPinned(ribbonPinned);
-
 		Object.entries(settersMap).forEach(([key, { setShowRibbon, setShowTab }]) => {
-			setItemState(key as RibbonKey, setShowRibbon, ribbonPinned ? '' : 'show');
+			setItemState(key as RibbonKey, setShowRibbon);
 			setItemState(key as RibbonKey, setShowTab);
 		});
 	}
@@ -658,20 +652,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleRibbonClick = (tabName: RibbonName) => {
 		if (tabName in ribbons) {
 			const [setRibbon, ribbonName] = ribbons[tabName];
-
-			if (activeTab === ribbonName) {
-				if (!isRibbonPinned) {
-					setRibbon(false);
-					setActiveTab('');
-				}
-			} else {
-				Object.keys(ribbons).forEach((key) => {
-					const [setOtherRibbon] = ribbons[key as RibbonName];
-					setOtherRibbon(false);
-				});
-				setRibbon(true);
-				setActiveTab(ribbonName);
-			}
+			Object.keys(ribbons).forEach((key) => {
+				const [setOtherRibbon] = ribbons[key as RibbonName];
+				setOtherRibbon(false);
+			});
+			setRibbon(true);
+			setActiveTab(ribbonName);
 		}
 	};
 
@@ -777,7 +763,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
 			const softwareName = capitalizeFirstLetter(tabName);
 			const isSoftwareEnabled = softwareName ? softwareEnabled[softwareName] : false;
-			const isSoftwareCliente = menuStructureStart.cliente?.submenu?.filter(item => softwareEnabled[item.label]);
+			const isSoftwareCliente = menuStructureStart.cliente.submenu?.some(item => item.label === softwareName) ? true : false;
 			const finalRoute = (tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) ? `${route}licensed` : route;
 
 			if (activeTab === tabName) {
@@ -791,10 +777,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 				localStorage.removeItem('activeTab');
 			} else {
 				setTab(true);
-				setRibbon(true);
+				setRibbon(isSoftwareCliente);
 				localStorage.setItem(localStorageTabKey, 'true');
-				if (localStorageRibbonKey) {
-					localStorage.setItem(localStorageRibbonKey, 'true');
+				if (localStorageRibbonKey && tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) {
+					localStorage.setItem(localStorageRibbonKey, 'true')
 				}
 				setActiveTab(tabName);
 				localStorage.setItem('activeTab', tabName);
@@ -852,7 +838,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 			localStorage.setItem('showNclinicRibbon', String(showNclinicRibbon));
 			localStorage.setItem('showNopticsRibbon', String(showNopticsRibbon));
 			localStorage.setItem('showNgoldRibbon', String(showNgoldRibbon));
-			localStorage.setItem('ribbonPinned', String(isRibbonPinned));
 			localStorage.setItem('showNsmartRibbon', String(showNsmartRibbon));
 			localStorage.setItem('showNrealityRibbon', String(showNrealityRibbon));
 			localStorage.setItem('showNhologramRibbon', String(showNhologramRibbon));
@@ -871,34 +856,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 			localStorage.setItem('showNcomfortRibbon', String(showNcomfortRibbon));
 			localStorage.setItem('showNsoundRibbon', String(showNsoundRibbon));
 			localStorage.setItem('showNhomeRibbon', String(showNhomeRibbon));
-			localStorage.setItem('ribbonPinned', String(isRibbonPinned));
 		};
 
 		const timer = setTimeout(handleStateChange, 10);
 
 		return () => clearTimeout(timer);
-	}, [isRibbonPinned, showPessoasRibbon, showDispositivosRibbon, showConfiguracaoRibbon, showAjudaRibbon, showNclockRibbon, showNaccessRibbon, showNvisitorRibbon, showNparkRibbon, showNdoorRibbon, showNpatrolRibbon, showNcardRibbon, showNviewRibbon, showNsecurRibbon, showNsoftwareRibbon, showNsystemRibbon, showNappRibbon, showNcyberRibbon, showNdigitalRibbon, showNserverRibbon, showNautRibbon, showNequipRibbon, showNprojectRibbon, showNsmartRibbon, showNrealityRibbon, showNhologramRibbon, showNpowerRibbon, showNchargeRibbon, showNcityRibbon, showNkioskRibbon, showNledRibbon, showNfireRibbon, showNfurnitureRibbon, showNpartitionRibbon, showNdecorRibbon, showNpingRibbon, showNconnectRibbon, showNlightRibbon, showNcomfortRibbon, showNsoundRibbon, showNhomeRibbon]);
-
-	// Função para alternar o estado do ribbon
-	const togglePinRibbon = () => {
-		const newState = !isRibbonPinned;
-		setIsRibbonPinned(newState);
-		localStorage.setItem('ribbonPinned', String(newState));
-
-		if (!newState) {
-			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
-			Object.values(settersMap).forEach(({ setShowRibbon }) => setShowRibbon(false));
-			setActiveTab('');
-		} else {
-			if (activeTab in ribbons) {
-				const [setRibbon] = ribbons[activeTab as RibbonName];
-				setRibbon(true);
-			} else if (activeTab in settersMap) {
-				const { setShowRibbon } = settersMap[activeTab as RibbonKey];
-				setShowRibbon(true);
-			}
-		}
-	};
+	}, [showPessoasRibbon, showDispositivosRibbon, showConfiguracaoRibbon, showAjudaRibbon, showNclockRibbon, showNaccessRibbon, showNvisitorRibbon, showNparkRibbon, showNdoorRibbon, showNpatrolRibbon, showNcardRibbon, showNviewRibbon, showNsecurRibbon, showNsoftwareRibbon, showNsystemRibbon, showNappRibbon, showNcyberRibbon, showNdigitalRibbon, showNserverRibbon, showNautRibbon, showNequipRibbon, showNprojectRibbon, showNsmartRibbon, showNrealityRibbon, showNhologramRibbon, showNpowerRibbon, showNchargeRibbon, showNcityRibbon, showNkioskRibbon, showNledRibbon, showNfireRibbon, showNfurnitureRibbon, showNpartitionRibbon, showNdecorRibbon, showNpingRibbon, showNconnectRibbon, showNlightRibbon, showNcomfortRibbon, showNsoundRibbon, showNhomeRibbon]);
 
 	// Função para alternar o submenu
 	const toggleSubMenu = (menuKey: string) => {
@@ -909,101 +872,123 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	};
 
-	// Define o componente do item de menu
-	const menuStructureNG: MenuStructure = {
-		sisnid: {
-			label: 'SISNID',
-			image: sisnidlogo,
-			alt: 'SISNID',
-			key: 'sisnid',
-			submenu: [
-				{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
-				{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
-				{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
-				{ label: 'Npark', image: npark, alt: 'npark', key: 'npark' },
-				{ label: 'Ndoor', image: ndoor, alt: 'ndoor', key: 'ndoor' },
-				{ label: 'Npatrol', image: npatrol, alt: 'npatrol', key: 'npatrol' },
-				{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
-				{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
-				{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
-				{ label: 'Nsoftwares', image: sisnidlogo, alt: 'nsoftwares', key: 'nsoftwares' }
-			],
-		},
-		nidsof: {
-			label: 'NIDSOF',
-			image: nidsof,
-			alt: 'NIDSOF',
-			key: 'nidsof',
-			submenu: [
-				{ label: 'Nsoftware', image: nsoftware, alt: 'nsoftware', key: 'nsoftware' },
-				{ label: 'Nsystem', image: nsystem, alt: 'nsystem', key: 'nsystem' },
-				{ label: 'Napp', image: napp, alt: 'napp', key: 'napp' },
-				{ label: 'Ncyber', image: ncyber, alt: 'ncyber', key: 'ncyber' },
-				{ label: 'Ndigital', image: ndigital, alt: 'ndigital', key: 'ndigital' },
-				{ label: 'Nserver', image: nserver, alt: 'nserver', key: 'nserver' },
-				{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
-				{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
-				{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
-				{ label: 'Ncount', image: ncount, alt: 'ncount', key: 'ncount' },
-				{ label: 'Nbuild', image: nbuild, alt: 'nbuild', key: 'nbuild' },
-				{ label: 'Ncaravan', image: ncaravan, alt: 'ncaravan', key: 'ncaravan' },
-				{ label: 'Nmechanic', image: nmechanic, alt: 'nmechanic', key: 'nmechanic' },
-				{ label: 'Nevents', image: nevents, alt: 'nevents', key: 'nevents' },
-				{ label: 'Nservice', image: nservice, alt: 'nservice', key: 'nservice' },
-				{ label: 'Ntask', image: ntask, alt: 'ntask', key: 'ntask' },
-				{ label: 'Nproduction', image: nproduction, alt: 'nproduction', key: 'nproduction' },
-				{ label: 'Nticket', image: nticket, alt: 'nticket', key: 'nticket' },
-				{ label: 'Nsales', image: nsales, alt: 'nsales', key: 'nsales' },
-				{ label: 'Ninvoice', image: ninvoice, alt: 'ninvoice', key: 'ninvoice' },
-				{ label: 'Ndoc', image: ndoc, alt: 'ndoc', key: 'ndoc' },
-				{ label: 'Nsports', image: nsports, alt: 'nsports', key: 'nsports' },
-				{ label: 'Ngym', image: ngym, alt: 'ngym', key: 'ngym' },
-				{ label: 'Nschool', image: nschool, alt: 'nschool', key: 'nschool' },
-				{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
-				{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
-				{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
-				{ label: 'Nsoftwares', image: nidsof, alt: 'nsoftwares', key: 'nsoftwares' }
-			],
-		},
-		nidtec: {
-			label: 'NIDTEC',
-			image: nidtec,
-			alt: 'NIDTEC',
-			key: 'nidtec',
-			submenu: [
-				{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
-				{ label: 'Nreality', image: nreality, alt: 'nreality', key: 'nreality' },
-				{ label: 'Nhologram', image: nhologram, alt: 'nhologram', key: 'nhologram' },
-				{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
-				{ label: 'Ncharge', image: ncharge, alt: 'ncharge', key: 'ncharge' },
-				{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
-				{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
-				{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
-				{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
-				{ label: 'Nsoftwares', image: nidtec, alt: 'nsoftwares', key: 'nsoftwares' }
-			],
-		},
-		nidplace: {
-			label: 'NIDPLACE',
-			image: nidplace,
-			alt: 'NIDPLACE',
-			key: 'nidplace',
-			submenu: [
-				{ label: 'Nfurniture', image: nfurniture, alt: 'nfurniture', key: 'nfurniture' },
-				{ label: 'Npartition', image: npartition, alt: 'npartition', key: 'npartition' },
-				{ label: 'Ndecor', image: ndecor, alt: 'ndecor', key: 'ndecor' },
-				{ label: 'Nping', image: nping, alt: 'nping', key: 'nping' },
-				{ label: 'Nconnect', image: nconnect, alt: 'nconnect', key: 'nconnect' },
-				{ label: 'Nlight', image: nlight, alt: 'nlight', key: 'nlight' },
-				{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
-				{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
-				{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
-				{ label: 'Nsoftwares', image: nidplace, alt: 'nsoftwares', key: 'nsoftwares' }
-			],
-		},
-	};
+	// Define a estrutura do menu de softwares
+	useEffect(() => {
+		const enabledSoftware = getSoftwareEnabledStatus(license);
 
-	// Define a estrutura do menu inicial
+		const filterUnlicensedSoftware = (submenu: MenuItem[]): MenuItem[] => {
+			return submenu.filter(item => !enabledSoftware[item.label]);
+		};
+
+		// Estrutura de menu original
+		const originalMenuStructure: MenuStructure = {
+			sisnid: {
+				label: 'SISNID',
+				image: sisnidlogo,
+				alt: 'SISNID',
+				key: 'sisnid',
+				submenu: [
+					{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
+					{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
+					{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
+					{ label: 'Npark', image: npark, alt: 'npark', key: 'npark' },
+					{ label: 'Ndoor', image: ndoor, alt: 'ndoor', key: 'ndoor' },
+					{ label: 'Npatrol', image: npatrol, alt: 'npatrol', key: 'npatrol' },
+					{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
+					{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
+					{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
+					{ label: 'Nsoftwares', image: sisnidlogo, alt: 'nsoftwares', key: 'nsoftwares' }
+				],
+			},
+			nidsof: {
+				label: 'NIDSOF',
+				image: nidsof,
+				alt: 'NIDSOF',
+				key: 'nidsof',
+				submenu: [
+					{ label: 'Nsoftware', image: nsoftware, alt: 'nsoftware', key: 'nsoftware' },
+					{ label: 'Nsystem', image: nsystem, alt: 'nsystem', key: 'nsystem' },
+					{ label: 'Napp', image: napp, alt: 'napp', key: 'napp' },
+					{ label: 'Ncyber', image: ncyber, alt: 'ncyber', key: 'ncyber' },
+					{ label: 'Ndigital', image: ndigital, alt: 'ndigital', key: 'ndigital' },
+					{ label: 'Nserver', image: nserver, alt: 'nserver', key: 'nserver' },
+					{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
+					{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
+					{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
+					{ label: 'Ncount', image: ncount, alt: 'ncount', key: 'ncount' },
+					{ label: 'Nbuild', image: nbuild, alt: 'nbuild', key: 'nbuild' },
+					{ label: 'Ncaravan', image: ncaravan, alt: 'ncaravan', key: 'ncaravan' },
+					{ label: 'Nmechanic', image: nmechanic, alt: 'nmechanic', key: 'nmechanic' },
+					{ label: 'Nevents', image: nevents, alt: 'nevents', key: 'nevents' },
+					{ label: 'Nservice', image: nservice, alt: 'nservice', key: 'nservice' },
+					{ label: 'Ntask', image: ntask, alt: 'ntask', key: 'ntask' },
+					{ label: 'Nproduction', image: nproduction, alt: 'nproduction', key: 'nproduction' },
+					{ label: 'Nticket', image: nticket, alt: 'nticket', key: 'nticket' },
+					{ label: 'Nsales', image: nsales, alt: 'nsales', key: 'nsales' },
+					{ label: 'Ninvoice', image: ninvoice, alt: 'ninvoice', key: 'ninvoice' },
+					{ label: 'Ndoc', image: ndoc, alt: 'ndoc', key: 'ndoc' },
+					{ label: 'Nsports', image: nsports, alt: 'nsports', key: 'nsports' },
+					{ label: 'Ngym', image: ngym, alt: 'ngym', key: 'ngym' },
+					{ label: 'Nschool', image: nschool, alt: 'nschool', key: 'nschool' },
+					{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
+					{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
+					{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
+					{ label: 'Nsoftwares', image: nidsof, alt: 'nsoftwares', key: 'nsoftwares' }
+				],
+			},
+			nidtec: {
+				label: 'NIDTEC',
+				image: nidtec,
+				alt: 'NIDTEC',
+				key: 'nidtec',
+				submenu: [
+					{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
+					{ label: 'Nreality', image: nreality, alt: 'nreality', key: 'nreality' },
+					{ label: 'Nhologram', image: nhologram, alt: 'nhologram', key: 'nhologram' },
+					{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
+					{ label: 'Ncharge', image: ncharge, alt: 'ncharge', key: 'ncharge' },
+					{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
+					{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
+					{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
+					{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
+					{ label: 'Nsoftwares', image: nidtec, alt: 'nsoftwares', key: 'nsoftwares' }
+				],
+			},
+			nidplace: {
+				label: 'NIDPLACE',
+				image: nidplace,
+				alt: 'NIDPLACE',
+				key: 'nidplace',
+				submenu: [
+					{ label: 'Nfurniture', image: nfurniture, alt: 'nfurniture', key: 'nfurniture' },
+					{ label: 'Npartition', image: npartition, alt: 'npartition', key: 'npartition' },
+					{ label: 'Ndecor', image: ndecor, alt: 'ndecor', key: 'ndecor' },
+					{ label: 'Nping', image: nping, alt: 'nping', key: 'nping' },
+					{ label: 'Nconnect', image: nconnect, alt: 'nconnect', key: 'nconnect' },
+					{ label: 'Nlight', image: nlight, alt: 'nlight', key: 'nlight' },
+					{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
+					{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
+					{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
+					{ label: 'Nsoftwares', image: nidplace, alt: 'nsoftwares', key: 'nsoftwares' }
+				],
+			},
+
+		};
+
+		const newMenuStructure: MenuStructure = {};
+		Object.keys(originalMenuStructure).forEach(key => {
+			const menu = originalMenuStructure[key];
+			const filteredSubmenu = menu.submenu ? filterUnlicensedSoftware(menu.submenu) : [];
+			newMenuStructure[key] = {
+				...menu,
+				submenu: filteredSubmenu
+			};
+		});
+
+		setMenuStructureNG(newMenuStructure);
+	}, [license]);
+
+	// Define a estrutura do menu do nidgroup
 	useEffect(() => {
 		const enabledSoftware = getSoftwareEnabledStatus(license);
 
@@ -1636,7 +1621,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'inicio nclock') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Link to="/nkiosk/nclockdashboardlicensed" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas mt-2">
+												<Link to="/nclock/nclockdashboardlicensed" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas mt-2">
 													<span className="icon">
 														<img src={home} alt="botão início" />
 													</span>
@@ -1720,7 +1705,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="text">Resultados</span>
 												</Button>
 											</div>
-											<div className="grid-container">
+											<div className="grid-container" style={{ width: 240 }}>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 													<span className="icon">
 														<img src={processing} alt="botão processamento" />
@@ -1755,7 +1740,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={clock} alt="botão trabalho suplementar" />
 													</span>
-													<span className="text">Trabalho Suplementar</span>
+													<span className="text">Suplementar</span>
 												</Button>
 											</div>
 										</div>
@@ -1767,7 +1752,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'horarios nclock') && (
 										<div className="btn-group" role="group">
-											<div className="grid-container-entidades">
+											<div className="grid-container-entidades" style={{ width: 120 }}>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 													<span className="icon">
 														<img src={time} alt="botão horários" />
@@ -1778,7 +1763,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={workPlan} alt="botão planos de trabalho" />
 													</span>
-													<span className="text">Planos de Trabalho</span>
+													<span className="text">Planos Trabalho</span>
 												</Button>
 											</div>
 										</div>
@@ -1790,7 +1775,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'codigos de resultados nclock') && (
 										<div className="btn-group" role="group">
-											<div className="grid-container">
+											<div className="grid-container" style={{ width: 250 }}>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 													<span className="icon">
 														<img src={absent} alt="botão ausências faltas" />
@@ -1861,7 +1846,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="text">Férias</span>
 												</Button>
 											</div>
-											<div>
+											<div style={{ width: 130 }}>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
 													<span className="icon">
 														<img src={vacation} alt="botão alteração de férias" />
@@ -1937,7 +1922,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'configuracoes nclock') && (
 										<div className="btn-group" role="group">
-											<div className='icon-text-informacoes'>
+											<div className='icon-text-informacoes' style={{ marginTop: 13 }}>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-entidades" disabled>
 													<span className="icon">
 														<img src={settings} alt="botão opções" />
@@ -1951,15 +1936,91 @@ export const NavBar = ({ style }: NavBarProps) => {
 										<span className="title">Configurações</span>
 									</div>
 								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'logs naccess') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-informacoes'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de logins" />
+													</span>
+													<span className="text">Logins</span>
+												</Button>
+											</div>
+											<div className='icon-text-informacoes'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de histórico" />
+													</span>
+													<span className="text">Histórico</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('logs naccess')}>
+										<span className="title">Logs</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas naccess') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-informacoes'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas naccess')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio naccess') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-informacoes'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagens" />
+													</span>
+													<span className="text">Listagens</span>
+												</Button>
+											</div>
+											<div className='icon-text-informacoes'>
+												<Link to="/nclock/nclockgraph" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio naccess')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos naccess') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-informacoes'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos naccess')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
 							</div>
-						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
 						</div>
 					</div>
 				)}
@@ -1971,7 +2032,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'inicio naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Link to="/nkiosk/naccessdashboardlicensed" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<Link to="/naccess/naccessdashboardlicensed" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={home} alt="botão início" />
 													</span>
@@ -2100,6 +2161,31 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
+									{(!isMobile || visibleGroup === 'logs naccess') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de logins" />
+													</span>
+													<span className="text">Logins</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={logs} alt="botão log de histórico" />
+													</span>
+													<span className="text">Histórico</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('logs naccess')}>
+										<span className="title">Logs</span>
+									</div>
+								</div>
+								<div className="group">
 									{(!isMobile || visibleGroup === 'alertas naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2127,7 +2213,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="text">Listagens</span>
 												</Button>
 											</div>
-
+											<div className='icon-text-pessoas'>
+												<Link to="/naccess/naccessgraph" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
 										</div>
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio naccess')}>
@@ -2152,14 +2245,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 							</div>
-						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
 						</div>
 					</div>
 				)}
@@ -2301,14 +2386,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 								</div>
 							</div>
 						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
-						</div>
 					</div>
 				)}
 				{showNviewRibbon && softwareEnabled['Nview'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nview')?.label && (
@@ -2443,14 +2520,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 								</div>
 							</div>
 						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
-						</div>
 					</div>
 				)}
 				{showNsecurRibbon && softwareEnabled['Nsecur'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsecur')?.label && (
@@ -2576,14 +2645,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 							</div>
-						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
 						</div>
 					</div>
 				)}
@@ -2837,14 +2898,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 								</div>
 							</div>
 						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
-						</div>
 					</div>
 				)}
 				{showNledRibbon && softwareEnabled['Nled'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nled')?.label && (
@@ -2992,14 +3045,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 							</div>
-						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
 						</div>
 					</div>
 				)}
@@ -3175,14 +3220,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 								</div>
 							</div>
 						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
-						</div>
 					</div>
 				)}
 				{showDispositivosRibbon && (
@@ -3289,14 +3326,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 							</div>
-						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
 						</div>
 					</div>
 				)}
@@ -3463,14 +3492,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 								</div>
 							</div>
 						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
-						</div>
 					</div>
 				)}
 				{showAjudaRibbon && (
@@ -3527,14 +3548,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 							</div>
-						</div>
-						<div className="ribbon-toggle">
-							<img
-								src={isRibbonPinned ? unpin : pin}
-								alt="Lock/Unlock Ribbon"
-								onClick={togglePinRibbon}
-								className='ribbon-icon'
-							/>
 						</div>
 					</div>
 				)}

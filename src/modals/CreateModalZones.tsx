@@ -34,6 +34,13 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    useEffect(() => {
+        if(!open) {
+            setFormData({});
+            setProfileImage(null);
+        }
+    }, [open]);
+
     // useEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -130,7 +137,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

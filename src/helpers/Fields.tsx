@@ -124,7 +124,8 @@ export const employeeAttendanceTimesFields = [
 
 export const deviceFields = [
     { key: "deviceNumber", label: "Número", type: "number", required: true },
-    { key: "deviceName", label: "Nome do Dispositivo", type: "string", required: true },
+    { key: "deviceName", label: "Nome", type: "string", required: true },
+    { key: "model", label: "Modelo", type: "string" },
     { key: "ipAddress", label: "Endereço IP", type: "string", required: true },
     { key: "port", label: "Porta", type: "number", required: true },
     { key: "photo", label: "Foto", type: "string" },
@@ -162,7 +163,7 @@ export const employeeDeviceFields = [
 
 export const employeeCardFields = [
     { key: 'cardNumber', label: 'Número do Cartão', type: 'string' },
-    { key: 'devicePassword', label: 'Senha do Dispositivo', type: 'string' },
+    { key: 'devicePassword', label: 'Senha do Dispositivo', type: 'number' },
     { key: 'devicePrivelage', label: 'Privilégio do Dispositivo', type: 'number' },
     { key: 'deviceEnabled', label: 'Dispositivo Activado', type: 'boolean' },
 ];
@@ -252,7 +253,7 @@ export const emailCompanyFields = [
 export const emailAndCompanyFields = emailFields.concat(emailCompanyFields);
 
 export const timePeriodFields = [
-    { key: 'appId', label: 'ID do App', type: 'string' },
+    { key: 'appId', label: 'ID', type: 'string' },
     { key: 'createrName', label: 'Nome do Criador', type: 'string', },
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'remark', label: 'Observações', type: 'string' },

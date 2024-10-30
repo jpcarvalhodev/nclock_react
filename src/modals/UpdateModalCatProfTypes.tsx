@@ -141,7 +141,7 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

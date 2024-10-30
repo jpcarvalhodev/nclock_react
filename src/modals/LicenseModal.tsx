@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Modal, Button, Form, InputGroup, FormControl, Col, OverlayTrigger, Tooltip, Row, Tabs, Tab } from 'react-bootstrap';
-import { EyeSlash, Eye, FileX } from 'react-bootstrap-icons';
+import { EyeSlash, Eye } from 'react-bootstrap-icons';
 import { useLicense } from '../context/LicenseContext';
 import { License } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -43,6 +44,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
     // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
     useEffect(() => {
@@ -79,7 +81,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     const verifyKey = async () => {
         try {
             const isKeyValid = await fetchAllLicenses(key);
-            if (isKeyValid.length > 0) {
+            if (isKeyValid && isKeyValid !== null && isKeyValid !== undefined) {
                 setFormData(isKeyValid);
                 setIsCheckVisible(false);
                 showModal();
@@ -106,6 +108,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     const handleClose = () => {
         setIsCheckVisible(false);
         setIsModalVisible(false);
+        navigate('/dashboard');
     };
 
     // Função para atualizar o estado do formulário
@@ -182,7 +185,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         case 'devices':
                             return (
                                 <Form.Control
-                                    type="number"
+                                    type="text"
                                     name={`${product}.${prop}`}
                                     value={value || 0}
                                     onChange={handleChange}
@@ -236,7 +239,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
     return (
         <div>
-            <Modal show={isCheckVisible} onHide={onClose}>
+            <Modal show={isCheckVisible} onHide={onClose} backdrop="static">
                 <Modal.Header closeButton>
                     <Modal.Title>Inserir Chave</Modal.Title>
                 </Modal.Header>
@@ -255,11 +258,11 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                     <Button style={{ width: '40%' }} variant="outline-primary" onClick={verifyKey}>Verificar Chave</Button>
                 </div>
             </Modal>
-            <Modal show={isModalVisible} onHide={handleClose} size='xl'>
+            <Modal show={isModalVisible} onHide={handleClose} backdrop="static" size='xl'>
                 <Modal.Header closeButton>
                     <Modal.Title>Licenciamento</Modal.Title>
                 </Modal.Header>
-                <Modal.Body className="modal-body-scrollable">
+                <Modal.Body>
                     <Row style={{ marginBottom: 20 }}>
                         <Col md={3}>
                             <Form.Group controlId="formEntidadeNumber">
@@ -304,24 +307,24 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                             </Form.Group>
                         </Col>
                     </Row>
-                    <Tabs defaultActiveKey={Object.keys(formData)[2]} id="product-tabs" className="nav-modal scrollable-tabs">
+                    <Tabs defaultActiveKey={Object.keys(formData)[2]} id="product-tabs" className="nav-modal">
                         {Object.keys(formData).filter(key => key.startsWith('n') && key !== 'nif').map(product => (
                             <Tab eventKey={product} title={product.toUpperCase()} key={product}>
-                                {Object.keys(formData[product]).filter(prop => prop !== 'createDate').map(prop => (
-                                    <Row className="mb-3" key={`${product}-${prop}`}>
-                                        <Col md={3}>
+                                <Row>
+                                    {Object.keys(formData[product]).filter(prop => prop !== 'createDate').map((prop, index) => (
+                                        <Col md={4} key={`${product}-${prop}`} className='mt-3'>
                                             <Form.Group controlId={`form${product}${prop}`}>
                                                 {renderFormControl(product, prop)}
                                             </Form.Group>
                                         </Col>
-                                    </Row>
-                                ))}
+                                    ))}
+                                </Row>
                             </Tab>
                         ))}
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-secondary" onClick={onClose}>
+                    <Button variant="outline-secondary" onClick={handleClose}>
                         Fechar
                     </Button>
                     <Button variant="outline-primary" onClick={handleUpdate}>

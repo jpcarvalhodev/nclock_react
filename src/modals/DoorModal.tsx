@@ -100,7 +100,7 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
     };
 
     return (
-        <Modal show={open} onHide={onClose}>
+        <Modal show={open} onHide={onClose} backdrop="static">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

@@ -28,6 +28,7 @@ interface Props<T> {
 
 // Define os valores iniciais do formulário para envio de forma padrão
 const initialValues: Partial<TimePeriod> = {
+    createrName: localStorage.getItem('username') || '',
     mondayStart1: '00:00', mondayEnd1: '00:00',
     tuesdayStart1: '00:00', tuesdayEnd1: '00:00',
     wednesdayStart1: '00:00', wednesdayEnd1: '00:00',
@@ -79,13 +80,15 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
     useEffect(() => {
         if (open) {
             fetchNextAppId();
+        } else {
+            setFormData(initialValues);
         }
     }, [open]);
 
     // Função para buscar o próximo ID do App
     const fetchNextAppId = async () => {
         const apiData = await apiService.fetchAllTimePeriods();
-        if (apiData.length > 0) {
+        if (apiData.length > 0 && apiData[apiData.length - 1].appId) {
             const lastAppId = apiData[apiData.length - 1].appId;
             const nextId = parseInt(lastAppId, 10) + 1;
             const nextAppId = nextId.toString();
@@ -143,14 +146,14 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl'>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <Form className="container-fluid">
                     <Row>
-                        <Col md={3}>
+                        <Col md={4}>
                             <Form.Group controlId="formInitFlag" className='d-flex justify-content-between mt-2'>
                                 <Form.Label>Activar Período:</Form.Label>
                                 <Form.Check
@@ -160,13 +163,12 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
                                     onChange={handleChange}
                                 />
                             </Form.Group>
-                            <Form.Group controlId="formAppId" className='d-flex justify-content-between mt-4'>
-                                <Form.Label column sm="4">ID do App:</Form.Label>
+                            <Form.Group controlId="formRemark" className='d-flex justify-content-between mt-4'>
+                                <Form.Label column sm="4">Observações:</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    name="appId"
-                                    readOnly
-                                    value={formData.appId}
+                                    name="remark"
+                                    value={formData.remark}
                                     onChange={handleChange}
                                 />
                             </Form.Group>
@@ -189,23 +191,15 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
                                     {errors.name}
                                 </Form.Control.Feedback>
                             </Form.Group>
-                            <Form.Group controlId="formRemark" className='d-flex justify-content-between mt-4'>
-                                <Form.Label column sm="4">Observações:</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="remark"
-                                    value={formData.remark}
-                                    onChange={handleChange}
-                                />
-                            </Form.Group>
                         </Col>
-                        <Col md={4}>
-                            <Form.Group controlId="formCreaterName" className='d-flex justify-content-between'>
-                                <Form.Label column sm="3">Criador:</Form.Label>
+                        <Col md={2}>
+                            <Form.Group controlId="formAppId" className='d-flex justify-content-between'>
+                                <Form.Label column sm="4">ID:</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    name="createrName"
-                                    value={formData.createrName}
+                                    name="appId"
+                                    readOnly
+                                    value={formData.appId}
                                     onChange={handleChange}
                                 />
                             </Form.Group>

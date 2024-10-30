@@ -104,7 +104,7 @@ export const Terminals = () => {
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
     const [userTabKey, setUserTabKey] = useState('users');
     const [filters, setFilters] = useState<Filters>({});
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'ipAddress']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'model', 'ipAddress']);
     const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber', 'statusFprint', 'statusFace']);
     const [selectedBioColums, setSelectedBioColumns] = useState<string[]>(['enrollNumber', 'name', 'statusFprint', 'statusFace']);
     const [selectedCardColums, setSelectedCardColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber']);
@@ -247,7 +247,7 @@ export const Terminals = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['deviceNumber', 'deviceName', 'ipAddress']);
+        setSelectedColumns(['deviceNumber', 'deviceName', 'model', 'ipAddress']);
     };
 
     const handleMainSelect = (k: string | null) => {
@@ -351,6 +351,7 @@ export const Terminals = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
@@ -1105,6 +1106,8 @@ export const Terminals = () => {
                             selectableRowsHighlight
                             noDataComponent="Não há dados disponíveis para exibir."
                             customStyles={customStyles}
+                            defaultSortAsc={true}
+                            defaultSortFieldId="deviceNumber"
                         />
                     </div>
                     <div style={{ flex: 2, overflow: "auto" }}>

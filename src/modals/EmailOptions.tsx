@@ -168,13 +168,8 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
         onClose();
     }
 
-    const typeOptions = [
-        { value: 'pt', label: 'Português' },
-        { value: 'en', label: 'Inglês' },
-    ];
-
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable" size='lg'>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg'>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -189,27 +184,6 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
                         <Tab.Content>
                             <Tab.Pane eventKey="configEmail">
                                 <Form style={{ marginTop: 10, marginBottom: 10, display: 'flex' }}>
-                                    <Row style={{ flex: 1, marginRight: 10 }}>
-                                        <Col md={12}>
-                                            <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
-                                                <Table striped bordered hover size="sm">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>SMTP E-Mails</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {emailConfig && emailConfig.map((email: EmailUserCompany) => (
-                                                            <tr key={email.usernameEmail} onClick={() => handleEmailClick(email)}>
-                                                                <td>{email.usernameEmail}</td>
-                                                                <td>{email.hostSMTP}</td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </Table>
-                                            </div>
-                                        </Col>
-                                    </Row>
                                     <Row style={{ flex: 1.5 }}>
                                         <Col md={6}>
                                             <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between mt-3'>

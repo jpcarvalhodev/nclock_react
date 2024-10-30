@@ -66,6 +66,8 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     useEffect(() => {
         if (open) {
             fetchEntityData();
+        } else {
+            setFormData({});
         }
     }, [open]);
 
@@ -147,7 +149,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

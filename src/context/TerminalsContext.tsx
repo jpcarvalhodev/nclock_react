@@ -165,9 +165,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para abrir a porta via dispositivo
-    const openDeviceDoor = async (zktecoDeviceID: DoorDevice, doorData: DoorDevice) => {
+    const openDeviceDoor = async (deviceSN: DoorDevice, doorData: DoorDevice) => {
         try {
-            const data = await apiService.openDeviceDoor(zktecoDeviceID, doorData);
+            const data = await apiService.openDeviceDoor(deviceSN, doorData);
             toast.success(data.message || 'Porta aberta com sucesso!');
 
         } catch (error) {

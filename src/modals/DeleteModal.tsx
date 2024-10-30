@@ -21,7 +21,7 @@ export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalPr
     };
 
     return (
-        <Modal show={open} onHide={onClose}>
+        <Modal show={open} onHide={onClose} backdrop="static">
             <Modal.Header closeButton>
                 <Modal.Title>Confirmar Eliminação</Modal.Title>
             </Modal.Header>

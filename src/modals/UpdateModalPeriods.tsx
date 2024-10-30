@@ -24,13 +24,14 @@ interface Field {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
+    onDuplicate?: (entity: T) => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
     title: string;
 }
 
-export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: UpdateModalProps<T>) => {
+export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onDuplicate, onUpdate, entity, fields }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -64,6 +65,13 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
         setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { employeeID, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
+    };
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -106,14 +114,14 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl'>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <Form className="container-fluid">
                     <Row>
-                        <Col md={3}>
+                        <Col md={4}>
                             <Form.Group controlId="formInitFlag" className='d-flex justify-content-between mt-2'>
                                 <Form.Label>Activar Período:</Form.Label>
                                 <Form.Check
@@ -123,13 +131,12 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                                     onChange={handleChange}
                                 />
                             </Form.Group>
-                            <Form.Group controlId="formAppId" className='d-flex justify-content-between mt-4'>
-                                <Form.Label column sm="4">ID do App:</Form.Label>
+                            <Form.Group controlId="formRemark" className='d-flex justify-content-between mt-4'>
+                                <Form.Label column sm="4">Observações:</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    name="appId"
-                                    readOnly
-                                    value={formData.appId}
+                                    name="remark"
+                                    value={formData.remark}
                                     onChange={handleChange}
                                 />
                             </Form.Group>
@@ -152,23 +159,15 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                                     {errors.name}
                                 </Form.Control.Feedback>
                             </Form.Group>
-                            <Form.Group controlId="formRemark" className='d-flex justify-content-between mt-4'>
-                                <Form.Label column sm="4">Observações:</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="remark"
-                                    value={formData.remark}
-                                    onChange={handleChange}
-                                />
-                            </Form.Group>
                         </Col>
-                        <Col md={4}>
-                            <Form.Group controlId="formCreaterName" className='d-flex justify-content-between'>
-                                <Form.Label column sm="3">Criador:</Form.Label>
+                        <Col md={2}>
+                            <Form.Group controlId="formAppId" className='d-flex justify-content-between'>
+                                <Form.Label column sm="4">ID:</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    name="createrName"
-                                    value={formData.createrName}
+                                    name="appId"
+                                    readOnly
+                                    value={formData.appId}
                                     onChange={handleChange}
                                 />
                             </Form.Group>
@@ -227,6 +226,7 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                 </Form>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>

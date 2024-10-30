@@ -42,6 +42,8 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
     useEffect(() => {
         if (open) {
             setFormData({ initialValues });
+        } else {
+            setFormData({});
         }
     }, [open]);
 
@@ -93,7 +95,7 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
     };
 
     return (
-        <Modal show={open} onHide={onClose}>
+        <Modal show={open} onHide={onClose} backdrop="static">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

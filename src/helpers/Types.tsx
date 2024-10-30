@@ -151,6 +151,7 @@ export type Devices = {
     id: string;
     deviceNumber: number;
     deviceName: string;
+    model: string;
     ipAddress: string;
     photo: string;
     port: number;

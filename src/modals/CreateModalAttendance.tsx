@@ -79,6 +79,8 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
+        } else {
+            setFormData({});
         }
     }, [open]);
 
@@ -153,7 +155,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
             <Modal.Header closeButton>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>

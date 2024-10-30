@@ -76,11 +76,6 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
         fetchAllLicensesWithoutKey();
     }, []);
 
-    // Atualiza o estado da licença ao mudar a licença
-    useEffect(() => {
-        getSoftwareEnabledStatus(license);
-    }, [license]);
-
     return (
         <LicenseContext.Provider value={{ license, setLicense, getSoftwareEnabledStatus, fetchAllLicenses, fetchAllLicensesWithoutKey, handleUpdateLicense }}>
             {children}

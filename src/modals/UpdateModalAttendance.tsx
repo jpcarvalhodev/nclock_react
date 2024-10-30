@@ -153,7 +153,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
             <Modal.Header closeButton>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>

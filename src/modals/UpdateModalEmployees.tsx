@@ -242,8 +242,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Função para lidar com a mudança de dados do cartão
   const handleCardChange = (e: React.ChangeEvent<any>) => {
-    const { name, value, type } = e.target;
-    const parsedValue = type === 'number' ? Number(value) : value;
+    const { name, value } = e.target;
+    let parsedValue = value === "0" || value === "1" ? parseInt(value, 10) : value;
+
     setCardFormData(prevState => ({
       ...prevState,
       [name]: parsedValue
@@ -261,7 +262,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Define a função para enviar
   const handleSubmit = async () => {
-    await onUpdate(formData, cardFormData);
+    const updatedCardFormData = { ...cardFormData, employeeID: formData.employeeID };
+    await onUpdate(formData, updatedCardFormData);
     onClose();
   };
 
@@ -334,7 +336,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   ];
 
   return (
-    <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -667,20 +669,23 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   <Col md={3}>
                     <Form.Group controlId="formDevicePrivelage">
                       <Form.Label>Privilégio do Dispositivo</Form.Label>
-                      <Form.Control
-                        type="number"
+                      <Form.Select
                         className="custom-input-height custom-select-font-size"
-                        value={cardFormData.devicePrivelage || ''}
+                        value={cardFormData.devicePrivelage !== undefined ? cardFormData.devicePrivelage : ''}
                         onChange={handleCardChange}
                         name="devicePrivelage"
-                      />
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="0">Não</option>
+                        <option value="1">Sim</option>
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                   <Col md={3}>
                     <Form.Group controlId="formDevicePassword">
                       <Form.Label>Senha do Dispositivo</Form.Label>
                       <Form.Control
-                        type="text"
+                        type="password"
                         className="custom-input-height custom-select-font-size"
                         value={cardFormData.devicePassword || ''}
                         onChange={handleCardChange}

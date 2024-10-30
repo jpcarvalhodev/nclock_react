@@ -6,7 +6,7 @@ export const NotFound = () => {
 
   // Remove o token do localStorage e redireciona para a página de login
   const returnToLogin = () => {
-    localStorage.removeItem('token');
+    localStorage.clear();
     window.location.href = '/';
   }
 

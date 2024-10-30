@@ -32,7 +32,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Types } from './pages/persons/Types';
 import { Terminals } from './pages/devices/Terminals';
 import { NkioskDashboardLicensed } from './pages/nidtec/nkiosk/NkioskDashboardLicensed';
-import { NclockDashboardLicensed } from './pages/sisnid/nclock/NclockDashboardLicensed';
 import { NaccessDashboardLicensed } from './pages/sisnid/naccess/NaccessDashboardLicensed';
 import { NclockAll } from './pages/sisnid/nclock/NclockAll';
 import { NclockMovement } from './pages/sisnid/nclock/NclockMovement';
@@ -119,6 +118,9 @@ import { NledGraph } from './pages/nidtec/nled/NledGraph';
 import { NsecurGraph } from './pages/sisnid/nsecur/NsecurGraph';
 import { NviewGraph } from './pages/sisnid/nview/NviewGraph';
 import { NvisitorGraph } from './pages/sisnid/nvisitor/NvisitorGraph';
+import { NclockDashboardLicensed } from './pages/sisnid/nclock/NclockDashboardLicensed';
+import { NclockGraph } from './pages/sisnid/nclock/NclockGraph';
+import { NaccessGraph } from './pages/sisnid/naccess/NaccessGraph';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -187,13 +189,15 @@ function AnimatedRoutes() {
               <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
               <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
-              <Route path="/nclock/nclockdashboardlicenced" element={<PageProtection><NclockDashboardLicensed /></PageProtection>} />
+              <Route path="/nclock/nclockdashboardlicensed" element={<PageProtection><NclockDashboardLicensed /></PageProtection>} />
               <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />
               <Route path="/nclock/nclockpresence" element={<PageProtection><NclockPresence /></PageProtection>} />
               <Route path="/nclock/nclockrequests" element={<PageProtection><NclockRequests /></PageProtection>} />
               <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
+              <Route path="/nclock/nclockgraph" element={<PageProtection><NclockGraph /></PageProtection>} />
               <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
               <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
+              <Route path="/naccess/naccessgraph" element={<PageProtection><NaccessGraph /></PageProtection>} />
               <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
               <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />
               <Route path="/nvisitor/nvisitorgraph" element={<PageProtection><NvisitorGraph /></PageProtection>} />
