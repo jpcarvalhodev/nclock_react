@@ -168,11 +168,6 @@ export const NkioskGetCoins = () => {
         })
     );
 
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable = Array.from(
-        new Map(filteredDataTable.map(item => [item.id, item])).values()
-    );
-
     // Calcula o total do valor das recolhas
     const totalAmount = filteredDataTable.reduce((total, getCoins) => {
         return total + (typeof getCoins.valorTotal === 'number' ? getCoins.valorTotal : parseFloat(getCoins.valorTotal) || 0);
@@ -206,7 +201,7 @@ export const NkioskGetCoins = () => {
                 <div className='table-css'>
                     <DataTable
                         columns={columns}
-                        data={uniqueFilteredDataTable}
+                        data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
