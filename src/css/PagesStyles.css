@@ -296,6 +296,7 @@ body {
 }
 
 .dashboard-title-text-inside {
+    border-bottom: 1px solid #ccc;
     text-align: center;
     text-transform: uppercase;
 }
@@ -425,7 +426,7 @@ body {
     border-radius: 5px;
     background: white;
     margin: 10px;
-    max-height: 550px;
+    max-height: 34rem;
 }
 
 .dashboard-carousel-container-pages-no-title {
@@ -438,8 +439,8 @@ body {
     border-radius: 5px;
     background: white;
     margin: 10px;
-    max-height: 550px;
-    margin-top: 70px;
+    max-height: 34.4rem;
+    margin-top: 140px;
 }
 
 .dashboard-carousel-container-main {
@@ -451,22 +452,24 @@ body {
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
+    max-height: 37rem;
+    margin: 10px;
 }
 
 .img-carousel {
-    max-width: 515px;
+    max-width: 32rem;
 }
 
 .img-carousel-dashboard {
     display: flex;
     justify-content: center;
     align-items: center;
-    max-width: 900px;
+    max-width: 56rem;
 }
 
 .img-carousel-licensed {
     padding: 10px;
-    max-width: 900px;
+    max-width: 56rem;
 }
 
 .dashboard-tabs-container {

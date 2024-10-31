@@ -45,40 +45,62 @@ export const NkioskMoveVP = () => {
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '3';
 
-    // Função para buscar as publicidades
+    // Função para buscar os movimentos de videoporteiro
     const fetchAllMoveVP = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, devices[0].deviceSN);
-            if (Array.isArray(data)) {
-                setMoveVP(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setMoveVP([]);
+                return;
             }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+            
+            setMoveVP(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos do video porteiro:', error);
+            setMoveVP([]);
         }
     };
 
-    // Função para buscar os movimentos dos cartões entre datas
+    // Função para buscar os movimentos de videoporteiro entre datas
     const fetchMovementVPBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, devices[0].deviceSN, startDate, endDate);
-            if (Array.isArray(data)) {
-                setMoveVP(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setMoveVP([]);
+                return;
             }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+            
+            setMoveVP(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos do video porteiro:', error);
+            setMoveVP([]);
         }
-    }
+    };
 
-    // Busca as publicidades ao carregar a página
+    // Busca os movimentos de videoporteiro publicidades ao carregar a página
     useEffect(() => {
         fetchAllMoveVP();
     }, []);
 
-    // Função para atualizar as publicidades
+    // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {
         fetchAllMoveVP();
         setClearSelectionToggle(!clearSelectionToggle);
@@ -167,14 +189,11 @@ export const NkioskMoveVP = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return devices[0].deviceName || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === value)?.deviceName ?? '';
                     case 'eventDoorId':
                         return 'Video Porteiro';
                     case 'eventTime':
-                        const dateString = typeof value === 'string' ? value : value instanceof Date ? value.toISOString() : '';
-                        const [datePart, timePart] = dateString.split(' ');
-                        const formattedDatePart = datePart.replace(/\//g, '/');
-                        return `${formattedDatePart} ${timePart}`;
+                        return new Date(value as string).toLocaleString();
                     default:
                         return value ?? '';
                 }

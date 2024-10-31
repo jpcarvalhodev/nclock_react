@@ -45,40 +45,62 @@ export const NkioskMoveKiosk = () => {
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '4';
 
-    // Função para buscar os movimentos de videoporteiro
+    // Função para buscar os movimentos do quiosque
     const fetchAllMoveKiosk = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN);
-            if (Array.isArray(data)) {
-                setMoveKiosk(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setMoveKiosk([]);
+                return;
             }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+            
+            setMoveKiosk(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos do quiosque:', error);
+            console.error('Erro ao buscar os dados de movimentos no quiosque:', error);
+            setMoveKiosk([]);
         }
     };
 
-    // Função para buscar os pagamentos do moedeiro entre datas
+    // Função para buscar os movimentos de quiosque entre datas
     const fetchMovementsKioskBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN, startDate, endDate);
-            if (Array.isArray(data)) {
-                setMoveKiosk(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setMoveKiosk([]);
+                return;
             }
-        } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos do quiosque:', error);
-        }
-    }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate);
+            });
+    
+            const allData = await Promise.all(promises);
 
-    // Busca os movimentos de videoporteiro ao carregar a página
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+            
+            setMoveKiosk(combinedData);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos no quiosque:', error);
+            setMoveKiosk([]);
+        }
+    };
+
+    // Busca os movimentos de quiosque ao carregar a página
     useEffect(() => {
         fetchAllMoveKiosk();
     }, []);
 
-    // Função para atualizar os movimentos de videoporteiro
+    // Função para atualizar os movimentos de quiosque
     const refreshMoveKiosk = () => {
         fetchAllMoveKiosk();
         setClearSelectionToggle(!clearSelectionToggle);
@@ -165,7 +187,7 @@ export const NkioskMoveKiosk = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return devices[0].deviceName || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === value)?.deviceName ?? '';
                     case 'eventDoorId':
                         return 'Quiosque';
                     case 'eventTime':

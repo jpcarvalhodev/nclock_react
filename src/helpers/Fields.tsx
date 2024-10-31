@@ -454,8 +454,30 @@ export const entityFields = [
 ];
 
 export const recolhaMoedeiroFields = [
-    { key: 'dataRecolha', label: 'Data da Recolha', type: 'datetime-local', required: true },
+    { key: 'dataRecolha', label: 'Data da Recolha', type: 'datetime-local' },
     { key: 'pessoaResponsavel', label: 'Pessoa Responsável', type: 'string', required: true },
     { key: 'numeroMoedas', label: 'Número de Moedas', type: 'number', required: true },
+    { key: 'numeroMoedasSistema', label: 'Número de Moedas no Sistema', type: 'number' },
+    { key: 'diferenca', label: 'Diferença', type: 'number' },
     { key: 'valorTotal', label: 'Valor Total', type: 'number', required: true },
+    { key: 'observacoes', label: 'Observações', type: 'string' },
+    { key: 'tipoRecolha', label: 'Tipo de Recolha', type: 'number' },
+    { key: 'deviceID', label: 'Dispositivo', type: 'string', required: true },
+    { key: 'dataFimIntervencao', label: 'Data de Fim da Intervenção', type: 'datetime-local' },
+];
+
+export const manualOpenDoorFields = [
+    { key: 'createdDate', label: 'Data de Criação', type: 'datetime-local' },
+    { key: 'nomeResponsavel', label: 'Nome', type: 'string' },
+    { key: 'nomeEvento', label: 'Nome do Evento', type: 'string' },
+    { key: 'observacoes', label: 'Observações', type: 'string' },
+    { key: 'deviceName', label: 'Nome do Dispositivo', type: 'string' },
+    { key: 'doorName', label: 'Nome da Porta', type: 'string' },
+];
+
+export const limpezasEOcorrenciasFields = [
+    { key: 'dataCreate', label: 'Data de Criação', type: 'datetime-local' },
+    { key: 'responsavel', label: 'Pessoa Responsável', type: 'string', required: true },
+    { key: 'observacoes', label: 'Observações', type: 'string' },
+    { key: 'deviceId', label: 'Dispositivo', type: 'string', required: true },
 ];

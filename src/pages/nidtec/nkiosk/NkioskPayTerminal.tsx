@@ -28,7 +28,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskPayTerminal = () => {
     const { navbarColor, footerColor } = useColor();
-    const { fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -160,7 +160,7 @@ export const NkioskPayTerminal = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        /* const deviceMatch = devices.find(device => device.serialNumber === row.deviceSN) */
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.name || 'Sem Dados';
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':

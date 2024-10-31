@@ -56,7 +56,7 @@ export const NkioskListPayments = () => {
     const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [lineChartData, setLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
-    const eventDoorId2 = '2';
+    const eventDoorId = '2';
 
     // Função para buscar as listagens de pagamentos em MB
     const fetchAllListPaymentsMB = async () => {
@@ -75,33 +75,64 @@ export const NkioskListPayments = () => {
     // Função para buscar as listagens de pagamentos em moedas
     const fetchAllListPaymentsCoins = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, devices[0].deviceSN);
-            if (Array.isArray(data)) {
-                setListPaymentCoin(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setListPaymentCoin([]);
+                return;
             }
+    
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, startDate, endDate);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+    
+            setListPaymentCoin(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de pagamentos por moedas:', error);
+            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            setListPaymentCoin([]);
         }
     }
 
-    // Função para buscar os pagamentos dos terminais entre datas
+    // Função para buscar as listagens de pagamentos entre datas
     const fetchPaymentsBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(startDate, endDate);
-            const dataCoin = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, devices[0].deviceSN, startDate, endDate);
-            if (Array.isArray(data)) {
-                setListPaymentMB(data);
-                setListPaymentCoin(dataCoin);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setListPaymentMB([]);
                 setListPaymentCoin([]);
+                return;
             }
+    
+            const mbPromises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByMBAndDeviceSN(startDate, endDate);
+            });
+    
+            const coinPromises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, startDate, endDate);
+            });
+    
+            const allMBData = await Promise.all(mbPromises);
+            const allCoinData = await Promise.all(coinPromises);
+    
+            const validMBData = allMBData.filter(data => Array.isArray(data) && data.length > 0);
+            const combinedMBData = validMBData.flat();
+    
+            const validCoinData = allCoinData.filter(data => Array.isArray(data) && data.length > 0);
+            const combinedCoinData = validCoinData.flat();
+    
+            setListPaymentMB(combinedMBData);
+            setListPaymentCoin(combinedCoinData);
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de pagamentos:', error);
+            setListPaymentMB([]);
+            setListPaymentCoin([]);
         }
-    }
+    }    
 
     // Função para buscar os dados dos terminais
     const fetchTerminalData = async () => {
@@ -241,7 +272,7 @@ export const NkioskListPayments = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        return devices[0].deviceName || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.name || 'Sem Dados';
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':

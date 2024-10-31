@@ -142,7 +142,7 @@ export const NkioskDashboardLicensed = () => {
                         </div>
                     </Carousel>
                 </div>
-                <div className="calendar-container" style={{ marginTop: 70 }}>
+                <div className="calendar-container" style={{ marginTop: 140 }}>
                     <div className="dashboard-calendar" style={{ height: 495 }}>
                         <Calendar
                             localizer={localizer}

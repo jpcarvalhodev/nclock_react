@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
-import { Doors } from '../helpers/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -18,7 +17,6 @@ interface CreateModalProps<T> {
     onClose: () => void;
     onSave: (data: Partial<T>) => void;
     fields: Field[];
-    initialValues: Partial<T>;
 }
 
 // Interface para os campos do formulário
@@ -32,8 +30,8 @@ interface Field {
 }
 
 // Define o componente
-export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({...initialValues, doorTimezoneList: []});
+export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
+    const [formData, setFormData] = useState<Partial<T>>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -64,14 +62,11 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employee = await apiService.fetchAllEmployees();
             const door = await apiService.fetchAllDoors();
-            const timezone = await apiService.fetchAllTimePeriods();
-            const filteredDoors = door.filter((door: Doors) => door.doorNo === 3 || door.doorNo === 4);
+            const device = await apiService.fetchAllDevices();
             setDropdownData({
-                employeesId: employee,
-                doorId: filteredDoors,
-                timezoneId: timezone
+                doorId: door,
+                deviceId: device
             });
         } catch (error) {
             console.error('Erro ao buscar os dados de funcionários, portas e períodos', error);
@@ -83,11 +78,11 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         if (open) {
             setFormData((prevState) => ({
                 ...prevState,
-                createrName: localStorage.getItem('username') || '',
+                nomeResponsavel: localStorage.getItem('username') || '',
             }));
             fetchDropdownOptions();
         } else {
-            setFormData({ ...initialValues, doorTimezoneList: [] });
+            setFormData({});
         }
     }, [open]);
 
@@ -105,11 +100,9 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         const { value } = e.target;
         const selectedOption = dropdownData[key]?.find((option: any) => {
             switch (key) {
-                case 'employeesId':
-                    return option.employeeID === value;
+                case 'deviceId':
+                    return option.zktecoDeviceID === value;
                 case 'doorId':
-                    return option.id === value;
-                case 'timezoneId':
                     return option.id === value;
                 default:
                     return false;
@@ -141,19 +134,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para salvar os dados
     const handleSave = () => {
-        const doorTimeEntry = {
-            doorId: formData.doorId,
-            timezoneId: formData.timezoneId,
-        };
-    
-        const { doorId, timezoneId, ...restFormData } = formData;
-    
-        const updatedFormData = {
-            ...restFormData,
-            doorTimezoneList: [...(restFormData.doorTimezoneList || []), doorTimeEntry]
-        };
-    
-        onSave(updatedFormData as Partial<T>);
+        onSave(formData as Partial<T>);
         onClose();
     };
       
@@ -167,9 +148,9 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                 <div className="container-fluid">
                     <Row>
                         {[
-                            { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
+                            { key: 'deviceId', label: 'Dispositivo', type: 'dropdown', required: true },
                             { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
-                            { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
+                            { key: 'observacoes', label: 'Observações', type: 'string' }
                         ].map((field) => (
                             <Col md={3} key={field.key}>
                                 <Form.Group controlId={`form${field.key}`}>
@@ -197,15 +178,11 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                             {dropdownData[field.key]?.map((option) => {
                                                 let optionId, optionName;
                                                 switch (field.key) {
-                                                    case 'employeesId':
-                                                        optionId = option.employeeID;
-                                                        optionName = option.shortName;
+                                                    case 'deviceId':
+                                                        optionId = option.zktecoDeviceID;
+                                                        optionName = option.deviceName;
                                                         break;
                                                     case 'doorId':
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
-                                                    case 'timezoneId':
                                                         optionId = option.id;
                                                         optionName = option.name;
                                                         break;

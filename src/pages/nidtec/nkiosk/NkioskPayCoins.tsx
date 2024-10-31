@@ -36,7 +36,7 @@ export const NkioskPayCoins = () => {
     const [terminalData, setTerminalData] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'statusMessage', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -49,28 +49,52 @@ export const NkioskPayCoins = () => {
     // Função para buscar os pagamentos no moedeiro
     const fetchAllPayCoins = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId, devices[0].deviceSN);
-            if (Array.isArray(data)) {
-                setPayCoins(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setPayCoins([]);
+                return;
             }
+    
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+    
+            setPayCoins(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de pagamento de moedas:', error);
+            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            setPayCoins([]);
         }
     };
 
     // Função para buscar os pagamentos do moedeiro entre datas
     const fetchPaymentsCoinBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId, devices[0].deviceSN, startDate, endDate);
-            if (Array.isArray(data)) {
-                setPayCoins(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setPayCoins([]);
+                return;
             }
+    
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, startDate, endDate);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+    
+            setPayCoins(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de pagamento de moedas:', error);
+            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            setPayCoins([]);
         }
     }
 
@@ -121,7 +145,7 @@ export const NkioskPayCoins = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
+        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'statusMessage', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -161,7 +185,7 @@ export const NkioskPayCoins = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        return devices[0].deviceName || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.name || 'Sem Dados';
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':

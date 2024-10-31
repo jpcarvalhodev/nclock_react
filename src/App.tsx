@@ -121,6 +121,9 @@ import { NvisitorGraph } from './pages/sisnid/nvisitor/NvisitorGraph';
 import { NclockDashboardLicensed } from './pages/sisnid/nclock/NclockDashboardLicensed';
 import { NclockGraph } from './pages/sisnid/nclock/NclockGraph';
 import { NaccessGraph } from './pages/sisnid/naccess/NaccessGraph';
+import { NkioskDoorOpen } from './pages/nidtec/nkiosk/NkioskDoorOpen';
+import { NkioskCleaning } from './pages/nidtec/nkiosk/NkioskCleaning';
+import { NkioskOccurrences } from './pages/nidtec/nkiosk/NkioskOccurrences';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -258,6 +261,9 @@ function AnimatedRoutes() {
               <Route path="/nkiosk/nkioskLogs" element={<PageProtection><NkioskLogs /></PageProtection>} />
               <Route path="/nkiosk/nkioskgraph" element={<PageProtection><NkioskGraph /></PageProtection>} />
               <Route path="/nkiosk/nkioskgetcoins" element={<PageProtection><NkioskGetCoins /></PageProtection>} />
+              <Route path="/nkiosk/nkioskdooropen" element={<PageProtection><NkioskDoorOpen /></PageProtection>} />
+              <Route path="/nkiosk/nkioskcleaning" element={<PageProtection><NkioskCleaning /></PageProtection>} />
+              <Route path="/nkiosk/nkioskoccurrences" element={<PageProtection><NkioskOccurrences /></PageProtection>} />
               <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
               <Route path="/nled/nleddashboardlicensed" element={<PageProtection><NledDashboardLicensed /></PageProtection>} />
               <Route path="/nled/nledgraph" element={<PageProtection><NledGraph /></PageProtection>} />

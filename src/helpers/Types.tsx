@@ -523,5 +523,31 @@ export type RecolhaMoedeiro = {
     dataRecolha: Date;
     pessoaResponsavel: string;
     numeroMoedas: number;
+    numeroMoedasSistema: number;
+    diferenca: number;
     valorTotal: number;
+    observacoes: string;
+    tipoRecolha: number;
+    deviceID: string;
+    dataFimIntervencao: Date;
+}
+
+export type ManualOpenDoor = {
+    [key: string]: any;
+    id: string;
+    createdDate: Date;
+    nomeResponsavel: string;
+    nomeEvento: string;
+    observacoes: string;
+    deviceName: string;
+    doorName: string;
+}
+
+export type LimpezasEOcorrencias = {
+    [key: string]: any;
+    id: string;
+    dataCreate: Date;
+    responsavel: string;
+    observacoes: string;
+    deviceID: string;
 }

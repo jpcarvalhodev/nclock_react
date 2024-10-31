@@ -51,47 +51,85 @@ export const NkioskListMovements = () => {
     // Função para buscar as listagens de movimentos de cartão
     const fetchAllListMovementsCard = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN);
-            if (Array.isArray(data)) {
-                setListMovementCard(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setListMovementCard([]);
+                return;
             }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+            
+            setListMovementCard(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de movimentos de cartão:', error);
+            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            setListMovementCard([]);
         }
     };
 
     // Função para buscar as listagens de movimentos do quiosque
     const fetchAllListMovementsKiosk = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, devices[0].deviceSN);
-            if (Array.isArray(data)) {
-                setListMovementKiosk(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setListMovementKiosk([]);
+                return;
             }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+            
+            setListMovementKiosk(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de movimentos do quiosque:', error);
+            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            setListMovementKiosk([]);
         }
     };
 
-    // Função para buscar os movimentos dos cartões entre datas
+    // Função para buscar os movimentos entre datas
     const fetchMovementCardBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN, startDate, endDate);
-            const dataKiosk = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, devices[0].deviceSN, startDate, endDate);
-            if (Array.isArray(data)) {
-                setListMovementCard(data);
-                setListMovementKiosk(dataKiosk);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setListMovementCard([]);
                 setListMovementKiosk([]);
+                return;
             }
+    
+            const promisesMovementCard = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.deviceSN, startDate, endDate)
+            );
+    
+            const promisesMovementKiosk = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.deviceSN, startDate, endDate)
+            );
+    
+            const resultsMovementCard = await Promise.all(promisesMovementCard);
+            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+    
+            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
+    
+            setListMovementCard(validDataCard);
+            setListMovementKiosk(validDataKiosk);
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de movimentos', error);
+            setListMovementCard([]);
+            setListMovementKiosk([]);
         }
-    }
+    };
 
     // Unifica os dados de movimentos de cartão e porteiro
     const mergeMovementData = () => {

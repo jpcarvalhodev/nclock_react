@@ -407,16 +407,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 		const savedActiveTab = localStorage.getItem('activeTab');
 		if (savedActiveTab && tabData[savedActiveTab]) {
-			setActiveTab(savedActiveTab);
-			const { setTab, setRibbon } = tabData[savedActiveTab];
+			const { setTab } = tabData[savedActiveTab];
 			setTab(true);
-			setRibbon(true);
 		}
 
-		if (activeTab in ribbons) {
-			const [setRibbon] = ribbons[activeTab as RibbonName];
-			setRibbon(true);
-		}
 	}, []);
 
 	// Função para carregar o token inicial
@@ -572,17 +566,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Cria variáveis para verificar se o software está habilitado
 	const softwareEnabled = getSoftwareEnabledStatus(license);
 
-	// Função para atualizar o estado a partir do localStorage
-	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix: string = ''): void {
-		const stateValue = localStorage.getItem(`${prefix}${key}`) === 'true';
-		setterFunction(stateValue);
-	}
-
 	// Função para carregar o estado das ribbons e tabs
 	function loadState(): void {
 		Object.entries(settersMap).forEach(([key, { setShowRibbon, setShowTab }]) => {
-			setItemState(key as RibbonKey, setShowRibbon);
-			setItemState(key as RibbonKey, setShowTab);
+			setShowRibbon(false);
+			setShowTab(false);
 		});
 	}
 
@@ -652,14 +640,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleRibbonClick = (tabName: RibbonName) => {
 		if (tabName in ribbons) {
 			const [setRibbon, ribbonName] = ribbons[tabName];
-			Object.keys(ribbons).forEach((key) => {
-				const [setOtherRibbon] = ribbons[key as RibbonName];
-				setOtherRibbon(false);
-			});
-			setRibbon(true);
-			setActiveTab(ribbonName);
+	
+			if (activeTab === ribbonName) {
+				setRibbon(false);
+				setActiveTab('');
+			} else {
+				Object.keys(ribbons).forEach((key) => {
+					const [setOtherRibbon] = ribbons[key as RibbonName];
+					setOtherRibbon(false);
+				});
+				setRibbon(true);
+				setActiveTab(ribbonName);
+			}
 		}
-	};
+	};	
 
 	// Função para criar as abas
 	const createTabInfo = (tab: string, route: string): TabInfo => {
@@ -777,9 +771,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 				localStorage.removeItem('activeTab');
 			} else {
 				setTab(true);
-				setRibbon(isSoftwareCliente);
-				localStorage.setItem(localStorageTabKey, 'true');
 				if (localStorageRibbonKey && tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) {
+					setRibbon(isSoftwareCliente);
 					localStorage.setItem(localStorageRibbonKey, 'true')
 				}
 				setActiveTab(tabName);
@@ -1182,257 +1175,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const pathSegments = location.pathname.split('/');
 		const mainSegment = pathSegments[1];
 		const colorConfig = tabColors[mainSegment] || tabColors.default;
-		const path = pathSegments[1];
-
-		switch (path) {
-			case 'persons':
-				setShowPessoasRibbon(true);
-				setShowDispositivosRibbon(false);
-				setShowConfiguracaoRibbon(false);
-				setShowAjudaRibbon(false);
-				setShowNclockRibbon(false);
-				setShowNaccessRibbon(false);
-				setShowNvisitorRibbon(false);
-				setShowNparkRibbon(false);
-				setShowNdoorRibbon(false);
-				setShowNpatrolRibbon(false);
-				setShowNcardRibbon(false);
-				setShowNviewRibbon(false);
-				setShowNsecurRibbon(false);
-				setShowNsoftwareRibbon(false);
-				setShowNsystemRibbon(false);
-				setShowNappRibbon(false);
-				setShowNcyberRibbon(false);
-				setShowNdigitalRibbon(false);
-				setShowNserverRibbon(false);
-				setShowNautRibbon(false);
-				setShowNequipRibbon(false);
-				setShowNprojectRibbon(false);
-				setShowNcountRibbon(false);
-				setShowNbuildRibbon(false);
-				setShowNcaravanRibbon(false);
-				setShowNmechanicRibbon(false);
-				setShowNeventsRibbon(false);
-				setShowNserviceRibbon(false);
-				setShowNtaskRibbon(false);
-				setShowNproductionRibbon(false);
-				setShowNticketRibbon(false);
-				setShowNsalesRibbon(false);
-				setShowNinvoiceRibbon(false);
-				setShowNdocRibbon(false);
-				setShowNsportsRibbon(false);
-				setShowNgymRibbon(false);
-				setShowNschoolRibbon(false);
-				setShowNclinicRibbon(false);
-				setShowNopticsRibbon(false);
-				setShowNgoldRibbon(false);
-				setShowNsmartRibbon(false);
-				setShowNrealityRibbon(false);
-				setShowNhologramRibbon(false);
-				setShowNpowerRibbon(false);
-				setShowNchargeRibbon(false);
-				setShowNcityRibbon(false);
-				setShowNkioskRibbon(false);
-				setShowNledRibbon(false);
-				setShowNfireRibbon(false);
-				setShowNfurnitureRibbon(false);
-				setShowNpartitionRibbon(false);
-				setShowNdecorRibbon(false);
-				setShowNpingRibbon(false);
-				setShowNconnectRibbon(false);
-				setShowNlightRibbon(false);
-				setShowNcomfortRibbon(false);
-				setShowNsoundRibbon(false);
-				setShowNhomeRibbon(false);
-				setActiveTab('pessoas');
-				break;
-			case 'devices':
-				setShowPessoasRibbon(false);
-				setShowDispositivosRibbon(true);
-				setShowConfiguracaoRibbon(false);
-				setShowAjudaRibbon(false);
-				setShowNclockRibbon(false);
-				setShowNaccessRibbon(false);
-				setShowNvisitorRibbon(false);
-				setShowNparkRibbon(false);
-				setShowNdoorRibbon(false);
-				setShowNpatrolRibbon(false);
-				setShowNcardRibbon(false);
-				setShowNviewRibbon(false);
-				setShowNsecurRibbon(false);
-				setShowNsoftwareRibbon(false);
-				setShowNsystemRibbon(false);
-				setShowNappRibbon(false);
-				setShowNcyberRibbon(false);
-				setShowNdigitalRibbon(false);
-				setShowNserverRibbon(false);
-				setShowNautRibbon(false);
-				setShowNequipRibbon(false);
-				setShowNprojectRibbon(false);
-				setShowNcountRibbon(false);
-				setShowNbuildRibbon(false);
-				setShowNcaravanRibbon(false);
-				setShowNmechanicRibbon(false);
-				setShowNeventsRibbon(false);
-				setShowNserviceRibbon(false);
-				setShowNtaskRibbon(false);
-				setShowNproductionRibbon(false);
-				setShowNticketRibbon(false);
-				setShowNsalesRibbon(false);
-				setShowNinvoiceRibbon(false);
-				setShowNdocRibbon(false);
-				setShowNsportsRibbon(false);
-				setShowNgymRibbon(false);
-				setShowNschoolRibbon(false);
-				setShowNclinicRibbon(false);
-				setShowNopticsRibbon(false);
-				setShowNgoldRibbon(false);
-				setShowNsmartRibbon(false);
-				setShowNrealityRibbon(false);
-				setShowNhologramRibbon(false);
-				setShowNpowerRibbon(false);
-				setShowNchargeRibbon(false);
-				setShowNcityRibbon(false);
-				setShowNkioskRibbon(false);
-				setShowNledRibbon(false);
-				setShowNfireRibbon(false);
-				setShowNfurnitureRibbon(false);
-				setShowNpartitionRibbon(false);
-				setShowNdecorRibbon(false);
-				setShowNpingRibbon(false);
-				setShowNconnectRibbon(false);
-				setShowNlightRibbon(false);
-				setShowNcomfortRibbon(false);
-				setShowNsoundRibbon(false);
-				setShowNhomeRibbon(false);
-				setActiveTab('dispositivos');
-				break;
-			case 'configs':
-				setShowPessoasRibbon(false);
-				setShowDispositivosRibbon(false);
-				setShowConfiguracaoRibbon(true);
-				setShowAjudaRibbon(false);
-				setShowNclockRibbon(false);
-				setShowNaccessRibbon(false);
-				setShowNvisitorRibbon(false);
-				setShowNparkRibbon(false);
-				setShowNdoorRibbon(false);
-				setShowNpatrolRibbon(false);
-				setShowNcardRibbon(false);
-				setShowNviewRibbon(false);
-				setShowNsecurRibbon(false);
-				setShowNsoftwareRibbon(false);
-				setShowNsystemRibbon(false);
-				setShowNappRibbon(false);
-				setShowNcyberRibbon(false);
-				setShowNdigitalRibbon(false);
-				setShowNserverRibbon(false);
-				setShowNautRibbon(false);
-				setShowNequipRibbon(false);
-				setShowNprojectRibbon(false);
-				setShowNcountRibbon(false);
-				setShowNbuildRibbon(false);
-				setShowNcaravanRibbon(false);
-				setShowNmechanicRibbon(false);
-				setShowNeventsRibbon(false);
-				setShowNserviceRibbon(false);
-				setShowNtaskRibbon(false);
-				setShowNproductionRibbon(false);
-				setShowNticketRibbon(false);
-				setShowNsalesRibbon(false);
-				setShowNinvoiceRibbon(false);
-				setShowNdocRibbon(false);
-				setShowNsportsRibbon(false);
-				setShowNgymRibbon(false);
-				setShowNschoolRibbon(false);
-				setShowNclinicRibbon(false);
-				setShowNopticsRibbon(false);
-				setShowNgoldRibbon(false);
-				setShowNsmartRibbon(false);
-				setShowNrealityRibbon(false);
-				setShowNhologramRibbon(false);
-				setShowNpowerRibbon(false);
-				setShowNchargeRibbon(false);
-				setShowNcityRibbon(false);
-				setShowNkioskRibbon(false);
-				setShowNledRibbon(false);
-				setShowNfireRibbon(false);
-				setShowNfurnitureRibbon(false);
-				setShowNpartitionRibbon(false);
-				setShowNdecorRibbon(false);
-				setShowNpingRibbon(false);
-				setShowNconnectRibbon(false);
-				setShowNlightRibbon(false);
-				setShowNcomfortRibbon(false);
-				setShowNsoundRibbon(false);
-				setShowNhomeRibbon(false);
-				setActiveTab('configuracao');
-				break;
-			case 'help':
-				setShowPessoasRibbon(false);
-				setShowDispositivosRibbon(false);
-				setShowConfiguracaoRibbon(false);
-				setShowAjudaRibbon(true);
-				setShowNclockRibbon(false);
-				setShowNaccessRibbon(false);
-				setShowNvisitorRibbon(false);
-				setShowNparkRibbon(false);
-				setShowNdoorRibbon(false);
-				setShowNpatrolRibbon(false);
-				setShowNcardRibbon(false);
-				setShowNviewRibbon(false);
-				setShowNsecurRibbon(false);
-				setShowNsoftwareRibbon(false);
-				setShowNsystemRibbon(false);
-				setShowNappRibbon(false);
-				setShowNcyberRibbon(false);
-				setShowNdigitalRibbon(false);
-				setShowNserverRibbon(false);
-				setShowNautRibbon(false);
-				setShowNequipRibbon(false);
-				setShowNprojectRibbon(false);
-				setShowNcountRibbon(false);
-				setShowNbuildRibbon(false);
-				setShowNcaravanRibbon(false);
-				setShowNmechanicRibbon(false);
-				setShowNeventsRibbon(false);
-				setShowNserviceRibbon(false);
-				setShowNtaskRibbon(false);
-				setShowNproductionRibbon(false);
-				setShowNticketRibbon(false);
-				setShowNsalesRibbon(false);
-				setShowNinvoiceRibbon(false);
-				setShowNdocRibbon(false);
-				setShowNsportsRibbon(false);
-				setShowNgymRibbon(false);
-				setShowNschoolRibbon(false);
-				setShowNclinicRibbon(false);
-				setShowNopticsRibbon(false);
-				setShowNgoldRibbon(false);
-				setShowNsmartRibbon(false);
-				setShowNrealityRibbon(false);
-				setShowNhologramRibbon(false);
-				setShowNpowerRibbon(false);
-				setShowNchargeRibbon(false);
-				setShowNcityRibbon(false);
-				setShowNkioskRibbon(false);
-				setShowNledRibbon(false);
-				setShowNfireRibbon(false);
-				setShowNfurnitureRibbon(false);
-				setShowNpartitionRibbon(false);
-				setShowNdecorRibbon(false);
-				setShowNpingRibbon(false);
-				setShowNconnectRibbon(false);
-				setShowNlightRibbon(false);
-				setShowNcomfortRibbon(false);
-				setShowNsoundRibbon(false);
-				setShowNhomeRibbon(false);
-				setActiveTab('ajuda');
-				break;
-			default:
-				setActiveTab('');
-				break;
-		}
 
 		setNavbarColor(colorConfig.navbarColor);
 		setFooterColor(colorConfig.footerColor);
@@ -1548,6 +1290,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 		setVisibleGroup((prev) => (prev === groupId ? null : groupId));
 	};
 
+	// Rota para verificar as ribbons
+	const currentRoute = window.location.pathname;
+
 	return (
 		<ColorProvider>
 			<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
@@ -1613,7 +1358,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</Dropdown>
 					</div>
 				</div>
-				{showNclockRibbon && softwareEnabled['Nclock'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclock')?.label && (
+				{showNclockRibbon && softwareEnabled['Nclock'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclock')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
 							<div className="section" id="section-group">
@@ -2024,7 +1769,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNaccessRibbon && softwareEnabled['Naccess'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'naccess')?.label && (
+				{showNaccessRibbon && softwareEnabled['Naccess'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'naccess')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="naccess" role="tabpanel" aria-labelledby="naccess-tab">
 							<div className="section" id="section-group">
@@ -2248,7 +1993,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNvisitorRibbon && softwareEnabled['Nvisitor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nvisitor')?.label && (
+				{showNvisitorRibbon && softwareEnabled['Nvisitor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nvisitor')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nvisitor" role="tabpanel" aria-labelledby="nvisitor-tab">
 							<div className="section" id="section-group">
@@ -2388,7 +2133,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNviewRibbon && softwareEnabled['Nview'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nview')?.label && (
+				{showNviewRibbon && softwareEnabled['Nview'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nview')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nview" role="tabpanel" aria-labelledby="nview-tab">
 							<div className="section" id="section-group">
@@ -2522,7 +2267,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsecurRibbon && softwareEnabled['Nsecur'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsecur')?.label && (
+				{showNsecurRibbon && softwareEnabled['Nsecur'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsecur')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsecur" role="tabpanel" aria-labelledby="nsecur-tab">
 							<div className="section" id="section-group">
@@ -2648,7 +2393,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNkioskRibbon && softwareEnabled['Nkiosk'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nkiosk')?.label && (
+				{showNkioskRibbon && softwareEnabled['Nkiosk'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nkiosk')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
 							<div className="section" id="section-group">
@@ -2743,12 +2488,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/nkiosk/nkioskdooropen" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={open_door} alt="botão abertura manual" />
 													</span>
 													<span className="text">Abertura Manual</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2766,12 +2511,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Recolha Moedas</span>
 												</Link>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button" disabled>
+												<Link to="/nkiosk/nkioskcleaning" type="button" className="btn btn-light ribbon-button">
 													<span className="icon">
 														<img src={cleaning} alt="botão limpeza wc" />
 													</span>
 													<span className="text">Limpeza Geral</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
@@ -2782,12 +2527,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/nkiosk/nkioskoccurrences" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={registry} alt="botão ocorrências" />
 													</span>
 													<span className="text">Ocorrências</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2900,7 +2645,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNledRibbon && softwareEnabled['Nled'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nled')?.label && (
+				{showNledRibbon && softwareEnabled['Nled'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nled')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nled" role="tabpanel" aria-labelledby="nled-tab">
 							<div className="section" id="section-group">

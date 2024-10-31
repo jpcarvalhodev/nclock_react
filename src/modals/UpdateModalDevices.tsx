@@ -70,7 +70,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         setFormData({ ...entity } as T);
-        const matchedDevice = deviceOptions.find(option => option.label === entity.deviceName);
+        const matchedDevice = deviceOptions.find(option => option.label === entity.model);
         if (matchedDevice) {
             setSelectedDevice(matchedDevice.value);
             setDeviceImage(matchedDevice.img);

@@ -6,23 +6,17 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
+import { LimpezasEOcorrencias } from '../helpers/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-// Define a interface Entity
-export interface Entity {
-    id: string;
-    [key: string]: any;
-}
-
 // Interface para as propriedades do modal
-interface UpdateModalProps<T extends Entity> {
+interface CreateModalProps<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onUpdate: (entity: T) => Promise<void>;
-    entity: T;
+    onSave: (data: T) => void;
     fields: Field[];
 }
 
@@ -36,9 +30,14 @@ interface Field {
     errorMessage?: string;
 }
 
+// Valores iniciais
+const initialValues: Partial<LimpezasEOcorrencias> = {
+    responsavel: localStorage.getItem('username') || '',
+};
+
 // Define o componente
-export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: UpdateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>({ ...entity });
+export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
+    const [formData, setFormData] = useState<Partial<LimpezasEOcorrencias>>(initialValues);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -47,9 +46,11 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
-            setFormData({ ...entity });
+            setFormData({ ...initialValues });
+        } else {
+            setFormData({});
         }
-    }, [open, entity]);
+    }, [open]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -61,6 +62,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
 
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
+                console.log([field.key], `${field.label} é obrigatório.`);
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
@@ -124,6 +126,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
+        console.log(formData)
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
@@ -133,7 +136,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
 
     // Função para salvar os dados
     const handleSave = () => {
-        onUpdate(formData as T);
+        onSave(formData as T);
         onClose();
     };
 
@@ -146,72 +149,50 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                 <div className="container-fluid">
                     <Row>
                         <Col md={6}>
-                            <Form.Group controlId="formDataRecolha">
-                                <Form.Label>Data da Recolha<span style={{ color: 'red' }}> *</span></Form.Label>
+                            <Form.Group controlId="formDataCreate">
+                                <Form.Label>Data de Criação<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-dataRecolha">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-dataCreate">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
                                         type="datetime-local"
-                                        name="dataRecolha"
-                                        value={formData.dataRecolha ? new Date(formData.dataRecolha).toISOString().slice(0, 16) : ''}
+                                        name="dataCreate"
+                                        value={formData.dataCreate ? new Date(formData.dataCreate).toISOString().slice(0, 16) : ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors['dataRecolha'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['dataRecolha']}</div>}
+                                {errors['dataCreate'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['dataCreate']}</div>}
                             </Form.Group>
-                            <Form.Group controlId="formNumeroMoedas">
-                                <Form.Label>Número de Moedas<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-numeroMoedas">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="numeroMoedas"
-                                        value={formData.numeroMoedas || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['numeroMoedas'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroMoedas']}</div>}
-                            </Form.Group>
-                            <Form.Group controlId="formValorTotal">
-                                <Form.Label>Valor Total<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-valorTotal">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="valorTotal"
-                                        value={formData.valorTotal || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['valorTotal'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['valorTotal']}</div>}
+                            <Form.Group controlId="formObservacoes">
+                                <Form.Label>Observações</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="observacoes"
+                                    value={formData.observacoes || ''}
+                                    onChange={handleChange}
+                                />
                             </Form.Group>
                         </Col>
                         <Col md={6}>
-                            <Form.Group controlId="formPessoaResponsavel">
+                            <Form.Group controlId="formResponsavel">
                                 <Form.Label>Pessoa Responsável<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-pessoaResponsavel">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-responsavel">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
                                         type="string"
-                                        name="pessoaResponsavel"
-                                        value={formData.pessoaResponsavel || ''}
+                                        name="responsavel"
+                                        value={formData.responsavel || ''}
                                         onChange={handleChange}
                                         readOnly={true}
                                     />
                                 </OverlayTrigger>
-                                {errors['pessoaResponsavel'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['pessoaResponsavel']}</div>}
+                                {errors['responsavel'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['responsavel']}</div>}
                             </Form.Group>
                             <Form.Group controlId="formDeviceId">
                                 <Form.Label>Dispositivo<span style={{ color: 'red' }}> *</span></Form.Label>
@@ -247,16 +228,6 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                     </Form.Control>
                                 </OverlayTrigger>
                                 {errors['deviceId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceId']}</div>}
-                            </Form.Group>
-                            <Form.Group controlId="formObservacoes">
-                                <Form.Label>Observações</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="number"
-                                    name="observacoes"
-                                    value={formData.observacoes || ''}
-                                    onChange={handleChange}
-                                />
                             </Form.Group>
                         </Col>
                     </Row>

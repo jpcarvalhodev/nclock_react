@@ -45,33 +45,57 @@ export const NkioskMoveCard = () => {
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '3';
 
-    // Função para buscar as publicidades
+    // Função para buscar os movimentos dos cartões
     const fetchAllMoveCard = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN);
-            if (Array.isArray(data)) {
-                setMoveCard(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setMoveCard([]);
+                return;
             }
+    
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+    
+            setMoveCard(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            setMoveCard([]);
         }
     };
 
     // Função para buscar os movimentos dos cartões entre datas
     const fetchMovementCardBetweenDates = async () => {
         try {
-            const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, devices[0].deviceSN, startDate, endDate);
-            if (Array.isArray(data)) {
-                setMoveCard(data);
-            } else {
+            if (devices.length === 0) {
+                console.log("Nenhum dispositivo encontrado.");
                 setMoveCard([]);
+                return;
             }
+    
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate);
+            });
+    
+            const allData = await Promise.all(promises);
+    
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+    
+            setMoveCard(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            setMoveCard([]);
         }
-    }
+    };
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
@@ -165,7 +189,7 @@ export const NkioskMoveCard = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return devices[0].deviceName || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === value)?.deviceName ?? '';
                     case 'eventDoorId':
                         return 'Torniquete';
                     case 'eventTime':

@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, MBDevice, Profession, RecolhaMoedeiro, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiro, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -282,6 +282,16 @@ export const fetchAllTPCloseOpen = async (startDate?: string, endDate?: string) 
     return response.json();
 }
 
+export const fetchAllManualDoorOpen = async () => {
+    const response = await fetchWithAuth(`KioskTransaction/GetAllAberturaDistanciaAsync`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
 export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
     let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
     if (employeeID !== null) {
@@ -514,6 +524,22 @@ export const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(mbDevice)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
+    const response = await fetchWithAuth(`KioskTransaction/CreateAberturaDistanciaAsync`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(door)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1581,6 +1607,52 @@ export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiro) =>
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(recolhaMoedeiro)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE LIMPEZAS E OCORRÊNCIAS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllCleaningsAndOccurrences = async (tipo: number) => {
+    const response = await fetchWithAuth(`KioskTransaction/GetAllLimpezasOcorrenciasByTipoAsync?tipoOcorrencia=${tipo}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const addCleaning = async (cleaning: LimpezasEOcorrencias) => {
+    const response = await fetchWithAuth(`KioskTransaction/CreateLimpezasWCAsync`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cleaning)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const addOccurrence = async (occurrence: LimpezasEOcorrencias) => {
+    const response = await fetchWithAuth(`KioskTransaction/CreateOcorrenciasAsync`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(occurrence)
     });
     if (!response.ok) {
         const errorData = await response.json();

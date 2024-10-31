@@ -7,87 +7,65 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { RecolhaMoedeiro } from "../../../helpers/Types";
-import { recolhaMoedeiroFields, transactionMBFields } from "../../../helpers/Fields";
+import { LimpezasEOcorrencias } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
-import { CreateRecolhaMoedeiroModal } from "../../../modals/CreateRecolhaMoedeiroModal";
-import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
 import { toast } from "react-toastify";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
+import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
+import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
 
-export const NkioskGetCoins = () => {
+export const NkioskCleaning = () => {
     const { navbarColor, footerColor } = useColor();
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const [getCoins, setGetCoins] = useState<RecolhaMoedeiro[]>([]);
+    const [cleaning, setCleaning] = useState<LimpezasEOcorrencias[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotal', 'deviceID']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate','responsavel', 'observacoes', 'deviceId']);
     const [filters, setFilters] = useState<Record<string, string>>({});
-    const [selectedRows, setSelectedRows] = useState<RecolhaMoedeiro[]>([]);
+    const [selectedRows, setSelectedRows] = useState<LimpezasEOcorrencias[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedRecolhaMoedeiro, setSelectedRecolhaMoedeiro] = useState<any>(null);
+    const tipo = 1;
 
-    // Função para buscar as recolhas do moedeiro
-    const fetchAllCoinRecoveredData = async () => {
+    // Função para buscar as limpezas
+    const fetchAllLimpezas = async () => {
         try {
-            const data = await apiService.fetchRecolhasMoedeiro();
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo);
             if (Array.isArray(data)) {
-                setGetCoins(data);
+                setCleaning(data);
             } else {
-                setGetCoins([]);
+                setCleaning([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de recolha do moedeiro:', error);
+            console.error('Erro ao buscar os dados de limpezas:', error);
         }
     };
 
-    // Função para adicionar recolha do moedeiro
-    const handleAddRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiro) => {
+    // Função para adicionar limpezas
+    const handleAddLimpezas = async (limpezas: LimpezasEOcorrencias) => {
         try {
-            const data = await apiService.addRecolhaMoedeiro(recolhaMoedeiro);
-            setGetCoins([...getCoins, data]);
-            toast.success(data.message || 'Recolha do moedeiro adicionada com sucesso!');
+            const data = await apiService.addCleaning(limpezas);
+            setCleaning([...cleaning, data]);
+            toast.success(data.message || 'Limpeza adicionada com sucesso!');
         } catch (error) {
-            console.error('Erro ao criar recolha do moedeiro:', error);
+            console.error('Erro ao criar nova limpeza:', error);
         } finally {
             setShowAddModal(false);
-            refreshRecolhaMoedeiro();
-        }
-    };
-
-    // Função para atualizar recolha do moedeiro
-    const handleUpdateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiro) => {
-        try {
-            const data = await apiService.updateRecolhaMoedeiro(recolhaMoedeiro);
-            setGetCoins(getCoins.map(item => (item.id === data.id ? data : item)));
-            toast.success(data.message || 'Recolha do moedeiro atualizada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar recolha do moedeiro:', error);
-        } finally {
-            setShowUpdateModal(false);
-            refreshRecolhaMoedeiro();
+            refreshLimpezas();
         }
     };
 
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
-        fetchAllCoinRecoveredData();
+        fetchAllLimpezas();
     }, []);
 
     // Função para atualizar as recolhas do moedeiro
-    const refreshRecolhaMoedeiro = () => {
-        fetchAllCoinRecoveredData();
+    const refreshLimpezas = () => {
+        fetchAllLimpezas();
         setClearSelectionToggle(!clearSelectionToggle);
-    };
-
-    // Função para editar uma recolha do moedeiro
-    const handleEditRecolhas = (recolhaMoedeiro: RecolhaMoedeiro) => {
-        setSelectedRecolhaMoedeiro(recolhaMoedeiro);
-        setShowUpdateModal(true);
     };
 
     // Função para selecionar as colunas
@@ -101,7 +79,7 @@ export const NkioskGetCoins = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotal', 'deviceID']);
+        setSelectedColumns(['dataCreate','responsavel', 'observacoes', 'deviceId']);
     };
 
     // Função para selecionar todas as colunas
@@ -113,7 +91,7 @@ export const NkioskGetCoins = () => {
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: RecolhaMoedeiro[];
+        selectedRows: LimpezasEOcorrencias[];
     }) => {
         setSelectedRows(state.selectedRows);
     };
@@ -125,13 +103,13 @@ export const NkioskGetCoins = () => {
     };
 
     // Define as colunas da tabela
-    const columns: TableColumn<RecolhaMoedeiro>[] = recolhaMoedeiroFields
+    const columns: TableColumn<LimpezasEOcorrencias>[] = limpezasEOcorrenciasFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: RecolhaMoedeiro) => {
+            const formatField = (row: LimpezasEOcorrencias) => {
                 switch (field.key) {
-                    case 'dataRecolha':
-                        return new Date(row.dataRecolha).toLocaleString();
+                    case 'dataCreate':
+                        return new Date(row.dataCreate).toLocaleString();
                     case 'deviceID':
                         return devices.find(device => device.zktecoDeviceID === row.deviceID)?.deviceName || '';
                     default:
@@ -143,17 +121,17 @@ export const NkioskGetCoins = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={getCoins} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={cleaning} />
                     </>
                 ),
                 selector: row => formatField(row),
                 sortable: true,
-                sortFunction: (rowA, rowB) => new Date(rowB.dataRecolha).getTime() - new Date(rowA.dataRecolha).getTime()
+                sortFunction: (rowA, rowB) => new Date(rowB.dataCreate).getTime() - new Date(rowA.dataCreate).getTime()
             };
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = getCoins.filter(getCoin =>
+    const filteredDataTable = cleaning.filter(getCoin =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -168,22 +146,12 @@ export const NkioskGetCoins = () => {
         })
     );
 
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable = Array.from(
-        new Map(filteredDataTable.map(item => [item.id, item])).values()
-    );
-
-    // Calcula o total do valor das recolhas
-    const totalAmount = filteredDataTable.reduce((total, getCoins) => {
-        return total + (typeof getCoins.valorTotal === 'number' ? getCoins.valorTotal : parseFloat(getCoins.valorTotal) || 0);
-    }, 0);
-
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="datatable-container">
                 <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Recolhas do Moedeiro</span>
+                    <span style={{ color: '#009739' }}>Limpezas</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -196,17 +164,17 @@ export const NkioskGetCoins = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLimpezas} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={getCoins} selectedData={selectedRows} fields={recolhaMoedeiroFields} />
-                        <PrintButton data={getCoins} fields={recolhaMoedeiroFields} />
+                        <ExportButton allData={cleaning} selectedData={selectedRows} fields={limpezasEOcorrenciasFields} />
+                        <PrintButton data={cleaning} fields={limpezasEOcorrenciasFields} />
                     </div>
                 </div>
                 <div className='table-css'>
                     <DataTable
                         columns={columns}
-                        data={uniqueFilteredDataTable}
+                        data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
@@ -214,21 +182,17 @@ export const NkioskGetCoins = () => {
                         onSelectedRowsChange={handleRowSelected}
                         clearSelectedRows={clearSelectionToggle}
                         selectableRowsHighlight
-                        onRowDoubleClicked={handleEditRecolhas}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={true}
-                        defaultSortFieldId="dataRecolha"
+                        defaultSortFieldId="dataCreate"
                     />
-                </div>
-                <div style={{ marginLeft: 30 }}>
-                    <strong>Valor Total das Recolhas: </strong>{totalAmount.toFixed(2)}€
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={transactionMBFields}
+                    columns={limpezasEOcorrenciasFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
@@ -236,23 +200,13 @@ export const NkioskGetCoins = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            <CreateRecolhaMoedeiroModal
-                title="Nova Recolha do Moedeiro"
+            <CreateLimpezaOcorrenciaModal
+                title="Adicionar Limpeza"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddRecolhaMoedeiro}
-                fields={recolhaMoedeiroFields}
+                onSave={handleAddLimpezas}
+                fields={limpezasEOcorrenciasFields}
             />
-            {selectedRecolhaMoedeiro && (
-                <UpdateRecolhaMoedeiroModal
-                    open={showUpdateModal}
-                    onClose={() => setShowUpdateModal(false)}
-                    onUpdate={handleUpdateRecolhaMoedeiro}
-                    entity={selectedRecolhaMoedeiro}
-                    fields={recolhaMoedeiroFields}
-                    title="Atualizar Recolha do Moedeiro"
-                />
-            )}
         </div>
     );
 }
