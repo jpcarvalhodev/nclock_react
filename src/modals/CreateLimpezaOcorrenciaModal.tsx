@@ -62,7 +62,6 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
 
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
-                console.log([field.key], `${field.label} é obrigatório.`);
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
@@ -126,7 +125,6 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
-        console.log(formData)
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
@@ -169,7 +167,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                                 <Form.Label>Observações</Form.Label>
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
-                                    type="number"
+                                    type="string"
                                     name="observacoes"
                                     value={formData.observacoes || ''}
                                     onChange={handleChange}

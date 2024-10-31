@@ -62,6 +62,7 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
 
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
+                newErrors[field.key] = `${field.label} é obrigatório.`;
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
@@ -125,6 +126,7 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
+        console.log(formData);
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
@@ -161,7 +163,6 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors['dataRecolha'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['dataRecolha']}</div>}
                             </Form.Group>
                             <Form.Group controlId="formNumeroMoedas">
                                 <Form.Label>Número de Moedas<span style={{ color: 'red' }}> *</span></Form.Label>
@@ -224,7 +225,7 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
                                         as="select"
                                         className="custom-input-height custom-select-font-size"
                                         value={formData.deviceId || ''}
-                                        onChange={(e) => handleDropdownChange('deviceId', e)}
+                                        onChange={(e) => handleDropdownChange('deviceID', e)}
                                     >
                                         <option value="">Selecione...</option>
                                         {dropdownData.deviceId?.map((option: any) => {
