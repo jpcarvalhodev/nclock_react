@@ -8,10 +8,13 @@ import Split from 'react-split';
 import '../../css/PagesStyles.css';
 import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { employeeFields } from '../../helpers/Fields';
-import { Employee } from '../../helpers/Types';
+import { Employee, EmployeeCard } from '../../helpers/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { ExportButton } from '../../components/ExportButton';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
+import { useColor } from '../../context/ColorContext';
+import { set } from 'date-fns';
+import { PrintButton } from '../../components/PrintButton';
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -20,10 +23,12 @@ export const Persons = () => {
         data,
         setData,
         setEmployees,
-        fetchAllData,
         fetchAllEmployees,
+        fetchAllCardData,
         handleAddEmployee,
+        handleAddEmployeeCard
     } = useContext(PersonsContext) as PersonsContextType;
+    const { navbarColor, footerColor } = useColor();
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName']);
@@ -35,11 +40,6 @@ export const Persons = () => {
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
     const [initialData, setInitialData] = useState<Employee | null>(null);
 
-    // Busca os departamentos, grupos e funcionários
-    useEffect(() => {
-        fetchAllData()
-    }, [fetchAllData]);
-
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
         fetchAllEmployees({
@@ -49,24 +49,42 @@ export const Persons = () => {
         });
     };
 
-    // Função para adicionar um funcionário
-    const addEmployee = async (employee: Employee) => {
-        await handleAddEmployee(employee);
-        setShowAddModal(false);
-        refreshEmployees();
-    }
+    // Função para adicionar um funcionário e um cartão
+    const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
+        await handleAddEmployee(employee as Employee);
 
-    // Atualiza a lista de funcionários ao carregar a página
-    useEffect(() => {
-        fetchAllData();
-        fetchEmployees();
-    }, []);
+        const employees = await fetchAllEmployees();
+        setData({ ...data, employees: employees });
+        const employeeCards = await fetchAllCardData();
+        const lastEmployee = employees[employees.length - 1];
+
+        const cardExists = employeeCards.some((employeeCard: EmployeeCard) => employeeCard.employeeID === lastEmployee.employeeID);
+        const cardDataProvided = card && Object.keys(card).length > 0;
+
+        if (!cardExists && !cardDataProvided) {
+            console.log('Cartão não adicionado porque os dados não foram fornecidos');
+        } else {
+            const newEmployeeCard = {
+                ...card,
+                employeeID: lastEmployee.employeeID
+            };
+            await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
+            setData({ ...data, employees: employees });
+        }
+        refreshEmployees();
+        setShowAddModal(false);
+    };
 
     // Função para selecionar funcionários
     const handleSelectEmployees = (employeeIds: string[]) => {
         setSelectedEmployeeIds(employeeIds);
         setShowAllEmployees(employeeIds.length === 0);
     };
+
+    // Busca todos os dados
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
 
     // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
@@ -107,23 +125,18 @@ export const Persons = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Função para filtrar funcionários
-    const handleFilteredEmployees = (employees: Employee[]) => {
-        setFilteredData(employees);
-    };
-
     return (
         <PersonsProvider>
             <div className="main-container">
-                <NavBar />
+                <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className="content-container">
-                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewData onSelectEmployees={handleSelectEmployees} />
+                            <TreeViewData onSelectEmployees={handleSelectEmployees} entity='all' />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span>Pessoas</span>
+                                <span style={{ color: '#000000' }}>Pessoas</span>
                             </div>
                             <div className="datatable-header">
                                 <div>
@@ -140,6 +153,7 @@ export const Persons = () => {
                                     <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                     <ExportButton allData={employees} selectedData={filteredData} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                                    <PrintButton data={employees} fields={employeeFields} />
                                 </div>
                             </div>
                             <PersonsDataTable
@@ -147,7 +161,7 @@ export const Persons = () => {
                                 selectedColumns={selectedColumns}
                                 showAllEmployees={showAllEmployees}
                                 filterText={filterText}
-                                filteredEmployees={handleFilteredEmployees}
+                                filteredEmployees={setFilteredData}
                                 resetSelection={resetSelection}
                                 data={data}
                                 onRefreshData={setData}
@@ -157,13 +171,13 @@ export const Persons = () => {
                         </div>
                     </Split>
                 </div>
-                <Footer />
+                <Footer style={{ backgroundColor: footerColor }} />
                 {showAddModal && (
                     <CreateModalEmployees
                         title="Adicionar Pessoa"
                         open={showAddModal}
                         onClose={() => setShowAddModal(false)}
-                        onSave={addEmployee}
+                        onSave={addEmployeeAndCard}
                         fields={employeeFields}
                         initialValues={initialData || {}}
                     />

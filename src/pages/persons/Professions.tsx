@@ -8,7 +8,6 @@ import { Profession } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { professionFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -17,6 +16,10 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
+import { id } from "date-fns/locale";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -25,6 +28,7 @@ interface Filters {
 
 // Define a página de profissões
 export const Professions = () => {
+    const { navbarColor, footerColor } = useColor();
     const [professions, setProfessions] = useState<Profession[]>([]);
     const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
     const [filterText, setFilterText] = useState('');
@@ -35,22 +39,12 @@ export const Professions = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [selectedRows, setSelectedRows] = useState<Profession[]>([]);
 
     // Função para buscar as profissões
-    const fetchProfessions = async () => {
+    const fetchAllProfessions = async () => {
         try {
-            const response = await fetchWithAuth('Professions', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.fetchAllProfessions();
             setProfessions(data);
         } catch (error) {
             console.error('Erro ao buscar os dados das profissões:', error);
@@ -60,19 +54,7 @@ export const Professions = () => {
     // Função para adicionar uma nova profissão
     const handleAddProfession = async (profession: Profession) => {
         try {
-            const response = await fetchWithAuth('Professions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(profession)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addProfession(profession);
             setProfessions([...professions, data]);
             toast.success(data.value || 'Profissão adicionada com sucesso!');
 
@@ -87,21 +69,7 @@ export const Professions = () => {
     // Função para atualizar uma profissão
     const handleUpdateProfession = async (profession: Profession) => {
         try {
-            const response = await fetchWithAuth(`Professions/${profession.professionID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(profession)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedProfession = await response.json();
+            const updatedProfession = await apiService.updateProfession(profession);
             setProfessions(professions => professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
             toast.success(updatedProfession.value || 'Profissão atualizada com sucesso!');
 
@@ -116,17 +84,7 @@ export const Professions = () => {
     // Função para apagar uma profissão
     const handleDeleteProfessions = async (professionID: string) => {
         try {
-            const response = await fetchWithAuth(`Professions/${professionID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteProfession = await response.json();
+            const deleteProfession = await apiService.deleteProfession(professionID);
             toast.success(deleteProfession.value || 'Profissão apagada com sucesso!');
 
         } catch (error) {
@@ -139,12 +97,12 @@ export const Professions = () => {
 
     // Atualiza a lista de profissões ao carregar a página
     useEffect(() => {
-        fetchProfessions();
+        fetchAllProfessions();
     }, []);
 
     // Função para atualizar a lista de profissões
     const refreshProfessions = () => {
-        fetchProfessions();
+        fetchAllProfessions();
     };
 
     // Função para abrir o modal de editar profissão
@@ -165,13 +123,6 @@ export const Professions = () => {
         setShowDeleteModal(true);
     };
 
-    // Filtra as profissões
-    const filteredItems = professions.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
-
     // Função para alternar a visibilidade das colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -191,6 +142,15 @@ export const Professions = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Função para lidar com a seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Profession[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
+
     // Opções de paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -206,6 +166,7 @@ export const Professions = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
+            id: columnKey,
             name: (
                 <>
                     {columnNamesMap[columnKey]}
@@ -240,10 +201,10 @@ export const Professions = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Profissões</span>
+                    <span style={{ color: '#000000' }}>Profissões</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -259,7 +220,8 @@ export const Professions = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={professions} selectedData={filteredItems} fields={professionFields} />
+                        <ExportButton allData={professions} selectedData={selectedRows} fields={professionFields} />
+                        <PrintButton data={professions} fields={professionFields} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes
@@ -279,6 +241,7 @@ export const Professions = () => {
                         entity={selectedProfession}
                         fields={professionFields}
                         title="Atualizar Profissão"
+                        entityType="profissões"
                     />
                 )}
                 <DeleteModal
@@ -298,12 +261,14 @@ export const Professions = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId="code"
                     />
                 </div>
             </div>
-            <Footer />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={professionFields}

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
+import { set } from 'date-fns';
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -29,46 +29,40 @@ interface Props<T> {
 // Define o componente
 export const CreateModalZones = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
-    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Valida o formulário
-    const validateForm = () => {
+    useEffect(() => {
+        if(!open) {
+            setFormData({});
+            setProfileImage(null);
+        }
+    }, [open]);
+
+    // useEffect para validar o formulário
+    useEffect(() => {
+        const newErrors: Record<string, string> = {};
+
         const isValid = fields.every(field => {
-            if (field.required) {
-                const fieldValue = formData?.[field.key];
-                return fieldValue !== null && fieldValue !== undefined && typeof fieldValue === 'string' && fieldValue.trim() !== '';
+            const fieldValue = formData[field.key];
+            let valid = true;
+
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
             }
-            return true;
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser negativo.`;
+            }
+
+            return valid;
         });
+
+        setErrors(newErrors);
         setIsFormValid(isValid);
-    };
-
-    // Atualiza a validação do formulário
-    useEffect(() => {
-        validateForm();
     }, [formData, fields]);
-
-    // Carregar as opções dos dropdowns
-    useEffect(() => {
-        const fetchDropdownOptions = async (field: FieldConfig) => {
-            if (field.optionsUrl) {
-                const response = await fetchWithAuth(field.optionsUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    setDropdownData(prev => ({ ...prev, [field.key]: data }));
-                }
-            }
-        };
-
-        fields.forEach(field => {
-            if (field.type === 'dropdown') {
-                fetchDropdownOptions(field);
-            }
-        });
-    }, [fields]);
 
     // Atualiza o valor do campo da foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +116,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     // Verifica o formulário e chama a função de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSave();
@@ -131,17 +125,19 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     // Salva os dados
     const handleSave = () => {
         onSave(formData as T);
+        onClose();
+        setFormData(initialValues);
     };
 
     // Opções de tipo
     const typeOptions = [
-        { value: 'zona', label: 'Zona' },
-        { value: 'local_de_trabalho', label: 'Local de Trabalho' },
-        { value: 'cantina', label: 'Cantina' },
+        { value: 0, label: 'Zona' },
+        { value: 1, label: 'Local de Trabalho' },
+        { value: 2, label: 'Cantina' },
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -165,6 +161,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -174,7 +171,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-acronym">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-acronym">Campo deve ter no máximo 4 caracteres</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"
@@ -185,6 +182,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.acronym && <Form.Text className="text-danger">{errors.acronym}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>

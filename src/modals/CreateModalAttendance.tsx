@@ -2,10 +2,10 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { Employee } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -45,9 +45,13 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             const fieldValue = formData[field.key];
             let valid = true;
 
-            if (field.required && !fieldValue) {
-                newErrors[field.key] = 'Campo obrigatório.';
+            
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
+            }
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -60,16 +64,11 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employeeResponse = await fetchWithAuth('Employees/GetAllEmployees');
-            if (employeeResponse.ok) {
-                const employees = await employeeResponse.json();
-                setDropdownData({
-                    employeeId: employees,
-                });
-            } else {
-                toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
-                return;
-            }
+            const employees = await apiService.fetchAllEmployees();
+            setDropdownData(prevState => ({
+                ...prevState,
+                employeeId: employees
+            }));
         } catch (error) {
             toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
             console.error(error);
@@ -80,6 +79,8 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
+        } else {
+            setFormData({});
         }
     }, [open]);
 
@@ -154,7 +155,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
             <Modal.Header closeButton>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>

@@ -1,35 +1,10 @@
 import Dropdown from 'react-bootstrap/Dropdown';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
-import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { CustomOutlineButton } from './CustomOutlineButton';
-
-// Define os estilos para o PDF
-const styles = StyleSheet.create({
-    page: {
-        flexDirection: 'column',
-        padding: 30,
-        backgroundColor: '#FFF'
-    },
-    section: {
-        margin: 10,
-        padding: 10,
-        flexGrow: 1
-    },
-    tableRow: {
-        flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderBottomColor: '#E4E4E4',
-        borderBottomStyle: 'solid',
-        alignItems: 'center',
-        height: 24,
-        fontStyle: 'bold',
-    },
-    tableCell: {
-        fontSize: 10,
-        marginLeft: 12,
-    }
-});
+import * as apiService from "../helpers/apiService";
+import { PDFDocument } from './PDFDocument';
 
 // Define a interface para os itens de dados
 interface DataItem {
@@ -49,15 +24,8 @@ interface ExportButtonProps {
     fields: Field[];
 }
 
-// Define as propriedades do documento PDF
-interface PDFDocumentProps {
-    data: DataItem[];
-    fields: Field[];
-}
-
 // Define o tipo de campo para as exceções
-type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' |
-    'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | string;
+type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | string;
 
 // Função para formatar a data e a hora
 function formatDateAndTime(input: string | Date): string {
@@ -98,18 +66,68 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
             return item.zoneName || '';
         case 'externalEntityId':
             return item.externalEntityName || '';
+        case 'attendanceTime':
+            return formatDateAndTime(item[fieldKey]);
         case 'inOutMode':
-            switch (item[fieldKey]) {
-                case 0: return 'Entrada';
-                case 1: return 'Saída';
-                case 2: return 'Pausa - Entrada';
-                case 3: return 'Pausa - Saída';
-                case 4: return 'Hora Extra - Entrada';
-                case 5: return 'Hora Extra - Saída';
+            if (item.inOutModeDescription) {
+                return item.inOutModeDescription || '';
+            } else {
+                switch (item[fieldKey]) {
+                    case 0: return 'Entrada';
+                    case 1: return 'Saída';
+                    case 2: return 'Pausa - Entrada';
+                    case 3: return 'Pausa - Saída';
+                    case 4: return 'Hora Extra - Entrada';
+                    case 5: return 'Hora Extra - Saída';
+                    default: return '';
+                }
+            }
+        case 'code':
+            return item.code === 0 ? "" : item.code;
+        case 'machineNumber':
+            return item.code === 0 ? "" : item.machineNumber;
+        case 'cardNumber':
+            return item.cardNumber === 0 ? "" : item.cardNumber;
+        case 'productTime':
+            return item.productTime ? formatDateAndTime(item[fieldKey]) : '';
+        case 'createDate':
+            return new Date(item.createDate).toLocaleString() || '';
+        case 'updateDate':
+            return new Date(item.updateDate).toLocaleString() || '';
+        case 'createTime':
+            return new Date(item.createTime).toLocaleString() || '';
+        case 'updateTime':
+            return new Date(item.updateTime).toLocaleString() || '';
+        case 'eventTime':
+            return new Date(item.eventTime).toLocaleString() || '';
+        case 'timestamp':
+            return item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+        case 'eventDoorId':
+            switch (item.eventDoorId) {
+                case 1: return 'Terminal';
+                case 2: return 'Moedeiro';
+                case 3: return 'Cartão';
+                case 4: return 'Video Porteiro';
                 default: return '';
             }
+        case 'transactionType':
+            return item[fieldKey] === 1 ? 'Multibanco' : 'Moedeiro';
+        case 'estadoTerminal':
+            return item[fieldKey] ? 'Ligado' : 'Desligado';
+        case 'timeReboot':
+            return item[fieldKey] === '00:00:00' ? 'Sem tempo de reinício' : item[fieldKey];
+        case 'clientTicket':
+        case 'merchantTicket':
+            const imageUrl = item[fieldKey];
+            if (imageUrl) {
+                const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
+                const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
+                return fullImageUrl;
+            } else {
+                return 'Sem Ticket';
+            }
         default:
-            return item[fieldKey] || '';
+            return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
     }
 };
 
@@ -171,29 +189,6 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void
     saveAs(blob, fileName + fileExtension);
 };
 
-// Define o componente PDFDocument
-const PDFDocument = ({ data, fields }: PDFDocumentProps) => (
-    <Document>
-        <Page size="A4" style={styles.page}>
-            {data.map((item, index) => (
-                <View key={index} style={styles.section}>
-                    {fields.map((field) => {
-                        const value = formatField(item, field.key);
-                        if (value !== undefined && value !== null && value !== '') {
-                            return (
-                                <View key={field.key} style={styles.tableRow}>
-                                    <Text style={styles.tableCell}>{field.label}: {value}</Text>
-                                </View>
-                            );
-                        }
-                        return null;
-                    })}
-                </View>
-            ))}
-        </Page>
-    </Document>
-);
-
 // Função para exportar os dados para TXT
 const exportToTXT = (data: DataItem[], fileName: string): void => {
     const fileExtension = '.txt';
@@ -215,7 +210,7 @@ const exportToTXT = (data: DataItem[], fileName: string): void => {
 
 // Define o componente
 export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProps) => {
-    const fileName = 'data_export';
+    const fileName = 'dados_exportados';
     const dataToExport = selectedData.length > 0 ? selectedData : allData;
 
     return (

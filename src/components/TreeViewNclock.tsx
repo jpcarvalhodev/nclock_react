@@ -7,6 +7,7 @@ import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { AttendanceProvider } from '../context/MovementContext';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -77,7 +78,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   // Busca os dados ao carregar o componente
   useEffect(() => {
     fetchAllData();
-  }, [fetchAllData]);
+  }, []);
 
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   useEffect(() => {
@@ -160,8 +161,8 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
 
     const treeItems = [
       {
-        id: 'nclock',
-        label: 'NCLOCK',
+        id: 'nidgroup',
+        label: 'NIDGROUP',
         children: [
           { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
           ...(unassignedDepartmentItems.length > 0 ? [{
@@ -229,14 +230,20 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     setSelectedEmployeeIds(Array.from(newSelectedIds));
 
     const employeeIds = Array.from(newSelectedIds).filter(id =>
-      id.includes('emp') || id.includes('-emp-') || id.startsWith('empd-') || id.startsWith('empg-')
+      id.includes('emp') || id.includes('-emp-')
     ).map(id => {
       if (id.includes('-emp-')) {
         return id.substring(id.lastIndexOf('-emp-') + 5);
-      } else if (id.startsWith('empd-') || id.startsWith('empg-')) {
-        return id.substring(5);
+      } else if (id.startsWith('unassigned-empdept-')) {
+        return id.substring(19);
+      } else if (id.startsWith('unassigned-empgrp-')) {
+        return id.substring(18);
       } else if (id.startsWith('emp-')) {
         return id.substring(4);
+      } else if (id.startsWith('empd-')) {
+        return id.substring(5);
+      } else if (id.startsWith('empg-')) {
+        return id.substring(5);
       }
       return null;
     }).filter(id => id !== null);
@@ -264,6 +271,8 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   return (
     <AttendanceProvider>
       <Box className="TreeViewContainer">
+      <p className='treeview-title-text' style={{ color: '#0050a0' }}>Árvore de Assiduidade</p>
+      <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect={true}

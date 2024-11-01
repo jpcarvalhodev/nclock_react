@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import * as apiService from "../helpers/apiService";
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -41,6 +41,13 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
 
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
     // UseEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -49,6 +56,9 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.required && !fieldValue) {
                 newErrors[field.key] = 'Campo obrigatório.';
                 valid = false;
@@ -64,7 +74,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employeeResponse = await fetchWithAuth('Employees/GetAllEmployees');
+            const employeeResponse = await apiService.fetchAllEmployees();
             if (employeeResponse.ok) {
                 const employees = await employeeResponse.json();
                 setDropdownData({
@@ -143,7 +153,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
             <Modal.Header closeButton>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
@@ -169,6 +179,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                             name="attendanceTime"
                                         />
                                     </OverlayTrigger>
+                                    {errors.attendanceTime && <div style={{ color: 'red', fontSize: 'small' }}>{errors.attendanceTime}</div>}
                                 </Form.Group>
                             </div>
                             <div className="col-md-6">
@@ -195,6 +206,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                             ))}
                                         </Form.Control>
                                     </OverlayTrigger>
+                                    {errors.employeeId && <div style={{ color: 'red', fontSize: 'small' }}>{errors.employeeId}</div>}
                                 </Form.Group>
                             </div>
                         </div>
@@ -282,6 +294,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                                 name={field.key}
                                             />
                                         )))}
+                                        {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
                             </Form.Group>
                         );
                     }

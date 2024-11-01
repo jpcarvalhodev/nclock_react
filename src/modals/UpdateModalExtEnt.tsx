@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -45,6 +45,13 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -53,9 +60,16 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
+            }
+            if (field.label === 'NIF' && fieldValue != null && fieldValue.toString().length < 9) {
+                valid = false;
+                newErrors[field.key] = 'NIF deve ter no mínimo 9 números.';
             }
 
             return valid;
@@ -67,28 +81,22 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
 
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
-        const response = await fetchWithAuth('Employees/GetAllEmployees');
-        if (response.ok) {
-            const employees = await response.json();
-            setDropdownData(prev => ({ ...prev, responsibleName: employees }));
-        } else {
-            toast.error('Erro ao buscar os funcionários.');
+        try {
+            const employeeResponse = await apiService.fetchAllEmployees();
+            setDropdownData(prev => ({ ...prev, responsibleName: employeeResponse }));
+        } catch (error) {
+            toast.error('Erro ao buscar os dados dos funcionários.');
+            console.error(error);
         }
-        fetchEmployees();
     };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const externalEntityTypesResponse = await fetchWithAuth('ExternalEntityTypes');
-            if (externalEntityTypesResponse.ok) {
-                const externalEntitiesType = await externalEntityTypesResponse.json();
-                setDropdownData({
-                    externalEntityTypeId: externalEntitiesType
-                });
-            } else {
-                toast.error('Erro ao buscar os dados de tipos.');
-            }
+            const externalEntityTypesResponse = await apiService.fetchAllExternalEntityTypes();
+            setDropdownData({
+                externalEntityTypeId: externalEntityTypesResponse
+            });
         } catch (error) {
             toast.error('Erro ao buscar os dados de tipos.');
             console.error(error);
@@ -178,7 +186,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
     // Função para lidar com os dados dos campos
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSubmit();
@@ -191,7 +199,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -236,7 +244,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-nif">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-nif">Campo deve ter no mínimo 9 números</Tooltip>}
                             >
                                 <Form.Control
                                     type="number"

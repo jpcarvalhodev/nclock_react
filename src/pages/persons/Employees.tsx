@@ -5,7 +5,7 @@ import '../../css/PagesStyles.css';
 import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
-import { Employee } from '../../helpers/Types';
+import { Employee, EmployeeCard } from '../../helpers/Types';
 import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
 import { DeleteModal } from '../../modals/DeleteModal';
@@ -18,6 +18,8 @@ import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedCompone
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
+import { useColor } from '../../context/ColorContext';
+import { PrintButton } from '../../components/PrintButton';
 
 // Define a interface para os filtros
 interface Filters {
@@ -29,13 +31,17 @@ export const Employees = () => {
     const {
         employees,
         data,
+        setData,
         setEmployees,
-        fetchAllData,
         fetchAllEmployees,
+        fetchAllCardData,
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,
+        handleAddEmployeeCard,
+        handleUpdateEmployeeCard
     } = useContext(PersonsContext) as PersonsContextType;
+    const { navbarColor, footerColor } = useColor();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -51,10 +57,6 @@ export const Employees = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
 
-    // Busca os departamentos, grupos e funcionários
-    useEffect(() => {
-        fetchAllData()
-    }, [fetchAllData]);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -67,19 +69,41 @@ export const Employees = () => {
         });
     };
 
-    // Função para adicionar um funcionário
-    const addEmployee = async (employee: Employee) => {
-        await handleAddEmployee(employee);
-        setShowAddModal(false);
-        refreshEmployees();
-    }
+    // Função para adicionar um funcionário e um cartão
+    const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
+        await handleAddEmployee(employee as Employee);
+        const employees = await fetchAllEmployees();
+        const employeeCards = await fetchAllCardData();
+        const lastEmployee = employees[employees.length - 1];
 
-    // Função para atualizar um funcionário
-    const updateEmployee = async (employee: Employee) => {
+        const cardExists = employeeCards.some((employeeCard: EmployeeCard) => employeeCard.employeeID === lastEmployee.employeeID);
+        const cardDataProvided = card && Object.keys(card).length > 0;
+
+        if (!cardExists && !cardDataProvided) {
+            console.log('Cartão não adicionado porque os dados não foram fornecidos');
+        } else {
+            const newEmployeeCard = {
+                ...card,
+                employeeID: lastEmployee.employeeID
+            };
+            await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
+            setData({ ...data, employees: employees });
+        }
+        refreshEmployees();
+        setShowAddModal(false);
+    };
+
+    // Função para atualizar um funcionário e um cartão
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
         await handleUpdateEmployee(employee);
+        if (card.cardId) {
+            await handleUpdateEmployeeCard(card as EmployeeCard);
+        } else {
+            await handleAddEmployeeCard(card as EmployeeCard);
+        }
         setShowUpdateModal(false);
         refreshEmployees();
-    }
+    };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
@@ -88,16 +112,16 @@ export const Employees = () => {
         refreshEmployees();
     }
 
-    // Busca os funcionários
+    // Busca todos os dados
     useEffect(() => {
         fetchEmployees();
     }, []);
 
     // Atualiza os funcionários
     const refreshEmployees = () => {
-        fetchAllData();
         fetchEmployees();
         setSelectedEmployeeIds([]);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para filtrar as presenças com base no texto de pesquisa
@@ -122,14 +146,14 @@ export const Employees = () => {
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         setSelectedEmployeeIds(selectedIds);
-    };    
+    };
 
     // Atualiza os funcionários filtrados
     useEffect(() => {
         setFilteredEmployees(employees);
     }, [employees]);
 
-    // Define a abertura do modal de atualização
+    // Define a abertura do modal de apagar funcionário
     const handleOpenDeleteModal = (employeeID: string) => {
         setSelectedEmployeeToDelete(employeeID);
         setShowDeleteModal(true);
@@ -216,14 +240,26 @@ export const Employees = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={data.employees} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -275,15 +311,15 @@ export const Employees = () => {
     return (
         <PersonsProvider>
             <div className="main-container">
-                <NavBar />
+                <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className="content-container">
-                    <Split className='split' sizes={[20, 80]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
+                            <TreeViewData onSelectEmployees={handleSelectFromTreeView} entity='employees' />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span>Funcionários</span>
+                                <span style={{ color: '#000000' }}>Funcionários</span>
                             </div>
                             <div className="datatable-header">
                                 <div>
@@ -300,6 +336,7 @@ export const Employees = () => {
                                     <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                                     <ExportButton allData={employees} selectedData={selectedRows} fields={employeeFields} />
+                                    <PrintButton data={employees} fields={employeeFields} />
                                 </div>
                             </div>
                             <DataTable
@@ -314,18 +351,20 @@ export const Employees = () => {
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
-                                noDataComponent="Não há dados disponíveis para exibir."
+                                noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                defaultSortAsc={true}
+                                defaultSortFieldId="enrollNumber"
                             />
                         </div>
                     </Split>
                 </div>
-                <Footer />
+                <Footer style={{ backgroundColor: footerColor }} />
                 <CreateModalEmployees
                     title="Adicionar Funcionário"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={addEmployee}
+                    onSave={addEmployeeAndCard}
                     fields={employeeFields}
                     initialValues={initialData || {}}
                 />
@@ -334,7 +373,7 @@ export const Employees = () => {
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
                         onDuplicate={handleDuplicate}
-                        onUpdate={updateEmployee}
+                        onUpdate={updateEmployeeAndCard}
                         entity={selectedEmployee}
                         fields={employeeFields}
                         title="Atualizar Funcionário"

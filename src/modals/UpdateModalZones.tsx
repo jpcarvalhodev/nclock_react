@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
@@ -34,39 +33,40 @@ interface UpdateModalProps<T extends Entity> {
 // Define o componente
 export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
-    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Atualiza o estado do componente com as validações dos campos
+    // Usa useEffect para inicializar o formulário
     useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
+
+    // useEffect para validar o formulário
+    useEffect(() => {
+        const newErrors: Record<string, string> = {};
+
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
-            const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
-            return !field.required || (field.required && valueAsString !== '');
+            let valid = true;
+
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                valid = false;
+                newErrors[field.key] = `${field.label} não pode ser negativo.`;
+            }
+
+            return valid;
         });
+
+        setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
-
-    // Atualiza o estado do componente com os dados do dropdown
-    useEffect(() => {
-        const fetchDropdownOptions = async (field: Field) => {
-            if (field.optionsUrl) {
-                const response = await fetchWithAuth(field.optionsUrl);
-                if (response.ok) {
-                    const data = await response.json();
-                    setDropdownData(prev => ({ ...prev, [field.key]: data }));
-                }
-            }
-        };
-
-        fields.forEach(field => {
-            if (field.type === 'dropdown') {
-                fetchDropdownOptions(field);
-            }
-        });
-    }, [fields]);
 
     // Atualiza o estado da foto
     useEffect(() => {
@@ -135,7 +135,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
     // Atualiza o estado do componente com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSubmit();
@@ -149,13 +149,13 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
 
     // Define as opções de tipo
     const typeOptions = [
-        { value: 'zona', label: 'Zona' },
-        { value: 'local_de_trabalho', label: 'Local de Trabalho' },
-        { value: 'cantina', label: 'Cantina' },
+        { value: 1, label: 'Zona' },
+        { value: 2, label: 'Local de Trabalho' },
+        { value: 3, label: 'Cantina' },
     ];
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -179,6 +179,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -188,7 +189,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-acronym">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-acronym">Campo deve ter no máximo 4 caracteres</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"
@@ -199,6 +200,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.acronym && <Form.Text className="text-danger">{errors.acronym}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>

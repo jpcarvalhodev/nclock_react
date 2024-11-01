@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface Entity
 export interface Entity {
@@ -29,13 +30,26 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    entityType: 'categorias' | 'profissões' | 'tipos';
+}
+
+// Define a interface para os itens de código
+interface CodeItem {
+    code: number;
 }
 
 // Exporta o componente
-export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title, entityType }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Usa useEffect para inicializar o formulário
+    useEffect(() => {
+        if (entity) {
+            setFormData({ ...entity });
+        }
+    }, [entity]);
 
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
@@ -45,6 +59,9 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -56,6 +73,47 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
         setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
+
+    // Usa useEffect para buscar os dados de categoria/profissão
+    useEffect(() => {
+        if (open) {
+            fetchEntityData();
+        }
+    }, [open]);
+
+    // Função para buscar os dados de categoria, profissão ou tipo
+    const fetchEntityData = async () => {
+        let url;
+        switch (entityType) {
+            case 'categorias':
+                url = apiService.fetchAllCategories;
+                break;
+            case 'profissões':
+                url = apiService.fetchAllProfessions;
+                break;
+            case 'tipos':
+                url = apiService.fetchAllExternalEntityTypes;
+                break;
+            default:
+                toast.error(`Tipo de entidade '${entityType}' não existe.`);
+                return;
+        }
+        try {
+            const response = await url();
+            if (response.ok) {
+                const data: CodeItem[] = await response.json();
+                const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code), 0) + 1;
+                setFormData(prevState => ({
+                    ...prevState,
+                    code: maxCode
+                }));
+            } else {
+                return;
+            }
+        } catch (error) {
+            console.error(`Erro ao buscar dados de ${entityType}:`, error);
+        }
+    };
 
     // Função para lidar com a mudança de entrada
     const handleInputChange = (key: string, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -83,7 +141,7 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

@@ -1,10 +1,11 @@
-import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices } from "../helpers/Types";
+import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction, KioskTransactionCard, KioskTransactionMB, Register, Doors, MBDevice, RecolhaMoedeiro } from "../helpers/Types";
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
 import ReactDOM from "react-dom";
+import * as apiService from "../helpers/apiService";
 
 // Tipos de dados
-type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices;
+type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionCard | KioskTransactionMB | Register | Doors | MBDevice | RecolhaMoedeiro;
 
 // Propriedades do componente de filtro de seleção
 interface SelectFilterProps {
@@ -77,8 +78,44 @@ const formatDataItem = (item: DataItem, column: string) => {
             return item.cardNumber === 0 ? "" : item.cardNumber;
         case 'productTime':
             return item.productTime ? formatDateAndTime(item[column]) : '';
-        case 'status':
-            return item.status ? 'Activo' : 'Inactivo';
+        case 'createDate':
+            return new Date(item.createDate).toLocaleString() || '';
+        case 'updateDate':
+            return new Date(item.updateDate).toLocaleString() || '';
+        case 'createTime':
+            return new Date(item.createTime).toLocaleString() || '';
+        case 'updateTime':
+            return new Date(item.updateTime).toLocaleString() || '';
+        case 'eventTime':
+            return new Date(item.eventTime).toLocaleString() || '';
+        case 'timestamp':
+            return item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+        case 'eventDoorId':
+            switch (item.eventDoorId) {
+                case 1: return 'Terminal';
+                case 2: return 'Moedeiro';
+                case 3: return 'Cartão';
+                case 4: return 'Video Porteiro';
+                default: return '';
+            }
+        case 'transactionType':
+            return item[item.transactionType] === 1 ? 'Multibanco' : 'Moedeiro';
+        case 'estadoTerminal':
+            return item[item.estadoTerminal] ? 'Ligado' : 'Desligado';
+        case 'timeReboot':
+            return item[item.timeReboot] === '00:00:00' ? 'Sem tempo de reinício' : item[item.timeReboot];
+        case 'clientTicket':
+        case 'merchantTicket':
+            const imageUrl = item[item.clientTicket || item.merchantTicket];
+            if (imageUrl) {
+                const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
+                const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
+                return fullImageUrl;
+            } else {
+                return 'Sem Ticket';
+            }
+        case 'dataRecolha':
+            return new Date(item.dataRecolha).toLocaleString();
         default:
             return item[column]?.toString();
     }
@@ -109,7 +146,7 @@ export const SelectFilter = ({ column, setFilters, data }: SelectFilterProps) =>
                 <i className="bi bi-filter"></i>
             </Dropdown.Toggle>
             {portalElement && ReactDOM.createPortal(
-                <Dropdown.Menu>
+                <Dropdown.Menu style={{ maxHeight: 200, overflowY: 'auto' }}>
                     <Dropdown.Item onClick={() => handleChange("")} key="all">Todos</Dropdown.Item>
                     {options.map((option, index) => (
                         <Dropdown.Item key={`${option}-${index}`} onClick={() => handleChange(option)}>

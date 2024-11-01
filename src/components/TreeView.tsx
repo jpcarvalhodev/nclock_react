@@ -6,6 +6,7 @@ import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
+import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -27,6 +28,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataProps {
   onSelectEmployees: (employeeIds: string[]) => void;
+  entity: "all" | "employees" | "external employees" | "users" | "visitors" | "contacts" | "temporaries";
 }
 
 // Função para filtrar os itens
@@ -64,8 +66,10 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
-  const { data, fetchAllData } = useContext(PersonsContext) as PersonsContextType;
+export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
+  const { data,
+    fetchAllData,
+  } = useContext(PersonsContext) as PersonsContextType;
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -73,10 +77,13 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
 
-  // Busca os dados ao carregar o componente
+  // Busca os dados ao carregar o componente de acordo com a entidade
   useEffect(() => {
-    fetchAllData();
-  }, [fetchAllData]);
+    const fetchData = async () => {
+      await fetchAllData(entity);
+    };
+    fetchData();
+  }, [entity]);
 
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {
@@ -159,8 +166,8 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
 
     const treeItems = [
       {
-        id: 'nclock',
-        label: 'NCLOCK',
+        id: 'nidgroup',
+        label: 'NIDGROUP',
         children: [
           { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
           ...(unassignedDepartmentItems.length > 0 ? [{
@@ -240,14 +247,20 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     setSelectedEmployeeIds(Array.from(newSelectedIds));
 
     const employeeIds = Array.from(newSelectedIds).filter(id =>
-      id.includes('emp') || id.includes('-emp-') || id.startsWith('empd-') || id.startsWith('empg-')
+      id.includes('emp') || id.includes('-emp-')
     ).map(id => {
       if (id.includes('-emp-')) {
         return id.substring(id.lastIndexOf('-emp-') + 5);
-      } else if (id.startsWith('empd-') || id.startsWith('empg-')) {
-        return id.substring(5);
+      } else if (id.startsWith('unassigned-empdept-')) {
+        return id.substring(19);
+      } else if (id.startsWith('unassigned-empgrp-')) {
+        return id.substring(18);
       } else if (id.startsWith('emp-')) {
         return id.substring(4);
+      } else if (id.startsWith('empd-')) {
+        return id.substring(5);
+      } else if (id.startsWith('empg-')) {
+        return id.substring(5);
       }
       return null;
     }).filter(id => id !== null);
@@ -265,6 +278,8 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   return (
     <PersonsProvider>
       <Box className="TreeViewContainer">
+      <p className='treeview-title-text'>Árvore de Pessoas</p>
+      <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect

@@ -1,10 +1,23 @@
-import '../css/PagesStyles.css';
+import { ColorProvider, useColor } from "../context/ColorContext";
 
-// Define o componente
-export const Footer = () => {
+interface FooterProps {
+  style?: React.CSSProperties;
+}
+
+export const Footer = ({ style }: FooterProps) => {
+  const { footerColor } = useColor();
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="footer">
-      <p className='footer-line1'>2024 ® Nclock by SISNID - All Rights Reserved</p>
-    </footer>
+    <ColorProvider>
+      <footer className="footer" style={{ backgroundColor: footerColor }}>
+        <div className="footer-left">
+          <p>{currentYear} ®NIDGROUP por SISNID - Todos os direitos reservados</p>
+        </div>
+        <div className="footer-right">
+          <p>Versão: 1</p>
+        </div>
+      </footer>
+    </ColorProvider>
   );
 };

@@ -1,10 +1,26 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
-import { Devices } from "../helpers/Types";
-import { fetchWithAuth } from "../components/FetchWithAuth";
+import { Doors } from "../helpers/Types";
 import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";
+import { TerminalsContext, DeviceContextType } from "../context/TerminalsContext";
+import DataTable, { TableColumn } from "react-data-table-component";
+import { customStyles } from "../components/CustomStylesDataTable";
+import { doorsFields } from "../helpers/Fields";
+import { SelectFilter } from "../components/SelectFilter";
+import * as apiService from "../helpers/apiService";
+import { UpdateModalDoor } from "./UpdateModalDoor";
+import nface from "../assets/img/terminais/nface.webp";
+import c3_100 from "../assets/img/terminais/c3_100.webp";
+import c3_200 from "../assets/img/terminais/c3_200.webp";
+import c3_400 from "../assets/img/terminais/c3_400.webp";
+import inbio160 from "../assets/img/terminais/inbio160.webp";
+import inbio260 from "../assets/img/terminais/inbio260.webp";
+import inbio460 from "../assets/img/terminais/inbio460.webp";
+import profacex from "../assets/img/terminais/profacex.webp";
+import rfid_td from "../assets/img/terminais/rfid_td.webp";
+import v5l_td from "../assets/img/terminais/v5l_td.webp";
 
 // Define a interface Entity
 export interface Entity {
@@ -29,20 +45,40 @@ interface UpdateModalProps<T extends Entity> {
     onClose: () => void;
     onDuplicate?: (entity: T) => void;
     onUpdate: (entity: T) => Promise<void>;
-    entity: T | null;
+    entity: T;
     fields: Field[];
     title: string;
 }
 
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+    const {
+        fetchAllDevices,
+        fetchAllDoorData,
+    } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<T>({ ...entity } as T);
-    const [device, setDevice] = useState<Devices[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [ipAddress, setIpAddress] = useState('');
     const [error, setError] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [doors, setDoors] = useState<Doors[]>([]);
+    const [filters, setFilters] = useState<Record<string, string>>({});
+    const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedDevice, setSelectedDevice] = useState('');
+
+    // UseEffect para atualizar o estado do formulário
+    useEffect(() => {
+        setFormData({ ...entity } as T);
+        const matchedDevice = deviceOptions.find(option => option.label === entity.model);
+        if (matchedDevice) {
+            setSelectedDevice(matchedDevice.value);
+            setDeviceImage(matchedDevice.img);
+        } else {
+            setSelectedDevice('');
+            setDeviceImage(no_image);
+        }
+    }, [entity]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -52,6 +88,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -81,24 +120,32 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         setIsFormValid(isValid);
     };
 
-    // Função para buscar todos os dispositivos
-    const fetchAllDevices = async () => {
-        try {
-            const response = await fetchWithAuth('Zkteco/GetAllDevices');
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
-            setDevice(data);
+    // Função para buscar as portas e filtrar pelo SN
+    const fetchDoors = async () => {
+        const data = await fetchAllDoorData();
+        const dataFiltered = data.filter((door: Doors) => door.devSN === formData.serialNumber);
+        setDoors(dataFiltered);
+    }
 
+    // Função para lidar com a atualização das portas
+    const handleUpdateDoor = async (door: Doors) => {
+        try {
+            const data = await apiService.updateDoor(door);
+            const updatedData = { ...door, ...data };
+            const updatedDoors = doors.map(d => d.id === door.id ? { ...d, ...updatedData } : d);
+            setDoors(updatedDoors);
+            toast.success(data?.message || 'Porta atualizada com sucesso!');
         } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
+            console.error('Erro ao atualizar a porta:', error);
+        } finally {
+            setShowUpdateModal(false);
         }
-    };
+    }
 
     // UseEffect para atualizar lista de todos os dispositivos
     useEffect(() => {
         fetchAllDevices();
+        fetchDoors();
     }, []);
 
     // Atualiza o estado da foto
@@ -113,9 +160,15 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
-        const { employeeID, ...dataWithoutId } = formData;
+        const { zktecoDeviceID, ...dataWithoutId } = formData;
         onDuplicate(dataWithoutId as T);
     };
+
+    // Função para lidar com a edição das portas
+    const handleEditDoors = (row: Doors) => {
+        setSelectedDoor(row);
+        setShowUpdateModal(true);
+    }
 
     // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,26 +180,26 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 image.onload = () => {
                     let width = image.width;
                     let height = image.height;
-    
-                    if (width > 512 || height > 512) {
+
+                    if (width > 768 || height > 768) {
                         if (width > height) {
-                            height *= 512 / width;
-                            width = 512;
+                            height *= 768 / width;
+                            width = 768;
                         } else {
-                            width *= 512 / height;
-                            height = 512;
+                            width *= 768 / height;
+                            height = 768;
                         }
                     }
-    
+
                     const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
                     const ctx = canvas.getContext('2d');
-                    ctx?.drawImage(image, 0, 0, width, height);
-    
+                    ctx?.drawImage(image, 0, 0, image.width, image.height);
                     const dataUrl = canvas.toDataURL('image/png');
                     setDeviceImage(dataUrl);
-                    setFormData({ ...formData, photo: dataUrl });
+                    setFormData(prevFormData => ({
+                        ...prevFormData,
+                        photo: dataUrl
+                    }));
                 };
                 image.src = readerEvent.target?.result as string;
             };
@@ -163,13 +216,27 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         return regex.test(ip);
     };
 
+    // Função para lidar com a mudança de imagem
+    const handleDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selected = e.target.value;
+        setSelectedDevice(selected);
+
+        const deviceOption = deviceOptions.find(option => option.value === selected);
+        setDeviceImage(deviceOption?.img || no_image);
+
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            model: deviceOption ? deviceOption.label : '',
+            photo: deviceOption?.img || no_image
+        }));
+    };
+
     // Função para lidar com a mudança de valor
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const parsedValue = type === 'number' ? Number(value) : value;
         if (name === "ipAddress") {
             if (validateIPAddress(value)) {
-                setIpAddress(value);
                 setError('');
             } else {
                 setError('Endereço IP inválido');
@@ -182,10 +249,65 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         validateForm();
     };
 
+    // Define as opções de paginação de EN para PT
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
+    };
+
+    // Filtra os dados da tabela
+    const filteredDataTable = doors.filter(door =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(door[key]) === String(filters[key])
+        )
+    );
+
+    // Define as colunas que serão exibidas
+    const includedColumns = ['enabled', 'name', 'doorNo', 'devSN'];
+
+    // Define as colunas
+    const columns: TableColumn<Doors>[] = doorsFields
+        .filter(field => includedColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: Doors) => {
+                switch (field.key) {
+                    case 'enabled':
+                        return row[field.key] === true ? 'Activo' : 'Inactivo';
+                    case 'createTime':
+                        return new Date(row[field.key]).toLocaleDateString();
+                    case 'updateTime':
+                        return new Date(row[field.key]).toLocaleDateString();
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
+                    </>
+                ),
+                selector: (row: Doors) => {
+                    if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                },
+                sortable: true,
+                cell: (row: Doors) => {
+                    if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                }
+            };
+        });
+
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSubmit();
@@ -197,8 +319,22 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         onClose();
     };
 
+    // Opções de dispositivos
+    const deviceOptions = [
+        { value: 'Nface-204_SISNID-1', label: 'Nface-204_SISNID-1', img: nface },
+        { value: 'SISNID-C3-100', label: 'SISNID-C3-100', img: c3_100 },
+        { value: 'SISNID-C3-200', label: 'SISNID-C3-200', img: c3_200 },
+        { value: 'SISNID-C3-400', label: 'SISNID-C3-400', img: c3_400 },
+        { value: 'SISNID-INBIO160', label: 'SISNID-INBIO160', img: inbio160 },
+        { value: 'SISNID-INBIO260', label: 'SISNID-INBIO160', img: inbio260 },
+        { value: 'SISNID-INBIO460', label: 'SISNID-INBIO460', img: inbio460 },
+        { value: 'SISNID-PROFACEX-TD', label: 'SISNID-PROFACEX-TD', img: profacex },
+        { value: 'SpeedFace-RFID-TD', label: 'SpeedFace-RFID-TD', img: rfid_td },
+        { value: 'Speedface-V5L-TD-1', label: 'Speedface-V5L-TD-1', img: v5l_td },
+    ];
+
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -206,27 +342,51 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 <Row>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceName">
-                            <Form.Label>Nome</Form.Label>
+                            <Form.Label>Nome<span style={{ color: 'red' }}> *</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
-                                    type="string"
+                                    type="text"
                                     name="deviceName"
                                     value={formData['deviceName'] || ''}
                                     onChange={handleChange}
                                     className="custom-input-height custom-select-font-size"
-                                />
+                                >
+                                </Form.Control>
                             </OverlayTrigger>
+                            {errors['deviceName'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceName']}</div>}
+                        </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                        <Form.Group controlId="formModel">
+                            <Form.Label>Modelo<span style={{ color: 'red' }}> *</span></Form.Label>
+                            <OverlayTrigger
+                                placement="right"
+                                overlay={<Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>}
+                            >
+                                <Form.Select
+                                    name="model"
+                                    value={selectedDevice}
+                                    onChange={handleDeviceChange}
+                                    className="custom-input-height custom-select-font-size"
+                                >
+                                    <option value="">Selecione</option>
+                                    {deviceOptions.map(option => (
+                                        <option key={option.value} value={option.value}>{option.label}</option>
+                                    ))}
+                                </Form.Select>
+                            </OverlayTrigger>
+                            {errors['model'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['model']}</div>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formDeviceNumber">
-                            <Form.Label>Número</Form.Label>
+                            <Form.Label>Número<span style={{ color: 'red' }}> *</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-deviceNumber">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     type="number"
@@ -255,7 +415,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                             <Col className='img-modal'>
                                                 <img
                                                     src={deviceImage || no_image}
-                                                    alt="Profile Avatar"
+                                                    alt="Imagem do dispositivo"
                                                     style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '25%' }}
                                                     onClick={triggerFileSelectPopup}
                                                 />
@@ -268,16 +428,16 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         ref={fileInputRef}
                                                     />
                                                 </div>
-                                                <Form.Group controlId="formStatus" className="d-flex align-items-center mb-3">
+                                                <Form.Group controlId="formDisabled" className="d-flex align-items-center mb-3">
                                                     <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo</Form.Label>
                                                     <Form.Check
                                                         type="switch"
-                                                        id="custom-switch-status"
-                                                        checked={formData.status === true}
-                                                        onChange={(e) => setFormData({ ...formData, status: e.target.checked ? true : false })}
+                                                        id="custom-switch-disabled"
+                                                        checked={formData.disabled === true}
+                                                        onChange={(e) => { const isDisabled = e.target.checked; setFormData({ ...formData, disabled: isDisabled }); }}
                                                         className="ms-auto"
                                                         label=""
-                                                        name="status"
+                                                        name="disabled"
                                                     />
                                                 </Form.Group>
                                                 <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', marginTop: '20px', textAlign: "center" }}>
@@ -296,6 +456,12 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                 <Nav.Item>
                                     <Nav.Link eventKey="comunicacao">Modo de Comunicação</Nav.Link>
                                 </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="informacao">Informação</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="portas">Portas</Nav.Link>
+                                </Nav.Item>
                             </Nav>
                             <Tab.Content>
                                 <Tab.Pane eventKey="comunicacao">
@@ -305,10 +471,10 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                 <Row>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formIpAddress">
-                                                            <Form.Label>IP</Form.Label>
+                                                            <Form.Label>IP<span style={{ color: 'red' }}> *</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
-                                                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                                                                overlay={<Tooltip id="tooltip-ipAddress">Campo obrigatório</Tooltip>}
                                                             >
                                                                 <Form.Control
                                                                     type="string"
@@ -326,10 +492,10 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formPort">
-                                                            <Form.Label>Porta</Form.Label>
+                                                            <Form.Label>Porta<span style={{ color: 'red' }}> *</span></Form.Label>
                                                             <OverlayTrigger
                                                                 placement="right"
-                                                                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                                                                overlay={<Tooltip id="tooltip-port">Campo obrigatório</Tooltip>}
                                                             >
                                                                 <Form.Control
                                                                     type="number"
@@ -356,15 +522,25 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
-                                                        <Form.Group controlId="formMachineNumber">
-                                                            <Form.Label>Número da Máquina</Form.Label>
-                                                            <Form.Control
-                                                                type="number"
-                                                                name="machineNumber"
-                                                                value={formData['machineNumber'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
+                                                        <Form.Group controlId="formDeviceProtocol">
+                                                            <Form.Label>Protocolo <span style={{ color: 'red' }}> *</span></Form.Label>
+                                                            <OverlayTrigger
+                                                                placement="right"
+                                                                overlay={<Tooltip id="tooltip-deviceProtocol">Campo obrigatório</Tooltip>}
+                                                            >
+                                                                <Form.Select
+                                                                    name="deviceProtocol"
+                                                                    value={formData['deviceProtocol'] || ''}
+                                                                    onChange={handleChange}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                >
+                                                                    <option value="">Selecione</option>
+                                                                    <option value="1">Standalone</option>
+                                                                    <option value="2">Pull</option>
+                                                                    <option value="3">Push</option>
+                                                                </Form.Select>
+                                                            </OverlayTrigger>
+                                                            {errors['deviceProtocol'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceProtocol']}</div>}
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
@@ -372,15 +548,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                         </Row>
                                     </Form>
                                 </Tab.Pane>
-                            </Tab.Content>
-                        </Tab.Container>
-                        <Tab.Container defaultActiveKey="informacao">
-                            <Nav variant="tabs" className="nav-modal">
-                                <Nav.Item>
-                                    <Nav.Link eventKey="informacao">Informação</Nav.Link>
-                                </Nav.Item>
-                            </Nav>
-                            <Tab.Content>
                                 <Tab.Pane eventKey="informacao">
                                     <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                         <Row>
@@ -397,6 +564,16 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
                                                         </Form.Group>
+                                                        <Form.Group controlId="formProductTime">
+                                                            <Form.Label>Data do Produto</Form.Label>
+                                                            <Form.Control
+                                                                type="date"
+                                                                name="productTime"
+                                                                value={formData['productTime'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
+                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formFirmware">
@@ -405,6 +582,16 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                                 type="string"
                                                                 name="firmware"
                                                                 value={formData['firmware'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
+                                                        </Form.Group>
+                                                        <Form.Group controlId="formProducter">
+                                                            <Form.Label>Fabricante</Form.Label>
+                                                            <Form.Control
+                                                                type="string"
+                                                                name="producter"
+                                                                value={formData['producter'] || ''}
                                                                 onChange={handleChange}
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
@@ -421,59 +608,65 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
                                                         </Form.Group>
+                                                        <Form.Group controlId="formDeviceType">
+                                                            <Form.Label>Tipo <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                            <OverlayTrigger
+                                                                placement="right"
+                                                                overlay={<Tooltip id="tooltip-deviceType">Campo obrigatório</Tooltip>}
+                                                            >
+                                                                <Form.Select
+                                                                    name="deviceType"
+                                                                    value={formData['deviceType'] || ''}
+                                                                    onChange={handleChange}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                >
+                                                                    <option value="">Selecione</option>
+                                                                    <option value="1">Assiduidade</option>
+                                                                    <option value="2">Controle de Acesso</option>
+                                                                </Form.Select>
+                                                            </OverlayTrigger>
+                                                            {errors['deviceType'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceType']}</div>}
+                                                        </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formSerialNumber">
-                                                            <Form.Label>Número de Série</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="serialNumber"
-                                                                value={formData['serialNumber'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formProductTime">
-                                                            <Form.Label>Data do Produto</Form.Label>
-                                                            <Form.Control
-                                                                type="date"
-                                                                name="productTime"
-                                                                value={formData['productTime'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formProducter">
-                                                            <Form.Label>Fabricante</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="producter"
-                                                                value={formData['producter'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
-                                                        </Form.Group>
-                                                    </Col>
-                                                    <Col md={3}>
-                                                        <Form.Group controlId="formType">
-                                                            <Form.Label>Tipo</Form.Label>
-                                                            <Form.Control
-                                                                type="string"
-                                                                name="type"
-                                                                value={formData['type'] || ''}
-                                                                onChange={handleChange}
-                                                                className="custom-input-height custom-select-font-size"
-                                                            />
+                                                            <Form.Label>Número de Série<span style={{ color: 'red' }}> *</span></Form.Label>
+                                                            <OverlayTrigger
+                                                                placement="right"
+                                                                overlay={<Tooltip id="tooltip-serialNumber">Campo obrigatório</Tooltip>}
+                                                            >
+                                                                <Form.Control
+                                                                    type="string"
+                                                                    name="serialNumber"
+                                                                    value={formData['serialNumber'] || ''}
+                                                                    onChange={handleChange}
+                                                                    className="custom-input-height custom-select-font-size"
+                                                                />
+                                                            </OverlayTrigger>
+                                                            {errors['serialNumber'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['serialNumber']}</div>}
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
                                             </Col>
+                                        </Row>
+                                    </Form>
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="portas">
+                                    <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                        <Row>
+                                            <DataTable
+                                                columns={columns}
+                                                data={filteredDataTable}
+                                                pagination
+                                                paginationComponentOptions={paginationOptions}
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[5, 10]}
+                                                onRowDoubleClicked={handleEditDoors}
+                                                noDataComponent="Não existem dados disponíveis para exibir."
+                                                customStyles={customStyles}
+                                                defaultSortAsc={true}
+                                                defaultSortFieldId="doorNo"
+                                            />
                                         </Row>
                                     </Form>
                                 </Tab.Pane>
@@ -482,9 +675,20 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     </Col>
                 </Row>
             </Modal.Body>
+            {selectedDoor && (
+                <UpdateModalDoor
+                    key={selectedDoor ? selectedDoor.id : null}
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onUpdate={handleUpdateDoor}
+                    entity={selectedDoor}
+                    fields={doorsFields}
+                    title="Atualizar Porta"
+                />
+            )}
             <Modal.Footer>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>

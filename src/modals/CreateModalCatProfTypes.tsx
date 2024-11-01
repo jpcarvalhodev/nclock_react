@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import { fetchWithAuth } from '../components/FetchWithAuth';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -29,7 +29,8 @@ interface Props<T> {
 
 // Define a interface para os itens de código
 interface CodeItem {
-    code: number;
+    code?: number;
+    order?: number;
 }
 
 // Define o componente
@@ -46,6 +47,9 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -62,39 +66,63 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     useEffect(() => {
         if (open) {
             fetchEntityData();
+        } else {
+            setFormData({});
         }
     }, [open]);
 
     // Função para buscar os dados de categoria, profissão ou tipo
     const fetchEntityData = async () => {
         let url;
+        let requiresNextCode = false;
+        let requiresNextOrder = false;
         switch (entityType) {
             case 'categorias':
-                url = 'Categories';
+                url = apiService.fetchAllCategories;
+                requiresNextCode = true;
                 break;
             case 'profissões':
-                url = 'Professions';
+                url = apiService.fetchAllProfessions;
+                requiresNextCode = true;
                 break;
             case 'tipos':
-                url = 'ExternalEntityTypes';
+                url = apiService.fetchAllExternalEntityTypes;
+                requiresNextOrder = true;
                 break;
             default:
-                toast.error(`Tipo de entidade '${entityType}' não suportado.`);
+                toast.error(`Tipo de entidade '${entityType}' não existe.`);
                 return;
         }
         try {
-            const response = await fetchWithAuth(url);
-            if (response.ok) {
-                const data: CodeItem[] = await response.json();
-                const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code), 0) + 1;
-                setFormData(prevState => ({
-                    ...prevState,
-                    code: maxCode
-                }));
-            } else {
-                toast.error(`Erro ao buscar dados de ${entityType}`);
-                return;
-            }
+            const response = await url();
+            if (response) {
+                const data: CodeItem[] = response
+                
+                if (requiresNextCode) {
+                    const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code ?? 0), 0) + 1;
+                    
+                    setFormData(prevState => ({
+                        ...prevState,
+                        code: maxCode
+                    }));
+                } else {
+                    setFormData(prevState => ({
+                        ...prevState,
+                    }));
+                }
+                if (requiresNextOrder) {
+                    const maxOrder = data.reduce((max: number, item: CodeItem) => Math.max(max, item.order ?? 0), 0) + 1;
+                    
+                    setFormData(prevState => ({
+                        ...prevState,
+                        order: maxOrder
+                    }));
+                } else {
+                    setFormData(prevState => ({
+                        ...prevState,
+                    }));
+                }
+            } 
         } catch (error) {
             console.error(`Erro ao buscar dados de ${entityType}:`, error);
             toast.error(`Erro ao conectar ao servidor para ${entityType}`);
@@ -121,7 +149,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="modal-scrollable">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

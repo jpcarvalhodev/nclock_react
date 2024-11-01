@@ -2,11 +2,12 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
-import { Employee } from '../helpers/Types';
+import { Employee, EmployeeCard } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
+import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -27,7 +28,7 @@ interface Props<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
+    onSave: (data: Partial<T>, cardData: Partial<EmployeeCard>) => void;
     fields: FieldConfig[];
     initialValues: Partial<T>;
 }
@@ -35,6 +36,7 @@ interface Props<T> {
 // Define o componente
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
+    const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
@@ -59,6 +61,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -92,9 +97,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Função para buscar os funcionários e definir o próximo número de matrícula
     const fetchEmployeesAndSetNextEnrollNumber = async () => {
-        const response = await fetchWithAuth('Employees/GetAllEmployees');
-        if (response.ok) {
-            const employees: Employee[] = await response.json();
+        try {
+            const employees: Employee[] = await apiService.fetchAllEmployees();
             const maxEnrollNumber = employees.reduce((max: number, employee: Employee) => {
                 const currentEnrollNumber = parseInt(employee.enrollNumber);
                 return Math.max(max, currentEnrollNumber);
@@ -103,35 +107,27 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 ...prevState,
                 enrollNumber: (maxEnrollNumber + 1).toString()
             }));
-        } else {
-            toast.error('Erro ao buscar o número de matrícula dos funcionários.');
+
+        } catch {
+            setFormData(prevState => ({ ...prevState, enrollNumber: 1 }));
         }
     };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const departmentsResponse = await fetchWithAuth('Departaments');
-            const groupsResponse = await fetchWithAuth('Groups');
-            const professionsResponse = await fetchWithAuth('Professions');
-            const zonesResponse = await fetchWithAuth('Zones');
-            const externalEntitiesResponse = await fetchWithAuth('ExternalEntities');
-            if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
-                const departments = await departmentsResponse.json();
-                const groups = await groupsResponse.json();
-                const professions = await professionsResponse.json();
-                const zones = await zonesResponse.json();
-                const externalEntities = await externalEntitiesResponse.json();
-                setDropdownData({
-                    departmentId: departments,
-                    groupId: groups,
-                    professionId: professions,
-                    zoneId: zones,
-                    externalEntityId: externalEntities
-                });
-            } else {
-                return;
-            }
+            const departments = await apiService.fetchAllDepartments();
+            const groups = await apiService.fetchAllGroups();
+            const professions = await apiService.fetchAllProfessions();
+            const zones = await apiService.fetchAllZones();
+            const externalEntities = await apiService.fetchAllExternalEntities();
+            setDropdownData({
+                departmentId: departments,
+                groupId: groups,
+                professionId: professions,
+                zoneId: zones,
+                externalEntityId: externalEntities
+            });
         } catch (error) {
             console.error('Erro ao buscar os dados de departamentos e grupos', error);
         }
@@ -142,6 +138,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         if (open) {
             fetchEmployeesAndSetNextEnrollNumber();
             fetchDropdownOptions();
+        } else {
+            setFormData({});
+            setCardFormData({});
         }
     }, [open]);
 
@@ -155,7 +154,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 image.onload = () => {
                     let width = image.width;
                     let height = image.height;
-    
+
                     if (width > 512 || height > 512) {
                         if (width > height) {
                             height *= 512 / width;
@@ -165,13 +164,13 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             height = 512;
                         }
                     }
-    
+
                     const canvas = document.createElement('canvas');
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(image, 0, 0, width, height);
-    
+
                     const dataUrl = canvas.toDataURL('image/png');
                     setProfileImage(dataUrl);
                     setFormData({ ...formData, photo: dataUrl });
@@ -180,7 +179,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             };
             reader.readAsDataURL(file);
         }
-    };    
+    };
 
     // Função para acionar o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
@@ -245,9 +244,20 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }
     };
 
+    // Função para lidar com a mudança de dados do cartão
+    const handleCardChange = (e: ChangeEvent<FormControlElement>) => {
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
+        setCardFormData(prevState => ({
+            ...prevState,
+            [name]: parsedValue
+        }));
+    };
+
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
         setFormData({});
+        setCardFormData({});
         setProfileImage(null);
         onClose();
     }
@@ -255,7 +265,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         handleSave();
@@ -263,7 +273,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Função para lidar com o salvamento
     const handleSave = () => {
-        onSave(formData as T);
+        onSave(formData as T, cardFormData as EmployeeCard);
     };
 
     // Opções do tipo
@@ -276,8 +286,66 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         { value: 'Provisório', label: 'Provisório' }
     ];
 
+    // Opções do módulo
+    const moduleOptions = [
+        { value: 'nclock', label: 'Nclock' },
+        { value: 'naccess', label: 'Naccess' },
+        { value: 'nvisitor', label: 'Nvisitor' },
+        { value: 'npark', label: 'Npark' },
+        { value: 'ndoor', label: 'Ndoor' },
+        { value: 'npatrol', label: 'Npatrol' },
+        { value: 'ncard', label: 'Ncard' },
+        { value: 'nview', label: 'Nview' },
+        { value: 'nsecur', label: 'Nsecur' },
+        { value: 'nsmart', label: 'Nsmart' },
+        { value: 'nreality', label: 'Nreality' },
+        { value: 'nhologram', label: 'Nhologram' },
+        { value: 'npower', label: 'Npower' },
+        { value: 'ncharge', label: 'Ncharge' },
+        { value: 'ncity', label: 'Ncity' },
+        { value: 'nkiosk', label: 'Nkiosk' },
+        { value: 'nled', label: 'Nled' },
+        { value: 'nfire', label: 'Nfire' },
+        { value: 'nfurniture', label: 'Nfurniture' },
+        { value: 'npartition', label: 'Npartition' },
+        { value: 'ndecor', label: 'Ndecor' },
+        { value: 'nping', label: 'Nping' },
+        { value: 'nconnect', label: 'Nconnect' },
+        { value: 'nlight', label: 'Nlight' },
+        { value: 'ncomfort', label: 'Ncomfort' },
+        { value: 'nsound', label: 'Nsound' },
+        { value: 'nhome', label: 'Nhome' },
+        { value: 'nsoftware', label: 'Nsoftware' },
+        { value: 'nsystem', label: 'Nsystem' },
+        { value: 'napp', label: 'Napp' },
+        { value: 'nciber', label: 'Nciber' },
+        { value: 'ndigital', label: 'Ndigital' },
+        { value: 'nserver', label: 'Nserver' },
+        { value: 'naut', label: 'Naut' },
+        { value: 'nequip', label: 'Nequip' },
+        { value: 'nproject', label: 'Nproject' },
+        { value: 'ncount', label: 'Ncount' },
+        { value: 'nconstruction', label: 'Nconstruction' },
+        { value: 'ncaravans', label: 'Ncaravans' },
+        { value: 'nwork', label: 'Nwork' },
+        { value: 'nevents', label: 'Nevents' },
+        { value: 'nservice', label: 'Nservice' },
+        { value: 'ntask', label: 'Ntask' },
+        { value: 'nproductions', label: 'Nproductions' },
+        { value: 'nticket', label: 'Nticket' },
+        { value: 'nsales', label: 'Nsales' },
+        { value: 'ninvoice', label: 'Ninvoice' },
+        { value: 'ndoc', label: 'Ndoc' },
+        { value: 'nsports', label: 'Nsports' },
+        { value: 'nacademy', label: 'Nacademy' },
+        { value: 'nshcool', label: 'Nshcool' },
+        { value: 'nclinics', label: 'Nclinics' },
+        { value: 'noptics', label: 'Noptics' },
+        { value: 'ngold', label: 'Ngold' }
+    ];
+
     return (
-        <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -303,7 +371,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                     <Col md={3}>
                         <Form.Group controlId="formEnrollNumber">
                             <Form.Label>
-                                Número de Matrícula <span style={{ color: 'red' }}>*</span>
+                                Número da Pessoa <span style={{ color: 'red' }}>*</span>
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
@@ -325,7 +393,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-name">Obrigatório ter 5 caracteres ou mais</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"
@@ -336,6 +404,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
                         </Form.Group>
                         <Form.Group controlId="formShortName">
                             <Form.Label>
@@ -343,7 +412,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-shortName">Obrigatório ter 5 caracteres ou mais</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"
@@ -354,6 +423,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                     required
                                 />
                             </OverlayTrigger>
+                            {errors.shortName && <Form.Text className="text-danger">{errors.shortName}</Form.Text>}
                         </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -394,8 +464,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                         </Form.Group>
                     </Col>
                     <Col md={3}>
-                        <Form.Group controlId="formStatus" className="d-flex align-items-center mb-3">
-                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Status:</Form.Label>
+                        <Form.Group controlId="formStatus" className="d-flex align-items-center mb-2">
+                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo:</Form.Label>
                             <Form.Check
                                 type="switch"
                                 id="custom-switch-status"
@@ -406,8 +476,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 name="status"
                             />
                         </Form.Group>
-                        <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-3">
-                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Status de E-Mail:</Form.Label>
+                        <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-2">
+                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo para E-Mail:</Form.Label>
                             <Form.Check
                                 type="switch"
                                 id="custom-switch-status-email"
@@ -418,7 +488,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 name="statusEmail"
                             />
                         </Form.Group>
-                        <Form.Group controlId="formRgptAut" className="d-flex align-items-center mb-3">
+                        <Form.Group controlId="formRgptAut" className="d-flex align-items-center">
                             <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Autorização RGPD:</Form.Label>
                             <Form.Check
                                 type="switch"
@@ -430,6 +500,21 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 name="rgpdAut"
                             />
                         </Form.Group>
+                        <Form.Group controlId="formModulos" style={{ marginTop: 12 }}>
+                            <Form.Label>Módulo</Form.Label>
+                            <Form.Control
+                                as="select"
+                                className="custom-input-height custom-select-font-size"
+                                value={formData.modulos || ''}
+                                onChange={handleChange}
+                                name="modulos"
+                            >
+                                <option value="">Selecione...</option>
+                                {moduleOptions.map(option => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
                     </Col>
                 </Row>
                 <Tab.Container defaultActiveKey="dadosPessoais">
@@ -439,6 +524,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                         </Nav.Item>
                         <Nav.Item>
                             <Nav.Link eventKey="dadosProfissionais">Dados Profissionais</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="cartoes">Cartão</Nav.Link>
                         </Nav.Item>
                     </Nav>
                     <Tab.Content>
@@ -549,6 +637,65 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                             </Form.Group>
                                         </Col>
                                     ))}
+                                </Row>
+                            </Form>
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="cartoes">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                <Row>
+                                    <Col md={3}>
+                                        <Form.Group controlId="formDeviceEnabled" className="d-flex align-items-center mt-3">
+                                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Dispositivo Activado:</Form.Label>
+                                            <Form.Check
+                                                type="switch"
+                                                id="custom-switch-device-enabled"
+                                                checked={cardFormData.deviceEnabled || false}
+                                                onChange={(e) => setCardFormData({ ...cardFormData, deviceEnabled: e.target.checked })}
+                                                className="ms-auto"
+                                                label=""
+                                                name="deviceEnabled"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                        <Form.Group controlId="formCardNumber">
+                                            <Form.Label>Número do Cartão</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                className="custom-input-height custom-select-font-size"
+                                                value={cardFormData.cardNumber || ''}
+                                                onChange={handleCardChange}
+                                                name="cardNumber"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                        <Form.Group controlId="formDevicePrivelage">
+                                            <Form.Label>Privilégio do Dispositivo</Form.Label>
+                                            <Form.Select
+                                                className="custom-input-height custom-select-font-size"
+                                                value={cardFormData.devicePrivelage || ''}
+                                                onChange={handleCardChange}
+                                                name="devicePrivelage"
+                                            >
+                                                <option value="">Selecione...</option>
+                                                <option value="0">Não</option>
+                                                <option value="1">Sim</option>
+                                            </Form.Select>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                        <Form.Group controlId="formDevicePassword">
+                                            <Form.Label>Senha do Dispositivo</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                className="custom-input-height custom-select-font-size"
+                                                value={cardFormData.devicePassword || ''}
+                                                onChange={handleCardChange}
+                                                name="devicePassword"
+                                            />
+                                        </Form.Group>
+                                    </Col>
                                 </Row>
                             </Form>
                         </Tab.Pane>

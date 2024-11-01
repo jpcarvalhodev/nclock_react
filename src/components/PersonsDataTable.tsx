@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { fetchWithAuth } from './FetchWithAuth';
-import { toast } from 'react-toastify';
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { Button } from 'react-bootstrap';
@@ -42,10 +40,11 @@ interface Filters {
 // Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate }: PersonsDataTableProps) => {
     const {
-        fetchAllData,
         fetchAllEmployees,
         handleUpdateEmployee,
         handleDeleteEmployee,
+        handleUpdateEmployeeCard,
+        handleAddEmployeeCard,
     } = useContext(PersonsContext) as PersonsContextType;
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -54,11 +53,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
     const [filters, setFilters] = useState<Filters>({});
-
-    // Busca todos os dados
-    useEffect(() => {
-        fetchAllData();
-    }, [fetchAllData]);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -70,27 +64,31 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     };
 
     // Função para atualizar um funcionário
-    const updateEmployee = async (employee: Employee) => {
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
         await handleUpdateEmployee(employee);
+        if (card.cardId) {
+            await handleUpdateEmployeeCard(card as EmployeeCard);
+        } else {
+            await handleAddEmployeeCard(card as EmployeeCard);
+        }
         setShowUpdateModal(false);
         refreshEmployees();
-    }
+    };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee(employeeId);
         setShowDeleteModal(false);
         refreshEmployees();
-    }
+    };
 
-    // Busca os funcionários
+    // Busca todos os dados
     useEffect(() => {
         fetchEmployees();
     }, []);
 
     // Atualiza a lista de funcionários
     const refreshEmployees = () => {
-        fetchAllData();
         fetchEmployees();
     }
 
@@ -159,7 +157,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         selectedRows: Employee[];
     }) => {
         setSelectedRows(state.selectedRows);
-        filteredEmployees(state.selectedRows);
     };
 
     // Função que manipula a duplicação e fecha o modal de atualização
@@ -229,8 +226,19 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         <SelectFilter column={field.key} setFilters={setFilters} data={data.employees} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -273,15 +281,17 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         onSelectedRowsChange={handleRowSelected}
                         selectableRowsHighlight
                         clearSelectedRows={resetSelectionInternal}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId='enrollNumber'
                     />
                     {selectedEmployee && (
                         <UpdateModalEmployees
                             open={showUpdateModal}
                             onClose={handleCloseUpdateModal}
                             onDuplicate={handleDuplicateAndClose}
-                            onUpdate={updateEmployee}
+                            onUpdate={updateEmployeeAndCard}
                             entity={selectedEmployee}
                             fields={employeeFields}
                             title="Atualizar Pessoa"

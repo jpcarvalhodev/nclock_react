@@ -15,19 +15,19 @@ export const PageProtection: React.FC<PageProtectionProps> = ({ children }) => {
     function isAuthenticated() {
       const token = localStorage.getItem('token');
       if (!token) {
-        setRedirectTo('/notfound'); 
+        setRedirectTo('/'); 
         return false;
       }
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        if (Date.now() >= payload.exp * 1000) {
+        if (payload.exp && Date.now() >= payload.exp * 1000) {
           localStorage.removeItem('token');
-          setRedirectTo('/unauthorized'); 
+          setRedirectTo('/'); 
           return false;
         }
       } catch {
         localStorage.removeItem('token');
-        setRedirectTo('/notfound');
+        setRedirectTo('/errors/notfound');
         return false;
       }
       return true;

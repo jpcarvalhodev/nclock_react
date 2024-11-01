@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Row, Col, Table, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { employeeFields } from '../helpers/Fields';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -34,6 +35,12 @@ interface Props<T> {
 
 // Define o componente
 export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
+    const {
+        handleAddEmployee,
+        handleAddEmployeeCard,
+        handleUpdateEmployee,
+        handleUpdateEmployeeCard,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -58,6 +65,9 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
                 newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -78,14 +88,9 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     // Função para buscar os dados de departamento/grupo
     const fetchData = async () => {
         const isDepartment = entityType === 'department';
-        const url = isDepartment ? 'Departaments/Employees' : 'Groups/Employees';
         try {
-            const response = await fetchWithAuth(url);
-            if (!response.ok) {
-                return;
-            }
-            const data: Department[] | Group[] = await response.json();
-            const items = data.map(item => ({
+            const data = isDepartment ? await apiService.fetchAllDepartmentsEmployees() : await apiService.fetchAllGroupsEmployees();
+            const items = data.map((item: Department | Group) => ({
                 ...item,
                 code: (item.code)
             }));
@@ -98,66 +103,40 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
             const nextCode = items.reduce((max: number, item: Department | Group) => Math.max(max, item.code), 0) + 1;
             setFormData(prev => ({ ...prev, code: nextCode }));
-
         } catch (error) {
             console.error(`Erro ao buscar ${isDepartment ? 'departamentos' : 'grupos'}:`, error);
         }
     };
 
-    // Função para adicionar um funcionário
-    const handleAddEmployee = async (employee: Employee) => {
-        try {
-            const response = await fetchWithAuth('Employees/CreateEmployee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
+    // Função para adicionar um funcionário e um cartão
+    const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
+        await handleAddEmployee(employee as Employee);
+        const employeeCard = {
+            ...card,
+            employeeId: employee.employeeID
+        };
+        await handleAddEmployeeCard(employeeCard as EmployeeCard);
+        fetchData();
+        setShowEmployeeModal(false);
+    }
+ 
+    // Função para atualizar um funcionário e um cartão
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+        await handleUpdateEmployee(employee);
+        const employeeCard = {
+            ...card,
+            employeeId: employee.employeeID
+        };
+        if (employeeCard && Object.keys(employeeCard).length > 0) {
+            if (card.cardID) {
+                await handleUpdateEmployeeCard(employeeCard as EmployeeCard);
+            } else {
+                await handleAddEmployeeCard(employeeCard as EmployeeCard);
             }
-            const data = await response.json();
-            setEmployees([...employees, data]);
-            toast.success(data.value || 'Funcionário adicionado com sucesso!');
-            
-        } catch (error) {
-            console.error('Erro ao adicionar novo funcionário:', error);
-        } finally {
-            setShowEmployeeModal(false);
-            fetchData();
         }
-    };
-
-    // Função para atualizar um funcionário
-    const handleUpdateEmployee = async (employee: Employee) => {
-        try {
-            const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(employee)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedEmployee = await response.json();
-            setEmployees(prevEmployees => prevEmployees.map(emp => emp.employeeID === updatedEmployee.employeeID ? updatedEmployee : emp));
-            toast.success(updatedEmployee.value || 'Funcionário atualizado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar funcionário:', error);
-        } finally {
-            setShowUpdateEmployeeModal(false);
-            fetchData();
-        }
-    };
+        fetchData();
+        setShowUpdateEmployeeModal(false);
+    }
 
     // Função para lidar com a mudança de valor
     const handleEmployeeClick = (employee: Employee) => {
@@ -186,20 +165,13 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const departmentResponse = await fetchWithAuth('Departaments');
-            const groupResponse = await fetchWithAuth('Groups');
+            const departments = await apiService.fetchAllDepartments();
+            const groups = await apiService.fetchAllGroups();
 
-            if (departmentResponse.ok && groupResponse.ok) {
-                const departments = await departmentResponse.json();
-                const groups = await groupResponse.json();
-
-                setDropdownData({
-                    departments: departments,
-                    groups: groups
-                });
-            } else {
-                toast.error('Erro ao buscar os dados de departamentos e grupos.');
-            }
+            setDropdownData({
+                departments: departments,
+                groups: groups
+            });
         } catch (error) {
             toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
             console.error(error);
@@ -210,6 +182,8 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
+        } else {
+            setFormData({});
         }
     }, [open]);
 
@@ -275,7 +249,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     }
 
     return (
-        <Modal show={open} onHide={onClose} size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{entityType === 'department' ? 'Criar Departamento' : 'Criar Grupo'}</Modal.Title>
             </Modal.Header>
@@ -423,7 +397,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                     title='Adicionar Funcionário'
                     open={showEmployeeModal}
                     onClose={() => setShowEmployeeModal(false)}
-                    onSave={handleAddEmployee}
+                    onSave={addEmployeeAndCard}
                     fields={employeeFields}
                     initialValues={{}}
                 />
@@ -433,7 +407,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                     title='Atualizar Funcionário'
                     open={showUpdateEmployeeModal}
                     onClose={() => setShowUpdateEmployeeModal(false)}
-                    onUpdate={handleUpdateEmployee}
+                    onUpdate={updateEmployeeAndCard}
                     entity={selectedEmployee}
                     fields={employeeFields}
                 />

@@ -59,7 +59,7 @@ export const ResetPassword = () => {
       }
 
       toast.success('Senha alterada com sucesso!', { progressClassName: 'custom-progress-bar' });
-      navigate('/login');
+      navigate('/');
 
     } catch (error) {
       console.error("Erro:", error);

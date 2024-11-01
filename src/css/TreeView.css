@@ -15,7 +15,6 @@
 .SearchBox fieldset {
   margin-top: 4px;
   margin-right: 4px;
-  margin-left: 4px;
 }
 
 .MuiTreeItem-label {
@@ -27,5 +26,5 @@
 }
 
 .TreeViewContainer .MuiCheckbox-root {
-  transform: scale(0.9);
+  transform: scale(0.8);
 }

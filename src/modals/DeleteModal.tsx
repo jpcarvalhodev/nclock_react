@@ -9,7 +9,7 @@ interface DeleteModalProps {
     entityId: string | null;
 }
 
-// Exporta o componente
+// Define o componente
 export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalProps) => {
 
     // Função para apagar a entidade
@@ -21,9 +21,9 @@ export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalPr
     };
 
     return (
-        <Modal show={open} onHide={onClose}>
+        <Modal show={open} onHide={onClose} backdrop="static">
             <Modal.Header closeButton>
-                <Modal.Title>Confirmar Exclusão</Modal.Title>
+                <Modal.Title>Confirmar Eliminação</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 Tem certeza que deseja apagar os dados da linha selecionada?

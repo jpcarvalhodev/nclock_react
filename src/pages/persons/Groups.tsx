@@ -8,7 +8,6 @@ import { Group } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { groupFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -17,6 +16,9 @@ import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -25,6 +27,7 @@ interface Filters {
 
 // Define a página de grupos
 export const Groups = () => {
+    const { navbarColor, footerColor } = useColor();
     const [groups, setGroups] = useState<Group[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -37,20 +40,9 @@ export const Groups = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar os grupos
-    const fetchGroups = async () => {
+    const fetchAllGroups = async () => {
         try {
-            const response = await fetchWithAuth('Groups', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.fetchAllGroups();
             setGroups(data);
         } catch (error) {
             console.error('Erro ao buscar os dados dos grupos:', error);
@@ -60,19 +52,7 @@ export const Groups = () => {
     // Função para adicionar um grupo
     const handleAddGroup = async (group: Group) => {
         try {
-            const response = await fetchWithAuth('Groups', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(group)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addGroup(group);
             setGroups([...groups, data]);
             toast.success(data.value || 'Grupo adicionado com sucesso!');
 
@@ -87,21 +67,7 @@ export const Groups = () => {
     // Função para atualizar um grupo
     const handleUpdateGroup = async (group: Group) => {
         try {
-            const response = await fetchWithAuth(`Groups/${group.groupID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(group)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedGroup = await response.json();
+            const updatedGroup = await apiService.updateGroup(group);
             setGroups(groups => groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
             toast.success(updatedGroup.value || 'Grupo atualizado com sucesso!');
 
@@ -116,17 +82,7 @@ export const Groups = () => {
     // Função para apagar um grupo
     const handleDeleteGroup = async (groupID: string) => {
         try {
-            const response = await fetchWithAuth(`Groups/${groupID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteGroup = await response.json();
+            const deleteGroup = await apiService.deleteGroup(groupID);
             toast.success(deleteGroup.value || 'Grupo apagado com sucesso!');
 
         } catch (error) {
@@ -139,12 +95,12 @@ export const Groups = () => {
 
     // Busca os grupos ao carregar a página
     useEffect(() => {
-        fetchGroups();
+        fetchAllGroups();
     }, []);
 
     // Função para atualizar os grupos
     const refreshGroups = () => {
-        fetchGroups();
+        fetchAllGroups();
     };
 
     // Função para abrir o modal de atualizar grupo
@@ -206,6 +162,7 @@ export const Groups = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
+            id: columnKey,
             name: (
                 <>
                     {columnNamesMap[columnKey]}
@@ -240,10 +197,10 @@ export const Groups = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Grupos</span>
+                    <span style={{ color: '#000000' }}>Grupos</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -260,6 +217,7 @@ export const Groups = () => {
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={groups} selectedData={filteredItems} fields={groupFields} />
+                        <PrintButton data={groups} fields={groupFields} />
                     </div>
                 </div>
                 <CreateModalDeptGrp
@@ -299,12 +257,14 @@ export const Groups = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId="name"
                     />
                 </div>
             </div>
-            <Footer />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={groupFields}

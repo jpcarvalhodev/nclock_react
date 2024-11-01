@@ -9,7 +9,6 @@ import { CreateModalDeptGrp } from '../../modals/CreateModalDeptGrp';
 import { UpdateModalDeptGrp } from '../../modals/UpdateModalDeptGrp';
 import { DeleteModal } from '../../modals/DeleteModal';
 import { CustomOutlineButton } from '../../components/CustomOutlineButton';
-import { fetchWithAuth } from '../../components/FetchWithAuth';
 import { departmentFields } from '../../helpers/Fields';
 import { ExportButton } from '../../components/ExportButton';
 import { toast } from 'react-toastify';
@@ -17,6 +16,10 @@ import '../../css/PagesStyles.css';
 import { ExpandedComponentDept } from '../../components/ExpandedComponentDept';
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
+import * as apiService from "../../helpers/apiService";
+import { useColor } from '../../context/ColorContext';
+import { id } from 'date-fns/locale';
+import { PrintButton } from '../../components/PrintButton';
 
 // Define a interface para os filtros
 interface Filters {
@@ -25,6 +28,7 @@ interface Filters {
 
 // Define a página de departamentos
 export const Departments = () => {
+    const { navbarColor, footerColor } = useColor();
     const [departments, setDepartments] = useState<Department[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -37,13 +41,9 @@ export const Departments = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Busca os departamentos
-    const fetchDepartments = async () => {
+    const fetchAllDepartments = async () => {
         try {
-            const response = await fetchWithAuth('Departaments');
-            if (!response.ok) {
-                return;
-            }
-            const allDepartments: Department[] = await response.json();
+            const allDepartments: Department[] = await apiService.fetchAllDepartments();
 
             const departmentMap = new Map<number, Department>(allDepartments.map((dept: Department) => [dept.code, { ...dept, subdepartments: [] }]));
 
@@ -64,13 +64,9 @@ export const Departments = () => {
     };
 
     // Busca os subdepartamentos
-    const fetchSubdepartments = async (parentId: number): Promise<Department[]> => {
+    const fetchAllSubDepartments = async (parentId: number): Promise<Department[]> => {
         try {
-            const response = await fetchWithAuth(`Departaments?parentId=${parentId}`);
-            if (!response.ok) {
-                return [];
-            }
-            const subdepartments: Department[] = await response.json();
+            const subdepartments: Department[] = await apiService.fetchAllSubDepartments(parentId);
             return subdepartments;
         } catch (error) {
             console.error('Erro ao buscar dados dos subdepartamentos:', error);
@@ -81,18 +77,7 @@ export const Departments = () => {
     // Adiciona um departamento
     const handleAddDepartment = async (department: Department) => {
         try {
-            const response = await fetchWithAuth('Departaments', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(department)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
+            const data = await apiService.addDepartment(department);
             setDepartments(deps => [...deps, data]);
             toast.success(data.value || 'Departamento adicionado com sucesso!')
 
@@ -107,21 +92,7 @@ export const Departments = () => {
     // Atualiza um departamento
     const handleUpdateDepartment = async (department: Department) => {
         try {
-            const response = await fetchWithAuth(`Departaments/${department.departmentID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(department)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedDepartment = await response.json();
+            const updatedDepartment = await apiService.updateDepartment(department);
             setDepartments(deps => deps.map(dep => dep.departmentID === updatedDepartment.departmentID ? updatedDepartment : dep));
             toast.success(updatedDepartment.value || 'Departamento atualizado com sucesso!');
 
@@ -136,18 +107,7 @@ export const Departments = () => {
     // Apaga um departamento
     const handleDeleteDepartment = async (departmentID: string) => {
         try {
-            const response = await fetchWithAuth(`Departaments/${departmentID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const deleteDept = await response.json();
+            const deleteDept = await apiService.deleteDepartment(departmentID);
             toast.success(deleteDept.value || 'Departamento apagado com sucesso!');
 
         } catch (error) {
@@ -160,12 +120,12 @@ export const Departments = () => {
 
     // Atualiza os departamentos
     useEffect(() => {
-        fetchDepartments();
+        fetchAllDepartments();
     }, []);
 
     // função de atualizar os departamentos
     const refreshDepartments = () => {
-        fetchDepartments();
+        fetchAllDepartments();
     };
 
     // Filtra os departamentos
@@ -203,6 +163,7 @@ export const Departments = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
+            id: columnKey,
             name: (
                 <>
                     {columnNamesMap[columnKey]}
@@ -266,10 +227,10 @@ export const Departments = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Departamentos</span>
+                    <span style={{ color: '#000000' }}>Departamentos</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -286,6 +247,7 @@ export const Departments = () => {
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={departments} selectedData={filteredItems} fields={departmentFields} />
+                        <PrintButton data={departments} fields={departmentFields} />
                     </div>
                 </div>
                 <CreateModalDeptGrp
@@ -325,10 +287,12 @@ export const Departments = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={(props) => (
-                            <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchSubdepartments} isRoot={true} />
+                            <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />
                         )}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId="code"
                     />
                 </div>
             </div>
@@ -342,7 +306,7 @@ export const Departments = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            <Footer />
+            <Footer style={{ backgroundColor: footerColor }} />
         </div>
     );
 }

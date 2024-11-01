@@ -8,7 +8,6 @@ import { ExternalEntity, ExternalEntityTypes } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { externalEntityFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -17,6 +16,9 @@ import { CreateModalExtEnt } from "../../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
+import { PrintButton } from "../../components/PrintButton";
 
 interface DataState {
     externalEntity: ExternalEntity[];
@@ -30,6 +32,7 @@ interface Filters {
 
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
+    const { navbarColor, footerColor } = useColor();
     const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -46,25 +49,9 @@ export const ExternalEntities = () => {
     });
 
     // Busca as entidades externas e os tipos de entidades externas
-    const fetchData = async () => {
+    const fetchAllExternalEntitiesData = async () => {
         try {
-            const typeResponsePromise = fetchWithAuth('ExternalEntityTypes');
-            const entityResponsePromise = fetchWithAuth('ExternalEntities', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            const [typeResponse, entityResponse] = await Promise.all([typeResponsePromise, entityResponsePromise]);
-
-            if (!typeResponse.ok || !entityResponse.ok) {
-                return;
-            }
-            const [ExternalEntityTypes, ExternalEntities] = await Promise.all([
-                typeResponse.json(),
-                entityResponse.json()
-            ]);
+            const { ExternalEntities, ExternalEntityTypes } = await apiService.fetchAllExternalEntitiesData() as { ExternalEntities: ExternalEntity[]; ExternalEntityTypes: ExternalEntityTypes[]; };
             setData({
                 externalEntity: ExternalEntities,
                 externalEntityTypes: ExternalEntityTypes,
@@ -77,17 +64,7 @@ export const ExternalEntities = () => {
     // Função para adicionar uma nova entidade externa
     const handleAddExternalEntity = async (externalEntity: ExternalEntity) => {
         try {
-            const response = await fetchWithAuth('ExternalEntities', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(externalEntity)
-            });
-            if (!response.ok) {
-                return;
-            }
-            const data = await response.json();
+            const data = await apiService.addExternalEntity(externalEntity);
             setExternalEntities([...externalEntities, data]);
             toast.success(data.value || 'Entidade externa adicionada com sucesso!');
 
@@ -101,21 +78,7 @@ export const ExternalEntities = () => {
     // Função para atualizar uma entidade externa
     const handleUpdateExternalEntity = async (externalEntity: ExternalEntity) => {
         try {
-            const response = await fetchWithAuth(`ExternalEntities/${externalEntity.externalEntityID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(externalEntity)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedExternalEntity = await response.json();
+            const updatedExternalEntity = await apiService.updateExternalEntity(externalEntity);
             setExternalEntities(externalEntities => externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
             toast.success(updatedExternalEntity.value || 'Entidade Externa atualizada com sucesso');
 
@@ -130,17 +93,7 @@ export const ExternalEntities = () => {
     // Função para apagar uma entidade externa
     const handleDeleteExternalEntity = async (externalEntityID: string) => {
         try {
-            const response = await fetchWithAuth(`ExternalEntities/${externalEntityID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteExtEnt = await response.json();
+            const deleteExtEnt = await apiService.deleteExternalEntity(externalEntityID);
             toast.success(deleteExtEnt.value || 'Entidade externa apagada com sucesso!');
 
         } catch (error) {
@@ -153,12 +106,12 @@ export const ExternalEntities = () => {
 
     // Atualiza as entidades externas
     useEffect(() => {
-        fetchData();
+        fetchAllExternalEntitiesData();
     }, []);
 
     // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {
-        fetchData();
+        fetchAllExternalEntitiesData();
     };
 
     // Função para abrir o modal de editar entidade externa
@@ -242,14 +195,26 @@ export const ExternalEntities = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
                         <SelectFilter column={field.key} setFilters={setFilters} data={data.externalEntity} />
                     </>
                 ),
-                selector: row => formatField(row),
+                selector: (row: ExternalEntity) => {
+                    if (field.key === 'name') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                },
                 sortable: true,
+                cell: (row: ExternalEntity) => {
+                    if (field.key === 'name') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                }
             };
         });
 
@@ -282,10 +247,10 @@ export const ExternalEntities = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Entidades Externas</span>
+                    <span style={{ color: '#000000' }}>Entidades Externas</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -302,6 +267,7 @@ export const ExternalEntities = () => {
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={externalEntities} selectedData={filteredItems} fields={externalEntityFields} />
+                        <PrintButton data={externalEntities} fields={externalEntityFields} />
                     </div>
                 </div>
                 <CreateModalExtEnt
@@ -339,12 +305,14 @@ export const ExternalEntities = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId="name"
                     />
                 </div>
             </div>
-            <Footer />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={externalEntityFields}

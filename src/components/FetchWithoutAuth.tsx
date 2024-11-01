@@ -1,7 +1,5 @@
 import { toast } from "react-toastify";
-
-// Define a URL base da API
-const BASE_URL = 'https://localhost:9090/api/';
+import * as apiService from "../helpers/apiService";
 
 // Define as opções de requisição
 interface FetchOptions extends RequestInit {
@@ -10,7 +8,7 @@ interface FetchOptions extends RequestInit {
 
 // Função para fazer requisições à API sem autenticação
 export const fetchWithoutAuth = async (endpoint: string, options: FetchOptions = {}): Promise<Response> => {
-    const url = `${BASE_URL}${endpoint}`;
+    const url = `${apiService.BASE_URL}${endpoint}`;
 
     try {
         const response = await fetch(url, options);
@@ -23,25 +21,17 @@ export const fetchWithoutAuth = async (endpoint: string, options: FetchOptions =
         return response;
     } catch (error) {
         console.error('Fetch error:', error);
-        toast.error('Erro de rede. Por favor, verifique sua conexão ou tente novamente mais tarde.');
         throw error;
     }
 };
 
 // Função para lidar com erros HTTP
 const handleHTTPError = async (response: Response) => {
-    const token = localStorage.getItem('token');
-    
+
     switch (response.status) {
-        case 401:
-            if (!token) {
-                toast.error('Você não tem permissão para acessar esta página');
-                window.location.href = '/unauthorized';
-            }
-            break;
         case 404:
             toast.error('Página não encontrada');
-            window.location.href = '/notfound';
+            window.location.href = '/errors/notfound';
             break;
         case 500:
         case 501:

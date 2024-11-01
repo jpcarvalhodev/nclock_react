@@ -8,7 +8,6 @@ import { Zone } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { zoneFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -17,6 +16,10 @@ import { UpdateModalZones } from "../../modals/UpdateModalZones";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
+import { id } from "date-fns/locale";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -25,6 +28,7 @@ interface Filters {
 
 // Define a página de Zonas
 export const Zones = () => {
+    const { navbarColor, footerColor } = useColor();
     const [zones, setZones] = useState<Zone[]>([]);
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
     const [filterText, setFilterText] = useState('');
@@ -37,20 +41,9 @@ export const Zones = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as zonas
-    const fetchZones = async () => {
+    const fetchAllZones = async () => {
         try {
-            const response = await fetchWithAuth('Zones', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.fetchAllZones();
             setZones(data);
         } catch (error) {
             console.error('Erro ao buscar os dados das zonas:', error);
@@ -60,19 +53,7 @@ export const Zones = () => {
     // Função para adicionar uma zona
     const handleAddZone = async (zone: Zone) => {
         try {
-            const response = await fetchWithAuth('Zones', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(zone)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addZone(zone);
             setZones([...zones, data]);
             toast.success(data.value || 'Zona adicionada com sucesso!');
 
@@ -87,21 +68,7 @@ export const Zones = () => {
     // Função para atualizar uma zona
     const handleUpdateZone = async (zone: Zone) => {
         try {
-            const response = await fetchWithAuth(`Zones/${zone.zoneID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(zone)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedZone = await response.json();
+            const updatedZone = await apiService.updateZone(zone);
             setZones(zones => zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
             toast.success(updatedZone.value || 'Zona atualizada com sucesso!');
 
@@ -116,17 +83,7 @@ export const Zones = () => {
     // Função para apagar uma zona
     const handleDeleteZone = async (zoneID: string) => {
         try {
-            const response = await fetchWithAuth(`Zones/${zoneID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteZone = await response.json();
+            const deleteZone = await apiService.deleteZone(zoneID);
             toast.success(deleteZone.value || 'Zona apagada com sucesso!');
 
         } catch (error) {
@@ -139,12 +96,12 @@ export const Zones = () => {
 
     // Atualiza a lista de zonas ao carregar a página
     useEffect(() => {
-        fetchZones();
+        fetchAllZones();
     }, []);
 
     // Função para atualizar as zonas
     const refreshZones = () => {
-        fetchZones();
+        fetchAllZones();
     };
 
     // Função para abrir o modal de editar zona
@@ -206,6 +163,7 @@ export const Zones = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
+            id: columnKey,
             name: (
                 <>
                     {columnNamesMap[columnKey]}
@@ -234,7 +192,7 @@ export const Zones = () => {
         cell: (row: Zone) => (
             <div style={{ display: 'flex' }}>
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditZone(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneId)} >
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneID)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
@@ -245,10 +203,10 @@ export const Zones = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Zonas</span>
+                    <span style={{ color: '#000000' }}>Zonas</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -265,6 +223,7 @@ export const Zones = () => {
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={zones} selectedData={filteredItems} fields={zoneFields} />
+                        <PrintButton data={zones} fields={zoneFields} />
                     </div>
                 </div>
                 <CreateModalZones
@@ -302,12 +261,14 @@ export const Zones = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId="name"
                     />
                 </div>
             </div>
-            <Footer />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={zoneFields}

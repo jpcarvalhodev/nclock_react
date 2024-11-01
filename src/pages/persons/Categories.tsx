@@ -8,7 +8,6 @@ import { Category } from "../../helpers/Types";
 import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { fetchWithAuth } from "../../components/FetchWithAuth";
 import { categoryFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
 import { toast } from "react-toastify";
@@ -17,6 +16,9 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
+import * as apiService from "../../helpers/apiService";
+import { useColor } from "../../context/ColorContext";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -25,6 +27,7 @@ interface Filters {
 
 // Define a página de categorias
 export const Categories = () => {
+    const { navbarColor, footerColor } = useColor();
     const [categories, setCategories] = useState<Category[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -37,20 +40,9 @@ export const Categories = () => {
     const [filters, setFilters] = useState<Filters>({});
 
     // Função para buscar as categorias
-    const fetchCategories = async () => {
+    const fetchAllCategories = async () => {
         try {
-            const response = await fetchWithAuth('Categories', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.fetchAllCategories();
             setCategories(data);
         } catch (error) {
             console.error('Erro ao buscar os dados das categorias:', error);
@@ -60,19 +52,7 @@ export const Categories = () => {
     // Função para adicionar uma categoria
     const handleAddCategory = async (category: Category) => {
         try {
-            const response = await fetchWithAuth('Categories', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(category)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
+            const data = await apiService.addCategory(category);
             setCategories([...categories, data]);
             toast.success(data.value || 'Categoria adicionada com sucesso!');
 
@@ -87,21 +67,7 @@ export const Categories = () => {
     // Função para atualizar uma categoria
     const handleUpdateCategory = async (category: Category) => {
         try {
-            const response = await fetchWithAuth(`Categories/${category.categoryID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(category)
-            });
-
-            if (!response.ok) {
-                return;
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            (contentType && contentType.includes('application/json'))
-            const updatedCategory = await response.json();
+            const updatedCategory = await apiService.updateCategory(category);
             setCategories(categories => categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
             toast.success(updatedCategory.value || 'Categoria atualizada com sucesso!');
 
@@ -116,17 +82,7 @@ export const Categories = () => {
     // Função para apagar uma categoria
     const handleDeleteCategory = async (categoryID: string) => {
         try {
-            const response = await fetchWithAuth(`Categories/${categoryID}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                return;
-            }
-            const deleteCategory = await response.json();
+            const deleteCategory = await apiService.deleteCategory(categoryID);
             toast.success(deleteCategory.value || 'Categoria apagada com sucesso!');
 
         } catch (error) {
@@ -139,12 +95,12 @@ export const Categories = () => {
 
     // Busca as categorias ao carregar a página
     useEffect(() => {
-        fetchCategories();
+        fetchAllCategories();
     }, []);
 
     // Função para atualizar as categorias
     const refreshCategories = () => {
-        fetchCategories();
+        fetchAllCategories();
     };
 
     // Função para editar uma categoria
@@ -206,6 +162,7 @@ export const Categories = () => {
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
+            id: columnKey,
             name: (
                 <>
                     {columnNamesMap[columnKey]}
@@ -240,10 +197,10 @@ export const Categories = () => {
 
     return (
         <div className="main-container">
-            <NavBar />
+            <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span>Categorias</span>
+                    <span style={{ color: '#000000' }}>Categorias</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -260,6 +217,7 @@ export const Categories = () => {
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={categories} selectedData={filteredItems} fields={categoryFields} />
+                        <PrintButton data={categories} fields={categoryFields} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes
@@ -279,6 +237,7 @@ export const Categories = () => {
                         entity={selectedCategory}
                         fields={categoryFields}
                         title="Atualizar Categoria"
+                        entityType="categorias"
                     />
                 )}
                 <DeleteModal
@@ -298,12 +257,14 @@ export const Categories = () => {
                         paginationComponentOptions={paginationOptions}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
-                        noDataComponent="Não há dados disponíveis para exibir."
+                        noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId="code"
                     />
                 </div>
             </div>
-            <Footer />
+            <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={categoryFields}

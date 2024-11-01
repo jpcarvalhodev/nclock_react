@@ -7,8 +7,8 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, EmployeeDevices } from "../../helpers/Types";
-import { deviceFields, employeeDeviceFields } from "../../helpers/Fields";
+import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, KioskTransaction } from "../../helpers/Types";
+import { deviceFields, employeeCardFields, employeeFields, transactionFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
@@ -21,14 +21,35 @@ import palmScan from "../../assets/img/terminais/palmScan.png";
 import card from "../../assets/img/terminais/card.png";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 import React from "react";
+import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+import { useColor } from "../../context/ColorContext";
+import * as apiService from "../../helpers/apiService";
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
 }
 
-// Define a interface para as transações
-interface Transaction {
+// Define a interface para os dados de biometria
+interface FingerprintTemplate {
+    FPTmpLength: number;
+    enrollNumber: string;
+    FPTmpIndex: number;
+    FPTmpFlag: number;
+    FPTmpData: string;
+}
+
+// Define a interface para os dados de face
+interface FaceTemplate {
+    enrollNumber: string;
+    FaceTmpIndex: number;
+    FaceTmpData: string;
+    FaceTmpLength: number;
+}
+
+// Define a interface para os movimentos
+interface Movement {
     UserID: string;
     IsInvalid: string;
     State: string;
@@ -36,26 +57,20 @@ interface Transaction {
     Time: string;
 }
 
-// Define a interface para as tarefas
-interface Tasks {
-    Status: string;
-    Date: Date;
-    Type: string;
-    Device: string;
-}
+// Define a interface para os dados de utilizadores e cartões
+interface MergedEmployeeAndCard extends Employee, Partial<Omit<EmployeeCard, 'id'>> { }
+
+// Junta os campos de utilizadores e cartões
+const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
 
 // Define o componente de terminais
 export const Terminals = () => {
     const {
         devices,
-        employeeDevices,
-        employeesBio,
-        employeesCard,
-        deviceStatus,
-        deviceStatusCount,
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
+        fetchAllKioskTransaction,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,
@@ -63,10 +78,25 @@ export const Terminals = () => {
         deleteAllUsersOnDevice,
         openDeviceDoor,
         restartDevice,
+        sendClockToDevice,
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
     } = useContext(TerminalsContext) as DeviceContextType;
+    const {
+        handleAddImportedAttendance,
+    } = useContext(AttendanceContext) as AttendanceContextType;
+    const {
+        fetchAllEmployees,
+        fetchAllCardData,
+        handleImportEmployeeCard,
+        handleImportEmployeeFP,
+        handleImportEmployeeFace
+    } = useContext(PersonsContext) as PersonsContextType;
+    const { navbarColor, footerColor } = useColor();
+    const [employees, setEmployees] = useState<EmployeeAndCard[]>([]);
+    const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
+    const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [initialData, setInitialData] = useState<Devices | null>(null);
@@ -74,15 +104,17 @@ export const Terminals = () => {
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
     const [userTabKey, setUserTabKey] = useState('users');
     const [filters, setFilters] = useState<Filters>({});
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'ipAddress']);
-    const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'employeeName', 'cardNumber', 'statusFprint', 'statusFace']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'model', 'ipAddress']);
+    const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber', 'statusFprint', 'statusFace']);
+    const [selectedBioColums, setSelectedBioColumns] = useState<string[]>(['enrollNumber', 'name', 'statusFprint', 'statusFace']);
+    const [selectedCardColums, setSelectedCardColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber']);
     const [selectedDeviceToDelete, setSelectedDeviceToDelete] = useState<string>('');
     const [selectedUserToDelete, setSelectedUserToDelete] = useState<string>('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedDeviceRows, setSelectedDeviceRows] = useState<Devices[]>([]);
-    const [selectedUserRows, setSelectedUserRows] = useState<EmployeeDevices[]>([]);
+    const [selectedUserRows, setSelectedUserRows] = useState<EmployeeAndCard[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(null);
     const [loadingUser, setLoadingUser] = useState(false);
     const [loadingAllUser, setLoadingAllUser] = useState(false);
@@ -95,13 +127,81 @@ export const Terminals = () => {
     const [loadingDeleteSelectedUsers, setLoadingDeleteSelectedUsers] = useState(false);
     const [loadingSendSelectedUsers, setLoadingSendSelectedUsers] = useState(false);
     const [loadingFetchSelectedUsers, setLoadingFetchSelectedUsers] = useState(false);
+    const [loadingImportAttendance, setLoadingImportAttendance] = useState(false);
+    const [loadingImportAttendanceLog, setLoadingImportAttendanceLog] = useState(false);
+    const [loadingImportUsers, setLoadingImportUsers] = useState(false);
+    const [loadingImportBio, setLoadingImportBio] = useState(false);
+    const [loadingImportFace, setLoadingImportFace] = useState(false);
     const [showAllUsers, setShowAllUsers] = useState(true);
     const [showFingerprintUsers, setShowFingerprintUsers] = useState(false);
     const [showFacialRecognitionUsers, setShowFacialRecognitionUsers] = useState(false);
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [task, setTask] = useState<Tasks[]>([]);
     const fileInputAttendanceRef = React.createRef<HTMLInputElement>();
     const fileInputUserRef = React.createRef<HTMLInputElement>();
+    const fileInputFPRef = React.createRef<HTMLInputElement>();
+    const fileInputFaceRef = React.createRef<HTMLInputElement>();
+    const [movements, setMovements] = useState<Movement[]>([]);
+    const [transactions, setTransactions] = useState<KioskTransaction[]>([]);
+    const [loadingActivityData, setLoadingActivityData] = useState(false);
+    const [loadingSendClock, setLoadingSendClock] = useState(false);
+
+    // Função para mesclar os dados de utilizadores e cartões
+    const mergeEmployeeAndCardData = (
+        employees: Employee[],
+        employeeCards: EmployeeCard[]
+    ): MergedEmployeeAndCard[] => {
+        const mergedEmployeesData = employees.map(employee => {
+            const card = employeeCards.filter(card => card.employeeId === employee.employeeID)[0];
+            if (card) {
+                return {
+                    ...employee,
+                    ...card,
+                } as MergedEmployeeAndCard;
+            }
+            return employee as MergedEmployeeAndCard;
+        })
+        return mergedEmployeesData;
+    };
+
+    // Função para buscar todos os utilizadores e cartões
+    const fetchEmployeesAndCards = async () => {
+        const employeesData: Employee[] = await fetchAllEmployees();
+
+        const cardData: EmployeeCard[] = await fetchAllCardData();
+
+        const mergedData = mergeEmployeeAndCardData(employeesData, cardData);
+
+        const filteredEmployeesBio = mergedData.filter(employee =>
+            employee.statusFprint === true || employee.statusFace === true
+        );
+
+        const filteredEmployeesCard = mergedData.filter(employee =>
+            employee.cardNumber !== "0"
+        );
+
+        setEmployees(mergedData);
+        setEmployeesBio(filteredEmployeesBio);
+        setEmployeeCards(filteredEmployeesCard);
+    };
+
+    // Função para buscar todas as transações de quiosques
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            if (selectedTerminal) {
+                setLoadingActivityData(true);
+                try {
+                    const fetchedTransactions = await fetchAllKioskTransaction(selectedTerminal.zktecoDeviceID);
+                    setTransactions(fetchedTransactions);
+                    setLoadingActivityData(false);
+                } catch (error) {
+                    console.error("Erro ao buscar transações:", error);
+                }
+            } else {
+                setTransactions([]);
+                setLoadingActivityData(false);
+            }
+        };
+        fetchTransactions();
+    }, [selectedTerminal]);
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
@@ -126,37 +226,10 @@ export const Terminals = () => {
         }
     }
 
-    // Função para buscar os logs de transações
-    useEffect(() => {
-        const ws = new WebSocket("ws://localhost:9999/websocket");
-
-        ws.onopen = () => {
-            console.log("Connected to WebSocket");
-        };
-
-        ws.onmessage = (event) => {
-            const transaction = JSON.parse(event.data);
-            setTransactions(prev => [...prev, transaction]);
-            console.log("Received data: ", transaction);
-        };
-
-        ws.onerror = (error) => {
-            console.error("WebSocket error: ", error);
-        };
-
-        ws.onclose = () => {
-            console.log("WebSocket connection closed");
-        };
-
-        return () => {
-            ws.close();
-        };
-    }, []);
-
     // Atualiza os dados de renderização
     useEffect(() => {
         fetchAllDevices();
-        fetchAllEmployeeDevices();
+        fetchEmployeesAndCards();
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -169,12 +242,12 @@ export const Terminals = () => {
     // Função para atualizar todos os dispositivos
     const refreshAll = () => {
         fetchAllDevices();
-        fetchAllEmployeeDevices();
+        fetchEmployeesAndCards();
     }
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['deviceNumber', 'deviceName', 'ipAddress']);
+        setSelectedColumns(['deviceNumber', 'deviceName', 'model', 'ipAddress']);
     };
 
     const handleMainSelect = (k: string | null) => {
@@ -224,7 +297,7 @@ export const Terminals = () => {
     const handleUserRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: EmployeeDevices[];
+        selectedRows: EmployeeAndCard[];
     }) => {
         setSelectedUserRows(state.selectedRows);
     };
@@ -234,8 +307,8 @@ export const Terminals = () => {
         if (!selectedTerminal) {
             return [];
         }
-        return employeeDevices.filter(employee => employee.deviceNumber === selectedTerminal.deviceNumber);
-    }, [employeeDevices, selectedTerminal]);
+        return employees.filter(employee => employee.deviceNumber === selectedTerminal.deviceNumber);
+    }, [employees, selectedTerminal]);
 
     // Função para formatar a data e a hora
     function formatDateAndTime(input: string | Date): string {
@@ -270,12 +343,15 @@ export const Terminals = () => {
                     case 'productTime':
                         return formatDateAndTime(row[field.key]);
                     case 'status':
-                        return row.status ? 'Activo' : 'Inactivo';
+                        return row.status ? 'Online' : 'Offline';
+                    case 'disabled':
+                        return row.disabled ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key];
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
@@ -293,6 +369,43 @@ export const Terminals = () => {
             filters[key] === "" || String(device[key]) === String(filters[key])
         )
     );
+
+    // Define as colunas de transações de quiosques
+    const transactionColumns: TableColumn<KioskTransaction>[] = transactionFields
+        .filter(field => field.key !== 'id' && field.key !== 'eventId' && field.key !== 'createTime' && field.key !== 'updateTime')
+        .map(field => {
+            const formatField = (row: KioskTransaction) => {
+                switch (field.key) {
+                    case 'eventTime':
+                        return new Date(row[field.key]).toLocaleString() || '';
+                    case 'eventDoorId':
+                        switch (row[field.key]) {
+                            case 1:
+                                return 'Terminal';
+                            case 2:
+                                return 'Moedeiro';
+                            case 3:
+                                return 'Cartão'
+                            case 4:
+                                return 'Video Porteiro'
+                            default:
+                                return row[field.key];
+                        }
+                    default:
+                        return row[field.key];
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={transactions} />
+                    </>
+                ),
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
 
     // Define as colunas de estado de dispositivos
     const stateColumns: TableColumn<Devices>[] = deviceFields
@@ -317,27 +430,43 @@ export const Terminals = () => {
         )
     );
 
-    // Formata as 3 colunas abaixo em uma única coluna
-    const formatCombinedStatus = (row: EmployeeDevices) => {
+    // Formata as colunas especiais na tabela de utilizadores, biometria e cartões
+    const formatUserStatus = (row: EmployeeAndCard) => {
         return (
             <>
-                {row.cardNumber !== "0" && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
+                {row.cardNumber && row.cardNumber !== "0" && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusFprint && <img src={fprintScan} alt="Fingerprint" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusFace && <img src={faceScan} alt="Face" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusPalm && <img src={palmScan} alt="Palm" style={{ width: 20, marginRight: 5 }} />}
             </>
         );
     };
+    const formatBioStatus = (row: EmployeeAndCard) => {
+        return (
+            <>
+                {row.statusFprint && <img src={fprintScan} alt="Fingerprint" style={{ width: 20, marginRight: 5 }} />}
+                {row.statusFace && <img src={faceScan} alt="Face" style={{ width: 20, marginRight: 5 }} />}
+                {row.statusPalm && <img src={palmScan} alt="Palm" style={{ width: 20, marginRight: 5 }} />}
+            </>
+        );
+    };
+    const formatCardStatus = (row: EmployeeAndCard) => {
+        return (
+            <>
+                {row.cardNumber && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
+            </>
+        );
+    };
 
     // Define as colunas excluídas de utilizadores    
-    const excludedUserColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+    const excludedUserColumns = ['statusFprint', 'statusFace', 'statusPalm', 'cardNumber'];
 
     // Define as colunas de utilizadores
-    const userColumns: TableColumn<EmployeeDevices>[] = employeeDeviceFields
+    const userColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
         .filter(field => selectedUserColums.includes(field.key))
         .filter(field => !excludedUserColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: EmployeeDevices) => {
+            const formatField = (row: EmployeeAndCard) => {
                 switch (field.key) {
                     case 'cardNumber':
                         return row.cardNumber === "0" ? "" : row.cardNumber;
@@ -345,15 +474,14 @@ export const Terminals = () => {
                         return row[field.key] || '';
                 }
             };
-
             return {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={employeeDevices} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
                     </>
                 ),
-                selector: (row: EmployeeDevices) => formatField(row),
+                selector: (row: EmployeeAndCard) => formatField(row),
                 sortable: true,
             };
         })
@@ -364,27 +492,58 @@ export const Terminals = () => {
                         Modo de Verificação
                     </>
                 ),
-                selector: row => formatCombinedStatus(row),
+                selector: row => formatUserStatus(row),
                 sortable: true,
             }
         ]);
 
     // Filtra os dados da tabela de utilizadores
     const filteredUserDataTable = useMemo(() => {
-        let filteredData: EmployeeDevices[] = [];
+        let filteredData: EmployeeAndCard[] = [];
 
         if (showAllUsers) {
-            return employeeDevices;
+            return employees;
         }
 
         if (showFingerprintUsers) {
-            filteredData = [...filteredData, ...employeeDevices.filter(user => user.statusFprint)];
+            filteredData = [...filteredData, ...employees.filter(user => user.statusFprint)];
         }
         if (showFacialRecognitionUsers) {
-            filteredData = [...filteredData, ...employeeDevices.filter(user => user.statusFace)];
+            filteredData = [...filteredData, ...employees.filter(user => user.statusFace)];
         }
         return filteredData;
-    }, [employeeDevices, showAllUsers, showFingerprintUsers, showFacialRecognitionUsers]);
+    }, [employees, showAllUsers, showFingerprintUsers, showFacialRecognitionUsers]);
+
+    // Define as colunas excluídas de utilizadores    
+    const excludedBioColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+
+    // Define as colunas de utilizadores
+    const bioColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
+        .filter(field => selectedBioColums.includes(field.key))
+        .filter(field => !excludedBioColumns.includes(field.key))
+        .map(field => {
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
+                    </>
+                ),
+                selector: (row: EmployeeAndCard) => row[field.key] || '',
+                sortable: true,
+            };
+        })
+        .concat([
+            {
+                name: (
+                    <>
+                        Modo de Verificação
+                    </>
+                ),
+                selector: row => formatBioStatus(row),
+                sortable: true,
+            }
+        ]);
 
     // Define os dados da tabela de biometria
     const filteredBioDataTable = employeesBio.filter(employee =>
@@ -393,8 +552,47 @@ export const Terminals = () => {
         )
     );
 
+    // Define as colunas excluídas de utilizadores    
+    const excludedCardColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+
+    // Define as colunas de utilizadores
+    const cardColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
+        .filter(field => selectedCardColums.includes(field.key))
+        .filter(field => !excludedCardColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: EmployeeAndCard) => {
+                switch (field.key) {
+                    case 'cardNumber':
+                        return row.cardNumber === "0" ? "" : row.cardNumber;
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
+                    </>
+                ),
+                selector: (row: EmployeeAndCard) => formatField(row),
+                sortable: true,
+            };
+        })
+        .concat([
+            {
+                name: (
+                    <>
+                        Modo de Verificação
+                    </>
+                ),
+                selector: row => formatCardStatus(row),
+                sortable: true,
+            }
+        ]);
+
     // Filtra os dados da tabela de cartões
-    const filteredCardDataTable = employeesCard.filter(employee =>
+    const filteredCardDataTable = employeeCards.filter(employee =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(employee[key]) === String(filters[key])
         )
@@ -419,15 +617,15 @@ export const Terminals = () => {
     }
 
     // Define a função de abertura do modal de exclusão dos dispositivos
-    const handleOpenDeleteModal = async (id: string, type: 'device' | 'user') => {
+    const handleOpenDeleteModal = async (zktecoDeviceID: string, type: 'device' | 'user') => {
         if (type === 'device') {
-            setSelectedDeviceToDelete(id);
+            setSelectedDeviceToDelete(zktecoDeviceID);
             setShowDeleteModal(true);
         } else {
             if (selectedTerminal) {
                 setLoadingDeleteSelectedUsers(true);
-                setSelectedUserToDelete(id);
-                await deleteAllUsersOnDevice(selectedTerminal?.zktecoDeviceID, id);
+                setSelectedUserToDelete(zktecoDeviceID);
+                await deleteAllUsersOnDevice(selectedTerminal?.zktecoDeviceID, zktecoDeviceID);
                 setLoadingDeleteSelectedUsers(false);
                 fetchAllEmployeeDevices();
             } else {
@@ -488,7 +686,7 @@ export const Terminals = () => {
         cell: (row: Devices) => (
             <div style={{ display: 'flex' }}>
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDevicesID, 'device')}>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDeviceID, 'device')}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>
             </div>
@@ -497,87 +695,362 @@ export const Terminals = () => {
         ignoreRowClick: true,
     };
 
-    // Define a cor do status
-    const getStatusColor = (statuses: string[]): string => {
-        const isActive = statuses.some(status => status === 'Activo');
-        return isActive ? 'green' : 'red';
-    };
-
-    // Define a cor de fundo do status
-    const backgroundColor = getStatusColor(deviceStatus);
-
-    // Define a função de adição de tarefas
-    const addTask = (type: string, status: string, device: string) => {
-        const newTask = {
-            Status: status,
-            Date: new Date(),
-            Type: type,
-            Device: selectedTerminal?.deviceName || 'Nenhum dispositivo selecionado'
-        };
-        setTask(prevTasks => [...prevTasks, newTask]);
-    };
-
-    // Função para controlar a mudança de arquivo
+    // Função para controlar a mudança de arquivo dos movimentos
     const handleAttendanceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 const result = e.target?.result;
-                if (typeof result === 'string' || typeof result === 'number') {
-                    const parsedData = parseAttendanceData(result);
-                    //sendToApi(parsedData);
+                if (typeof result === 'string') {
+                    const fileName = file.name;
+                    const parsedData = parseAttendanceData(result, fileName);
+                    await handleAddImportedAttendance(parsedData);
                 } else {
                     console.error('Erro: o conteúdo do arquivo não é uma string ou number');
                 }
             };
+            setLoadingImportAttendance(false);
+            setLoadingImportAttendanceLog(false);
             reader.readAsText(file);
         }
     };
 
-    // Função para formatar os dados para a API
-    const parseAttendanceData = (text: string) => {
+    // Função para formatar os dados de movimentos para a API
+    const parseAttendanceData = (text: string, fileName: string) => {
+        const deviceSN = fileName.split('_')[0];
         const lines = text.split('\n');
-        const data = lines.map(line => {
-            const [enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode] = line.trim().split(/\s+/);
-            return { enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode };
+        return lines.filter(line => line.trim().length > 0).map(line => {
+            const parts = line.trim().split(/\s+/);
+            const enrollNumber = parts[0];
+            const attendanceDateTime = `${parts[1]}T${parts[2]}.000Z`;
+            const deviceNumber = parts[3];
+            const inOutMode = parts[4];
+            const verifyMode = parts[5];
+            const workCode = parts[6];
+
+            return {
+                deviceSN: deviceSN,
+                enrollNumber: enrollNumber,
+                attendanceTime: attendanceDateTime,
+                deviceNumber: parseInt(deviceNumber, 10),
+                inOutMode: parseInt(inOutMode, 10),
+                verifyMode: parseInt(verifyMode, 10),
+                workCode: parseInt(workCode, 10),
+            };
         });
-        return data;
     };
 
+    // Função para controlar a mudança de arquivo dos utilizadores
     const handleUserFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0] || null;
+        const file = event.target.files ? event.target.files[0] : null;
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const result = e.target?.result;
-                if (typeof result === 'string' || typeof result === 'number') {
-                    const parsedData = parseUserData(result);
-                    //sendToApi(parsedData);
-                } else {
-                    console.error('Erro: o conteúdo do arquivo não é uma string ou number');
-                }
+            reader.onload = async (e) => {
+                const buffer = e.target?.result as ArrayBuffer;
+                const data = parseUserData(buffer);
+                await handleImportEmployeeCard(data);
+            };
+            setLoadingImportUsers(false);
+            reader.readAsArrayBuffer(file);
+        }
+    };
+
+    // Função para formatar os dados de utilizadores para a API
+    const parseUserData = (buffer: ArrayBuffer): Partial<EmployeeCard>[] => {
+        const dataView = new DataView(buffer);
+        const users: Partial<EmployeeCard>[] = [];
+        let offset = 0;
+        const USER_STRUCT_SIZE = calcUserStructSize();
+        while (offset + USER_STRUCT_SIZE <= buffer.byteLength) {
+            offset += 2;
+            const devicePrivelage = dataView.getUint8(offset); offset += 1;
+            const devicePassword = decodeString(dataView, offset, 8); offset += 8;
+            const employeeName = decodeString(dataView, offset, 24); offset += 24;
+            const cardNumber = dataView.getUint32(offset, true); offset += 4;
+            offset += 1 + 8;
+            const enrollNumber = decodeString(dataView, offset, 24); offset += 24;
+
+            users.push({ devicePrivelage, devicePassword, employeeName, cardNumber: cardNumber.toString(), enrollNumber, deviceEnabled: true });
+        }
+
+        return users;
+    };
+
+    // Função para calcular o tamanho da estrutura do utilizador
+    const calcUserStructSize = (): number => {
+        return 2 + 1 + 8 + 24 + 4 + 1 + 8 + 24;
+    };
+
+    // Função para decodificar a string
+    const decodeString = (dataView: DataView, offset: number, length: number): string => {
+        const bytes = new Uint8Array(dataView.buffer, offset, length);
+        return new TextDecoder('utf-8').decode(bytes).replace(/\0/g, '');
+    };
+
+    // Função para controlar a mudança de arquivo da biometria
+    const handleFPFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files ? event.target.files[0] : null;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const buffer = e.target?.result as ArrayBuffer;
+                const data = parseFPData(buffer);
+                await handleImportEmployeeFP(data);
+            };
+            setLoadingImportUsers(false);
+            reader.readAsArrayBuffer(file);
+        }
+    };
+
+    // Função para formatar os dados de biometria para a API
+    const parseFPData = (buffer: ArrayBuffer): FingerprintTemplate[] => {
+        const dataView = new DataView(buffer);
+        const templates: FingerprintTemplate[] = [];
+        let offset = 0;
+
+        while (offset < buffer.byteLength) {
+            const FPTmpLength = dataView.getUint16(offset, true); offset += 2;
+            const enrollNumberNumeric = dataView.getUint16(offset, true); offset += 2;
+            const enrollNumber = enrollNumberNumeric.toString();
+            const FPTmpIndex = dataView.getUint8(offset); offset += 1;
+            const FPTmpFlag = dataView.getUint8(offset); offset += 1;
+
+            const TemplateSize = FPTmpLength - (2 + 2 + 1 + 1);
+            const FPTmpData = new Uint8Array(buffer, offset, TemplateSize);
+            offset += TemplateSize;
+
+            const templateBase64 = btoa(String.fromCharCode(...FPTmpData));
+
+            templates.push({ FPTmpLength, enrollNumber, FPTmpIndex, FPTmpFlag, FPTmpData: templateBase64 });
+        }
+
+        return templates;
+    };
+
+    // Função para controlar a mudança de arquivo da face
+    const handleFaceFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files ? event.target.files[0] : null;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const content = e.target?.result as string;
+                const parsedData = parseFaceData(content);
+                await handleImportEmployeeFace(parsedData);
             };
             reader.readAsText(file);
         }
     };
 
-    // Função para formatar os dados para a API
-    const parseUserData = (text: string) => {
-        const lines = text.split('\n');
-        const data = lines.map(line => {
-            //const [enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode] = line.trim().split(/\s+/);
-            //return { enrollNumber, attendanceTime, deviceId, inOutMode, verifyMode, workCode };
+    // Função para formatar os dados de face para a API
+    const parseFaceData = (dataString: string): FaceTemplate[] => {
+        const lines = dataString.split('\n');
+        const results: FaceTemplate[] = [];
+
+        lines.forEach(line => {
+            if (line.includes('Pin=')) {
+                const enrollNumber = line.match(/Pin=(\d+)/)?.[1];
+                const FaceTmpIndexMatch = line.match(/Index=(\d+)/);
+                const FaceTmpDataMatch = line.match(/Tmp=([a-zA-Z0-9+/=]+)/);
+
+                if (enrollNumber && FaceTmpIndexMatch && FaceTmpDataMatch) {
+                    const FaceTmpIndex = parseInt(FaceTmpIndexMatch[1], 10);
+                    const FaceTmpData = FaceTmpDataMatch[1];
+                    const FaceTmpLength = FaceTmpData.length;
+
+                    results.push({ enrollNumber, FaceTmpIndex, FaceTmpData, FaceTmpLength });
+                }
+            }
         });
-        return data;
+
+        return results;
     };
 
-    // Funções para acionar o popup de seleção de arquivo
-    const triggerFileAttendanceSelectPopup = () => fileInputAttendanceRef.current?.click();
-    const triggerFileUserSelectPopup = () => fileInputUserRef.current?.click();
+    // Funções para acionar o popup de seleção de arquivo dos movimentos, utilizadores e biometria
+    const triggerFileAttendanceSelectPopup = () => {
+        fileInputAttendanceRef.current?.click();
+        setLoadingImportAttendance(true);
+        setTimeout(() => {
+            if (!fileInputAttendanceRef.current?.value) {
+                setLoadingImportAttendance(false);
+            }
+        }, 5000);
+    };
+    const triggerFileAttendanceLogSelectPopup = () => {
+        fileInputAttendanceRef.current?.click();
+        setLoadingImportAttendanceLog(true);
+        setTimeout(() => {
+            if (!fileInputAttendanceRef.current?.value) {
+                setLoadingImportAttendanceLog(false);
+            }
+        }, 5000);
+    };
+    const triggerFileUserSelectPopup = () => {
+        fileInputUserRef.current?.click();
+        setLoadingImportUsers(true);
+        setTimeout(() => {
+            if (!fileInputUserRef.current?.value) {
+                setLoadingImportUsers(false);
+            }
+        }, 5000);
+    };
+    const triggerFileFPSelectPopup = () => {
+        fileInputFPRef.current?.click();
+        setLoadingImportBio(true);
+        setTimeout(() => {
+            if (!fileInputFPRef.current?.value) {
+                setLoadingImportBio(false);
+            }
+        }, 5000);
+    };
+    const triggerFileFaceSelectPopup = () => {
+        fileInputFaceRef.current?.click();
+        setLoadingImportFace(true);
+        setTimeout(() => {
+            if (!fileInputFaceRef.current?.value) {
+                setLoadingImportFace(false);
+            }
+        }, 5000);
+    };
 
-    // Define as colunas das transações
-    const transactionColumns: TableColumn<Transaction>[] = [
+    // Função para enviar os utilizadores selecionados
+    const handleSendSelectedUsers = async () => {
+        if (!selectedTerminal || selectedUserRows.length === 0) {
+            toast('Selecione um terminal e pelo menos um utilizador!');
+        } else {
+            setLoadingSendSelectedUsers(true);
+            const userId = selectedUserRows[0].employeeID;
+            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
+            setLoadingSendSelectedUsers(false);
+        }
+    }
+
+    // Função para excluir os utilizadores selecionados
+    const handleDeleteSelectedUsers = async () => {
+        if (selectedUserRows.length > 0) {
+            const userId = selectedUserRows[0].employeeID;
+            handleOpenDeleteModal(userId, 'user');
+        } else {
+            toast.error('Selecione um utilizador primeiro!');
+        }
+    }
+
+    // Função para recolher os utilizadores selecionados
+    const handleFetchSelectedUsers = async () => {
+        if (!selectedTerminal || selectedUserRows.length === 0) {
+            toast('Selecione um terminal e pelo menos um utilizador!');
+        } else {
+            setLoadingFetchSelectedUsers(true);
+            const userId = selectedUserRows[0].employeeID;
+            await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
+            setLoadingFetchSelectedUsers(false);
+        }
+    }
+
+    // Função para enviar todos os utilizadores
+    const handleUsers = async () => {
+        if (selectedTerminal) {
+            setLoadingUser(true);
+            await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+            setLoadingUser(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Função para enviar todos os utilizadores
+    const handleAllUsers = async () => {
+        if (selectedTerminal) {
+            setLoadingAllUser(true);
+            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
+            setLoadingAllUser(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Função para sincronizar todos os utilizadores
+    const handleSyncAllUsers = async () => {
+        if (selectedTerminal) {
+            setLoadingSyncAllUser(true);
+            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
+            setLoadingSyncAllUser(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Função para manipular os movimentos
+    const handleMovements = async () => {
+        if (selectedTerminal) {
+            setLoadingMovements(true);
+            await fetchAllKioskTransaction(selectedTerminal.zktecoDeviceID);
+            setLoadingMovements(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Função para excluir todos os utilizadores
+    const handleDeleteAllUsers = async () => {
+        if (selectedTerminal) {
+            setLoadingDeleteAllUsers(true);
+            await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
+            setLoadingDeleteAllUsers(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Função para reiniciar o dispositivo
+    const handleRestartDevice = async () => {
+        if (selectedTerminal) {
+            setLoadingRestartDevice(true);
+            await restartDevice(selectedTerminal.zktecoDeviceID);
+            setLoadingRestartDevice(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Função para enviar o horário ao dispositivo
+    const handleSendClock = async () => {
+        if (selectedTerminal) {
+            setLoadingSendClock(true);
+            const timePeriods = await apiService.fetchAllTimePeriods();
+            for (const period of timePeriods) {
+                await sendClockToDevice(selectedTerminal.serialNumber, period.id);
+            }
+            setLoadingSendClock(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Função para abrir a porta ligada ao dispositivo
+    const handleOpenDoor = async (doorData: DoorDevice) => {
+        if (selectedTerminal) {
+            setLoadingOpenDoor(true);
+            await openDeviceDoor(selectedTerminal.zktecoDeviceID, doorData);
+            setLoadingOpenDoor(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Função para sincronizar a hora
+    const handleSyncTime = async () => {
+        if (selectedTerminal) {
+            setLoadingSyncTime(true);
+            await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
+            setLoadingSyncTime(false);
+        } else {
+            toast.error('Selecione um terminal primeiro!');
+        }
+    }
+
+    // Define as colunas dos movimentos temporariamente
+    const movementColumns: TableColumn<Movement>[] = [
         {
             name: "ID do Usuário",
             selector: row => row.UserID,
@@ -585,9 +1058,9 @@ export const Terminals = () => {
         },
         {
             name: "Estado",
-            selector: (row: Transaction) => row.State,
+            selector: (row: Movement) => row.State,
             sortable: true,
-            format: (row: Transaction) => row.IsInvalid ? "Inválido" : "Válido"
+            format: (row: Movement) => row.IsInvalid ? "Inválido" : "Válido"
         },
         {
             name: "Hora",
@@ -596,42 +1069,18 @@ export const Terminals = () => {
         },
         {
             name: "Método de Verificação",
-            selector: (row: Transaction) => row.VerifyStyle,
+            selector: (row: Movement) => row.VerifyStyle,
             sortable: true,
-            format: (row: Transaction) => `${row.VerifyStyle}`
-        }
-    ];
-
-    // Define as colunas das tarefas
-    const taskColumns: TableColumn<Tasks>[] = [
-        {
-            name: "Status",
-            selector: (row: Tasks) => row.Status,
-            sortable: true,
-        },
-        {
-            name: "Dispositivo",
-            selector: (row: Tasks) => row.Device,
-            sortable: true,
-        },
-        {
-            name: "Data",
-            selector: (row: Tasks) => formatDateAndTime(row.Date),
-            sortable: true,
-        },
-        {
-            name: "Tipo",
-            selector: (row: Tasks) => row.Type,
-            sortable: true,
+            format: (row: Movement) => `${row.VerifyStyle}`
         }
     ];
 
     return (
         <TerminalsProvider>
             <div className="main-container">
-                <NavBar />
+                <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className='filter-refresh-add-edit-upper-class'>
-                    <div className="datatable-title-text">
+                    <div className="datatable-title-text" style={{ color: '#000000' }}>
                         <span>Terminais</span>
                     </div>
                     <div className="datatable-header">
@@ -639,17 +1088,6 @@ export const Terminals = () => {
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAll} />
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                             <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                            <span style={{
-                                color: 'white',
-                                backgroundColor: backgroundColor,
-                                borderRadius: '4px',
-                                padding: '2px 10px',
-                                display: 'inline-block',
-                                marginLeft: 'auto',
-                                marginRight: '30px'
-                            }}>
-                                Status: {deviceStatusCount && `${deviceStatusCount['Activo'] || 0} Online, ${deviceStatusCount['Inactivo'] || 0} Offline`}
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -668,6 +1106,8 @@ export const Terminals = () => {
                             selectableRowsHighlight
                             noDataComponent="Não há dados disponíveis para exibir."
                             customStyles={customStyles}
+                            defaultSortAsc={true}
+                            defaultSortFieldId="deviceNumber"
                         />
                     </div>
                     <div style={{ flex: 2, overflow: "auto" }}>
@@ -676,34 +1116,50 @@ export const Terminals = () => {
                             activeKey={mainTabKey}
                             onSelect={handleMainSelect}
                             className="nav-modal"
-                            style={{ marginBottom: 10 }}
+                            style={{ marginBottom: 10, marginTop: 0 }}
                         >
                             <Tab eventKey="tasks" title="Actividade">
                                 <div>
                                     <p className="activityTabContent">Actividades</p>
-                                    <DataTable
-                                        columns={taskColumns}
-                                        data={task}
-                                        pagination
-                                        paginationPerPage={5}
-                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                        paginationComponentOptions={paginationOptions}
-                                        noDataComponent="Não há tarefas disponíveis para exibir."
-                                        customStyles={customStyles}
-                                    />
+                                    {
+                                        selectedTerminal && selectedDeviceRows.length > 0 ? (
+                                            loadingActivityData ?
+                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                </div> :
+                                                <DataTable
+                                                    columns={transactionColumns}
+                                                    data={transactions}
+                                                    pagination
+                                                    paginationPerPage={5}
+                                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                    paginationComponentOptions={paginationOptions}
+                                                    noDataComponent="Não há actividades disponíveis para exibir."
+                                                    customStyles={customStyles}
+                                                />
+                                        ) : (
+                                            <p style={{ textAlign: "center" }}>Selecione um terminal para ver as actividades.</p>
+                                        )
+                                    }
                                 </div>
                                 <div>
                                     <p className="activityTabContent">Movimentos</p>
-                                    <DataTable
-                                        columns={transactionColumns}
-                                        data={transactions}
-                                        pagination
-                                        paginationPerPage={5}
-                                        paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                        paginationComponentOptions={paginationOptions}
-                                        noDataComponent="Não há actividades disponíveis para exibir."
-                                        customStyles={customStyles}
-                                    />
+                                    {
+                                        selectedTerminal && selectedDeviceRows.length > 0 ? (
+                                            <DataTable
+                                                columns={movementColumns}
+                                                data={movements}
+                                                pagination
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                paginationComponentOptions={paginationOptions}
+                                                noDataComponent="Não há movimentos disponíveis para exibir."
+                                                customStyles={customStyles}
+                                            />
+                                        ) : (
+                                            <p style={{ textAlign: "center" }}>Selecione um terminal para ver os movimentos.</p>
+                                        )
+                                    }
                                 </div>
                             </Tab>
                             <Tab eventKey="user-track" title="Manutenção de utilizadores">
@@ -732,17 +1188,7 @@ export const Terminals = () => {
                                                 />
                                             </div>
                                             <div style={{ flex: 1, flexDirection: "column" }}>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={async () => {
-                                                    if (!selectedTerminal || selectedUserRows.length === 0) {
-                                                        toast('Selecione um terminal e pelo menos um utilizador!');
-                                                    } else {
-                                                        setLoadingSendSelectedUsers(true);
-                                                        const userId = selectedUserRows[0].employeeID;
-                                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
-                                                        setLoadingSendSelectedUsers(false);
-                                                        fetchAllEmployeeDevices();
-                                                    }
-                                                }}>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleSendSelectedUsers}>
                                                     {loadingSendSelectedUsers ? (
                                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                                     ) : (
@@ -750,14 +1196,7 @@ export const Terminals = () => {
                                                     )}
                                                     Enviar utilizadores seleccionados
                                                 </Button>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={() => {
-                                                    if (selectedUserRows.length > 0) {
-                                                        const userId = selectedUserRows[0].employeeID;
-                                                        handleOpenDeleteModal(userId, 'user');
-                                                    } else {
-                                                        toast.error('Selecione um utilizador primeiro!');
-                                                    }
-                                                }}>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleDeleteSelectedUsers}>
                                                     {loadingDeleteSelectedUsers ? (
                                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                                     ) : (
@@ -765,17 +1204,7 @@ export const Terminals = () => {
                                                     )}
                                                     Remover utilizadores seleccionados
                                                 </Button>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={async () => {
-                                                    if (!selectedTerminal || selectedUserRows.length === 0) {
-                                                        toast('Selecione um terminal e pelo menos um utilizador!');
-                                                    } else {
-                                                        setLoadingFetchSelectedUsers(true);
-                                                        const userId = selectedUserRows[0].employeeID;
-                                                        await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
-                                                        setLoadingFetchSelectedUsers(false);
-                                                        fetchAllEmployeeDevices();
-                                                    }
-                                                }}>
+                                                <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleFetchSelectedUsers}>
                                                     {loadingFetchSelectedUsers ? (
                                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                                     ) : (
@@ -803,7 +1232,7 @@ export const Terminals = () => {
                                     </Tab>
                                     <Tab eventKey="facial-taken" title="Biometria recolhida">
                                         <DataTable
-                                            columns={userColumns}
+                                            columns={bioColumns}
                                             data={filteredBioDataTable}
                                             pagination
                                             paginationPerPage={5}
@@ -818,7 +1247,7 @@ export const Terminals = () => {
                                     </Tab>
                                     <Tab eventKey="cards-taken" title="Cartões recolhidos">
                                         <DataTable
-                                            columns={userColumns}
+                                            columns={cardColumns}
                                             data={filteredCardDataTable}
                                             pagination
                                             paginationPerPage={5}
@@ -865,15 +1294,7 @@ export const Terminals = () => {
                                     variant="outline-primary"
                                     size="sm"
                                     className="button-terminals-users"
-                                    onClick={async () => {
-                                        if (selectedTerminal) {
-                                            setLoadingUser(true);
-                                            await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
-                                            setLoadingUser(false);
-                                        } else {
-                                            toast.error('Selecione um terminal primeiro!');
-                                        }
-                                    }}>
+                                    onClick={handleUsers}>
                                     {loadingUser ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -881,15 +1302,7 @@ export const Terminals = () => {
                                     )}
                                     Recolher utilizadores
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                    if (selectedTerminal) {
-                                        setLoadingAllUser(true);
-                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
-                                        setLoadingAllUser(false);
-                                    } else {
-                                        toast.error('Selecione um terminal primeiro!');
-                                    }
-                                }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleAllUsers}>
                                     {loadingAllUser ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -897,31 +1310,15 @@ export const Terminals = () => {
                                     )}
                                     Enviar todos os utilizadores
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                    if (selectedTerminal) {
-                                        setLoadingSyncAllUser(true);
-                                        await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
-                                        setLoadingSyncAllUser(false);
-                                    } else {
-                                        toast.error('Selecione um terminal primeiro!');
-                                    }
-                                }}>
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncAllUsers}>
                                     {loadingSyncAllUser ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
                                         <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     )}
                                     Sincronizar utilizadores
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                    if (selectedTerminal) {
-                                        setLoadingMovements(true);
-                                        await saveAllAttendancesEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
-                                        setLoadingMovements(false);
-                                    } else {
-                                        toast.error('Selecione um terminal primeiro!');
-                                    }
-                                }}>
+                                </Button> */}
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleMovements}>
                                     {loadingMovements ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -929,15 +1326,7 @@ export const Terminals = () => {
                                     )}
                                     Recolher movimentos
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                    if (selectedTerminal) {
-                                        setLoadingDeleteAllUsers(true);
-                                        await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
-                                        setLoadingDeleteAllUsers(false);
-                                    } else {
-                                        toast.error('Selecione um terminal primeiro!');
-                                    }
-                                }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleDeleteAllUsers}>
                                     {loadingDeleteAllUsers ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -972,19 +1361,7 @@ export const Terminals = () => {
                         </Tab>
                         <Tab eventKey="onOff" title="Ligação">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    Ligar
-                                </Button> */}
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                    if (selectedTerminal) {
-                                        setLoadingRestartDevice(true);
-                                        await restartDevice(selectedTerminal.zktecoDeviceID);
-                                        setLoadingRestartDevice(false);
-                                    } else {
-                                        toast.error('Selecione um terminal primeiro!');
-                                    }
-                                }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
                                     {loadingRestartDevice ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -996,19 +1373,15 @@ export const Terminals = () => {
                         </Tab>
                         <Tab eventKey="access" title="Acessos">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSendClock}>
+                                    {loadingSendClock ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Enviar horários
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                    if (selectedTerminal) {
-                                        setLoadingOpenDoor(true);
-                                        await openDeviceDoor(selectedTerminal);
-                                        setLoadingOpenDoor(false);
-                                    } else {
-                                        toast.error('Selecione um terminal primeiro!');
-                                    }
-                                }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleOpenDoor}>
                                     {loadingOpenDoor ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -1016,23 +1389,15 @@ export const Terminals = () => {
                                     )}
                                     Abrir porta
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-pc" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Actualizar multiverificação
-                                </Button>
+                                </Button> */}
                             </div>
                         </Tab>
                         <Tab eventKey="configuration" title="Configurações">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={async () => {
-                                    if (selectedTerminal) {
-                                        setLoadingSyncTime(true);
-                                        await syncTimeManuallyToDevice(selectedTerminal);
-                                        setLoadingSyncTime(false);
-                                    } else {
-                                        toast.error('Selecione um terminal primeiro!');
-                                    }
-                                }}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncTime}>
                                     {loadingSyncTime ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -1040,57 +1405,79 @@ export const Terminals = () => {
                                     )}
                                     Acertar a hora
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-gear-wide" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Enviar configurações
-                                </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
+                                </Button> */}
+                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-send-arrow-up" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Enviar códigos de tarefas
-                                </Button>
+                                </Button> */}
                                 {/* <Button variant="outline-primary" size="sm" className="button-terminals-users">
                                     <i className="bi bi-bell" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                     Sincronizar toques da sirene
                                 </Button> */}
                             </div>
                         </Tab>
-                        <Tab eventKey="files" title="Ficheiros">
+                        {/* <Tab eventKey="files" title="Ficheiros">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
-                                    <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    {loadingImportAttendance ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-arrow-bar-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Importar movimentos
                                 </Button>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileUserSelectPopup}>
-                                    <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    {loadingImportUsers ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-person-fill-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Importar utilizadores
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileFPSelectPopup}>
+                                    {loadingImportBio ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-fingerprint" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Importar biometria digital
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
-                                    <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileFaceSelectPopup}>
+                                    {loadingImportFace ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-person-square" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
+                                    Importar biometria Facial
+                                </Button>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceLogSelectPopup}>
+                                    {loadingImportAttendanceLog ? (
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                    ) : (
+                                        <i className="bi bi-file-arrow-down" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                    )}
                                     Importar movimentos do log
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users">
-                                    <i className="bi bi-files-alt" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    Importar movimentos do log (auto)
-                                </Button>
                             </div>
-                        </Tab>
+                        </Tab> */}
                     </Tabs>
                 </div>
-                <Footer />
-                {showColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={deviceFields}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setShowColumnSelector(false)}
-                        onColumnToggle={handleColumnToggle}
-                        onResetColumns={handleResetColumns}
-                        onSelectAllColumns={handleSelectAllColumns}
-                    />
-                )}
+                <Footer style={{ backgroundColor: footerColor }} />
+                {
+                    showColumnSelector && (
+                        <ColumnSelectorModal
+                            columns={deviceFields}
+                            selectedColumns={selectedColumns}
+                            onClose={() => setShowColumnSelector(false)}
+                            onColumnToggle={handleColumnToggle}
+                            onResetColumns={handleResetColumns}
+                            onSelectAllColumns={handleSelectAllColumns}
+                        />
+                    )
+                }
                 <CreateModalDevices
                     title="Adicionar Terminal"
                     open={showAddModal}
@@ -1099,25 +1486,29 @@ export const Terminals = () => {
                     fields={deviceFields}
                     initialValues={initialData || {}}
                 />
-                {selectedTerminal && (
-                    <UpdateModalDevices
-                        open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
-                        onDuplicate={handleDuplicate}
-                        onUpdate={updateDevice}
-                        entity={selectedTerminal}
-                        fields={deviceFields}
-                        title="Atualizar Terminal"
-                    />
-                )}
-                {showDeleteModal && (
-                    <DeleteModal
-                        open={showDeleteModal}
-                        onClose={() => setShowDeleteModal(false)}
-                        onDelete={deleteDevice}
-                        entityId={selectedDeviceToDelete}
-                    />
-                )}
+                {
+                    selectedTerminal && (
+                        <UpdateModalDevices
+                            open={showUpdateModal}
+                            onClose={handleCloseUpdateModal}
+                            onDuplicate={handleDuplicate}
+                            onUpdate={updateDevice}
+                            entity={selectedTerminal}
+                            fields={deviceFields}
+                            title="Atualizar Terminal"
+                        />
+                    )
+                }
+                {
+                    showDeleteModal && (
+                        <DeleteModal
+                            open={showDeleteModal}
+                            onClose={() => setShowDeleteModal(false)}
+                            onDelete={deleteDevice}
+                            entityId={selectedDeviceToDelete}
+                        />
+                    )
+                }
                 <input
                     type="file"
                     accept=".dat,.txt"
@@ -1132,7 +1523,21 @@ export const Terminals = () => {
                     style={{ display: 'none' }}
                     onChange={handleUserFileChange}
                 />
-            </div>
-        </TerminalsProvider>
+                <input
+                    type="file"
+                    accept=".fp10"
+                    ref={fileInputFPRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFPFileChange}
+                />
+                <input
+                    type="file"
+                    accept=".dat"
+                    ref={fileInputFaceRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFaceFileChange}
+                />
+            </div >
+        </TerminalsProvider >
     );
 };

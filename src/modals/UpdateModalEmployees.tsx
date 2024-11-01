@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { fetchWithAuth } from '../components/FetchWithAuth';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
+import * as apiService from "../helpers/apiService";
+import { EmployeeCard } from '../helpers/Types';
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -31,7 +33,7 @@ interface UpdateModalProps<T extends Entity> {
   open: boolean;
   onClose: () => void;
   onDuplicate?: (entity: T) => void;
-  onUpdate: (entity: T) => Promise<void>;
+  onUpdate: (entity: T, cardData: Partial<EmployeeCard>) => Promise<void>;
   entity: T;
   fields: Field[];
   title: string;
@@ -39,12 +41,23 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+  const {
+    fetchEmployeeCardData,
+  } = useContext(PersonsContext) as PersonsContextType;
   const [formData, setFormData] = useState<T>({ ...entity });
+  const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const fileInputRef = React.createRef<HTMLInputElement>();
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Usa useEffect para inicializar o formulário
+  useEffect(() => {
+    if (entity) {
+      setFormData({ ...entity });
+    }
+  }, [entity]);
 
   // Atualiza o estado do componente com parte das validações dos campos
   useEffect(() => {
@@ -54,6 +67,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       const fieldValue = formData[field.key];
       let valid = true;
 
+      if (field.required && (fieldValue === undefined || fieldValue === '')) {
+        valid = false;
+      }
       if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
         valid = false;
         newErrors[field.key] = `${field.label} não pode ser negativo.`;
@@ -77,30 +93,34 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     setIsFormValid(isValid);
   }
 
+  // Função para buscar os cartões dos funcionários
+  const fetchEmployeesCards = async () => {
+    try {
+      const employeesCards = await fetchEmployeeCardData(entity.employeeID);
+      setCardFormData(prevData => ({
+        ...prevData,
+        ...employeesCards
+      }));
+    } catch {
+      toast.error('Erro ao buscar os cartões dos funcionários.');
+    }
+  };
+
   // Função para buscar as opções do dropdown
   const fetchDropdownOptions = async () => {
     try {
-      const departmentsResponse = await fetchWithAuth('Departaments');
-      const groupsResponse = await fetchWithAuth('Groups');
-      const professionsResponse = await fetchWithAuth('Professions');
-      const zonesResponse = await fetchWithAuth('Zones');
-      const externalEntitiesResponse = await fetchWithAuth('ExternalEntities');
-      if (departmentsResponse.ok && groupsResponse.ok && professionsResponse.ok && zonesResponse.ok && externalEntitiesResponse.ok) {
-        const departments = await departmentsResponse.json();
-        const groups = await groupsResponse.json();
-        const professions = await professionsResponse.json();
-        const zones = await zonesResponse.json();
-        const externalEntities = await externalEntitiesResponse.json();
-        setDropdownData({
-          departmentId: departments,
-          groupId: groups,
-          professionId: professions,
-          zoneId: zones,
-          externalEntityId: externalEntities
-        });
-      } else {
-        return;
-      }
+      const departments = await apiService.fetchAllDepartments();
+      const groups = await apiService.fetchAllGroups();
+      const professions = await apiService.fetchAllProfessions();
+      const zones = await apiService.fetchAllZones();
+      const externalEntities = await apiService.fetchAllExternalEntities();
+      setDropdownData({
+        departmentId: departments,
+        groupId: groups,
+        professionId: professions,
+        zoneId: zones,
+        externalEntityId: externalEntities
+      });
     } catch (error) {
       console.error('Erro ao buscar os dados de departamentos e grupos', error);
     }
@@ -110,6 +130,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   useEffect(() => {
     if (open) {
       fetchDropdownOptions();
+      fetchEmployeesCards();
     }
   }, [open]);
 
@@ -219,10 +240,21 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     }));
   };
 
+  // Função para lidar com a mudança de dados do cartão
+  const handleCardChange = (e: React.ChangeEvent<any>) => {
+    const { name, value } = e.target;
+    let parsedValue = value === "0" || value === "1" ? parseInt(value, 10) : value;
+
+    setCardFormData(prevState => ({
+      ...prevState,
+      [name]: parsedValue
+    }));
+  };
+
   // Define a função para salvar
   const handleSaveClick = () => {
     if (!isFormValid) {
-      toast.warn('Preencha todos os campos obrigatórios antes de salvar.');
+      toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
       return;
     }
     handleSubmit();
@@ -230,7 +262,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Define a função para enviar
   const handleSubmit = async () => {
-    await onUpdate(formData);
+    const updatedCardFormData = { ...cardFormData, employeeID: formData.employeeID };
+    await onUpdate(formData, updatedCardFormData);
     onClose();
   };
 
@@ -244,8 +277,66 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     { value: 'Provisório', label: 'Provisório' }
   ];
 
+  // Opções do módulo
+  const moduleOptions = [
+    { value: 'nclock', label: 'Nclock' },
+    { value: 'naccess', label: 'Naccess' },
+    { value: 'nvisitor', label: 'Nvisitor' },
+    { value: 'npark', label: 'Npark' },
+    { value: 'ndoor', label: 'Ndoor' },
+    { value: 'npatrol', label: 'Npatrol' },
+    { value: 'ncard', label: 'Ncard' },
+    { value: 'nview', label: 'Nview' },
+    { value: 'nsecur', label: 'Nsecur' },
+    { value: 'nsmart', label: 'Nsmart' },
+    { value: 'nreality', label: 'Nreality' },
+    { value: 'nhologram', label: 'Nhologram' },
+    { value: 'npower', label: 'Npower' },
+    { value: 'ncharge', label: 'Ncharge' },
+    { value: 'ncity', label: 'Ncity' },
+    { value: 'nkiosk', label: 'Nkiosk' },
+    { value: 'nled', label: 'Nled' },
+    { value: 'nfire', label: 'Nfire' },
+    { value: 'nfurniture', label: 'Nfurniture' },
+    { value: 'npartition', label: 'Npartition' },
+    { value: 'ndecor', label: 'Ndecor' },
+    { value: 'nping', label: 'Nping' },
+    { value: 'nconnect', label: 'Nconnect' },
+    { value: 'nlight', label: 'Nlight' },
+    { value: 'ncomfort', label: 'Ncomfort' },
+    { value: 'nsound', label: 'Nsound' },
+    { value: 'nhome', label: 'Nhome' },
+    { value: 'nsoftware', label: 'Nsoftware' },
+    { value: 'nsystem', label: 'Nsystem' },
+    { value: 'napp', label: 'Napp' },
+    { value: 'nciber', label: 'Nciber' },
+    { value: 'ndigital', label: 'Ndigital' },
+    { value: 'nserver', label: 'Nserver' },
+    { value: 'naut', label: 'Naut' },
+    { value: 'nequip', label: 'Nequip' },
+    { value: 'nproject', label: 'Nproject' },
+    { value: 'ncount', label: 'Ncount' },
+    { value: 'nconstruction', label: 'Nconstruction' },
+    { value: 'ncaravans', label: 'Ncaravans' },
+    { value: 'nwork', label: 'Nwork' },
+    { value: 'nevents', label: 'Nevents' },
+    { value: 'nservice', label: 'Nservice' },
+    { value: 'ntask', label: 'Ntask' },
+    { value: 'nproductions', label: 'Nproductions' },
+    { value: 'nticket', label: 'Nticket' },
+    { value: 'nsales', label: 'Nsales' },
+    { value: 'ninvoice', label: 'Ninvoice' },
+    { value: 'ndoc', label: 'Ndoc' },
+    { value: 'nsports', label: 'Nsports' },
+    { value: 'nacademy', label: 'Nacademy' },
+    { value: 'nshcool', label: 'Nshcool' },
+    { value: 'nclinics', label: 'Nclinics' },
+    { value: 'noptics', label: 'Noptics' },
+    { value: 'ngold', label: 'Ngold' }
+  ];
+
   return (
-    <Modal show={open} onHide={onClose} dialogClassName="custom-modal" size="xl">
+    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -276,7 +367,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
           <Col md={3}>
             <Form.Group controlId="formEnrollNumber">
               <Form.Label>
-                Número de Matrícula <span style={{ color: 'red' }}>*</span>
+                Número da Pessoa <span style={{ color: 'red' }}>*</span>
               </Form.Label>
               <OverlayTrigger
                 placement="right"
@@ -299,7 +390,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
+                overlay={<Tooltip id="tooltip-name">Obrigatório ter 5 caracteres ou mais</Tooltip>}
               >
                 <Form.Control
                   type="string"
@@ -310,6 +401,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   required
                 />
               </OverlayTrigger>
+              {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
             </Form.Group>
             <Form.Group controlId="formShortName">
               <Form.Label>
@@ -317,7 +409,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                overlay={<Tooltip id="tooltip-shortName">Obrigatório ter 5 caracteres ou mais</Tooltip>}
               >
                 <Form.Control
                   type="string"
@@ -328,6 +420,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   required
                 />
               </OverlayTrigger>
+              {errors.shortName && <Form.Text className="text-danger">{errors.shortName}</Form.Text>}
             </Form.Group>
           </Col>
           <Col md={3}>
@@ -368,8 +461,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
             </Form.Group>
           </Col>
           <Col md={3}>
-            <Form.Group controlId="formStatus" className="d-flex align-items-center mb-3">
-              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Status:</Form.Label>
+            <Form.Group controlId="formStatus" className="d-flex align-items-center mb-2">
+              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo:</Form.Label>
               <Form.Check
                 type="switch"
                 id="custom-switch-status"
@@ -380,8 +473,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                 name="status"
               />
             </Form.Group>
-            <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-3">
-              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Status de E-Mail:</Form.Label>
+            <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-2">
+              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo para E-Mail:</Form.Label>
               <Form.Check
                 type="switch"
                 id="custom-switch-status-email"
@@ -392,7 +485,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                 name="statusEmail"
               />
             </Form.Group>
-            <Form.Group controlId="formRgptAut" className="d-flex align-items-center mb-3">
+            <Form.Group controlId="formRgptAut" className="d-flex align-items-center">
               <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Autorização RGPD:</Form.Label>
               <Form.Check
                 type="switch"
@@ -404,6 +497,21 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                 name="rgpdAut"
               />
             </Form.Group>
+            <Form.Group controlId="formModulos" style={{ marginTop: 12 }}>
+              <Form.Label>Módulo</Form.Label>
+              <Form.Control
+                as="select"
+                className="custom-input-height custom-select-font-size"
+                value={formData.modulos || ''}
+                onChange={handleChange}
+                name="modulos"
+              >
+                <option value="">Selecione...</option>
+                {moduleOptions.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </Form.Control>
+            </Form.Group>
           </Col>
         </Row>
         <Tab.Container defaultActiveKey="dadosPessoais">
@@ -413,6 +521,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
             </Nav.Item>
             <Nav.Item>
               <Nav.Link eventKey="dadosProfissionais">Dados Profissionais</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="cartoes">Cartões</Nav.Link>
             </Nav.Item>
           </Nav>
           <Tab.Content>
@@ -523,6 +634,65 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                       </Form.Group>
                     </Col>
                   ))}
+                </Row>
+              </Form>
+            </Tab.Pane>
+            <Tab.Pane eventKey="cartoes">
+              <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                <Row>
+                  <Col md={3}>
+                    <Form.Group controlId="formDeviceEnabled" className="d-flex align-items-center mt-3">
+                      <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Dispositivo Activado:</Form.Label>
+                      <Form.Check
+                        type="switch"
+                        id="custom-switch-device-enabled"
+                        checked={cardFormData.deviceEnabled || false}
+                        onChange={(e) => setCardFormData({ ...cardFormData, deviceEnabled: e.target.checked })}
+                        className="ms-auto"
+                        label=""
+                        name="deviceEnabled"
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group controlId="formCardNumber">
+                      <Form.Label>Número do Cartão</Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="custom-input-height custom-select-font-size"
+                        value={cardFormData.cardNumber || ''}
+                        onChange={handleCardChange}
+                        name="cardNumber"
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group controlId="formDevicePrivelage">
+                      <Form.Label>Privilégio do Dispositivo</Form.Label>
+                      <Form.Select
+                        className="custom-input-height custom-select-font-size"
+                        value={cardFormData.devicePrivelage !== undefined ? cardFormData.devicePrivelage : ''}
+                        onChange={handleCardChange}
+                        name="devicePrivelage"
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="0">Não</option>
+                        <option value="1">Sim</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group controlId="formDevicePassword">
+                      <Form.Label>Senha do Dispositivo</Form.Label>
+                      <Form.Control
+                        type="password"
+                        className="custom-input-height custom-select-font-size"
+                        value={cardFormData.devicePassword || ''}
+                        onChange={handleCardChange}
+                        name="devicePassword"
+                      />
+                    </Form.Group>
+                  </Col>
                 </Row>
               </Form>
             </Tab.Pane>
