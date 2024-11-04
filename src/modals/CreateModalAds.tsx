@@ -11,7 +11,7 @@ interface CreateModalProps<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: T | FormData) => void;
+    onSave: (data: FormData) => void;
     fields: Field[];
     initialValues: Partial<T>;
     entities: 'all' | 'photo' | 'video';
@@ -57,7 +57,6 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -131,16 +130,16 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
 
     const handleOrderChange = (index: number, newOrder: number) => {
         if (newOrder <= 0 || isNaN(newOrder)) return;
-    
+
         const newFiles = files.map((file, idx) => {
             if (idx === index) {
                 return { ...file, ordem: newOrder };
             }
             return file;
         });
-    
+
         newFiles.sort((a, b) => a.ordem - b.ordem);
-    
+
         setFiles(newFiles);
     };
 
@@ -169,9 +168,29 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData as T);
+        const dataToSend = new FormData();
+        Object.keys(formData).forEach(key => {
+            const value = formData[key];
+    
+            if (value !== undefined) {
+                if (value && (value as any) instanceof Blob) {
+                    dataToSend.append(key, value);
+                } else if (typeof value === 'string') {
+                    dataToSend.append(key, value);
+                } else {
+                    dataToSend.append(key, String(value));
+                }
+            }
+        });
+    
+        files.forEach((fileWithOrder, index) => {
+            dataToSend.append(`file_${index}`, fileWithOrder.file, fileWithOrder.file.name);
+            dataToSend.append(`order_${index}`, fileWithOrder.ordem.toString());
+        });
+
+        onSave(dataToSend);
         onClose();
-    };
+    };        
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl">

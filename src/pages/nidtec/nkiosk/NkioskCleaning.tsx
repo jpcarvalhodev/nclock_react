@@ -22,7 +22,7 @@ export const NkioskCleaning = () => {
     const [cleaning, setCleaning] = useState<LimpezasEOcorrencias[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate','responsavel', 'observacoes', 'deviceId']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedRows, setSelectedRows] = useState<LimpezasEOcorrencias[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -79,7 +79,7 @@ export const NkioskCleaning = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['dataCreate','responsavel', 'observacoes', 'deviceId']);
+        setSelectedColumns(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
     };
 
     // Função para selecionar todas as colunas
@@ -105,13 +105,12 @@ export const NkioskCleaning = () => {
     // Define as colunas da tabela
     const columns: TableColumn<LimpezasEOcorrencias>[] = limpezasEOcorrenciasFields
         .filter(field => selectedColumns.includes(field.key))
+        .filter(field => field.key !== 'deviceId')
         .map(field => {
             const formatField = (row: LimpezasEOcorrencias) => {
                 switch (field.key) {
                     case 'dataCreate':
                         return new Date(row.dataCreate).toLocaleString();
-                    case 'deviceID':
-                        return devices.find(device => device.zktecoDeviceID === row.deviceID)?.deviceName || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -192,7 +191,7 @@ export const NkioskCleaning = () => {
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={limpezasEOcorrenciasFields}
+                    columns={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

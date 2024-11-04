@@ -220,6 +220,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             };
 
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}

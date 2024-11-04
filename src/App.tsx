@@ -71,7 +71,6 @@ import { NpartitionDashboard } from './pages/nidplace/npartition/NpartitionDashb
 import { NpingDashboard } from './pages/nidplace/nping/NpingDashboard';
 import { NsoundDashboard } from './pages/nidplace/nsound/NsoundDashboard';
 import { ColorProvider } from './context/ColorContext';
-import { NkioskAds } from './pages/nidtec/nkiosk/NkioskAds';
 import { NkioskMap } from './pages/nidtec/nkiosk/NkioskMap';
 import { NkioskPayTerminal } from './pages/nidtec/nkiosk/NkioskPayTerminal';
 import { NkioskPayCoins } from './pages/nidtec/nkiosk/NkioskPayCoins';
@@ -124,6 +123,8 @@ import { NaccessGraph } from './pages/sisnid/naccess/NaccessGraph';
 import { NkioskDoorOpen } from './pages/nidtec/nkiosk/NkioskDoorOpen';
 import { NkioskCleaning } from './pages/nidtec/nkiosk/NkioskCleaning';
 import { NkioskOccurrences } from './pages/nidtec/nkiosk/NkioskOccurrences';
+import { NkioskCounter } from './pages/nidtec/nkiosk/NkioskCounter';
+import { NledAds } from './pages/nidtec/nled/NledAds';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -249,7 +250,6 @@ function AnimatedRoutes() {
               <Route path="/ncity/ncitydashboard" element={<PageProtection><NcityDashboard /></PageProtection>} />
               <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
               <Route path="/nkiosk/nkioskdashboardlicensed" element={<PageProtection><NkioskDashboardLicensed /></PageProtection>} />
-              <Route path="/nkiosk/nkioskAds" element={<PageProtection><NkioskAds /></PageProtection>} />
               <Route path="/nkiosk/nkioskMap" element={<PageProtection><NkioskMap /></PageProtection>} />
               <Route path="/nkiosk/nkioskPayTerminal" element={<PageProtection><NkioskPayTerminal /></PageProtection>} />
               <Route path="/nkiosk/nkioskPayCoins" element={<PageProtection><NkioskPayCoins /></PageProtection>} />
@@ -264,8 +264,10 @@ function AnimatedRoutes() {
               <Route path="/nkiosk/nkioskdooropen" element={<PageProtection><NkioskDoorOpen /></PageProtection>} />
               <Route path="/nkiosk/nkioskcleaning" element={<PageProtection><NkioskCleaning /></PageProtection>} />
               <Route path="/nkiosk/nkioskoccurrences" element={<PageProtection><NkioskOccurrences /></PageProtection>} />
+              <Route path="/nkiosk/nkioskcounter" element={<PageProtection><NkioskCounter /></PageProtection>} />
               <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
               <Route path="/nled/nleddashboardlicensed" element={<PageProtection><NledDashboardLicensed /></PageProtection>} />
+              <Route path="/nled/nledads" element={<PageProtection><NledAds /></PageProtection>} />
               <Route path="/nled/nledgraph" element={<PageProtection><NledGraph /></PageProtection>} />
               <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
               <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />

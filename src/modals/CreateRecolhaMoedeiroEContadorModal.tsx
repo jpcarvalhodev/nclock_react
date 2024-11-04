@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { RecolhaMoedeiro } from '../helpers/Types';
+import { RecolhaMoedeiroEContador } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
@@ -31,13 +31,14 @@ interface Field {
 }
 
 // Valores iniciais
-const initialValues: Partial<RecolhaMoedeiro> = {
+const initialValues: Partial<RecolhaMoedeiroEContador> = {
+    dataRecolha: new Date(),
     pessoaResponsavel: localStorage.getItem('username') || '',
 };
 
 // Define o componente
-export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<RecolhaMoedeiro>>(initialValues);
+export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
+    const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>(initialValues);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -62,11 +63,9 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
 
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
-                newErrors[field.key] = `${field.label} é obrigatório.`;
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -93,7 +92,7 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
         const { value } = e.target;
         const selectedOption = dropdownData[key]?.find((option: any) => {
             switch (key) {
-                case 'deviceId':
+                case 'deviceID':
                     return option.zktecoDeviceID === value;
                 default:
                     return false;
@@ -120,13 +119,13 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
         const formattedValue = type === 'number' ? parseFloat(value) || 0 : value;
         setFormData(prevState => ({
             ...prevState,
-            [name]: formattedValue
+            [name]: formattedValue,
+            valorTotal: name === 'numeroMoedas' ? (formattedValue * 0.50).toFixed(2) : prevState.valorTotal
         }));
     };
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
-        console.log(formData);
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
@@ -141,14 +140,14 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static">
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
-                        <Col md={6}>
+                        <Col md={2}>
                             <Form.Group controlId="formDataRecolha">
                                 <Form.Label>Data da Recolha<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -164,40 +163,8 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
                                     />
                                 </OverlayTrigger>
                             </Form.Group>
-                            <Form.Group controlId="formNumeroMoedas">
-                                <Form.Label>Número de Moedas<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-numeroMoedas">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="numeroMoedas"
-                                        value={formData.numeroMoedas || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['numeroMoedas'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroMoedas']}</div>}
-                            </Form.Group>
-                            <Form.Group controlId="formValorTotal">
-                                <Form.Label>Valor Total<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-valorTotal">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="valorTotal"
-                                        value={formData.valorTotal || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['valorTotal'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['valorTotal']}</div>}
-                            </Form.Group>
                         </Col>
-                        <Col md={6}>
+                        <Col md={2}>
                             <Form.Group controlId="formPessoaResponsavel">
                                 <Form.Label>Pessoa Responsável<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -215,7 +182,45 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
                                 </OverlayTrigger>
                                 {errors['pessoaResponsavel'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['pessoaResponsavel']}</div>}
                             </Form.Group>
-                            <Form.Group controlId="formDeviceId">
+                        </Col>
+                        <Col md={2}>
+                            <Form.Group controlId="formNumeroMoedas">
+                                <Form.Label>Número de Moedas<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-numeroMoedas">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="numeroMoedas"
+                                        value={formData.numeroMoedas || ''}
+                                        onChange={handleChange}
+                                    />
+                                </OverlayTrigger>
+                                {errors['numeroMoedas'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroMoedas']}</div>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={2}>
+                            <Form.Group controlId="formValorTotal">
+                                <Form.Label>Valor Total<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-valorTotal">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="valorTotal"
+                                        value={formData.valorTotal || ''}
+                                        onChange={handleChange}
+                                    />
+                                </OverlayTrigger>
+                                {errors['valorTotal'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['valorTotal']}</div>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={2}>
+                        <Form.Group controlId="formDeviceId">
                                 <Form.Label>Dispositivo<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
@@ -224,14 +229,14 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
                                     <Form.Control
                                         as="select"
                                         className="custom-input-height custom-select-font-size"
-                                        value={formData.deviceId || ''}
+                                        value={formData.deviceID || ''}
                                         onChange={(e) => handleDropdownChange('deviceID', e)}
                                     >
                                         <option value="">Selecione...</option>
                                         {dropdownData.deviceId?.map((option: any) => {
                                             let optionId, optionName;
-                                            switch ('deviceId') {
-                                                case 'deviceId':
+                                            switch ('deviceID') {
+                                                case 'deviceID':
                                                     optionId = option.zktecoDeviceID;
                                                     optionName = option.deviceName;
                                                     break;
@@ -250,12 +255,15 @@ export const CreateRecolhaMoedeiroModal = <T extends Record<string, any>>({ titl
                                 </OverlayTrigger>
                                 {errors['deviceId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceId']}</div>}
                             </Form.Group>
+                        </Col>
+                        <Col md={10}>
                             <Form.Group controlId="formObservacoes">
                                 <Form.Label>Observações</Form.Label>
                                 <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="number"
+                                    as="textarea"
+                                    rows={3}
                                     name="observacoes"
+                                    className="textarea custom-select-font-size"
                                     value={formData.observacoes || ''}
                                     onChange={handleChange}
                                 />

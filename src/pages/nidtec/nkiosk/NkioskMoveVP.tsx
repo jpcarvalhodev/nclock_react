@@ -49,7 +49,6 @@ export const NkioskMoveVP = () => {
     const fetchAllMoveVP = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setMoveVP([]);
                 return;
             }
@@ -74,7 +73,6 @@ export const NkioskMoveVP = () => {
     const fetchMovementVPBetweenDates = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setMoveVP([]);
                 return;
             }

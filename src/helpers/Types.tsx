@@ -517,7 +517,7 @@ export type Entity = {
     enabled: boolean;
 }
 
-export type RecolhaMoedeiro = {
+export type RecolhaMoedeiroEContador = {
     [key: string]: any;
     id: string;
     dataRecolha: Date;
@@ -527,7 +527,6 @@ export type RecolhaMoedeiro = {
     diferenca: number;
     valorTotal: number;
     observacoes: string;
-    tipoRecolha: number;
     deviceID: string;
     dataFimIntervencao: Date;
 }

@@ -51,7 +51,6 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;

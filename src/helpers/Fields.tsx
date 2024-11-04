@@ -15,21 +15,21 @@ export const employeeFields = [
     { label: 'Telefone', key: 'phone', type: 'string' },
     { label: 'Telemóvel', key: 'mobile', type: 'string' },
     { label: 'E-Mail', key: 'email', type: 'string' },
-    { label: 'Data de Nascimento', key: 'birthday', type: 'datetime-local' },
+    { label: 'Data de Nascimento', key: 'birthday', type: 'date' },
     { label: 'Nacionalidade', key: 'nacionality', type: 'string' },
     { label: 'Gênero', key: 'gender', type: 'string' },
     { label: 'Número de BI', key: 'biNumber', type: 'string' },
-    { label: 'Emissão de BI', key: 'biIssuance', type: 'datetime-local' },
-    { label: 'Validade de BI', key: 'biValidity', type: 'datetime-local' },
+    { label: 'Emissão de BI', key: 'biIssuance', type: 'date' },
+    { label: 'Validade de BI', key: 'biValidity', type: 'date' },
     { label: 'NIF', key: 'nif', type: 'number' },
-    { label: 'Data de Admissão', key: 'admissionDate', type: 'datetime-local' },
-    { label: 'Data de Saída', key: 'exitDate', type: 'datetime-local' },
+    { label: 'Data de Admissão', key: 'admissionDate', type: 'date' },
+    { label: 'Data de Saída', key: 'exitDate', type: 'date' },
     { label: 'Autorização RGPD', key: 'rgpdAut', type: 'boolean' },
     { label: 'Status', key: 'status', type: 'boolean' },
     { label: 'Status de E-Mail', key: 'statusEmail', type: 'boolean' },
-    { key: 'statusFprint', label: 'Status de Digital', type: 'boolean' },
-    { key: 'statusFace', label: 'Status de Face', type: 'boolean' },
-    { key: 'statusPalm', label: 'Status de Palma', type: 'boolean' },
+    { label: 'Status de Digital', key: 'statusFprint', type: 'boolean' },
+    { label: 'Status de Face', key: 'statusFace', type: 'boolean' },
+    { label: 'Status de Palma', key: 'statusPalm', type: 'boolean' },
     { label: 'Tipo', key: 'type', type: 'string' },
     { label: 'Departamento', key: 'departmentId', type: 'dropdown' },
     { label: 'Profissão', key: 'professionId', type: 'dropdown' },
@@ -70,15 +70,15 @@ export const externalEntityFields = [
     { label: 'WWW', key: 'www', type: 'string' },
     { label: 'Fax', key: 'fax', type: 'number' },
     { label: 'NIF', key: 'nif', type: 'number', required: true },
-    { label: 'Data Inserida', key: 'dateInserted', type: 'datetime-local' },
-    { label: 'Data Atualizada', key: 'dateUpdated', type: 'datetime-local' },
+    { label: 'Data Inserida', key: 'dateInserted', type: 'date' },
+    { label: 'Data Atualizada', key: 'dateUpdated', type: 'date' },
     { label: 'Tipo', key: 'externalEntityTypeId', type: 'dropdown' },
 ];
 
 export const externalEntityTypeFields = [
     { label: 'Ordem', key: 'order', type: 'number', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
-    { label: 'Data de Inserção', key: 'dateInserted', type: 'datetime-local', required: true },
+    { label: 'Data de Inserção', key: 'dateInserted', type: 'date', required: true },
 ];
 
 export const groupFields = [
@@ -109,7 +109,7 @@ export const zoneFields = [
 ];
 
 export const employeeAttendanceTimesFields = [
-    { key: 'attendanceTime', label: 'Data e Hora de presença', type: 'datetime-local', required: true },
+    { key: 'attendanceTime', label: 'Data e Hora de presença', type: 'date', required: true },
     { key: 'deviceId', label: 'Dispositivo', type: 'dropdown' },
     { key: 'deviceNumber', label: 'Número do Dispositivo', type: 'number' },
     { key: 'employeeId', label: 'Funcionário', type: 'dropdown', required: true },
@@ -339,52 +339,28 @@ export const accessControlFields = [
 ];
 
 export const doorsFields = [
-    { key: 'companyId', label: 'ID da Empresa', type: 'string' },
-    { key: 'createTime', label: 'Horário de Criação', type: 'date' },
-    { key: 'createrCode', label: 'Código do Criador', type: 'string' },
-    { key: 'createrId', label: 'ID do Criador', type: 'string' },
-    { key: 'createrName', label: 'Name do Criador', type: 'string' },
-    { key: 'opVersion', label: 'Versão Operacional', type: 'number' },
-    { key: 'updateTime', label: 'Horário de Atualização', type: 'date' },
-    { key: 'updaterCode', label: 'Código de Atualização', type: 'string' },
-    { key: 'updaterId', label: 'ID de Atualização', type: 'string' },
-    { key: 'updaterName', label: 'Nome de Atualização', type: 'string' },
-    { key: 'actionInterval', label: 'Intervalo de Ação', type: 'number' },
-    { key: 'activeTimesegId', label: 'ID de Tempo Activo', type: 'string' },
-    { key: 'allowSuaccessLock', label: 'Permitir Trava de Acesso', type: 'string' },
-    { key: 'backLock', label: 'Trava Traseira', type: 'string' },
-    { key: 'combopenInterval', label: 'Intervalo de Abertura', type: 'number' },
+    { key: 'actionInterval', label: 'Intervalo entre Operações', type: 'number' },
+    { key: 'activeTimesegId', label: 'Faixa Horária Activa', type: 'string' },
+    { key: 'allowSuaccessLock', label: 'Permitir Acesso de SU ao Bloqueio', type: 'string' },
+    { key: 'backLock', label: 'Status da Fechadura', type: 'boolean' },
+    { key: 'combopenInterval', label: 'Intervalo entre Identificações', type: 'number' },
     { key: 'delayOpenTime', label: 'Atraso de Tempo de Abertura', type: 'number' },
-    { key: 'doorNo', label: 'Número da Porta', type: 'number' },
-    { key: 'doorSensorStatus', label: 'Status de Sensor da Porta', type: 'number' },
+    { key: 'doorNo', label: 'Número de Porta', type: 'number', readonly: true, required: true },
+    { key: 'doorSensorStatus', label: 'Tipo de Sensor de Porta', type: 'number' },
     { key: 'enabled', label: 'Activo', type: 'boolean' },
-    { key: 'extDelayDrivertime', label: 'Tempo de Atraso do Driver Externo', type: 'number' },
-    { key: 'extDevId', label: 'ID de Dispositivo Externo', type: 'string' },
-    { key: 'forcePwd', label: 'Forçar Senha', type: 'string' },
-    { key: 'hostStatus', label: 'Status de Hospedagem', type: 'number' },
-    { key: 'inApbDuration', label: 'Duração em APB', type: 'number' },
-    { key: 'isDisableAudio', label: 'Desativar Audio', type: 'string' },
-    { key: 'latchDoorType', label: 'Tipo de Trava da Porta', type: 'number' },
-    { key: 'latchTimeOut', label: 'Tempo Limite da Trava', type: 'number' },
-    { key: 'latchTimesegId', label: 'ID de Período da Trava', type: 'string' },
-    { key: 'lockDelay', label: 'Atraso de Trava', type: 'number' },
-    { key: 'name', label: 'Nome', type: 'string' },
-    { key: 'passmodeTimesegId', label: 'ID de Período de Passagem', type: 'string' },
-    { key: 'readerType', label: 'Tipo de Leitor', type: 'number' },
-    { key: 'sexInputMode', label: 'Modo de Entrada de Sex', type: 'string' },
-    { key: 'sexSupervisedResistor', label: 'Resistor Supervisionado de Sex', type: 'string' },
-    { key: 'senInputMode', label: 'Modo de Entrada de Sen', type: 'string' },
-    { key: 'senSupervisedResistor', label: 'Resistor Supervisionado de Sen', type: 'string' },
-    { key: 'sensorDelay', label: 'Delay do Sensor', type: 'number' },
-    { key: 'supperPwd', label: 'Senha Supper', type: 'string' },
-    { key: 'verifyMode', label: 'Modo de Verificação', type: 'number' },
-    { key: 'wgInputId', label: 'ID de Entrada WG', type: 'string' },
-    { key: 'wgInputType', label: 'Tipo de Entrada WG', type: 'number' },
-    { key: 'wgOutputId', label: 'ID de Saída WG', type: 'string' },
-    { key: 'wgOutputType', label: 'Tipo de Saída WG', type: 'number' },
-    { key: 'wgReversed', label: 'WG Inverso', type: 'number' },
-    { key: 'devId', label: 'ID do Dispositivo', type: 'string' },
-    { key: 'devSN', label: 'Serial do Dispositivo', type: 'string' },
+    { key: 'extDelayDrivertime', label: 'Tempo de Atraso de Driver', type: 'number' },
+    { key: 'extDevId', label: 'Dispositivo Externo', type: 'string' },
+    { key: 'forcePwd', label: 'Senha de Coação', type: 'string' },
+    { key: 'inApbDuration', label: 'Duração do Antirretorno da Fechadura', type: 'number' },
+    { key: 'lockDelay', label: 'Duração da Abertura da Fechadura', type: 'number' },
+    { key: 'name', label: 'Nome', type: 'string', required: true },
+    { key: 'passmodeTimesegId', label: 'Faixa Horária do Modo de Passagem', type: 'string' },
+    { key: 'readerType', label: 'Tipo de Sensor', type: 'number', required: true },
+    { key: 'sensorDelay', label: 'Atraso do Sensor de Porta', type: 'number' },
+    { key: 'supperPwd', label: 'Senha de Emergência', type: 'string' },
+    { key: 'verifyMode', label: 'Modo de Verificação', type: 'number', required: true },
+    { key: 'devId', label: 'Dispositivo', type: 'string' },
+    { key: 'timezoneId', label: 'Período', type: 'string' },
 ];
 
 export const mbDeviceFields = [
@@ -453,21 +429,20 @@ export const entityFields = [
     { key: 'enabled', label: 'Ativo', type: 'boolean' }
 ];
 
-export const recolhaMoedeiroFields = [
-    { key: 'dataRecolha', label: 'Data da Recolha', type: 'datetime-local' },
+export const recolhaMoedeiroEContadorFields = [
+    { key: 'dataRecolha', label: 'Data', type: 'date' },
     { key: 'pessoaResponsavel', label: 'Pessoa Responsável', type: 'string', required: true },
     { key: 'numeroMoedas', label: 'Número de Moedas', type: 'number', required: true },
     { key: 'numeroMoedasSistema', label: 'Número de Moedas no Sistema', type: 'number' },
     { key: 'diferenca', label: 'Diferença', type: 'number' },
     { key: 'valorTotal', label: 'Valor Total', type: 'number', required: true },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'tipoRecolha', label: 'Tipo de Recolha', type: 'number' },
     { key: 'deviceID', label: 'Dispositivo', type: 'string', required: true },
-    { key: 'dataFimIntervencao', label: 'Data de Fim da Intervenção', type: 'datetime-local' },
+    { key: 'dataFimIntervencao', label: 'Data Fim', type: 'date' },
 ];
 
 export const manualOpenDoorFields = [
-    { key: 'createdDate', label: 'Data de Criação', type: 'datetime-local' },
+    { key: 'createdDate', label: 'Data de Criação', type: 'date' },
     { key: 'nomeResponsavel', label: 'Nome', type: 'string' },
     { key: 'nomeEvento', label: 'Nome do Evento', type: 'string' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
@@ -476,8 +451,9 @@ export const manualOpenDoorFields = [
 ];
 
 export const limpezasEOcorrenciasFields = [
-    { key: 'dataCreate', label: 'Data de Criação', type: 'datetime-local' },
+    { key: 'dataCreate', label: 'Data de Criação', type: 'date' },
     { key: 'responsavel', label: 'Pessoa Responsável', type: 'string', required: true },
     { key: 'observacoes', label: 'Observações', type: 'string' },
     { key: 'deviceId', label: 'Dispositivo', type: 'string', required: true },
+    { key: 'deviceName', label: 'Dispositivo', type: 'string' },
 ];

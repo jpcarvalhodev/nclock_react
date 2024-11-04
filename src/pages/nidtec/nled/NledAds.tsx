@@ -16,7 +16,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
 import { UpdateModalAds } from "../../../modals/UpdateModalAds";
 
-export const NkioskAds = () => {
+export const NledAds = () => {
     const { navbarColor, footerColor } = useColor();
     const [ads, setAds] = useState<Ads[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);

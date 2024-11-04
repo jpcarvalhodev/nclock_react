@@ -58,7 +58,6 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;

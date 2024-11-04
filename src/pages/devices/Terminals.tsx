@@ -866,7 +866,7 @@ export const Terminals = () => {
         return results;
     };
 
-    // Funções para acionar o popup de seleção de arquivo dos movimentos, utilizadores e biometria
+    /* // Funções para acionar o popup de seleção de arquivo dos movimentos, utilizadores e biometria
     const triggerFileAttendanceSelectPopup = () => {
         fileInputAttendanceRef.current?.click();
         setLoadingImportAttendance(true);
@@ -911,7 +911,7 @@ export const Terminals = () => {
                 setLoadingImportFace(false);
             }
         }, 5000);
-    };
+    }; */
 
     // Função para enviar os utilizadores selecionados
     const handleSendSelectedUsers = async () => {

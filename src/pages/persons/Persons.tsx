@@ -15,6 +15,7 @@ import { PersonsContext, PersonsContextType, PersonsProvider } from '../../conte
 import { useColor } from '../../context/ColorContext';
 import { set } from 'date-fns';
 import { PrintButton } from '../../components/PrintButton';
+import { toast } from 'react-toastify';
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -62,7 +63,7 @@ export const Persons = () => {
         const cardDataProvided = card && Object.keys(card).length > 0;
 
         if (!cardExists && !cardDataProvided) {
-            console.log('Cartão não adicionado porque os dados não foram fornecidos');
+            toast.warn('Cartão não adicionado porque os dados não foram fornecidos');
         } else {
             const newEmployeeCard = {
                 ...card,

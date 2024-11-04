@@ -50,7 +50,6 @@ export const NkioskPayCoins = () => {
     const fetchAllPayCoins = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setPayCoins([]);
                 return;
             }
@@ -76,7 +75,6 @@ export const NkioskPayCoins = () => {
     const fetchPaymentsCoinBetweenDates = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setPayCoins([]);
                 return;
             }

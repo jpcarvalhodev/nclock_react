@@ -416,7 +416,18 @@
     .ncomfort-tab,
     .nsound-tab,
     .nhome-tab {
-        font-size: 12px !important;
+        font-size: 9.5px !important;
+        margin-top: 4px;
+    }
+
+    .logoNG {
+        font-size: 9.5px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .calendar-container {
+        margin: 0;
     }
     
     .tab-content {

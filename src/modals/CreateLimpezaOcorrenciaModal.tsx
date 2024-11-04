@@ -32,6 +32,7 @@ interface Field {
 
 // Valores iniciais
 const initialValues: Partial<LimpezasEOcorrencias> = {
+    dataCreate: new Date(),
     responsavel: localStorage.getItem('username') || '',
 };
 
@@ -65,7 +66,6 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -139,14 +139,14 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static">
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
-                        <Col md={6}>
+                        <Col md={3}>
                             <Form.Group controlId="formDataCreate">
                                 <Form.Label>Data de Criação<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -163,18 +163,8 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                                 </OverlayTrigger>
                                 {errors['dataCreate'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['dataCreate']}</div>}
                             </Form.Group>
-                            <Form.Group controlId="formObservacoes">
-                                <Form.Label>Observações</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="string"
-                                    name="observacoes"
-                                    value={formData.observacoes || ''}
-                                    onChange={handleChange}
-                                />
-                            </Form.Group>
                         </Col>
-                        <Col md={6}>
+                        <Col md={3}>
                             <Form.Group controlId="formResponsavel">
                                 <Form.Label>Pessoa Responsável<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -192,6 +182,8 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                                 </OverlayTrigger>
                                 {errors['responsavel'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['responsavel']}</div>}
                             </Form.Group>
+                        </Col>
+                        <Col md={3}>
                             <Form.Group controlId="formDeviceId">
                                 <Form.Label>Dispositivo<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -226,6 +218,19 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                                     </Form.Control>
                                 </OverlayTrigger>
                                 {errors['deviceId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceId']}</div>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={9}>
+                            <Form.Group controlId="formObservacoes">
+                                <Form.Label>Observações</Form.Label>
+                                <Form.Control
+                                    className="textarea custom-select-font-size"
+                                    as="textarea"
+                                    rows={3}
+                                    name="observacoes"
+                                    value={formData.observacoes || ''}
+                                    onChange={handleChange}
+                                />
                             </Form.Group>
                         </Col>
                     </Row>

@@ -49,7 +49,6 @@ export const NkioskMoveCard = () => {
     const fetchAllMoveCard = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setMoveCard([]);
                 return;
             }
@@ -75,7 +74,6 @@ export const NkioskMoveCard = () => {
     const fetchMovementCardBetweenDates = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setMoveCard([]);
                 return;
             }

@@ -64,7 +64,6 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -91,7 +90,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
         const { value } = e.target;
         const selectedOption = dropdownData[key]?.find((option: any) => {
             switch (key) {
-                case 'deviceId':
+                case 'deviceID':
                     return option.zktecoDeviceID === value;
                 default:
                     return false;
@@ -118,7 +117,8 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
         const formattedValue = type === 'number' ? parseFloat(value) || 0 : value;
         setFormData(prevState => ({
             ...prevState,
-            [name]: formattedValue
+            [name]: formattedValue,
+            valorTotal: name === 'numeroMoedas' ? (formattedValue * 0.50).toFixed(2) : prevState.valorTotal
         }));
     };
 
@@ -138,14 +138,14 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static">
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
-                        <Col md={6}>
+                        <Col md={2}>
                             <Form.Group controlId="formDataRecolha">
                                 <Form.Label>Data da Recolha<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -160,42 +160,9 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors['dataRecolha'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['dataRecolha']}</div>}
-                            </Form.Group>
-                            <Form.Group controlId="formNumeroMoedas">
-                                <Form.Label>Número de Moedas<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-numeroMoedas">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="numeroMoedas"
-                                        value={formData.numeroMoedas || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['numeroMoedas'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroMoedas']}</div>}
-                            </Form.Group>
-                            <Form.Group controlId="formValorTotal">
-                                <Form.Label>Valor Total<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-valorTotal">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="valorTotal"
-                                        value={formData.valorTotal || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['valorTotal'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['valorTotal']}</div>}
                             </Form.Group>
                         </Col>
-                        <Col md={6}>
+                        <Col md={2}>
                             <Form.Group controlId="formPessoaResponsavel">
                                 <Form.Label>Pessoa Responsável<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -213,6 +180,44 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                 </OverlayTrigger>
                                 {errors['pessoaResponsavel'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['pessoaResponsavel']}</div>}
                             </Form.Group>
+                        </Col>
+                        <Col md={2}>
+                            <Form.Group controlId="formNumeroMoedas">
+                                <Form.Label>Número de Moedas<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-numeroMoedas">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="numeroMoedas"
+                                        value={formData.numeroMoedas || ''}
+                                        onChange={handleChange}
+                                    />
+                                </OverlayTrigger>
+                                {errors['numeroMoedas'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroMoedas']}</div>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={2}>
+                            <Form.Group controlId="formValorTotal">
+                                <Form.Label>Valor Total<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-valorTotal">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="valorTotal"
+                                        value={formData.valorTotal || ''}
+                                        onChange={handleChange}
+                                    />
+                                </OverlayTrigger>
+                                {errors['valorTotal'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['valorTotal']}</div>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={2}>
                             <Form.Group controlId="formDeviceId">
                                 <Form.Label>Dispositivo<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -222,14 +227,14 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                     <Form.Control
                                         as="select"
                                         className="custom-input-height custom-select-font-size"
-                                        value={formData.deviceId || ''}
-                                        onChange={(e) => handleDropdownChange('deviceId', e)}
+                                        value={formData.deviceID || ''}
+                                        onChange={(e) => handleDropdownChange('deviceID', e)}
                                     >
                                         <option value="">Selecione...</option>
                                         {dropdownData.deviceId?.map((option: any) => {
                                             let optionId, optionName;
-                                            switch ('deviceId') {
-                                                case 'deviceId':
+                                            switch ('deviceID') {
+                                                case 'deviceID':
                                                     optionId = option.zktecoDeviceID;
                                                     optionName = option.deviceName;
                                                     break;
@@ -248,12 +253,15 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                 </OverlayTrigger>
                                 {errors['deviceId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceId']}</div>}
                             </Form.Group>
+                        </Col>
+                        <Col md={10}>
                             <Form.Group controlId="formObservacoes">
                                 <Form.Label>Observações</Form.Label>
                                 <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="number"
+                                    as="textarea"
+                                    rows={3}
                                     name="observacoes"
+                                    className="textarea custom-select-font-size"
                                     value={formData.observacoes || ''}
                                     onChange={handleChange}
                                 />

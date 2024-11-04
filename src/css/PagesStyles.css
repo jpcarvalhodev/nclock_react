@@ -440,7 +440,7 @@ body {
     background: white;
     margin: 10px;
     max-height: 34.4rem;
-    margin-top: 140px;
+    margin-top: 70px;
 }
 
 .dashboard-carousel-container-main {
@@ -464,7 +464,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    max-width: 56rem;
+    max-width: 54rem;
 }
 
 .img-carousel-licensed {

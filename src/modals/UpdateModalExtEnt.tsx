@@ -65,11 +65,9 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
             if (field.label === 'NIF' && fieldValue != null && fieldValue.toString().length < 9) {
                 valid = false;
-                newErrors[field.key] = 'NIF deve ter no mínimo 9 números.';
             }
 
             return valid;

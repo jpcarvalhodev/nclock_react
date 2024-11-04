@@ -49,7 +49,6 @@ export const NkioskMoveKiosk = () => {
     const fetchAllMoveKiosk = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setMoveKiosk([]);
                 return;
             }
@@ -74,7 +73,6 @@ export const NkioskMoveKiosk = () => {
     const fetchMovementsKioskBetweenDates = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setMoveKiosk([]);
                 return;
             }

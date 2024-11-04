@@ -52,6 +52,7 @@ interface UpdateModalProps<T extends Entity> {
 
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const {
+        devices,
         fetchAllDevices,
         fetchAllDoorData,
     } = useContext(TerminalsContext) as DeviceContextType;
@@ -93,7 +94,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -122,9 +122,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // Função para buscar as portas e filtrar pelo SN
     const fetchDoors = async () => {
-        const data = await fetchAllDoorData();
-        const dataFiltered = data.filter((door: Doors) => door.devSN === formData.serialNumber);
-        setDoors(dataFiltered);
+        const dataDoors = await fetchAllDoorData();
+        const doors = dataDoors.filter((door: Doors) => devices.some(device => door.devId === device.zktecoDeviceID));
+        setDoors(doors);
     }
 
     // Função para lidar com a atualização das portas
@@ -263,11 +263,12 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     );
 
     // Define as colunas que serão exibidas
-    const includedColumns = ['enabled', 'name', 'doorNo', 'devSN'];
+    const includedColumns = ['enabled', 'name', 'doorNo', 'lockDelay'];
 
     // Define as colunas
     const columns: TableColumn<Doors>[] = doorsFields
         .filter(field => includedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'lockDelay') return 1; else if (b.key === 'lockDelay') return -1; else return 0; })
         .map(field => {
             const formatField = (row: Doors) => {
                 switch (field.key) {
@@ -282,6 +283,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}

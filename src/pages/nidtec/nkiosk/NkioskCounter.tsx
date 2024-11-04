@@ -15,12 +15,12 @@ import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsC
 import { RecolhaMoedeiroEContador } from "../../../helpers/Types";
 import { recolhaMoedeiroEContadorFields } from "../../../helpers/Fields";
 import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
-import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
+import { Button, Spinner, Tab, Tabs } from "react-bootstrap";
 
-export const NkioskGetCoins = () => {
+export const NkioskCounter = () => {
     const { navbarColor, footerColor } = useColor();
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const [getCoins, setGetCoins] = useState<RecolhaMoedeiroEContador[]>([]);
+    const [counter, setCounter] = useState<RecolhaMoedeiroEContador[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotal', 'deviceID']);
@@ -28,66 +28,54 @@ export const NkioskGetCoins = () => {
     const [selectedRows, setSelectedRows] = useState<RecolhaMoedeiroEContador[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedRecolhaMoedeiro, setSelectedRecolhaMoedeiro] = useState<any>(null);
+    const [userTabKey, setUserTabKey] = useState<string>('endCounter');
+    const [loadingEndCounter, setLoadingEndCounter] = useState(false);
+    const [selectedCounter, setSelectedCounter] = useState<RecolhaMoedeiroEContador | null>(null);
 
-    // Função para buscar as recolhas do moedeiro
-    const fetchAllCoinRecoveredData = async () => {
+    // Função para buscar os contadores
+    const fetchAllCounter = async () => {
         try {
-            const data = await apiService.fetchRecolhasMoedeiro();
+            const data = await apiService.fetchAllContador();
             if (Array.isArray(data)) {
-                setGetCoins(data);
+                setCounter(data);
             } else {
-                setGetCoins([]);
+                setCounter([]);
             }
         } catch (error) {
-            console.error('Erro ao buscar os dados de recolha do moedeiro:', error);
+            console.error('Erro ao buscar os dados do contador:', error);
         }
     };
 
-    // Função para adicionar recolha do moedeiro
-    const handleAddRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
+    // Função para iniciar contador
+    const handleStartContador = async (contador: RecolhaMoedeiroEContador) => {
         try {
-            const data = await apiService.addRecolhaMoedeiro(recolhaMoedeiro);
-            setGetCoins([...getCoins, data]);
-            toast.success(data.message || 'Recolha do moedeiro adicionada com sucesso!');
+            const data = await apiService.startContador(contador);
+            setCounter([...counter, data]);
+            toast.success(data.message || 'Contador iniciado com sucesso!');
         } catch (error) {
-            console.error('Erro ao criar recolha do moedeiro:', error);
+            console.error('Erro ao criar contador:', error);
         } finally {
             setShowAddModal(false);
-            refreshRecolhaMoedeiro();
-        }
-    };
-
-    // Função para atualizar recolha do moedeiro
-    const handleUpdateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
-        try {
-            const data = await apiService.updateRecolhaMoedeiro(recolhaMoedeiro);
-            setGetCoins(getCoins.map(item => (item.id === data.id ? data : item)));
-            toast.success(data.message || 'Recolha do moedeiro atualizada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar recolha do moedeiro:', error);
-        } finally {
-            setShowUpdateModal(false);
-            refreshRecolhaMoedeiro();
+            refreshCounter();
         }
     };
 
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
-        fetchAllCoinRecoveredData();
+        fetchAllCounter();
     }, []);
 
     // Função para atualizar as recolhas do moedeiro
-    const refreshRecolhaMoedeiro = () => {
-        fetchAllCoinRecoveredData();
+    const refreshCounter = () => {
+        fetchAllCounter();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
-    // Função para editar uma recolha do moedeiro
-    const handleEditRecolhas = (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
-        setSelectedRecolhaMoedeiro(recolhaMoedeiro);
-        setShowUpdateModal(true);
+    // Função para alternar a visibilidade das abas
+    const handleUserSelect = (k: string | null) => {
+        if (k) {
+            setUserTabKey(k);
+        }
     };
 
     // Função para selecionar as colunas
@@ -116,6 +104,7 @@ export const NkioskGetCoins = () => {
         selectedRows: RecolhaMoedeiroEContador[];
     }) => {
         setSelectedRows(state.selectedRows);
+        setSelectedCounter(state.selectedRows[0] || null);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -145,7 +134,7 @@ export const NkioskGetCoins = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={getCoins} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={counter} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -155,7 +144,7 @@ export const NkioskGetCoins = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = getCoins.filter(getCoin =>
+    const filteredDataTable = counter.filter(getCoin =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -170,17 +159,25 @@ export const NkioskGetCoins = () => {
         })
     );
 
-    // Calcula o total do valor das recolhas
-    const totalAmount = filteredDataTable.reduce((total, getCoins) => {
-        return total + (typeof getCoins.valorTotal === 'number' ? getCoins.valorTotal : parseFloat(getCoins.valorTotal) || 0);
-    }, 0);
+    // Função para encerrar o contador selecionado
+    const handleEndCounter = async () => {
+        if (selectedCounter) {
+            setLoadingEndCounter(true);
+            const data = await apiService.endContador(selectedCounter.id);
+            toast.success(data.message || 'Contador encerrado com sucesso!');
+            setLoadingEndCounter(false);
+            refreshCounter();
+        } else {
+            toast.error('Selecione um contador primeiro!');
+        }
+    }
 
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="datatable-container">
                 <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Recolhas do Moedeiro</span>
+                    <span style={{ color: '#009739' }}>Contadores</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -193,11 +190,11 @@ export const NkioskGetCoins = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCounter} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={getCoins} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
-                        <PrintButton data={getCoins} fields={recolhaMoedeiroEContadorFields} />
+                        <ExportButton allData={counter} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
+                        <PrintButton data={counter} fields={recolhaMoedeiroEContadorFields} />
                     </div>
                 </div>
                 <div className='table-css'>
@@ -211,15 +208,34 @@ export const NkioskGetCoins = () => {
                         onSelectedRowsChange={handleRowSelected}
                         clearSelectedRows={clearSelectionToggle}
                         selectableRowsHighlight
-                        onRowDoubleClicked={handleEditRecolhas}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={true}
                         defaultSortFieldId="dataRecolha"
                     />
                 </div>
-                <div style={{ marginLeft: 30 }}>
-                    <strong>Valor Total das Recolhas: </strong>{totalAmount.toFixed(2)}€
+                <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
+                    <div>
+                        <Tabs
+                            id="controlled-tab-terminals-buttons"
+                            activeKey={userTabKey}
+                            onSelect={handleUserSelect}
+                            className="nav-modal"
+                        >
+                            <Tab eventKey="endCounter" title="Contador">
+                                <div style={{ display: "flex", marginTop: 10 }}>
+                                    <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleEndCounter}>
+                                        {loadingEndCounter ? (
+                                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                        ) : (
+                                            <i className="bi bi-stop-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                        )}
+                                        Encerrar
+                                    </Button>
+                                </div>
+                            </Tab>
+                        </Tabs>
+                    </div>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
@@ -234,22 +250,12 @@ export const NkioskGetCoins = () => {
                 />
             )}
             <CreateRecolhaMoedeiroEContadorModal
-                title="Nova Recolha do Moedeiro"
+                title="Iniciar Contador"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddRecolhaMoedeiro}
+                onSave={handleStartContador}
                 fields={recolhaMoedeiroEContadorFields}
             />
-            {selectedRecolhaMoedeiro && (
-                <UpdateRecolhaMoedeiroModal
-                    open={showUpdateModal}
-                    onClose={() => setShowUpdateModal(false)}
-                    onUpdate={handleUpdateRecolhaMoedeiro}
-                    entity={selectedRecolhaMoedeiro}
-                    fields={recolhaMoedeiroEContadorFields}
-                    title="Atualizar Recolha do Moedeiro"
-                />
-            )}
         </div>
     );
 }

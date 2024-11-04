@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiro, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -1496,7 +1496,7 @@ export const deleteAccessControl = async (id: string, doorId?: Doors) => {
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CONTROLE DE ACESSO//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE PORTAS///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 export const fetchAllDoors = async () => {
@@ -1584,7 +1584,7 @@ export const fetchRecolhasMoedeiro = async () => {
     return response.json();
 }
 
-export const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiro) => {
+export const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
     const response = await fetchWithAuth(`KioskTransaction/CreateRecolhasMoedeiro`, {
         method: 'POST',
         headers: {
@@ -1600,7 +1600,7 @@ export const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiro) => {
     return response.json();
 }
 
-export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiro) => {
+export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
     const response = await fetchWithAuth(`KioskTransaction/UpdateRecolhasMoedeiro?id=${recolhaMoedeiro.id}`, {
         method: 'PUT',
         headers: {
@@ -1659,5 +1659,50 @@ export const addOccurrence = async (occurrence: LimpezasEOcorrencias) => {
         toast.error(errorData.message);
         throw new Error;
     }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CONTADORES//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllContador = async () => {
+    const response = await fetchWithAuth(`KioskTransaction/GetAllContadorMoedeiro`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const startContador = async (contador: RecolhaMoedeiroEContador) => {
+    const response = await fetchWithAuth(`KioskTransaction/StartContadorMoedasAsync`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contador)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
+    return response.json();
+}
+
+export const endContador = async (contadorId: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/EndContadorMoedasAsync?recolhaId=${contadorId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
     return response.json();
 }

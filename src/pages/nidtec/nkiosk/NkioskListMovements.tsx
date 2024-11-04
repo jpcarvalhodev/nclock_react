@@ -52,7 +52,6 @@ export const NkioskListMovements = () => {
     const fetchAllListMovementsCard = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setListMovementCard([]);
                 return;
             }
@@ -77,7 +76,6 @@ export const NkioskListMovements = () => {
     const fetchAllListMovementsKiosk = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setListMovementKiosk([]);
                 return;
             }
@@ -102,7 +100,6 @@ export const NkioskListMovements = () => {
     const fetchMovementCardBetweenDates = async () => {
         try {
             if (devices.length === 0) {
-                console.log("Nenhum dispositivo encontrado.");
                 setListMovementCard([]);
                 setListMovementKiosk([]);
                 return;

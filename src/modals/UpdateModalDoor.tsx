@@ -5,6 +5,10 @@ import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, Row } from 'react-bootstrap';
+import * as apiService from "../helpers/apiService";
+
+// Define a interface para os itens de campo
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 // Define a interface Entity
 export interface Entity {
@@ -34,16 +38,18 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: UpdateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>({...entity});
+    const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
+    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (entity) {
+        if (open) {
+            fetchDropdownOptions();
             setFormData({ ...entity });
         }
-    }, [entity]);
+    }, [open, entity]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -58,7 +64,6 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -67,6 +72,48 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
         setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
+
+    // Função para buscar os dados dos dropdowns
+    const fetchDropdownOptions = async () => {
+        try {
+            const devices = await apiService.fetchAllDevices();
+            const timezones = await apiService.fetchAllTimePeriods();
+            setDropdownData({
+                devId: devices,
+                timezoneId: timezones
+            });
+        } catch (error) {
+            console.error('Erro ao buscar os dados de dispositivos e períodos', error);
+        }
+    };
+
+    // Função para lidar com a mudança do dropdown
+    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+        const { value } = e.target;
+        const selectedOption = dropdownData[key]?.find((option: any) => {
+            switch (key) {
+                case 'devID':
+                    return option.zktecoDeviceID === value;
+                case 'timezoneId':
+                    return option.id === value;
+                default:
+                    return false;
+            }
+        });
+
+        if (selectedOption) {
+            const idKey = key;
+            setFormData(prevState => ({
+                ...prevState,
+                [idKey]: value
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                [key]: value
+            }));
+        }
+    };
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,16 +132,31 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
         onClose();
     };
 
+    // Define as seleções de modo de verificação
+    const verifyModeOptions = [
+        { value: 3, label: 'Somente Senha' },
+        { value: 4, label: 'Somente Cartão' },
+        { value: 7, label: 'Cartão/Senha' },
+        { value: 11, label: 'Cartão + Senha' },
+    ];
+
+    // Define as seleções de tipo de sensor
+    const doorSensorTypes = [
+        { value: 0, label: 'Nenhum' },
+        { value: 1, label: 'Normalmente Aberto' },
+        { value: 2, label: 'Normalmente Fechado' }
+    ];
+
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="modal-body-scrollable">
+            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 65 }}>
                 <div className="container-fluid">
                     <Row>
-                        <Col md={6} key="enabled" className="mb-3">
-                            <Form.Group controlId="enabled" className='d-flex justify-content-between mt-4'>
+                        <Col md={3}>
+                            <Form.Group controlId="formEnabled" className='d-flex justify-content-between mt-3' style={{ marginBottom: 13.5 }}>
                                 <Form.Label>Activo</Form.Label>
                                 <Form.Check
                                     type="switch"
@@ -103,25 +165,271 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                     onChange={handleChange}
                                 />
                             </Form.Group>
+                            <Form.Group controlId="formAllowSuaccessLock">
+                                <Form.Label>Permitir Acesso de SU ao Bloqueio</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="allowSuaccessLock"
+                                    value={formData.allowSuaccessLock}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formDoorSensorStatus">
+                                <Form.Label>Tipo de Sensor de Porta</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    as="select"
+                                    name="doorSensorStatus"
+                                    value={formData.doorSensorStatus}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Selecione...</option>
+                                    {doorSensorTypes.map(option => (
+                                        <option key={option.value} value={option.value}>{option.label}</option>
+                                    ))}
+                                </Form.Control>
+                            </Form.Group>
+                            <Form.Group controlId="formInApbDuration">
+                                <Form.Label>Duração Antirretorno Fechadura</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="inApbDuration"
+                                    value={formData.inApbDuration}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formReaderType">
+                                <Form.Label>Tipo de Leitor</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="readerType"
+                                    value={formData.readerType}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formDevId">
+                                <Form.Label>Dispositivo</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.devId || ''}
+                                    onChange={(e) => handleDropdownChange('devId', e)}
+                                >
+                                    <option value="">Selecione...</option>
+                                    {dropdownData.devId?.map((option: any) => {
+                                        let optionId, optionName;
+                                        switch ('devId') {
+                                            case 'devId':
+                                                optionId = option.zktecoDeviceID;
+                                                optionName = option.deviceName;
+                                                break;
+                                            default:
+                                                optionId = option.id;
+                                                optionName = option.name;
+                                                break;
+                                        }
+                                        return (
+                                            <option key={optionId} value={optionId}>
+                                                {optionName}
+                                            </option>
+                                        );
+                                    })}
+                                </Form.Control>
+                            </Form.Group>
                         </Col>
-                        {fields.filter(field => field.key !== 'devId' && field.key !== 'enabled' && field.key !== 'companyId' && field.key !== 'createTime' && field.key !== 'createrCode' && field.key !== 'createrId' && field.key !== 'opVersion' && field.key !== 'updateTime' && field.key !== 'updaterCode' && field.key !== 'updaterId' && field.key !== 'updaterName' && field.key !== 'activeTimesegId' && field.key !== 'extDevId' && field.key !== 'hostStatus' && field.key !== 'latchTimesegId' && field.key !== 'passmodeTimesegId' && field.key !== 'wgInputId' && field.key !== 'wgOutputId').map((field) => (
-                            <Col md={6} key={field.key} className="mb-3">
-                                <Form.Group controlId={field.key}>
-                                    <Form.Label>{field.label}</Form.Label>
-                                    <Form.Control
-                                        type={field.type}
-                                        name={field.key}
-                                        value={formData[field.key] || ''}
-                                        onChange={handleChange}
-                                        isInvalid={!!errors[field.key]}
-                                        required={field.required}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors[field.key]}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Col>
-                        ))}
+                        <Col md={3}>
+                            <Form.Group controlId="formBackLock" className='d-flex justify-content-between mt-3' style={{ marginBottom: 13.5 }}>
+                                <Form.Label>Status da Fechadura</Form.Label>
+                                <Form.Check
+                                    type="switch"
+                                    name="backLock"
+                                    checked={!!formData.backLock}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formCombopenInterval">
+                                <Form.Label>Intervalo entre Identificações</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="combopenInterval"
+                                    value={formData.combopenInterval}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formExtDelayDrivertime">
+                                <Form.Label>Tempo de Atraso de Driver</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="extDelayDrivertime"
+                                    value={formData.extDelayDrivertime}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formLockDelay">
+                                <Form.Label>Duração da Abertura da Fechadura</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="lockDelay"
+                                    value={formData.lockDelay}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formSensorDelay">
+                                <Form.Label>Atraso do Sensor de Porta</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="sensorDelay"
+                                    value={formData.sensorDelay}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formTimezoneId">
+                                <Form.Label>Dispositivo</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.timezoneId || ''}
+                                    onChange={(e) => handleDropdownChange('timezoneId', e)}
+                                >
+                                    <option value="">Selecione...</option>
+                                    {dropdownData.timezoneId?.map((option: any) => {
+                                        let optionId, optionName;
+                                        switch ('timezoneId') {
+                                            case 'timezoneId':
+                                                optionId = option.id;
+                                                optionName = option.name;
+                                                break;
+                                            default:
+                                                optionId = option.id;
+                                                optionName = option.name;
+                                                break;
+                                        }
+                                        return (
+                                            <option key={optionId} value={optionId}>
+                                                {optionName}
+                                            </option>
+                                        );
+                                    })}
+                                </Form.Control>
+                            </Form.Group>
+                        </Col>
+                        <Col md={3}>
+                            <Form.Group controlId="formActionInterval">
+                                <Form.Label>Intervalo entre Operações</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="actionInterval"
+                                    value={formData.actionInterval}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formDelayOpenTime">
+                                <Form.Label>Atraso de Tempo de Abertura</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="delayOpenTime"
+                                    value={formData.delayOpenTime}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formExtDevId">
+                                <Form.Label>Dispositivo Externo</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="extDevId"
+                                    value={formData.extDevId}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formName">
+                                <Form.Label>Nome</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formSupperPwd">
+                                <Form.Label>Senha de Emergência</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="supperPwd"
+                                    value={formData.supperPwd}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={3}>
+                            <Form.Group controlId="formActiveTimesegId">
+                                <Form.Label>Faixa Horária Activa</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="activeTimesegId"
+                                    value={formData.activeTimesegId}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formDoorNo">
+                                <Form.Label>Número de Porta</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="number"
+                                    name="doorNo"
+                                    value={formData.doorNo}
+                                    onChange={handleChange}
+                                    readOnly
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formForcePwd">
+                                <Form.Label>Senha de Coação</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="forcePwd"
+                                    value={formData.forcePwd}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formPassmodeTimesegId">
+                                <Form.Label>Faixa Horária Modo de Passagem</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="passmodeTimesegId"
+                                    value={formData.passmodeTimesegId}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formVerifyMode">
+                                <Form.Label>Modo de Verificação</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    as="select"
+                                    name="verifyMode"
+                                    value={formData.verifyMode}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Selecione...</option>
+                                    {verifyModeOptions.map(option => (
+                                        <option key={option.value} value={option.value}>{option.label}</option>
+                                    ))}
+                                </Form.Control>
+                            </Form.Group>
+                        </Col>
                     </Row>
                 </div>
             </Modal.Body>

@@ -14,7 +14,6 @@ export const customStyles: TableStyles = {
             backgroundColor: '#f0f0f0',
             color: '#333',
             fontWeight: 'bold',
-            height: '30px',
             border: 'none',
             paddingLeft: '5px',
             paddingRight: '5px',
@@ -22,7 +21,6 @@ export const customStyles: TableStyles = {
     },
     headRow: {
         style: {
-            minHeight: '30px',
             backgroundColor: '#f0f0f0',
             paddingLeft: '5px',
             paddingRight: '5px',

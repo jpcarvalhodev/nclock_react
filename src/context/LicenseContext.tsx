@@ -68,6 +68,8 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
             }
         } catch (error) {
             console.error('Erro ao atualizar licença:', error);
+        } finally {
+            fetchAllLicensesWithoutKey();
         }
     };
 

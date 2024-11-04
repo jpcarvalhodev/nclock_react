@@ -20,6 +20,7 @@ import { SelectFilter } from '../../components/SelectFilter';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
 import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
+import { toast } from 'react-toastify';
 
 // Define a interface para os filtros
 interface Filters {
@@ -79,7 +80,7 @@ export const User = () => {
         const cardDataProvided = card && Object.keys(card).length > 0;
 
         if (!cardExists && !cardDataProvided) {
-            console.log('Cartão não adicionado porque os dados não foram fornecidos');
+            toast.warn('Cartão não adicionado porque os dados não foram fornecidos');
         } else {
             const newEmployeeCard = {
                 ...card,

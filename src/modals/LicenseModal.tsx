@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Modal, Button, Form, InputGroup, FormControl, Col, OverlayTrigger, Tooltip, Row, Tabs, Tab } from 'react-bootstrap';
-import { EyeSlash, Eye } from 'react-bootstrap-icons';
 import { useLicense } from '../context/LicenseContext';
 import { License } from '../helpers/Types';
 import { toast } from 'react-toastify';
@@ -64,7 +63,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
 
             return valid;
@@ -250,9 +248,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         onChange={handleKeyChange}
                         type={showPassword ? 'text' : 'password'}
                     />
-                    <Button variant="outline-secondary" onClick={togglePasswordVisibility}>
-                        {showPassword ? <EyeSlash /> : <Eye />}
-                    </Button>
                 </InputGroup>
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
                     <Button style={{ width: '40%' }} variant="outline-primary" onClick={verifyKey}>Verificar Chave</Button>

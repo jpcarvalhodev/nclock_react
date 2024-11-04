@@ -272,7 +272,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     <AttendanceProvider>
       <Box className="TreeViewContainer">
       <p className='treeview-title-text' style={{ color: '#0050a0' }}>Árvore de Assiduidade</p>
-      <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
+      <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect={true}

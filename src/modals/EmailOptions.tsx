@@ -67,7 +67,6 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
             const fieldValue = emailFormData[field.key];
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 isValidEmail = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 isValidEmail = false;
@@ -78,7 +77,6 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
             const fieldValue = companyFormData[field.key];
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 isValidCompany = false;
-                newErrors[field.key] = `${field.label} não pode ser negativo.`;
             }
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 isValidCompany = false;

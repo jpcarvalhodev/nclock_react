@@ -279,7 +279,7 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
     <PersonsProvider>
       <Box className="TreeViewContainer">
       <p className='treeview-title-text'>Árvore de Pessoas</p>
-      <CustomOutlineButton icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
+      <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect
