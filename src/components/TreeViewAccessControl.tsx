@@ -182,7 +182,7 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
 
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text'>Árvore de Acessos</p>
+            <p className='treeview-title-text'>Filtros</p>
             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
             <Box className="treeViewFlexItem">
                 <RichTreeView

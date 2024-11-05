@@ -23,14 +23,14 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     // Função para verificar se o software está habilitado
     const getSoftwareEnabledStatus = (license: Partial<License>) => {
         const softwareEnabled: { [key: string]: boolean } = {};
-        
+
         Object.keys(license).forEach(key => {
             const item = license[key];
             if (typeof item === 'object' && item !== null && 'enable' in item) {
                 softwareEnabled[key] = item.enable;
             }
         });
-    
+
         return softwareEnabled;
     };
 

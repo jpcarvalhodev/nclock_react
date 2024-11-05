@@ -154,25 +154,42 @@ export const Zones = () => {
         rangeSeparatorText: 'de',
     };
 
-    // Mapeia os nomes das colunas
-    const columnNamesMap = zoneFields.reduce<Record<string, string>>((acc, field) => {
-        acc[field.key] = field.label;
-        return acc;
-    }, {});
-
     // Define as colunas da tabela
-    const tableColumns = selectedColumns
-        .map(columnKey => ({
-            id: columnKey,
-            name: (
-                <>
-                    {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={zones} />
-                </>
-            ),
-            selector: (row: Record<string, any>) => row[columnKey],
-            sortable: true,
-        }));
+    const columns: TableColumn<Zone>[] = zoneFields
+        .filter(field => selectedColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: Zone) => {
+                switch (field.key) {
+                    case 'photo':
+                        return row.photo ? 'Imagem disponível' : 'Sem imagem';
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+
+            return {
+                id: field.key,
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={zones} />
+                    </>
+                ),
+                selector: (row: Zone) => {
+                    if (field.key === 'name') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                },
+                sortable: true,
+                cell: (row: Zone) => {
+                    if (field.key === 'name') {
+                        return row[field.key] ?? '';
+                    }
+                    return formatField(row);
+                }
+            };
+        });
 
     // Filtra os dados da tabela
     const filteredDataTable = zones.filter(zone =>
@@ -254,7 +271,7 @@ export const Zones = () => {
             <div className='content-wrapper'>
                 <div className='table-css'>
                     <DataTable
-                        columns={[...tableColumns, actionColumn]}
+                        columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         onRowDoubleClicked={handleEditZone}
                         pagination

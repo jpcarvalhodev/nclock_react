@@ -91,6 +91,11 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
         onClose();
     };
 
+    // Define as opções para o campo modelo
+    const modelOptions = [
+        { value: 'Newland U1000', label: 'Newland U1000' },
+    ]
+
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
             <Modal.Header closeButton>
@@ -101,7 +106,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
                     <Row>
                         {[
                             { key: 'nomeQuiosque', label: 'Nome do Terminal', type: 'string', required: true },
-                            { key: 'estadoTerminal', label: 'Estado do Terminal', type: 'number' },
+                            { key: 'modelo', label: 'Modelo', type: 'string' },
                             { key: 'timeReboot', label: 'Tempo de Reinício', type: 'string' },
                         ].map((field) => (
                             <Col md={3} key={field.key}>
@@ -118,13 +123,22 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
                                     ) : (
                                         <Form.Label>{field.label}</Form.Label>
                                     )}
-                                    <Form.Control
-                                        type={field.type}
-                                        className="custom-input-height custom-select-font-size"
-                                        value={formData[field.key] !== undefined && formData[field.key] !== null ? formData[field.key] : ''}
-                                        onChange={handleChange}
-                                        name={field.key}
-                                    />
+                                    {field.key === 'modelo' ? (
+                                        <Form.Control as="select" name={field.key} value={formData[field.key] || ''} onChange={handleChange} className="custom-input-height custom-select-font-size">
+                                            <option value="">Selecione...</option>
+                                            {modelOptions.map(option => (
+                                                <option key={option.value} value={option.value}>{option.label}</option>
+                                            ))}
+                                        </Form.Control>
+                                    ) : (
+                                        <Form.Control
+                                            type={field.type === 'number' ? 'number' : 'text'}
+                                            value={formData[field.key] || ''}
+                                            onChange={handleChange}
+                                            name={field.key}
+                                            className="custom-input-height custom-select-font-size"
+                                        />
+                                    )}
                                     {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
                                 </Form.Group>
                             </Col>

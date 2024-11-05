@@ -104,7 +104,7 @@ export const Terminals = () => {
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
     const [userTabKey, setUserTabKey] = useState('users');
     const [filters, setFilters] = useState<Filters>({});
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'model', 'ipAddress']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status']);
     const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber', 'statusFprint', 'statusFace']);
     const [selectedBioColums, setSelectedBioColumns] = useState<string[]>(['enrollNumber', 'name', 'statusFprint', 'statusFace']);
     const [selectedCardColums, setSelectedCardColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber']);
@@ -247,7 +247,7 @@ export const Terminals = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['deviceNumber', 'deviceName', 'model', 'ipAddress']);
+        setSelectedColumns(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status']);
     };
 
     const handleMainSelect = (k: string | null) => {
@@ -343,7 +343,15 @@ export const Terminals = () => {
                     case 'productTime':
                         return formatDateAndTime(row[field.key]);
                     case 'status':
-                        return row.status ? 'Online' : 'Offline';
+                        return (
+                            <div style={{
+                                height: '10px',
+                                width: '10px',
+                                backgroundColor: row.status ? 'green' : 'red',
+                                borderRadius: '50%',
+                                display: 'inline-block'
+                            }} title={row.status ? 'Online' : 'Offline'} />
+                        );
                     case 'disabled':
                         return row.disabled ? 'Activo' : 'Inactivo';
                     default:

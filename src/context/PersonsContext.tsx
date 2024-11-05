@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useCallback } from 'react';
+import { createContext, useState, useContext, useCallback, useEffect } from 'react';
 import { ReactNode } from 'react';
 import { Department, Employee, EmployeeCard, EmployeeFace, EmployeeFP, Group } from '../helpers/Types';
 import { toast } from 'react-toastify';
@@ -191,6 +191,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Define a função de importação de biometria digital
     const handleImportEmployeeFP = async (employeeFP: Partial<EmployeeFP>) => {
         try {
             const employeesData = await apiService.employeeImportFP(employeeFP);
@@ -201,6 +202,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Define a função de importação de biometria facial
     const handleImportEmployeeFace = async (employeeFace: Partial<EmployeeFace>) => {
         try {
             const employeesData = await apiService.employeeImportFace(employeeFace);
@@ -211,6 +213,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Define a função de importação de cartão
     const handleImportEmployeeCard = async (employeeCard: Partial<EmployeeCard>) => {
         try {
             const employeesData = await apiService.employeeImportCard(employeeCard);
@@ -220,6 +223,13 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             console.error('Erro ao adicionar novo cartão:', error);
         }
     }
+
+    // Busca todos os dados ao carregar o componente
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            fetchAllData();
+        }
+    }, []);
 
     // Define o valor do contexto
     const contextValue: PersonsContextType = {

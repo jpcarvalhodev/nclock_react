@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailCompany, EmailUser, EmailUserCompany, Employee, Entity, License } from '../helpers/Types';
+import { EmailCompany, EmailUser, EmailUserCompany, Employee, Entity } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -20,8 +20,6 @@ import interventionAreas from '../assets/img/navbar/pessoas/interventionAreas.pn
 import businessAreas from '../assets/img/navbar/pessoas/businessAreas.png';
 import internalContacts from '../assets/img/navbar/pessoas/internalContacts.png';
 import Dropdown from 'react-bootstrap/Dropdown';
-import pin from '../assets/img/navbar/navbar/pin.png';
-import unpin from '../assets/img/navbar/navbar/unpin.png';
 import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.png';
 import nclock from '../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../assets/img/navbar/navbar/naccess.webp';
@@ -231,7 +229,7 @@ interface TabsInfo {
 // Define as propriedades do componente
 export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
-	const { handleAddModalNavbar } = useAds();
+	const { handleAddAds } = useAds();
 	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
@@ -1533,11 +1531,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para abrir o modal da entidade
 	const toggleEntityModal = () => setShowEntityModal(!showEntityModal);
-
-	// Função para adicionar publicidade via contexto
-	const handleUploadClick = (ad: FormData) => {
-		handleAddModalNavbar(ad);
-	};
 
 	// Função para abrir o anydesk em uma nova janela
 	const handleAnydeskWindow = () => {
@@ -2845,12 +2838,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'alertas nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/nkiosk/nkioskalerts" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={bell} alt="botão avisos" />
 													</span>
 													<span className="text">Avisos</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -3238,7 +3231,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={terminal} alt="botão terminais" />
 													</span>
-													<span className="text">Terminais</span>
+													<span className="text">Equipamentos</span>
 												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
@@ -3246,7 +3239,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={terminalmb} alt="botão terminais multibanco" />
 													</span>
-													<span className="text">Terminais MB</span>
+													<span className="text">Terminais</span>
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
@@ -3578,7 +3571,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<CreateModalAds
 						open={showPhotoAdsModal}
 						onClose={() => setShowPhotoAdsModal(false)}
-						onSave={handleUploadClick}
+						onSave={handleAddAds}
 						fields={adsFields}
 						initialValues={{}}
 						title='Publicidades'
@@ -3589,7 +3582,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<CreateModalAds
 						open={showVideoAdsModal}
 						onClose={() => setShowVideoAdsModal(false)}
-						onSave={handleUploadClick}
+						onSave={handleAddAds}
 						fields={adsFields}
 						initialValues={{}}
 						title='Publicidades'

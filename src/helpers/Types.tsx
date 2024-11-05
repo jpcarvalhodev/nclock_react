@@ -227,8 +227,8 @@ export type Ads = {
     Desativar: boolean;
     URLArquivo: string;
     Ordem: number;
-    CreateDate: Date;
-    UpdateDate: Date;
+    tempoExecucaoImagens: number;
+    dataFim: Date;
 };
 
 export type KioskTransaction = {
@@ -281,10 +281,11 @@ export type Register = {
     id: string;
     name: string;
     userName: string;
-    email: string;
+    emailAddress: string;
     password: string;
     confirmPassword: string;
     role: string;
+    profileImage: string;
 };
 
 export type EmailUser = {
@@ -459,6 +460,7 @@ export type MBDevice = {
     [key: string]: any;
     id: string;
     nomeQuiosque: string;
+    modelo: string
     estadoTerminal: number;
     timeReboot: string;
 };

@@ -1104,13 +1104,10 @@ export const fetchAdByid = async (id: string) => {
     return response.json();
 };
 
-export const addAd = async (ad: FormData) => {
+export const addAd = async (ads: FormData) => {
     const response = await fetchWithAuth(`Publicidade/upload`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'multipart/form-data;'
-        },
-        body: ad
+        body: ads
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1119,13 +1116,11 @@ export const addAd = async (ad: FormData) => {
     return response.json();
 };
 
-export const updateAd = async (ads: Ads) => {
-    const response = await fetchWithAuth(`Publicidade/${ads.Id}`, {
+export const updateAd = async (ads: Ads, ad: FormData) => {
+    console.log(Array.from(ad.entries()));
+    const response = await fetchWithAuth(`Publicidade/${ads.id}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'multipart/form-data;'
-        },
-        body: JSON.stringify(ads)
+        body: ad
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1291,13 +1286,10 @@ export const addNewRegisteredUser = async (registeredUser: Register) => {
     return response.json();
 }
 
-export const updateRegisteredUser = async (registeredUser: Register) => {
+export const updateRegisteredUser = async (registeredUser: FormData) => {
     const response = await fetchWithAuth(`Authentication/UpdateUser`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registeredUser)
+        body: registeredUser
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1704,5 +1696,19 @@ export const endContador = async (contadorId: string) => {
         toast.error(errorData.message);
         throw new Error;
     }	
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE ALERTAS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllAlerts = async () => {
+    const response = await fetchWithAuth(`KioskTransaction/GetAlertMessageAsync`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
     return response.json();
 }

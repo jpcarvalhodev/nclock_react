@@ -38,7 +38,7 @@ export const TerminalsMB = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [userTabKey, setUserTabKey] = useState('onOff');
     const [filters, setFilters] = useState<Filters>({});
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['nomeQuiosque', 'estadoTerminal', 'timeReboot']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['nomeQuiosque', 'modelo', 'estadoTerminal', 'timeReboot']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedTerminal, setSelectedTerminal] = useState<MBDevice | null>(null);
@@ -97,7 +97,7 @@ export const TerminalsMB = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['nomeQuiosque', 'estadoTerminal', 'timeReboot']);
+        setSelectedColumns(['nomeQuiosque', 'modelo', 'estadoTerminal', 'timeReboot']);
     };
 
     // Função para alternar a visibilidade das abas
@@ -151,11 +151,20 @@ export const TerminalsMB = () => {
     // Define as colunas de dispositivos
     const columns: TableColumn<MBDevice>[] = mbDeviceFields
         .filter(field => selectedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'estadoTerminal') return 1; else if (b.key === 'estadoTerminal') return -1; else return 0; })
         .map(field => {
             const formatField = (row: MBDevice) => {
                 switch (field.key) {
                     case 'estadoTerminal':
-                        return row[field.key] === 1 ? 'Ligado' : 'Desligado';
+                        return (
+                            <div style={{
+                                height: '10px',
+                                width: '10px',
+                                backgroundColor: row.status ? 'green' : 'red',
+                                borderRadius: '50%',
+                                display: 'inline-block'
+                            }} title={row.status ? 'Online' : 'Offline'} />
+                        );
                     case 'timeReboot':
                         return row[field.key] === '00:00:00' ? 'Sem tempo de reinício' : row[field.key];
                     default:

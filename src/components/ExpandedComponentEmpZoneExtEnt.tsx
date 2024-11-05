@@ -1,5 +1,5 @@
 import { employeeFields, externalEntityFields, zoneFields } from "../helpers/Fields";
-import { Employee, ExternalEntity, Zone } from "../helpers/Types";
+import { Employee, ExternalEntity, Register, Zone } from "../helpers/Types";
 import '../css/Expanded.css';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 
@@ -28,7 +28,7 @@ interface ExpandedComponentProps<T> {
 }
 
 // Define o componente
-export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | ExternalEntity>({
+export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | ExternalEntity | Register>({
     data,
     fields
 }: ExpandedComponentProps<T>) => {
@@ -38,7 +38,7 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
 
     const columnNames = columnNamesMap(fields);
 
-    const photo = (data as Employee).photo || (data as Zone).photo || (data as ExternalEntity).photo || modalAvatar;
+    const photo = (data as Employee).photo || (data as Zone).photo || (data as ExternalEntity).photo || (data as Register).profileImage || modalAvatar;
 
     return (
         <div className="expanded-details-container">
@@ -54,6 +54,9 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                 {fields.map((field) => {
                     const key = field.key;
                     if (key === 'photo') return null;
+                    if (key === 'profileImage') return null;
+                    if (key === 'password') return null;
+                    if (key === 'confirmPassword') return null;
                     const value = data[key];
                     let displayValue = value;
                     switch (key) {
@@ -83,6 +86,9 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                             break;
                         case 'externalEntityId':
                             displayValue = (data as Employee)['externalEntityName'] || '';
+                            break;
+                        case 'roles':
+                            displayValue = value ? value.join(', ') : 'Conta sem tipo especificado';
                             break;
                         default:
                             if (typeof value === 'object' && value !== null) {

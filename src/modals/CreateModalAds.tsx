@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, Row } from 'react-bootstrap';
+import { set } from 'date-fns';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
@@ -39,6 +40,12 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     const [files, setFiles] = useState<FileWithOrder[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
+    const [fileInputKey, setFileInputKey] = useState(Date.now());
+
+    // Função para resetar o input de arquivo
+    const resetFileInput = () => {
+        setFileInputKey(Date.now());
+    };
 
     // Extensões permitidas para imagens e vídeos
     const allowedImageExtensions = ['jpg', 'jpeg', 'png'];
@@ -73,6 +80,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
             setFormData((prevData) => ({ ...prevData, Creador: username }));
         } else {
             setFormData({});
+            setFiles([]);
         }
     }, [open]);
 
@@ -128,6 +136,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
         }
     };
 
+    // Função para lidar com a mudança de ordem dos ficheiros
     const handleOrderChange = (index: number, newOrder: number) => {
         if (newOrder <= 0 || isNaN(newOrder)) return;
 
@@ -157,6 +166,12 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
         }
     };
 
+    // Função para remover um ficheiro
+    const handleRemoveFile = () => {
+        setFiles([]);
+        resetFileInput();
+    };
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -169,28 +184,56 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     // Função para salvar os dados
     const handleSave = () => {
         const dataToSend = new FormData();
-        Object.keys(formData).forEach(key => {
-            const value = formData[key];
-    
-            if (value !== undefined) {
-                if (value && (value as any) instanceof Blob) {
-                    dataToSend.append(key, value);
-                } else if (typeof value === 'string') {
-                    dataToSend.append(key, value);
-                } else {
-                    dataToSend.append(key, String(value));
-                }
+        const imageFiles: FileWithOrder[] = [];
+        const videoFiles: FileWithOrder[] = [];
+
+        files.forEach(fileWithOrder => {
+            if (allowedImageExtensions.some(ext => fileWithOrder.file.name.toLowerCase().endsWith(ext))) {
+                imageFiles.push(fileWithOrder);
+            } else if (allowedVideoExtensions.some(ext => fileWithOrder.file.name.toLowerCase().endsWith(ext))) {
+                videoFiles.push(fileWithOrder);
             }
         });
-    
-        files.forEach((fileWithOrder, index) => {
-            dataToSend.append(`file_${index}`, fileWithOrder.file, fileWithOrder.file.name);
-            dataToSend.append(`order_${index}`, fileWithOrder.ordem.toString());
-        });
+
+        if (formData.Creador) {
+            dataToSend.append('Creador', formData.Creador);
+        }
+
+        if (imageFiles.length > 0) {
+            if (formData.nomeArquivo) {
+                dataToSend.append('NomesImagens', formData.nomeArquivo);
+            }
+            dataToSend.append('OrdensImagens', imageFiles.map(f => f.ordem.toString()).join(','));
+            imageFiles.forEach(f => {
+                dataToSend.append('imagens', f.file, f.file.name);
+            });
+        }
+
+        if (videoFiles.length > 0) {
+            if (formData.nomeArquivo) {
+                dataToSend.append('NomesVideos', formData.nomeArquivo);
+            }
+            dataToSend.append('OrdensVideos', videoFiles.map(f => f.ordem.toString()).join(','));
+            videoFiles.forEach(f => {
+                dataToSend.append('videos', f.file, f.file.name);
+            });
+        }
+
+        if (formData.tempoExecucaoImagens && imageFiles.length > 0) {
+            dataToSend.append('TemposExecucaoImagens', formData.tempoExecucaoImagens);
+        }
+
+        if (formData.dataFim && imageFiles.length > 0) {
+            dataToSend.append('DatasFimImagens', formData.dataFim);
+        }
+
+        if (formData.dataFim && videoFiles.length > 0) {
+            dataToSend.append('DatasFimVideos', formData.dataFim);
+        }
 
         onSave(dataToSend);
         onClose();
-    };        
+    };
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl">
@@ -202,8 +245,9 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                     <Row>
                         <Col md={6}>
                             <Form.Group controlId="formFile">
-                                <Form.Label>Upload de Arquivos<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <Form.Label>Upload de Ficheiros<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <Form.Control
+                                    key={fileInputKey}
                                     className="custom-input-height custom-select-font-size"
                                     type="file"
                                     accept={getAcceptedFileTypes()}
@@ -212,11 +256,11 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                                 />
                             </Form.Group>
                             {files.map((fileObj, index) => (
-                                <Row key={fileObj.file.name} className="align-items-center">
+                                <Row key={fileObj.file.name} className="align-items-center mt-2">
                                     <Col md={8}>
                                         <div>{fileObj.file.name}</div>
                                     </Col>
-                                    <Col md={4}>
+                                    <Col md={3}>
                                         <Form.Control
                                             type="number"
                                             value={fileObj.ordem}
@@ -224,26 +268,23 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                                             className="custom-input-height custom-select-font-size"
                                         />
                                     </Col>
+                                    <Col md={1} className="d-flex justify-content-center align-content-center">
+                                        <Button
+                                            variant="outline-danger"
+                                            size="sm"
+                                            onClick={() => handleRemoveFile()}
+                                        >
+                                            X
+                                        </Button>
+                                    </Col>
                                 </Row>
                             ))}
                         </Col>
                         <Col md={6}>
                             <Row>
                                 <Col md={6}>
-                                    <Form.Group controlId="formDesativar" className='d-flex align-items-center'>
-                                        <Form.Label>Activação de Publicidade:</Form.Label>
-                                        <Form.Check
-                                            type="switch"
-                                            label="Desativar"
-                                            name="Desativar"
-                                            checked={formData.Desativar}
-                                            onChange={handleChange}
-                                        />
-                                    </Form.Group>
-                                </Col>
-                                <Col md={6}>
                                     <Form.Group controlId="formNomeArquivo">
-                                        <Form.Label>Nome do Arquivo</Form.Label>
+                                        <Form.Label>Nome</Form.Label>
                                         <Form.Control
                                             className="custom-input-height custom-select-font-size"
                                             type="text"
@@ -253,8 +294,6 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                                         />
                                     </Form.Group>
                                 </Col>
-                            </Row>
-                            <Row>
                                 <Col md={6}>
                                     <Form.Group controlId="formtipoArquivo">
                                         <Form.Label>Tipo de Arquivo</Form.Label>
@@ -271,18 +310,28 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                                         {errors['tipoArquivo'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['tipoArquivo']}</div>}
                                     </Form.Group>
                                 </Col>
+                            </Row>
+                            <Row>
                                 <Col md={6}>
-                                    <Form.Group controlId="formUpdateDate">
-                                        <Form.Label>Data de Atualização</Form.Label>
+                                    <Form.Group controlId="formTempoExecucaoImagens">
+                                        <Form.Label>Tempo de Execução</Form.Label>
+                                        <Form.Control
+                                            className="custom-input-height custom-select-font-size"
+                                            type="number"
+                                            name="tempoExecucaoImagens"
+                                            value={formData.tempoExecucaoImagens || ''}
+                                            onChange={handleChange}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Group controlId="formDataFim">
+                                        <Form.Label>Data para Encerrar</Form.Label>
                                         <Form.Control
                                             className="custom-input-height custom-select-font-size"
                                             type="date"
-                                            name="updateDate"
-                                            value={
-                                                formData.updateDate
-                                                    ? new Date(formData.updateDate).toISOString().split('T')[0]
-                                                    : ''
-                                            }
+                                            name="dataFim"
+                                            value={formData.dataFim || ''}
                                             onChange={handleChange}
                                         />
                                     </Form.Group>

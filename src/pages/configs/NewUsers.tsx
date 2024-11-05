@@ -13,12 +13,13 @@ import { toast } from "react-toastify";
 import { SelectFilter } from "../../components/SelectFilter";
 import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
 import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
+import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 
 export const NewUsers = () => {
     const { navbarColor, footerColor } = useColor();
     const [users, setUsers] = useState<Register[]>([]);
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'userName', 'email', 'roles']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'userName', 'emailAddress', 'roles']);
     const [filterText, setFilterText] = useState("");
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [showAddModal, setShowAddModal] = useState(false);
@@ -49,9 +50,9 @@ export const NewUsers = () => {
     }
 
     // Função para atualizar usuários registados
-    const handleUpdateUser = async (user: Register) => {
+    const handleUpdateUser = async (user: FormData) => {
         try {
-            const data = await apiService.updateRegisteredUser(user as Register);
+            const data = await apiService.updateRegisteredUser(user);
             const updatedUsers = users.map(u => u.id === data.id ? data : u);
             setUsers(updatedUsers);
             toast.success(data.value || 'Usuário atualizado com sucesso!');
@@ -95,7 +96,7 @@ export const NewUsers = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['name', 'userName', 'email', 'roles']);
+        setSelectedColumns(['name', 'userName', 'emailAddress', 'roles']);
     };
 
     // Função para selecionar todas as colunas
@@ -108,6 +109,11 @@ export const NewUsers = () => {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
+
+    // Define o componente de linha expandida
+    const expandableRowComponent = (row: Register) => (
+        <ExpandedComponentEmpZoneExtEnt data={row} fields={registerFields} />
+    );
 
     // Filtra os dados da tabela
     const filteredDataTable = users.filter(user =>
@@ -125,6 +131,10 @@ export const NewUsers = () => {
         .map(field => {
             const formatField = (row: Register) => {
                 switch (field.key) {
+                    case 'roles':
+                        return row.roles ? row.roles.join(', ') : 'Conta sem tipo especificado';
+                    case 'profileImage':
+                        return row.profileImage ? 'Imagem disponível' : 'Sem imagem';
                     default:
                         return row[field.key] || '';
                 }
@@ -185,6 +195,8 @@ export const NewUsers = () => {
                         onRowDoubleClicked={handleEditUsers}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        expandableRows
+                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                     />
@@ -192,12 +204,12 @@ export const NewUsers = () => {
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             <CreateModalRegisterUsers
-                    title="Adicionar Registo de Utilizador"
-                    open={showAddModal}
-                    onClose={() => setShowAddModal(false)}
-                    onSave={handleAddUsers}
-                    fields={registerFields}
-                />
+                title="Adicionar Registo de Utilizador"
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={handleAddUsers}
+                fields={registerFields}
+            />
             {selectedUser && (
                 <UpdateModalRegisterUsers
                     open={showUpdateModal}

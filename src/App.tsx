@@ -125,6 +125,7 @@ import { NkioskCleaning } from './pages/nidtec/nkiosk/NkioskCleaning';
 import { NkioskOccurrences } from './pages/nidtec/nkiosk/NkioskOccurrences';
 import { NkioskCounter } from './pages/nidtec/nkiosk/NkioskCounter';
 import { NledAds } from './pages/nidtec/nled/NledAds';
+import { NkioskAlerts } from './pages/nidtec/nkiosk/NkioskAlerts';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -265,6 +266,7 @@ function AnimatedRoutes() {
               <Route path="/nkiosk/nkioskcleaning" element={<PageProtection><NkioskCleaning /></PageProtection>} />
               <Route path="/nkiosk/nkioskoccurrences" element={<PageProtection><NkioskOccurrences /></PageProtection>} />
               <Route path="/nkiosk/nkioskcounter" element={<PageProtection><NkioskCounter /></PageProtection>} />
+              <Route path="/nkiosk/nkioskalerts" element={<PageProtection><NkioskAlerts /></PageProtection>} />
               <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
               <Route path="/nled/nleddashboardlicensed" element={<PageProtection><NledDashboardLicensed /></PageProtection>} />
               <Route path="/nled/nledads" element={<PageProtection><NledAds /></PageProtection>} />

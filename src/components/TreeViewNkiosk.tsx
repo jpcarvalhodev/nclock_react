@@ -205,7 +205,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
 
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text' style={{ color: '#009739' }}>Árvore de Dispositivos</p>
+            <p className='treeview-title-text' style={{ color: '#009739' }}>Filtros</p>
             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
             <Box className="treeViewFlexItem">
                 <RichTreeView

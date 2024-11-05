@@ -190,6 +190,8 @@ export const ExternalEntities = () => {
                     case 'externalEntityTypeId':
                         const typeName = data.externalEntityTypes.find(type => type.externalEntityTypeID === row.externalEntityTypeId)?.name;
                         return typeName;
+                    case 'photo':
+                        return row.photo ? 'Imagem disponível' : 'Sem imagem';
                     default:
                         return row[field.key] || '';
                 }

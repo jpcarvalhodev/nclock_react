@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../helpers/Types";
 import { toast } from "react-toastify";
 import * as apiService from "../helpers/apiService";
@@ -135,6 +135,13 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             console.error('Erro ao apagar assiduidade:', error);
         }
     };
+
+    // Busca todas as assiduidades ao carregar o componente
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            fetchAllAttendances();
+        }
+    }, []);
 
     // Definindo o valor do contexto
     const contextValue = {

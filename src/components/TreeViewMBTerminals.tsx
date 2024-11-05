@@ -182,7 +182,7 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
 
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text' style={{ color: 'black' }}>Árvore de Dispositivos</p>
+            <p className='treeview-title-text' style={{ color: 'black' }}>Filtros</p>
             <CustomOutlineButton onClick={() => fetchAllMBDevices()} icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
             <Box className="treeViewFlexItem">
                 <RichTreeView

@@ -75,7 +75,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todas as actividades de quiosque
-    const fetchAllKioskTransaction = async (zktecoDeviceID: Devices): Promise <KioskTransaction[]> => {
+    const fetchAllKioskTransaction = async (zktecoDeviceID: Devices): Promise<KioskTransaction[]> => {
         try {
             const transactionData = await apiService.fetchAllKioskTransactions(zktecoDeviceID);
             return transactionData;
@@ -86,7 +86,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os dados das portas
-    const fetchAllDoorData = async (): Promise <Doors[]> => {
+    const fetchAllDoorData = async (): Promise<Doors[]> => {
         try {
             const doorData = await apiService.fetchAllDoors();
             return doorData;
@@ -97,7 +97,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os dispositivos de multibanco
-    const fetchAllMBDevices = async (): Promise <MBDevice[]> => {
+    const fetchAllMBDevices = async (): Promise<MBDevice[]> => {
         try {
             const data = await apiService.fetchAllMBDevices();
             setMBDevices(data);
@@ -109,7 +109,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar o fecho e abertura de todos os dispositivos multibanco
-    const fetchAllMBCloseOpen = async (): Promise <MBDeviceCloseOpen[]> => {
+    const fetchAllMBCloseOpen = async (): Promise<MBDeviceCloseOpen[]> => {
         try {
             const data = await apiService.fetchAllTPCloseOpen();
             return data;
@@ -299,8 +299,10 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todos os dispositivos ao carregar o componente
     useEffect(() => {
-        fetchAllDevices();
-        fetchAllMBDevices();
+        if (localStorage.getItem('token')) {
+            fetchAllDevices();
+            fetchAllMBDevices();
+        }
     }, []);
 
     // Define o valor do contexto

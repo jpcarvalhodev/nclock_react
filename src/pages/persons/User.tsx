@@ -71,8 +71,8 @@ export const User = () => {
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
-        await handleAddEmployee(employee as Employee); 
-        const employees = await fetchAllEmployees(); 
+        await handleAddEmployee(employee as Employee);
+        const employees = await fetchAllEmployees();
         const employeeCards = await fetchAllCardData();
         const lastEmployee = employees[employees.length - 1];
 
@@ -92,7 +92,7 @@ export const User = () => {
         refreshEmployees();
         setShowAddModal(false);
     };
- 
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
         await handleUpdateEmployee(employee);
@@ -235,6 +235,8 @@ export const User = () => {
                         return row.zoneName || '';
                     case 'externalEntityId':
                         return row.externalEntityName || '';
+                    case 'photo':
+                        return row.photo ? 'Imagem disponível' : 'Sem imagem';
                     default:
                         return row[field.key] || '';
                 }

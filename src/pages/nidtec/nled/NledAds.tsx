@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
@@ -8,17 +8,16 @@ import { useColor } from "../../../context/ColorContext";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { adsFields } from "../../../helpers/Fields";
 import { Ads } from "../../../helpers/Types";
-import * as apiService from "../../../helpers/apiService";
-import { toast } from "react-toastify";
 import { Button } from "react-bootstrap";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
 import { UpdateModalAds } from "../../../modals/UpdateModalAds";
+import { AdsContext, AdsContextType } from "../../../context/AdsContext";
 
 export const NledAds = () => {
     const { navbarColor, footerColor } = useColor();
-    const [ads, setAds] = useState<Ads[]>([]);
+    const { ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds } = useContext(AdsContext) as AdsContextType;
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -29,67 +28,14 @@ export const NledAds = () => {
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filterText, setFilterText] = useState('');
 
-    // Função para buscar as publicidades
-    const fetchAllAds = async () => {
-        try {
-            const data = await apiService.fetchAllAds();
-            setAds(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados das publicidades:', error);
-        }
-    };
-
-    // Função para adicionar uma publicidade
-    const handleAddAds = async (ad: FormData) => {
-        try {
-            const data = await apiService.addAd(ad);
-            setAds(ads => [...ads, data]);
-            toast.success(data.message || 'publicidade adicionada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao adicionar nova publicidade:', error);
-        } finally {
-            setShowAddModal(false);
-            refreshAds();
-        }
-    };
-
-    // Função para atualizar uma publicidade
-    const handleUpdateAds = async (ads: Ads) => {
-        try {
-            const updatedAds = await apiService.updateAd(ads);
-            setAds(ads => ads.map(a => a.id === updatedAds.id ? updatedAds : a));
-            toast.success(updatedAds.message || 'publicidade atualizada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar publicidade:', error);
-        } finally {
-            setShowUpdateModal(false);
-            refreshAds();
-        }
-    };
-
-    // Função para apagar uma publicidade
-    const handleDeleteAds = async (id: string) => {
-        try {
-            const deleteAds = await apiService.deleteAd(id);
-            toast.success(deleteAds.message || 'publicidade apagada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar publicidade:', error);
-        } finally {
-            setShowDeleteModal(false);
-            refreshAds();
-        }
-    };
-
     // Busca as publicidades ao carregar a página
     useEffect(() => {
-        fetchAllAds();
+        fetchAds();
     }, []);
 
     // Função para atualizar as publicidades
     const refreshAds = () => {
-        fetchAllAds();
+        fetchAds();
     };
 
     // Função para editar uma publicidade
@@ -147,6 +93,8 @@ export const NledAds = () => {
                         return new Date(row[field.key]).toLocaleString() || '';
                     case 'updateDate':
                         return new Date(row[field.key]).toLocaleString() || '';
+                    case 'dataFim':
+                        return new Date(row[field.key]).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -165,7 +113,7 @@ export const NledAds = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = ads.filter(ad =>
+    const filteredDataTable = ads.filter((ad: Ads) =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (ad[key] != null && String(ad[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -231,7 +179,7 @@ export const NledAds = () => {
                     <UpdateModalAds
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateAds}
+                        onUpdate={(entity) => handleUpdateAds(selectedAds, entity as FormData)}
                         entity={selectedAds}
                         fields={adsFields}
                         title="Publicidades"

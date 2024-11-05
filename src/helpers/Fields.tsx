@@ -110,8 +110,8 @@ export const zoneFields = [
 
 export const employeeAttendanceTimesFields = [
     { key: 'attendanceTime', label: 'Data e Hora de presença', type: 'date', required: true },
-    { key: 'deviceId', label: 'Dispositivo', type: 'dropdown' },
-    { key: 'deviceNumber', label: 'Número do Dispositivo', type: 'number' },
+    { key: 'deviceId', label: 'Equipamento', type: 'dropdown' },
+    { key: 'deviceNumber', label: 'Número do Equipamento', type: 'number' },
     { key: 'employeeId', label: 'Funcionário', type: 'dropdown', required: true },
     { key: 'enrollNumber', label: 'Número', type: 'string' },
     { key: 'employeeName', label: 'Nome do Funcionário', type: 'string' },
@@ -153,8 +153,8 @@ export const deviceFields = [
 
 export const employeeDeviceFields = [
     { key: 'deviceNumber', label: 'Número do Dispositivo', type: 'number' },
-    { key: 'deviceSn', label: 'Serial do Dispositivo', type: 'string' },
-    { key: 'deviceName', label: 'Nome do Dispositivo', type: 'string' },
+    { key: 'deviceSn', label: 'Serial do Equipamento', type: 'string' },
+    { key: 'deviceName', label: 'Nome do Equipamento', type: 'string' },
     { key: 'enrollNumber', label: 'Número', type: 'string' },
     { key: 'employeeName', label: 'Nome', type: 'string' },
     { key: 'startTime', label: 'Hora de Início', type: 'Date' },
@@ -163,9 +163,9 @@ export const employeeDeviceFields = [
 
 export const employeeCardFields = [
     { key: 'cardNumber', label: 'Número do Cartão', type: 'string' },
-    { key: 'devicePassword', label: 'Senha do Dispositivo', type: 'number' },
-    { key: 'devicePrivelage', label: 'Privilégio do Dispositivo', type: 'number' },
-    { key: 'deviceEnabled', label: 'Dispositivo Activado', type: 'boolean' },
+    { key: 'devicePassword', label: 'Senha do Equipamento', type: 'number' },
+    { key: 'devicePrivelage', label: 'Privilégio do Equipamento', type: 'number' },
+    { key: 'deviceEnabled', label: 'Equipamento Activado', type: 'boolean' },
 ];
 
 export const employeeFPFields = [
@@ -188,8 +188,8 @@ export const adsFields = [
     { key: 'desativar', label: 'Desativar', type: 'boolean' },
     { key: 'urlArquivo', label: 'URL do Arquivo', type: 'string' },
     { key: 'ordem', label: 'Ordem', type: 'number' },
-    { key: 'createDate', label: 'Data de Criação', type: 'Date' },
-    { key: 'updateDate', label: 'Data de Atualização', type: 'Date' },
+    { key: 'tempoExecucaoImagens', label: 'Tempo de Execução', type: 'number' },
+    { key: 'dataFim', label: 'Data para Encerrar', type: 'Date' },
 ];
 
 export const transactionFields = [
@@ -198,7 +198,7 @@ export const transactionFields = [
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'ID do Evento', type: 'number' },
     { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
-    { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
+    { key: 'deviceSN', label: 'Equipamento', type: 'string' },
     { key: 'createTime', label: 'Data de Criação', type: 'Date' },
     { key: 'updateTime', label: 'Data de Atualização', type: 'Date' },
 ];
@@ -212,13 +212,13 @@ export const transactionMBFields = [
     { key: 'email', label: 'Email', type: 'string' },
     { key: 'timestamp', label: 'Data e Hora', type: 'Date' },
     { key: 'tpId', label: 'Terminal', type: 'string' },
-    { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
+    { key: 'deviceSN', label: 'Equipamento', type: 'string' },
 ];
 
 export const transactionCardFields = [
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
     { key: 'nameUser', label: 'Nome do Usuário', type: 'string' },
-    { key: 'deviceSN', label: 'Nome do Dispositivo', type: 'string' },
+    { key: 'deviceSN', label: 'Equipamento', type: 'string' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventDoorId', label: 'Nome da Porta', type: 'number' },
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
@@ -227,10 +227,11 @@ export const transactionCardFields = [
 export const registerFields = [
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'userName', label: 'Nome de Usuário', type: 'string', required: true },
-    { key: 'email', label: 'E-Mail', type: 'string', required: true },
+    { key: 'emailAddress', label: 'E-Mail', type: 'string', required: true },
     { key: 'password', label: 'Senha', type: 'string', required: true },
-    { key: 'confirmPassword', label: 'Confirmar Senha', type: 'string', required: true },
-    { key: 'role', label: 'Tipo de Conta', type: 'string', required: true },
+    { key: 'confirmPassword', label: 'Confirmar Senha', type: 'string' },
+    { key: 'roles', label: 'Tipo de Conta', type: 'string', required: true },
+    { key: 'profileImage', label: 'Foto', type: 'string' },
 ];
 
 export const emailFields = [
@@ -359,24 +360,26 @@ export const doorsFields = [
     { key: 'sensorDelay', label: 'Atraso do Sensor de Porta', type: 'number' },
     { key: 'supperPwd', label: 'Senha de Emergência', type: 'string' },
     { key: 'verifyMode', label: 'Modo de Verificação', type: 'number', required: true },
-    { key: 'devId', label: 'Dispositivo', type: 'string' },
+    { key: 'devId', label: 'Equipamento', type: 'string' },
     { key: 'timezoneId', label: 'Período', type: 'string' },
 ];
 
 export const mbDeviceFields = [
-    { key: 'nomeQuiosque', label: 'Nome do Terminal', type: 'string', required: true },
+    { key: 'nomeQuiosque', label: 'Nome', type: 'string', required: true },
+    { key: 'modelo', label: 'Modelo', type: 'string' },
     { key: 'estadoTerminal', label: 'Estado do Terminal', type: 'number' },
     { key: 'timeReboot', label: 'Tempo de Reinício', type: 'string' },
 ];
 
 export const mbDeviceStatusFields = [
+    { key: 'tpId', label: 'Terminal', type: 'string' },
     { key: 'tipoStatus', label: 'Status', type: 'number' },
     { key: 'nomeStatus', label: 'Nome', type: 'string' },
     { key: 'timespam', label: 'Horário', type: 'date' },
 ];
 
 export const mbDeviceCloseOpenFields = [
-    { key: 'tpId', label: 'Dispositivo', type: 'string' },
+    { key: 'tpId', label: 'Terminal', type: 'string' },
     { key: 'timestamp', label: 'Horário', type: 'date' },
     { key: 'fechoImage', label: 'Fecho', type: 'string' },
     { key: 'aberturaImage', label: 'Abertura', type: 'string' },
@@ -437,7 +440,7 @@ export const recolhaMoedeiroEContadorFields = [
     { key: 'diferenca', label: 'Diferença', type: 'number' },
     { key: 'valorTotal', label: 'Valor Total', type: 'number', required: true },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'deviceID', label: 'Dispositivo', type: 'string', required: true },
+    { key: 'deviceID', label: 'Equipamento', type: 'string', required: true },
     { key: 'dataFimIntervencao', label: 'Data Fim', type: 'date' },
 ];
 
@@ -446,7 +449,7 @@ export const manualOpenDoorFields = [
     { key: 'nomeResponsavel', label: 'Nome', type: 'string' },
     { key: 'nomeEvento', label: 'Nome do Evento', type: 'string' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'deviceName', label: 'Nome do Dispositivo', type: 'string' },
+    { key: 'deviceName', label: 'Equipamento', type: 'string' },
     { key: 'doorName', label: 'Nome da Porta', type: 'string' },
 ];
 
@@ -454,6 +457,6 @@ export const limpezasEOcorrenciasFields = [
     { key: 'dataCreate', label: 'Data de Criação', type: 'date' },
     { key: 'responsavel', label: 'Pessoa Responsável', type: 'string', required: true },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'deviceId', label: 'Dispositivo', type: 'string', required: true },
-    { key: 'deviceName', label: 'Dispositivo', type: 'string' },
+    { key: 'deviceId', label: 'Equipamento', type: 'string', required: true },
+    { key: 'deviceName', label: 'Equipamento', type: 'string' },
 ];

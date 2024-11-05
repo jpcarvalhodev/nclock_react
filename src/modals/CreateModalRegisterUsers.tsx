@@ -136,17 +136,17 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                             </Form.Group>
                         </Col>
                         <Col md={6}>
-                            <Form.Group controlId="formEmail">
+                            <Form.Group controlId="formEmailAddress">
                                 <Form.Label>E-Mail <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-email">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-emailAddress">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
                                         type="email"
-                                        name="email"
-                                        value={formData.email || ''}
+                                        name="emailAddress"
+                                        value={formData.emailAddress || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
