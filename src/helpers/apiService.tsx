@@ -1331,13 +1331,10 @@ export const updateUserEmailConfig = async (email: Partial<EmailUser>) => {
     return response.json();
 }
 
-export const addCompanyConfig = async (companyEmail: Partial<EmailCompany>) => {
+export const addCompanyConfig = async (companyEmail: FormData) => {
     const response = await fetchWithAuth(`Configuration/CreateEntidade`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(companyEmail)
+        body: companyEmail
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1347,13 +1344,10 @@ export const addCompanyConfig = async (companyEmail: Partial<EmailCompany>) => {
     return response.json();
 }
 
-export const updateCompanyConfig = async (companyEmail: Partial<EmailCompany>) => {
-    const response = await fetchWithAuth(`Configuration/UpdateCompany`, {
+export const updateCompanyConfig = async (companyEmail: FormData) => {
+    const response = await fetchWithAuth(`Configuration/UpadateCompany`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(companyEmail)
+        body: companyEmail
     });
     if (!response.ok) {
         const errorData = await response.json();

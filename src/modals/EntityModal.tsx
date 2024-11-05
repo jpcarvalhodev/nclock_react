@@ -3,14 +3,15 @@ import { useEffect, useState } from 'react';
 import { Modal, Button, Form, Row, Col, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import no_image from '../assets/img/terminais/no_image.png';
-import { Entity } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
 
 // Interface para as propriedades do modal
 interface UpdateModalProps<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onUpdate: (data: T) => void;
+    onUpdate: (data: FormData) => void;
+    onSave: (data: FormData) => void;
     fields: Field[];
     entities: T[];
     entity: T;
@@ -26,13 +27,16 @@ interface Field {
     errorMessage?: string;
 }
 
-export const EntityModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, fields, entity, entities }: UpdateModalProps<T>) => {
+export const EntityModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, onSave, fields, entity, entities }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [selectedEntity, setSelectedEntity] = useState<T>(entity);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
+    const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+
+    console.log(entity)
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -59,8 +63,14 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (open) {
-            setFormData(entity);
+        if (entity && open) {
+            setFormData({ ...entity });
+            const imageURL = entity.logotipo ? `${apiService.baseURL}${entity.logotipo}` : no_image;
+            console.log("Final image URL:", imageURL);
+            setDeviceImage(imageURL);
+        } else {
+            setFormData({});
+            setDeviceImage(null);
         }
     }, [entity, open]);
 
@@ -68,6 +78,14 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
     useEffect(() => {
         setFormData({ ...selectedEntity });
     }, [selectedEntity]);
+
+    useEffect(() => {
+        return () => {
+            if (deviceImage && typeof deviceImage === 'string' && deviceImage.startsWith('blob:')) {
+                URL.revokeObjectURL(deviceImage);
+            }
+        };
+    }, [deviceImage]);    
 
     // Função para selecionar a entidade
     const selectEntity = (entity: T) => {
@@ -94,39 +112,12 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (readerEvent) => {
-                const image = new Image();
-                image.onload = () => {
-                    let width = image.width;
-                    let height = image.height;
-
-                    if (width > 768 || height > 768) {
-                        if (width > height) {
-                            height *= 768 / width;
-                            width = 768;
-                        } else {
-                            width *= 768 / height;
-                            height = 768;
-                        }
-                    }
-
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    ctx?.drawImage(image, 0, 0, image.width, image.height);
-                    const dataUrl = canvas.toDataURL('image/png');
-                    setDeviceImage(dataUrl);
-                    setFormData(prevFormData => ({
-                        ...prevFormData,
-                        photo: dataUrl
-                    }));
-                };
-                image.src = readerEvent.target?.result as string;
-            };
-            reader.readAsDataURL(file);
+            setProfileImageFile(file);
+            const objectUrl = URL.createObjectURL(file);
+            setDeviceImage(objectUrl);
         }
     };
-
+    
     // Função para acionar o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
@@ -149,7 +140,51 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
 
     // Função para lidar com o salvamento
     const handleSave = () => {
-        onUpdate(formData as T);
+
+        const dataToSend = new FormData();
+
+        if (formData.nome) {
+            dataToSend.append('Nome', formData.nome);
+        }
+        if (formData.morada) {
+            dataToSend.append('morada', formData.morada);
+        }
+        if (formData.cPostal) {
+            dataToSend.append('CPostal', formData.cPostal);
+        }
+        if (formData.localidade) {
+            dataToSend.append('Localidade', formData.localidade);
+        }
+        if (formData.telefone) {
+            dataToSend.append('Telefone', formData.telefone);
+        }
+        if (formData.email) {
+            dataToSend.append('Email', formData.email);
+        }
+        if (formData.nif) {
+            dataToSend.append('NIF', formData.nif);
+        }
+        if (formData.www) {
+            dataToSend.append('WWW', formData.www);
+        }
+        if (formData.observacoes) {
+            dataToSend.append('Observacoes', formData.observacoes);
+        }
+        if (formData.enabled) {
+            dataToSend.append('Enabled', formData.enabled);
+        }
+        if (profileImageFile) {
+            dataToSend.append('Logotipo', profileImageFile);
+        }
+
+        if (entity.id) {
+            dataToSend.append('id', entity.id);
+            onUpdate(dataToSend);
+        }
+
+        if (!entity.id) {
+            onSave(dataToSend);
+        }
         onClose();
     };
 
@@ -172,7 +207,8 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                                 <tbody>
                                     {entities.map((ent, index) => (
                                         <tr key={index} onClick={() => selectEntity(ent)} style={{ cursor: 'pointer' }}>
-                                            <td>{ent.name}</td>
+                                            <td>{ent.nome}</td>
+                                            <td>{ent.nif}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -203,8 +239,8 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                             <Form.Group controlId="formEnabled" className='mt-4' style={{ marginBottom: 14 }}>
                                 <Form.Check
                                     type="switch"
-                                    label="Activa?"
                                     name="enabled"
+                                    label="Activo"
                                     checked={formData.enabled}
                                     onChange={handleChange}
                                     style={{ width: '100%', display: 'flex', justifyContent: 'space-between', flexDirection: 'row-reverse', padding: 0 }}

@@ -461,30 +461,48 @@ export const NavBar = ({ style }: NavBarProps) => {
 			toast.success('Email adicionado com sucesso!');
 		} catch (error) {
 			console.error('Erro ao adicionar o email registado:', error);
+		} finally {
+			fetchEmailConfig();
 		}
 	}
 
 	// Função de atualização de emails de utilizadores e as configurações da empresa
-	const handleUpdateEmailConfig = async (email: Partial<EmailUser>, companyConfig: Partial<EmailCompany>) => {
+	const handleUpdateEmailConfig = async (email: Partial<EmailUser>) => {
 		try {
 			const data = await apiService.updateUserEmailConfig(email);
 			const updatedUsers = email.map((u: EmailUser) => u.id === data.id ? data : u);
 			setEmailCompanyConfig(updatedUsers);
-			await apiService.updateCompanyConfig(companyConfig);
 			toast.success(data.value || 'Email atualizado com sucesso!');
 		} catch (error) {
 			console.error('Erro ao atualizar o email registado:', error);
+		} finally {
+			fetchEmailConfig();
+		}
+	}
+
+	// Função para adicionar os dados da empresa
+	const handleAddCompanyData = async (entityData: FormData) => {
+		try {
+			const data = await apiService.addCompanyConfig(entityData);
+			setEntityData(data);
+			toast.success(data.value || 'Dados da empresa adicionados com sucesso!');
+		} catch (error) {
+			console.error('Erro ao adicionar os dados da empresa:', error);
+		} finally {
+			fetchCompanyConfig();
 		}
 	}
 
 	// Função para atualizar os dados da empresa
-	const handleUpdateCompanyData = async (entityData: Partial<Entity>) => {
+	const handleUpdateCompanyData = async (entityData: FormData) => {
 		try {
 			const data = await apiService.updateCompanyConfig(entityData);
 			setEntityData(data);
 			toast.success(data.value || 'Dados da empresa atualizados com sucesso!');
 		} catch (error) {
 			console.error('Erro ao atualizar os dados da empresa:', error);
+		} finally {
+			fetchCompanyConfig();
 		}
 	}
 
@@ -1537,6 +1555,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 		window.open('https://anydesk.com/pt');
 	}
 
+	// Função para abrir a câmera em uma nova janela
+	const handleCameraOpenWindow = () => {
+		window.open('http://192.168.1.181');
+	}
+
 	// Função para alternar a visibilidade da seção quando o título for clicado
 	const toggleGroupVisibility = (groupId: string) => {
 		setVisibleGroup((prev) => (prev === groupId ? null : groupId));
@@ -1544,6 +1567,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Rota para verificar as ribbons
 	const currentRoute = window.location.pathname;
+
+	console.log(entityData);
+	console.log(entitiesData);
 
 	return (
 		<ColorProvider>
@@ -2410,7 +2436,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'videovigilancia nview') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Button onClick={handleCameraOpenWindow} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" >
 													<span className="icon">
 														<img src={online} alt="botão online" />
 													</span>
@@ -3608,6 +3634,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						open={showEntityModal}
 						onClose={() => setShowEntityModal(false)}
 						onUpdate={handleUpdateCompanyData}
+						onSave={handleAddCompanyData}
 						entity={entityData}
 						entities={entitiesData}
 						fields={entityFields}
