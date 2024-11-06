@@ -33,7 +33,15 @@ function formatDateAndTime(input: string | Date): string {
 const formatDataItem = (item: DataItem, column: string) => {
     switch (column) {
         case 'birthday':
-            return item.birthday ? formatDateAndTime(item[column]) : '';
+            return item.birthday ? formatDateAndTime(item.birthday) : '';
+        case 'admissionDate':
+            return item.admissionDate ? formatDateAndTime(item.admissionDate) : '';
+        case 'biIssuance':
+            return item.biIssueDate ? formatDateAndTime(item.biIssuance) : '';
+        case 'biValidity':
+            return item.biValidity ? formatDateAndTime(item.biValidity) : '';
+        case 'exitDate':
+            return item.exitDate ? formatDateAndTime(item.exitDate) : '';
         case 'status':
             return item.status ? 'Activo' : 'Inactivo';
         case 'statusEmail':
@@ -89,7 +97,7 @@ const formatDataItem = (item: DataItem, column: string) => {
         case 'eventTime':
             return new Date(item.eventTime).toLocaleString() || '';
         case 'timestamp':
-            return item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+            return new Date(item.timestamp).toLocaleString() || '';
         case 'eventDoorId':
             switch (item.eventDoorId) {
                 case 1: return 'Terminal';

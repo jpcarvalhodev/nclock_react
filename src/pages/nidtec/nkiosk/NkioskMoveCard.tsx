@@ -98,7 +98,7 @@ export const NkioskMoveCard = () => {
     // Busca as publicidades ao carregar a página
     useEffect(() => {
         fetchAllMoveCard();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {

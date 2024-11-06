@@ -567,11 +567,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                 <Row>
                                     {[
-                                        { key: 'biNumber', label: 'Número de BI', type: 'string' },
-                                        { key: 'biIssuance', label: 'Emissão de BI', type: 'date' },
-                                        { key: 'biValidity', label: 'Validade de BI', type: 'date' },
-                                        { key: 'admissionDate', label: 'Data de Admissão', type: 'date' },
-                                        { key: 'exitDate', label: 'Data de Saída', type: 'date' },
+                                        { key: 'bInumber', label: 'Número de BI', type: 'string' },
+                                        { key: 'bIissuance', label: 'Emissão de BI', type: 'datetime-local' },
+                                        { key: 'biValidity', label: 'Validade de BI', type: 'datetime-local' },
+                                        { key: 'admissionDate', label: 'Data de Admissão', type: 'datetime-local' },
+                                        { key: 'exitDate', label: 'Data de Saída', type: 'datetime-local' },
                                         { key: 'departmentId', label: 'Departamento', type: 'dropdown' },
                                         { key: 'professionId', label: 'Profissão', type: 'dropdown' },
                                         { key: 'groupId', label: 'Grupo', type: 'dropdown' },

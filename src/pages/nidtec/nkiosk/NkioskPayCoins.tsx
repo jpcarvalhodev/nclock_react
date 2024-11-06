@@ -114,11 +114,12 @@ export const NkioskPayCoins = () => {
     useEffect(() => {
         fetchAllPayCoins();
         fetchTerminalData();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {
         fetchAllPayCoins();
+        fetchTerminalData();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -183,7 +184,7 @@ export const NkioskPayCoins = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        return devices.find(device => device.serialNumber === row.deviceSN)?.name || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || 'Sem Dados';
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':

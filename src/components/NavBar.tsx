@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailCompany, EmailUser, EmailUserCompany, Employee, Entity } from '../helpers/Types';
+import { EmailUser, Employee, Entity } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -139,7 +139,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailAndCompanyFields, entityFields, licenseFields } from '../helpers/Fields';
+import { adsFields, emailAndCompanyFields, emailFields, entityFields, licenseFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -166,6 +166,7 @@ import ngold from '../assets/img/navbar/navbar/ngold.png';
 import open_door from '../assets/img/navbar/nkiosk/open_door.png';
 import count from '../assets/img/navbar/nkiosk/count.png';
 import cleaning from '../assets/img/navbar/nkiosk/cleaning.png';
+import certificate from '../assets/img/navbar/certificate.png';
 import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
 import { EntityModal } from '../modals/EntityModal';
@@ -353,7 +354,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showPhotoAdsModal, setShowPhotoAdsModal] = useState(false);
 	const [showVideoAdsModal, setShowVideoAdsModal] = useState(false);
 	const [showEmailModal, setShowEmailModal] = useState(false);
-	const [emailCompanyConfig, setEmailCompanyConfig] = useState<EmailUserCompany>();
+	const [emailCompanyConfig, setEmailCompanyConfig] = useState<EmailUser>();
 	const [visibleGroup, setVisibleGroup] = useState<string | null>(null);
 	const [isMobile, setIsMobile] = useState<boolean>(false);
 	const [showAboutModal, setShowAboutModal] = useState(false);
@@ -445,11 +446,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const fetchCompanyConfig = async () => {
 		try {
 			const data = await apiService.fetchAllCompanyConfig();
-			setEmailCompanyConfig(data);
 			setEntityData(data);
 			setEntitiesData(data);
 		} catch (error) {
-			console.error('Erro ao carregar os emails registados:', error);
+			console.error('Erro ao carregar os empresas:', error);
 		}
 	}
 
@@ -467,7 +467,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	}
 
 	// Função de atualização de emails de utilizadores e as configurações da empresa
-	const handleUpdateEmailConfig = async (email: Partial<EmailUser>) => {
+	const handleUpdateEmailConfig = async (email: EmailUser) => {
 		try {
 			const data = await apiService.updateUserEmailConfig(email);
 			const updatedUsers = email.map((u: EmailUser) => u.id === data.id ? data : u);
@@ -1070,7 +1070,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			dashboard: { label: 'INÍCIO', image: nidgroup, alt: 'INÍCIO', key: 'dashboard' },
 			cliente: {
 				label: 'LICENÇAS',
-				image: nidgroup,
+				image: certificate,
 				alt: 'LICENÇAS',
 				key: 'cliente',
 				submenu: filteredSubmenu,
@@ -1568,9 +1568,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Rota para verificar as ribbons
 	const currentRoute = window.location.pathname;
 
-	console.log(entityData);
-	console.log(entitiesData);
-
 	return (
 		<ColorProvider>
 			<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
@@ -1628,8 +1625,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<Dropdown.Menu>
 								<div className='dropdown-content'>
 									<img src={employee?.photo || profileAvatar} alt="user photo" className='profile-avatar' />
-									<Dropdown.Item disabled>{user.name}</Dropdown.Item>
-									<Dropdown.Item disabled>{user.email}</Dropdown.Item>
 									<Dropdown.Item onClick={logout}>Sair</Dropdown.Item>
 								</div>
 							</Dropdown.Menu>
@@ -1963,20 +1958,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'logs naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2187,20 +2182,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'logs naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2327,20 +2322,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'logs nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2461,20 +2456,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'logs nview') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2587,20 +2582,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'logs nsecur') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2839,20 +2834,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'logs nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -2987,20 +2982,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={logs} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
-												</Button>
+												</Link>
 											</div>
 										</div>
 									)}
@@ -3582,14 +3577,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 						initialValues={{}}
 					/>
 				)}
-				{showEmailModal && emailCompanyConfig && (
+				{showEmailModal && (
 					<EmailOptionsModal
 						open={showEmailModal}
 						onClose={() => setShowEmailModal(false)}
 						onSave={handleAddEmailConfig}
 						onUpdate={handleUpdateEmailConfig}
-						entity={emailCompanyConfig}
-						fields={emailAndCompanyFields}
+						entity={emailCompanyConfig || {} as EmailUser}
+						fields={emailFields}
 						title='Opções de E-Mail'
 					/>
 				)}

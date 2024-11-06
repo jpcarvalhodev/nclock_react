@@ -4,13 +4,19 @@ import * as apiService from "../helpers/apiService";
 // Estilos para o documento PDF
 const styles = StyleSheet.create({
     page: {
-        padding: 40,
+        flexDirection: 'column',
         backgroundColor: '#FFF',
+        padding: 30,
+    },
+    header: {
+        fontSize: 12,
+        marginBottom: 20,
+        textAlign: 'center',
+        textTransform: 'uppercase'
     },
     table: {
         display: 'table',
         width: 'auto',
-        maxWidth: 'auto',
         borderStyle: 'solid',
         borderWidth: 1,
         borderRightWidth: 0,
@@ -21,32 +27,43 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: '#E4E4E4',
         borderBottomStyle: 'solid',
+        alignItems: 'center',
+        minHeight: 24,
     },
     tableColHeader: {
-        width: '20%',
+        width: '25%',
         borderStyle: 'solid',
         borderWidth: 1,
         borderLeftWidth: 0,
         borderTopWidth: 0,
         backgroundColor: '#f2f2f2',
-        padding: 5,
+        padding: 8,
         textAlign: 'center',
+        fontWeight: 'bold',
     },
     tableCol: {
-        width: '20%',
+        width: '25%',
         borderStyle: 'solid',
         borderWidth: 1,
         borderLeftWidth: 0,
         borderTopWidth: 0,
-        padding: 5,
+        padding: 8,
         textAlign: 'center',
     },
     tableCellHeader: {
         fontSize: 10,
-        fontWeight: 'bold',
+        fontWeight: 'bold'
     },
     tableCell: {
-        fontSize: 10,
+        fontSize: 10
+    },
+    footer: {
+        fontSize: 12,
+        textAlign: 'center',
+        marginTop: 25,
+        paddingTop: 10,
+        borderTopWidth: 1,
+        borderColor: '#E4E4E4'
     }
 });
 
@@ -90,6 +107,14 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
     switch (fieldKey) {
         case 'birthday':
             return item.birthday ? formatDateAndTime(item.birthday) : '';
+        case 'admissionDate':
+            return item.admissionDate ? formatDateAndTime(item.admissionDate) : '';
+        case 'biIssuance':
+            return item.biIssueDate ? formatDateAndTime(item.biIssuance) : '';
+        case 'biValidity':
+            return item.biValidity ? formatDateAndTime(item.biValidity) : '';
+        case 'exitDate':
+            return item.exitDate ? formatDateAndTime(item.exitDate) : '';
         case 'status':
         case 'statusEmail':
             return item[fieldKey] ? 'Activo' : 'Inactivo';
@@ -144,7 +169,7 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
         case 'eventTime':
             return new Date(item.eventTime).toLocaleString() || '';
         case 'timestamp':
-            return item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+            return new Date(item.timestamp).toLocaleString() || '';
         case 'eventDoorId':
             switch (item.eventDoorId) {
                 case 1: return 'Terminal';
@@ -179,7 +204,7 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
 // Componente para renderizar o documento PDF
 export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
     const maxColsPerPage = 5;
-    const allColumns = ['eventId', 'appId', 'timezoneId', 'doorId', 'tpId', 'id', 'deviceId', 'birthday', 'status', 'statusEmail', 'rgpdAut', 'departmentId', 'professionId', 'categoryId', 'groupId', 'zoneId', 'externalEntityId', 'attendanceTime', 'inOutMode', 'code', 'machineNumber', 'cardNumber', 'productTime', 'createDate', 'updateDate', 'createTime', 'updateTime', 'eventTime', 'timestamp', 'eventDoorId'];
+    const allColumns = ['eventId', 'appId', 'timezoneId', 'doorId', 'tpId', 'id', 'deviceId', 'birthday', 'admissionDate', 'biIssuance', 'biValidity', 'exitDate', 'status', 'statusEmail', 'rgpdAut', 'departmentId', 'professionId', 'categoryId', 'groupId', 'zoneId', 'externalEntityId', 'attendanceTime', 'inOutMode', 'code', 'machineNumber', 'cardNumber', 'productTime', 'createDate', 'updateDate', 'createTime', 'updateTime', 'eventTime', 'timestamp', 'eventDoorId', 'transactionType', 'estadoTerminal', 'timeReboot', 'dataRecolha'];
     const columnsToIgnore = ['clientTicket', 'merchantTicket'];
 
     const updateColumnsToIgnore = () => {
@@ -207,7 +232,7 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                     <View style={styles.table}>
                         <View style={styles.tableRow}>
                             {fieldGroup.map((field) => (
-                                <View key={field.key} style={styles.tableColHeader}>
+                                <View key={field.key} style={{...styles.tableColHeader, width: `${80 / fields.length}%`}}>
                                     <Text style={styles.tableCellHeader}>{field.label}</Text>
                                 </View>
                             ))}
@@ -217,7 +242,7 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                                 {fieldGroup.map((field) => {
                                     const value = formatField(item, field.key);
                                     return (
-                                        <View key={field.key} style={styles.tableCol}>
+                                        <View key={field.key} style={{...styles.tableCol, width: `${80 / fields.length}%`}}>
                                             <Text style={styles.tableCell}>{value}</Text>
                                         </View>
                                     );
@@ -225,6 +250,7 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                             </View>
                         ))}
                     </View>
+                    <Text style={styles.footer}>Gerado em {new Date().toLocaleString()}</Text>
                 </Page>
             ))}
         </Document>

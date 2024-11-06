@@ -40,6 +40,21 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
 
     const photo = (data as Employee).photo || (data as Zone).photo || (data as ExternalEntity).photo || (data as Register).profileImage || modalAvatar;
 
+    // Função para formatar a data e a hora
+    function formatDateAndTime(input: string | Date): string {
+        const date = typeof input === 'string' ? new Date(input) : input;
+        const options: Intl.DateTimeFormatOptions = {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+        };
+        return new Intl.DateTimeFormat('pt-PT', options).format(date);
+    }
+
     return (
         <div className="expanded-details-container">
             <div className="entity-photo">
@@ -62,6 +77,18 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                     switch (key) {
                         case 'status':
                             displayValue = value ? 'Activo' : 'Inactivo';
+                            break;
+                        case 'admissionDate':
+                            displayValue = value ? formatDateAndTime(value) : '';
+                            break;
+                        case 'bIissuance':
+                            displayValue = value ? formatDateAndTime(value) : '';
+                            break;
+                        case 'biValidity':
+                            displayValue = value ? formatDateAndTime(value) : '';
+                            break;
+                        case 'exitDate':
+                            displayValue = value ? formatDateAndTime(value) : '';
                             break;
                         case 'statusEmail':
                             displayValue = value ? 'Activo' : 'Inactivo';

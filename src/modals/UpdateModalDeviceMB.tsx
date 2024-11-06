@@ -93,7 +93,6 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
 
     // Função para salvar os dados
     const handleSave = () => {
-        console.log(formData);
         onUpdate(formData as T);
         onClose();
     };

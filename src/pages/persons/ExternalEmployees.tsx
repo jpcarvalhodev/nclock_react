@@ -217,6 +217,14 @@ export const ExternalEmployees = () => {
                 switch (field.key) {
                     case 'birthday':
                         return row.birthday ? formatDateAndTime(row[field.key]) : '';
+                    case 'admissionDate':
+                        return row.admissionDate ? formatDateAndTime(row[field.key]) : '';
+                    case 'biIssuance':
+                        return row.biIssueDate ? formatDateAndTime(row[field.key]) : '';
+                    case 'biValidity':
+                        return row.biValidity ? formatDateAndTime(row[field.key]) : '';
+                    case 'exitDate':
+                        return row.exitDate ? formatDateAndTime(row[field.key]) : '';
                     case 'status':
                         return row.status ? 'Activo' : 'Inactivo';
                     case 'statusEmail':

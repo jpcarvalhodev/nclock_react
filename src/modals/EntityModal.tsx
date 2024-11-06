@@ -36,8 +36,6 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
 
-    console.log(entity)
-
     // UseEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -63,33 +61,29 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (entity && open) {
+        if (open && entities.length > 0) {
             setFormData({ ...entity });
-            const imageURL = entity.logotipo ? `${apiService.baseURL}${entity.logotipo}` : no_image;
-            console.log("Final image URL:", imageURL);
-            setDeviceImage(imageURL);
         } else {
             setFormData({});
             setDeviceImage(null);
         }
-    }, [entity, open]);
+    }, [entities, open]);
 
     // Função para lidar com o clique na tabela
     useEffect(() => {
         setFormData({ ...selectedEntity });
     }, [selectedEntity]);
 
-    useEffect(() => {
-        return () => {
-            if (deviceImage && typeof deviceImage === 'string' && deviceImage.startsWith('blob:')) {
-                URL.revokeObjectURL(deviceImage);
-            }
-        };
-    }, [deviceImage]);    
-
     // Função para selecionar a entidade
     const selectEntity = (entity: T) => {
         setSelectedEntity(entity);
+        updateImageForSelectedEntity(entity);
+    };
+
+    // Função para atualizar a imagem da entidade selecionada
+    const updateImageForSelectedEntity = (entity: T) => {
+        const imageURL = entity.logotipo ? `${apiService.baseURL}${entity.logotipo}` : no_image;
+        setDeviceImage(imageURL);
     };
 
     // Função para validar o formulário
@@ -117,7 +111,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
             setDeviceImage(objectUrl);
         }
     };
-    
+
     // Função para acionar o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
@@ -136,6 +130,15 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
             return;
         }
         handleSave();
+    };
+
+    // Função para lidar com o clique no botão de atualizar
+    const handleUpdateSaveClick = () => {
+        if (!isFormValid) {
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            return;
+        }
+        handleUpdate();
     };
 
     // Função para lidar com o salvamento
@@ -177,14 +180,55 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
             dataToSend.append('Logotipo', profileImageFile);
         }
 
-        if (entity.id) {
-            dataToSend.append('id', entity.id);
-            onUpdate(dataToSend);
+        onSave(dataToSend);
+        onClose();
+    };
+
+    // Função para lidar com a atualização
+    const handleUpdate = () => {
+
+        const dataToSend = new FormData();
+
+        dataToSend.append('id', selectedEntity.id);
+
+        if (formData.nome) {
+            dataToSend.append('Nome', formData.nome);
+        }
+        if (formData.morada) {
+            dataToSend.append('morada', formData.morada);
+        }
+        if (formData.cPostal) {
+            dataToSend.append('CPostal', formData.cPostal);
+        }
+        if (formData.localidade) {
+            dataToSend.append('Localidade', formData.localidade);
+        }
+        if (formData.telefone) {
+            dataToSend.append('Telefone', formData.telefone);
+        }
+        if (formData.email) {
+            dataToSend.append('Email', formData.email);
+        }
+        if (formData.nif) {
+            dataToSend.append('NIF', formData.nif);
+        }
+        if (formData.www) {
+            dataToSend.append('WWW', formData.www);
+        }
+        if (formData.observacoes) {
+            dataToSend.append('Observacoes', formData.observacoes);
+        }
+        if (formData.enabled) {
+            dataToSend.append('Enabled', formData.enabled);
+        }
+        if (profileImageFile) {
+            dataToSend.append('Logotipo', profileImageFile);
+        } else if (deviceImage && typeof deviceImage === 'string') {
+            const relativePath = deviceImage.replace('https://localhost:9090/', '');
+            dataToSend.append('Logotipo', relativePath);
         }
 
-        if (!entity.id) {
-            onSave(dataToSend);
-        }
+        onUpdate(dataToSend);
         onClose();
     };
 
@@ -369,6 +413,9 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
+                </Button>
+                <Button variant="outline-info" onClick={handleUpdateSaveClick}>
+                    Atualizar
                 </Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>
                     Guardar

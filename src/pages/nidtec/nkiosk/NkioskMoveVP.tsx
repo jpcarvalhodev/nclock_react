@@ -53,7 +53,7 @@ export const NkioskMoveVP = () => {
                 return;
             }
             const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
+                return apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, device.serialNumber);
             });
     
             const allData = await Promise.all(promises);
@@ -77,7 +77,7 @@ export const NkioskMoveVP = () => {
                 return;
             }
             const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate);
+                return apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, device.serialNumber, startDate, endDate);
             });
     
             const allData = await Promise.all(promises);
@@ -96,7 +96,7 @@ export const NkioskMoveVP = () => {
     // Busca os movimentos de videoporteiro publicidades ao carregar a página
     useEffect(() => {
         fetchAllMoveVP();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {
@@ -190,8 +190,6 @@ export const NkioskMoveVP = () => {
                         return devices.find(device => device.serialNumber === value)?.deviceName ?? '';
                     case 'eventDoorId':
                         return 'Video Porteiro';
-                    case 'eventTime':
-                        return new Date(value as string).toLocaleString();
                     default:
                         return value ?? '';
                 }
@@ -207,11 +205,6 @@ export const NkioskMoveVP = () => {
                 ),
                 selector: row => formatField(row),
                 sortable: true,
-                sortFunction: (rowA, rowB) => {
-                    const dateA = new Date(formatField(rowA).replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
-                    const dateB = new Date(formatField(rowB).replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
-                    return dateB.getTime() - dateA.getTime();
-                }
             };
         });
 

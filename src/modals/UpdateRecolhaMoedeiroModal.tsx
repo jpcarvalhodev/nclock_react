@@ -219,7 +219,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                         </Col>
                         <Col md={2}>
                             <Form.Group controlId="formDeviceId">
-                                <Form.Label>Dispositivo<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <Form.Label>Nome do Local<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
                                     overlay={<Tooltip id="tooltip-deviceId">Campo obrigatório</Tooltip>}

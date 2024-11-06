@@ -123,8 +123,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // Função para buscar as portas e filtrar pelo SN
     const fetchDoors = async () => {
         const dataDoors = await fetchAllDoorData();
-        const doors = dataDoors.filter((door: Doors) => devices.some(device => door.devId === device.zktecoDeviceID));
-        setDoors(doors);
+        const filteredDoors = dataDoors.filter((door) => door.devId === entity.zktecoDeviceID);
+        setDoors(filteredDoors);
     }
 
     // Função para lidar com a atualização das portas

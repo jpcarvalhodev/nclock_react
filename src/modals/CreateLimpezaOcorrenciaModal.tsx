@@ -185,7 +185,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                         </Col>
                         <Col md={3}>
                             <Form.Group controlId="formDeviceId">
-                                <Form.Label>Dispositivo<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <Form.Label>Nome do Local<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
                                     overlay={<Tooltip id="tooltip-deviceId">Campo obrigatório</Tooltip>}

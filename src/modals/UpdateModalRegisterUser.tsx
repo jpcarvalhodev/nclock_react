@@ -6,7 +6,7 @@ import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import React from 'react';
-import { Register } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface Entity
 export interface Entity {
@@ -51,8 +51,9 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
 
     // Atualiza o estado da foto
     useEffect(() => {
-        if (entity && entity.profileImage) {
-            setProfileImage(entity.profileImage);
+        if (entity) {
+            const imageURL = entity.profileImage ? `${apiService.baseURL}${entity.logotipo}` : modalAvatar;
+            setProfileImage(imageURL);
         } else {
             setProfileImage(modalAvatar);
         }
@@ -85,36 +86,8 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         const file = e.target.files?.[0];
         if (file) {
             setProfileImageFile(file);
-            const reader = new FileReader();
-            reader.onload = (readerEvent) => {
-                const image = new Image();
-                image.onload = () => {
-                    let width = image.width;
-                    let height = image.height;
-
-                    if (width > 512 || height > 512) {
-                        if (width > height) {
-                            height *= 512 / width;
-                            width = 512;
-                        } else {
-                            width *= 512 / height;
-                            height = 512;
-                        }
-                    }
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx?.drawImage(image, 0, 0, width, height);
-
-                    const dataUrl = canvas.toDataURL('image/png');
-                    setProfileImage(dataUrl);
-                    setFormData({ ...formData, photo: dataUrl });
-                };
-                image.src = readerEvent.target?.result as string;
-            };
-            reader.readAsDataURL(file);
+            const objectUrl = URL.createObjectURL(file);
+            setProfileImage(objectUrl);
         }
     };
 
@@ -174,8 +147,11 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         }
         if (profileImageFile) {
             dataToSend.append('ProfileImage', profileImageFile);
+        } else if (profileImage && typeof profileImage === 'string') {
+            const relativePath = profileImage.replace('https://localhost:9090/', '');
+            dataToSend.append('ProfileImage', relativePath);
         }
-        
+
         onUpdate(dataToSend);
         onClose();
     };

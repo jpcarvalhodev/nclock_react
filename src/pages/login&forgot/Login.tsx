@@ -77,7 +77,7 @@ export const Login = () => {
           localStorage.removeItem('rememberMePassword');
         }
 
-        toast.info(`Seja bem vindo aos softwares do NIDGROUP ${username}!`);
+        toast.info(`Seja bem vindo ${username} aos Nsoftwares do NIDGROUP`);
         navigate('/dashboard');
       }
     } catch (error) {

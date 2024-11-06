@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { Col, Form, Nav, OverlayTrigger, Row, Tab, Table, Tooltip } from 'react-bootstrap';
+import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import { EmailUserCompany } from '../helpers/Types';
-import * as apiService from "../helpers/apiService";
+import { EmailUser } from '../helpers/Types';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -18,29 +17,25 @@ interface FieldConfig {
 }
 
 // Define a interface para as propriedades do componente
-interface Props<T extends EmailUserCompany> {
+interface Props<T> {
     open: boolean;
     onClose: () => void;
-    onSave: (emailConfig: T, companyConfig: T) => Promise<void>;
-    onUpdate: (emailConfig: T, companyConfig: T) => Promise<void>;
-    entity: EmailUserCompany;
+    onSave: (data: T) => Promise<void>;
+    onUpdate: (data: T) => Promise<void>;
+    entity: T;
     fields: FieldConfig[];
     title: string;
 }
 
-export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
-    const [emailFormData, setEmailFormData] = useState<Partial<EmailUserCompany>>({ ...entity });
-    const [companyFormData, setCompanyFormData] = useState<Partial<EmailUserCompany>>({ ...entity });
+export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
+    const [emailFormData, setEmailFormData] = useState<Partial<EmailUser>>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [emailConfig, setEmailConfig] = useState<EmailUserCompany[]>([]);
-    const [companyConfig, setCompanyConfig] = useState<EmailUserCompany[]>([]);
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
         if (entity) {
             setEmailFormData({ ...entity });
-            setCompanyFormData({ ...entity });
         }
     }, [entity]);
 
@@ -48,75 +43,46 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
     useEffect(() => {
         if (!open)
             setEmailFormData({});
-            setCompanyFormData({});
     }, [open]);
-
-    // Busca os dados iniciais de emails dos utilizadores
-    useEffect(() => {
-        fetchUserData();
-        fetchCompanyConfig();
-    }, []);
 
     // Usa useEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
-        let isValidEmail = true;
-        let isValidCompany = true;
 
-        fields.forEach(field => {
+        const isValid = fields.every(field => {
             const fieldValue = emailFormData[field.key];
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                isValidEmail = false;
-            }
+            let valid = true;
+
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                isValidEmail = false;
+                valid = false;
             }
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                valid = false;
+            }
+
+            return valid;
         });
 
-        fields.forEach(field => {
-            const fieldValue = companyFormData[field.key];
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                isValidCompany = false;
-            }
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                isValidCompany = false;
-            }
-        });
-
-        setIsFormValid(isValidEmail && isValidCompany);
         setErrors(newErrors);
-    }, [emailFormData, companyFormData, fields]);
+        setIsFormValid(isValid);
+        validateForm();
+    }, [emailFormData, fields]);
 
-    // Função para buscar os dados de emails dos utilizadores
-    const fetchUserData = async () => {
-        try {
-            const data = await apiService.fetchAllEmailConfig();
-            const normalizedData = Array.isArray(data) ? data : [data];
-            setEmailConfig(normalizedData);
-        } catch (error) {
-            console.error('Erro ao carregar os emails registados:', error);
-        }
-    }
+    // Função para validar o formulário
+    const validateForm = () => {
+        const isValid = fields.every(field => {
+            const fieldValue = emailFormData?.[field.key];
+            if (field.required) {
+                if (typeof fieldValue === 'string') {
+                    return fieldValue.trim() !== '';
+                }
+                return fieldValue !== null && fieldValue !== undefined;
+            }
+            return true;
+        });
 
-    // Função para buscar as configurações da empresa
-    const fetchCompanyConfig = async () => {
-        try {
-            const data = await apiService.fetchAllCompanyConfig();
-            const normalizedData = Array.isArray(data) ? data : [data];
-            setCompanyConfig(normalizedData);
-        } catch (error) {
-            console.error('Erro ao carregar as configurações da empresa:', error);
-        }
-    }
-
-    // Função para lidar com o clique em um email na tabela
-    const handleEmailClick = (emailUser: EmailUserCompany) => {
-        setEmailFormData(emailUser as Partial<T>);
+        setIsFormValid(isValid);
     };
-
-    const handleCompanyClick = (emailCompany: EmailUserCompany) => {
-        setCompanyFormData(emailCompany as Partial<T>);
-    }
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -132,14 +98,9 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
             parsedValue = value;
         }
 
-        const formType = dataset.formType as 'email' | 'company';
+        const formType = dataset.formType as 'email';
         if (formType === 'email') {
             setEmailFormData(prevState => ({
-                ...prevState,
-                [name]: parsedValue
-            }));
-        } else if (formType === 'company') {
-            setCompanyFormData(prevState => ({
                 ...prevState,
                 [name]: parsedValue
             }));
@@ -152,7 +113,7 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onSave(emailFormData as T, companyFormData as T);
+        onSave(emailFormData as T);
         onClose();
     };
 
@@ -162,7 +123,7 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onUpdate(emailFormData as T, companyFormData as T);
+        onUpdate(emailFormData as T);
         onClose();
     }
 
@@ -281,8 +242,9 @@ export const EmailOptionsModal = <T extends EmailUserCompany>({ title, open, onC
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-info" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>
-                <Button variant="outline-primary" onClick={handleUpdateClick} disabled={!isFormValid}>Atualizar</Button>
+                <Button variant="outline-info" onClick={handleUpdateClick}>Atualizar</Button>
+                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                
             </Modal.Footer>
         </Modal >
     );

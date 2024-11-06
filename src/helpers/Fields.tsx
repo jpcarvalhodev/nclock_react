@@ -18,18 +18,18 @@ export const employeeFields = [
     { label: 'Data de Nascimento', key: 'birthday', type: 'date' },
     { label: 'Nacionalidade', key: 'nacionality', type: 'string' },
     { label: 'Gênero', key: 'gender', type: 'string' },
-    { label: 'Número de BI', key: 'biNumber', type: 'string' },
-    { label: 'Emissão de BI', key: 'biIssuance', type: 'date' },
-    { label: 'Validade de BI', key: 'biValidity', type: 'date' },
+    { label: 'Número de BI', key: 'bInumber', type: 'string' },
+    { label: 'Emissão de BI', key: 'bIissuance', type: 'datetime-local' },
+    { label: 'Validade de BI', key: 'biValidity', type: 'datetime-local' },
     { label: 'NIF', key: 'nif', type: 'number' },
-    { label: 'Data de Admissão', key: 'admissionDate', type: 'date' },
+    { label: 'Data de Admissão', key: 'admissionDate', type: 'datetime-local' },
     { label: 'Data de Saída', key: 'exitDate', type: 'date' },
     { label: 'Autorização RGPD', key: 'rgpdAut', type: 'boolean' },
-    { label: 'Status', key: 'status', type: 'boolean' },
-    { label: 'Status de E-Mail', key: 'statusEmail', type: 'boolean' },
-    { label: 'Status de Digital', key: 'statusFprint', type: 'boolean' },
-    { label: 'Status de Face', key: 'statusFace', type: 'boolean' },
-    { label: 'Status de Palma', key: 'statusPalm', type: 'boolean' },
+    { label: 'Estado', key: 'status', type: 'boolean' },
+    { label: 'Estado de E-Mail', key: 'statusEmail', type: 'boolean' },
+    { label: 'Estado de Digital', key: 'statusFprint', type: 'boolean' },
+    { label: 'Estado de Face', key: 'statusFace', type: 'boolean' },
+    { label: 'Estado de Palma', key: 'statusPalm', type: 'boolean' },
     { label: 'Tipo', key: 'type', type: 'string' },
     { label: 'Departamento', key: 'departmentId', type: 'dropdown' },
     { label: 'Profissão', key: 'professionId', type: 'dropdown' },
@@ -147,7 +147,7 @@ export const deviceFields = [
     { key: "producter", label: "Produtor", type: "string" },
     { key: "deviceProtocol", label: "Protocolo", type: "number" },
     { key: "deviceType", label: "Tipo", type: "number" },
-    { key: "status", label: "Status", type: "boolean" },
+    { key: "status", label: "Estado", type: "boolean" },
     { key: "disabled", label: "Activo", type: "boolean" }
 ];
 
@@ -206,7 +206,7 @@ export const transactionFields = [
 export const transactionMBFields = [
     { key: 'transactionType', label: 'Tipo de Transação', type: 'number' },
     { key: 'amount', label: 'Valor', type: 'string' },
-    { key: 'statusMessage', label: 'Mensagem de Status', type: 'string' },
+    { key: 'statusMessage', label: 'Mensagem de Estado', type: 'string' },
     { key: 'clientTicket', label: 'Ticket do Cliente', type: 'string' },
     { key: 'merchantTicket', label: 'Ticket do Comerciante', type: 'string' },
     { key: 'email', label: 'Email', type: 'string' },
@@ -217,10 +217,10 @@ export const transactionMBFields = [
 
 export const transactionCardFields = [
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
-    { key: 'nameUser', label: 'Nome do Usuário', type: 'string' },
+    { key: 'nameUser', label: 'Utilizador', type: 'string' },
     { key: 'deviceSN', label: 'Equipamento', type: 'string' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
-    { key: 'eventDoorId', label: 'Nome da Porta', type: 'number' },
+    { key: 'eventDoorId', label: 'Nome', type: 'number' },
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
 ];
 
@@ -239,7 +239,7 @@ export const emailFields = [
     { key: 'passwordEmail', label: 'Senha do E-Mail', type: 'string', required: true },
     { key: 'hostSMTP', label: 'Servidor SMTP', type: 'string', required: true },
     { key: 'portSMTP', label: 'Porta SMTP', type: 'string', required: true },
-    { key: 'enableSSL', label: 'Activar SSL', type: 'string', required: true },
+    { key: 'enableSSL', label: 'Activar SSL', type: 'string' },
 ];
 
 export const emailCompanyFields = [
@@ -343,7 +343,7 @@ export const doorsFields = [
     { key: 'actionInterval', label: 'Intervalo entre Operações', type: 'number' },
     { key: 'activeTimesegId', label: 'Faixa Horária Activa', type: 'string' },
     { key: 'allowSuaccessLock', label: 'Permitir Acesso de SU ao Bloqueio', type: 'string' },
-    { key: 'backLock', label: 'Status da Fechadura', type: 'boolean' },
+    { key: 'backLock', label: 'Estado da Fechadura', type: 'boolean' },
     { key: 'combopenInterval', label: 'Intervalo entre Identificações', type: 'number' },
     { key: 'delayOpenTime', label: 'Atraso de Tempo de Abertura', type: 'number' },
     { key: 'doorNo', label: 'Número de Porta', type: 'number', readonly: true, required: true },
@@ -373,8 +373,8 @@ export const mbDeviceFields = [
 
 export const mbDeviceStatusFields = [
     { key: 'tpId', label: 'Terminal', type: 'string' },
-    { key: 'tipoStatus', label: 'Status', type: 'number' },
-    { key: 'nomeStatus', label: 'Nome', type: 'string' },
+    { key: 'tipoStatus', label: 'Estado', type: 'number' },
+    { key: 'nomeStatus', label: 'Alerta', type: 'string' },
     { key: 'timespam', label: 'Horário', type: 'date' },
 ];
 
@@ -435,10 +435,10 @@ export const entityFields = [
 export const recolhaMoedeiroEContadorFields = [
     { key: 'dataRecolha', label: 'Data', type: 'date' },
     { key: 'pessoaResponsavel', label: 'Pessoa Responsável', type: 'string', required: true },
-    { key: 'numeroMoedas', label: 'Número de Moedas', type: 'number', required: true },
+    { key: 'numeroMoedas', label: 'Número de Moedas Recolhidas', type: 'number', required: true },
     { key: 'numeroMoedasSistema', label: 'Número de Moedas no Sistema', type: 'number' },
     { key: 'diferenca', label: 'Diferença', type: 'number' },
-    { key: 'valorTotal', label: 'Valor Total', type: 'number', required: true },
+    { key: 'valorTotal', label: 'Valor Total Recolhido', type: 'number', required: true },
     { key: 'observacoes', label: 'Observações', type: 'string' },
     { key: 'deviceID', label: 'Equipamento', type: 'string', required: true },
     { key: 'dataFimIntervencao', label: 'Data Fim', type: 'date' },
@@ -446,11 +446,11 @@ export const recolhaMoedeiroEContadorFields = [
 
 export const manualOpenDoorFields = [
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
-    { key: 'nomeResponsavel', label: 'Nome', type: 'string' },
+    { key: 'nomeResponsavel', label: 'Utilizador', type: 'string' },
     { key: 'nomeEvento', label: 'Nome do Evento', type: 'string' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
     { key: 'deviceName', label: 'Equipamento', type: 'string' },
-    { key: 'doorName', label: 'Nome da Porta', type: 'string' },
+    { key: 'doorName', label: 'Nome', type: 'string' },
 ];
 
 export const limpezasEOcorrenciasFields = [
@@ -459,4 +459,11 @@ export const limpezasEOcorrenciasFields = [
     { key: 'observacoes', label: 'Observações', type: 'string' },
     { key: 'deviceId', label: 'Equipamento', type: 'string', required: true },
     { key: 'deviceName', label: 'Equipamento', type: 'string' },
+];
+
+export const logsFields = [
+    { key: 'userName', label: 'Nome', type: 'string' },
+    { key: 'taskName', label: 'Nome da Tarefa', type: 'string' },
+    { key: 'description', label: 'Descrição', type: 'string' },
+    { key: 'createdDate', label: 'Data de Criação', type: 'date' },
 ];

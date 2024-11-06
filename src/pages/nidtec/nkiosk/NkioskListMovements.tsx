@@ -171,7 +171,7 @@ export const NkioskListMovements = () => {
     useEffect(() => {
         fetchAllListMovementsCard();
         fetchAllListMovementsKiosk();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar as listagens de movimentos
     const refreshListMovements = () => {

@@ -10,7 +10,7 @@ import { Ads } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { adsFields } from "../../../helpers/Fields";
 
-export const NkioskLogs = () => {
+export const NledAdsLogs = () => {
     const { navbarColor, footerColor } = useColor();
     const [logs, setlogs] = useState<Ads[]>([]);
     const [filterText, setFilterText] = useState<string>('');
@@ -89,7 +89,7 @@ export const NkioskLogs = () => {
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Logs de Utilizadores</span>
+                    <span style={{ color: '#009739' }}>Logs de Publicidades</span>
                 </div>
                 <div className="datatable-header">
                     <div>

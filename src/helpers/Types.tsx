@@ -552,3 +552,12 @@ export type LimpezasEOcorrencias = {
     observacoes: string;
     deviceID: string;
 }
+
+export type Logs = {
+    [key: string]: any;
+    userId: string;
+    userName: string;
+    taskName: string;
+    description: string;
+    createdDate: Date;
+}

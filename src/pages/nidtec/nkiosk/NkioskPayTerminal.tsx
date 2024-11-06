@@ -96,13 +96,16 @@ export const NkioskPayTerminal = () => {
     // Função para atualizar os pagamentos dos terminais
     const refreshPayTerminal = () => {
         fetchAllPayTerminal();
+        fetchTerminalData();
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    console.log(payTerminal);
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = payTerminal.filter(payTerminals => selectedDevicesIds.includes(payTerminals.tpId));
+            const filtered = payTerminal.filter(payTerminals => selectedDevicesIds.includes(payTerminals.deviceSN) || selectedDevicesIds.includes(payTerminals.tpId));
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(payTerminal);
@@ -160,7 +163,7 @@ export const NkioskPayTerminal = () => {
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
-                        return devices.find(device => device.serialNumber === row.deviceSN)?.name || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || 'Sem Dados';
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':

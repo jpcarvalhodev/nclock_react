@@ -190,7 +190,7 @@ export const NkioskListPayments = () => {
         fetchAllListPaymentsMB();
         fetchAllListPaymentsCoins();
         fetchTerminalData();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar as listagens de pagamentos
     const refreshListPayments = () => {
@@ -268,9 +268,9 @@ export const NkioskListPayments = () => {
                     case 'tpId':
                         const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
                         const terminalName = terminalMatch?.nomeQuiosque || '';
-                        return terminalName || 'Sem Dados';
+                        return terminalName || 'Clérigos Moedeiro';
                     case 'deviceSN':
-                        return devices.find(device => device.serialNumber === row.deviceSN)?.name || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || 'Sem Dados';
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':

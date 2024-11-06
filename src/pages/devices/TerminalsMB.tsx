@@ -160,10 +160,10 @@ export const TerminalsMB = () => {
                             <div style={{
                                 height: '10px',
                                 width: '10px',
-                                backgroundColor: row.status ? 'green' : 'red',
+                                backgroundColor: row.estadoTerminal ? 'green' : 'red',
                                 borderRadius: '50%',
                                 display: 'inline-block'
-                            }} title={row.status ? 'Online' : 'Offline'} />
+                            }}/>
                         );
                     case 'timeReboot':
                         return row[field.key] === '00:00:00' ? 'Sem tempo de reinício' : row[field.key];

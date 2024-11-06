@@ -14,7 +14,6 @@ import { useColor } from "../../../context/ColorContext";
 import * as apiService from "../../../helpers/apiService";
 import { manualOpenDoorFields } from "../../../helpers/Fields";
 import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -26,7 +25,7 @@ export const NkioskDoorOpen = () => {
     const { navbarColor, footerColor } = useColor();
     const [manualOpenDoor, setManualOpenDoor] = useState<ManualOpenDoor[]>([]);
     const [filters, setFilters] = useState<Filters>({});
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nomeResponsavel', 'nomeEvento', 'deviceName', 'doorName']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nomeResponsavel', 'nomeEvento', 'deviceName', 'doorName', 'observacoes']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [selectedManualOpen, setSelectedManualOpen] = useState<ManualOpenDoor | null>(null);
     const [loadingManualOpen, setLoadingManualOpen] = useState(false);
@@ -56,7 +55,7 @@ export const NkioskDoorOpen = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['createdDate', 'nomeResponsavel', 'nomeEvento', 'deviceName', 'doorName']);
+        setSelectedColumns(['createdDate', 'nomeResponsavel', 'nomeEvento', 'deviceName', 'doorName', 'observacoes']);
     };
 
     // Função para alternar a visibilidade das abas
@@ -144,6 +143,12 @@ export const NkioskDoorOpen = () => {
         setModalOpen(true);
     }
 
+    // Função para fechar o modal
+    const handleManualClose = async () => {
+        setLoadingManualOpen(false);
+        setModalOpen(false);
+    }
+
     // Função para enviar a abertura manualmente
     const handleManualOpenSave = async (door: Partial<ManualOpenDoor>) => {
         setModalOpen(false);
@@ -151,11 +156,11 @@ export const NkioskDoorOpen = () => {
             const data = await apiService.addManualOpenDoor(door);
             setManualOpenDoor([...manualOpenDoor, data]);
             setLoadingManualOpen(false);
-            toast.success(data.message || 'Porta aberta manualmente com sucesso!');
+            toast.success(data.message || 'Abertura manual com sucesso!');
         } catch (error) {
             setLoadingManualOpen(false);
-            console.error('Erro ao abrir a porta manualmente', error);
-            toast.error('Erro ao abrir a porta manualmente.');
+            console.error('Erro ao abrir manualmente', error);
+            toast.error('Erro ao abrir manualmente.');
         } finally {
             fetchAllManualOpen();
         }
@@ -214,7 +219,7 @@ export const NkioskDoorOpen = () => {
                                         ) : (
                                             <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
                                         )}
-                                        Abrir Porta
+                                        Abertura Remota
                                     </Button>
                                 </div>
                             </Tab>
@@ -234,9 +239,9 @@ export const NkioskDoorOpen = () => {
                 />
             )}
             <ManualDoorOpenModal 
-                title="Abrir Porta Manualmente"
+                title="Abertura Manual"
                 open={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={handleManualClose}
                 onSave={handleManualOpenSave}
                 fields={manualOpenDoorFields}
             />

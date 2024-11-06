@@ -1117,7 +1117,6 @@ export const addAd = async (ads: FormData) => {
 };
 
 export const updateAd = async (ads: Ads, ad: FormData) => {
-    console.log(Array.from(ad.entries()));
     const response = await fetchWithAuth(`Publicidade/${ads.id}`, {
         method: 'PUT',
         body: ad
@@ -1315,7 +1314,7 @@ export const addUserEmailConfig = async (email: EmailUser) => {
     return response.json();
 }
 
-export const updateUserEmailConfig = async (email: Partial<EmailUser>) => {
+export const updateUserEmailConfig = async (email: EmailUser) => {
     const response = await fetchWithAuth(`Configuration/UpdateEmailConfigurations`, {
         method: 'PUT',
         headers: {
@@ -1345,7 +1344,8 @@ export const addCompanyConfig = async (companyEmail: FormData) => {
 }
 
 export const updateCompanyConfig = async (companyEmail: FormData) => {
-    const response = await fetchWithAuth(`Configuration/UpadateCompany`, {
+    const companyId = companyEmail.get('id');
+    const response = await fetchWithAuth(`Configuration/UpadateCompany?id=${companyId}`, {
         method: 'PUT',
         body: companyEmail
     });
@@ -1699,6 +1699,30 @@ export const endContador = async (contadorId: string) => {
 
 export const fetchAllAlerts = async () => {
     const response = await fetchWithAuth(`KioskTransaction/GetAlertMessageAsync`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE LOGS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllHistoryLogs = async () => {
+    const response = await fetchWithAuth(`Configuration/GetHistoryUsers`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const fetchAllLoginLogs = async () => {
+    const response = await fetchWithAuth(`Configuration/GetAuthTasks`);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);

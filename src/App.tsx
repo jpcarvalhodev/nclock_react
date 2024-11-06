@@ -78,7 +78,7 @@ import { NkioskMoveCard } from './pages/nidtec/nkiosk/NkioskMoveCard';
 import { NkioskMoveKiosk } from './pages/nidtec/nkiosk/NkioskMoveKiosk';
 import { NkioskListMovements } from './pages/nidtec/nkiosk/NkioskListMovements';
 import { NkioskListPayments } from './pages/nidtec/nkiosk/NkioskListPayments';
-import { NkioskLogs } from './pages/nidtec/nkiosk/NkioskLogs';
+import { NledAdsLogs } from './pages/nidtec/nled/NledAdsLogs';
 import { NewUsers } from './pages/configs/NewUsers';
 import { TimePeriods } from './pages/devices/TimePeriods';
 import { AccessControls } from './pages/devices/AccessControls';
@@ -126,6 +126,8 @@ import { NkioskOccurrences } from './pages/nidtec/nkiosk/NkioskOccurrences';
 import { NkioskCounter } from './pages/nidtec/nkiosk/NkioskCounter';
 import { NledAds } from './pages/nidtec/nled/NledAds';
 import { NkioskAlerts } from './pages/nidtec/nkiosk/NkioskAlerts';
+import { LoginLogs } from './pages/Logs/LoginLogs';
+import { HistoryLogs } from './pages/Logs/HistoryLogs';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -173,6 +175,8 @@ function AnimatedRoutes() {
               <Route path='/login&forgot/reset-password' element={<ResetPassword />} />
               <Route path="/errors/notfound" element={<NotFound />} />
               <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
+              <Route path="/logs/loginlogs" element={<PageProtection><LoginLogs /></PageProtection>} />
+              <Route path="/logs/historylogs" element={<PageProtection><HistoryLogs /></PageProtection>} />
               <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />
               <Route path="/persons/employees" element={<PageProtection><Employees /></PageProtection>} />
               <Route path="/persons/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
@@ -259,7 +263,6 @@ function AnimatedRoutes() {
               <Route path="/nkiosk/nkioskMoveVP" element={<PageProtection><NkioskMoveVP /></PageProtection>} />
               <Route path="/nkiosk/nkioskListPayments" element={<PageProtection><NkioskListPayments /></PageProtection>} />
               <Route path="/nkiosk/nkioskListMovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
-              <Route path="/nkiosk/nkioskLogs" element={<PageProtection><NkioskLogs /></PageProtection>} />
               <Route path="/nkiosk/nkioskgraph" element={<PageProtection><NkioskGraph /></PageProtection>} />
               <Route path="/nkiosk/nkioskgetcoins" element={<PageProtection><NkioskGetCoins /></PageProtection>} />
               <Route path="/nkiosk/nkioskdooropen" element={<PageProtection><NkioskDoorOpen /></PageProtection>} />
@@ -271,6 +274,7 @@ function AnimatedRoutes() {
               <Route path="/nled/nleddashboardlicensed" element={<PageProtection><NledDashboardLicensed /></PageProtection>} />
               <Route path="/nled/nledads" element={<PageProtection><NledAds /></PageProtection>} />
               <Route path="/nled/nledgraph" element={<PageProtection><NledGraph /></PageProtection>} />
+              <Route path="/nled/nledadslogs" element={<PageProtection><NledAdsLogs /></PageProtection>} />
               <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
               <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />
               <Route path="/npartition/npartitiondashboard" element={<PageProtection><NpartitionDashboard /></PageProtection>} />

@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
+import { Doors } from '../helpers/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -35,6 +36,8 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+    const [allDoors, setAllDoors] = useState<Doors[]>([]);
+    const [filteredDoors, setFilteredDoors] = useState<Doors[]>([]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -67,6 +70,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                 doorId: door,
                 deviceId: device
             });
+            setAllDoors(door);
         } catch (error) {
             console.error('Erro ao buscar os dados de funcionários, portas e períodos', error);
         }
@@ -97,22 +101,14 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
-        const selectedOption = dropdownData[key]?.find((option: any) => {
-            switch (key) {
-                case 'deviceId':
-                    return option.zktecoDeviceID === value;
-                case 'doorId':
-                    return option.id === value;
-                default:
-                    return false;
-            }
-        });
+        if (key === 'deviceId') {
+            const filtered = allDoors.filter(door => door.devId === value);
+            setFilteredDoors(filtered);
 
-        if (selectedOption) {
-            const idKey = key;
             setFormData(prevState => ({
                 ...prevState,
-                [idKey]: value
+                [key]: value,
+                doorId: ''
             }));
         } else {
             setFormData(prevState => ({
@@ -136,7 +132,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
         onSave(formData as Partial<T>);
         onClose();
     };
-      
+
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl">
@@ -148,7 +144,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                     <Row>
                         {[
                             { key: 'deviceId', label: 'Dispositivo', type: 'dropdown', required: true },
-                            { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
+                            { key: 'doorId', label: 'Abertura', type: 'dropdown', required: true },
                             { key: 'observacoes', label: 'Observações', type: 'string' }
                         ].map((field) => (
                             <Col md={3} key={field.key}>
@@ -174,21 +170,17 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                                             onChange={(e) => handleDropdownChange(field.key, e)}
                                         >
                                             <option value="">Selecione...</option>
-                                            {dropdownData[field.key]?.map((option) => {
+                                            {(field.key === 'doorId' ? filteredDoors : dropdownData[field.key])?.map((option) => {
                                                 let optionId, optionName;
-                                                switch (field.key) {
-                                                    case 'deviceId':
-                                                        optionId = option.zktecoDeviceID;
-                                                        optionName = option.deviceName;
-                                                        break;
-                                                    case 'doorId':
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
-                                                    default:
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
+                                                if (field.key === 'deviceId') {
+                                                    optionId = option.zktecoDeviceID;
+                                                    optionName = option.deviceName;
+                                                } else if (field.key === 'doorId') {
+                                                    optionId = option.id;
+                                                    optionName = option.name;
+                                                } else {
+                                                    optionId = option.id;
+                                                    optionName = option.name;
                                                 }
                                                 return (
                                                     <option key={optionId} value={optionId}>
@@ -218,7 +210,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                     Fechar
                 </Button>
                 <Button variant="outline-primary" onClick={handleCheckForSave}>
-                    Guardar
+                    Abrir
                 </Button>
             </Modal.Footer>
         </Modal >
