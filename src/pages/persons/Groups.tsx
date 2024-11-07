@@ -195,6 +195,18 @@ export const Groups = () => {
         ignoreRowClick: true,
     };
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const groupWithNames = groups.map(transaction => {
+
+        const groupMatch = groups.find(group => group.paiId === transaction.code);
+        const groupName = groupMatch?.name || '';
+
+        return {
+            ...transaction,
+            paiId: groupName,
+        };
+    });
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -216,8 +228,8 @@ export const Groups = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={groups} selectedData={filteredItems} fields={groupFields} />
-                        <PrintButton data={groups} fields={groupFields} />
+                        <ExportButton allData={groupWithNames} selectedData={filteredItems} fields={groupFields} />
+                        <PrintButton data={groupWithNames} fields={groupFields} />
                     </div>
                 </div>
                 <CreateModalDeptGrp

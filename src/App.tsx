@@ -4,7 +4,6 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Spinner } from 'react-bootstrap';
 import { Login } from './pages/login&forgot/Login';
 import { Dashboard } from './pages/Dashboard';
-import { ForgotPassword } from './pages/login&forgot/ForgotPassword';
 import { Employees } from './pages/persons/Employees';
 import { Departments } from './pages/persons/Departments';
 import { Categories } from './pages/persons/Categories';
@@ -14,7 +13,6 @@ import { Professions } from './pages/persons/Professions';
 import { Zones } from './pages/persons/Zones';
 import { NotFound } from './pages/errors/NotFound';
 import { Persons } from './pages/persons/Persons';
-import { ResetPassword } from './pages/login&forgot/PasswordReset';
 import { ExternalEmployees } from './pages/persons/ExternalEmployees';
 import { User } from './pages/persons/User';
 import { Visitors } from './pages/persons/Visitors';
@@ -128,6 +126,12 @@ import { NledAds } from './pages/nidtec/nled/NledAds';
 import { NkioskAlerts } from './pages/nidtec/nkiosk/NkioskAlerts';
 import { LoginLogs } from './pages/Logs/LoginLogs';
 import { HistoryLogs } from './pages/Logs/HistoryLogs';
+import { PersonsProvider } from './context/PersonsContext';
+import { AttendanceProvider } from './context/MovementContext';
+import { TerminalsProvider } from './context/TerminalsContext';
+import { AdsProvider } from './context/AdsContext';
+import { ForgotPassword } from './pages/login&forgot/ForgotPassword';
+import { ResetPassword } from './pages/login&forgot/PasswordReset';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -171,8 +175,8 @@ function AnimatedRoutes() {
           <div ref={nodeRef} style={{ display: showContent ? 'block' : 'none' }}>
             <Routes location={location}>
               <Route path="/" element={<Login />} />
-              <Route path="/login&forgot/forgot-password" element={<ForgotPassword />} />
-              <Route path='/login&forgot/reset-password' element={<ResetPassword />} />
+              <Route path="/login&forgot/forgotpassword" element={<ForgotPassword />} />
+              <Route path='/login&forgot/resetpassword' element={<ResetPassword />} />
               <Route path="/errors/notfound" element={<NotFound />} />
               <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
               <Route path="/logs/loginlogs" element={<PageProtection><LoginLogs /></PageProtection>} />
@@ -298,10 +302,18 @@ function App() {
   return (
     <LicenseProvider>
       <ColorProvider>
-        <Router>
-          <ToastContainer />
-          <AnimatedRoutes />
-        </Router>
+        <PersonsProvider>
+          <AttendanceProvider>
+            <TerminalsProvider>
+              <AdsProvider>
+                <Router>
+                  <ToastContainer />
+                  <AnimatedRoutes />
+                </Router>
+              </AdsProvider>
+            </TerminalsProvider>
+          </AttendanceProvider>
+        </PersonsProvider>
       </ColorProvider>
     </LicenseProvider>
   );

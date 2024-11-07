@@ -1298,6 +1298,18 @@ export const updateRegisteredUser = async (registeredUser: FormData) => {
     return response.json();
 }
 
+export const deleteRegisteredUser = async (id: string) => {
+    const response = await fetchWithAuth(`Authentication/DeleteUser?id=${id}`, {
+        method: 'DELETE'
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
 export const addUserEmailConfig = async (email: EmailUser) => {
     const response = await fetchWithAuth(`Configuration/AddEmailConfigurations`, {
         method: 'POST',
@@ -1697,8 +1709,12 @@ export const endContador = async (contadorId: string) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE ALERTAS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export const fetchAllAlerts = async () => {
-    const response = await fetchWithAuth(`KioskTransaction/GetAlertMessageAsync`);
+export const fetchAllAlerts = async (startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetAlertMessageAsync`;
+    if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -1711,8 +1727,12 @@ export const fetchAllAlerts = async () => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE LOGS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export const fetchAllHistoryLogs = async () => {
-    const response = await fetchWithAuth(`Configuration/GetHistoryUsers`);
+export const fetchAllHistoryLogs = async (startDate?: string, endDate?: string) => {
+    let url = `Configuration/GetHistoryUsers`;
+    if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -1721,8 +1741,12 @@ export const fetchAllHistoryLogs = async () => {
     return response.json();
 }
 
-export const fetchAllLoginLogs = async () => {
-    const response = await fetchWithAuth(`Configuration/GetAuthTasks`);
+export const fetchAllLoginLogs = async (startDate?: string, endDate?: string) => {
+    let url = `Configuration/GetAuthTasks`;
+    if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);

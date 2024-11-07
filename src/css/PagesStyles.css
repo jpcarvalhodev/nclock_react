@@ -794,6 +794,10 @@ body {
         display: none;
     }
 
+    .calendar-container {
+        margin: 0;
+    }
+
 }
 
 @media (min-width: 501px) and (max-width: 1200px) {

@@ -14,9 +14,22 @@ import { MBDeviceStatus } from "../../../helpers/Types";
 import { mbDeviceStatusFields } from "../../../helpers/Fields";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
 export const NkioskAlerts = () => {
     const { navbarColor, footerColor } = useColor();
     const { mbDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [alerts, setAlerts] = useState<MBDeviceStatus[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -24,6 +37,8 @@ export const NkioskAlerts = () => {
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedRows, setSelectedRows] = useState<MBDeviceStatus[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
 
     // Função para buscar as limpezas
     const fetchAllTasks = async () => {
@@ -38,6 +53,20 @@ export const NkioskAlerts = () => {
             console.error('Erro ao buscar os dados de alertas:', error);
         }
     };
+
+    // Função para buscar os alertas entre datas
+    const fetchAlertsBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchAllAlerts(startDate, endDate);
+            if (Array.isArray(data)) {
+                setAlerts(data);
+            } else {
+                setAlerts([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de alertas:', error);
+        }
+    }
 
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
@@ -87,6 +116,7 @@ export const NkioskAlerts = () => {
     // Define as colunas da tabela
     const columns: TableColumn<MBDeviceStatus>[] = mbDeviceStatusFields
         .filter(field => selectedColumns.includes(field.key))
+        .filter(field => field.key !== 'tipoStatus')
         .sort((a, b) => { if (a.key === 'timespam') return -1; else if (b.key === 'timespam') return 1; else return 0; })
         .map(field => {
             const formatField = (row: MBDeviceStatus) => {
@@ -149,8 +179,24 @@ export const NkioskAlerts = () => {
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshTasks} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={alerts} selectedData={selectedRows} fields={mbDeviceStatusFields} />
-                        <PrintButton data={alerts} fields={mbDeviceStatusFields} />
+                        <ExportButton allData={alerts} selectedData={selectedRows} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
+                        <PrintButton data={alerts} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
+                    </div>
+                    <div className="date-range-search">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchAlertsBetweenDates} iconSize='1.1em' />
                     </div>
                 </div>
                 <div className='table-css'>
@@ -174,7 +220,7 @@ export const NkioskAlerts = () => {
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={mbDeviceStatusFields}
+                    columns={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

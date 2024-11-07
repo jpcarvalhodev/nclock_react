@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useCallback, useEffect } from 'react';
 import { ReactNode } from 'react';
-import { Department, Employee, EmployeeCard, EmployeeFace, EmployeeFP, Group } from '../helpers/Types';
+import { Department, Employee, EmployeeCard, EmployeeFace, EmployeeFP, Group, Register } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -14,6 +14,7 @@ interface DataState {
 // Define o tipo de contexto
 export interface PersonsContextType {
     employees: Employee[];
+    registeredUsers: Register[];
     data: DataState;
     setData: (data: DataState) => void;
     setEmployees: (employees: Employee[]) => void;
@@ -47,6 +48,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [employeesFP, setEmployeesFP] = useState<EmployeeFP[]>([]);
     const [employeesFace, setEmployeesFace] = useState<EmployeeFace[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeCard[]>([]);
+    const [registeredUsers, setRegisteredUsers] = useState<Register[]>([]);
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -98,6 +100,16 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             return [];
         }
     }, []);
+
+    // Função para buscar todos os utilizadores registados
+    const fetchAllRegisteredUsers = async () => {
+        try {
+            const data = await apiService.fetchAllRegisteredUsers();
+            setRegisteredUsers(data);
+        } catch (error) {
+            console.error('Erro ao buscar utilizadores registados:', error);
+        }
+    }
 
     // Define a função de adição de funcionários
     const handleAddEmployee = async (employee: Employee) => {
@@ -228,12 +240,14 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         if (localStorage.getItem('token')) {
             fetchAllData();
+            fetchAllRegisteredUsers();
         }
     }, []);
 
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,
+        registeredUsers,
         data,
         setData,
         setEmployees,

@@ -120,7 +120,9 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
-        if (!isFormValid) {
+        const keysToCheck = ['deviceId', 'doorId', 'observacoes'];
+        const isOnlyResponsibleFilled = keysToCheck.every(key => !formData[key]);
+        if (!isFormValid || isOnlyResponsibleFilled) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -133,7 +135,6 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
         onClose();
     };
 
-
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl">
             <Modal.Header closeButton>
@@ -145,7 +146,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                         {[
                             { key: 'deviceId', label: 'Dispositivo', type: 'dropdown', required: true },
                             { key: 'doorId', label: 'Abertura', type: 'dropdown', required: true },
-                            { key: 'observacoes', label: 'Observações', type: 'string' }
+                            { key: 'observacoes', label: 'Observações', type: 'string', required: true }
                         ].map((field) => (
                             <Col md={3} key={field.key}>
                                 <Form.Group controlId={`form${field.key}`}>

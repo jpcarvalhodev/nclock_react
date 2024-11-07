@@ -175,6 +175,18 @@ export const NkioskGetCoins = () => {
         return total + (typeof getCoins.valorTotal === 'number' ? getCoins.valorTotal : parseFloat(getCoins.valorTotal) || 0);
     }, 0);
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const getCoinsWithNames = getCoins.map(transaction => {
+
+        const deviceMatch = devices.find(device => device.zktecoDeviceID === transaction.deviceID);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            deviceID: deviceName,
+        };
+    });
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -196,8 +208,8 @@ export const NkioskGetCoins = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={getCoins} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
-                        <PrintButton data={getCoins} fields={recolhaMoedeiroEContadorFields} />
+                        <ExportButton allData={getCoinsWithNames} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
+                        <PrintButton data={getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
                     </div>
                 </div>
                 <div className='table-css'>

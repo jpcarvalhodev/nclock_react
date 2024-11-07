@@ -1,11 +1,11 @@
-import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction, KioskTransactionCard, KioskTransactionMB, Register, Doors, MBDevice, RecolhaMoedeiroEContador, ManualOpenDoor, LimpezasEOcorrencias } from "../helpers/Types";
+import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction, KioskTransactionCard, KioskTransactionMB, Register, Doors, MBDevice, RecolhaMoedeiroEContador, ManualOpenDoor, LimpezasEOcorrencias, Logs } from "../helpers/Types";
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
 import ReactDOM from "react-dom";
 import * as apiService from "../helpers/apiService";
 
 // Tipos de dados
-type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionCard | KioskTransactionMB | Register | Doors | MBDevice | RecolhaMoedeiroEContador | ManualOpenDoor | LimpezasEOcorrencias;
+type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionCard | KioskTransactionMB | Register | Doors | MBDevice | RecolhaMoedeiroEContador | ManualOpenDoor | LimpezasEOcorrencias | Logs;
 
 // Propriedades do componente de filtro de seleção
 interface SelectFilterProps {
@@ -14,34 +14,23 @@ interface SelectFilterProps {
     data: DataItem[];
 }
 
-// Função para formatar a data e a hora
-function formatDateAndTime(input: string | Date): string {
-    const date = typeof input === 'string' ? new Date(input) : input;
-    const options: Intl.DateTimeFormatOptions = {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-    };
-    return new Intl.DateTimeFormat('pt-PT', options).format(date);
-}
-
 // Função de formatação de item de dados
 const formatDataItem = (item: DataItem, column: string) => {
     switch (column) {
         case 'birthday':
-            return item.birthday ? formatDateAndTime(item.birthday) : '';
+            return new Date(item.birthday).toLocaleString() || '';
         case 'admissionDate':
-            return item.admissionDate ? formatDateAndTime(item.admissionDate) : '';
-        case 'biIssuance':
-            return item.biIssueDate ? formatDateAndTime(item.biIssuance) : '';
+            return new Date(item.admissionDate).toLocaleString() || '';
+        case 'bIissuance':
+            return new Date(item.bIissuance).toLocaleString() || '';
         case 'biValidity':
-            return item.biValidity ? formatDateAndTime(item.biValidity) : '';
+            return new Date(item.biValidity).toLocaleString() || '';
         case 'exitDate':
-            return item.exitDate ? formatDateAndTime(item.exitDate) : '';
+            return new Date(item.exitDate).toLocaleString() || '';
+        case 'dateInserted':
+            return new Date(item.dateInserted).toLocaleString() || '';
+        case 'dateUpdated':
+            return new Date(item.dateInserted).toLocaleString() || '';
         case 'status':
             return item.status ? 'Activo' : 'Inactivo';
         case 'statusEmail':
@@ -61,7 +50,7 @@ const formatDataItem = (item: DataItem, column: string) => {
         case 'externalEntityId':
             return item.externalEntityName || '';
         case 'attendanceTime':
-            return formatDateAndTime(item[column]);
+            return new Date(item.attendanceTime).toLocaleString() || '';
         case 'employeeId':
             return item.employeeName;
         case 'inOutMode':
@@ -85,7 +74,7 @@ const formatDataItem = (item: DataItem, column: string) => {
         case 'cardNumber':
             return item.cardNumber === 0 ? "" : item.cardNumber;
         case 'productTime':
-            return item.productTime ? formatDateAndTime(item[column]) : '';
+            return new Date(item.productTime).toLocaleString() || '';
         case 'createDate':
             return new Date(item.createDate).toLocaleString() || '';
         case 'updateDate':
@@ -123,7 +112,11 @@ const formatDataItem = (item: DataItem, column: string) => {
                 return 'Sem Ticket';
             }
         case 'dataRecolha':
-            return new Date(item.dataRecolha).toLocaleString();
+            return new Date(item.dataRecolha).toLocaleString() || '';
+        case 'createdTime':
+            return new Date(item.createdTime).toLocaleString() || '';
+        case 'dataCreate':
+            return new Date(item.dataCreate).toLocaleString() || '';
         default:
             return item[column]?.toString();
     }

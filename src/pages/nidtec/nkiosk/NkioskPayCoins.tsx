@@ -175,6 +175,7 @@ export const NkioskPayCoins = () => {
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
+        .filter(field => field.key !== 'clientTicket' && field.key !== 'merchantTicket' && field.key !== 'tpId' && field.key !== 'email')
         .sort((a, b) => { if (a.key === 'timestamp') return -1; else if (b.key === 'timestamp') return 1; else return 0; })
         .map(field => {
             const formatField = (row: KioskTransactionMB) => {
@@ -231,6 +232,21 @@ export const NkioskPayCoins = () => {
     // Calcula o total do valor dos pagamentos
     const totalAmount = filteredDataTable.length * 0.50;
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const payCoinsWithNames = payCoins.map(transaction => {
+        const terminalMatch = terminalData.find(terminal => terminal.id === transaction.tpId);
+        const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
+
+        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            tpId: terminalName,
+            deviceSN: deviceName,
+        };
+    });
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -257,8 +273,8 @@ export const NkioskPayCoins = () => {
                                 <div className="buttons-container-others">
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayCoins} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    <ExportButton allData={payCoins} selectedData={selectedRows} fields={transactionMBFields} />
-                                    <PrintButton data={payCoins} fields={transactionMBFields} />
+                                    <ExportButton allData={payCoinsWithNames} selectedData={selectedRows} fields={transactionMBFields.filter(field => field.key !== 'clientTicket' && field.key !== 'merchantTicket' && field.key !== 'tpId' && field.key !== 'email')} />
+                                    <PrintButton data={payCoinsWithNames} fields={transactionMBFields.filter(field => field.key !== 'clientTicket' && field.key !== 'merchantTicket' && field.key !== 'tpId' && field.key !== 'email')} />
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -303,7 +319,7 @@ export const NkioskPayCoins = () => {
                 <Footer style={{ backgroundColor: footerColor }} />
                 {openColumnSelector && (
                     <ColumnSelectorModal
-                        columns={transactionMBFields}
+                        columns={transactionMBFields.filter(field => field.key !== 'clientTicket' && field.key !== 'merchantTicket' && field.key !== 'tpId' && field.key !== 'email')}
                         selectedColumns={selectedColumns}
                         onClose={() => setOpenColumnSelector(false)}
                         onColumnToggle={toggleColumn}

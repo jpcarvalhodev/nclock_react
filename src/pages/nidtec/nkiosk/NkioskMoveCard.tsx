@@ -52,17 +52,17 @@ export const NkioskMoveCard = () => {
                 setMoveCard([]);
                 return;
             }
-    
+
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
             });
-    
+
             const allData = await Promise.all(promises);
-    
+
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-    
+
             setMoveCard(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
@@ -77,17 +77,17 @@ export const NkioskMoveCard = () => {
                 setMoveCard([]);
                 return;
             }
-    
+
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate);
             });
-    
+
             const allData = await Promise.all(promises);
-    
+
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-    
+
             setMoveCard(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
@@ -211,6 +211,18 @@ export const NkioskMoveCard = () => {
             };
         });
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const moveCardWithNames = moveCard.map(transaction => {
+
+        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            deviceSN: deviceName,
+        };
+    });
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -237,8 +249,8 @@ export const NkioskMoveCard = () => {
                                 <div className="buttons-container-others">
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    <ExportButton allData={moveCard} selectedData={selectedRows} fields={transactionCardFields} />
-                                    <PrintButton data={moveCard} fields={transactionCardFields} />
+                                    <ExportButton allData={moveCardWithNames} selectedData={selectedRows} fields={transactionCardFields} />
+                                    <PrintButton data={moveCardWithNames} fields={transactionCardFields} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

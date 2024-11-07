@@ -52,7 +52,6 @@ interface UpdateModalProps<T extends Entity> {
 
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
     const {
-        devices,
         fetchAllDevices,
         fetchAllDoorData,
     } = useContext(TerminalsContext) as DeviceContextType;
@@ -430,16 +429,16 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         ref={fileInputRef}
                                                     />
                                                 </div>
-                                                <Form.Group controlId="formDisabled" className="d-flex align-items-center mb-3">
+                                                <Form.Group controlId="formEnabled" className="d-flex align-items-center mb-3">
                                                     <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo</Form.Label>
                                                     <Form.Check
                                                         type="switch"
-                                                        id="custom-switch-disabled"
-                                                        checked={formData.disabled === true}
-                                                        onChange={(e) => { const isDisabled = e.target.checked; setFormData({ ...formData, disabled: isDisabled }); }}
+                                                        id="custom-switch-enabled"
+                                                        checked={formData.enabled === true}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, enabled: e.target.checked }))}
                                                         className="ms-auto"
                                                         label=""
-                                                        name="disabled"
+                                                        name="enabled"
                                                     />
                                                 </Form.Group>
                                                 <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', marginTop: '20px', textAlign: "center" }}>

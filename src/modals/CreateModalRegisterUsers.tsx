@@ -178,10 +178,10 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                         </Col>
                         <Col md={6}>
                             <Form.Group controlId="formPassword">
-                                <Form.Label>Senha <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-password">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-password">Obrigatório a password ter uma letra minúscula, maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -197,10 +197,10 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                         </Col>
                         <Col md={6}>
                             <Form.Group controlId="formConfirmPassword">
-                                <Form.Label>Confirmar Senha <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Label>Confirmar Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a password ter uma letra minúscula, maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"

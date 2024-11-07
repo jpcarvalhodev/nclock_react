@@ -13,8 +13,21 @@ import { PrintButton } from "../../components/PrintButton";
 import { Logs } from "../../helpers/Types";
 import { logsFields } from "../../helpers/Fields";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
 export const HistoryLogs = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [logs, setLogs] = useState<Logs[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -22,6 +35,8 @@ export const HistoryLogs = () => {
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedRows, setSelectedRows] = useState<Logs[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
 
     // Função para buscar os logs
     const fetchAllLogs = async () => {
@@ -36,6 +51,20 @@ export const HistoryLogs = () => {
             console.error('Erro ao buscar os dados de logs:', error);
         }
     };
+
+    // Função para buscar os logs entre datas
+    const fetchLogsBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchAllHistoryLogs(startDate, endDate);
+            if (Array.isArray(data)) {
+                setLogs(data);
+            } else {
+                setLogs([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de logs:', error);
+        }
+    }
 
     // Busca os logs ao carregar a página
     useEffect(() => {
@@ -147,6 +176,22 @@ export const HistoryLogs = () => {
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={logs} selectedData={selectedRows} fields={logsFields} />
                         <PrintButton data={logs} fields={logsFields} />
+                    </div>
+                    <div className="date-range-search">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchLogsBetweenDates} iconSize='1.1em' />
                     </div>
                 </div>
                 <div className='table-css'>

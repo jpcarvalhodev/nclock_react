@@ -209,6 +209,18 @@ export const NkioskMoveKiosk = () => {
             };
         });
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const moveKioskWithNames = moveKiosk.map(transaction => {
+
+        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            deviceSN: deviceName,
+        };
+    });
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -234,8 +246,8 @@ export const NkioskMoveKiosk = () => {
                             <div className="buttons-container-others">
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveKiosk} />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                <ExportButton allData={moveKiosk} selectedData={selectedRows} fields={transactionCardFields} />
-                                <PrintButton data={moveKiosk} fields={transactionCardFields} />
+                                <ExportButton allData={moveKioskWithNames} selectedData={selectedRows} fields={transactionCardFields} />
+                                <PrintButton data={moveKioskWithNames} fields={transactionCardFields} />
                             </div>
                             <div className="date-range-search">
                                 <input

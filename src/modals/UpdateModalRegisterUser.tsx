@@ -226,7 +226,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formPassword">
-                                <Form.Label>Senha <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
                                     overlay={<Tooltip id="tooltip-password">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}

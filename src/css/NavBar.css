@@ -358,6 +358,10 @@
 
 @media (max-width: 500px) {
 
+    .logos {
+        margin-right: auto;
+    }
+
     .pessoas-tab,
     .dispositivos-tab,
     .configuracao-tab,
@@ -453,6 +457,11 @@
 
     .user-info {
         font-size: 13px;
+    }
+
+    .user-section {
+        margin-right: auto;
+        margin-left: 0;
     }
 
     .submenu {

@@ -172,6 +172,18 @@ export const NkioskCounter = () => {
         }
     }
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const getCounterWithNames = counter.map(transaction => {
+
+        const deviceMatch = devices.find(device => device.zktecoDeviceID === transaction.deviceID);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            deviceID: deviceName,
+        };
+    });
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -193,8 +205,8 @@ export const NkioskCounter = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCounter} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={counter} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
-                        <PrintButton data={counter} fields={recolhaMoedeiroEContadorFields} />
+                        <ExportButton allData={getCounterWithNames} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
+                        <PrintButton data={getCounterWithNames} fields={recolhaMoedeiroEContadorFields} />
                     </div>
                 </div>
                 <div className='table-css'>

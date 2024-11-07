@@ -139,7 +139,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailAndCompanyFields, emailFields, entityFields, licenseFields } from '../helpers/Fields';
+import { adsFields, emailFields, entityFields, licenseFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -170,6 +170,7 @@ import certificate from '../assets/img/navbar/certificate.png';
 import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
 import { EntityModal } from '../modals/EntityModal';
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -232,6 +233,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
 	const { handleAddAds } = useAds();
 	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
+	const { registeredUsers } = usePersons();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [employee, setEmployee] = useState<Employee | null>(null);
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -1568,6 +1570,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Rota para verificar as ribbons
 	const currentRoute = window.location.pathname;
 
+	// Função para buscar o user logado e a imagem do perfil
+	const findUser = registeredUsers.find(user => user.userName === localStorage.getItem('username'));
+	const userImage = findUser?.profileImage;
+	const baseURL = apiService.baseURL.slice(0, -1);
+	const profileUserImage = `${baseURL}${userImage}`;
+
 	return (
 		<ColorProvider>
 			<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
@@ -1624,8 +1632,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<div className='dropdown-content'>
-									<img src={employee?.photo || profileAvatar} alt="user photo" className='profile-avatar' />
-									<Dropdown.Item onClick={logout}>Sair</Dropdown.Item>
+									<img src={profileUserImage || profileAvatar} alt="user photo" className='profile-avatar' />
+									<Dropdown.Item className='dropdown-button' onClick={logout}>Sair</Dropdown.Item>
 								</div>
 							</Dropdown.Menu>
 						</Dropdown>

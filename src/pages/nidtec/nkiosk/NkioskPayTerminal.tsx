@@ -100,8 +100,6 @@ export const NkioskPayTerminal = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
-    console.log(payTerminal);
-
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
@@ -151,6 +149,27 @@ export const NkioskPayTerminal = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredDevices.filter(payTerminals =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (payTerminals[key] != null && String(payTerminals[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(payTerminals).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
+    );
+
+    // Remove IDs duplicados na tabela caso existam
+    const uniqueFilteredDataTable = Array.from(
+        new Map(filteredDataTable.map(item => [item.id, item])).values()
+    );
+
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
@@ -159,7 +178,7 @@ export const NkioskPayTerminal = () => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
                     case 'tpId':
-                        const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
+                        const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId);
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
@@ -191,7 +210,7 @@ export const NkioskPayTerminal = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={payTerminal} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={uniqueFilteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -200,31 +219,25 @@ export const NkioskPayTerminal = () => {
             };
         });
 
-    // Filtra os dados da tabela
-    const filteredDataTable = filteredDevices.filter(payTerminals =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (payTerminals[key] != null && String(payTerminals[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(payTerminals).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
-
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable = Array.from(
-        new Map(filteredDataTable.map(item => [item.id, item])).values()
-    );
-
     // Calcula o total do valor dos pagamentos
     const totalAmount = filteredDataTable.reduce((total, transaction) => {
         return total + (typeof transaction.amount === 'number' ? transaction.amount : parseFloat(transaction.amount) || 0);
     }, 0);
+
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const payTerminalsWithNames = payTerminal.map(transaction => {
+        const terminalMatch = terminalData.find(terminal => terminal.id === transaction.tpId);
+        const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
+
+        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            tpId: terminalName,
+            deviceSN: deviceName,
+        };
+    });
 
     return (
         <TerminalsProvider>
@@ -252,8 +265,8 @@ export const NkioskPayTerminal = () => {
                                 <div className="buttons-container-others">
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayTerminal} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    <ExportButton allData={payTerminal} selectedData={selectedRows} fields={transactionMBFields} />
-                                    <PrintButton data={payTerminal} fields={transactionMBFields} />
+                                    <ExportButton allData={payTerminalsWithNames} selectedData={selectedRows} fields={transactionMBFields} />
+                                    <PrintButton data={payTerminalsWithNames} fields={transactionMBFields} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

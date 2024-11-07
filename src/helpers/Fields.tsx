@@ -148,7 +148,7 @@ export const deviceFields = [
     { key: "deviceProtocol", label: "Protocolo", type: "number" },
     { key: "deviceType", label: "Tipo", type: "number" },
     { key: "status", label: "Estado", type: "boolean" },
-    { key: "disabled", label: "Activo", type: "boolean" }
+    { key: "enabled", label: "Activo", type: "boolean" }
 ];
 
 export const employeeDeviceFields = [
@@ -198,7 +198,7 @@ export const transactionFields = [
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'ID do Evento', type: 'number' },
     { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
-    { key: 'deviceSN', label: 'Equipamento', type: 'string' },
+    { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'createTime', label: 'Data de Criação', type: 'Date' },
     { key: 'updateTime', label: 'Data de Atualização', type: 'Date' },
 ];
@@ -212,13 +212,13 @@ export const transactionMBFields = [
     { key: 'email', label: 'Email', type: 'string' },
     { key: 'timestamp', label: 'Data e Hora', type: 'Date' },
     { key: 'tpId', label: 'Terminal', type: 'string' },
-    { key: 'deviceSN', label: 'Equipamento', type: 'string' },
+    { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
 ];
 
 export const transactionCardFields = [
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
-    { key: 'nameUser', label: 'Utilizador', type: 'string' },
-    { key: 'deviceSN', label: 'Equipamento', type: 'string' },
+    { key: 'nameUser', label: 'Nome do Utilizador', type: 'string' },
+    { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventDoorId', label: 'Nome', type: 'number' },
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
@@ -226,10 +226,10 @@ export const transactionCardFields = [
 
 export const registerFields = [
     { key: 'name', label: 'Nome', type: 'string', required: true },
-    { key: 'userName', label: 'Nome de Usuário', type: 'string', required: true },
+    { key: 'userName', label: 'Nome do Utilizador', type: 'string', required: true },
     { key: 'emailAddress', label: 'E-Mail', type: 'string', required: true },
-    { key: 'password', label: 'Senha', type: 'string', required: true },
-    { key: 'confirmPassword', label: 'Confirmar Senha', type: 'string' },
+    { key: 'password', label: 'Password', type: 'string', required: true },
+    { key: 'confirmPassword', label: 'Confirmar Password', type: 'string' },
     { key: 'roles', label: 'Tipo de Conta', type: 'string', required: true },
     { key: 'profileImage', label: 'Foto', type: 'string' },
 ];
@@ -434,36 +434,35 @@ export const entityFields = [
 
 export const recolhaMoedeiroEContadorFields = [
     { key: 'dataRecolha', label: 'Data', type: 'date' },
-    { key: 'pessoaResponsavel', label: 'Pessoa Responsável', type: 'string', required: true },
+    { key: 'pessoaResponsavel', label: 'Nome do Utilizador', type: 'string', required: true },
     { key: 'numeroMoedas', label: 'Número de Moedas Recolhidas', type: 'number', required: true },
+    { key: 'valorTotal', label: 'Valor Total Recolhido', type: 'number', required: true },
     { key: 'numeroMoedasSistema', label: 'Número de Moedas no Sistema', type: 'number' },
     { key: 'diferenca', label: 'Diferença', type: 'number' },
-    { key: 'valorTotal', label: 'Valor Total Recolhido', type: 'number', required: true },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'deviceID', label: 'Equipamento', type: 'string', required: true },
-    { key: 'dataFimIntervencao', label: 'Data Fim', type: 'date' },
+    { key: 'deviceID', label: 'Nome do Local', type: 'string', required: true },
+    /* { key: 'dataFimIntervencao', label: 'Data Fim', type: 'date' }, */
 ];
 
 export const manualOpenDoorFields = [
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
-    { key: 'nomeResponsavel', label: 'Utilizador', type: 'string' },
+    { key: 'nomeResponsavel', label: 'Nome do Utilizador', type: 'string' },
     { key: 'nomeEvento', label: 'Nome do Evento', type: 'string' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'deviceName', label: 'Equipamento', type: 'string' },
+    { key: 'deviceName', label: 'Nome do Local', type: 'string' },
     { key: 'doorName', label: 'Nome', type: 'string' },
 ];
 
 export const limpezasEOcorrenciasFields = [
     { key: 'dataCreate', label: 'Data de Criação', type: 'date' },
-    { key: 'responsavel', label: 'Pessoa Responsável', type: 'string', required: true },
+    { key: 'responsavel', label: 'Nome do Utilizador', type: 'string', required: true },
     { key: 'observacoes', label: 'Observações', type: 'string' },
     { key: 'deviceId', label: 'Equipamento', type: 'string', required: true },
-    { key: 'deviceName', label: 'Equipamento', type: 'string' },
+    { key: 'deviceName', label: 'Nome do Local', type: 'string' },
 ];
 
 export const logsFields = [
-    { key: 'userName', label: 'Nome', type: 'string' },
-    { key: 'taskName', label: 'Nome da Tarefa', type: 'string' },
+    { key: 'userName', label: 'Nome do Utilizador', type: 'string' },
     { key: 'description', label: 'Descrição', type: 'string' },
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
 ];

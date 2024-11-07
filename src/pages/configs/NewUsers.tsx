@@ -14,6 +14,8 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
 import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
+import { Button } from "react-bootstrap";
+import { DeleteModal } from "../../modals/DeleteModal";
 
 export const NewUsers = () => {
     const { navbarColor, footerColor } = useColor();
@@ -25,6 +27,8 @@ export const NewUsers = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState<Register | null>(null);
+    const [selectedUserToDelete, setSelectedUserToDelete] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     // Função para buscar os dados dos usuários registados
     const fetchUsers = async () => {
@@ -32,7 +36,7 @@ export const NewUsers = () => {
             const data = await apiService.fetchAllRegisteredUsers();
             setUsers(data);
         } catch (error) {
-            console.error('Erro ao buscar os dados dos usuários registados:', error);
+            console.error('Erro ao buscar os dados dos utilizador registados:', error);
         }
     };
 
@@ -41,9 +45,9 @@ export const NewUsers = () => {
         try {
             const data = await apiService.addNewRegisteredUser(user as Register);
             setUsers([...users, data]);
-            toast.success(data.value || 'Usuário adicionado com sucesso!');
+            toast.success(data.value || 'Utilizador adicionado com sucesso!');
         } catch (error) {
-            console.error('Erro ao adicionar o usuário registado:', error);
+            console.error('Erro ao adicionar o utilizador registado:', error);
         } finally {
             refreshUsers();
         }
@@ -55,9 +59,21 @@ export const NewUsers = () => {
             const data = await apiService.updateRegisteredUser(user);
             const updatedUsers = users.map(u => u.id === data.id ? data : u);
             setUsers(updatedUsers);
-            toast.success(data.value || 'Usuário atualizado com sucesso!');
+            toast.success(data.value || 'Utilizador atualizado com sucesso!');
         } catch (error) {
-            console.error('Erro ao atualizar o usuário registado:', error);
+            console.error('Erro ao atualizar o utilizador registado:', error);
+        } finally {
+            refreshUsers();
+        }
+    }
+
+    // Função para eliminar usuários registados
+    const handleDeleteUser = async (id: string) => {
+        try {
+            const data = await apiService.deleteRegisteredUser(id);
+            toast.success(data.message || 'Utilizador eliminado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao eliminar o utilizador registado:', error);
         } finally {
             refreshUsers();
         }
@@ -104,6 +120,12 @@ export const NewUsers = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a abertura do modal de apagar controle de acesso
+    const handleOpenDeleteModal = (id: string) => {
+        setSelectedUserToDelete(id);
+        setShowDeleteModal(true);
+    };
+
     // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -140,6 +162,7 @@ export const NewUsers = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
@@ -157,6 +180,9 @@ export const NewUsers = () => {
         cell: (row: Register) => (
             <div style={{ display: 'flex' }}>
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditUsers(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
             </div>
         ),
         selector: (row: Register) => row.id,
@@ -199,6 +225,8 @@ export const NewUsers = () => {
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        defaultSortAsc={true}
+                        defaultSortFieldId='name'
                     />
                 </div>
             </div>
@@ -220,6 +248,12 @@ export const NewUsers = () => {
                     title="Atualizar Registo de Utilizador"
                 />
             )}
+            <DeleteModal
+                open={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={handleDeleteUser}
+                entityId={selectedUserToDelete}
+            />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={registerFields.filter(field => !excludedColumns.includes(field.key))}

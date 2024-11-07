@@ -353,6 +353,21 @@ export const NkioskListPayments = () => {
         setLineChartData(newLineData);
     }, [listPayments]);
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const payTerminalsCoinsWithNames = listPayments.map(transaction => {
+        const terminalMatch = terminalData.find(terminal => terminal.id === transaction.tpId);
+        const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
+
+        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            tpId: terminalName,
+            deviceSN: deviceName,
+        };
+    });
+
     return (
         <TerminalsProvider>
             <div className="dashboard-container">
@@ -374,8 +389,8 @@ export const NkioskListPayments = () => {
                         <div className="buttons-container-others">
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                            <ExportButton allData={listPayments} selectedData={selectedRows} fields={transactionMBFields} />
-                            <PrintButton data={listPayments} fields={transactionMBFields} />
+                            <ExportButton allData={payTerminalsCoinsWithNames} selectedData={selectedRows} fields={transactionMBFields} />
+                            <PrintButton data={payTerminalsCoinsWithNames} fields={transactionMBFields} />
                         </div>
                         <div className="date-range-search">
                             <input

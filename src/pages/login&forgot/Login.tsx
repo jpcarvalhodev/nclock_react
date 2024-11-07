@@ -57,7 +57,8 @@ export const Login = () => {
       if (response.status === 401) {
         toast.error('Dados incorretos. Tente novamente.');
       } else if (!response.ok) {
-        console.error('Error:', response.status, response.statusText);
+        toast.error('Falha ao fazer login. Tente novamente.');
+        throw new Error;
       } else {
         const data = await response.json();
 
@@ -77,7 +78,7 @@ export const Login = () => {
           localStorage.removeItem('rememberMePassword');
         }
 
-        toast.info(`Seja bem vindo ${username} aos Nsoftwares do NIDGROUP`);
+        toast.info(`SEJA BEM VINDO ${username.toUpperCase()} AOS NSOFTWARES DO NIDGROUP`);
         navigate('/dashboard');
       }
     } catch (error) {
@@ -105,7 +106,7 @@ export const Login = () => {
             Guardar dados?
             <input style={{ marginLeft: '10px' }} type="checkbox" name="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
           </label>
-          <Link className="btn-my-custom-link" to="/forgot-password">Esqueceu sua senha?</Link>
+          <Link className="btn-my-custom-link" to="/login&forgot/forgotpassword">Esqueceu sua senha?</Link>
           <Button className="btn-my-custom-button" type='submit'>Login</Button>
         </form>
       </div>

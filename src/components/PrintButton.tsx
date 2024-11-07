@@ -30,16 +30,6 @@ export const PrintButton = ({ data, fields }: PrintButtonProps) => {
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
 
-    const handlePrint = () => {
-        return (
-            <PDFDownloadLink
-                document={<PDFDocument data={data} fields={fields} />}
-                fileName="dados_impressos.pdf"
-            >
-            </PDFDownloadLink>
-        )
-    }
-
     return (
         <>
             <CustomOutlineButton onClick={handleShowModal} icon='bi-printer' iconSize='1.1em'></CustomOutlineButton >
@@ -57,9 +47,14 @@ export const PrintButton = ({ data, fields }: PrintButtonProps) => {
                     <Button variant="outline-info" onClick={handleCloseModal}>
                         Fechar
                     </Button>
-                    <Button variant="outline-secondary" onClick={handlePrint}>
-                        Guardar
-                    </Button>
+                    <PDFDownloadLink
+                        document={<PDFDocument data={data} fields={fields} />}
+                        fileName="dados_impressos.pdf"
+                    >
+                        <Button variant="outline-secondary">
+                            Guardar
+                        </Button>
+                    </PDFDownloadLink>
                     <Button variant="outline-primary" onClick={window.print}>
                         Imprimir
                     </Button>

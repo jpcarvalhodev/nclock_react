@@ -294,7 +294,19 @@ export const NkioskListMovements = () => {
         });
 
     // Calcula o valor total dos movimentos
-    const totalAmount = uniqueFilteredDataTable.length
+    const totalAmount = uniqueFilteredDataTable.length;
+    
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const moveCardKioskWithNames = listMovements.map(transaction => {
+
+        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            deviceSN: deviceName,
+        };
+    });
 
     return (
         <TerminalsProvider>
@@ -322,8 +334,8 @@ export const NkioskListMovements = () => {
                                 <div className="buttons-container-others">
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    <ExportButton allData={listMovements} selectedData={selectedRows} fields={combinedMovements} />
-                                    <PrintButton data={listMovements} fields={combinedMovements} />
+                                    <ExportButton allData={moveCardKioskWithNames} selectedData={selectedRows} fields={combinedMovements} />
+                                    <PrintButton data={moveCardKioskWithNames} fields={combinedMovements} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

@@ -45,7 +45,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const {
         devices,
     } = useContext(TerminalsContext) as DeviceContextType;
-    const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, disabled: true });
+    const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, enabled: true });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [error, setError] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
@@ -57,7 +57,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        setFormData({ ...initialValues, disabled: true });
+        setFormData({ ...initialValues, enabled: true });
         if (initialValues.photo) {
             setDeviceImage(initialValues.photo);
         } else {
@@ -378,16 +378,16 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                         ref={fileInputRef}
                                                     />
                                                 </div>
-                                                <Form.Group controlId="formDisabled" className="d-flex align-items-center mb-3">
+                                                <Form.Group controlId="formEnabled" className="d-flex align-items-center mb-3">
                                                     <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo</Form.Label>
                                                     <Form.Check
                                                         type="switch"
-                                                        id="custom-switch-disabled"
-                                                        checked={formData.disabled === true}
-                                                        onChange={(e) => { const isDisabled = e.target.checked; setFormData({ ...formData, disabled: isDisabled }); }}
+                                                        id="custom-switch-enabled"
+                                                        checked={formData.enabled === true}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, enabled: e.target.checked }))}
                                                         className="ms-auto"
                                                         label=""
-                                                        name="disabled"
+                                                        name="enabled"
                                                     />
                                                 </Form.Group>
                                                 <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', marginTop: '20px', textAlign: "center" }}>

@@ -199,7 +199,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                     case 'admissionDate':
                         return row.admissionDate ? formatDateAndTime(row[field.key]) : '';
                     case 'biIssuance':
-                        return row.biIssueDate ? formatDateAndTime(row[field.key]) : '';
+                        return row.biIssuance ? formatDateAndTime(row[field.key]) : '';
                     case 'biValidity':
                         return row.biValidity ? formatDateAndTime(row[field.key]) : '';
                     case 'exitDate':

@@ -64,7 +64,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
             }
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+            if (field.type === 'number' && fieldValue != null) {
                 valid = false;
             }
 
@@ -194,7 +194,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                                         className="custom-input-height custom-select-font-size"
                                         type="number"
                                         name="numeroMoedas"
-                                        value={formData.numeroMoedas || ''}
+                                        value={formData.numeroMoedas === undefined ? '' : formData.numeroMoedas}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>

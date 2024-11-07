@@ -179,6 +179,7 @@ export const NkioskMoveVP = () => {
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))
+        .filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')
         .sort((a, b) => (a.key === 'eventTime' ? -1 : b.key === 'eventTime' ? 1 : 0))
         .sort((a, b) => (a.key === 'deviceSN' ? 1 : b.key === 'deviceSN' ? -1 : 0))
         .sort((a, b) => (a.key === 'eventNo' ? 1 : b.key === 'eventNo' ? -1 : 0))
@@ -208,6 +209,18 @@ export const NkioskMoveVP = () => {
             };
         });
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const moveVPWithNames = moveVP.map(transaction => {
+
+        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
+        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+
+        return {
+            ...transaction,
+            deviceSN: deviceName,
+        };
+    });
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -234,8 +247,8 @@ export const NkioskMoveVP = () => {
                                 <div className="buttons-container-others">
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    <ExportButton allData={moveVP} selectedData={selectedRows} fields={transactionCardFields} />
-                                    <PrintButton data={moveVP} fields={transactionCardFields} />
+                                    <ExportButton allData={moveVPWithNames} selectedData={selectedRows} fields={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')} />
+                                    <PrintButton data={moveVPWithNames} fields={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')} />
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -277,7 +290,7 @@ export const NkioskMoveVP = () => {
                 <Footer style={{ backgroundColor: footerColor }} />
                 {openColumnSelector && (
                     <ColumnSelectorModal
-                        columns={transactionCardFields}
+                        columns={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')}
                         selectedColumns={selectedColumns}
                         onClose={() => setOpenColumnSelector(false)}
                         onColumnToggle={toggleColumn}

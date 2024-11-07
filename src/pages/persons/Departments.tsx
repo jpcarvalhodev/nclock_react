@@ -225,6 +225,18 @@ export const Departments = () => {
         ignoreRowClick: true,
     };
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const departmentWithNames = departments.map(transaction => {
+
+        const departmentMatch = departments.find(dept => dept.paiId === transaction.code);
+        const departmentName = departmentMatch?.name || '';
+
+        return {
+            ...transaction,
+            paiId: departmentName,
+        };
+    });
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -246,8 +258,8 @@ export const Departments = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshDepartments} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={departments} selectedData={filteredItems} fields={departmentFields} />
-                        <PrintButton data={departments} fields={departmentFields} />
+                        <ExportButton allData={departmentWithNames} selectedData={filteredItems} fields={departmentFields} />
+                        <PrintButton data={departmentWithNames} fields={departmentFields} />
                     </div>
                 </div>
                 <CreateModalDeptGrp

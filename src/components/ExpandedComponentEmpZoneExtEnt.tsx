@@ -2,6 +2,7 @@ import { employeeFields, externalEntityFields, zoneFields } from "../helpers/Fie
 import { Employee, ExternalEntity, Register, Zone } from "../helpers/Types";
 import '../css/Expanded.css';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os campos
 interface Field {
@@ -38,29 +39,15 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
 
     const columnNames = columnNamesMap(fields);
 
-    const photo = (data as Employee).photo || (data as Zone).photo || (data as ExternalEntity).photo || (data as Register).profileImage || modalAvatar;
-
-    // Função para formatar a data e a hora
-    function formatDateAndTime(input: string | Date): string {
-        const date = typeof input === 'string' ? new Date(input) : input;
-        const options: Intl.DateTimeFormatOptions = {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-        };
-        return new Intl.DateTimeFormat('pt-PT', options).format(date);
-    }
+    const photo = (data as Employee).photo || (data as Zone).photo || (data as ExternalEntity).photo || (data as Register).profileImage || '';
+    const baseURL = apiService.baseURL.slice(0, -1);
+    const photoData = photo ? `${baseURL}${photo}` : modalAvatar;
 
     return (
         <div className="expanded-details-container">
             <div className="entity-photo">
                 <img
-                    src={photo}
-                    alt={'Foto não disponível'}
+                    src={photoData}
                     className="entity-photo-img"
                     style={{ borderRadius: '50%' }}
                 />
@@ -75,20 +62,26 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                     const value = data[key];
                     let displayValue = value;
                     switch (key) {
-                        case 'status':
-                            displayValue = value ? 'Activo' : 'Inactivo';
+                        case 'birthday':
+                            displayValue = new Date(value).toLocaleString() || '';
                             break;
                         case 'admissionDate':
-                            displayValue = value ? formatDateAndTime(value) : '';
+                            displayValue = new Date(value).toLocaleString() || '';
                             break;
                         case 'bIissuance':
-                            displayValue = value ? formatDateAndTime(value) : '';
+                            displayValue = new Date(value).toLocaleString() || '';
                             break;
                         case 'biValidity':
-                            displayValue = value ? formatDateAndTime(value) : '';
+                            displayValue = new Date(value).toLocaleString() || '';
                             break;
                         case 'exitDate':
-                            displayValue = value ? formatDateAndTime(value) : '';
+                            displayValue = new Date(value).toLocaleString() || '';
+                            break;
+                        case 'dateInserted':
+                            displayValue = new Date(value).toLocaleString() || '';
+                            break;
+                        case 'dateUpdated':
+                            displayValue = new Date(value).toLocaleString() || '';
                             break;
                         case 'statusEmail':
                             displayValue = value ? 'Activo' : 'Inactivo';
