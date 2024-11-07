@@ -303,7 +303,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllDevices();
             fetchAllMBDevices();
         }
-    }, []);
+    }, [localStorage.getItem('token')]);
 
     // Define o valor do contexto
     const contextValue: DeviceContextType = {

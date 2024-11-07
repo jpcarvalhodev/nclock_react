@@ -74,7 +74,7 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
     if (localStorage.getItem('token')) {
       fetchAds();
     }
-  }, []);
+  }, [localStorage.getItem('token')]);
 
   return (
     <AdsContext.Provider value={{ ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds }}>

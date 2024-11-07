@@ -176,6 +176,8 @@ export const NkioskMoveVP = () => {
         return filteredDataTable.find(item => item.eventTime === eventTime);
     }).filter((item): item is KioskTransactionCard => item !== undefined);
 
+    console.log(uniqueFilteredDataTable);
+
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))
@@ -206,6 +208,7 @@ export const NkioskMoveVP = () => {
                 ),
                 selector: row => formatField(row),
                 sortable: true,
+                sortFunction: (rowA, rowB) => new Date(rowB.eventTime).getTime() - new Date(rowA.eventTime).getTime()
             };
         });
 
