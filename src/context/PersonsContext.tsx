@@ -21,6 +21,10 @@ export interface PersonsContextType {
     fetchAllData: (entity?: string) => Promise<void>;
     fetchAllEmployees: (options?: FetchOptions) => Promise<Employee[]>;
     fetchAllCardData: () => Promise<EmployeeCard[]>;
+    fetchAllRegisteredUsers: () => Promise<void>;
+    handleAddUsers: (user: FormData) => Promise<void>;
+    handleUpdateUser: (user: FormData) => Promise<void>;
+    handleDeleteUser: (id: string) => Promise<void>;
     handleAddEmployee: (employee: Employee) => Promise<void>;
     handleUpdateEmployee: (employee: Employee) => Promise<void>;
     handleDeleteEmployee: (employeeID: string) => Promise<void>;
@@ -111,6 +115,45 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para adicionar usuários registados
+    const handleAddUsers = async (user: FormData) => {
+        try {
+            const data = await apiService.addNewRegisteredUser(user);
+            setRegisteredUsers([...registeredUsers, data]);
+            toast.success(data.value || 'Utilizador adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar o utilizador registado:', error);
+        } finally {
+            fetchAllRegisteredUsers();
+        }
+    }
+
+    // Função para atualizar usuários registados
+    const handleUpdateUser = async (user: FormData) => {
+        try {
+            const data = await apiService.updateRegisteredUser(user);
+            const updatedUsers = registeredUsers.map(u => u.id === data.id ? data : u);
+            setRegisteredUsers(updatedUsers);
+            toast.success(data.value || 'Utilizador atualizado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar o utilizador registado:', error);
+        } finally {
+            fetchAllRegisteredUsers();
+        }
+    }
+
+    // Função para eliminar usuários registados
+    const handleDeleteUser = async (id: string) => {
+        try {
+            const data = await apiService.deleteRegisteredUser(id);
+            toast.success(data.message || 'Utilizador eliminado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao eliminar o utilizador registado:', error);
+        } finally {
+            fetchAllRegisteredUsers();
+        }
+    }
+
     // Define a função de adição de funcionários
     const handleAddEmployee = async (employee: Employee) => {
         try {
@@ -119,6 +162,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             toast.success(employeesData.message || 'Funcionário adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar novo funcionário:', error);
+        } finally {
+            fetchAllData();
+            fetchAllEmployees();
         }
     };
 
@@ -130,6 +176,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             toast.success(updatedEmployee.message || 'Funcionário atualizado com sucesso');
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
+        } finally {
+            fetchAllData();
+            fetchAllEmployees();
         }
     };
 
@@ -141,6 +190,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             toast.success(deleteEmployee.message || 'Funcionário apagado com sucesso!')
         } catch (error) {
             console.error('Erro ao apagar funcionário:', error);
+        } finally {
+            fetchAllData();
+            fetchAllEmployees();
         }
     };
 
@@ -177,6 +229,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             }
         } catch (error) {
             console.error('Erro ao adicionar novo cartão:', error);
+        } finally {
+            fetchAllCardData();
         }
     };
 
@@ -190,6 +244,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             }
         } catch (error) {
             console.error('Erro ao atualizar cartão:', error);
+        } finally {
+            fetchAllCardData();
         }
     };
 
@@ -200,6 +256,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             toast.success(deleteEmployeeCard.message || 'Cartão apagado com sucesso!')
         } catch (error) {
             console.error('Erro ao apagar cartão:', error);
+        } finally {
+            fetchAllCardData();
         }
     }
 
@@ -240,7 +298,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         if (localStorage.getItem('token')) {
             fetchAllData();
+            fetchAllEmployees();
             fetchAllRegisteredUsers();
+            fetchAllCardData();
         }
     }, [localStorage.getItem('token')]);
 
@@ -254,6 +314,10 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         fetchAllData,
         fetchAllEmployees,
         fetchAllCardData,
+        fetchAllRegisteredUsers,
+        handleAddUsers,
+        handleUpdateUser,
+        handleDeleteUser,
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,

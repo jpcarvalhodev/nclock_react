@@ -101,6 +101,8 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             toast.success(newAttendance.value || 'assiduidade adicionada com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar nova assiduidade:', error);
+        } finally {
+            fetchAllAttendances();
         }
     };
 
@@ -123,6 +125,8 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             toast.success(updatedAttendance.value || 'assiduidade atualizada com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar assiduidade:', error);
+        } finally {
+            fetchAllAttendances();
         }
     };
 
@@ -133,6 +137,8 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             toast.success(deleteAttendance.value || 'assiduidade apagada com sucesso!');
         } catch (error) {
             console.error('Erro ao apagar assiduidade:', error);
+        } finally {
+            fetchAllAttendances();
         }
     };
 

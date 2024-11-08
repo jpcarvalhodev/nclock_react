@@ -233,6 +233,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao adicionado dispositivos:', error);
+        } finally {
+            fetchAllDevices();
         }
     };
 
@@ -247,6 +249,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Erro ao conectar ao servidor');
+        } finally {
+            fetchAllDevices();
         }
     };
 
@@ -258,6 +262,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao apagar dispositivos:', error);
+        } finally {
+            fetchAllDevices();
         }
     };
 
@@ -269,6 +275,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             toast.success(deviceData.message || 'dispositivo adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionado dispositivos:', error);
+        } finally {
+            fetchAllMBDevices();
         }
     }
 
@@ -283,6 +291,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
             toast.error('Erro ao conectar ao servidor');
+        } finally {
+            fetchAllMBDevices();
         }
     }
 
@@ -294,6 +304,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao apagar dispositivos:', error);
+        } finally {
+            fetchAllMBDevices();
         }
     }
 

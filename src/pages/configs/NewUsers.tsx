@@ -16,10 +16,11 @@ import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { Button } from "react-bootstrap";
 import { DeleteModal } from "../../modals/DeleteModal";
+import { usePersons } from "../../context/PersonsContext";
 
 export const NewUsers = () => {
     const { navbarColor, footerColor } = useColor();
-    const [users, setUsers] = useState<Register[]>([]);
+    const { registeredUsers, fetchAllRegisteredUsers, handleAddUsers, handleUpdateUser, handleDeleteUser } = usePersons();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'userName', 'emailAddress', 'roles']);
     const [filterText, setFilterText] = useState("");
@@ -30,63 +31,14 @@ export const NewUsers = () => {
     const [selectedUserToDelete, setSelectedUserToDelete] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // Função para buscar os dados dos usuários registados
-    const fetchUsers = async () => {
-        try {
-            const data = await apiService.fetchAllRegisteredUsers();
-            setUsers(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos utilizador registados:', error);
-        }
-    };
-
-    // Função para adicionar usuários registados
-    const handleAddUsers = async (user: FormData) => {
-        try {
-            const data = await apiService.addNewRegisteredUser(user);
-            setUsers([...users, data]);
-            toast.success(data.value || 'Utilizador adicionado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao adicionar o utilizador registado:', error);
-        } finally {
-            refreshUsers();
-        }
-    }
-
-    // Função para atualizar usuários registados
-    const handleUpdateUser = async (user: FormData) => {
-        try {
-            const data = await apiService.updateRegisteredUser(user);
-            const updatedUsers = users.map(u => u.id === data.id ? data : u);
-            setUsers(updatedUsers);
-            toast.success(data.value || 'Utilizador atualizado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar o utilizador registado:', error);
-        } finally {
-            refreshUsers();
-        }
-    }
-
-    // Função para eliminar usuários registados
-    const handleDeleteUser = async (id: string) => {
-        try {
-            const data = await apiService.deleteRegisteredUser(id);
-            toast.success(data.message || 'Utilizador eliminado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao eliminar o utilizador registado:', error);
-        } finally {
-            refreshUsers();
-        }
-    }
-
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
-        fetchUsers();
+        fetchAllRegisteredUsers();
     }, []);
 
     // Função para atualizar os utilizadores
     const refreshUsers = () => {
-        fetchUsers();
+        fetchAllRegisteredUsers();
     };
 
     // Função para editar um utilizador
@@ -138,7 +90,7 @@ export const NewUsers = () => {
     );
 
     // Filtra os dados da tabela
-    const filteredDataTable = users.filter(user =>
+    const filteredDataTable = registeredUsers.filter(user =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(user[key]) === String(filters[key])
         )

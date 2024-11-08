@@ -287,6 +287,10 @@
     border-radius: 5px 5px 0 0;
 }
 
+.profile-avatar {
+    border-radius: 50%;
+}
+
 .image-text {
     align-items: center;
     margin-left: 10px;
@@ -433,7 +437,7 @@
     .calendar-container {
         margin: 0;
     }
-    
+
     .tab-content {
         max-height: calc(100vh - 200px);
         overflow: auto;
