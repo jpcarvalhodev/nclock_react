@@ -255,7 +255,7 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                                 </View>
                             ))}
                     </View>
-                    <Text style={styles.footer}>SISNID - Security Solutions</Text>
+                    <Text style={styles.footer}>NIDGROUP- Business Solutions</Text>
                 </Page>
             ))}
         </Document>
