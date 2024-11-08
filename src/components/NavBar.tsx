@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailUser, Employee, Entity } from '../helpers/Types';
+import { EmailUser, Entity } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -232,10 +232,9 @@ interface TabsInfo {
 export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
 	const { handleAddAds } = useAds();
-	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
+	const { license, getSoftwareEnabledStatus, fetchAllLicensesWithoutKey, handleUpdateLicense } = useLicense();
 	const { registeredUsers } = usePersons();
 	const [user, setUser] = useState({ name: '', email: '' });
-	const [employee, setEmployee] = useState<Employee | null>(null);
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
 	const [showConfiguracaoRibbon, setShowConfiguracaoRibbon] = useState(false);
@@ -1557,11 +1556,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		window.open('https://anydesk.com/pt');
 	}
 
-	// Função para abrir a câmera em uma nova janela
-	const handleCameraOpenWindow = () => {
-		window.open('http://192.168.1.181');
-	}
-
 	// Função para alternar a visibilidade da seção quando o título for clicado
 	const toggleGroupVisibility = (groupId: string) => {
 		setVisibleGroup((prev) => (prev === groupId ? null : groupId));
@@ -1572,9 +1566,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para buscar o user logado e a imagem do perfil
 	const findUser = registeredUsers.find(user => user.userName === localStorage.getItem('username'));
-	const userImage = findUser?.profileImage;
-	const baseURL = apiService.baseURL.slice(0, -1);
-	const profileUserImage = `${baseURL}${userImage}`;
+	const userImage = findUser?.profileImage ? `${apiService.baseURL.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
+
+	// Função para fechar o modal de licenças
+	const handleCloseLicenseModal = () => {
+		setShowLicenseModal(false);
+		fetchAllLicensesWithoutKey();
+	};
 
 	return (
 		<ColorProvider>
@@ -1632,7 +1630,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<div className='dropdown-content'>
-									<img src={profileUserImage || profileAvatar} alt="user photo" className='profile-avatar' />
+									<img src={userImage} className='profile-avatar' />
 									<Dropdown.Item className='dropdown-button' onClick={logout}>Sair</Dropdown.Item>
 								</div>
 							</Dropdown.Menu>
@@ -2439,12 +2437,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'videovigilancia nview') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button onClick={handleCameraOpenWindow} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" >
+												<Link to="/nview/nviewonlinecameras" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" >
 													<span className="icon">
 														<img src={online} alt="botão online" />
 													</span>
 													<span className="text">Online</span>
-												</Button>
+												</Link>
 											</div>
 											<div>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
@@ -3627,7 +3625,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				{showLicenseModal && (
 					<LicenseModal
 						open={showLicenseModal}
-						onClose={() => setShowLicenseModal(false)}
+						onClose={handleCloseLicenseModal}
 						onUpdate={handleUpdateLicense}
 						fields={licenseFields}
 					/>

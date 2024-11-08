@@ -152,7 +152,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 65 }}>
+            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 130 }}>
                 <div className="container-fluid">
                     <Row>
                         <Col md={3}>
@@ -165,11 +165,10 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                     onChange={handleChange}
                                 />
                             </Form.Group>
-                            <Form.Group controlId="formAllowSuaccessLock">
+                            <Form.Group controlId="formAllowSuaccessLock" className='d-flex justify-content-between mt-3' style={{ marginBottom: 4 }}>
                                 <Form.Label>Permitir Acesso de SU ao Bloqueio</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="string"
+                                <Form.Check
+                                    type="switch"
                                     name="allowSuaccessLock"
                                     value={formData.allowSuaccessLock}
                                     onChange={handleChange}
@@ -197,16 +196,6 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                     type="number"
                                     name="inApbDuration"
                                     value={formData.inApbDuration}
-                                    onChange={handleChange}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="formReaderType">
-                                <Form.Label>Tipo de Leitor</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="number"
-                                    name="readerType"
-                                    value={formData.readerType}
                                     onChange={handleChange}
                                 />
                             </Form.Group>
@@ -242,7 +231,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                         </Col>
                         <Col md={3}>
                             <Form.Group controlId="formBackLock" className='d-flex justify-content-between mt-3' style={{ marginBottom: 13.5 }}>
-                                <Form.Label>Status da Fechadura</Form.Label>
+                                <Form.Label>Estado da Fechadura</Form.Label>
                                 <Form.Check
                                     type="switch"
                                     name="backLock"
@@ -257,16 +246,6 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                     type="number"
                                     name="combopenInterval"
                                     value={formData.combopenInterval}
-                                    onChange={handleChange}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="formExtDelayDrivertime">
-                                <Form.Label>Tempo de Atraso de Driver</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="number"
-                                    name="extDelayDrivertime"
-                                    value={formData.extDelayDrivertime}
                                     onChange={handleChange}
                                 />
                             </Form.Group>
@@ -291,7 +270,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                 />
                             </Form.Group>
                             <Form.Group controlId="formTimezoneId">
-                                <Form.Label>Dispositivo</Form.Label>
+                                <Form.Label>Período</Form.Label>
                                 <Form.Control
                                     as="select"
                                     className="custom-input-height custom-select-font-size"
@@ -321,13 +300,13 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                             </Form.Group>
                         </Col>
                         <Col md={3}>
-                            <Form.Group controlId="formActionInterval">
-                                <Form.Label>Intervalo entre Operações</Form.Label>
+                            <Form.Group controlId="formName">
+                                <Form.Label>Nome</Form.Label>
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
-                                    type="number"
-                                    name="actionInterval"
-                                    value={formData.actionInterval}
+                                    type="string"
+                                    name="name"
+                                    value={formData.name}
                                     onChange={handleChange}
                                 />
                             </Form.Group>
@@ -351,21 +330,21 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                     onChange={handleChange}
                                 />
                             </Form.Group>
-                            <Form.Group controlId="formName">
-                                <Form.Label>Nome</Form.Label>
+                            <Form.Group controlId="formActionInterval">
+                                <Form.Label>Intervalo entre Operações</Form.Label>
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
-                                    type="string"
-                                    name="name"
-                                    value={formData.name}
+                                    type="number"
+                                    name="actionInterval"
+                                    value={formData.actionInterval}
                                     onChange={handleChange}
                                 />
                             </Form.Group>
                             <Form.Group controlId="formSupperPwd">
-                                <Form.Label>Senha de Emergência</Form.Label>
+                                <Form.Label>Password de Emergência</Form.Label>
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
-                                    type="string"
+                                    type="password"
                                     name="supperPwd"
                                     value={formData.supperPwd}
                                     onChange={handleChange}
@@ -373,17 +352,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                             </Form.Group>
                         </Col>
                         <Col md={3}>
-                            <Form.Group controlId="formActiveTimesegId">
-                                <Form.Label>Faixa Horária Activa</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="number"
-                                    name="activeTimesegId"
-                                    value={formData.activeTimesegId}
-                                    onChange={handleChange}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="formDoorNo">
+                        <Form.Group controlId="formDoorNo">
                                 <Form.Label>Número de Porta</Form.Label>
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
@@ -394,11 +363,21 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                     readOnly
                                 />
                             </Form.Group>
-                            <Form.Group controlId="formForcePwd">
-                                <Form.Label>Senha de Coação</Form.Label>
+                            <Form.Group controlId="formActiveTimesegId">
+                                <Form.Label>Faixa Horária Activa</Form.Label>
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
-                                    type="string"
+                                    type="number"
+                                    name="activeTimesegId"
+                                    value={formData.activeTimesegId}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formForcePwd">
+                                <Form.Label>Password de Coação</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="password"
                                     name="forcePwd"
                                     value={formData.forcePwd}
                                     onChange={handleChange}

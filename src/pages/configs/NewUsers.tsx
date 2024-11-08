@@ -41,9 +41,9 @@ export const NewUsers = () => {
     };
 
     // Função para adicionar usuários registados
-    const handleAddUsers = async (user: Register) => {
+    const handleAddUsers = async (user: FormData) => {
         try {
-            const data = await apiService.addNewRegisteredUser(user as Register);
+            const data = await apiService.addNewRegisteredUser(user);
             setUsers([...users, data]);
             toast.success(data.value || 'Utilizador adicionado com sucesso!');
         } catch (error) {
@@ -237,6 +237,7 @@ export const NewUsers = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddUsers}
                 fields={registerFields}
+                initialValues={{}}
             />
             {selectedUser && (
                 <UpdateModalRegisterUsers

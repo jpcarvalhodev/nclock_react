@@ -35,7 +35,7 @@ interface UpdateModalProps<T> {
 }
 
 export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields }: UpdateModalProps<T>) => {
-    const { fetchAllLicenses } = useLicense();
+    const { fetchAllLicenses, fetchAllLicensesWithoutKey } = useLicense();
     const [formData, setFormData] = useState<Partial<License>>({});
     const [isCheckVisible, setIsCheckVisible] = useState<boolean>(false);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -92,11 +92,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         }
     };
 
-    // Função para alternar a visibilidade da password
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
     // Função para mostrar o modal
     const showModal = () => {
         setIsModalVisible(true);
@@ -106,6 +101,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     const handleClose = () => {
         setIsCheckVisible(false);
         setIsModalVisible(false);
+        fetchAllLicensesWithoutKey();
         navigate('/dashboard');
     };
 
@@ -235,6 +231,14 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         }
     }
 
+    // Define o estado de ativação dos produtos
+    const enabledStatus = Object.keys(formData).reduce((acc: { [key: string]: boolean }, key) => {
+        if (formData[key]?.enable !== undefined) {
+            acc[key] = formData[key].enable;
+        }
+        return acc;
+    }, {});
+
     return (
         <div>
             <Modal show={isCheckVisible} onHide={onClose} backdrop="static">
@@ -302,20 +306,31 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                             </Form.Group>
                         </Col>
                     </Row>
-                    <Tabs defaultActiveKey={Object.keys(formData)[2]} id="product-tabs" className="nav-modal">
-                        {Object.keys(formData).filter(key => key.startsWith('n') && key !== 'nif').map(product => (
-                            <Tab eventKey={product} title={product.toUpperCase()} key={product}>
-                                <Row>
-                                    {Object.keys(formData[product]).filter(prop => prop !== 'createDate').map((prop, index) => (
-                                        <Col md={4} key={`${product}-${prop}`} className='mt-3'>
-                                            <Form.Group controlId={`form${product}${prop}`}>
-                                                {renderFormControl(product, prop)}
-                                            </Form.Group>
-                                        </Col>
-                                    ))}
-                                </Row>
-                            </Tab>
-                        ))}
+                    <Tabs defaultActiveKey={Object.keys(formData)[2]} id="product-tabs" className='nav-modal'>
+                        {Object.keys(formData)
+                            .filter(key => key.startsWith('n') && key !== 'nif')
+                            .map(product => (
+                                <Tab
+                                    eventKey={product}
+                                    title={product.toUpperCase()}
+                                    key={product}
+                                    tabClassName={enabledStatus[product] ? 'enabled-tab' : ''}
+                                >
+                                    <Row>
+                                        {Object.keys(formData[product])
+                                            .filter(prop => prop !== 'createDate')
+                                            .map((prop, index) => (
+                                                <Col md={3} key={`${product}-${prop}`} className='mt-3'>
+                                                    <Form.Group controlId={`form${product}${prop}`}>
+                                                        {renderFormControl(product, prop)}
+                                                    </Form.Group>
+                                                </Col>
+                                            ))
+                                        }
+                                    </Row>
+                                </Tab>
+                            ))
+                        }
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer>

@@ -561,3 +561,16 @@ export type Logs = {
     description: string;
     createdDate: Date;
 }
+
+export type Cameras = {
+    [key: string]: any;
+    id: string;
+    numeroCamera: number;
+    nomeCamera: string;
+    ip: string;
+    url: string;
+    userCamera: string;
+    passwordCamera: string;
+    createdDate: Date;
+    updatedDate: Date;
+}

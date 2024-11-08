@@ -132,6 +132,7 @@ import { TerminalsProvider } from './context/TerminalsContext';
 import { AdsProvider } from './context/AdsContext';
 import { ForgotPassword } from './pages/login&forgot/ForgotPassword';
 import { ResetPassword } from './pages/login&forgot/PasswordReset';
+import { NviewOnlineCameras } from './pages/sisnid/nview/NviewOnlineCameras';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -217,6 +218,7 @@ function AnimatedRoutes() {
               <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
               <Route path="/nview/nviewdashboardlicensed" element={<PageProtection><NviewDashboardLicensed /></PageProtection>} />
               <Route path="/nview/nviewgraph" element={<PageProtection><NviewGraph /></PageProtection>} />
+              <Route path="/nview/nviewonlinecameras" element={<PageProtection><NviewOnlineCameras /></PageProtection>} />
               <Route path="/ncard/ncarddashboard" element={<PageProtection><NcardDashboard /></PageProtection>} />
               <Route path="/ndoor/ndoordashboard" element={<PageProtection><NdoorDashboard /></PageProtection>} />
               <Route path="/npark/nparkdashboard" element={<PageProtection><NparkDashboard /></PageProtection>} />

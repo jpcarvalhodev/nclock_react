@@ -6,13 +6,12 @@ const styles = StyleSheet.create({
     page: {
         flexDirection: 'column',
         backgroundColor: '#FFF',
-        padding: 30,
+        padding: 10,
     },
     aboveHeader: {
         fontSize: 12,
         textAlign: 'right',
-        marginTop: 25,
-        paddingTop: 10,
+        marginBottom: 5,
         borderColor: '#E4E4E4'
     },
     header: {
@@ -23,7 +22,6 @@ const styles = StyleSheet.create({
     },
     table: {
         display: 'table',
-        width: 'auto',
         borderStyle: 'solid',
         borderBottomWidth: 0,
         margin: 0
@@ -34,21 +32,21 @@ const styles = StyleSheet.create({
         borderColor: '#E4E4E4',
         borderBottomStyle: 'solid',
         alignItems: 'center',
-        minHeight: 25,
+        minHeight: 20,
     },
     tableColHeader: {
-        width: '20%',
+        flex: 1,
         borderStyle: 'solid',
         borderTopWidth: 0,
         backgroundColor: '#f2f2f2',
         textAlign: 'center',
         fontWeight: 'bold',
-        minHeight: 40,
+        minHeight: 35,
         display: 'flex',
         justifyContent: 'center'
     },
     tableCol: {
-        width: '20%',
+        flex: 1,
         borderStyle: 'solid',
         borderTopWidth: 0,
         textAlign: 'center',
@@ -63,8 +61,7 @@ const styles = StyleSheet.create({
     footer: {
         fontSize: 12,
         textAlign: 'left',
-        marginTop: 25,
-        paddingTop: 10,
+        marginTop: 20,
         borderColor: '#E4E4E4'
     }
 });
@@ -208,7 +205,7 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
         }
     };
 
-    const maxColsPerPage = 6;
+    const maxColsPerPage = 8;
     const allColumns = ['eventId', 'appId', 'timezoneId', 'doorId', 'id', 'deviceId', 'birthday', 'admissionDate', 'biIssuance', 'biValidity', 'exitDate', 'status', 'statusEmail', 'rgpdAut', 'departmentId', 'professionId', 'categoryId', 'groupId', 'zoneId', 'externalEntityId', 'attendanceTime', 'inOutMode', 'code', 'machineNumber', 'cardNumber', 'productTime', 'createDate', 'updateDate', 'createTime', 'updateTime', 'eventTime', 'timestamp', 'transactionType', 'estadoTerminal', 'timeReboot', 'dataRecolha'];
     const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo'];
 
@@ -243,18 +240,20 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                                 </View>
                             ))}
                         </View>
-                        {data.map((item, rowIndex) => (
-                            <View key={rowIndex} style={styles.tableRow}>
-                                {fieldGroup.map((field) => {
-                                    const value = formatField(item, field.key);
-                                    return (
-                                        <View key={field.key} style={{ ...styles.tableCol }}>
-                                            <Text style={styles.tableCell}>{value}</Text>
-                                        </View>
-                                    );
-                                })}
-                            </View>
-                        ))}
+                        {data
+                            .filter(item => fieldGroup.some(field => item[field.key] !== undefined && item[field.key] !== null && item[field.key] !== ''))
+                            .map((item, rowIndex) => (
+                                <View key={rowIndex} style={styles.tableRow}>
+                                    {fieldGroup.map((field) => {
+                                        const value = formatField(item, field.key);
+                                        return (
+                                            <View key={field.key} style={{ ...styles.tableCol }}>
+                                                <Text style={styles.tableCell}>{value}</Text>
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            ))}
                     </View>
                     <Text style={styles.footer}>SISNID - Security Solutions</Text>
                 </Page>

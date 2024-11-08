@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -1269,13 +1269,10 @@ export const fetchAllEmailConfig = async () => {
     return response.json();
 }
 
-export const addNewRegisteredUser = async (registeredUser: Register) => {
+export const addNewRegisteredUser = async (registeredUser: FormData) => {
     const response = await fetchWithAuth(`Authentication/Register`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registeredUser)
+        body: registeredUser
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1752,5 +1749,63 @@ export const fetchAllLoginLogs = async (startDate?: string, endDate?: string) =>
         toast.error(errorData.message);
         throw new Error;
     }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DAS CÂMERAS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllCameras = async () => {
+    const response = await fetchWithAuth(`ViewCamera/GetAllViewCameras`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const addCamera = async (camera: Cameras) => {
+    const response = await fetchWithAuth(`ViewCamera/CreateViewCamera`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(camera)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
+    return response.json();
+}
+
+export const updateCamera = async (camera: Cameras) => {
+    const response = await fetchWithAuth(`ViewCamera/UpdateViewCamera?id=${camera.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(camera)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
+    return response.json();
+}
+
+export const deleteCamera = async (id: string) => {
+    const response = await fetchWithAuth(`ViewCamera/DeleteViewCamera?id=${id}`, {
+        method: 'DELETE'
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
     return response.json();
 }

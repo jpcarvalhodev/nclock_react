@@ -79,17 +79,17 @@ export const NkioskListPayments = () => {
                 setListPaymentCoin([]);
                 return;
             }
-    
+
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, startDate, endDate);
             });
-    
+
             const allData = await Promise.all(promises);
-    
+
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-    
+
             setListPaymentCoin(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
@@ -105,24 +105,24 @@ export const NkioskListPayments = () => {
                 setListPaymentCoin([]);
                 return;
             }
-    
+
             const mbPromises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByMBAndDeviceSN(startDate, endDate);
             });
-    
+
             const coinPromises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, startDate, endDate);
             });
-    
+
             const allMBData = await Promise.all(mbPromises);
             const allCoinData = await Promise.all(coinPromises);
-    
+
             const validMBData = allMBData.filter(data => Array.isArray(data) && data.length > 0);
             const combinedMBData = validMBData.flat();
-    
+
             const validCoinData = allCoinData.filter(data => Array.isArray(data) && data.length > 0);
             const combinedCoinData = validCoinData.flat();
-    
+
             setListPaymentMB(combinedMBData);
             setListPaymentCoin(combinedCoinData);
         } catch (error) {
@@ -130,7 +130,7 @@ export const NkioskListPayments = () => {
             setListPaymentMB([]);
             setListPaymentCoin([]);
         }
-    }    
+    }
 
     // Função para buscar os dados dos terminais
     const fetchTerminalData = async () => {
@@ -275,6 +275,8 @@ export const NkioskListPayments = () => {
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
                         return new Date(row.timestamp).toLocaleString();
+                    case 'amount':
+                        return `${row[field.key]}€`;
                     case 'clientTicket':
                     case 'merchantTicket':
                         const imageUrl = row[field.key];
@@ -365,6 +367,7 @@ export const NkioskListPayments = () => {
             ...transaction,
             tpId: terminalName,
             deviceSN: deviceName,
+            amount: `${transaction.amount}€`,
         };
     });
 

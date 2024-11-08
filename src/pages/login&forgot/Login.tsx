@@ -78,7 +78,7 @@ export const Login = () => {
           localStorage.removeItem('rememberMePassword');
         }
 
-        toast.info(`SEJA BEM VINDO ${username.toUpperCase()} AOS NSOFTWARES DO NIDGROUP`);
+        toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
         navigate('/dashboard');
       }
     } catch (error) {
@@ -94,7 +94,7 @@ export const Login = () => {
           <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
           <div className='username-password-labels'>
             <label className='username-label'>
-              <p>Nome de Usuário:</p>
+              <p>Nome de Utilizador:</p>
               <input type="text" name="username" value={username} placeholder='Nome de Usuário' onChange={(e) => setUsername(e.target.value)} />
             </label>
             <label className='password-label'>
@@ -106,7 +106,7 @@ export const Login = () => {
             Guardar dados?
             <input style={{ marginLeft: '10px' }} type="checkbox" name="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
           </label>
-          <Link className="btn-my-custom-link" to="/login&forgot/forgotpassword">Esqueceu sua senha?</Link>
+          <Link className="btn-my-custom-link" to="/login&forgot/forgotpassword">Esqueceu sua password?</Link>
           <Button className="btn-my-custom-button" type='submit'>Login</Button>
         </form>
       </div>

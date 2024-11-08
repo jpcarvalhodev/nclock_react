@@ -53,17 +53,17 @@ export const NkioskPayCoins = () => {
                 setPayCoins([]);
                 return;
             }
-    
+
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber);
             });
-    
+
             const allData = await Promise.all(promises);
-    
+
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-    
+
             setPayCoins(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
@@ -78,17 +78,17 @@ export const NkioskPayCoins = () => {
                 setPayCoins([]);
                 return;
             }
-    
+
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, startDate, endDate);
             });
-    
+
             const allData = await Promise.all(promises);
-    
+
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-    
+
             setPayCoins(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
@@ -190,6 +190,8 @@ export const NkioskPayCoins = () => {
                         return new Date(row.timestamp).toLocaleString();
                     case 'transactionType':
                         return row[field.key] === 1 ? 'Multibanco' : 'Moedeiro';
+                    case 'amount':
+                        return `${row[field.key]}€`;
                     default:
                         return row[field.key] || '';
                 }
@@ -244,6 +246,7 @@ export const NkioskPayCoins = () => {
             ...transaction,
             tpId: terminalName,
             deviceSN: deviceName,
+            amount: `${transaction.amount}€`,
         };
     });
 

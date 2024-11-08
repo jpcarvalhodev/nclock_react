@@ -22,7 +22,7 @@ export const NledAds = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['nomeArquivo', 'tipoArquivo', 'creador']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['nomeArquivo', 'tipoArquivo', 'creador', 'dataFim']);
     const [selectedAds, setSelectedAds] = useState<any>(null);
     const [selectedAdsForDelete, setSelectedAdsForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Record<string, string>>({});
@@ -67,7 +67,7 @@ export const NledAds = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['nomeArquivo', 'tipoArquivo', 'creador']);
+        setSelectedColumns(['nomeArquivo', 'tipoArquivo', 'creador', 'dataFim']);
     };
 
     // Função para selecionar todas as colunas

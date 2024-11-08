@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import React from 'react';
 import * as apiService from "../helpers/apiService";
+import { set } from 'date-fns';
 
 // Define a interface Entity
 export interface Entity {
@@ -46,16 +47,11 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     useEffect(() => {
         if (entity) {
             setFormData({ ...entity });
-        }
-    }, [entity]);
-
-    // Atualiza o estado da foto
-    useEffect(() => {
-        if (entity) {
-            const imageURL = entity.profileImage ? `${apiService.baseURL}${entity.logotipo}` : modalAvatar;
+            const imageURL = entity.profileImage ? `${apiService.baseURL.slice(0, -1)}${entity.profileImage}` : modalAvatar;
             setProfileImage(imageURL);
         } else {
             setProfileImage(modalAvatar);
+            setProfileImageFile(null);
         }
     }, [entity]);
 
@@ -94,7 +90,8 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     // Define a função para resetar a foto de perfil
     const resetToDefaultAvatar = () => {
         setProfileImage(modalAvatar);
-        setFormData({ ...formData, photo: '' });
+        setProfileImageFile(null);
+        setFormData({ ...formData, profileImage: '' });
     };
 
     // Função para lidar com a mudança de valor
@@ -147,11 +144,14 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         }
         if (profileImageFile) {
             dataToSend.append('ProfileImage', profileImageFile);
+        } else if (profileImage === modalAvatar) {
+            dataToSend.append('ProfileImage', '');
         } else if (profileImage && typeof profileImage === 'string') {
             const relativePath = profileImage.replace('https://localhost:9090/', '');
             dataToSend.append('ProfileImage', relativePath);
         }
 
+        console.log(Array.from(dataToSend.entries()));
         onUpdate(dataToSend);
         onClose();
     };
@@ -172,8 +172,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                     <Row>
                         <Col md={4} className='img-modal'>
                             <img
-                                src={profileImage || modalAvatar}
-                                alt="Profile Avatar"
+                                src={profileImage as string}
                                 style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover' }}
                                 onDoubleClick={triggerFileSelectPopup}
                             />
@@ -245,7 +244,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                         </Col>
                         <Col md={3}>
                             <Form.Group controlId="formUserName">
-                                <Form.Label>Nome de Usuário <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Label>Nome de Utilizador <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
                                     overlay={<Tooltip id="tooltip-userName">Campo obrigatório</Tooltip>}

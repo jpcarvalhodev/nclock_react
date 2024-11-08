@@ -104,7 +104,7 @@ export const Terminals = () => {
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
     const [userTabKey, setUserTabKey] = useState('users');
     const [filters, setFilters] = useState<Filters>({});
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status', 'enabled']);
     const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber', 'statusFprint', 'statusFace']);
     const [selectedBioColums, setSelectedBioColumns] = useState<string[]>(['enrollNumber', 'name', 'statusFprint', 'statusFace']);
     const [selectedCardColums, setSelectedCardColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber']);
@@ -247,7 +247,7 @@ export const Terminals = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status']);
+        setSelectedColumns(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status', 'enabled']);
     };
 
     const handleMainSelect = (k: string | null) => {
@@ -352,8 +352,8 @@ export const Terminals = () => {
                                 display: 'inline-block'
                             }} title={row.status ? 'Online' : 'Offline'} />
                         );
-                    case 'disabled':
-                        return row.disabled ? 'Activo' : 'Inactivo';
+                    case 'enabled':
+                        return row.enabled ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key];
                 }

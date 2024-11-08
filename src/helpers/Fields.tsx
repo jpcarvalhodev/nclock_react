@@ -342,21 +342,19 @@ export const accessControlFields = [
 export const doorsFields = [
     { key: 'actionInterval', label: 'Intervalo entre Operações', type: 'number' },
     { key: 'activeTimesegId', label: 'Faixa Horária Activa', type: 'string' },
-    { key: 'allowSuaccessLock', label: 'Permitir Acesso de SU ao Bloqueio', type: 'string' },
+    { key: 'allowSuaccessLock', label: 'Permitir Acesso de SU ao Bloqueio', type: 'boolean' },
     { key: 'backLock', label: 'Estado da Fechadura', type: 'boolean' },
     { key: 'combopenInterval', label: 'Intervalo entre Identificações', type: 'number' },
     { key: 'delayOpenTime', label: 'Atraso de Tempo de Abertura', type: 'number' },
     { key: 'doorNo', label: 'Número de Porta', type: 'number', readonly: true, required: true },
     { key: 'doorSensorStatus', label: 'Tipo de Sensor de Porta', type: 'number' },
     { key: 'enabled', label: 'Activo', type: 'boolean' },
-    { key: 'extDelayDrivertime', label: 'Tempo de Atraso de Driver', type: 'number' },
     { key: 'extDevId', label: 'Dispositivo Externo', type: 'string' },
     { key: 'forcePwd', label: 'Senha de Coação', type: 'string' },
     { key: 'inApbDuration', label: 'Duração do Antirretorno da Fechadura', type: 'number' },
     { key: 'lockDelay', label: 'Duração da Abertura da Fechadura', type: 'number' },
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'passmodeTimesegId', label: 'Faixa Horária do Modo de Passagem', type: 'string' },
-    { key: 'readerType', label: 'Tipo de Sensor', type: 'number', required: true },
     { key: 'sensorDelay', label: 'Atraso do Sensor de Porta', type: 'number' },
     { key: 'supperPwd', label: 'Senha de Emergência', type: 'string' },
     { key: 'verifyMode', label: 'Modo de Verificação', type: 'number', required: true },
@@ -465,4 +463,15 @@ export const logsFields = [
     { key: 'userName', label: 'Nome do Utilizador', type: 'string' },
     { key: 'description', label: 'Descrição', type: 'string' },
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
+];
+
+export const cameraFields = [
+    { key: 'numeroCamera', label: 'Número', type: 'number', required: true },
+    { key: 'nomeCamera', label: 'Nome', type: 'string', required: true },
+    { key: 'ip', label: 'IP', type: 'string', required: true },
+    { key: 'url', label: 'URL', type: 'string', required: true },
+    { key: 'userCamera', label: 'Utilizador', type: 'string', required: true },
+    { key: 'passwordCamera', label: 'Password', type: 'string', required: true },
+    { key: 'createdDate', label: 'Data de Criação', type: 'date' },
+    { key: 'updatedDate', label: 'Data de Atualização', type: 'date' },
 ];

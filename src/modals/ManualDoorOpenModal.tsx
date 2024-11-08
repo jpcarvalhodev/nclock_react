@@ -121,8 +121,8 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         const keysToCheck = ['deviceId', 'doorId', 'observacoes'];
-        const isOnlyResponsibleFilled = keysToCheck.every(key => !formData[key]);
-        if (!isFormValid || isOnlyResponsibleFilled) {
+        const areAllRequiredFieldsFilled  = keysToCheck.every(key => formData[key]);
+        if (!isFormValid || !areAllRequiredFieldsFilled ) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
