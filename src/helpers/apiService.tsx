@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailCompany, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
