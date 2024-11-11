@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
@@ -7,7 +7,7 @@ import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import { Employee, EmployeeCard } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
-import { set } from 'date-fns';
+import { useLicense } from '../context/LicenseContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -35,6 +35,7 @@ interface Props<T> {
 
 // Define o componente
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
+    const { license, getSoftwareEnabledStatus } = useLicense();
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
     const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -346,6 +347,10 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         { value: 'ngold', label: 'Ngold' }
     ];
 
+    // Filtra as opções de módulo com base no status do software
+    const softwareEnabledStatus = getSoftwareEnabledStatus(license);
+    const filteredModuleOptions = moduleOptions.filter(option => softwareEnabledStatus[option.label]);
+
     // Opções de género
     const genderOptions = [
         { value: true, label: 'Masculino' },
@@ -513,8 +518,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                         <Form.Group controlId="formModulos" style={{ marginTop: 12 }}>
                             <Form.Label>Software <span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
-                                placement="right"
-                                overlay={<Tooltip id="tooltip-modulos">Obrigatório ter 5 caracteres ou mais</Tooltip>}
+                                placement="left"
+                                overlay={<Tooltip id="tooltip-modulos">Obrigatório escolher um software</Tooltip>}
                             >
                                 <Form.Control
                                     as="select"
@@ -524,7 +529,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                     name="modulos"
                                 >
                                     <option value="">Selecione...</option>
-                                    {moduleOptions.map(option => (
+                                    {filteredModuleOptions.map(option => (
                                         <option key={option.value} value={option.value}>{option.label}</option>
                                     ))}
                                 </Form.Control>

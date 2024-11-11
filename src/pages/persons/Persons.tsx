@@ -13,7 +13,6 @@ import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { ExportButton } from '../../components/ExportButton';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
 import { useColor } from '../../context/ColorContext';
-import { set } from 'date-fns';
 import { PrintButton } from '../../components/PrintButton';
 import { toast } from 'react-toastify';
 

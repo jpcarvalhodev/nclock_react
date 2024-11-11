@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 import { EmployeeCard } from '../helpers/Types';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { useLicense } from '../context/LicenseContext';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -44,6 +45,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const {
     fetchEmployeeCardData,
   } = useContext(PersonsContext) as PersonsContextType;
+  const { license, getSoftwareEnabledStatus } = useLicense();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -337,6 +339,10 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     { value: 'ngold', label: 'Ngold' }
   ];
 
+  // Filtra as opções de módulo com base no status do software
+  const softwareEnabledStatus = getSoftwareEnabledStatus(license);
+  const filteredModuleOptions = moduleOptions.filter(option => softwareEnabledStatus[option.label]);
+
   // Opções de género
   const genderOptions = [
     { value: true, label: 'Masculino' },
@@ -510,8 +516,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
             <Form.Group controlId="formModulos" style={{ marginTop: 12 }}>
               <Form.Label>Software <span style={{ color: 'red' }}>*</span></Form.Label>
               <OverlayTrigger
-                placement="right"
-                overlay={<Tooltip id="tooltip-modulos">Obrigatório ter 5 caracteres ou mais</Tooltip>}
+                placement="left"
+                overlay={<Tooltip id="tooltip-modulos">Obrigatório escolher um software</Tooltip>}
               >
                 <Form.Control
                   as="select"
@@ -520,8 +526,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   onChange={handleChange}
                   name="modulos"
                 >
-                  <option value="">Selecione...</option>
-                  {moduleOptions.map(option => (
+                  {filteredModuleOptions.map(option => (
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </Form.Control>
