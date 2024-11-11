@@ -428,6 +428,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                     value={formData.shortName || ''}
                                     onChange={handleChange}
                                     name="shortName"
+                                    maxLength={20}
                                     required
                                 />
                             </OverlayTrigger>
@@ -443,6 +444,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                 value={formData.nameAcronym || ''}
                                 onChange={handleChange}
                                 name="nameAcronym"
+                                maxLength={4}
                             />
                         </Form.Group>
                         <Form.Group controlId="formComments">

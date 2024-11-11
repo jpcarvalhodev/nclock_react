@@ -313,6 +313,10 @@
     height: 30px;
 }
 
+.dropdown-content {
+    padding: -10px;
+}
+
 .ribbon-icon {
     cursor: pointer;
     position: absolute;

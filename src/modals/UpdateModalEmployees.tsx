@@ -426,6 +426,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   onChange={handleChange}
                   name="shortName"
                   required
+                  maxLength={20}
                 />
               </OverlayTrigger>
               {errors.shortName && <Form.Text className="text-danger">{errors.shortName}</Form.Text>}
@@ -440,6 +441,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                 value={formData.nameAcronym || ''}
                 onChange={handleChange}
                 name="nameAcronym"
+                maxLength={4}
               />
             </Form.Group>
             <Form.Group controlId="formComments">
