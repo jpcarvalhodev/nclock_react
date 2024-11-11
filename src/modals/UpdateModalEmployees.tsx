@@ -506,19 +506,25 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               />
             </Form.Group>
             <Form.Group controlId="formModulos" style={{ marginTop: 12 }}>
-              <Form.Label>Módulo</Form.Label>
-              <Form.Control
-                as="select"
-                className="custom-input-height custom-select-font-size"
-                value={formData.modulos || ''}
-                onChange={handleChange}
-                name="modulos"
+              <Form.Label>Software <span style={{ color: 'red' }}>*</span></Form.Label>
+              <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip id="tooltip-modulos">Obrigatório ter 5 caracteres ou mais</Tooltip>}
               >
-                <option value="">Selecione...</option>
-                {moduleOptions.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </Form.Control>
+                <Form.Control
+                  as="select"
+                  className="custom-input-height custom-select-font-size"
+                  value={formData.modulos || ''}
+                  onChange={handleChange}
+                  name="modulos"
+                >
+                  <option value="">Selecione...</option>
+                  {moduleOptions.map(option => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </Form.Control>
+              </OverlayTrigger>
+              {errors.modulos && <Form.Text className="text-danger">{errors.modulos}</Form.Text>}
             </Form.Group>
           </Col>
         </Row>
@@ -680,41 +686,29 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   </Col>
                   <Col md={3}>
                     <Form.Group controlId="formCardNumber">
-                      <Form.Label>Número do Cartão <span style={{ color: 'red' }}>*</span></Form.Label>
-                      <OverlayTrigger
-                        placement="right"
-                        overlay={<Tooltip id="tooltip-cardNumber">Obrigatório ter 5 caracteres ou mais</Tooltip>}
-                      >
-                        <Form.Control
-                          type="text"
-                          className="custom-input-height custom-select-font-size"
-                          value={cardFormData.cardNumber || ''}
-                          onChange={handleCardChange}
-                          name="cardNumber"
-                        />
-                      </OverlayTrigger>
-                      {errors.cardNumber && <Form.Text className="text-danger">{errors.cardNumber}</Form.Text>}
+                      <Form.Label>Número do Cartão</Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="custom-input-height custom-select-font-size"
+                        value={cardFormData.cardNumber || ''}
+                        onChange={handleCardChange}
+                        name="cardNumber"
+                      />
                     </Form.Group>
                   </Col>
                   <Col md={3}>
                     <Form.Group controlId="formDevicePrivelage">
-                      <Form.Label>Privilégio do Dispositivo <span style={{ color: 'red' }}>*</span></Form.Label>
-                      <OverlayTrigger
-                        placement="right"
-                        overlay={<Tooltip id="tooltip-devicePrivelage">Obrigatório ter 5 caracteres ou mais</Tooltip>}
+                      <Form.Label>Privilégio do Dispositivo</Form.Label>
+                      <Form.Select
+                        className="custom-input-height custom-select-font-size"
+                        value={cardFormData.devicePrivelage || ''}
+                        onChange={handleCardChange}
+                        name="devicePrivelage"
                       >
-                        <Form.Select
-                          className="custom-input-height custom-select-font-size"
-                          value={cardFormData.devicePrivelage || ''}
-                          onChange={handleCardChange}
-                          name="devicePrivelage"
-                        >
-                          <option value="">Selecione...</option>
-                          <option value="0">Não</option>
-                          <option value="1">Sim</option>
-                        </Form.Select>
-                      </OverlayTrigger>
-                      {errors.devicePrivelage && <Form.Text className="text-danger">{errors.devicePrivelage}</Form.Text>}
+                        <option value="">Selecione...</option>
+                        <option value="0">Não</option>
+                        <option value="1">Sim</option>
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                   <Col md={3}>

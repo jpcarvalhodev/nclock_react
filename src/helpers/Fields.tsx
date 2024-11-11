@@ -162,10 +162,10 @@ export const employeeDeviceFields = [
 ];
 
 export const employeeCardFields = [
-    { key: 'cardNumber', label: 'Número do Cartão', type: 'string', required: true },
+    { key: 'cardNumber', label: 'Número do Cartão', type: 'string' },
     { key: 'devicePassword', label: 'Password do Equipamento', type: 'number' },
-    { key: 'devicePrivelage', label: 'Privilégio do Equipamento', type: 'number', required: true },
-    { key: 'deviceEnabled', label: 'Equipamento Activado', type: 'boolean', required: true },
+    { key: 'devicePrivelage', label: 'Privilégio do Equipamento', type: 'number' },
+    { key: 'deviceEnabled', label: 'Equipamento Activado', type: 'boolean' },
 ];
 
 export const employeeFPFields = [
