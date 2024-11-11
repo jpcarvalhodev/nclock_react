@@ -243,8 +243,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-info" onClick={handleUpdateClick}>Atualizar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
-                
+                <Button variant="outline-primary" onClick={handleSaveClick}>Criar</Button>
             </Modal.Footer>
         </Modal >
     );
