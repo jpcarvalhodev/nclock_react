@@ -177,7 +177,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                         </Col>
                                         <Col md={6}>
                                             <Form.Group controlId="formPasswordEmail">
-                                                <Form.Label>Senha do E-Mail <span style={{ color: 'red' }}>*</span></Form.Label>
+                                                <Form.Label>Password do E-Mail <span style={{ color: 'red' }}>*</span></Form.Label>
                                                 <OverlayTrigger
                                                     placement="right"
                                                     overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}

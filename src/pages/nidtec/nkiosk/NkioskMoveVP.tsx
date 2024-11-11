@@ -176,8 +176,6 @@ export const NkioskMoveVP = () => {
         return filteredDataTable.find(item => item.eventTime === eventTime);
     }).filter((item): item is KioskTransactionCard => item !== undefined);
 
-    console.log(uniqueFilteredDataTable);
-
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))

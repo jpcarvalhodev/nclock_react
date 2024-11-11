@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import React from 'react';
 import * as apiService from "../helpers/apiService";
-import { set } from 'date-fns';
 
 // Define a interface Entity
 export interface Entity {
@@ -147,11 +146,10 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         } else if (profileImage === modalAvatar) {
             dataToSend.append('ProfileImage', '');
         } else if (profileImage && typeof profileImage === 'string') {
-            const relativePath = profileImage.replace('https://localhost:9090/', '');
+            const relativePath = profileImage.replace(apiService.baseURL, '');
             dataToSend.append('ProfileImage', relativePath);
         }
 
-        console.log(Array.from(dataToSend.entries()));
         onUpdate(dataToSend);
         onClose();
     };
@@ -225,21 +223,15 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formPassword">
-                                <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-password">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="password"
-                                        name="password"
-                                        value={formData.password || ''}
-                                        onChange={handleChange}
-                                        autoComplete='off'
-                                    />
-                                </OverlayTrigger>
-                                {errors.password && <Form.Text className="text-danger">{errors.password}</Form.Text>}
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="password"
+                                    name="password"
+                                    value={formData.password || ''}
+                                    onChange={handleChange}
+                                    autoComplete='off'
+                                />
                             </Form.Group>
                         </Col>
                         <Col md={3}>

@@ -35,7 +35,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        if(!open) {
+        if (!open) {
             setFormData({});
             setProfileImage(null);
         }
@@ -73,7 +73,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                 image.onload = () => {
                     let width = image.width;
                     let height = image.height;
-    
+
                     if (width > 512 || height > 512) {
                         if (width > height) {
                             height *= 512 / width;
@@ -83,13 +83,13 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                             height = 512;
                         }
                     }
-    
+
                     const canvas = document.createElement('canvas');
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(image, 0, 0, width, height);
-    
+
                     const dataUrl = canvas.toDataURL('image/png');
                     setProfileImage(dataUrl);
                     setFormData({ ...formData, photo: dataUrl });
@@ -125,7 +125,6 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     const handleSave = () => {
         onSave(formData as T);
         onClose();
-        setFormData(initialValues);
     };
 
     // Opções de tipo
@@ -220,10 +219,11 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                             <Form.Label>Descrição</Form.Label>
                                             <Form.Control
                                                 as="textarea"
+                                                rows={5}
                                                 value={formData.description || ''}
                                                 onChange={handleChange}
                                                 name="description"
-                                                className="custom-select-font-size textarea-large"
+                                                className="custom-select-font-size textarea"
                                             />
                                         </Form.Group>
                                     </Col>
@@ -231,7 +231,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                         <img
                                             src={profileImage || modalAvatar}
                                             alt="Profile Avatar"
-                                            style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover'}}
+                                            style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover' }}
                                             onDoubleClick={triggerFileSelectPopup}
                                         />
                                         <div>
@@ -252,13 +252,13 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                 <Row>
                                     {[
                                         { key: 'address', label: 'Morada', type: 'string' },
-                                        { key: 'ZIPCode', label: 'Código Postal', type: 'string' },
+                                        { key: 'ziPcode', label: 'Código Postal', type: 'string' },
                                         { key: 'locality', label: 'Localidade', type: 'string' },
                                         { key: 'village', label: 'Freguesia', type: 'string' },
-                                        { key: 'District', label: 'Distrito', type: 'string' },
-                                        { key: 'Phone', label: 'Telefone', type: 'string' },
-                                        { key: 'Mobile', label: 'Telemóvel', type: 'string' },
-                                        { key: 'Email', label: 'E-Mail', type: 'string' },
+                                        { key: 'district', label: 'Distrito', type: 'string' },
+                                        { key: 'phone', label: 'Telefone', type: 'string' },
+                                        { key: 'mobile', label: 'Telemóvel', type: 'string' },
+                                        { key: 'email', label: 'E-Mail', type: 'string' },
                                     ].map((field) => (
                                         <Col md={3}>
                                             <Form.Group controlId={`form${field.key}`}>

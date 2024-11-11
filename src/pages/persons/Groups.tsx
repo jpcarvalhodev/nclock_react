@@ -31,7 +31,7 @@ export const Groups = () => {
     const [groups, setGroups] = useState<Group[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'description']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
@@ -139,7 +139,7 @@ export const Groups = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['name']);
+        setSelectedColumns(['name', 'description']);
     };
 
     // Função para selecionar todas as colunas

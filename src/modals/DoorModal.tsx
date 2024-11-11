@@ -5,7 +5,11 @@ import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { DoorDevice } from '../helpers/Types';
+import { DoorDevice, Doors } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
+
+// Define a interface para os itens de campo
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 // Define a interface Entity
 export interface Entity {
@@ -15,7 +19,6 @@ export interface Entity {
 
 // Interface para as propriedades do modal
 interface DoorModalProps<T extends Entity> {
-    key: string;
     title: string;
     open: boolean;
     onClose: () => void;
@@ -44,10 +47,12 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
     const [formData, setFormData] = useState<Partial<DoorDevice>>({ ...entity, ...initialValues });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
+    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
         if (entity) {
+            fetchDropdownOptions();
             setFormData({ ...entity, ...initialValues });
         }
     }, [entity]);
@@ -73,6 +78,45 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
         setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
+
+    // Função para buscar os dados dos dropdowns
+    const fetchDropdownOptions = async () => {
+        try {
+            const door = await apiService.fetchAllDoors();
+            const filteredDoors = door.filter((door: Doors) => door.devId === entity.zktecoDeviceID);
+            setDropdownData({
+                nrDoor: filteredDoors
+            });
+        } catch (error) {
+            console.error('Erro ao buscar os dados de portas', error);
+        }
+    };
+
+    // Função para lidar com a mudança do dropdown
+    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+        const { value } = e.target;
+        const selectedOption = dropdownData[key]?.find((option: any) => {
+            switch (key) {
+                case 'nrDoor':
+                    return option.doorNo === value;
+                default:
+                    return false;
+            }
+        });
+
+        if (selectedOption) {
+            const idKey = key;
+            setFormData(prevState => ({
+                ...prevState,
+                [idKey]: value
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                [key]: value
+            }));
+        }
+    };
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<any>) => {
@@ -108,19 +152,33 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
                     <Row>
                         <Col md={6}>
                             <Form.Group controlId="formNrDoor">
-                                <Form.Label>Número da Porta<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                                <Form.Label>Porta</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.nrDoor || ''}
+                                    onChange={(e) => handleDropdownChange('nrDoor', e)}
                                 >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="nrDoor"
-                                        value={formData.nrDoor || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
+                                    <option value="">Selecione...</option>
+                                    {dropdownData.nrDoor?.map((option: any) => {
+                                        let optionId, optionName;
+                                        switch ('nrDoor') {
+                                            case 'nrDoor':
+                                                optionId = option.doorNo;
+                                                optionName = option.name;
+                                                break;
+                                            default:
+                                                optionId = option.doorNo;
+                                                optionName = option.name;
+                                                break;
+                                        }
+                                        return (
+                                            <option key={optionId} value={optionId}>
+                                                {optionName}
+                                            </option>
+                                        );
+                                    })}
+                                </Form.Control>
                                 {errors['nrDoor'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nrDoor']}</div>}
                             </Form.Group>
                         </Col>

@@ -363,8 +363,7 @@ export const TerminalsMB = () => {
                         onDelete={deleteDevice}
                         entityId={selectedMBDeviceToDelete}
                     />
-                )
-                }
+                )}
             </div>
         </TerminalsProvider>
     );

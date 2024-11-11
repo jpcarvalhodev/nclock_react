@@ -4,26 +4,26 @@ export const employeeFields = [
     { label: 'Número', key: 'enrollNumber', type: 'string', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
-    { label: 'Acrônimo do Nome', key: 'nameAcronym', type: 'string' },
+    { label: 'Iniciais do Nome', key: 'nameAcronym', type: 'string' },
     { label: 'Comentários', key: 'comments', type: 'string' },
     { label: 'Foto', key: 'photo', type: 'string' },
     { label: 'Morada', key: 'address', type: 'string' },
-    { label: 'Código Postal', key: 'zipcode', type: 'string' },
+    { label: 'Código Postal', key: 'ziPcode', type: 'string' },
     { label: 'Localidade', key: 'locality', type: 'string' },
     { label: 'Freguesia', key: 'village', type: 'string' },
     { label: 'Distrito', key: 'district', type: 'string' },
     { label: 'Telefone', key: 'phone', type: 'string' },
     { label: 'Telemóvel', key: 'mobile', type: 'string' },
     { label: 'E-Mail', key: 'email', type: 'string' },
-    { label: 'Data de Nascimento', key: 'birthday', type: 'date' },
-    { label: 'Nacionalidade', key: 'nacionality', type: 'string' },
-    { label: 'Gênero', key: 'gender', type: 'string' },
+    { label: 'Data de Nascimento', key: 'birthday', type: 'datetime-local' },
+    { label: 'Nacionalidade', key: 'nationality', type: 'string' },
+    { label: 'Gênero', key: 'gender', type: 'boolean' },
     { label: 'Número de BI', key: 'bInumber', type: 'string' },
     { label: 'Emissão de BI', key: 'bIissuance', type: 'datetime-local' },
     { label: 'Validade de BI', key: 'biValidity', type: 'datetime-local' },
     { label: 'NIF', key: 'nif', type: 'number' },
     { label: 'Data de Admissão', key: 'admissionDate', type: 'datetime-local' },
-    { label: 'Data de Saída', key: 'exitDate', type: 'date' },
+    { label: 'Data de Saída', key: 'exitDate', type: 'datetime-local' },
     { label: 'Autorização RGPD', key: 'rgpdAut', type: 'boolean' },
     { label: 'Estado', key: 'status', type: 'boolean' },
     { label: 'Estado de E-Mail', key: 'statusEmail', type: 'boolean' },
@@ -37,7 +37,7 @@ export const employeeFields = [
     { label: 'Grupo', key: 'groupId', type: 'dropdown', },
     { label: 'Zona', key: 'zoneId', type: 'dropdown', },
     { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', },
-    { label: 'Módulo', key: 'modulos', type: 'string' },
+    { label: 'Módulo', key: 'modulos', type: 'string', required: true },
 ];
 
 export const departmentFields = [
@@ -50,7 +50,7 @@ export const departmentFields = [
 export const categoryFields = [
     { label: 'Código', key: 'code', type: 'number', required: true },
     { label: 'Descrição', key: 'description', type: 'string', required: true },
-    { label: 'Acrônimo', key: 'acronym', type: 'string' },
+    { label: 'Iniciais', key: 'acronym', type: 'string' },
 ];
 
 export const externalEntityFields = [
@@ -60,7 +60,7 @@ export const externalEntityFields = [
     { label: 'Nome Responsável', key: 'responsibleName', type: 'string' },
     { label: 'Foto', key: 'photo', type: 'string' },
     { label: 'Morada', key: 'address', type: 'string' },
-    { label: 'Código Postal', key: 'ZIPCode', type: 'string' },
+    { label: 'Código Postal', key: 'zipCode', type: 'string' },
     { label: 'Localidade', key: 'locality', type: 'string' },
     { label: 'Freguesia', key: 'village', type: 'string' },
     { label: 'Distrito', key: 'district', type: 'string' },
@@ -70,15 +70,15 @@ export const externalEntityFields = [
     { label: 'WWW', key: 'www', type: 'string' },
     { label: 'Fax', key: 'fax', type: 'number' },
     { label: 'NIF', key: 'nif', type: 'number', required: true },
-    { label: 'Data Inserida', key: 'dateInserted', type: 'date' },
-    { label: 'Data Atualizada', key: 'dateUpdated', type: 'date' },
+    { label: 'Data Inserida', key: 'dateInserted', type: 'datetime-local' },
+    { label: 'Data Atualizada', key: 'dateUpdated', type: 'datetime-local' },
     { label: 'Tipo', key: 'externalEntityTypeId', type: 'dropdown' },
 ];
 
 export const externalEntityTypeFields = [
     { label: 'Ordem', key: 'order', type: 'number', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
-    { label: 'Data de Inserção', key: 'dateInserted', type: 'date', required: true },
+    { label: 'Data de Inserção', key: 'dateInserted', type: 'datetime-local', required: true },
 ];
 
 export const groupFields = [
@@ -89,23 +89,23 @@ export const groupFields = [
 export const professionFields = [
     { key: 'code', label: 'Código', type: 'number', required: true },
     { key: 'description', label: 'Descrição', type: 'string', required: true },
-    { key: 'acronym', label: 'Acrônimo', type: 'string' },
+    { key: 'acronym', label: 'Iniciais', type: 'string' },
 ];
 
 export const zoneFields = [
     { key: 'type', label: 'Tipo', type: 'string' },
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'description', label: 'Descrição', type: 'string' },
-    { key: 'acronym', label: 'Acrônimo', type: 'string', required: true },
+    { key: 'acronym', label: 'Iniciais', type: 'string', required: true },
     { key: 'photo', label: 'Foto', type: 'string' },
     { key: 'address', label: 'Morada', type: 'string' },
-    { key: 'ZIPCode', label: 'Código Postal', type: 'string' },
+    { key: 'ziPcode', label: 'Código Postal', type: 'string' },
     { key: 'locality', label: 'Localidade', type: 'string' },
     { key: 'village', label: 'Freguesia', type: 'string' },
-    { key: 'District', label: 'Distrito', type: 'string' },
-    { key: 'Phone', label: 'Telefone', type: 'string' },
-    { key: 'Mobile', label: 'Telemóvel', type: 'string' },
-    { key: 'Email', label: 'E-Mail', type: 'string' },
+    { key: 'district', label: 'Distrito', type: 'string' },
+    { key: 'phone', label: 'Telefone', type: 'string' },
+    { key: 'mobile', label: 'Telemóvel', type: 'string' },
+    { key: 'email', label: 'E-Mail', type: 'string' },
 ];
 
 export const employeeAttendanceTimesFields = [
@@ -125,7 +125,7 @@ export const employeeAttendanceTimesFields = [
 export const deviceFields = [
     { key: "deviceNumber", label: "Número", type: "number", required: true },
     { key: "deviceName", label: "Nome", type: "string", required: true },
-    { key: "model", label: "Modelo", type: "string" },
+    { key: "model", label: "Modelo", type: "string", required: true },
     { key: "ipAddress", label: "Endereço IP", type: "string", required: true },
     { key: "port", label: "Porta", type: "number", required: true },
     { key: "photo", label: "Foto", type: "string" },
@@ -133,7 +133,7 @@ export const deviceFields = [
     { key: "platform", label: "Platforma", type: "string" },
     { key: "firmware", label: "Firmware", type: "string" },
     { key: "macAddress", label: "Endereço MAC", type: "string" },
-    { key: "serialNumber", label: "Número Serial", type: "string" },
+    { key: "serialNumber", label: "Número Serial", type: "string", required: true },
     { key: "readerCount", label: "Contagem no Leitor", type: "number" },
     { key: "auxInCount", label: "Contagem de Entrada", type: "number" },
     { key: "auxOutCount", label: "Contagem de Saída", type: "number" },
@@ -145,8 +145,8 @@ export const deviceFields = [
     { key: "fpAlg", label: "Algoritmo de Digitais", type: "number" },
     { key: "productTime", label: "Tempo de Produção", type: "Date" },
     { key: "producter", label: "Produtor", type: "string" },
-    { key: "deviceProtocol", label: "Protocolo", type: "number" },
-    { key: "deviceType", label: "Tipo", type: "number" },
+    { key: "deviceProtocol", label: "Protocolo", type: "number", required: true },
+    { key: "deviceType", label: "Tipo", type: "number", required: true },
     { key: "status", label: "Estado", type: "boolean" },
     { key: "enabled", label: "Activo", type: "boolean" }
 ];
@@ -162,10 +162,10 @@ export const employeeDeviceFields = [
 ];
 
 export const employeeCardFields = [
-    { key: 'cardNumber', label: 'Número do Cartão', type: 'string' },
-    { key: 'devicePassword', label: 'Senha do Equipamento', type: 'number' },
-    { key: 'devicePrivelage', label: 'Privilégio do Equipamento', type: 'number' },
-    { key: 'deviceEnabled', label: 'Equipamento Activado', type: 'boolean' },
+    { key: 'cardNumber', label: 'Número do Cartão', type: 'string', required: true },
+    { key: 'devicePassword', label: 'Password do Equipamento', type: 'number' },
+    { key: 'devicePrivelage', label: 'Privilégio do Equipamento', type: 'number', required: true },
+    { key: 'deviceEnabled', label: 'Equipamento Activado', type: 'boolean', required: true },
 ];
 
 export const employeeFPFields = [
@@ -228,15 +228,15 @@ export const registerFields = [
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'userName', label: 'Nome do Utilizador', type: 'string', required: true },
     { key: 'emailAddress', label: 'E-Mail', type: 'string', required: true },
-    { key: 'password', label: 'Password', type: 'string', required: true },
+    { key: 'password', label: 'Password', type: 'string' },
     { key: 'confirmPassword', label: 'Confirmar Password', type: 'string' },
-    { key: 'roles', label: 'Tipo de Conta', type: 'string', required: true },
+    { key: 'roles', label: 'Tipo de Conta', type: 'string' },
     { key: 'profileImage', label: 'Foto', type: 'string' },
 ];
 
 export const emailFields = [
     { key: 'usernameEmail', label: 'E-Mail do Utilizador', type: 'string', required: true },
-    { key: 'passwordEmail', label: 'Senha do E-Mail', type: 'string', required: true },
+    { key: 'passwordEmail', label: 'Password do E-Mail', type: 'string', required: true },
     { key: 'hostSMTP', label: 'Servidor SMTP', type: 'string', required: true },
     { key: 'portSMTP', label: 'Porta SMTP', type: 'string', required: true },
     { key: 'enableSSL', label: 'Activar SSL', type: 'string' },
@@ -350,13 +350,13 @@ export const doorsFields = [
     { key: 'doorSensorStatus', label: 'Tipo de Sensor de Porta', type: 'number' },
     { key: 'enabled', label: 'Activo', type: 'boolean' },
     { key: 'extDevId', label: 'Dispositivo Externo', type: 'string' },
-    { key: 'forcePwd', label: 'Senha de Coação', type: 'string' },
+    { key: 'forcePwd', label: 'Password de Coação', type: 'string' },
     { key: 'inApbDuration', label: 'Duração do Antirretorno da Fechadura', type: 'number' },
     { key: 'lockDelay', label: 'Duração da Abertura da Fechadura', type: 'number' },
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'passmodeTimesegId', label: 'Faixa Horária do Modo de Passagem', type: 'string' },
     { key: 'sensorDelay', label: 'Atraso do Sensor de Porta', type: 'number' },
-    { key: 'supperPwd', label: 'Senha de Emergência', type: 'string' },
+    { key: 'supperPwd', label: 'Password de Emergência', type: 'string' },
     { key: 'verifyMode', label: 'Modo de Verificação', type: 'number', required: true },
     { key: 'devId', label: 'Equipamento', type: 'string' },
     { key: 'timezoneId', label: 'Período', type: 'string' },
@@ -474,4 +474,10 @@ export const cameraFields = [
     { key: 'passwordCamera', label: 'Password', type: 'string', required: true },
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
     { key: 'updatedDate', label: 'Data de Atualização', type: 'date' },
+];
+
+export const employeesOnDeviceFields = [
+    { key: 'pin', label: 'Número', type: 'string' },
+    { key: 'name', label: 'Nome', type: 'string' },
+    { key: 'cardno', label: 'Número do Cartão', type: 'string' },
 ];

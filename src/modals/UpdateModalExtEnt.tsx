@@ -295,7 +295,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                             <Form.Control as="select" value={formData.responsibleName || ''} onChange={handleChange} name="responsibleName" className="custom-input-height custom-select-font-size">
                                                 <option value="">Selecione...</option>
                                                 {dropdownData.responsibleName && dropdownData.responsibleName.map((employee) => (
-                                                    <option key={employee.id} value={employee.name}>
+                                                    <option key={employee.id} value={employee.id}>
                                                         {employee.name}
                                                     </option>
                                                 ))}
@@ -326,7 +326,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                         <Form.Group controlId="formDateUpdated">
                                             <Form.Label>Data Atualizada</Form.Label>
                                             <Form.Control
-                                                type="date"
+                                                type="datetime-local"
                                                 className="custom-input-height custom-select-font-size"
                                                 value={formData.dateUpdated || ''}
                                                 onChange={handleChange}
@@ -429,7 +429,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, e
                                 </Row>
                                 <Row>
                                     {[
-                                        { label: 'Código Postal', key: 'ZIPCode', type: 'string' },
+                                        { label: 'Código Postal', key: 'zipCode', type: 'string' },
                                         { label: 'Localidade', key: 'locality', type: 'string' },
                                         { label: 'Freguesia', key: 'village', type: 'string' },
                                         { label: 'Distrito', key: 'district', type: 'string' },

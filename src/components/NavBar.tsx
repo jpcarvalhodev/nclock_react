@@ -362,7 +362,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showLicenseModal, setShowLicenseModal] = useState(false);
 	const [showEntityModal, setShowEntityModal] = useState(false);
 	const [entityData, setEntityData] = useState<Entity>();
-	const [entitiesData, setEntitiesData] = useState<Entity[]>();
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [showSoftwaresDropdown, setShowSoftwaresDropdown] = useState(false);
 	const [menuStructureStart, setMenuStructureStart] = useState<MenuStructure>({});
@@ -448,7 +447,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		try {
 			const data = await apiService.fetchAllCompanyConfig();
 			setEntityData(data);
-			setEntitiesData(data);
 		} catch (error) {
 			console.error('Erro ao carregar os empresas:', error);
 		}
@@ -3630,14 +3628,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 						fields={licenseFields}
 					/>
 				)}
-				{showEntityModal && entityData && entitiesData && (
+				{showEntityModal && entityData && (
 					<EntityModal
 						open={showEntityModal}
 						onClose={() => setShowEntityModal(false)}
 						onUpdate={handleUpdateCompanyData}
 						onSave={handleAddCompanyData}
 						entity={entityData}
-						entities={entitiesData}
 						fields={entityFields}
 						title='Entidades'
 					/>

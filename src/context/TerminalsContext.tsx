@@ -1,18 +1,19 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { ReactNode } from 'react';
-import { Devices, DoorDevice, Doors, Employee, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
+import { Devices, DoorDevice, Doors, Employee, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
-import { set } from 'date-fns';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
     devices: Devices[];
     mbDevices: MBDevice[];
     employeeDevices: Employee[];
+    employeesOnDevice: EmployeesOnDevice[];
     fetchAllDevices: () => Promise<void>;
     fetchAllEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllEmployeeDevices: () => Promise<void>;
+    fetchUsersOnDevice: (zktecoDeviceID: string) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllDoorData: () => Promise<Doors[]>;
     fetchAllMBDevices: () => Promise<MBDevice[]>;
@@ -22,7 +23,8 @@ export interface DeviceContextType {
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     syncTimeManuallyToDevice: (device: Devices) => Promise<void>;
     deleteAllUsersOnDevice: (device: Devices, employee: string | null) => Promise<void>;
-    openDeviceDoor: (zktecoDeviceID: DoorDevice, doorData: DoorDevice) => Promise<void>;
+    openDeviceIdDoor: (zktecoDeviceID: string, doorData: DoorDevice) => Promise<void>;
+    openDeviceDoor: (deviceSN: DoorDevice, doorData: DoorDevice) => Promise<void>;
     restartDevice: (device: Devices) => Promise<void>;
     restartMBDevice: (mbDevice: Partial<MBDevice>) => Promise<void>;
     sendClockToDevice: (serialNumber: string, timeZoneId: string) => Promise<void>;
@@ -42,6 +44,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [devices, setDevices] = useState<Devices[]>([]);
     const [mbDevices, setMBDevices] = useState<MBDevice[]>([]);
     const [employeeDevices, setEmployeeDevices] = useState<Employee[]>([]);
+    const [employeesOnDevice, setEmployeesOnDevice] = useState<EmployeesOnDevice[]>([]);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async () => {
@@ -58,13 +61,12 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await apiService.fetchAllEmployeesOnDevice(zktecoDeviceID);
             toast.success(data.message || 'Funcionários recolhidos com sucesso!');
-
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
         }
     };
 
-    // Função para buscar todos os funcionários por dispositivos
+    // Função para buscar todos os funcionários por dispositivos standalone
     const fetchAllEmployeeDevices = async () => {
         try {
             const employeesData = await apiService.fetchAllEmployeeDevices();
@@ -119,6 +121,16 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         return [];
     }
 
+    // Função para buscar todos os funcionários no dispositivo push
+    const fetchUsersOnDevice = async (zktecoDeviceID: string) => {
+        try {
+            const data = await apiService.fetchAllUsersOnDevice(zktecoDeviceID);
+            setEmployeesOnDevice(data);
+        } catch (error) {
+            console.error('Erro ao buscar utilizadores:', error);
+        }
+    }
+
     // Função para enviar todos os funcionários para o dispositivo
     const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
         try {
@@ -163,6 +175,18 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             toast.error('Erro ao conectar ao servidor');
         }
     };
+
+    // Função para abrir a porta via ID
+    const openDeviceIdDoor = async (zktecoDeviceID: string, doorData: DoorDevice) => {
+        try {
+            const data = await apiService.openDeviceIdDoor(zktecoDeviceID, doorData);
+            toast.success(data.message || 'Porta aberta com sucesso!');
+
+        } catch (error) {
+            console.error('Erro ao abrir a porta:', error);
+            toast.error('Erro ao conectar ao servidor');
+        }
+    }
 
     // Função para abrir a porta via dispositivo
     const openDeviceDoor = async (deviceSN: DoorDevice, doorData: DoorDevice) => {
@@ -322,9 +346,11 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         devices,
         mbDevices,
         employeeDevices,
+        employeesOnDevice,
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
+        fetchUsersOnDevice,
         fetchAllKioskTransaction,
         fetchAllDoorData,
         fetchAllMBDevices,
@@ -334,6 +360,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
         deleteAllUsersOnDevice,
+        openDeviceIdDoor,
         openDeviceDoor,
         restartDevice,
         restartMBDevice,

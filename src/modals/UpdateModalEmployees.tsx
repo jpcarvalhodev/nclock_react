@@ -231,8 +231,11 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Define a função para mudar o campo
   const handleChange = (e: React.ChangeEvent<any>) => {
-    const { name, value, type } = e.target;
-    const parsedValue = type === 'number' ? Number(value) : value;
+    const { name, value } = e.target;
+    let parsedValue = value;
+    if (name === 'gender') {
+      parsedValue = value === 'true';
+    }
     setFormData(prevState => ({
       ...prevState,
       [name]: parsedValue
@@ -334,6 +337,12 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     { value: 'ngold', label: 'Ngold' }
   ];
 
+  // Opções de género
+  const genderOptions = [
+    { value: true, label: 'Masculino' },
+    { value: false, label: 'Feminino' }
+  ];
+
   return (
     <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
       <Modal.Header closeButton>
@@ -424,7 +433,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
           </Col>
           <Col md={3}>
             <Form.Group controlId="formNameAcronym">
-              <Form.Label>Acrônimo do Nome</Form.Label>
+              <Form.Label>Iniciais do Nome</Form.Label>
               <Form.Control
                 type="string"
                 className="custom-input-height custom-select-font-size"
@@ -532,27 +541,43 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   {[
                     { key: 'nif', label: 'NIF', type: 'number' },
                     { key: 'address', label: 'Morada', type: 'string' },
-                    { key: 'zipcode', label: 'Código Postal', type: 'string' },
+                    { key: 'ziPcode', label: 'Código Postal', type: 'string' },
                     { key: 'locality', label: 'Localidade', type: 'string' },
                     { key: 'village', label: 'Freguesia', type: 'string' },
                     { key: 'district', label: 'Distrito', type: 'string' },
                     { key: 'phone', label: 'Telefone', type: 'string' },
                     { key: 'mobile', label: 'Telemóvel', type: 'string' },
                     { key: 'email', label: 'E-Mail', type: 'email' },
-                    { key: 'birthday', label: 'Data de Nascimento', type: 'date' },
-                    { key: 'nacionality', label: 'Nacionalidade', type: 'string' },
-                    { key: 'gender', label: 'Gênero', type: 'string' }
+                    { key: 'birthday', label: 'Data de Nascimento', type: 'datetime-local' },
+                    { key: 'nationality', label: 'Nacionalidade', type: 'string' },
+                    { key: 'gender', label: 'Gênero', type: 'boolean' }
                   ].map((field) => (
                     <Col md={3} key={field.key}>
                       <Form.Group controlId={`form${field.key}`}>
                         <Form.Label>{field.label}</Form.Label>
-                        <Form.Control
-                          type={field.type}
-                          className="custom-input-height custom-select-font-size"
-                          value={formData[field.key] || ''}
-                          onChange={handleChange}
-                          name={field.key}
-                        />
+                        {field.key === 'gender' ? (
+                          <Form.Control
+                            as="select"
+                            className="custom-input-height custom-select-font-size"
+                            value={formData.gender}
+                            onChange={handleChange}
+                            name="gender">
+                            <option value="">Selecione...</option>
+                            {genderOptions.map(option => (
+                              <option key={String(option.value)} value={String(option.value)}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Form.Control>
+                        ) : (
+                          <Form.Control
+                            type={field.type}
+                            className="custom-input-height custom-select-font-size"
+                            value={formData[field.key] || ''}
+                            onChange={handleChange}
+                            name={field.key}
+                          />
+                        )}
                         {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
                       </Form.Group>
                     </Col>
@@ -624,7 +649,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                         ) : (
                           <Form.Control
                             type={field.type}
-                            className="custom-input-height"
+                            className="custom-input-height custom-select-font-size"
                             value={formData[field.key] || ''}
                             onChange={handleChange}
                             name={field.key}
@@ -655,34 +680,46 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   </Col>
                   <Col md={3}>
                     <Form.Group controlId="formCardNumber">
-                      <Form.Label>Número do Cartão</Form.Label>
-                      <Form.Control
-                        type="text"
-                        className="custom-input-height custom-select-font-size"
-                        value={cardFormData.cardNumber || ''}
-                        onChange={handleCardChange}
-                        name="cardNumber"
-                      />
+                      <Form.Label>Número do Cartão <span style={{ color: 'red' }}>*</span></Form.Label>
+                      <OverlayTrigger
+                        placement="right"
+                        overlay={<Tooltip id="tooltip-cardNumber">Obrigatório ter 5 caracteres ou mais</Tooltip>}
+                      >
+                        <Form.Control
+                          type="text"
+                          className="custom-input-height custom-select-font-size"
+                          value={cardFormData.cardNumber || ''}
+                          onChange={handleCardChange}
+                          name="cardNumber"
+                        />
+                      </OverlayTrigger>
+                      {errors.cardNumber && <Form.Text className="text-danger">{errors.cardNumber}</Form.Text>}
                     </Form.Group>
                   </Col>
                   <Col md={3}>
                     <Form.Group controlId="formDevicePrivelage">
-                      <Form.Label>Privilégio do Dispositivo</Form.Label>
-                      <Form.Select
-                        className="custom-input-height custom-select-font-size"
-                        value={cardFormData.devicePrivelage !== undefined ? cardFormData.devicePrivelage : ''}
-                        onChange={handleCardChange}
-                        name="devicePrivelage"
+                      <Form.Label>Privilégio do Dispositivo <span style={{ color: 'red' }}>*</span></Form.Label>
+                      <OverlayTrigger
+                        placement="right"
+                        overlay={<Tooltip id="tooltip-devicePrivelage">Obrigatório ter 5 caracteres ou mais</Tooltip>}
                       >
-                        <option value="">Selecione...</option>
-                        <option value="0">Não</option>
-                        <option value="1">Sim</option>
-                      </Form.Select>
+                        <Form.Select
+                          className="custom-input-height custom-select-font-size"
+                          value={cardFormData.devicePrivelage || ''}
+                          onChange={handleCardChange}
+                          name="devicePrivelage"
+                        >
+                          <option value="">Selecione...</option>
+                          <option value="0">Não</option>
+                          <option value="1">Sim</option>
+                        </Form.Select>
+                      </OverlayTrigger>
+                      {errors.devicePrivelage && <Form.Text className="text-danger">{errors.devicePrivelage}</Form.Text>}
                     </Form.Group>
                   </Col>
                   <Col md={3}>
                     <Form.Group controlId="formDevicePassword">
-                      <Form.Label>Senha do Dispositivo</Form.Label>
+                      <Form.Label>Password do Dispositivo</Form.Label>
                       <Form.Control
                         type="password"
                         className="custom-input-height custom-select-font-size"
@@ -703,6 +740,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
         <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
       </Modal.Footer>
-    </Modal>
+    </Modal >
   );
 };

@@ -5,7 +5,6 @@ import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, Row } from 'react-bootstrap';
-import { set } from 'date-fns';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {

@@ -574,3 +574,11 @@ export type Cameras = {
     createdDate: Date;
     updatedDate: Date;
 }
+
+export type EmployeesOnDevice = {
+    [key: string]: any;
+    id: string;
+    cardNo: string;
+    pin: string;
+    name: string;
+}

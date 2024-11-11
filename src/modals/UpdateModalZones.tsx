@@ -148,9 +148,9 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
 
     // Define as opções de tipo
     const typeOptions = [
-        { value: 1, label: 'Zona' },
-        { value: 2, label: 'Local de Trabalho' },
-        { value: 3, label: 'Cantina' },
+        { value: 0, label: 'Zona' },
+        { value: 1, label: 'Local de Trabalho' },
+        { value: 2, label: 'Cantina' },
     ];
 
     return (
@@ -237,11 +237,12 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                         <Form.Group controlId="formDescription">
                                             <Form.Label>Descrição</Form.Label>
                                             <Form.Control
-                                                type="textarea"
+                                                as="textarea"
+                                                rows={5}
                                                 value={formData.description || ''}
                                                 onChange={handleChange}
                                                 name="description"
-                                                className="custom-select-font-size textarea-large"
+                                                className="custom-select-font-size textarea"
                                             />
                                         </Form.Group>
                                     </Col>
@@ -275,13 +276,13 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                                 <Row>
                                     {[
                                         { key: 'address', label: 'Morada', type: 'string' },
-                                        { key: 'ZIPCode', label: 'Código Postal', type: 'string' },
+                                        { key: 'ziPcode', label: 'Código Postal', type: 'string' },
                                         { key: 'locality', label: 'Localidade', type: 'string' },
                                         { key: 'village', label: 'Freguesia', type: 'string' },
-                                        { key: 'District', label: 'Distrito', type: 'string' },
-                                        { key: 'Phone', label: 'Telefone', type: 'string' },
-                                        { key: 'Mobile', label: 'Telemóvel', type: 'string' },
-                                        { key: 'Email', label: 'E-Mail', type: 'string' },
+                                        { key: 'district', label: 'Distrito', type: 'string' },
+                                        { key: 'phone', label: 'Telefone', type: 'string' },
+                                        { key: 'mobile', label: 'Telemóvel', type: 'string' },
+                                        { key: 'email', label: 'E-Mail', type: 'string' },
                                     ].map((field) => (
                                         <Col md={3}>
                                             <Form.Group controlId={`form${field.key}`}>

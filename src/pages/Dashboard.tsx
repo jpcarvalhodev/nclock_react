@@ -195,9 +195,14 @@ const extractSoftwareNameFromTabKey = (tabKey: string) => {
 // Define a página principal
 export const Dashboard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { license, getSoftwareEnabledStatus } = useLicense();
+    const { license, getSoftwareEnabledStatus, fetchAllLicensesWithoutKey } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('LICENÇAS SOFTWARES CLIENTE');
+
+    // Busca as licenças ao carregar a página
+    useEffect(() => {
+        fetchAllLicensesWithoutKey();
+    }, []);
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {

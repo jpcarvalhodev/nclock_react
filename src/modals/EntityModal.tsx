@@ -4,6 +4,9 @@ import { Modal, Button, Form, Row, Col, Table, OverlayTrigger, Tooltip } from 'r
 import { toast } from 'react-toastify';
 import no_image from '../assets/img/terminais/no_image.png';
 import * as apiService from "../helpers/apiService";
+import { DeleteModal } from './DeleteModal';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { set } from 'date-fns';
 
 // Interface para as propriedades do modal
 interface UpdateModalProps<T> {
@@ -13,7 +16,6 @@ interface UpdateModalProps<T> {
     onUpdate: (data: FormData) => void;
     onSave: (data: FormData) => void;
     fields: Field[];
-    entities: T[];
     entity: T;
 }
 
@@ -27,14 +29,17 @@ interface Field {
     errorMessage?: string;
 }
 
-export const EntityModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, onSave, fields, entity, entities }: UpdateModalProps<T>) => {
+export const EntityModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, onSave, fields, entity }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
-    const [selectedEntity, setSelectedEntity] = useState<T>(entity);
+    const [entities, setEntities] = useState<T[]>([]);
+    const [selectedEntity, setSelectedEntity] = useState<T | null>(entity);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [selectedEntityToDelete, setSelectedEntityToDelete] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -61,23 +66,87 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (open && entities.length > 0) {
+        if (open && entity) {
             setFormData({ ...entity });
+            setEntities(prevEntities => {
+                const existingEntityIndex = prevEntities.findIndex(ent => ent.id === entity.id);
+                if (existingEntityIndex !== -1) {
+                    const newEntities = [...prevEntities];
+                    newEntities[existingEntityIndex] = entity;
+                    return newEntities;
+                } else {
+                    return [...prevEntities, entity];
+                }
+            });
         } else {
             setFormData({});
             setDeviceImage(null);
+            setEntities([]);
+            setSelectedEntity(null);
         }
-    }, [entities, open]);
+    }, [entity, open]);
+
+    // UseEffect para carregar as entidades
+    useEffect(() => {
+        if (entities.length > 0 && Array.isArray(entities[0])) {
+            const flattenedEntities = entities.reduce<T[]>((acc, val) => acc.concat(val), []);
+            setEntities(flattenedEntities);
+        }
+    }, [entities]);
 
     // Função para lidar com o clique na tabela
     useEffect(() => {
-        setFormData({ ...selectedEntity });
+        if (selectedEntity) {
+            setFormData({ ...selectedEntity });
+        } else {
+            setFormData({});
+            setDeviceImage(null);
+            setEntities([]);
+            setSelectedEntity(null);
+        }
     }, [selectedEntity]);
+
+    // Função para atualizar as entidades
+    const refreshEntities = async () => {
+        const data = await apiService.fetchAllCompanyConfig();
+        setEntities(data);
+        if (!data.some((ent: T) => ent.id === selectedEntity?.id)) {
+            setSelectedEntity(null);
+            setFormData({});
+        }
+    }
+
+    // Função para eliminar uma entidade
+    const handleDeleteEntity = async (id: string) => {
+        try {
+            const data = await apiService.deleteCompanyConfig(id);
+            toast.success(data.message || 'Entidade eliminada com sucesso.');
+        } catch (error) {
+            console.error('Erro ao eliminar a entidade', error);
+        } finally {
+            setFormData({});
+            setDeviceImage(null);
+            setSelectedEntity(null);
+            setEntities([]);
+            refreshEntities();
+            onClose();
+        }
+    }
 
     // Função para selecionar a entidade
     const selectEntity = (entity: T) => {
         setSelectedEntity(entity);
         updateImageForSelectedEntity(entity);
+    };
+
+    // Define a abertura do modal de apagar controle de acesso
+    const handleOpenDeleteModal = (id: string) => {
+        if (selectedEntity?.id) {
+            setSelectedEntityToDelete(id);
+            setShowDeleteModal(true);
+        } else {
+            toast.warn('Selecione uma entidade para eliminar.');
+        }
     };
 
     // Função para atualizar a imagem da entidade selecionada
@@ -161,6 +230,9 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         if (formData.telefone) {
             dataToSend.append('Telefone', formData.telefone);
         }
+        if (formData.telemovel) {
+            dataToSend.append('Telemovel', formData.telemovel);
+        }
         if (formData.email) {
             dataToSend.append('Email', formData.email);
         }
@@ -189,7 +261,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
 
         const dataToSend = new FormData();
 
-        dataToSend.append('id', selectedEntity.id);
+        dataToSend.append('id', selectedEntity?.id);
 
         if (formData.nome) {
             dataToSend.append('Nome', formData.nome);
@@ -205,6 +277,9 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         }
         if (formData.telefone) {
             dataToSend.append('Telefone', formData.telefone);
+        }
+        if (formData.telemovel) {
+            dataToSend.append('Telemovel', formData.telemovel);
         }
         if (formData.email) {
             dataToSend.append('Email', formData.email);
@@ -224,7 +299,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         if (profileImageFile) {
             dataToSend.append('Logotipo', profileImageFile);
         } else if (deviceImage && typeof deviceImage === 'string') {
-            const relativePath = deviceImage.replace('https://localhost:9090/', '');
+            const relativePath = deviceImage.replace(apiService.baseURL, '');
             dataToSend.append('Logotipo', relativePath);
         }
 
@@ -239,7 +314,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <Form style={{ display: 'flex' }}>
-                    <Row style={{ flex: 1 }}>
+                    <Row style={{ flex: 1.5 }}>
                         <Col md={12}>
                             <Table striped bordered hover size="md">
                                 <thead>
@@ -257,6 +332,12 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                                     ))}
                                 </tbody>
                             </Table>
+                            <div style={{ display: 'flex' }}>
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEntities} />
+                                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(selectedEntity?.id)}>
+                                    <i className="bi bi-trash-fill"></i>
+                                </Button>
+                            </div>
                         </Col>
                     </Row>
                     <Row style={{ flex: 2 }}>
@@ -395,7 +476,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                                 />
                             </Form.Group>
                         </Col>
-                        <Row>
+                        <Row style={{ flex: 1 }}>
                             <Form.Group controlId="formObservacoes">
                                 <Form.Label>Observações</Form.Label>
                                 <Form.Control
@@ -404,6 +485,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                                     name="observacoes"
                                     value={formData.observacoes}
                                     onChange={handleChange}
+                                    className="custom-select-font-size textarea"
                                 />
                             </Form.Group>
                         </Row>
@@ -418,9 +500,17 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                     Atualizar
                 </Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>
-                    Guardar
+                    Criar
                 </Button>
             </Modal.Footer>
+            {showDeleteModal && (
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={handleDeleteEntity}
+                    entityId={selectedEntityToDelete}
+                />
+            )}
         </Modal>
     );
 }

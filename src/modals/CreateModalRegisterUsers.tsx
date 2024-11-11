@@ -6,6 +6,7 @@ import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 import React from 'react';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -127,6 +128,9 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         if (formData.password) {
             dataToSend.append('Password', formData.password);
         }
+        if (formData.confirmPassword) {
+            dataToSend.append('ConfirmPassword', formData.confirmPassword);
+        }
         if (formData.roles) {
             dataToSend.append('Roles', formData.roles);
         }
@@ -135,7 +139,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         } else if (profileImage === modalAvatar) {
             dataToSend.append('ProfileImage', '');
         } else if (profileImage && typeof profileImage === 'string') {
-            const relativePath = profileImage.replace('https://localhost:9090/', '');
+            const relativePath = profileImage.replace(apiService.baseURL, '');
             dataToSend.append('ProfileImage', relativePath);
         }
 
@@ -145,8 +149,8 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
 
     // Define as seleções de tipo de conta
     const RoleTypes = [
-        { value: 'admin', label: 'Administrador' },
-        { value: 'user', label: 'Utilizador' }
+        { value: 'Admin', label: 'Administrador' },
+        { value: 'User', label: 'Utilizador' }
     ];
 
     return (
@@ -266,6 +270,23 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                     </Form.Control>
                                 </OverlayTrigger>
                                 {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
+                            </Form.Group>
+                            <Form.Group controlId="formConfirmPassword">
+                                <Form.Label>Confirmar Password <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="password"
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword || ''}
+                                        onChange={handleChange}
+                                        autoComplete='off'
+                                    />
+                                </OverlayTrigger>
+                                {errors.confirmPassword && <Form.Text className="text-danger">{errors.confirmPassword}</Form.Text>}
                             </Form.Group>
                         </Col>
                     </Row>

@@ -292,6 +292,16 @@ export const fetchAllManualDoorOpen = async () => {
     return response.json();
 }
 
+export const fetchAllUsersOnDevice = async (zktecoDeviceID: string) => {
+    const response = await fetchWithAuth(`Zkteco/GetAllUserInfoOnDevice?deviceId=${zktecoDeviceID}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
 export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
     let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
     if (employeeID !== null) {
@@ -359,6 +369,22 @@ export const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
     }
     return response.json();
 };
+
+export const openDeviceIdDoor = async (zktecoDeviceID: string, doorData: DoorDevice) => {
+    const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${zktecoDeviceID}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(doorData)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
 
 export const openDeviceDoor = async (deviceSN: DoorDevice, doorData: DoorDevice) => {
     const response = await fetchWithAuth(`Zkteco/OpenDevice1Door/${deviceSN}`, {
@@ -1236,7 +1262,7 @@ export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, d
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CRIAÇÃO DE CONTAS E EMAILS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CRIAÇÃO DE CONTAS, ENTIDADES E EMAILS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 export const fetchAllRegisteredUsers = async () => {
@@ -1357,6 +1383,18 @@ export const updateCompanyConfig = async (companyEmail: FormData) => {
     const response = await fetchWithAuth(`Configuration/UpadateCompany?id=${companyId}`, {
         method: 'PUT',
         body: companyEmail
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const deleteCompanyConfig = async (id: string) => {
+    const response = await fetchWithAuth(`Configuration/DeleteCompany?id=${id}`, {
+        method: 'DELETE'
     });
     if (!response.ok) {
         const errorData = await response.json();

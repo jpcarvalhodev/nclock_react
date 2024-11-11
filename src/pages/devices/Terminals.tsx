@@ -7,8 +7,8 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import "../../css/Terminals.css";
 import { Button, Form, Tab, Tabs } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, KioskTransaction } from "../../helpers/Types";
-import { deviceFields, employeeCardFields, employeeFields, transactionFields } from "../../helpers/Fields";
+import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../helpers/Types";
+import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { toast } from "react-toastify";
@@ -25,6 +25,8 @@ import { AttendanceContext, AttendanceContextType } from "../../context/Movement
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 import { useColor } from "../../context/ColorContext";
 import * as apiService from "../../helpers/apiService";
+import { DoorModal } from "../../modals/DoorModal";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -67,16 +69,18 @@ const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
 export const Terminals = () => {
     const {
         devices,
+        employeesOnDevice,
         fetchAllDevices,
         fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
+        fetchUsersOnDevice,
         fetchAllKioskTransaction,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
         deleteAllUsersOnDevice,
-        openDeviceDoor,
+        openDeviceIdDoor,
         restartDevice,
         sendClockToDevice,
         handleAddDevice,
@@ -143,6 +147,9 @@ export const Terminals = () => {
     const [transactions, setTransactions] = useState<KioskTransaction[]>([]);
     const [loadingActivityData, setLoadingActivityData] = useState(false);
     const [loadingSendClock, setLoadingSendClock] = useState(false);
+    const [showDoorModal, setShowDoorModal] = useState(false);
+    const [loadingUsersInTerminalData, setLoadingUsersInTerminalData] = useState(false);
+    const [loadingTerminals, setLoadingTerminals] = useState(false);
 
     // Função para mesclar os dados de utilizadores e cartões
     const mergeEmployeeAndCardData = (
@@ -203,11 +210,31 @@ export const Terminals = () => {
         fetchTransactions();
     }, [selectedTerminal]);
 
+    // Função para buscar todos os utilizadores no terminal
+    useEffect(() => {
+        const fetchUsersInTerminal = async () => {
+            if (selectedTerminal) {
+                setLoadingUsersInTerminalData(true);
+                try {
+                    await fetchUsersOnDevice(selectedTerminal.zktecoDeviceID);
+                    setLoadingUsersInTerminalData(false);
+                } catch (error) {
+                    console.error("Erro ao buscar utilizadores no terminal:", error);
+                }
+            } else {
+                setLoadingUsersInTerminalData(false);
+            }
+        }
+        fetchUsersInTerminal();
+    }, [selectedTerminal]);
+
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
+        setLoadingTerminals(true);
         await handleAddDevice(device);
         setShowAddModal(false);
-        refreshAll();
+        setLoadingTerminals(false);
+        refreshAll();        
     }
 
     // Função para atualizar um dispositivo
@@ -230,6 +257,7 @@ export const Terminals = () => {
     useEffect(() => {
         fetchAllDevices();
         fetchEmployeesAndCards();
+
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -297,18 +325,49 @@ export const Terminals = () => {
     const handleUserRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: EmployeeAndCard[];
+        selectedRows: (EmployeeAndCard | EmployeesOnDevice)[];
     }) => {
         setSelectedUserRows(state.selectedRows);
     };
 
     // Filtra os utilizadores no terminal
     const filteredUsersInTerminal = useMemo(() => {
-        if (!selectedTerminal) {
+        if (selectedTerminal) {
+            return employeesOnDevice;
+        } else {
             return [];
         }
-        return employees.filter(employee => employee.deviceNumber === selectedTerminal.deviceNumber);
+    }, [employeesOnDevice, selectedTerminal]);
+
+    const filteredUsersInSoftware = useMemo(() => {
+        if (selectedTerminal) {
+            return employees;
+        } else {
+            return [];
+        }
     }, [employees, selectedTerminal]);
+
+    // Define as colunas de funcionário no dispositivo
+    const employeeOnDeviceColumns: TableColumn<EmployeesOnDevice>[] = employeesOnDeviceFields
+        .map(field => {
+            const formatField = (row: EmployeesOnDevice) => {
+                switch (field.key) {
+                    default:
+                        return row[field.key];
+                }
+            };
+            return {
+                id: field.key,
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={employeesOnDevice} />
+                    </>
+                ),
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
 
     // Função para formatar a data e a hora
     function formatDateAndTime(input: string | Date): string {
@@ -1036,14 +1095,9 @@ export const Terminals = () => {
     }
 
     // Função para abrir a porta ligada ao dispositivo
-    const handleOpenDoor = async (doorData: DoorDevice) => {
-        if (selectedTerminal) {
-            setLoadingOpenDoor(true);
-            await openDeviceDoor(selectedTerminal.zktecoDeviceID, doorData);
-            setLoadingOpenDoor(false);
-        } else {
-            toast.error('Selecione um terminal primeiro!');
-        }
+    const handleOpenDoor = async (id: string, doorData: DoorDevice) => {
+        await openDeviceIdDoor(id, doorData);
+        setLoadingOpenDoor(false);
     }
 
     // Função para sincronizar a hora
@@ -1083,6 +1137,12 @@ export const Terminals = () => {
         }
     ];
 
+    // Função para abrir o modal para escolher porta
+    const openDoorModal = () => {
+        setShowDoorModal(true);
+        setLoadingOpenDoor(true);
+    }
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -1101,22 +1161,27 @@ export const Terminals = () => {
                 </div>
                 <div className="content-section deviceTabsMobile" style={{ display: 'flex', flex: 1 }}>
                     <div style={{ flex: 1.5, overflow: "auto" }} className="deviceMobile">
-                        <DataTable
-                            columns={[...deviceColumns, devicesActionColumn]}
-                            data={filteredDeviceDataTable}
-                            onRowDoubleClicked={handleEditDevices}
-                            pagination
-                            paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            onSelectedRowsChange={handleDeviceRowSelected}
-                            selectableRowsHighlight
-                            noDataComponent="Não há dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            defaultSortAsc={true}
-                            defaultSortFieldId="deviceNumber"
-                        />
+                        {loadingTerminals ?
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                            </div> :
+                            <DataTable
+                                columns={[...deviceColumns, devicesActionColumn]}
+                                data={filteredDeviceDataTable}
+                                onRowDoubleClicked={handleEditDevices}
+                                pagination
+                                paginationPerPage={5}
+                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                paginationComponentOptions={paginationOptions}
+                                selectableRows
+                                onSelectedRowsChange={handleDeviceRowSelected}
+                                selectableRowsHighlight
+                                noDataComponent="Não há dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                defaultSortAsc={true}
+                                defaultSortFieldId="deviceNumber"
+                            />
+                        }
                     </div>
                     <div style={{ flex: 2, overflow: "auto" }}>
                         <Tabs
@@ -1183,7 +1248,7 @@ export const Terminals = () => {
                                             <div style={{ overflowX: "auto", flex: 5 }}>
                                                 <DataTable
                                                     columns={userColumns}
-                                                    data={filteredUserDataTable}
+                                                    data={filteredUsersInSoftware}
                                                     pagination
                                                     paginationPerPage={5}
                                                     paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
@@ -1224,19 +1289,24 @@ export const Terminals = () => {
                                         </div>
                                     </Tab>
                                     <Tab eventKey="users-terminal" title="Utilizadores no terminal">
-                                        <DataTable
-                                            columns={userColumns}
-                                            data={filteredUsersInTerminal}
-                                            pagination
-                                            paginationPerPage={5}
-                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                            paginationComponentOptions={paginationOptions}
-                                            selectableRows
-                                            onSelectedRowsChange={handleUserRowSelected}
-                                            selectableRowsHighlight
-                                            noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
-                                            customStyles={customStyles}
-                                        />
+                                        {loadingUsersInTerminalData ?
+                                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                            </div> :
+                                            <DataTable
+                                                columns={employeeOnDeviceColumns}
+                                                data={filteredUsersInTerminal}
+                                                pagination
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                paginationComponentOptions={paginationOptions}
+                                                selectableRows
+                                                onSelectedRowsChange={handleUserRowSelected}
+                                                selectableRowsHighlight
+                                                noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
+                                                customStyles={customStyles}
+                                            />
+                                        }
                                     </Tab>
                                     <Tab eventKey="facial-taken" title="Biometria recolhida">
                                         <DataTable
@@ -1389,7 +1459,7 @@ export const Terminals = () => {
                                     )}
                                     Enviar horários
                                 </Button>
-                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleOpenDoor}>
+                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={openDoorModal}>
                                     {loadingOpenDoor ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
@@ -1517,6 +1587,19 @@ export const Terminals = () => {
                         />
                     )
                 }
+                {selectedTerminal && (
+                    <DoorModal
+                        title="Escolha a Porta para Abrir"
+                        open={showDoorModal}
+                        onClose={() => {
+                            setShowDoorModal(false);
+                            setLoadingOpenDoor(false);
+                        }}
+                        onSave={(data) => handleOpenDoor(data.zktecoDeviceID, data)}
+                        entity={selectedTerminal}
+                        fields={doorFields}
+                    />
+                )}
                 <input
                     type="file"
                     accept=".dat,.txt"
