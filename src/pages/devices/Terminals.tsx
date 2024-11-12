@@ -75,6 +75,7 @@ export const Terminals = () => {
         fetchAllEmployeeDevices,
         fetchUsersOnDevice,
         fetchAllKioskTransaction,
+        fetchAllKioskTransactionOnDevice,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
         saveAllAttendancesEmployeesOnDevice,
@@ -113,7 +114,6 @@ export const Terminals = () => {
     const [selectedBioColums, setSelectedBioColumns] = useState<string[]>(['enrollNumber', 'name', 'statusFprint', 'statusFace']);
     const [selectedCardColums, setSelectedCardColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber']);
     const [selectedDeviceToDelete, setSelectedDeviceToDelete] = useState<string>('');
-    const [selectedUserToDelete, setSelectedUserToDelete] = useState<string>('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
@@ -234,7 +234,7 @@ export const Terminals = () => {
         await handleAddDevice(device);
         setShowAddModal(false);
         setLoadingTerminals(false);
-        refreshAll();        
+        refreshAll();
     }
 
     // Função para atualizar um dispositivo
@@ -340,7 +340,7 @@ export const Terminals = () => {
     }, [employeesOnDevice, selectedTerminal]);
 
     const filteredUsersInSoftware = useMemo(() => {
-        if (selectedTerminal) {
+        if (employees) {
             return employees;
         } else {
             return [];
@@ -542,6 +542,7 @@ export const Terminals = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
@@ -554,6 +555,7 @@ export const Terminals = () => {
         })
         .concat([
             {
+                id: 'verificationMode',
                 name: (
                     <>
                         Modo de Verificação
@@ -684,21 +686,9 @@ export const Terminals = () => {
     }
 
     // Define a função de abertura do modal de exclusão dos dispositivos
-    const handleOpenDeleteModal = async (zktecoDeviceID: string, type: 'device' | 'user') => {
-        if (type === 'device') {
-            setSelectedDeviceToDelete(zktecoDeviceID);
-            setShowDeleteModal(true);
-        } else {
-            if (selectedTerminal) {
-                setLoadingDeleteSelectedUsers(true);
-                setSelectedUserToDelete(zktecoDeviceID);
-                await deleteAllUsersOnDevice(selectedTerminal?.zktecoDeviceID, zktecoDeviceID);
-                setLoadingDeleteSelectedUsers(false);
-                fetchAllEmployeeDevices();
-            } else {
-                toast.error('Selecione um terminal primeiro!');
-            }
-        }
+    const handleOpenDeleteModal = async (zktecoDeviceID: string) => {
+        setSelectedDeviceToDelete(zktecoDeviceID);
+        setShowDeleteModal(true);
     };
 
     // Função que manipula a duplicação
@@ -753,7 +743,7 @@ export const Terminals = () => {
         cell: (row: Devices) => (
             <div style={{ display: 'flex' }}>
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDeviceID, 'device')}>
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDeviceID)}>
                     <i className="bi bi-trash-fill"></i>
                 </Button>
             </div>
@@ -986,19 +976,29 @@ export const Terminals = () => {
             toast('Selecione um terminal e pelo menos um utilizador!');
         } else {
             setLoadingSendSelectedUsers(true);
-            const userId = selectedUserRows[0].employeeID;
-            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
+            for (const user of selectedUserRows) {
+                const userId = user.employeeID;
+                await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
+            }
             setLoadingSendSelectedUsers(false);
+            setSelectedDeviceRows([]);
+            setSelectedUserRows([]);
         }
     }
 
     // Função para excluir os utilizadores selecionados
     const handleDeleteSelectedUsers = async () => {
-        if (selectedUserRows.length > 0) {
-            const userId = selectedUserRows[0].employeeID;
-            handleOpenDeleteModal(userId, 'user');
+        if (!selectedTerminal || selectedUserRows.length === 0) {
+            toast('Selecione um terminal e pelo menos um utilizador!');
         } else {
-            toast.error('Selecione um utilizador primeiro!');
+            setLoadingDeleteSelectedUsers(true);
+            for (const user of selectedUserRows) {
+                const userId = user.employeeID;
+                await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userId);
+            }
+            setLoadingDeleteSelectedUsers(false);
+            setSelectedDeviceRows([]);
+            setSelectedUserRows([]);
         }
     }
 
@@ -1008,9 +1008,13 @@ export const Terminals = () => {
             toast('Selecione um terminal e pelo menos um utilizador!');
         } else {
             setLoadingFetchSelectedUsers(true);
-            const userId = selectedUserRows[0].employeeID;
-            await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
+            for (const user of selectedUserRows) {
+                const userId = user.employeeID;
+                await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
+            }
             setLoadingFetchSelectedUsers(false);
+            setSelectedDeviceRows([]);
+            setSelectedUserRows([]);
         }
     }
 
@@ -1031,6 +1035,7 @@ export const Terminals = () => {
             setLoadingAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingAllUser(false);
+            setSelectedDeviceRows([]);
         } else {
             toast.error('Selecione um terminal primeiro!');
         }
@@ -1042,6 +1047,7 @@ export const Terminals = () => {
             setLoadingSyncAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingSyncAllUser(false);
+            setSelectedDeviceRows([]);
         } else {
             toast.error('Selecione um terminal primeiro!');
         }
@@ -1051,8 +1057,9 @@ export const Terminals = () => {
     const handleMovements = async () => {
         if (selectedTerminal) {
             setLoadingMovements(true);
-            await fetchAllKioskTransaction(selectedTerminal.zktecoDeviceID);
+            await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingMovements(false);
+            setSelectedDeviceRows([]);
         } else {
             toast.error('Selecione um terminal primeiro!');
         }
@@ -1064,6 +1071,7 @@ export const Terminals = () => {
             setLoadingDeleteAllUsers(true);
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingDeleteAllUsers(false);
+            setSelectedDeviceRows([]);
         } else {
             toast.error('Selecione um terminal primeiro!');
         }
@@ -1075,6 +1083,7 @@ export const Terminals = () => {
             setLoadingRestartDevice(true);
             await restartDevice(selectedTerminal.zktecoDeviceID);
             setLoadingRestartDevice(false);
+            setSelectedDeviceRows([]);
         } else {
             toast.error('Selecione um terminal primeiro!');
         }
@@ -1089,6 +1098,7 @@ export const Terminals = () => {
                 await sendClockToDevice(selectedTerminal.serialNumber, period.id);
             }
             setLoadingSendClock(false);
+            setSelectedDeviceRows([]);
         } else {
             toast.error('Selecione um terminal primeiro!');
         }
@@ -1106,6 +1116,7 @@ export const Terminals = () => {
             setLoadingSyncTime(true);
             await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
             setLoadingSyncTime(false);
+            setSelectedDeviceRows([]);
         } else {
             toast.error('Selecione um terminal primeiro!');
         }
@@ -1258,6 +1269,8 @@ export const Terminals = () => {
                                                     selectableRowsHighlight
                                                     noDataComponent="Não há dados disponíveis para exibir."
                                                     customStyles={customStyles}
+                                                    defaultSortAsc={true}
+                                                    defaultSortFieldId='enrollNumber'
                                                 />
                                             </div>
                                             <div style={{ flex: 1, flexDirection: "column" }}>
@@ -1305,6 +1318,8 @@ export const Terminals = () => {
                                                 selectableRowsHighlight
                                                 noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
                                                 customStyles={customStyles}
+                                                defaultSortAsc={true}
+                                                defaultSortFieldId='pin'
                                             />
                                         }
                                     </Tab>

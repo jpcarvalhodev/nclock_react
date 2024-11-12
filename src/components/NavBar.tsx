@@ -3589,7 +3589,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						onUpdate={handleUpdateEmailConfig}
 						entity={emailCompanyConfig || {} as EmailUser}
 						fields={emailFields}
-						title='Opções de E-Mail'
+						title='Opções de Email e Quiosque'
 					/>
 				)}
 				{showPhotoAdsModal && (

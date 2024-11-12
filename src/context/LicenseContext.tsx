@@ -78,7 +78,7 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
         if (localStorage.getItem('token')) {
             fetchAllLicensesWithoutKey();
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     return (
         <LicenseContext.Provider value={{ license, setLicense, getSoftwareEnabledStatus, fetchAllLicenses, fetchAllLicensesWithoutKey, handleUpdateLicense }}>

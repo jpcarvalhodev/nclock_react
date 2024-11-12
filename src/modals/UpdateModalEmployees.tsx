@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -132,6 +132,10 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     if (open) {
       fetchDropdownOptions();
       fetchEmployeesCards();
+    } else {
+      setFormData({ ...entity });
+      setCardFormData({});
+      setProfileImage(null);
     }
   }, [open]);
 
@@ -245,10 +249,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   };
 
   // Função para lidar com a mudança de dados do cartão
-  const handleCardChange = (e: React.ChangeEvent<any>) => {
-    const { name, value } = e.target;
-    let parsedValue = value === "0" || value === "1" ? parseInt(value, 10) : value;
-
+  const handleCardChange = (e: ChangeEvent<FormControlElement>) => {
+    const { name, value, type } = e.target;
+    const parsedValue = type === 'number' ? Number(value) : value;
     setCardFormData(prevState => ({
       ...prevState,
       [name]: parsedValue
@@ -423,7 +426,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-shortName">Obrigatório ter 5 caracteres ou mais</Tooltip>}
+                overlay={<Tooltip id="tooltip-shortName">Obrigatório ter entre 5 a 20 caracteres</Tooltip>}
               >
                 <Form.Control
                   type="string"
@@ -441,14 +444,19 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
           <Col md={3}>
             <Form.Group controlId="formNameAcronym">
               <Form.Label>Iniciais do Nome</Form.Label>
-              <Form.Control
-                type="string"
-                className="custom-input-height custom-select-font-size"
-                value={formData.nameAcronym || ''}
-                onChange={handleChange}
-                name="nameAcronym"
-                maxLength={4}
-              />
+              <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip id="tooltip-name">Máximo de 4 caracteres</Tooltip>}
+              >
+                <Form.Control
+                  type="string"
+                  className="custom-input-height custom-select-font-size"
+                  value={formData.nameAcronym || ''}
+                  onChange={handleChange}
+                  name="nameAcronym"
+                  maxLength={4}
+                />
+              </OverlayTrigger>
             </Form.Group>
             <Form.Group controlId="formComments">
               <Form.Label>Comentários</Form.Label>

@@ -431,15 +431,17 @@ export const entityFields = [
 ];
 
 export const recolhaMoedeiroEContadorFields = [
-    { key: 'dataRecolha', label: 'Data', type: 'date' },
-    { key: 'pessoaResponsavel', label: 'Nome do Utilizador', type: 'string', required: true },
-    { key: 'numeroMoedas', label: 'Número de Moedas Recolhidas', type: 'number', required: true },
-    { key: 'valorTotal', label: 'Valor Total Recolhido', type: 'number', required: true },
-    { key: 'numeroMoedasSistema', label: 'Número de Moedas no Sistema', type: 'number' },
-    { key: 'diferenca', label: 'Diferença', type: 'number' },
+    { key: 'dataRecolha', label: 'Data da Recolha', type: 'date' },
+    { key: 'pessoaResponsavel', label: 'Nome do Utilizador', type: 'string' },
+    { key: 'numeroMoedas', label: 'Moedas Recolha', type: 'number', required: true },
+    { key: 'numeroMoedasSistema', label: 'Moedas Sistema', type: 'number' },
+    { key: 'valorTotalRecolhido', label: 'Valor Recolha', type: 'number' },
+    { key: 'valorTotalSistema', label: 'Valor Sistema', type: 'number' },
+    { key: 'diferencaMoedas', label: 'Diferença Moedas', type: 'number' },
+    { key: 'diferencaEuros', label: 'Diferença Euros', type: 'number' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
     { key: 'deviceID', label: 'Nome do Local', type: 'string', required: true },
-    /* { key: 'dataFimIntervencao', label: 'Data Fim', type: 'date' }, */
+    { key: 'dataFimRecolha', label: 'Data de Fim', type: 'date' },
 ];
 
 export const manualOpenDoorFields = [
@@ -480,4 +482,10 @@ export const employeesOnDeviceFields = [
     { key: 'pin', label: 'Número', type: 'string' },
     { key: 'name', label: 'Nome', type: 'string' },
     { key: 'cardno', label: 'Número do Cartão', type: 'string' },
+];
+
+export const kioskConfigFields = [
+    { key: 'amount', label: 'Valor', type: 'number' },
+    { key: 'totalMoedas', label: 'Total de Moedas', type: 'number' },
+    { key: 'emails', label: 'E-Mails', type: Array<string> },
 ];

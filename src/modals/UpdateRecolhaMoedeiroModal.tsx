@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
+import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -38,6 +39,9 @@ interface Field {
 
 // Define o componente
 export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: UpdateModalProps<T>) => {
+    const {
+        devices,
+    } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -161,10 +165,8 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                     />
                                 </OverlayTrigger>
                             </Form.Group>
-                        </Col>
-                        <Col md={2}>
                             <Form.Group controlId="formPessoaResponsavel">
-                                <Form.Label>Pessoa Responsável<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <Form.Label>Nome do Utilizador<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
                                     overlay={<Tooltip id="tooltip-pessoaResponsavel">Campo obrigatório</Tooltip>}
@@ -182,42 +184,6 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                             </Form.Group>
                         </Col>
                         <Col md={2}>
-                            <Form.Group controlId="formNumeroMoedas">
-                                <Form.Label>Número de Moedas<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-numeroMoedas">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="numeroMoedas"
-                                        value={formData.numeroMoedas || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['numeroMoedas'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroMoedas']}</div>}
-                            </Form.Group>
-                        </Col>
-                        <Col md={2}>
-                            <Form.Group controlId="formValorTotal">
-                                <Form.Label>Valor Total<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-valorTotal">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="number"
-                                        name="valorTotal"
-                                        value={formData.valorTotal || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['valorTotal'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['valorTotal']}</div>}
-                            </Form.Group>
-                        </Col>
-                        <Col md={2}>
                             <Form.Group controlId="formDeviceId">
                                 <Form.Label>Nome do Local<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
@@ -231,7 +197,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                         onChange={(e) => handleDropdownChange('deviceID', e)}
                                     >
                                         <option value="">Selecione...</option>
-                                        {dropdownData.deviceId?.map((option: any) => {
+                                        {devices?.map((option: any) => {
                                             let optionId, optionName;
                                             switch ('deviceID') {
                                                 case 'deviceID':
@@ -252,6 +218,128 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                     </Form.Control>
                                 </OverlayTrigger>
                                 {errors['deviceId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceId']}</div>}
+                            </Form.Group>
+                            <Form.Group controlId="formDataFimRecolha">
+                                <Form.Label>Data de Fim<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-dataFimRecolha">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="datetime-local"
+                                        name="dataFimRecolha"
+                                        value={formData.dataFimRecolha ? new Date(formData.dataFimRecolha).toISOString().slice(0, 16) : ''}
+                                        onChange={handleChange}
+                                    />
+                                </OverlayTrigger>
+                            </Form.Group>
+                        </Col>
+                        <Col md={2}>
+                            <Form.Group controlId="formNumeroMoedas">
+                                <Form.Label>Moedas Recolha<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-numeroMoedas">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="numeroMoedas"
+                                        value={formData.numeroMoedas === undefined ? '' : formData.numeroMoedas}
+                                        onChange={handleChange}
+                                    />
+                                </OverlayTrigger>
+                                {errors['numeroMoedas'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroMoedas']}</div>}
+                            </Form.Group>
+                            <Form.Group controlId="formNumeroMoedasSistema">
+                                <Form.Label>Moedas Sistema<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-numeroMoedasSistema">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="numeroMoedasSistema"
+                                        value={formData.numeroMoedasSistema === undefined ? '' : formData.numeroMoedasSistema}
+                                        onChange={handleChange}
+                                        readOnly
+                                    />
+                                </OverlayTrigger>
+                                {errors['numeroMoedasSistema'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroMoedasSistema']}</div>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={2}>
+                            <Form.Group controlId="formValorTotalRecolhido">
+                                <Form.Label>Valor Recolha<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-valorTotalRecolhido">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="valorTotalRecolhido"
+                                        value={formData.valorTotalRecolhido || ''}
+                                        onChange={handleChange}
+                                        readOnly
+                                    />
+                                </OverlayTrigger>
+                                {errors['valorTotalRecolhido'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['valorTotalRecolhido']}</div>}
+                            </Form.Group>
+                            <Form.Group controlId="formValorTotalSistema">
+                                <Form.Label>Valor Sistema<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-valorTotalSistema">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="valorTotalSistema"
+                                        value={formData.valorTotalSistema || ''}
+                                        onChange={handleChange}
+                                        readOnly
+                                    />
+                                </OverlayTrigger>
+                                {errors['valorTotalSistema'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['valorTotalSistema']}</div>}
+                            </Form.Group>
+                        </Col>
+                        <Col md={2}>
+                            <Form.Group controlId="formDiferencaMoedas">
+                                <Form.Label>Diferença Recolha<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-diferencaMoedas">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="diferencaMoedas"
+                                        value={formData.diferencaMoedas || ''}
+                                        onChange={handleChange}
+                                        readOnly
+                                    />
+                                </OverlayTrigger>
+                                {errors['diferencaMoedas'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['diferencaMoedas']}</div>}
+                            </Form.Group>
+                            <Form.Group controlId="formDiferencaEuros">
+                                <Form.Label>Diferença Euros<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-diferencaEuros">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="number"
+                                        name="diferencaEuros"
+                                        value={formData.diferencaEuros || ''}
+                                        onChange={handleChange}
+                                        readOnly
+                                    />
+                                </OverlayTrigger>
+                                {errors['diferencaEuros'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['diferencaEuros']}</div>}
                             </Form.Group>
                         </Col>
                         <Col md={10}>

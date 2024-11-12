@@ -33,7 +33,7 @@ interface Field {
 
 // Define o componente
 export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({...initialValues, doorTimezoneList: []});
+    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...initialValues, doorTimezoneList: [] });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -144,18 +144,18 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
             doorId: formData.doorId,
             timezoneId: formData.timezoneId,
         };
-    
+
         const { doorId, timezoneId, ...restFormData } = formData;
-    
+
         const updatedFormData = {
             ...restFormData,
             doorTimezoneList: [...(restFormData.doorTimezoneList || []), doorTimeEntry]
         };
-    
+
         onSave(updatedFormData as Partial<T>);
         onClose();
     };
-      
+
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl">
@@ -191,34 +191,44 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                             className="custom-input-height custom-select-font-size"
                                             value={formData[field.key] || ''}
                                             onChange={(e) => handleDropdownChange(field.key, e)}
+                                            style={{ overflowY: 'auto', maxHeight: '200px' }}
                                         >
                                             <option value="">Selecione...</option>
-                                            {dropdownData[field.key]?.map((option) => {
-                                                let optionId, optionName;
-                                                switch (field.key) {
-                                                    case 'employeesId':
-                                                        optionId = option.employeeID;
-                                                        optionName = option.shortName;
-                                                        break;
-                                                    case 'doorId':
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
-                                                    case 'timezoneId':
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
-                                                    default:
-                                                        optionId = option.id;
-                                                        optionName = option.name;
-                                                        break;
-                                                }
-                                                return (
-                                                    <option key={optionId} value={optionId}>
-                                                        {optionName}
-                                                    </option>
-                                                );
-                                            })}
+                                            {dropdownData[field.key]
+                                                ? dropdownData[field.key]
+                                                    .sort((a, b) => {
+                                                        if (field.key === 'employeesId') {
+                                                            return a.enrollNumber - b.enrollNumber;
+                                                        }
+                                                        return 0;
+                                                    })
+                                                    .map((option) => {
+                                                        let optionId, optionName;
+                                                        switch (field.key) {
+                                                            case 'employeesId':
+                                                                optionId = option.employeeID;
+                                                                optionName = `${option.enrollNumber} - ${option.shortName}`;
+                                                                break;
+                                                            case 'doorId':
+                                                                optionId = option.id;
+                                                                optionName = option.name;
+                                                                break;
+                                                            case 'timezoneId':
+                                                                optionId = option.id;
+                                                                optionName = option.name;
+                                                                break;
+                                                            default:
+                                                                optionId = option.id;
+                                                                optionName = option.name;
+                                                                break;
+                                                        }
+                                                        return (
+                                                            <option key={optionId} value={optionId}>
+                                                                {optionName}
+                                                            </option>
+                                                        );
+                                                    })
+                                                : null}
                                         </Form.Control>
                                     ) : (
                                         <Form.Control

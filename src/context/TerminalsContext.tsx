@@ -15,6 +15,7 @@ export interface DeviceContextType {
     fetchAllEmployeeDevices: () => Promise<void>;
     fetchUsersOnDevice: (zktecoDeviceID: string) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
+    fetchAllKioskTransactionOnDevice: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllDoorData: () => Promise<Doors[]>;
     fetchAllMBDevices: () => Promise<MBDevice[]>;
     fetchAllMBCloseOpen: () => Promise<MBDeviceCloseOpen[]>;
@@ -80,6 +81,17 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllKioskTransaction = async (zktecoDeviceID: Devices): Promise<KioskTransaction[]> => {
         try {
             const transactionData = await apiService.fetchAllKioskTransactions(zktecoDeviceID);
+            return transactionData;
+        } catch (error) {
+            console.error('Erro ao buscar transações:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar todas as actividades de quiosque no dispositivo
+    const fetchAllKioskTransactionOnDevice = async (zktecoDeviceID: Devices): Promise<KioskTransaction[]> => {
+        try {
+            const transactionData = await apiService.fetchAllKioskTransactionsOnDevice(zktecoDeviceID);
             return transactionData;
         } catch (error) {
             console.error('Erro ao buscar transações:', error);
@@ -339,7 +351,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllDevices();
             fetchAllMBDevices();
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     // Define o valor do contexto
     const contextValue: DeviceContextType = {
@@ -352,6 +364,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         fetchAllEmployeeDevices,
         fetchUsersOnDevice,
         fetchAllKioskTransaction,
+        fetchAllKioskTransactionOnDevice,
         fetchAllDoorData,
         fetchAllMBDevices,
         fetchAllMBCloseOpen,

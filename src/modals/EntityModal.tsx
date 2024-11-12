@@ -66,7 +66,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (open && entity) {
+        if (entity) {
             setFormData({ ...entity });
             setEntities(prevEntities => {
                 const existingEntityIndex = prevEntities.findIndex(ent => ent.id === entity.id);
@@ -129,7 +129,6 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
             setSelectedEntity(null);
             setEntities([]);
             refreshEntities();
-            onClose();
         }
     }
 

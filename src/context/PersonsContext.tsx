@@ -302,7 +302,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllRegisteredUsers();
             fetchAllCardData();
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     // Define o valor do contexto
     const contextValue: PersonsContextType = {

@@ -132,7 +132,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             dataToSend.append('ConfirmPassword', formData.confirmPassword);
         }
         if (formData.roles) {
-            dataToSend.append('Roles', formData.roles);
+            dataToSend.append('Role', formData.roles);
         }
         if (profileImageFile) {
             dataToSend.append('ProfileImage', profileImageFile);
@@ -142,7 +142,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             const relativePath = profileImage.replace(apiService.baseURL, '');
             dataToSend.append('ProfileImage', relativePath);
         }
-
+        
         onSave(dataToSend);
         onClose();
     };

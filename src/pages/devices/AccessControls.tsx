@@ -209,6 +209,7 @@ export const AccessControls = () => {
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
@@ -289,6 +290,8 @@ export const AccessControls = () => {
                                 }}
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                defaultSortAsc={true}
+                                defaultSortFieldId='enrollNumber'
                             />
                         </div>
                     </div>

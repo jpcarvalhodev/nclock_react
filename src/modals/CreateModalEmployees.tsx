@@ -141,6 +141,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         } else {
             setFormData({});
             setCardFormData({});
+            setProfileImage(null);
         }
     }, [open]);
 
@@ -425,7 +426,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-shortName">Obrigatório ter 5 caracteres ou mais</Tooltip>}
+                                overlay={<Tooltip id="tooltip-shortName">Obrigatório ter entre 5 a 20 caracteres</Tooltip>}
                             >
                                 <Form.Control
                                     type="string"
@@ -443,14 +444,19 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                     <Col md={3}>
                         <Form.Group controlId="formNameAcronym">
                             <Form.Label>Iniciais do Nome</Form.Label>
-                            <Form.Control
-                                type="string"
-                                className="custom-input-height custom-select-font-size"
-                                value={formData.nameAcronym || ''}
-                                onChange={handleChange}
-                                name="nameAcronym"
-                                maxLength={4}
-                            />
+                            <OverlayTrigger
+                                placement="right"
+                                overlay={<Tooltip id="tooltip-name">Máximo de 4 caracteres</Tooltip>}
+                            >
+                                <Form.Control
+                                    type="string"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.nameAcronym || ''}
+                                    onChange={handleChange}
+                                    name="nameAcronym"
+                                    maxLength={4}
+                                />
+                            </OverlayTrigger>
                         </Form.Group>
                         <Form.Group controlId="formComments">
                             <Form.Label>Comentários</Form.Label>

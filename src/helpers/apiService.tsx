@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -1181,6 +1181,16 @@ export const fetchAllKioskTransactions = async (zktecoDeviceID: Devices) => {
     return response.json();
 };
 
+export const fetchAllKioskTransactionsOnDevice = async (zktecoDeviceID: Devices) => {
+    const response = await fetchWithAuth(`KioskTransaction/GetAllTransactionsOnDevice?deviceID=${zktecoDeviceID}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
 export const fetchKioskTransactionDoorAsync = async () => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactionDoorAsync`);
     if (!response.ok) {
@@ -1598,7 +1608,7 @@ export const updateLicenses = async (key: string, licences: License[]) => {
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
-        throw new Error;
+        return errorData;
     }
     return response.json();
 }
@@ -1609,6 +1619,16 @@ export const updateLicenses = async (key: string, licences: License[]) => {
 
 export const fetchRecolhasMoedeiro = async () => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllRecolhasMoedeiro`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const fetchContagemSNTransacoes = async () => {
+    const response = await fetchWithAuth(`KioskTransaction/ObterContagemSNTransacoes`);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -1839,6 +1859,52 @@ export const updateCamera = async (camera: Cameras) => {
 export const deleteCamera = async (id: string) => {
     const response = await fetchWithAuth(`ViewCamera/DeleteViewCamera?id=${id}`, {
         method: 'DELETE'
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DAS CONFIGURAÇÔES DE QUIOSQUES///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchKioskConfig = async () => {
+    const response = await fetchWithAuth(`Configuration/GetKioskConfigurations`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
+    return response.json();
+}
+
+export const addKioskConfig = async (kioskConfig: KioskConfig) => {
+    const response = await fetchWithAuth(`Configuration/AddKioskConfigurations`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(kioskConfig)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
+    return response.json();
+}
+
+export const updateKioskConfig = async (kioskConfig: KioskConfig) => {
+    const response = await fetchWithAuth(`Configuration/UpdateKioskConfigurations`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(kioskConfig)
     });
     if (!response.ok) {
         const errorData = await response.json();

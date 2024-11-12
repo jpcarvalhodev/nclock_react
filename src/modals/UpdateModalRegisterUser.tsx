@@ -139,7 +139,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             dataToSend.append('Password', formData.password);
         }
         if (formData.roles) {
-            dataToSend.append('Roles', formData.roles);
+            dataToSend.append('Role', formData.roles);
         }
         if (profileImageFile) {
             dataToSend.append('ProfileImage', profileImageFile);

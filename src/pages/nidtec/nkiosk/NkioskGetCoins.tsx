@@ -23,7 +23,7 @@ export const NkioskGetCoins = () => {
     const [getCoins, setGetCoins] = useState<RecolhaMoedeiroEContador[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotal', 'deviceID']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotalRecolhido', 'diferencaMoedas', 'deviceID']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedRows, setSelectedRows] = useState<RecolhaMoedeiroEContador[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -101,7 +101,7 @@ export const NkioskGetCoins = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotal', 'deviceID']);
+        setSelectedColumns(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotalRecolhido', 'diferencaMoedas', 'deviceID']);
     };
 
     // Função para selecionar todas as colunas
@@ -132,10 +132,16 @@ export const NkioskGetCoins = () => {
                 switch (field.key) {
                     case 'dataRecolha':
                         return new Date(row.dataRecolha).toLocaleString();
-                    case 'dataFimIntervencao':
-                        return new Date(row.dataFimIntervencao).toLocaleString();
+                    case 'dataFimRecolha':
+                        return new Date(row.dataFimRecolha).toLocaleString();
                     case 'deviceID':
-                        return devices.find(device => device.zktecoDeviceID === row.deviceID)?.deviceName || '';
+                        return devices.find(device => device.zktecoDeviceID === row.deviceID)?.deviceName || 'Sem Dados';
+                    case 'numeroMoedasSistema':
+                        return `${row[field.key]}€`;
+                    case 'valorTotalRecolhido':
+                        return `${row[field.key]}€`;
+                    case 'diferencaEuros':
+                        return `${row[field.key]}€`;
                     default:
                         return row[field.key] || '';
                 }

@@ -526,11 +526,15 @@ export type RecolhaMoedeiroEContador = {
     pessoaResponsavel: string;
     numeroMoedas: number;
     numeroMoedasSistema: number;
-    diferenca: number;
-    valorTotal: number;
+    diferencaMoedas: number;
+    diferencaEuros: number;
+    valorTotalRecolhido: number;
+    valorTotalSistema: number;
     observacoes: string;
     deviceID: string;
-    dataFimIntervencao: Date;
+    serialNumber: string;
+    contagemTransacoes: number;
+    dataFimRecolha: Date;
 }
 
 export type ManualOpenDoor = {
@@ -581,4 +585,12 @@ export type EmployeesOnDevice = {
     cardNo: string;
     pin: string;
     name: string;
+}
+
+export type KioskConfig = {
+    [key: string]: any;
+    id: string;
+    amount: number;
+    totalMoedas: number;
+    emails: Array<string>;
 }
