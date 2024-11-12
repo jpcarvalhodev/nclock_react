@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailUser, Entity } from '../helpers/Types';
+import { EmailUser, Entity, KioskConfig } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -139,7 +139,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailFields, entityFields, licenseFields } from '../helpers/Fields';
+import { adsFields, emailFields, entityFields, kioskConfigFields, licenseFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -366,6 +366,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showSoftwaresDropdown, setShowSoftwaresDropdown] = useState(false);
 	const [menuStructureStart, setMenuStructureStart] = useState<MenuStructure>({});
 	const [menuStructureNG, setMenuStructureNG] = useState<MenuStructure>({});
+	const [kioskConfig, setKioskConfig] = useState<KioskConfig>();
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -452,30 +453,57 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	}
 
-	// Função para adicionar emails de utilizadores
-	const handleAddEmailConfig = async (email: EmailUser) => {
+	// Função para carregar as configurações dos quiosques
+	const fetchKioskConfig = async () => {
 		try {
-			const data = await apiService.addUserEmailConfig(email);
-			setEmailCompanyConfig(data);
-			toast.success('Email adicionado com sucesso!');
+			const data = await apiService.fetchKioskConfig();
+			setKioskConfig(data);
 		} catch (error) {
-			console.error('Erro ao adicionar o email registado:', error);
+			console.error('Erro ao carregar as configurações dos quiosques:', error);
+		}
+	}
+
+	// Função para adicionar emails de utilizadores
+	const handleAddEmailConfig = async (email: Partial<EmailUser>, kioskConfig: Partial<KioskConfig>) => {
+		try {
+			console.log('email:', email);
+			console.log('kioskConfig:', kioskConfig);
+			if (email) {
+				const data = await apiService.addUserEmailConfig(email);
+				setEmailCompanyConfig(data);
+				toast.success(data.message || 'Email adicionado com sucesso!');
+			} else {
+				const data = await apiService.addKioskConfig(kioskConfig);
+				setKioskConfig(data);
+				toast.success(data.message || 'Configurações do quiosque adicionadas com sucesso!');
+			}
+		} catch (error) {
+			console.error('Erro ao adicionar o email registado ou o quiosque:', error);
 		} finally {
 			fetchEmailConfig();
+			fetchKioskConfig();
 		}
 	}
 
 	// Função de atualização de emails de utilizadores e as configurações da empresa
-	const handleUpdateEmailConfig = async (email: EmailUser) => {
+	const handleUpdateEmailConfig = async (email: Partial<EmailUser>, kioskConfig: Partial<KioskConfig>) => {
 		try {
-			const data = await apiService.updateUserEmailConfig(email);
-			const updatedUsers = email.map((u: EmailUser) => u.id === data.id ? data : u);
-			setEmailCompanyConfig(updatedUsers);
-			toast.success(data.value || 'Email atualizado com sucesso!');
+			console.log('email:', email);
+			console.log('kioskConfig:', kioskConfig);
+			if (email) {
+				const data = await apiService.updateUserEmailConfig(email);
+				setEmailCompanyConfig(data);
+				toast.success(data.message || 'Email atualizado com sucesso!');
+			} else {
+				const data = await apiService.updateKioskConfig(kioskConfig);
+				setKioskConfig(data);
+				toast.success(data.message || 'Configurações do quiosque atualizadas com sucesso!');
+			}
 		} catch (error) {
-			console.error('Erro ao atualizar o email registado:', error);
+			console.error('Erro ao atualizar o email registado ou o quiosque:', error);
 		} finally {
 			fetchEmailConfig();
+			fetchKioskConfig();
 		}
 	}
 
@@ -509,7 +537,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 	useEffect(() => {
 		fetchEmailConfig();
 		fetchCompanyConfig();
+		fetchKioskConfig();
 	}, []);
+
+	// Combinação das configurações de email e dos quiosques
+	const combinedConfig = {
+		...emailCompanyConfig,
+		...kioskConfig
+	  };
 
 	// Verificar se a tela é mobile
 	const checkIfMobile = () => {
@@ -3587,8 +3622,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 						onClose={() => setShowEmailModal(false)}
 						onSave={handleAddEmailConfig}
 						onUpdate={handleUpdateEmailConfig}
-						entity={emailCompanyConfig || {} as EmailUser}
-						fields={emailFields}
+						entity={combinedConfig || {}}
+						fields={emailFields || kioskConfigFields}
 						title='Opções de Email e Quiosque'
 					/>
 				)}

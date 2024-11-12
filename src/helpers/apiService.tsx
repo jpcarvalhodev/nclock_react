@@ -1343,7 +1343,7 @@ export const deleteRegisteredUser = async (id: string) => {
     return response.json();
 }
 
-export const addUserEmailConfig = async (email: EmailUser) => {
+export const addUserEmailConfig = async (email: Partial<EmailUser>) => {
     const response = await fetchWithAuth(`Configuration/AddEmailConfigurations`, {
         method: 'POST',
         headers: {
@@ -1359,7 +1359,7 @@ export const addUserEmailConfig = async (email: EmailUser) => {
     return response.json();
 }
 
-export const updateUserEmailConfig = async (email: EmailUser) => {
+export const updateUserEmailConfig = async (email: Partial<EmailUser>) => {
     const response = await fetchWithAuth(`Configuration/UpdateEmailConfigurations`, {
         method: 'PUT',
         headers: {
@@ -1882,7 +1882,7 @@ export const fetchKioskConfig = async () => {
     return response.json();
 }
 
-export const addKioskConfig = async (kioskConfig: KioskConfig) => {
+export const addKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
     const response = await fetchWithAuth(`Configuration/AddKioskConfigurations`, {
         method: 'POST',
         headers: {
@@ -1898,7 +1898,7 @@ export const addKioskConfig = async (kioskConfig: KioskConfig) => {
     return response.json();
 }
 
-export const updateKioskConfig = async (kioskConfig: KioskConfig) => {
+export const updateKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
     const response = await fetchWithAuth(`Configuration/UpdateKioskConfigurations`, {
         method: 'PUT',
         headers: {

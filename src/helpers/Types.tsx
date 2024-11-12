@@ -592,5 +592,5 @@ export type KioskConfig = {
     id: string;
     amount: number;
     totalMoedas: number;
-    emails: Array<string>;
+    emails: string[];
 }

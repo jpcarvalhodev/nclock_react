@@ -7,6 +7,7 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
 import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
+import { KioskConfig, RecolhaMoedeiroEContador } from '../helpers/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -42,15 +43,16 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     const {
         devices,
     } = useContext(TerminalsContext) as DeviceContextType;
-    const [formData, setFormData] = useState<Partial<T>>({ ...entity });
+    const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
-    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+    const [amounts, setAmounts] = useState<KioskConfig>();
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
         if (open) {
-            fetchDropdownOptions();
+            fetchRecolhas();
+            fetchAmount();
             setFormData({ ...entity });
         }
     }, [open, entity]);
@@ -77,22 +79,42 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
         setIsFormValid(isValid);
     }, [formData, fields]);
 
-    // Função para buscar os dados dos dropdowns
-    const fetchDropdownOptions = async () => {
+    // Buscar as recolhas para o moedeiro
+    const fetchRecolhas = async () => {
         try {
-            const devices = await apiService.fetchAllDevices();
-            setDropdownData({
-                deviceId: devices
-            });
+            const recolhas = await apiService.fetchRecolhasMoedeiro();
+            const recolhaDevice = recolhas.find((recolha: any) => devices.some(device => device.zktecoDeviceID === recolha.deviceID));
+            if (recolhas && recolhas.length > 0 && recolhaDevice) {
+                const lastRecolha = recolhas.sort((a: RecolhaMoedeiroEContador, b: RecolhaMoedeiroEContador) => new Date(b.dataFimRecolha).getTime() - new Date(a.dataFimRecolha).getTime())[0];
+                setFormData(prevState => ({
+                    ...prevState,
+                    dataRecolha: new Date(new Date(lastRecolha.dataFimRecolha).getTime()).toISOString().slice(0, 16)
+                }));
+            } else {
+                setFormData(prevState => ({
+                    ...prevState,
+                    dataRecolha: new Date()
+                }));
+            }
         } catch (error) {
-            console.error('Erro ao buscar os dados de funcionários, portas e períodos', error);
+            console.error('Erro ao buscar as recolhas', error);
+        }
+    }
+
+    // Buscar os valores de moedas
+    const fetchAmount = async () => {
+        try {
+            const amounts = await apiService.fetchKioskConfig();
+            setAmounts(amounts);
+        } catch (error) {
+            console.error('Erro ao buscar o valor', error);
         }
     };
 
     // Função para lidar com a mudança do dropdown
-    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+    const handleDropdownChange = async (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
-        const selectedOption = dropdownData[key]?.find((option: any) => {
+        const selectedOption = devices?.find((option: any) => {
             switch (key) {
                 case 'deviceID':
                     return option.zktecoDeviceID === value;
@@ -102,11 +124,26 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
         });
 
         if (selectedOption) {
-            const idKey = key;
             setFormData(prevState => ({
                 ...prevState,
-                [idKey]: value
+                [key]: value
             }));
+
+            try {
+                const count = await apiService.fetchContagemSNTransacoes();
+                const deviceCount = count.find((c: any) => c.serialNumber === selectedOption.serialNumber);
+                if (selectedOption.serialNumber === deviceCount.serialNumber) {
+                    setFormData(prevState => ({
+                        ...prevState,
+                        valorTotalSistema: deviceCount.contagemTransacoes,
+                        numeroMoedasSistema: amounts?.amount ? deviceCount.contagemTransacoes * amounts.amount : 0,
+                        diferencaMoedas: (formData.numeroMoedas || 0) - (deviceCount.contagemTransacoes || 0),
+                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (amounts?.amount ?? 0))
+                    }));
+                }
+            } catch (error) {
+                console.error('Erro ao buscar as contagens para o número serial', error);
+            }
         } else {
             setFormData(prevState => ({
                 ...prevState,
@@ -118,12 +155,28 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value, type } = e.target;
+        if (name === "dataFimRecolha") {
+            return;
+        }
         const formattedValue = type === 'number' ? parseFloat(value) || 0 : value;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: formattedValue,
-            valorTotal: name === 'numeroMoedas' ? (formattedValue * 0.50).toFixed(2) : prevState.valorTotal
-        }));
+
+        setFormData(prevState => {
+            const updatedState = {
+                ...prevState,
+                [name]: formattedValue
+            };
+
+            if (name === 'numeroMoedas') {
+                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (amounts?.amount || 0)).toFixed(2));
+            }
+
+            if (['numeroMoedas', 'valorTotalRecolhido'].includes(name)) {
+                updatedState.diferencaMoedas = (updatedState.numeroMoedas || 0) - (updatedState.valorTotalSistema || 0);
+                updatedState.diferencaEuros = (updatedState.valorTotalRecolhido || 0) - (updatedState.numeroMoedasSistema || 0);
+            }
+
+            return updatedState;
+        });
     };
 
     // Função para verificar se o formulário é válido antes de salvar
