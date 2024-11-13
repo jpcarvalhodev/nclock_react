@@ -173,6 +173,7 @@ export const NewUsers = () => {
                         onRowDoubleClicked={handleEditUsers}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."

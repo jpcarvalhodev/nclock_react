@@ -12,24 +12,37 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
 import { toast } from "react-toastify";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
 import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
 export const NkioskOccurrences = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [occurrences, setOccurrences] = useState<LimpezasEOcorrencias[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate','responsavel', 'observacoes', 'deviceName']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedRows, setSelectedRows] = useState<LimpezasEOcorrencias[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const tipo = 2;
 
-    // Função para buscar as limpezas
+    // Função para buscar as Ocorrências
     const fetchAllOcorrencias = async () => {
         try {
             const data = await apiService.fetchAllCleaningsAndOccurrences(tipo);
@@ -43,7 +56,21 @@ export const NkioskOccurrences = () => {
         }
     };
 
-    // Função para adicionar limpezas
+    // Função para buscar as Ocorrências entre datas
+    const fetchOcorrenciasBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo, startDate, endDate);
+            if (Array.isArray(data)) {
+                setOccurrences(data);
+            } else {
+                setOccurrences([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ocorrências:', error);
+        }
+    };
+
+    // Função para adicionar Ocorrências
     const handleAddOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
         try {
             const data = await apiService.addOccurrence(occurrence);
@@ -79,7 +106,7 @@ export const NkioskOccurrences = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['dataCreate','responsavel', 'observacoes', 'deviceName']);
+        setSelectedColumns(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
     };
 
     // Função para selecionar todas as colunas
@@ -167,6 +194,22 @@ export const NkioskOccurrences = () => {
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={occurrences} selectedData={selectedRows} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
                         <PrintButton data={occurrences} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
+                    </div>
+                    <div className="date-range-search">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchOcorrenciasBetweenDates} iconSize='1.1em' />
                     </div>
                 </div>
                 <div className='table-css'>

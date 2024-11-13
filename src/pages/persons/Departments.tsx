@@ -297,6 +297,7 @@ export const Departments = () => {
                         onRowDoubleClicked={handleEditDepartment}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         expandableRows
                         expandableRowsComponent={(props) => (
                             <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />

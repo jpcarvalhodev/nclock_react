@@ -20,9 +20,22 @@ interface Filters {
     [key: string]: string;
 }
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
 // Define o componente de terminais
 export const NkioskDoorOpen = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [manualOpenDoor, setManualOpenDoor] = useState<ManualOpenDoor[]>([]);
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nomeResponsavel', 'nomeEvento', 'deviceName', 'doorName', 'observacoes']);
@@ -32,14 +45,35 @@ export const NkioskDoorOpen = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [filterText, setFilterText] = useState<string>('');
     const [userTabKey, setUserTabKey] = useState<string>('manualOpen');
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
 
     // Função para buscar os dados de aberturas manuais
     const fetchAllManualOpen = async () => {
         try {
             const data = await apiService.fetchAllManualDoorOpen();
-            setManualOpenDoor(data);
+            if (Array.isArray(data)) {
+                setManualOpenDoor(data);
+            } else {
+                setManualOpenDoor([]);
+            }
         } catch (error) {
-            console.error('Erro ao buscar os dados de aberturas manuais', error);
+            console.error('Erro ao buscar os dados de aberturas manuais:', error);
+        }
+    }
+
+    // Função para buscar os dados de aberturas manuais entre datas
+    const fetchManualOpenBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchAllManualDoorOpen(startDate, endDate);
+            console.log(data);
+            if (Array.isArray(data)) {
+                setManualOpenDoor(data);
+            } else {
+                setManualOpenDoor([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de aberturas manuais:', error);
         }
     }
 
@@ -186,6 +220,22 @@ export const NkioskDoorOpen = () => {
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAllManualOpen} />
                             <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                         </div>
+                        <div className="date-range-search">
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={e => setStartDate(e.target.value)}
+                                className='search-input'
+                            />
+                            <span> até </span>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={e => setEndDate(e.target.value)}
+                                className='search-input'
+                            />
+                            <CustomOutlineButton icon="bi-search" onClick={fetchManualOpenBetweenDates} iconSize='1.1em' />
+                        </div>
                     </div>
                 </div>
                 <div className="deviceMobile">
@@ -194,6 +244,7 @@ export const NkioskDoorOpen = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         selectableRows
                         onSelectedRowsChange={handleDeviceRowSelected}
                         selectableRowsHighlight
@@ -238,7 +289,7 @@ export const NkioskDoorOpen = () => {
                     onSelectAllColumns={handleSelectAllColumns}
                 />
             )}
-            <ManualDoorOpenModal 
+            <ManualDoorOpenModal
                 title="Abertura Manual"
                 open={modalOpen}
                 onClose={handleManualClose}

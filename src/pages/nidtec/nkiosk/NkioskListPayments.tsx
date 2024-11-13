@@ -425,7 +425,7 @@ export const NkioskListPayments = () => {
                             columns={columns}
                             data={uniqueFilteredDataTable}
                             pagination
-                            paginationPerPage={10}
+                            paginationPerPage={15}
                             paginationComponentOptions={paginationOptions}
                             selectableRows
                             onSelectedRowsChange={handleRowSelected}

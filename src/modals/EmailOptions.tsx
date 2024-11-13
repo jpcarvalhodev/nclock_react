@@ -54,8 +54,6 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         }
     }, [entity]);
 
-    console.log(entity);
-
     // Limpa os dados do formulário quando o modal é fechado
     useEffect(() => {
         if (!open) {
@@ -139,7 +137,6 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        console.log(emailFormData, kioskFormData);
         onSave(emailFormData as EmailUser, kioskFormData as KioskConfig);
         onClose();
     };
@@ -150,7 +147,6 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        console.log(emailFormData, kioskFormData);
         onUpdate(emailFormData as EmailUser, kioskFormData as KioskConfig);
         onClose();
     }

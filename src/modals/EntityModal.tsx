@@ -94,15 +94,14 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         }
     }, [entities]);
 
-    // Função para lidar com o clique na tabela
+    // Uso de useEffect para lidar com mudanças no selectedEntity
     useEffect(() => {
         if (selectedEntity) {
             setFormData({ ...selectedEntity });
+            updateImageForSelectedEntity(selectedEntity);
         } else {
-            setFormData({});
+            clearFormData();
             setDeviceImage(null);
-            setEntities([]);
-            setSelectedEntity(null);
         }
     }, [selectedEntity]);
 
@@ -112,7 +111,8 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         setEntities(data);
         if (!data.some((ent: T) => ent.id === selectedEntity?.id)) {
             setSelectedEntity(null);
-            setFormData({});
+            clearFormData();
+            setDeviceImage(null);
         }
     }
 
@@ -121,16 +121,27 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         try {
             const data = await apiService.deleteCompanyConfig(id);
             toast.success(data.message || 'Entidade eliminada com sucesso.');
+            if (selectedEntity?.id === id) {
+                clearFormData();
+                setDeviceImage(null);
+                setSelectedEntity(null);
+            }
         } catch (error) {
             console.error('Erro ao eliminar a entidade', error);
         } finally {
-            setFormData({});
-            setDeviceImage(null);
-            setSelectedEntity(null);
-            setEntities([]);
             refreshEntities();
         }
     }
+
+    // Função para limpar todos os campos do formulário
+    const clearFormData = () => {
+        const newFormData: Record<string, any> = {};
+        fields.forEach(field => {
+            newFormData[field.key] = '';
+        });
+        setFormData(newFormData as Partial<T>);
+        setDeviceImage(null);
+    };
 
     // Função para selecionar a entidade
     const selectEntity = (entity: T) => {
@@ -332,7 +343,6 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                                 </tbody>
                             </Table>
                             <div style={{ display: 'flex' }}>
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEntities} />
                                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(selectedEntity?.id)}>
                                     <i className="bi bi-trash-fill"></i>
                                 </Button>

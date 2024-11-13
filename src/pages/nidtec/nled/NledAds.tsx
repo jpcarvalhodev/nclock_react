@@ -201,6 +201,7 @@ export const NledAds = () => {
                         onRowDoubleClicked={handleEditAds}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={false}

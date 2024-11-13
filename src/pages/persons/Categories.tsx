@@ -255,6 +255,7 @@ export const Categories = () => {
                         onRowDoubleClicked={handleEditCategory}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

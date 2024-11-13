@@ -10,7 +10,6 @@ import * as apiService from "../../helpers/apiService";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { AccessControl, Doors } from "../../helpers/Types";
 import { accessControlFields } from "../../helpers/Fields";
-import { DeleteModal } from "../../modals/DeleteModal";
 import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
 import { Button } from "react-bootstrap";
@@ -18,6 +17,7 @@ import { toast } from "react-toastify";
 import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import Split from "react-split";
 import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
+import { DeleteACModal } from "../../modals/DeleteACModal";
 
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useColor();
@@ -29,7 +29,7 @@ export const AccessControls = () => {
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filterText, setFilterText] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedAccessToDelete, setSelectedAccessToDelete] = useState<string | null>(null);
+    const [selectedAccessToDelete, setSelectedAccessToDelete] = useState<AccessControl | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
@@ -73,12 +73,10 @@ export const AccessControls = () => {
     };
 
     // Função para deletar o controle de acesso
-    const handleDeleteAccessControl = async (id: string, doorId?: Doors) => {
+    const handleDeleteAccessControl = async (employeesId: string[], doorId: string) => {
         try {
-            const data = await apiService.deleteAccessControl(id, doorId);
-            if (data) {
-                setAccessControl(prevAccessControl => [...prevAccessControl, data]);
-            }
+            const data = await apiService.deleteAccessControl(employeesId, doorId);
+            setAccessControl(prevAccessControl => [...prevAccessControl, data]);
             toast.success(data.message || 'Controle de acesso apagado com sucesso!');
         } catch (error) {
             console.error('Erro ao deletar o controle de acesso:', error);
@@ -143,8 +141,8 @@ export const AccessControls = () => {
     };
 
     // Define a abertura do modal de apagar controle de acesso
-    const handleOpenDeleteModal = (id: string) => {
-        setSelectedAccessToDelete(id);
+    const handleOpenDeleteModal = (accessControl: AccessControl) => {
+        setSelectedAccessToDelete(accessControl);
         setShowDeleteModal(true);
     };
 
@@ -227,7 +225,7 @@ export const AccessControls = () => {
         cell: (row: AccessControl) => (
             <div style={{ display: 'flex' }}>
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAccessControl(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.acId)} >
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
@@ -270,6 +268,7 @@ export const AccessControls = () => {
                                 data={filteredDataTable}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
                                 onRowDoubleClicked={handleEditAccessControl}
                                 selectableRows
                                 onSelectedRowsChange={handleRowSelected}
@@ -308,12 +307,14 @@ export const AccessControls = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            <DeleteModal
-                open={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteAccessControl}
-                entityId={selectedAccessToDelete}
-            />
+            {selectedAccessToDelete && (
+                <DeleteACModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={handleDeleteAccessControl}
+                    entity={selectedAccessToDelete}
+                />
+            )}
             <CreateAccessControlModal
                 title="Adicionar Acesso"
                 open={showAddModal}

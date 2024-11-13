@@ -17,9 +17,22 @@ import { recolhaMoedeiroEContadorFields } from "../../../helpers/Fields";
 import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
 export const NkioskGetCoins = () => {
     const { navbarColor, footerColor } = useColor();
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [getCoins, setGetCoins] = useState<RecolhaMoedeiroEContador[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -30,11 +43,27 @@ export const NkioskGetCoins = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedRecolhaMoedeiro, setSelectedRecolhaMoedeiro] = useState<any>(null);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
 
     // Função para buscar as recolhas do moedeiro
     const fetchAllCoinRecoveredData = async () => {
         try {
             const data = await apiService.fetchRecolhasMoedeiro();
+            if (Array.isArray(data)) {
+                setGetCoins(data);
+            } else {
+                setGetCoins([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de recolha do moedeiro:', error);
+        }
+    };
+
+    // Função para buscar as recolhas do moedeiro entre datas
+    const fetchCoinsBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchRecolhasMoedeiro(startDate, endDate);
             if (Array.isArray(data)) {
                 setGetCoins(data);
             } else {
@@ -136,12 +165,18 @@ export const NkioskGetCoins = () => {
                         return new Date(row.dataFimRecolha).toLocaleString();
                     case 'deviceID':
                         return devices.find(device => device.zktecoDeviceID === row.deviceID)?.deviceName || 'Sem Dados';
+                    case 'numeroMoedas':
+                        return row[field.key] || '0';
                     case 'numeroMoedasSistema':
-                        return `${row[field.key]}€`;
+                        return row[field.key] || '0';
+                    case 'diferencaMoedas':
+                        return row[field.key] || '0';
                     case 'valorTotalRecolhido':
-                        return `${row[field.key]}€`;
+                        return `${row[field.key]}€` || '0€';
+                    case 'valorTotalSistema':
+                        return `${row[field.key]}€` || '0€';;
                     case 'diferencaEuros':
-                        return `${row[field.key]}€`;
+                        return `${row[field.key]}€` || '0€';;
                     default:
                         return row[field.key] || '';
                 }
@@ -178,7 +213,12 @@ export const NkioskGetCoins = () => {
 
     // Calcula o total do valor das recolhas
     const totalAmount = filteredDataTable.reduce((total, getCoins) => {
-        return total + (typeof getCoins.valorTotal === 'number' ? getCoins.valorTotal : parseFloat(getCoins.valorTotal) || 0);
+        return total + (typeof getCoins.valorTotalRecolhido === 'number' ? getCoins.valorTotalRecolhido : parseFloat(getCoins.valorTotal) || 0);
+    }, 0);
+
+    // Calcula o total do valor das diferenças
+    const totalAmountDifference = filteredDataTable.reduce((total, getCoins) => {
+        return total + (typeof getCoins.diferencaEuros === 'number' ? getCoins.diferencaEuros : parseFloat(getCoins.valorTotal) || 0);
     }, 0);
 
     // Função para gerar os dados com nomes substituídos para o export/print
@@ -217,6 +257,22 @@ export const NkioskGetCoins = () => {
                         <ExportButton allData={getCoinsWithNames} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
                         <PrintButton data={getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
                     </div>
+                    <div className="date-range-search">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchCoinsBetweenDates} iconSize='1.1em' />
+                    </div>
                 </div>
                 <div className='table-css'>
                     <DataTable
@@ -238,6 +294,9 @@ export const NkioskGetCoins = () => {
                 </div>
                 <div style={{ marginLeft: 30 }}>
                     <strong>Valor Total das Recolhas: </strong>{totalAmount.toFixed(2)}€
+                </div>
+                <div style={{ marginLeft: 30 }}>
+                    <strong>Valor Total de Diferença de Recolhas: </strong>{totalAmountDifference.toFixed(2)}€
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

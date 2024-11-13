@@ -42,7 +42,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     const [key, setKey] = useState<string>('');
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
@@ -150,6 +149,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         } else {
+            console.log('formData:', formData);
             setIsModalVisible(false);
             onUpdate(key, formData as License[]);
             onClose();
@@ -159,6 +159,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     // Função para renderizar os softwares
     function renderFormControl(product: string, prop: string) {
         const value = formData[product][prop];
+
         return (
             <div>
                 <Form.Label>{getLabel(prop)}</Form.Label>
@@ -231,14 +232,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         }
     }
 
-    // Define o estado de ativação dos produtos
-    const enabledStatus = Object.keys(formData).reduce((acc: { [key: string]: boolean }, key) => {
-        if (formData[key]?.enable !== undefined) {
-            acc[key] = formData[key].enable;
-        }
-        return acc;
-    }, {});
-
     return (
         <div>
             <Modal show={isCheckVisible} onHide={onClose} backdrop="static">
@@ -250,7 +243,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         placeholder="Insira a chave de licenciamento"
                         value={key}
                         onChange={handleKeyChange}
-                        type={showPassword ? 'text' : 'password'}
+                        type='password'
                     />
                 </InputGroup>
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
@@ -306,20 +299,20 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                             </Form.Group>
                         </Col>
                     </Row>
-                    <Tabs defaultActiveKey={Object.keys(formData)[2]} id="product-tabs" className='nav-modal'>
+                    <Tabs defaultActiveKey={Object.keys(formData).find(key => typeof formData[key] === 'object' && formData[key] !== null)} id="product-tabs" className='nav-modal'>
                         {Object.keys(formData)
-                            .filter(key => key.startsWith('n') && key !== 'nif')
+                            .filter(key => typeof formData[key] === 'object' && formData[key] !== null)
                             .map(product => (
                                 <Tab
                                     eventKey={product}
                                     title={product.toUpperCase()}
                                     key={product}
-                                    tabClassName={enabledStatus[product] ? 'enabled-tab' : ''}
+                                    tabClassName={formData[product].enable ? 'enabled-tab' : ''}
                                 >
                                     <Row>
-                                        {Object.keys(formData[product])
-                                            .filter(prop => prop !== 'createDate')
-                                            .map((prop, index) => (
+                                        {Object.entries(formData[product])
+                                            .filter(([propKey]) => propKey !== 'createDate')
+                                            .map(([prop, value], index) => (
                                                 <Col md={3} key={`${product}-${prop}`} className='mt-3'>
                                                     <Form.Group controlId={`form${product}${prop}`}>
                                                         {renderFormControl(product, prop)}

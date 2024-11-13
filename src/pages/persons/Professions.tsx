@@ -259,6 +259,7 @@ export const Professions = () => {
                         onRowDoubleClicked={handleEditProfession}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

@@ -95,11 +95,11 @@ export const Login = () => {
           <div className='username-password-labels'>
             <label className='username-label'>
               <p>Nome de Utilizador:</p>
-              <input type="text" name="username" value={username} placeholder='Nome de Usuário' onChange={(e) => setUsername(e.target.value)} />
+              <input type="text" name="username" value={username} placeholder='Nome de Utilizador' onChange={(e) => setUsername(e.target.value)} />
             </label>
             <label className='password-label'>
-              <p>Senha:</p>
-              <input type={showPassword ? "text" : "password"} name="password" value={password} placeholder='Senha' onChange={(e) => setPassword(e.target.value)} />
+              <p>Password:</p>
+              <input type={showPassword ? "text" : "password"} name="password" value={password} placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
             </label>
           </div>
           <label className='remember_me-label'>

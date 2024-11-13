@@ -1181,7 +1181,7 @@ export const Terminals = () => {
                                 data={filteredDeviceDataTable}
                                 onRowDoubleClicked={handleEditDevices}
                                 pagination
-                                paginationPerPage={5}
+                                paginationPerPage={15}
                                 paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                 paginationComponentOptions={paginationOptions}
                                 selectableRows
@@ -1261,8 +1261,7 @@ export const Terminals = () => {
                                                     columns={userColumns}
                                                     data={filteredUsersInSoftware}
                                                     pagination
-                                                    paginationPerPage={5}
-                                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                    paginationPerPage={15}
                                                     paginationComponentOptions={paginationOptions}
                                                     selectableRows
                                                     onSelectedRowsChange={handleUserRowSelected}
@@ -1310,8 +1309,7 @@ export const Terminals = () => {
                                                 columns={employeeOnDeviceColumns}
                                                 data={filteredUsersInTerminal}
                                                 pagination
-                                                paginationPerPage={5}
-                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                paginationPerPage={15}
                                                 paginationComponentOptions={paginationOptions}
                                                 selectableRows
                                                 onSelectedRowsChange={handleUserRowSelected}
@@ -1328,8 +1326,7 @@ export const Terminals = () => {
                                             columns={bioColumns}
                                             data={filteredBioDataTable}
                                             pagination
-                                            paginationPerPage={5}
-                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                            paginationPerPage={15}
                                             paginationComponentOptions={paginationOptions}
                                             selectableRows
                                             onSelectedRowsChange={handleUserRowSelected}
@@ -1343,8 +1340,7 @@ export const Terminals = () => {
                                             columns={cardColumns}
                                             data={filteredCardDataTable}
                                             pagination
-                                            paginationPerPage={5}
-                                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                            paginationPerPage={15}
                                             paginationComponentOptions={paginationOptions}
                                             selectableRows
                                             onSelectedRowsChange={handleUserRowSelected}
@@ -1360,8 +1356,7 @@ export const Terminals = () => {
                                     columns={stateColumns}
                                     data={filteredStateDataTable}
                                     pagination
-                                    paginationPerPage={5}
-                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                    paginationPerPage={15}
                                     paginationComponentOptions={paginationOptions}
                                     selectableRows
                                     onSelectedRowsChange={handleDeviceRowSelected}

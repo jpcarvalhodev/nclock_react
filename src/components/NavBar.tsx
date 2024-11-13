@@ -466,13 +466,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para adicionar emails de utilizadores
 	const handleAddEmailConfig = async (email: Partial<EmailUser>, kioskConfig: Partial<KioskConfig>) => {
 		try {
-			console.log('email:', email);
-			console.log('kioskConfig:', kioskConfig);
-			if (email) {
+			if (email && Object.keys(email).length > 0) {
 				const data = await apiService.addUserEmailConfig(email);
 				setEmailCompanyConfig(data);
 				toast.success(data.message || 'Email adicionado com sucesso!');
-			} else {
+			}
+			if (kioskConfig && Object.keys(kioskConfig).length > 0) {
 				const data = await apiService.addKioskConfig(kioskConfig);
 				setKioskConfig(data);
 				toast.success(data.message || 'Configurações do quiosque adicionadas com sucesso!');
@@ -488,13 +487,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função de atualização de emails de utilizadores e as configurações da empresa
 	const handleUpdateEmailConfig = async (email: Partial<EmailUser>, kioskConfig: Partial<KioskConfig>) => {
 		try {
-			console.log('email:', email);
-			console.log('kioskConfig:', kioskConfig);
-			if (email) {
+			if (email && Object.keys(email).length > 0) {
 				const data = await apiService.updateUserEmailConfig(email);
 				setEmailCompanyConfig(data);
 				toast.success(data.message || 'Email atualizado com sucesso!');
-			} else {
+			}
+			if (kioskConfig && Object.keys(kioskConfig).length > 0) {
 				const data = await apiService.updateKioskConfig(kioskConfig);
 				setKioskConfig(data);
 				toast.success(data.message || 'Configurações do quiosque atualizadas com sucesso!');
@@ -544,7 +542,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const combinedConfig = {
 		...emailCompanyConfig,
 		...kioskConfig
-	  };
+	};
 
 	// Verificar se a tela é mobile
 	const checkIfMobile = () => {
@@ -1606,6 +1604,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 		setShowLicenseModal(false);
 		fetchAllLicensesWithoutKey();
 	};
+
+	// Função para fechar o modal de entidades
+	const handleCloseEntityModal = () => {
+		setShowEntityModal(false);
+		fetchCompanyConfig();
+	}
 
 	return (
 		<ColorProvider>
@@ -3666,7 +3670,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				{showEntityModal && entityData && (
 					<EntityModal
 						open={showEntityModal}
-						onClose={() => setShowEntityModal(false)}
+						onClose={handleCloseEntityModal}
 						onUpdate={handleUpdateCompanyData}
 						onSave={handleAddCompanyData}
 						entity={entityData}

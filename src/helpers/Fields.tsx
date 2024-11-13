@@ -431,17 +431,17 @@ export const entityFields = [
 ];
 
 export const recolhaMoedeiroEContadorFields = [
-    { key: 'dataRecolha', label: 'Data da Recolha', type: 'date' },
+    { key: 'dataRecolha', label: 'Data de Início', type: 'date' },
     { key: 'pessoaResponsavel', label: 'Nome do Utilizador', type: 'string' },
-    { key: 'numeroMoedas', label: 'Moedas Recolha', type: 'number', required: true },
+    { key: 'numeroMoedas', label: 'Moedas Recolhidas', type: 'number', required: true },
     { key: 'numeroMoedasSistema', label: 'Moedas Sistema', type: 'number' },
-    { key: 'valorTotalRecolhido', label: 'Valor Recolha', type: 'number' },
+    { key: 'valorTotalRecolhido', label: 'Valor Recolhido', type: 'number' },
     { key: 'valorTotalSistema', label: 'Valor Sistema', type: 'number' },
     { key: 'diferencaMoedas', label: 'Diferença Moedas', type: 'number' },
-    { key: 'diferencaEuros', label: 'Diferença Euros', type: 'number' },
+    { key: 'diferencaEuros', label: 'Diferença Valor', type: 'number' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
     { key: 'deviceID', label: 'Nome do Local', type: 'string', required: true },
-    { key: 'dataFimRecolha', label: 'Data de Fim', type: 'date' },
+    { key: 'dataFimRecolha', label: 'Data da Recolha', type: 'date' },
 ];
 
 export const manualOpenDoorFields = [

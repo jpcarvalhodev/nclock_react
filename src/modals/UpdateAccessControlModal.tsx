@@ -7,7 +7,6 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
 import { Doors } from '../helpers/Types';
-import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -249,7 +248,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                     <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} size="xl">
+            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} size="xl" backdrop="static">
                 <Modal.Header closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
@@ -293,6 +292,12 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                                                             }
                                                             return 0;
                                                         })
+                                                        .sort((a, b) => {
+                                                            if (field.key === 'doorId') {
+                                                                return a.doorNo - b.doorNo;
+                                                            }
+                                                            return 0;
+                                                        })
                                                         .map((option) => {
                                                             let optionId, optionName;
                                                             switch (field.key) {
@@ -302,7 +307,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                                                                     break;
                                                                 case 'doorId':
                                                                     optionId = option.id;
-                                                                    optionName = option.name;
+                                                                    optionName = `${option.doorNo} - ${option.name}`;
                                                                     break;
                                                                 case 'timezoneId':
                                                                     optionId = option.id;

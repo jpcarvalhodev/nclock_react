@@ -285,6 +285,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         highlightOnHover
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         onRowDoubleClicked={handleRowDoubleClicked}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}

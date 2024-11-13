@@ -303,6 +303,7 @@ export const ExternalEntities = () => {
                         columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         onRowDoubleClicked={handleEditExternalEntity}
+                        paginationPerPage={15}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         expandableRows

@@ -282,8 +282,12 @@ export const fetchAllTPCloseOpen = async (startDate?: string, endDate?: string) 
     return response.json();
 }
 
-export const fetchAllManualDoorOpen = async () => {
-    const response = await fetchWithAuth(`KioskTransaction/GetAllAberturaDistanciaAsync`);
+export const fetchAllManualDoorOpen = async (startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetAllAberturaDistanciaAsync`;
+    if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -1522,13 +1526,13 @@ export const updateAccessControl = async (accessControl: Partial<AccessControl>,
     return response.json();
 }
 
-export const deleteAccessControl = async (id: string, doorId?: Doors) => {
-    let url = `AccessControle/DeleteAccessControle?id=${id}`;
-    if (doorId) {
-        url += `&doorId=${doorId}`;
-    }
-    const response = await fetchWithAuth(url, {
-        method: 'DELETE'
+export const deleteAccessControl = async (employeesId: string[], doorId: string) => {
+    const response = await fetchWithAuth(`AccessControle/DeleteAccessControle?doorId=${doorId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employeesId)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1617,8 +1621,12 @@ export const updateLicenses = async (key: string, licences: License[]) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE RECOLHA MOEDEIRO///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export const fetchRecolhasMoedeiro = async () => {
-    const response = await fetchWithAuth(`KioskTransaction/GetAllRecolhasMoedeiro`);
+export const fetchRecolhasMoedeiro = async (startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetAllRecolhasMoedeiro`;
+    if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -1673,8 +1681,12 @@ export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroECon
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE LIMPEZAS E OCORRÊNCIAS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export const fetchAllCleaningsAndOccurrences = async (tipo: number) => {
-    const response = await fetchWithAuth(`KioskTransaction/GetAllLimpezasOcorrenciasByTipoAsync?tipoOcorrencia=${tipo}`);
+export const fetchAllCleaningsAndOccurrences = async (tipo: number, startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetAllLimpezasOcorrenciasByTipoAsync?tipoOcorrencia=${tipo}`;
+    if (startDate && endDate) {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -1719,8 +1731,12 @@ export const addOccurrence = async (occurrence: LimpezasEOcorrencias) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CONTADORES//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export const fetchAllContador = async () => {
-    const response = await fetchWithAuth(`KioskTransaction/GetAllContadorMoedeiro`);
+export const fetchAllContador = async (startDate?: string, endDate?: string) => {
+    let url = `KioskTransaction/GetAllContadorMoedeiro`;
+    if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);

@@ -356,6 +356,7 @@ export const Visitors = () => {
                                 onRowDoubleClicked={handleEditEmployee}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
                                 expandableRows
                                 expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                                 selectableRows

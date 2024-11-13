@@ -267,6 +267,7 @@ export const Groups = () => {
                         onRowDoubleClicked={handleEditGroup}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

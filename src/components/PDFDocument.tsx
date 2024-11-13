@@ -193,9 +193,11 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                     return fullImageUrl;
                 } else {
                     return 'Sem Ticket';
-                }
+                } 
             case 'dataRecolha':
                 return new Date(item.dataRecolha).toLocaleString() || '';
+            case 'dataFimRecolha':
+                return new Date(item.dataFimRecolha).toLocaleString() || '';
             case 'createdTime':
                 return new Date(item.createdTime).toLocaleString() || '';
             case 'dataCreate':

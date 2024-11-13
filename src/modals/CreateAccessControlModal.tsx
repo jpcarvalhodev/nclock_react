@@ -202,6 +202,12 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         }
                                                         return 0;
                                                     })
+                                                    .sort((a, b) => {
+                                                        if (field.key === 'doorId') {
+                                                            return a.doorNo - b.doorNo;
+                                                        }
+                                                        return 0;
+                                                    })
                                                     .map((option) => {
                                                         let optionId, optionName;
                                                         switch (field.key) {
@@ -211,7 +217,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                                                 break;
                                                             case 'doorId':
                                                                 optionId = option.id;
-                                                                optionName = option.name;
+                                                                optionName = `${option.doorNo} - ${option.name}`;
                                                                 break;
                                                             case 'timezoneId':
                                                                 optionId = option.id;

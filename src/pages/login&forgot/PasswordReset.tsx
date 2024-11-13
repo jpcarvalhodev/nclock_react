@@ -37,12 +37,12 @@ export const ResetPassword = () => {
     event.preventDefault();
 
     if (!isPasswordValid(password)) {
-      toast.error('A senha deve ter pelo menos 8 caracteres.');
+      toast.error('A password deve ter pelo menos 8 caracteres.');
       return;
     }
 
     if (!doPasswordsMatch(password, confirmPassword)) {
-      toast.error('As senhas não coincidem.');
+      toast.error('As passwords não coincidem.');
       return;
     }
 
@@ -58,7 +58,7 @@ export const ResetPassword = () => {
         return;
       }
 
-      toast.success('Senha alterada com sucesso!', { progressClassName: 'custom-progress-bar' });
+      toast.success('Password alterada com sucesso!', { progressClassName: 'custom-progress-bar' });
       navigate('/');
 
     } catch (error) {
@@ -71,14 +71,10 @@ export const ResetPassword = () => {
       <form className='form-login' onSubmit={handleResetPasswordFormSubmit}>
         <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
         <div className='password-field'>
-          <p>Nova Senha:</p>
+          <p>Nova Password:</p>
           <input type={showPassword ? "text" : "password"} name="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
-        <div className='password-field'>
-          <p>Confirme a Senha:</p>
-          <input type={showPassword ? "text" : "password"} name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-        </div>
-        <Button className="btn-my-custom-button" type='submit'>Redefinir Senha</Button>
+        <Button className="btn-my-custom-button" type='submit'>Redefinir Password</Button>
       </form>
     </div>
   );

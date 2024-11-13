@@ -12,13 +12,24 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
 import { toast } from "react-toastify";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
 import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
 export const NkioskCleaning = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const [cleaning, setCleaning] = useState<LimpezasEOcorrencias[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -27,12 +38,28 @@ export const NkioskCleaning = () => {
     const [selectedRows, setSelectedRows] = useState<LimpezasEOcorrencias[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const tipo = 1;
 
     // Função para buscar as limpezas
     const fetchAllLimpezas = async () => {
         try {
             const data = await apiService.fetchAllCleaningsAndOccurrences(tipo);
+            if (Array.isArray(data)) {
+                setCleaning(data);
+            } else {
+                setCleaning([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de limpezas:', error);
+        }
+    };
+
+    // Função para buscar as limpezas entre datas
+    const fetchLimpezasBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo, startDate, endDate);
             if (Array.isArray(data)) {
                 setCleaning(data);
             } else {
@@ -168,6 +195,22 @@ export const NkioskCleaning = () => {
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={cleaning} selectedData={selectedRows} fields={limpezasEOcorrenciasFields} />
                         <PrintButton data={cleaning} fields={limpezasEOcorrenciasFields} />
+                    </div>
+                    <div className="date-range-search">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={e => setStartDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <span> até </span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={e => setEndDate(e.target.value)}
+                            className='search-input'
+                        />
+                        <CustomOutlineButton icon="bi-search" onClick={fetchLimpezasBetweenDates} iconSize='1.1em' />
                     </div>
                 </div>
                 <div className='table-css'>

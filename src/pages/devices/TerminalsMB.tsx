@@ -285,6 +285,7 @@ export const TerminalsMB = () => {
                                     data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={15}
                                     selectableRows
                                     onSelectedRowsChange={handleDeviceRowSelected}
                                     selectableRowsHighlight

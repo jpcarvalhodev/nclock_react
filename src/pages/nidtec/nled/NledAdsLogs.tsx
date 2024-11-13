@@ -113,6 +113,7 @@ export const NledAdsLogs = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        paginationPerPage={15}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={true}
