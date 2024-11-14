@@ -40,7 +40,7 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
     const columnNames = columnNamesMap(fields);
 
     const photo = (data as Employee).photo || (data as Zone).photo || (data as ExternalEntity).photo || (data as Register).profileImage || '';
-    const baseURL = apiService.baseURL.slice(0, -1);
+    const baseURL = apiService.baseURL?.slice(0, -1);
     const photoData = photo ? `${baseURL}${photo}` : modalAvatar;
 
     return (

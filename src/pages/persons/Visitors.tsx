@@ -260,16 +260,16 @@ export const Visitors = () => {
                 ),
                 selector: (row: Employee) => {
                     if (field.key === 'enrollNumber') {
-                        return row[field.key] ?? '';
+                        return parseInt(row.enrollNumber) || 0;
                     }
-                    return formatField(row);
+                    return row[field.key] || '';
                 },
                 sortable: true,
                 cell: (row: Employee) => {
                     if (field.key === 'enrollNumber') {
                         return row[field.key] ?? '';
                     }
-                    return formatField(row);
+                    return row[field.key] || '';
                 }
             };
         });

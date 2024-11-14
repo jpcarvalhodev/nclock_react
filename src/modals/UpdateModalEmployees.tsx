@@ -43,6 +43,9 @@ interface UpdateModalProps<T extends Entity> {
 // Define o componente
 export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
   const {
+    fetchAllEmployees,
+    fetchAllDepartments,
+    fetchAllGroups,
     fetchEmployeeCardData,
   } = useContext(PersonsContext) as PersonsContextType;
   const { license, getSoftwareEnabledStatus } = useLicense();
@@ -102,16 +105,16 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         ...prevData,
         ...employeesCards
       }));
-    } catch {
-      toast.error('Erro ao buscar os cartões dos funcionários.');
+    } catch (error) {
+      console.error('Erro ao buscar os cartões dos funcionários', error);
     }
   };
 
   // Função para buscar as opções do dropdown
   const fetchDropdownOptions = async () => {
     try {
-      const departments = await apiService.fetchAllDepartments();
-      const groups = await apiService.fetchAllGroups();
+      const departments = await fetchAllDepartments();
+      const groups = await fetchAllGroups();
       const professions = await apiService.fetchAllProfessions();
       const zones = await apiService.fetchAllZones();
       const externalEntities = await apiService.fetchAllExternalEntities();
@@ -534,6 +537,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   onChange={handleChange}
                   name="modulos"
                 >
+                  <option value="">Selecione...</option>
                   {filteredModuleOptions.map(option => (
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}

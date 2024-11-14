@@ -1,5 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-import * as apiService from "../helpers/apiService";
+import React from 'react';
 
 // Estilos para o documento PDF
 const styles = StyleSheet.create({
@@ -84,7 +84,7 @@ interface DataItem {
 }
 
 // Define o tipo de campo para as exceções
-type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | string;
+type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | string;
 
 // Componente para renderizar o documento PDF
 export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
@@ -184,16 +184,6 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                 return item[fieldKey] ? 'Ligado' : 'Desligado';
             case 'timeReboot':
                 return item[fieldKey] === '00:00:00' ? 'Sem tempo de reinício' : item[fieldKey];
-            case 'clientTicket':
-            case 'merchantTicket':
-                const imageUrl = item[fieldKey];
-                if (imageUrl) {
-                    const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
-                    const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
-                    return fullImageUrl;
-                } else {
-                    return 'Sem Ticket';
-                } 
             case 'dataRecolha':
                 return new Date(item.dataRecolha).toLocaleString() || '';
             case 'dataFimRecolha':
@@ -201,15 +191,22 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
             case 'createdTime':
                 return new Date(item.createdTime).toLocaleString() || '';
             case 'dataCreate':
-                return new Date(item.dataCreate).toLocaleString();
+                return new Date(item.dataCreate).toLocaleString() || '';
+            case 'statusFprint':
+                return item[fieldKey] ? 'Activo' : 'Inactivo';
+            case 'statusFace':
+                return item[fieldKey] ? 'Activo' : 'Inactivo';
+            case 'statusPalm':
+                return item[fieldKey] ? 'Activo' : 'Inactivo';
             default:
                 return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
         }
     };
 
     const maxColsPerPage = 8;
+    const maxRowsPerPage = 20;
     const allColumns = ['eventId', 'appId', 'timezoneId', 'doorId', 'id', 'deviceId', 'birthday', 'admissionDate', 'biIssuance', 'biValidity', 'exitDate', 'status', 'statusEmail', 'rgpdAut', 'departmentId', 'professionId', 'categoryId', 'groupId', 'zoneId', 'externalEntityId', 'attendanceTime', 'inOutMode', 'code', 'machineNumber', 'cardNumber', 'productTime', 'createDate', 'updateDate', 'createTime', 'updateTime', 'eventTime', 'timestamp', 'transactionType', 'estadoTerminal', 'timeReboot', 'dataRecolha'];
-    const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo'];
+    const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo'];
 
     const updateColumnsToIgnore = () => {
         const idColumns = allColumns.filter(column => column.toLowerCase().includes('id'));
@@ -226,39 +223,51 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
         return groups;
     };
 
+    const splitDataIntoGroups = (data: any[], maxRowsPerPage: number) => {
+        const groups: any[][] = [];
+        for (let i = 0; i < data.length; i += maxRowsPerPage) {
+            const group = data.slice(i, i + maxRowsPerPage);
+            groups.push(group);
+        }
+        return groups;
+    };
+
     const filteredFields = fields.filter(field => !filteredColumnsToIgnore.includes(field.key));
     const fieldGroups = splitFieldsIntoGroups(filteredFields, maxColsPerPage);
 
     return (
         <Document>
             {fieldGroups.map((fieldGroup, groupIndex) => (
-                <Page size="A4" orientation="landscape" style={styles.page} key={groupIndex}>
-                    <Text style={styles.aboveHeader}>Gerado em {new Date().toLocaleString()}</Text>
-                    <View style={styles.table}>
-                        <View style={styles.tableRow}>
-                            {fieldGroup.map((field) => (
-                                <View key={field.key} style={{ ...styles.tableColHeader }}>
-                                    <Text style={styles.tableCellHeader}>{field.label}</Text>
-                                </View>
-                            ))}
-                        </View>
-                        {data
-                            .filter(item => fieldGroup.some(field => item[field.key] !== undefined && item[field.key] !== null && item[field.key] !== ''))
-                            .map((item, rowIndex) => (
-                                <View key={rowIndex} style={styles.tableRow}>
-                                    {fieldGroup.map((field) => {
-                                        const value = formatField(item, field.key);
-                                        return (
-                                            <View key={field.key} style={{ ...styles.tableCol }}>
-                                                <Text style={styles.tableCell}>{value}</Text>
+                <React.Fragment key={groupIndex}>
+                    {
+                        splitDataIntoGroups(data, maxRowsPerPage).map((dataGroup, pageIndex) => (
+                            <Page size="A4" orientation="landscape" style={styles.page} key={pageIndex}>
+                                <Text style={styles.aboveHeader}>Gerado em {new Date().toLocaleString()}</Text>
+                                <View style={styles.table}>
+                                    <View style={styles.tableRow}>
+                                        {fieldGroup.map(field => (
+                                            <View key={field.key} style={styles.tableColHeader}>
+                                                <Text style={styles.tableCellHeader}>{field.label}</Text>
                                             </View>
-                                        );
-                                    })}
+                                        ))}
+                                    </View>
+                                    {dataGroup.map((item, rowIndex) => (
+                                        <View key={rowIndex} style={styles.tableRow}>
+                                            {fieldGroup.map(field => {
+                                                const value = formatField(item, field.key);
+                                                return (
+                                                    <View key={field.key} style={styles.tableCol}>
+                                                        <Text style={styles.tableCell}>{value}</Text>
+                                                    </View>
+                                                );
+                                            })}
+                                        </View>
+                                    ))}
                                 </View>
-                            ))}
-                    </View>
-                    <Text style={styles.footer}>NIDGROUP - Business Solutions</Text>
-                </Page>
+                                <Text style={styles.footer}>NIDGROUP - Business Solutions</Text>
+                            </Page>
+                        ))}
+                </React.Fragment>
             ))}
         </Document>
     );

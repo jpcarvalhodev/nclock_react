@@ -25,7 +25,7 @@ interface ExportButtonProps {
 }
 
 // Define o tipo de campo para as exceções
-type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | string;
+type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | string;
 
 // Função para formatar a data e a hora
 function formatDateAndTime(input: string | Date): string {
@@ -116,16 +116,20 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
             return item[fieldKey] ? 'Ligado' : 'Desligado';
         case 'timeReboot':
             return item[fieldKey] === '00:00:00' ? 'Sem tempo de reinício' : item[fieldKey];
-        case 'clientTicket':
-        case 'merchantTicket':
-            const imageUrl = item[fieldKey];
-            if (imageUrl) {
-                const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
-                const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
-                return fullImageUrl;
-            } else {
-                return 'Sem Ticket';
-            }
+        case 'dataRecolha':
+            return new Date(item.dataRecolha).toLocaleString() || '';
+        case 'dataFimRecolha':
+            return new Date(item.dataFimRecolha).toLocaleString() || '';
+        case 'createdTime':
+            return new Date(item.createdTime).toLocaleString() || '';
+        case 'dataCreate':
+            return new Date(item.dataCreate).toLocaleString() || '';
+        case 'statusFprint':
+            return item[fieldKey] ? 'Activo' : 'Inactivo';
+        case 'statusFace':
+            return item[fieldKey] ? 'Activo' : 'Inactivo';
+        case 'statusPalm':
+            return item[fieldKey] ? 'Activo' : 'Inactivo';
         default:
             return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
     }

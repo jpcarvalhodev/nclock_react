@@ -14,12 +14,16 @@ interface DataState {
 // Define o tipo de contexto
 export interface PersonsContextType {
     employees: Employee[];
+    departments: Department[];
+    groups: Group[];
     registeredUsers: Register[];
     data: DataState;
     setData: (data: DataState) => void;
     setEmployees: (employees: Employee[]) => void;
     fetchAllData: (entity?: string) => Promise<void>;
     fetchAllEmployees: (options?: FetchOptions) => Promise<Employee[]>;
+    fetchAllDepartments: () => Promise<Department[]>;
+    fetchAllGroups: () => Promise<Group[]>;
     fetchAllCardData: () => Promise<EmployeeCard[]>;
     fetchAllRegisteredUsers: () => Promise<void>;
     handleAddUsers: (user: FormData) => Promise<void>;
@@ -53,6 +57,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [employeesFace, setEmployeesFace] = useState<EmployeeFace[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeCard[]>([]);
     const [registeredUsers, setRegisteredUsers] = useState<Register[]>([]);
+    const [departments, setDepartments] = useState<Department[]>([]);
+    const [groups, setGroups] = useState<Group[]>([]);
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -104,6 +110,30 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             return [];
         }
     }, []);
+
+    // Função para buscar todos os departamentos
+    const fetchAllDepartments = async (): Promise<Department[]> => {
+        try {
+            const departments = await apiService.fetchAllDepartments();
+            setDepartments(departments);
+            return departments;
+        } catch (error) {
+            console.error('Erro ao buscar departamentos:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar todos os grupos
+    const fetchAllGroups = async (): Promise<Group[]> => {
+        try {
+            const groups = await apiService.fetchAllGroups();
+            setGroups(groups);
+            return groups;
+        } catch (error) {
+            console.error('Erro ao buscar grupos:', error);
+        }
+        return [];
+    }
 
     // Função para buscar todos os utilizadores registados
     const fetchAllRegisteredUsers = async () => {
@@ -299,20 +329,26 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         if (localStorage.getItem('token')) {
             fetchAllData();
             fetchAllEmployees();
+            fetchAllDepartments();
+            fetchAllGroups();
             fetchAllRegisteredUsers();
             fetchAllCardData();
         }
-    }, []);
+    }, [localStorage.getItem('token')]);
 
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,
+        departments,
+        groups,
         registeredUsers,
         data,
         setData,
         setEmployees,
         fetchAllData,
         fetchAllEmployees,
+        fetchAllDepartments,
+        fetchAllGroups,
         fetchAllCardData,
         fetchAllRegisteredUsers,
         handleAddUsers,

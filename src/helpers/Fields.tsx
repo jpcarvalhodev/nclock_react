@@ -37,7 +37,7 @@ export const employeeFields = [
     { label: 'Grupo', key: 'groupId', type: 'dropdown', },
     { label: 'Zona', key: 'zoneId', type: 'dropdown', },
     { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', },
-    { label: 'Módulo', key: 'modulos', type: 'string', required: true },
+    { label: 'Software', key: 'modulos', type: 'string', required: true },
 ];
 
 export const departmentFields = [

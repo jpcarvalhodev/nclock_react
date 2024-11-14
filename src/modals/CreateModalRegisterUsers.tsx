@@ -51,20 +51,30 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
     // useEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
+        let isValid = true;
 
-        const isValid = fields.every(field => {
+        fields.forEach(field => {
             const fieldValue = formData[field.key];
-            let valid = true;
-
             if (field.required && (fieldValue === null || fieldValue === '')) {
-                valid = false;
+                isValid = false;
             }
+    
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
+                isValid = false;
             }
-
-            return valid;
+    
+            if (field.key === 'password' && fieldValue) {
+                if (!validatePassword(fieldValue)) {
+                    newErrors[field.key] = 'Obrigatório a password ter 8 caracteres, uma letra maiúscula e um caractere especial';
+                    isValid = false;
+                }
+            }
         });
+
+        if (formData.password !== formData.confirmPassword) {
+            newErrors['confirmPassword'] = 'A password e a confirmação não coincidem.';
+            isValid = false;
+        }
 
         setErrors(newErrors);
         setIsFormValid(isValid);
@@ -79,8 +89,9 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         if (type === 'number') {
             parsedValue = Number(value);
         } else {
-            parsedValue = value;
+            parsedValue = name === 'userName' ? value.replace(/\s+/g, '') : value;
         }
+
         setFormData(prevState => ({
             ...prevState,
             [name]: parsedValue
@@ -95,6 +106,12 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             const objectUrl = URL.createObjectURL(file);
             setProfileImage(objectUrl);
         }
+    };
+
+    // Função para validar a senha
+    const validatePassword = (password: string): boolean => {
+        const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])/;
+        return regex.test(password);
     };
 
     // Define a função para resetar a foto de perfil
@@ -139,10 +156,10 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         } else if (profileImage === modalAvatar) {
             dataToSend.append('ProfileImage', '');
         } else if (profileImage && typeof profileImage === 'string') {
-            const relativePath = profileImage.replace(apiService.baseURL, '');
+            const relativePath = profileImage.replace(apiService.baseURL || '', '');
             dataToSend.append('ProfileImage', relativePath);
         }
-        
+
         onSave(dataToSend);
         onClose();
     };
@@ -219,7 +236,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-password">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-password">Obrigatório a password ter 8 caracteres, uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -228,6 +245,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                         value={formData.password || ''}
                                         onChange={handleChange}
                                         autoComplete='off'
+                                        minLength={8}
                                     />
                                 </OverlayTrigger>
                                 {errors.password && <Form.Text className="text-danger">{errors.password}</Form.Text>}
@@ -275,7 +293,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Confirmar Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a senha ter uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a password ter 8 caracteres, uma letra maiúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -284,6 +302,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                         value={formData.confirmPassword || ''}
                                         onChange={handleChange}
                                         autoComplete='off'
+                                        minLength={8}
                                     />
                                 </OverlayTrigger>
                                 {errors.confirmPassword && <Form.Text className="text-danger">{errors.confirmPassword}</Form.Text>}

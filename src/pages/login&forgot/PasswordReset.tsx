@@ -7,7 +7,7 @@ import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 
 // Define a página de redefinição de senha
 export const ResetPassword = () => {
-  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -24,34 +24,35 @@ export const ResetPassword = () => {
 
   // Verifica se a senha é válida
   const isPasswordValid = (password: string): boolean => {
-    return password.length >= 8;
+    return password.length >= 8 && validatePassword(password);
   };
 
-  // Verifica se as senhas coincidem
-  const doPasswordsMatch = (password: string, confirmPassword: string): boolean => {
-    return password === confirmPassword;
+  // Função para validar a senha
+  const validatePassword = (password: string): boolean => {
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])/;
+    return regex.test(password);
   };
 
   // Função para enviar o formulário de redefinição de senha
   const handleResetPasswordFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!isPasswordValid(password)) {
+    if (!isPasswordValid(newPassword)) {
       toast.error('A password deve ter pelo menos 8 caracteres.');
       return;
     }
 
-    if (!doPasswordsMatch(password, confirmPassword)) {
-      toast.error('As passwords não coincidem.');
-      return;
-    }
-
     try {
-      const response = await fetchWithoutAuth(`Authentication/ResetPassword?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
+      const response = await fetchWithoutAuth(`Authentication/ResetPassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          email,
+          token,
+          newPassword,
+        }),
       });
 
       if (!response.ok) {
@@ -72,7 +73,7 @@ export const ResetPassword = () => {
         <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
         <div className='password-field'>
           <p>Nova Password:</p>
-          <input type={showPassword ? "text" : "password"} name="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input type={showPassword ? "text" : "password"} name="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
         </div>
         <Button className="btn-my-custom-button" type='submit'>Redefinir Password</Button>
       </form>

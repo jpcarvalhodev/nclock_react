@@ -174,6 +174,7 @@ export const NewUsers = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
+                        selectableRows
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."

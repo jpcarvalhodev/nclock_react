@@ -5,8 +5,9 @@ import { toast } from 'react-toastify';
 import no_image from '../assets/img/terminais/no_image.png';
 import * as apiService from "../helpers/apiService";
 import { DeleteModal } from './DeleteModal';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { set } from 'date-fns';
+import DataTable from 'react-data-table-component';
+import { customStyles } from '../components/CustomStylesDataTable';
+import { Entity } from '../helpers/Types';
 
 // Interface para as propriedades do modal
 interface UpdateModalProps<T> {
@@ -40,6 +41,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [selectedEntityToDelete, setSelectedEntityToDelete] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -202,6 +204,39 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         setFormData(prev => ({ ...prev, [name]: newValue }));
     };
 
+    // Colunas da tabela
+    const columns = [
+        {
+            name: 'Nome',
+            selector: (row: Partial<Entity>) => row.nome || '',
+            sortable: true,
+        },
+        {
+            name: 'NIF',
+            selector: (row: Partial<Entity>) => row.nif || '',
+            sortable: true,
+        },
+    ];
+
+    // Funipara lidar com a linha selecionada
+    const handleRowSelected = (state: { selectedRows: string | any[]; }) => {
+        if (state.selectedRows.length > 0) {
+            const lastSelectedRow = state.selectedRows[state.selectedRows.length - 1];
+            setSelectedRow(lastSelectedRow);
+            selectEntity(lastSelectedRow);
+        } else {
+            setSelectedRow(null);
+            setSelectedEntity(null);
+            clearFormData();
+        }
+    };    
+
+    // Opções de paginação da tabela com troca de EN para PT
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
+    };
+
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
@@ -309,7 +344,7 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         if (profileImageFile) {
             dataToSend.append('Logotipo', profileImageFile);
         } else if (deviceImage && typeof deviceImage === 'string') {
-            const relativePath = deviceImage.replace(apiService.baseURL, '');
+            const relativePath = deviceImage.replace(apiService.baseURL || '', '');
             dataToSend.append('Logotipo', relativePath);
         }
 
@@ -326,22 +361,21 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                 <Form style={{ display: 'flex' }}>
                     <Row style={{ flex: 1.5 }}>
                         <Col md={12}>
-                            <Table striped bordered hover size="md">
-                                <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>NIF</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {entities.map((ent, index) => (
-                                        <tr key={index} onClick={() => selectEntity(ent)} style={{ cursor: 'pointer' }}>
-                                            <td>{ent.nome}</td>
-                                            <td>{ent.nif}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
+                            <DataTable
+                                columns={columns}
+                                data={entities}
+                                customStyles={customStyles}
+                                noHeader
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={5}
+                                paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                selectableRowsHighlight
+                                selectableRowsNoSelectAll={true}
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                            />
                             <div style={{ display: 'flex' }}>
                                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(selectedEntity?.id)}>
                                     <i className="bi bi-trash-fill"></i>

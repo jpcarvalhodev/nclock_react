@@ -147,7 +147,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         if (localStorage.getItem('token')) {
             fetchAllAttendances();
         }
-    }, []);
+    }, [localStorage.getItem('token')]);
 
     // Definindo o valor do contexto
     const contextValue = {

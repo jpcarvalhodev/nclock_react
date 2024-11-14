@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import { EmailUser } from '../helpers/Types';
+import { KioskConfig } from '../helpers/Types';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -20,37 +20,35 @@ interface FieldConfig {
 interface Props<T> {
     open: boolean;
     onClose: () => void;
-    onSave: (emailFormData: Partial<EmailUser>) => Promise<void>;
-    onUpdate: (emailFormData: Partial<EmailUser>) => Promise<void>;
+    onSave: (kioskFormData: Partial<KioskConfig>) => Promise<void>;
+    onUpdate: (kioskFormData: Partial<KioskConfig>) => Promise<void>;
     entity: T;
     fields: FieldConfig[];
     title: string;
 }
 
-export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
-    const [emailFormData, setEmailFormData] = useState<Partial<EmailUser>>({ ...entity });
+export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
+    const [kioskFormData, setKioskFormData] = useState<Partial<KioskConfig>>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
         if (entity) {
-            const emailData: Partial<EmailUser> = {
-                enableSSL: entity.enableSSL,
-                hostSMTP: entity.hostSMTP,
-                passwordEmail: entity.passwordEmail,
-                portSMTP: entity.portSMTP,
-                usernameEmail: entity.usernameEmail
+            const kioskData: Partial<KioskConfig> = {
+                amount: entity.amount,
+                totalMoedas: entity.totalMoedas,
+                emails: entity.emails
             };
 
-            setEmailFormData(emailData);
+            setKioskFormData(kioskData);
         }
     }, [entity]);
 
     // Limpa os dados do formulário quando o modal é fechado
     useEffect(() => {
         if (!open) {
-            setEmailFormData({});
+            setKioskFormData({});
         }
     }, [open]);
 
@@ -59,7 +57,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         const newErrors: Record<string, string> = {};
 
         const isValid = fields.every(field => {
-            const fieldValue = emailFormData[field.key];
+            const fieldValue = kioskFormData[field.key];
             let valid = true;
 
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
@@ -75,12 +73,12 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         setErrors(newErrors);
         setIsFormValid(isValid);
         validateForm();
-    }, [emailFormData, fields]);
+    }, [kioskFormData, fields]);
 
     // Função para validar o formulário
     const validateForm = () => {
         const isValid = fields.every(field => {
-            const fieldValue = emailFormData?.[field.key];
+            const fieldValue = kioskFormData?.[field.key];
             if (field.required) {
                 if (typeof fieldValue === 'string') {
                     return fieldValue.trim() !== '';
@@ -99,9 +97,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         const { name, value, type, dataset } = target;
         let parsedValue: string | number | boolean | string[];
 
-        if (name === "emails") {
-            parsedValue = value.split(',').map(email => email.trim());        
-        } else if (type === 'checkbox') {
+        if (type === 'checkbox') {
             parsedValue = target.checked;
         } else if (type === 'number') {
             parsedValue = Number(value);
@@ -109,14 +105,14 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             parsedValue = value;
         }
 
-        const formType = dataset.formType as 'email';
-        if (formType === 'email') {
-            setEmailFormData(prevState => ({
+        const formType = dataset.formType as 'kiosk';
+        if (formType === 'kiosk') {
+            setKioskFormData(prevState => ({
                 ...prevState,
                 [name]: parsedValue
             }));
-        }
-    };
+        };
+    }
 
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
@@ -124,7 +120,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onSave(emailFormData as EmailUser);
+        onSave(kioskFormData as KioskConfig);
         onClose();
     };
 
@@ -134,7 +130,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onUpdate(emailFormData as EmailUser);
+        onUpdate(kioskFormData as KioskConfig);
         onClose();
     }
 
@@ -145,103 +141,72 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
-                    <Tab.Container defaultActiveKey="configEmail">
+                    <Tab.Container defaultActiveKey="configKiosk">
                         <Nav variant="tabs" className="nav-modal">
                             <Nav.Item>
-                                <Nav.Link eventKey="configEmail">Configuração E-Mails</Nav.Link>
+                                <Nav.Link eventKey="configKiosk">Configuração Quiosque</Nav.Link>
                             </Nav.Item>
                         </Nav>
                         <Tab.Content>
-                            <Tab.Pane eventKey="configEmail">
+                            <Tab.Pane eventKey="configKiosk">
                                 <Form style={{ marginTop: 10, marginBottom: 10, display: 'flex' }}>
                                     <Row style={{ flex: 1.5 }}>
                                         <Col md={6}>
-                                            <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between mt-3'>
-                                                <Form.Label>Activar SSL:</Form.Label>
-                                                <Form.Check
-                                                    type="switch"
-                                                    name="enableSSL"
-                                                    checked={!!emailFormData.enableSSL}
-                                                    onChange={handleChange}
-                                                    data-form-type="email"
-                                                />
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group controlId="formUsernameEmail">
-                                                <Form.Label>E-Mail do Utilizador <span style={{ color: 'red' }}>*</span></Form.Label>
+                                            <Form.Group controlId="formAmount">
+                                                <Form.Label>Valor <span style={{ color: 'red' }}>*</span></Form.Label>
                                                 <OverlayTrigger
                                                     placement="right"
-                                                    overlay={<Tooltip id="tooltip-usernameEmail">Campo obrigatório</Tooltip>}
+                                                    overlay={<Tooltip id="tooltip-amount">Campo obrigatório</Tooltip>}
                                                 >
                                                     <Form.Control
                                                         className="custom-input-height custom-select-font-size"
-                                                        type="text"
-                                                        name="usernameEmail"
-                                                        value={emailFormData.usernameEmail || ''}
+                                                        type="number"
+                                                        name="amount"
+                                                        value={kioskFormData.amount || ''}
                                                         onChange={handleChange}
-                                                        data-form-type="email"
+                                                        data-form-type="kiosk"
                                                     />
                                                 </OverlayTrigger>
-                                                {errors.usernameEmail && <Form.Text className="text-danger">{errors.usernameEmail}</Form.Text>}
+                                                {errors.amount && <Form.Text className="text-danger">{errors.amount}</Form.Text>}
                                             </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group controlId="formPasswordEmail">
-                                                <Form.Label>Password do E-Mail <span style={{ color: 'red' }}>*</span></Form.Label>
+                                            <Form.Group controlId="formTotalMoedas">
+                                                <Form.Label>Total Moedas <span style={{ color: 'red' }}>*</span></Form.Label>
                                                 <OverlayTrigger
                                                     placement="right"
-                                                    overlay={<Tooltip id="tooltip-passwordEmail">Campo obrigatório</Tooltip>}
+                                                    overlay={<Tooltip id="tooltip-totalMoedas">Campo obrigatório</Tooltip>}
                                                 >
                                                     <Form.Control
                                                         className="custom-input-height custom-select-font-size"
-                                                        type="password"
-                                                        name="passwordEmail"
-                                                        value={emailFormData.passwordEmail || ''}
+                                                        type="number"
+                                                        name="totalMoedas"
+                                                        value={kioskFormData.totalMoedas || ''}
                                                         onChange={handleChange}
-                                                        data-form-type="email"
+                                                        data-form-type="kiosk"
                                                     />
                                                 </OverlayTrigger>
-                                                {errors.passwordEmail && <Form.Text className="text-danger">{errors.passwordEmail}</Form.Text>}
+                                                {errors.totalMoedas && <Form.Text className="text-danger">{errors.totalMoedas}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                         <Col md={6}>
-                                            <Form.Group controlId="formHostSMTP">
-                                                <Form.Label>Servidor SMTP <span style={{ color: 'red' }}>*</span></Form.Label>
+                                            <Form.Group controlId="formEmails">
+                                                <Form.Label>E-Mails <span style={{ color: 'red' }}>*</span></Form.Label>
                                                 <OverlayTrigger
                                                     placement="right"
-                                                    overlay={<Tooltip id="tooltip-hostSMTP">Campo obrigatório</Tooltip>}
+                                                    overlay={<Tooltip id="tooltip-emails">Digite os e-mails separados por vírgula.</Tooltip>}
                                                 >
                                                     <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className="textarea custom-select-font-size"
                                                         type="email"
-                                                        name="hostSMTP"
-                                                        value={emailFormData.hostSMTP || ''}
+                                                        as="textarea"
+                                                        name="emails"
+                                                        value={kioskFormData.emails?.join(', ').replace(/,\s+/g, ',').replace(/\s+,/g, ',')}
                                                         onChange={handleChange}
-                                                        data-form-type="email"
+                                                        data-form-type="kiosk"
+                                                        multiple
+                                                        rows={4}
                                                     />
                                                 </OverlayTrigger>
-                                                {errors.hostSMTP && <Form.Text className="text-danger">{errors.hostSMTP}</Form.Text>}
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group controlId="formPortSMTP">
-                                                <Form.Label>Porta SMTP <span style={{ color: 'red' }}>*</span></Form.Label>
-                                                <OverlayTrigger
-                                                    placement="right"
-                                                    overlay={<Tooltip id="tooltip-portSMTP">Campo obrigatório</Tooltip>}
-                                                >
-                                                    <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
-                                                        type='text'
-                                                        name="portSMTP"
-                                                        value={emailFormData.portSMTP || ''}
-                                                        onChange={handleChange}
-                                                        data-form-type="email"
-                                                    >
-                                                    </Form.Control>
-                                                </OverlayTrigger>
-                                                {errors.portSMTP && <Form.Text className="text-danger">{errors.portSMTP}</Form.Text>}
+                                                {errors.emails && <Form.Text className="text-danger">{errors.emails}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                     </Row>

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Button, Form, Row, Col, Table, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
-import * as apiService from "../helpers/apiService";
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import DataTable from 'react-data-table-component';
+import { customStyles } from '../components/CustomStylesDataTable';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -36,22 +37,23 @@ interface Props<T> {
 // Define o componente
 export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
     const {
+        fetchAllEmployees,
+        fetchAllDepartments,
+        fetchAllGroups,
         handleAddEmployee,
         handleAddEmployeeCard,
         handleUpdateEmployee,
         handleUpdateEmployeeCard,
     } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
-    const [departments, setDepartments] = useState<Department[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const [selectedDepartment, setSelectedDepartment] = useState<string>('');
+    const [employeeData, setEmployeeData] = useState<Employee[]>([]);
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showUpdateEmployeeModal, setShowUpdateEmployeeModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-    const [groups, setGroups] = useState<Group[]>([]);
-    const [selectedGroup, setSelectedGroup] = useState<string>('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -79,34 +81,6 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         setIsFormValid(isValid);
     }, [formData, fields]);
 
-    // Usa useEffect para buscar os dados de departamento/grupo
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    // Função para buscar os dados de departamento/grupo
-    const fetchData = async () => {
-        const isDepartment = entityType === 'department';
-        try {
-            const data = isDepartment ? await apiService.fetchAllDepartmentsEmployees() : await apiService.fetchAllGroupsEmployees();
-            const items = data.map((item: Department | Group) => ({
-                ...item,
-                code: (item.code)
-            }));
-
-            if (isDepartment) {
-                setDepartments(items as Department[]);
-            } else {
-                setGroups(items as Group[]);
-            }
-
-            const nextCode = items.reduce((max: number, item: Department | Group) => Math.max(max, item.code), 0) + 1;
-            setFormData(prev => ({ ...prev, code: nextCode }));
-        } catch (error) {
-            console.error(`Erro ao buscar ${isDepartment ? 'departamentos' : 'grupos'}:`, error);
-        }
-    };
-
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
         await handleAddEmployee(employee as Employee);
@@ -115,10 +89,14 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             employeeId: employee.employeeID
         };
         await handleAddEmployeeCard(employeeCard as EmployeeCard);
-        fetchData();
+        if (entityType === 'department') {
+            fetchAllDepartments();
+        } else {
+            fetchAllGroups();
+        }
         setShowEmployeeModal(false);
     }
- 
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
         await handleUpdateEmployee(employee);
@@ -133,7 +111,11 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 await handleAddEmployeeCard(employeeCard as EmployeeCard);
             }
         }
-        fetchData();
+        if (entityType === 'department') {
+            fetchAllDepartments();
+        } else {
+            fetchAllGroups();
+        }
         setShowUpdateEmployeeModal(false);
     }
 
@@ -145,35 +127,50 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
     // Função para lidar com a seleção de um departamento
     const handleDepartmentClick = (departmentID: string) => {
-        setSelectedDepartment(departmentID);
-        const selectedDept = departments.find(dept => dept.departmentID === departmentID);
-        if (selectedDept && selectedDept.employees) {
-            setEmployees(selectedDept.employees);
+        const selectedDept = dropdownData.departments.find(dept => dept.departmentID === departmentID);
+        if (selectedDept) {
+            const deptEmployees = employees.filter(emp => emp.departmentId === departmentID);
+            setEmployeeData(deptEmployees);
+        } else {
+            setEmployeeData([]);
         }
     };
 
     // Função para lidar com a seleção de um grupo
     const handleGroupClick = (groupID: string) => {
-        setSelectedGroup(groupID);
-        const selectedGroup = groups.find(grp => grp.groupID === groupID);
-        if (selectedGroup && selectedGroup.employees) {
-            setEmployees(selectedGroup.employees);
+        const selectedGroup = dropdownData.groups.find(grp => grp.groupID === groupID);
+        if (selectedGroup) {
+            const grpEmployees = employees.filter(emp => emp.groupId === groupID);
+            setEmployeeData(grpEmployees);
+        } else {
+            setEmployeeData([]);
         }
     };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
+        const isDepartment = entityType === 'department';
         try {
-            const departments = await apiService.fetchAllDepartments();
-            const groups = await apiService.fetchAllGroups();
+            const departments = await fetchAllDepartments();
+            const groups = await fetchAllGroups();
+            const employee = await fetchAllEmployees();
 
+            setEmployees(employee);
             setDropdownData({
                 departments: departments,
                 groups: groups
             });
+
+            const items = departments.map((item: Department) => ({
+                ...item,
+                code: (item.code)
+            }));
+
+            const nextCode = items.reduce((max: number, item: Department) => Math.max(max, item.code), 0) + 1;
+            setFormData(prev => ({ ...prev, code: nextCode }));
         } catch (error) {
             toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
-            console.error(error);
+            console.error(`Erro ao buscar ${isDepartment ? 'departamentos' : 'grupos'}:`, error);
         }
     };
 
@@ -213,6 +210,78 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             ...prev,
             [name]: parsedValue
         }));
+    };
+
+    // Define as colunas para os departamentos
+    const departmentColumns = [
+        {
+            id: 'code',
+            name: 'Código',
+            selector: (row: Partial<Department>) => row.code || '',
+            sortable: true,
+        },
+        {
+            name: 'Nome',
+            selector: (row: Partial<Department>) => row.name || '',
+            sortable: true,
+        }
+    ];
+
+    // Define as colunas para os grupos
+    const groupColumns = [
+        {
+            id: 'name',
+            name: 'Nome',
+            selector: (row: Partial<Group>) => row.name || '',
+            sortable: true,
+        },
+        {
+            name: 'Descrição',
+            selector: (row: Partial<Group>) => row.description || '',
+            sortable: true,
+        }
+    ];
+
+    // Define as colunas para os funcionários
+    const employeeColumns = [
+        {
+            id: 'enrollNumber',
+            name: 'Número',
+            selector: (row: Partial<Employee>) => row.enrollNumber || '',
+            sortable: true,
+        },
+        {
+            name: 'Nome',
+            selector: (row: Partial<Employee>) => row.name || '',
+            sortable: true,
+        }
+    ];
+
+    // Funipara lidar com a linha selecionada
+    const handleRowSelected = (state: { selectedRows: string | any[] }) => {
+        if (state.selectedRows.length > 0) {
+            const lastSelectedRow = state.selectedRows[state.selectedRows.length - 1];
+            setSelectedRow(lastSelectedRow);
+            if (entityType === 'department') {
+                handleDepartmentClick(lastSelectedRow?.departmentID);
+            } else {
+                setSelectedRow(null);
+            }
+            if (entityType === 'group') {
+                handleGroupClick(lastSelectedRow?.groupID);
+            } else {
+                setSelectedRow(null);
+            }
+        } else {
+            setSelectedRow(null);
+            setEmployeeData([]);
+        }
+    };
+
+    // Opções de paginação da tabela com troca de EN para PT
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
     };
 
     // Função para lidar com o clique no botão de guardar
@@ -344,43 +413,44 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                             </Row>
                             <h5 style={{ marginTop: 20 }}>{entityType === 'department' ? 'Departamentos' : 'Grupos'}</h5>
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
-                                <Table striped bordered hover size="sm">
-                                    <thead>
-                                        <tr>
-                                            <th>{entityType === 'department' ? 'Código' : 'Nome'}</th>
-                                            <th>{entityType === 'department' ? 'Nome' : 'Descrição'}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {(entityType === 'department' ? departments : groups).map(item => (
-                                            <tr key={item[`${entityType}ID`]} onClick={() => entityType === 'department' ? handleDepartmentClick(item.departmentID) : handleGroupClick(item.groupID)}>
-                                                <td>{entityType === 'department' ? item.code : item.name}</td>
-                                                <td>{entityType === 'department' ? item.name : item.description}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </Table>
+                                <DataTable
+                                    columns={entityType === 'department' ? departmentColumns : groupColumns}
+                                    data={entityType === 'department' ? dropdownData.departments : dropdownData.groups}
+                                    customStyles={customStyles}
+                                    noHeader
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={5}
+                                    paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    selectableRowsHighlight
+                                    selectableRowsNoSelectAll={true}
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId={entityType === 'department' ? 'code' : 'name'}
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                />
                             </div>
                         </Col>
                         <Col md={7}>
                             <h5>Funcionários</h5>
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
-                                <Table striped bordered hover size="sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Número de Matrícula</th>
-                                            <th>Nome</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {employees.map(emp => (
-                                            <tr key={emp.employeeID} onDoubleClick={() => handleEmployeeClick(emp)}>
-                                                <td>{emp.enrollNumber}</td>
-                                                <td>{emp.name}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </Table>
+                                <DataTable
+                                    columns={employeeColumns}
+                                    data={employeeData}
+                                    customStyles={customStyles}
+                                    noHeader
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={5}
+                                    paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                                    onRowDoubleClicked={handleEmployeeClick}
+                                    selectableRows
+                                    selectableRowsNoSelectAll={true}
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId='enrollNumber'
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                />
                             </div>
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
                         </Col>

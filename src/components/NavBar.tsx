@@ -171,6 +171,7 @@ import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
 import { EntityModal } from '../modals/EntityModal';
 import { usePersons } from '../context/PersonsContext';
+import { KioskOptionsModal } from '../modals/KioskOptions';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -355,6 +356,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showPhotoAdsModal, setShowPhotoAdsModal] = useState(false);
 	const [showVideoAdsModal, setShowVideoAdsModal] = useState(false);
 	const [showEmailModal, setShowEmailModal] = useState(false);
+	const [showKioskModal, setShowKioskModal] = useState(false);
 	const [emailCompanyConfig, setEmailCompanyConfig] = useState<EmailUser>();
 	const [visibleGroup, setVisibleGroup] = useState<string | null>(null);
 	const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -464,43 +466,60 @@ export const NavBar = ({ style }: NavBarProps) => {
 	}
 
 	// Função para adicionar emails de utilizadores
-	const handleAddEmailConfig = async (email: Partial<EmailUser>, kioskConfig: Partial<KioskConfig>) => {
+	const handleAddEmailConfig = async (email: Partial<EmailUser>) => {
 		try {
 			if (email && Object.keys(email).length > 0) {
 				const data = await apiService.addUserEmailConfig(email);
 				setEmailCompanyConfig(data);
 				toast.success(data.message || 'Email adicionado com sucesso!');
 			}
+		} catch (error) {
+			console.error('Erro ao adicionar o email registado ou o quiosque:', error);
+		} finally {
+			fetchEmailConfig();
+		}
+	}
+	// Função para adicionar configurações de quiosque
+	const handleAddKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
+		try {
 			if (kioskConfig && Object.keys(kioskConfig).length > 0) {
 				const data = await apiService.addKioskConfig(kioskConfig);
 				setKioskConfig(data);
 				toast.success(data.message || 'Configurações do quiosque adicionadas com sucesso!');
 			}
 		} catch (error) {
-			console.error('Erro ao adicionar o email registado ou o quiosque:', error);
+			console.error('Erro ao adicionar as configurações do quiosque:', error);
 		} finally {
-			fetchEmailConfig();
 			fetchKioskConfig();
 		}
 	}
 
-	// Função de atualização de emails de utilizadores e as configurações da empresa
-	const handleUpdateEmailConfig = async (email: Partial<EmailUser>, kioskConfig: Partial<KioskConfig>) => {
+	// Função de atualização de emails de utilizadores
+	const handleUpdateEmailConfig = async (email: Partial<EmailUser>) => {
 		try {
 			if (email && Object.keys(email).length > 0) {
 				const data = await apiService.updateUserEmailConfig(email);
 				setEmailCompanyConfig(data);
 				toast.success(data.message || 'Email atualizado com sucesso!');
 			}
+		} catch (error) {
+			console.error('Erro ao atualizar o email registado ou o quiosque:', error);
+		} finally {
+			fetchEmailConfig();
+		}
+	}
+
+	// Função de atualização de configurações do quiosque
+	const handleUpdateKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
+		try {
 			if (kioskConfig && Object.keys(kioskConfig).length > 0) {
 				const data = await apiService.updateKioskConfig(kioskConfig);
 				setKioskConfig(data);
 				toast.success(data.message || 'Configurações do quiosque atualizadas com sucesso!');
 			}
 		} catch (error) {
-			console.error('Erro ao atualizar o email registado ou o quiosque:', error);
+			console.error('Erro ao atualizar as configurações do quiosque:', error);
 		} finally {
-			fetchEmailConfig();
 			fetchKioskConfig();
 		}
 	}
@@ -537,12 +556,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		fetchCompanyConfig();
 		fetchKioskConfig();
 	}, []);
-
-	// Combinação das configurações de email e dos quiosques
-	const combinedConfig = {
-		...emailCompanyConfig,
-		...kioskConfig
-	};
 
 	// Verificar se a tela é mobile
 	const checkIfMobile = () => {
@@ -1567,6 +1580,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para abrir o modal de opções de email
 	const toggleEmailOptionsModal = () => setShowEmailModal(!showEmailModal);
 
+	// Função para abrir o modal de opções de kiosk
+	const toggleKioskOptionsModal = () => setShowKioskModal(!showKioskModal);
+
 	// Função para abrir o modal de publicidade para fotos
 	const togglePhotoAdsModal = () => setShowPhotoAdsModal(!showPhotoAdsModal);
 
@@ -1597,7 +1613,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para buscar o user logado e a imagem do perfil
 	const findUser = registeredUsers.find(user => user.userName === localStorage.getItem('username'));
-	const userImage = findUser?.profileImage ? `${apiService.baseURL.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
+	const userImage = findUser?.profileImage ? `${apiService.baseURL?.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
 
 	// Função para fechar o modal de licenças
 	const handleCloseLicenseModal = () => {
@@ -2957,6 +2973,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 										<span className="title">Módulos</span>
 									</div>
 								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'opcoes nkiosk') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button onClick={toggleKioskOptionsModal} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('opcoes nkiosk')}>
+										<span className="title">Opções</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -3626,9 +3659,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 						onClose={() => setShowEmailModal(false)}
 						onSave={handleAddEmailConfig}
 						onUpdate={handleUpdateEmailConfig}
-						entity={combinedConfig || {}}
-						fields={emailFields || kioskConfigFields}
-						title='Opções de Email e Quiosque'
+						entity={emailCompanyConfig}
+						fields={emailFields}
+						title='Opções de Email'
+					/>
+				)}
+				{showKioskModal && (
+					<KioskOptionsModal
+						open={showKioskModal}
+						onClose={() => setShowKioskModal(false)}
+						onSave={handleAddKioskConfig}
+						onUpdate={handleUpdateKioskConfig}
+						entity={kioskConfig}
+						fields={kioskConfigFields}
+						title='Opções de Quiosque'
 					/>
 				)}
 				{showPhotoAdsModal && (

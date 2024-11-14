@@ -256,6 +256,7 @@ export const Categories = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
+                        selectableRows
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

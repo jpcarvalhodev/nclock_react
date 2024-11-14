@@ -110,20 +110,44 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
         if (name.includes('.')) {
             const [productName, productProperty] = name.split('.');
+            let parsedValue: string | number | boolean | null = value;
+
+            if (type === 'checkbox') {
+                parsedValue = checked;
+            } else if (type === 'number') {
+                parsedValue = Number(value) || defaultValueFor(productProperty);
+            } else if (productProperty === 'sn') {
+                parsedValue = value.replace(/\s+/g, '');
+            } else {
+                parsedValue = value || defaultValueFor(productProperty);
+            }
+
             setFormData(prevState => ({
                 ...prevState,
                 [productName]: {
                     ...prevState[productName],
-                    [productProperty]: type === 'checkbox' ? checked : (value === '' ? defaultValueFor(productProperty) : value)
+                    [productProperty]: parsedValue
                 }
             }));
         } else {
+            let parsedValue: string | number | boolean | null = value;
+
+            if (type === 'checkbox') {
+                parsedValue = checked;
+            } else if (type === 'number') {
+                parsedValue = Number(value) || defaultValueFor(name);
+            } else if (name === 'sn') {
+                parsedValue = value.replace(/\s+/g, '');
+            } else {
+                parsedValue = value || defaultValueFor(name);
+            }
+
             setFormData(prevState => ({
                 ...prevState,
-                [name]: type === 'checkbox' ? checked : value
+                [name]: parsedValue
             }));
         }
-    };
+    }
 
     // Função para definir valores padrões com base no tipo de campo
     const defaultValueFor = (property: string) => {

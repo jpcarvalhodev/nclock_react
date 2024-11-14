@@ -270,6 +270,7 @@ export const TimePeriods = () => {
                                 pagination
                                 paginationComponentOptions={paginationOptions}
                                 paginationPerPage={15}
+                                selectableRows
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
                             />

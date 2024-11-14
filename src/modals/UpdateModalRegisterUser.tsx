@@ -46,7 +46,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     useEffect(() => {
         if (entity) {
             setFormData({ ...entity });
-            const imageURL = entity.profileImage ? `${apiService.baseURL.slice(0, -1)}${entity.profileImage}` : modalAvatar;
+            const imageURL = entity.profileImage ? `${apiService.baseURL?.slice(0, -1)}${entity.profileImage}` : modalAvatar;
             setProfileImage(imageURL);
         } else {
             setProfileImage(modalAvatar);
@@ -57,19 +57,23 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     // Usa useEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
+        let isValid = true;
 
-        const isValid = fields.every(field => {
+        fields.forEach(field => {
             const fieldValue = formData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
+            if (field.required && (fieldValue === null || fieldValue === '')) {
+                isValid = false;
             }
+
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
+                isValid = false;
             }
 
-            return valid;
+            if (field.key === 'password' && fieldValue) {
+                if (!validatePassword(fieldValue)) {
+                    newErrors[field.key] = 'Obrigatório a password ter 8 caracteres, uma letra maiúscula e um caractere especial';
+                }
+            }
         });
 
         setErrors(newErrors);
@@ -93,6 +97,12 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         setFormData({ ...formData, profileImage: '' });
     };
 
+    // Função para validar a senha
+    const validatePassword = (password: string): boolean => {
+        const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])/;
+        return regex.test(password);
+    };
+
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const target = e.target as HTMLInputElement;
@@ -104,7 +114,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         } else if (type === 'number') {
             parsedValue = Number(value);
         } else {
-            parsedValue = value;
+            parsedValue = name === 'userName' ? value.replace(/\s+/g, '') : value;
         }
         setFormData(prevState => ({
             ...prevState,
@@ -146,7 +156,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         } else if (profileImage === modalAvatar) {
             dataToSend.append('ProfileImage', '');
         } else if (profileImage && typeof profileImage === 'string') {
-            const relativePath = profileImage.replace(apiService.baseURL, '');
+            const relativePath = profileImage.replace(apiService.baseURL || '', '');
             dataToSend.append('ProfileImage', relativePath);
         }
 
@@ -231,7 +241,9 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                     value={formData.password || ''}
                                     onChange={handleChange}
                                     autoComplete='off'
+                                    minLength={8}
                                 />
+                                {errors.password && <Form.Text className="text-danger">{errors.password}</Form.Text>}
                             </Form.Group>
                         </Col>
                         <Col md={3}>

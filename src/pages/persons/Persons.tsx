@@ -152,7 +152,7 @@ export const Persons = () => {
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                                    <ExportButton allData={employees} selectedData={filteredData} fields={employeeFields.map(field => ({ key: field.key, label: field.label }))} />
+                                    <ExportButton allData={employees} selectedData={filteredData} fields={employeeFields} />
                                     <PrintButton data={employees} fields={employeeFields} />
                                 </div>
                             </div>

@@ -224,6 +224,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         return row.externalEntityName || '';
                     case 'photo':
                         return row.photo ? 'Imagem disponível' : 'Sem imagem';
+                    case 'statusFprint':
+                        return row.statusFprint ? 'Activo' : 'Inactivo';
+                    case 'statusFace':
+                        return row.statusFprint ? 'Activo' : 'Inactivo';
+                    case 'statusPalm':
+                        return row.statusFprint ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key] || '';
                 }
@@ -239,16 +245,16 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 ),
                 selector: (row: Employee) => {
                     if (field.key === 'enrollNumber') {
-                        return row[field.key] ?? '';
+                        return parseInt(row.enrollNumber) || 0;
                     }
-                    return formatField(row);
+                    return row[field.key] || '';
                 },
                 sortable: true,
                 cell: (row: Employee) => {
                     if (field.key === 'enrollNumber') {
                         return row[field.key] ?? '';
                     }
-                    return formatField(row);
+                    return row[field.key] || '';
                 }
             };
         });

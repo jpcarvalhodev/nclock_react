@@ -18,7 +18,6 @@ import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
 import * as apiService from "../../helpers/apiService";
 import { useColor } from '../../context/ColorContext';
-import { id } from 'date-fns/locale';
 import { PrintButton } from '../../components/PrintButton';
 
 // Define a interface para os filtros
@@ -32,7 +31,7 @@ export const Departments = () => {
     const [departments, setDepartments] = useState<Department[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'name']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'name', 'description']);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
@@ -146,7 +145,7 @@ export const Departments = () => {
 
     // Reseta as colunas
     const resetColumns = () => {
-        setSelectedColumns(['code', 'name']);
+        setSelectedColumns(['code', 'name', 'description']);
     };
 
     // Seleciona todas as colunas
@@ -298,6 +297,7 @@ export const Departments = () => {
                         pagination
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
+                        selectableRows
                         expandableRows
                         expandableRowsComponent={(props) => (
                             <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />

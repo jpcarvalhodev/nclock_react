@@ -306,6 +306,7 @@ export const ExternalEntities = () => {
                         paginationPerPage={15}
                         pagination
                         paginationComponentOptions={paginationOptions}
+                        selectableRows
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."
