@@ -339,7 +339,7 @@ export const NdoorDashboard = () => {
                 <div className="dashboard-carousel-container">
                     <h3 className="dashboard-title-text-inside">Software Ndoor - Portas e Automatismos</h3>
                     <p className="dashboard-text-inside">
-                        O Ndoor é um software de controlo de assiduidade, desenvolvido para responder às grandes necessidades da esfera de recursos humanos de uma entidade corporativa. Ele permite-lhe:
+                        O Ndoor é um software de controlo de acessos, desenvolvido para responder às grandes necessidades da esfera de recursos humanos de uma entidade corporativa. Ele permite-lhe:
                     </p>
                     <p>- Gerir, de forma otimizada, os acessos através de portas , grades e abrigos;</p>
                     <p>- Manusear facil e intuitivamente a interface;</p>
