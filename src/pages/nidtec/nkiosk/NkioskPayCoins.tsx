@@ -172,6 +172,22 @@ export const NkioskPayCoins = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredDevices.filter(payCoin =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (payCoin[key] != null && String(payCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(payCoin).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
+    );
+
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
@@ -201,7 +217,7 @@ export const NkioskPayCoins = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={payCoins} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -209,27 +225,6 @@ export const NkioskPayCoins = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.timestamp).getTime() - new Date(rowA.timestamp).getTime()
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = filteredDevices.filter(payCoin =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (payCoin[key] != null && String(payCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(payCoin).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
-
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable = Array.from(
-        new Map(filteredDataTable.map(item => [item.id, item])).values()
-    );
 
     // Calcula o total do valor dos pagamentos
     const totalAmount = filteredDataTable.length * 0.50;
@@ -299,7 +294,7 @@ export const NkioskPayCoins = () => {
                             <div className='table-css'>
                                 <DataTable
                                     columns={columns}
-                                    data={uniqueFilteredDataTable}
+                                    data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     paginationPerPage={15}

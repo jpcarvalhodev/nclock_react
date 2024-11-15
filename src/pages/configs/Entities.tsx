@@ -5,50 +5,107 @@ import { useColor } from "../../context/ColorContext";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { useEffect, useState } from "react";
-import { registerFields } from "../../helpers/Fields";
 import { customStyles } from "../../components/CustomStylesDataTable";
-import { Register } from "../../helpers/Types";
+import * as apiService from "../../helpers/apiService";
+import { Entity } from "../../helpers/Types";
+import { toast } from "react-toastify";
 import { SelectFilter } from "../../components/SelectFilter";
-import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
-import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
-import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { Button } from "react-bootstrap";
 import { DeleteModal } from "../../modals/DeleteModal";
-import { usePersons } from "../../context/PersonsContext";
+import { entityFields } from "../../helpers/Fields";
+import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
+import { CreateEntityModal } from "../../modals/CreateEntityModal";
+import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
 
-export const NewUsers = () => {
+export const Entities = () => {
     const { navbarColor, footerColor } = useColor();
-    const { registeredUsers, fetchAllRegisteredUsers, handleAddUsers, handleUpdateUser, handleDeleteUser } = usePersons();
+    const [entityData, setEntityData] = useState<Entity[]>([]);
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'userName', 'emailAddress', 'roles']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nome', 'nif', 'email', 'enabled']);
     const [filterText, setFilterText] = useState("");
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<Register | null>(null);
-    const [selectedUserToDelete, setSelectedUserToDelete] = useState<string | null>(null);
+    const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+    const [selectedEntityToDelete, setSelectedEntityToDelete] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    // Função para carregar os dados das entidades
+    const fetchCompanyConfig = async () => {
+        try {
+            const data = await apiService.fetchAllCompanyConfig();
+            if (Array.isArray(data)) {
+                setEntityData(data);
+            } else {
+                setEntityData([]);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar os empresas:', error);
+        }
+    }
+
+    // Função para adicionar os dados da entidade
+    const handleAddCompanyData = async (entityData: FormData) => {
+        try {
+            const data = await apiService.addCompanyConfig(entityData);
+            if (Array.isArray(data)) {
+                setEntityData(data);
+            }
+            toast.success(data.value || 'Dados da empresa adicionados com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar os dados da empresa:', error);
+        } finally {
+            fetchCompanyConfig();
+        }
+    }
+
+    // Função para atualizar os dados da entidade
+    const handleUpdateCompanyData = async (entityData: FormData) => {
+        try {
+            const data = await apiService.updateCompanyConfig(entityData);
+            if (Array.isArray(data)) {
+                setEntityData(data);
+            }
+            toast.success(data.value || 'Dados da empresa atualizados com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar os dados da empresa:', error);
+        } finally {
+            fetchCompanyConfig();
+        }
+    }
+
+    // Função para apagar os dados da entidade
+    const handleDeleteCompanyData = async (id: string) => {
+        try {
+            const data = await apiService.deleteCompanyConfig(id);
+            toast.success(data.value || 'Dados da empresa apagados com sucesso!');
+        } catch (error) {
+            console.error('Erro ao apagar os dados da empresa:', error);
+        } finally {
+            fetchCompanyConfig();
+        }
+    }
 
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
-        fetchAllRegisteredUsers();
+        fetchCompanyConfig();
     }, []);
 
-    // Função para atualizar os utilizadores
-    const refreshUsers = () => {
-        fetchAllRegisteredUsers();
+    // Função para atualizar as entidade
+    const refreshEntity = () => {
+        fetchCompanyConfig();
     };
 
-    // Função para editar um utilizador
-    const handleEditUsers = (User: Register) => {
-        setSelectedUser(User);
+    // Função para editar uma entidade
+    const handleEditEntity = (User: Entity) => {
+        setSelectedEntity(User);
         setShowUpdateModal(true);
     };
 
-    // Fecha o modal de edição de utilizadores
+    // Fecha o modal de edição de entidade
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
-        setSelectedUser(null);
+        setSelectedEntity(null);
     };
 
     // Função para selecionar as colunas
@@ -62,7 +119,7 @@ export const NewUsers = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['name', 'userName', 'emailAddress', 'roles']);
+        setSelectedColumns(['createdDate', 'nome', 'nif', 'email', 'enabled']);
     };
 
     // Função para selecionar todas as colunas
@@ -70,9 +127,14 @@ export const NewUsers = () => {
         setSelectedColumns(allColumnKeys);
     };
 
-    // Define a abertura do modal de apagar controle de acesso
+    // Define o componente de linha expandida
+    const expandableRowComponent = (row: Entity) => (
+        <ExpandedComponentEmpZoneExtEnt data={row} fields={entityFields} />
+    );
+
+    // Define a abertura do modal de apagar entidade
     const handleOpenDeleteModal = (id: string) => {
-        setSelectedUserToDelete(id);
+        setSelectedEntityToDelete(id);
         setShowDeleteModal(true);
     };
 
@@ -82,31 +144,28 @@ export const NewUsers = () => {
         rangeSeparatorText: 'de',
     };
 
-    // Define o componente de linha expandida
-    const expandableRowComponent = (row: Register) => (
-        <ExpandedComponentEmpZoneExtEnt data={row} fields={registerFields} />
-    );
-
     // Filtra os dados da tabela
-    const filteredDataTable = registeredUsers.filter(user =>
+    const filteredDataTable = entityData.filter(user =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(user[key]) === String(filters[key])
         )
     );
 
-    const excludedColumns = ['id', 'password', 'confirmPassword'];
+    const excludedColumns = ['logotipo'];
 
     // Define as colunas da tabela
-    const columns: TableColumn<Register>[] = registerFields
+    const columns: TableColumn<Entity>[] = entityFields
         .filter(field => selectedColumns.includes(field.key))
         .filter(field => !excludedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'createdDate') return -1; else if (b.key === 'createdDate') return 1; else return 0; })
         .map(field => {
-            const formatField = (row: Register) => {
+            const formatField = (row: Entity) => {
                 switch (field.key) {
-                    case 'roles':
-                        return row.roles ? row.roles.join(', ') : 'Conta sem tipo especificado';
-                    case 'profileImage':
-                        return row.profileImage ? 'Imagem disponível' : 'Sem imagem';
+                    case 'createdDate':
+                    case 'updatedDate':
+                        return new Date(row[field.key]).toLocaleString();
+                    case 'enabled':
+                        return row[field.key] ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key] || '';
                 }
@@ -121,21 +180,22 @@ export const NewUsers = () => {
                 ),
                 selector: row => formatField(row),
                 sortable: true,
+                sortFunction: (rowA, rowB) => new Date(rowB.createdDate).getTime() - new Date(rowA.createdDate).getTime()
             };
         });
 
     // Define a coluna de ações
-    const actionColumn: TableColumn<Register> = {
+    const actionColumn: TableColumn<Entity> = {
         name: 'Ações',
-        cell: (row: Register) => (
+        cell: (row: Entity) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditUsers(row)} />
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEntity(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}
             </div>
         ),
-        selector: (row: Register) => row.id,
+        selector: (row: Entity) => row.id,
         ignoreRowClick: true,
     };
 
@@ -144,7 +204,7 @@ export const NewUsers = () => {
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
-                    <span style={{ color: '#000000' }}>Utilizadores</span>
+                    <span style={{ color: '#000000' }}>Entidades</span>
                 </div>
                 <div className="datatable-header">
                     <div>
@@ -157,7 +217,7 @@ export const NewUsers = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshUsers} />
+                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEntity} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                     </div>
@@ -168,7 +228,7 @@ export const NewUsers = () => {
                     <DataTable
                         columns={[...columns, actionColumn]}
                         data={filteredDataTable}
-                        onRowDoubleClicked={handleEditUsers}
+                        onRowDoubleClicked={handleEditEntity}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
@@ -178,38 +238,38 @@ export const NewUsers = () => {
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={true}
-                        defaultSortFieldId='name'
+                        defaultSortFieldId='createdDate'
                     />
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
-            <CreateModalRegisterUsers
-                title="Adicionar Registo de Utilizador"
+            <CreateEntityModal
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddUsers}
-                fields={registerFields}
+                onSave={handleAddCompanyData}
+                fields={entityFields}
                 initialValues={{}}
+                title="Adicionar Entidade"
             />
-            {selectedUser && (
-                <UpdateModalRegisterUsers
+            {selectedEntity && (
+                <UpdateEntityModal
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
-                    onUpdate={handleUpdateUser}
-                    entity={selectedUser}
-                    fields={registerFields}
-                    title="Atualizar Registo de Utilizador"
+                    onUpdate={handleUpdateCompanyData}
+                    fields={entityFields}
+                    entity={selectedEntity}
+                    title="Atualizar Entidade"
                 />
             )}
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteUser}
-                entityId={selectedUserToDelete}
+                onDelete={handleDeleteCompanyData}
+                entityId={selectedEntityToDelete}
             />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={registerFields.filter(field => !excludedColumns.includes(field.key))}
+                    columns={entityFields.filter(field => !excludedColumns.includes(field.key))}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}

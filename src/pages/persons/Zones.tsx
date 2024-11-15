@@ -154,6 +154,13 @@ export const Zones = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = zones.filter(zone =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(zone[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas da tabela
     const columns: TableColumn<Zone>[] = zoneFields
         .filter(field => selectedColumns.includes(field.key))
@@ -172,7 +179,7 @@ export const Zones = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={zones} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: (row: Zone) => {
@@ -190,13 +197,6 @@ export const Zones = () => {
                 }
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = zones.filter(zone =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(zone[key]) === String(filters[key])
-        )
-    );
 
     // Componente de linha expandida
     const expandableRowComponent = (row: Zone) => (
@@ -239,8 +239,8 @@ export const Zones = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={zones} selectedData={filteredItems} fields={zoneFields} />
-                        <PrintButton data={zones} fields={zoneFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={zoneFields} />
+                        <PrintButton data={filteredDataTable} fields={zoneFields} />
                     </div>
                 </div>
                 <CreateModalZones

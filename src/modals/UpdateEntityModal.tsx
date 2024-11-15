@@ -1,21 +1,22 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Modal, Button, Form, Row, Col, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import no_image from '../assets/img/terminais/no_image.png';
 import * as apiService from "../helpers/apiService";
-import { DeleteModal } from './DeleteModal';
-import DataTable from 'react-data-table-component';
-import { customStyles } from '../components/CustomStylesDataTable';
-import { Entity } from '../helpers/Types';
+
+// Define a interface Entity
+export interface Entity {
+    id: string;
+    [key: string]: any;
+}
 
 // Interface para as propriedades do modal
-interface UpdateModalProps<T> {
+interface UpdateModalProps<T extends Entity> {
     title: string;
     open: boolean;
     onClose: () => void;
     onUpdate: (data: FormData) => void;
-    onSave: (data: FormData) => void;
     fields: Field[];
     entity: T;
 }
@@ -30,18 +31,13 @@ interface Field {
     errorMessage?: string;
 }
 
-export const EntityModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, onSave, fields, entity }: UpdateModalProps<T>) => {
+export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUpdate, fields, entity }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
-    const [entities, setEntities] = useState<T[]>([]);
-    const [selectedEntity, setSelectedEntity] = useState<T | null>(entity);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
-    const [selectedEntityToDelete, setSelectedEntityToDelete] = useState<string | null>(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -68,104 +64,15 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (entity) {
+        if (open) {
             setFormData({ ...entity });
-            setEntities(prevEntities => {
-                const existingEntityIndex = prevEntities.findIndex(ent => ent.id === entity.id);
-                if (existingEntityIndex !== -1) {
-                    const newEntities = [...prevEntities];
-                    newEntities[existingEntityIndex] = entity;
-                    return newEntities;
-                } else {
-                    return [...prevEntities, entity];
-                }
-            });
+            const imageURL = entity.logotipo ? `${apiService.baseURL}${entity.logotipo}` : no_image;
+            setDeviceImage(imageURL);
         } else {
             setFormData({});
             setDeviceImage(null);
-            setEntities([]);
-            setSelectedEntity(null);
         }
-    }, [entity, open]);
-
-    // UseEffect para carregar as entidades
-    useEffect(() => {
-        if (entities.length > 0 && Array.isArray(entities[0])) {
-            const flattenedEntities = entities.reduce<T[]>((acc, val) => acc.concat(val), []);
-            setEntities(flattenedEntities);
-        }
-    }, [entities]);
-
-    // Uso de useEffect para lidar com mudanças no selectedEntity
-    useEffect(() => {
-        if (selectedEntity) {
-            setFormData({ ...selectedEntity });
-            updateImageForSelectedEntity(selectedEntity);
-        } else {
-            clearFormData();
-            setDeviceImage(null);
-        }
-    }, [selectedEntity]);
-
-    // Função para atualizar as entidades
-    const refreshEntities = async () => {
-        const data = await apiService.fetchAllCompanyConfig();
-        setEntities(data);
-        if (!data.some((ent: T) => ent.id === selectedEntity?.id)) {
-            setSelectedEntity(null);
-            clearFormData();
-            setDeviceImage(null);
-        }
-    }
-
-    // Função para eliminar uma entidade
-    const handleDeleteEntity = async (id: string) => {
-        try {
-            const data = await apiService.deleteCompanyConfig(id);
-            toast.success(data.message || 'Entidade eliminada com sucesso.');
-            if (selectedEntity?.id === id) {
-                clearFormData();
-                setDeviceImage(null);
-                setSelectedEntity(null);
-            }
-        } catch (error) {
-            console.error('Erro ao eliminar a entidade', error);
-        } finally {
-            refreshEntities();
-        }
-    }
-
-    // Função para limpar todos os campos do formulário
-    const clearFormData = () => {
-        const newFormData: Record<string, any> = {};
-        fields.forEach(field => {
-            newFormData[field.key] = '';
-        });
-        setFormData(newFormData as Partial<T>);
-        setDeviceImage(null);
-    };
-
-    // Função para selecionar a entidade
-    const selectEntity = (entity: T) => {
-        setSelectedEntity(entity);
-        updateImageForSelectedEntity(entity);
-    };
-
-    // Define a abertura do modal de apagar controle de acesso
-    const handleOpenDeleteModal = (id: string) => {
-        if (selectedEntity?.id) {
-            setSelectedEntityToDelete(id);
-            setShowDeleteModal(true);
-        } else {
-            toast.warn('Selecione uma entidade para eliminar.');
-        }
-    };
-
-    // Função para atualizar a imagem da entidade selecionada
-    const updateImageForSelectedEntity = (entity: T) => {
-        const imageURL = entity.logotipo ? `${apiService.baseURL}${entity.logotipo}` : no_image;
-        setDeviceImage(imageURL);
-    };
+    }, [open]);
 
     // Função para validar o formulário
     const validateForm = () => {
@@ -204,50 +111,8 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         setFormData(prev => ({ ...prev, [name]: newValue }));
     };
 
-    // Colunas da tabela
-    const columns = [
-        {
-            name: 'Nome',
-            selector: (row: Partial<Entity>) => row.nome || '',
-            sortable: true,
-        },
-        {
-            name: 'NIF',
-            selector: (row: Partial<Entity>) => row.nif || '',
-            sortable: true,
-        },
-    ];
-
-    // Funipara lidar com a linha selecionada
-    const handleRowSelected = (state: { selectedRows: string | any[]; }) => {
-        if (state.selectedRows.length > 0) {
-            const lastSelectedRow = state.selectedRows[state.selectedRows.length - 1];
-            setSelectedRow(lastSelectedRow);
-            selectEntity(lastSelectedRow);
-        } else {
-            setSelectedRow(null);
-            setSelectedEntity(null);
-            clearFormData();
-        }
-    };    
-
-    // Opções de paginação da tabela com troca de EN para PT
-    const paginationOptions = {
-        rowsPerPageText: 'Linhas por página',
-        rangeSeparatorText: 'de',
-    };
-
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
-        if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
-            return;
-        }
-        handleSave();
-    };
-
-    // Função para lidar com o clique no botão de atualizar
-    const handleUpdateSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
@@ -255,58 +120,12 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
         handleUpdate();
     };
 
-    // Função para lidar com o salvamento
-    const handleSave = () => {
-
-        const dataToSend = new FormData();
-
-        if (formData.nome) {
-            dataToSend.append('Nome', formData.nome);
-        }
-        if (formData.morada) {
-            dataToSend.append('morada', formData.morada);
-        }
-        if (formData.cPostal) {
-            dataToSend.append('CPostal', formData.cPostal);
-        }
-        if (formData.localidade) {
-            dataToSend.append('Localidade', formData.localidade);
-        }
-        if (formData.telefone) {
-            dataToSend.append('Telefone', formData.telefone);
-        }
-        if (formData.telemovel) {
-            dataToSend.append('Telemovel', formData.telemovel);
-        }
-        if (formData.email) {
-            dataToSend.append('Email', formData.email);
-        }
-        if (formData.nif) {
-            dataToSend.append('NIF', formData.nif);
-        }
-        if (formData.www) {
-            dataToSend.append('WWW', formData.www);
-        }
-        if (formData.observacoes) {
-            dataToSend.append('Observacoes', formData.observacoes);
-        }
-        if (formData.enabled) {
-            dataToSend.append('Enabled', formData.enabled);
-        }
-        if (profileImageFile) {
-            dataToSend.append('Logotipo', profileImageFile);
-        }
-
-        onSave(dataToSend);
-        onClose();
-    };
-
     // Função para lidar com a atualização
     const handleUpdate = () => {
 
         const dataToSend = new FormData();
 
-        dataToSend.append('id', selectedEntity?.id);
+        dataToSend.append('id', entity.id);
 
         if (formData.nome) {
             dataToSend.append('Nome', formData.nome);
@@ -358,32 +177,8 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <Form style={{ display: 'flex' }}>
-                    <Row style={{ flex: 1.5 }}>
-                        <Col md={12}>
-                            <DataTable
-                                columns={columns}
-                                data={entities}
-                                customStyles={customStyles}
-                                noHeader
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={5}
-                                paginationRowsPerPageOptions={[5, 10, 15, 20]}
-                                selectableRows
-                                onSelectedRowsChange={handleRowSelected}
-                                selectableRowsHighlight
-                                selectableRowsNoSelectAll={true}
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                            />
-                            <div style={{ display: 'flex' }}>
-                                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(selectedEntity?.id)}>
-                                    <i className="bi bi-trash-fill"></i>
-                                </Button>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row style={{ flex: 2 }}>
+                <div className="container-fluid">
+                    <Row>
                         <Row>
                             <Col md={12} className='img-modal'>
                                 <img
@@ -519,41 +314,32 @@ export const EntityModal = <T extends Record<string, any>>({ title, open, onClos
                                 />
                             </Form.Group>
                         </Col>
-                        <Row style={{ flex: 1 }}>
-                            <Form.Group controlId="formObservacoes">
-                                <Form.Label>Observações</Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    rows={3}
-                                    name="observacoes"
-                                    value={formData.observacoes}
-                                    onChange={handleChange}
-                                    className="custom-select-font-size textarea"
-                                />
-                            </Form.Group>
+                        <Row>
+                            <Col md={12}>
+                                <Form.Group controlId="formObservacoes">
+                                    <Form.Label>Observações</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        name="observacoes"
+                                        value={formData.observacoes}
+                                        onChange={handleChange}
+                                        className="custom-select-font-size textarea"
+                                    />
+                                </Form.Group>
+                            </Col>
                         </Row>
                     </Row>
-                </Form>
+                </div>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-info" onClick={handleUpdateSaveClick}>
-                    Atualizar
-                </Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>
-                    Criar
+                    Guardar
                 </Button>
             </Modal.Footer>
-            {showDeleteModal && (
-                <DeleteModal
-                    open={showDeleteModal}
-                    onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteEntity}
-                    entityId={selectedEntityToDelete}
-                />
-            )}
         </Modal>
     );
 }

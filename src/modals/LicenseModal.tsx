@@ -173,7 +173,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         } else {
-            console.log('formData:', formData);
             setIsModalVisible(false);
             onUpdate(key, formData as License[]);
             onClose();

@@ -129,6 +129,22 @@ export const NkioskCleaning = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = cleaning.filter(getCoin =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(getCoin).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
+    );
+
     // Define as colunas da tabela
     const columns: TableColumn<LimpezasEOcorrencias>[] = limpezasEOcorrenciasFields
         .filter(field => selectedColumns.includes(field.key))
@@ -147,7 +163,7 @@ export const NkioskCleaning = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={cleaning} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -155,22 +171,6 @@ export const NkioskCleaning = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.dataCreate).getTime() - new Date(rowA.dataCreate).getTime()
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = cleaning.filter(getCoin =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(getCoin).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
 
     return (
         <div className="main-container">
@@ -193,8 +193,8 @@ export const NkioskCleaning = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLimpezas} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={cleaning} selectedData={selectedRows} fields={limpezasEOcorrenciasFields} />
-                        <PrintButton data={cleaning} fields={limpezasEOcorrenciasFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={limpezasEOcorrenciasFields} />
+                        <PrintButton data={filteredDataTable} fields={limpezasEOcorrenciasFields} />
                     </div>
                     <div className="date-range-search">
                         <input

@@ -20,15 +20,15 @@ interface FieldConfig {
 interface Props<T> {
     open: boolean;
     onClose: () => void;
-    onSave: (emailFormData: Partial<EmailUser>) => Promise<void>;
-    onUpdate: (emailFormData: Partial<EmailUser>) => Promise<void>;
+    onSave: (emailFormData: T) => Promise<void>;
+    onUpdate: (emailFormData: T) => Promise<void>;
     entity: T;
     fields: FieldConfig[];
     title: string;
 }
 
 export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
-    const [emailFormData, setEmailFormData] = useState<Partial<EmailUser>>({ ...entity });
+    const [emailFormData, setEmailFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -43,55 +43,41 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                 usernameEmail: entity.usernameEmail
             };
 
-            setEmailFormData(emailData);
+            setEmailFormData(emailData as T);
         }
     }, [entity]);
 
     // Limpa os dados do formulário quando o modal é fechado
     useEffect(() => {
         if (!open) {
-            setEmailFormData({});
+            setEmailFormData({} as T);
         }
     }, [open]);
 
-    // Usa useEffect para validar o formulário
-    useEffect(() => {
+    // Função para validar o formulário e gerenciar os erros
+    const validateForm = () => {
         const newErrors: Record<string, string> = {};
+        let isValid = true;
 
-        const isValid = fields.every(field => {
+        fields.forEach(field => {
             const fieldValue = emailFormData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
+            if (field.required && (fieldValue === undefined || fieldValue === '' || (Array.isArray(fieldValue) && fieldValue.length === 0))) {
+                isValid = false;
+            } else if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                isValid = false;
+            } else if (field.validate && !field.validate(fieldValue)) {
+                isValid = false;
             }
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
-            }
-
-            return valid;
         });
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+    };
+
+    // Chame validateForm apropriadamente em useEffect
+    useEffect(() => {
         validateForm();
     }, [emailFormData, fields]);
-
-    // Função para validar o formulário
-    const validateForm = () => {
-        const isValid = fields.every(field => {
-            const fieldValue = emailFormData?.[field.key];
-            if (field.required) {
-                if (typeof fieldValue === 'string') {
-                    return fieldValue.trim() !== '';
-                }
-                return fieldValue !== null && fieldValue !== undefined;
-            }
-            return true;
-        });
-
-        setIsFormValid(isValid);
-    };
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -99,9 +85,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         const { name, value, type, dataset } = target;
         let parsedValue: string | number | boolean | string[];
 
-        if (name === "emails") {
-            parsedValue = value.split(',').map(email => email.trim());        
-        } else if (type === 'checkbox') {
+        if (type === 'checkbox') {
             parsedValue = target.checked;
         } else if (type === 'number') {
             parsedValue = Number(value);
@@ -118,13 +102,22 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         }
     };
 
+    // Função para lidar com o clique em adicionar ou atualizar
+    const handleAddOrUpdate = () => {
+        if (entity.usernameEmail !== '' && entity.passwordEmail !== '' && entity.hostSMTP !== '' && entity.portSMTP !== '') {
+            handleUpdateClick();
+        } else {
+            handleSaveClick();
+        }
+    }
+
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onSave(emailFormData as EmailUser);
+        onSave(emailFormData as T);
         onClose();
     };
 
@@ -134,7 +127,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onUpdate(emailFormData as EmailUser);
+        onUpdate(emailFormData as T);
         onClose();
     }
 
@@ -253,8 +246,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-info" onClick={handleUpdateClick}>Atualizar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Criar</Button>
+                <Button variant="outline-primary" onClick={handleAddOrUpdate}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

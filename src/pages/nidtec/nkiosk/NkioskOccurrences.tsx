@@ -192,8 +192,8 @@ export const NkioskOccurrences = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOcorrencias} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={occurrences} selectedData={selectedRows} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
-                        <PrintButton data={occurrences} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
+                        <PrintButton data={filteredDataTable} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
                     </div>
                     <div className="date-range-search">
                         <input

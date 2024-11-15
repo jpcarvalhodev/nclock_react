@@ -57,10 +57,6 @@ import nlight from '../assets/img/navbar/navbar/nlight.webp';
 import ncomfort from '../assets/img/navbar/navbar/ncomfort.webp';
 import nsound from '../assets/img/navbar/navbar/nsound.webp';
 import nhome from '../assets/img/navbar/navbar/nhome.webp';
-import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
-import nidtec from '../assets/img/navbar/navbar/nidtec.png';
-import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
-import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.png';
 import banner_nidgroup from '../assets/img/carousel/banner_nidgroup.jpg';
 import banner_nclock from '../assets/img/carousel/banner_nclock.jpg';
 import banner_naccess from '../assets/img/carousel/banner_naccess.jpg';
@@ -395,6 +391,114 @@ export const Dashboard = () => {
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_nidgroup} alt="NIDGROUP" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nclock} alt="Nclock" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_naccess} alt="Naccess" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nvisitor} alt="Nvisitor" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_npark} alt="Npark" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_ndoor} alt="Ndoor" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_npatrol} alt="Npatrol" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_ncard} alt="Ncard" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nview} alt="Nview" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nsecur} alt="Nsecur" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nsoftware} alt="Nsoftware" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nsystem} alt="Nsystem" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_napp} alt="Napp" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_ncyber} alt="Ncyber" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_ndigital} alt="Ndigital" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nserver} alt="Nserver" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_naut} alt="Naut" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nequip} alt="Nequip" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nproject} alt="Nproject" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nsmart} alt="Nsmart" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nreality} alt="Nreality" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nhologram} alt="Nhologram" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_npower} alt="Npower" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_ncharge} alt="Ncharge" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_ncity} alt="Ncity" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nkiosk} alt="Nkiosk" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nled} alt="Nled" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nfire} alt="Nfire" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nfurniture} alt="Nfurniture" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_npartition} alt="Npartition" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_ndecor} alt="Ndecor" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nping} alt="Nping" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nconnect} alt="Nconnect" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nlight} alt="Nlight" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_ncomfort} alt="Ncomfort" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nsound} alt="Nsound" />
+                            </div>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_nhome} alt="Nhome" />
                             </div>
                         </Carousel>
                     )}

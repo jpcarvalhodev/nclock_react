@@ -20,15 +20,15 @@ interface FieldConfig {
 interface Props<T> {
     open: boolean;
     onClose: () => void;
-    onSave: (kioskFormData: Partial<KioskConfig>) => Promise<void>;
-    onUpdate: (kioskFormData: Partial<KioskConfig>) => Promise<void>;
+    onSave: (kioskFormData: T) => Promise<void>;
+    onUpdate: (kioskFormData: T) => Promise<void>;
     entity: T;
     fields: FieldConfig[];
     title: string;
 }
 
 export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
-    const [kioskFormData, setKioskFormData] = useState<Partial<KioskConfig>>({ ...entity });
+    const [kioskFormData, setKioskFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -38,80 +38,76 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             const kioskData: Partial<KioskConfig> = {
                 amount: entity.amount,
                 totalMoedas: entity.totalMoedas,
-                emails: entity.emails
+                emails: Array.isArray(entity.emails) ? entity.emails : entity.emails ? entity.emails.split(', ') : []
             };
 
-            setKioskFormData(kioskData);
+            setKioskFormData(kioskData as T);
         }
     }, [entity]);
 
     // Limpa os dados do formulário quando o modal é fechado
     useEffect(() => {
         if (!open) {
-            setKioskFormData({});
+            setKioskFormData({} as T);
         }
     }, [open]);
 
-    // Usa useEffect para validar o formulário
-    useEffect(() => {
+    // Função para validar o formulário e gerenciar os erros
+    const validateForm = () => {
         const newErrors: Record<string, string> = {};
+        let isValid = true;
 
-        const isValid = fields.every(field => {
+        fields.forEach(field => {
             const fieldValue = kioskFormData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
+            if (field.required && (fieldValue === undefined || fieldValue === null || (field.type === 'number' && fieldValue !== 0 && !fieldValue))) {
+                isValid = false;
+            } else if (field.required && typeof fieldValue === 'string' && fieldValue.trim() === '') {
+                isValid = false;
+            } else if (field.type === 'number' && fieldValue !== null && isNaN(fieldValue)) {
+                isValid = false;
+            } else if (field.validate && !field.validate(fieldValue)) {
+                isValid = false;
             }
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
-            }
-
-            return valid;
         });
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+    };
+
+    // Chame validateForm apropriadamente em useEffect
+    useEffect(() => {
         validateForm();
     }, [kioskFormData, fields]);
-
-    // Função para validar o formulário
-    const validateForm = () => {
-        const isValid = fields.every(field => {
-            const fieldValue = kioskFormData?.[field.key];
-            if (field.required) {
-                if (typeof fieldValue === 'string') {
-                    return fieldValue.trim() !== '';
-                }
-                return fieldValue !== null && fieldValue !== undefined;
-            }
-            return true;
-        });
-
-        setIsFormValid(isValid);
-    };
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const target = e.target as HTMLInputElement;
-        const { name, value, type, dataset } = target;
+        const { name, value, type } = target;
         let parsedValue: string | number | boolean | string[];
 
         if (type === 'checkbox') {
-            parsedValue = target.checked;
+            parsedValue = (e.target as HTMLInputElement).checked;
         } else if (type === 'number') {
-            parsedValue = Number(value);
+            parsedValue = value === '' ? '' : Number(value);
+        } else if (name === 'emails' && type === 'textarea') {
+            parsedValue = value.split(',').map(email => email.trim());
         } else {
             parsedValue = value;
         }
 
-        const formType = dataset.formType as 'kiosk';
-        if (formType === 'kiosk') {
-            setKioskFormData(prevState => ({
-                ...prevState,
-                [name]: parsedValue
-            }));
-        };
+        setKioskFormData(prevState => ({
+            ...prevState,
+            [name]: parsedValue
+        }));
+    }
+
+    // Função para lidar com o clique em adicionar ou atualizar
+    const handleAddOrUpdate = () => {
+        if (entity.amount !== 0 && entity.totalMoedas !== 0 && entity.emails.length !== 0) {
+            handleUpdateClick();
+        } else {
+            handleSaveClick();
+        }
     }
 
     // Função para lidar com o clique em guardar
@@ -120,7 +116,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onSave(kioskFormData as KioskConfig);
+        onSave(kioskFormData as T);
         onClose();
     };
 
@@ -130,7 +126,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onUpdate(kioskFormData as KioskConfig);
+        onUpdate(kioskFormData as T);
         onClose();
     }
 
@@ -162,9 +158,8 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         className="custom-input-height custom-select-font-size"
                                                         type="number"
                                                         name="amount"
-                                                        value={kioskFormData.amount || ''}
+                                                        value={kioskFormData.amount || 0}
                                                         onChange={handleChange}
-                                                        data-form-type="kiosk"
                                                     />
                                                 </OverlayTrigger>
                                                 {errors.amount && <Form.Text className="text-danger">{errors.amount}</Form.Text>}
@@ -181,7 +176,6 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         name="totalMoedas"
                                                         value={kioskFormData.totalMoedas || ''}
                                                         onChange={handleChange}
-                                                        data-form-type="kiosk"
                                                     />
                                                 </OverlayTrigger>
                                                 {errors.totalMoedas && <Form.Text className="text-danger">{errors.totalMoedas}</Form.Text>}
@@ -199,9 +193,8 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         type="email"
                                                         as="textarea"
                                                         name="emails"
-                                                        value={kioskFormData.emails?.join(', ').replace(/,\s+/g, ',').replace(/\s+,/g, ',')}
+                                                        value={Array.isArray(kioskFormData.emails) ? kioskFormData.emails.join(', ') : ''}
                                                         onChange={handleChange}
-                                                        data-form-type="kiosk"
                                                         multiple
                                                         rows={4}
                                                     />
@@ -218,8 +211,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-info" onClick={handleUpdateClick}>Atualizar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Criar</Button>
+                <Button variant="outline-primary" onClick={handleAddOrUpdate}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

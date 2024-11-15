@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
@@ -14,6 +14,9 @@ import { useColor } from "../../../context/ColorContext";
 import * as apiService from "../../../helpers/apiService";
 import { manualOpenDoorFields } from "../../../helpers/Fields";
 import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
+import Split from "react-split";
+import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -33,6 +36,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 // Define o componente de terminais
 export const NkioskDoorOpen = () => {
     const { navbarColor, footerColor } = useColor();
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -47,6 +51,8 @@ export const NkioskDoorOpen = () => {
     const [userTabKey, setUserTabKey] = useState<string>('manualOpen');
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<ManualOpenDoor[]>([]);
 
     // Função para buscar os dados de aberturas manuais
     const fetchAllManualOpen = async () => {
@@ -66,7 +72,6 @@ export const NkioskDoorOpen = () => {
     const fetchManualOpenBetweenDates = async () => {
         try {
             const data = await apiService.fetchAllManualDoorOpen(startDate, endDate);
-            console.log(data);
             if (Array.isArray(data)) {
                 setManualOpenDoor(data);
             } else {
@@ -86,6 +91,17 @@ export const NkioskDoorOpen = () => {
     const refreshAllManualOpen = () => {
         fetchAllManualOpen();
     }
+
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filterDevices = devices.filter(device => selectedDevicesIds.includes(device.serialNumber));
+            const devicesFiltered = manualOpenDoor.filter(door => filterDevices.some(device => device.deviceName === door.deviceName));
+            setFilteredDevices(devicesFiltered);
+        } else {
+            setFilteredDevices(manualOpenDoor);
+        }
+    }, [selectedDevicesIds, manualOpenDoor, devices]);    
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
@@ -114,6 +130,11 @@ export const NkioskDoorOpen = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Define a função de seleção de linhas de dispositivos
     const handleDeviceRowSelected = (state: {
         allSelected: boolean;
@@ -122,6 +143,22 @@ export const NkioskDoorOpen = () => {
     }) => {
         setSelectedManualOpen(state.selectedRows[0] || null);
     };
+
+    // Filtra os dados da tabela de dispositivos
+    const filteredDataTable = filteredDevices.filter(device =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (device[key] != null && String(device[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(device).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
+    );
 
     // Define as colunas de dispositivos
     const columns: TableColumn<ManualOpenDoor>[] = manualOpenDoorFields
@@ -140,7 +177,7 @@ export const NkioskDoorOpen = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={manualOpenDoor} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -148,22 +185,6 @@ export const NkioskDoorOpen = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.createdDate).getTime() - new Date(rowA.createdDate).getTime()
             };
         });
-
-    // Filtra os dados da tabela de dispositivos
-    const filteredDataTable = manualOpenDoor.filter(device =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (device[key] != null && String(device[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(device).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -203,80 +224,87 @@ export const NkioskDoorOpen = () => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="datatable-container">
-                <div className="datatable-title-text" style={{ color: '#009739' }}>
-                    <span>Aberturas Manuais</span>
-                </div>
-                <div className="datatable-header">
-                    <div className="buttons-container-others-mb">
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
-                        <div className="custom-buttons">
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAllManualOpen} />
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                        </div>
-                        <div className="date-range-search">
-                            <input
-                                type="date"
-                                value={startDate}
-                                onChange={e => setStartDate(e.target.value)}
-                                className='search-input'
-                            />
-                            <span> até </span>
-                            <input
-                                type="date"
-                                value={endDate}
-                                onChange={e => setEndDate(e.target.value)}
-                                className='search-input'
-                            />
-                            <CustomOutlineButton icon="bi-search" onClick={fetchManualOpenBetweenDates} iconSize='1.1em' />
-                        </div>
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                </div>
-                <div className="deviceMobile">
-                    <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
-                        selectableRows
-                        onSelectedRowsChange={handleDeviceRowSelected}
-                        selectableRowsHighlight
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        defaultSortAsc={true}
-                        defaultSortFieldId="createdDate"
-                    />
-                </div>
-                <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
-                    <div>
-                        <Tabs
-                            id="controlled-tab-terminals-buttons"
-                            activeKey={userTabKey}
-                            onSelect={handleUserSelect}
-                            className="nav-modal"
-                        >
-                            <Tab eventKey="manualOpen" title="Ligação">
-                                <div style={{ display: "flex", marginTop: 10 }}>
-                                    <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleManualOpen}>
-                                        {loadingManualOpen ? (
-                                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                        ) : (
-                                            <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                        )}
-                                        Abertura Remota
-                                    </Button>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text" style={{ color: '#009739' }}>
+                            <span>Aberturas Manuais</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div className="buttons-container-others-mb">
+                                <input
+                                    className='search-input'
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                />
+                                <div className="custom-buttons">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAllManualOpen} />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                 </div>
-                            </Tab>
-                        </Tabs>
+                                <div className="date-range-search">
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <span> até </span>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchManualOpenBetweenDates} iconSize='1.1em' />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="deviceMobile">
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
+                                selectableRows
+                                onSelectedRowsChange={handleDeviceRowSelected}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                defaultSortAsc={true}
+                                defaultSortFieldId="createdDate"
+                            />
+                        </div>
+                        <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
+                            <div>
+                                <Tabs
+                                    id="controlled-tab-terminals-buttons"
+                                    activeKey={userTabKey}
+                                    onSelect={handleUserSelect}
+                                    className="nav-modal"
+                                >
+                                    <Tab eventKey="manualOpen" title="Ligação">
+                                        <div style={{ display: "flex", marginTop: 10 }}>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleManualOpen}>
+                                                {loadingManualOpen ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Abertura Remota
+                                            </Button>
+                                        </div>
+                                    </Tab>
+                                </Tabs>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {showColumnSelector && (

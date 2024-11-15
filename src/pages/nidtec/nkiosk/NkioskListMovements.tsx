@@ -246,13 +246,6 @@ export const NkioskListMovements = () => {
             })
         );
 
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable: KioskTransactionCard[] = Array.from(
-        new Set(filteredDataTable.map(item => item.eventTime))
-    ).map(eventTime => {
-        return filteredDataTable.find(item => item.eventTime === eventTime);
-    }).filter((item): item is KioskTransactionCard => item !== undefined);
-
     // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
     const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {
         if (!acc.some(field => field.key === current.key)) {
@@ -294,7 +287,7 @@ export const NkioskListMovements = () => {
         });
 
     // Calcula o valor total dos movimentos
-    const totalAmount = uniqueFilteredDataTable.length;
+    const totalAmount = filteredDataTable.length;
     
     // Função para gerar os dados com nomes substituídos para o export/print
     const moveCardKioskWithNames = listMovements.map(transaction => {
@@ -357,7 +350,7 @@ export const NkioskListMovements = () => {
                             <div className='table-css'>
                                 <DataTable
                                     columns={columns}
-                                    data={uniqueFilteredDataTable}
+                                    data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     paginationPerPage={15}

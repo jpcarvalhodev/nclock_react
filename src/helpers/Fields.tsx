@@ -485,7 +485,7 @@ export const employeesOnDeviceFields = [
 ];
 
 export const kioskConfigFields = [
-    { key: 'amount', label: 'Valor', type: 'number' },
-    { key: 'totalMoedas', label: 'Total de Moedas', type: 'number' },
-    { key: 'emails', label: 'E-Mails', type: 'string' },
+    { key: 'amount', label: 'Valor', type: 'number', required: true },
+    { key: 'totalMoedas', label: 'Total de Moedas', type: 'number', required: true },
+    { key: 'emails', label: 'E-Mails', type: 'string', required: true },
 ];

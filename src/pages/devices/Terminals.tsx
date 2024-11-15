@@ -361,7 +361,7 @@ export const Terminals = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={employeesOnDevice} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredUsersInTerminal} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -369,22 +369,14 @@ export const Terminals = () => {
             };
         });
 
-    // Função para formatar a data e a hora
-    function formatDateAndTime(input: string | Date): string {
-        const date = typeof input === 'string' ? new Date(input) : input;
-        const options: Intl.DateTimeFormatOptions = {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-        };
-        return new Intl.DateTimeFormat('pt-PT', options).format(date);
-    }
-
     const excludedColumns = ['readerCount', 'auxInCount', 'auxOutCount', 'maxUserCount', 'maxAttLogCount', 'maxFingerCount', 'maxUserFingerCount', 'faceAlg', 'fpAlg'];
+
+    // Filtra os dados da tabela de dispositivos
+    const filteredDeviceDataTable = devices.filter(device =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(device[key]) === String(filters[key])
+        )
+    );
 
     // Define as colunas de dispositivos
     const deviceColumns: TableColumn<Devices>[] = deviceFields
@@ -400,7 +392,7 @@ export const Terminals = () => {
                     case 'cardNumber':
                         return row.cardNumber === 0 ? "" : row.cardNumber;
                     case 'productTime':
-                        return formatDateAndTime(row[field.key]);
+                        return new Date(row.productTime).toLocaleString() || '';
                     case 'status':
                         return (
                             <div style={{
@@ -422,20 +414,13 @@ export const Terminals = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={devices} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDeviceDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
                 sortable: true,
             };
         });
-
-    // Filtra os dados da tabela de dispositivos
-    const filteredDeviceDataTable = devices.filter(device =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(device[key]) === String(filters[key])
-        )
-    );
 
     // Define as colunas de transações de quiosques
     const transactionColumns: TableColumn<KioskTransaction>[] = transactionFields
@@ -474,6 +459,13 @@ export const Terminals = () => {
             };
         });
 
+    // Filtra os dados da tabela de estado de dispositivos
+    const filteredStateDataTable = devices.filter(device =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(device[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas de estado de dispositivos
     const stateColumns: TableColumn<Devices>[] = deviceFields
         .filter(field => excludedColumns.includes(field.key) || field.key === 'deviceName')
@@ -482,20 +474,13 @@ export const Terminals = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={devices} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredStateDataTable} />
                     </>
                 ),
                 selector: row => row[field.key],
                 sortable: true,
             };
         });
-
-    // Filtra os dados da tabela de estado de dispositivos
-    const filteredStateDataTable = devices.filter(device =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(device[key]) === String(filters[key])
-        )
-    );
 
     // Formata as colunas especiais na tabela de utilizadores, biometria e cartões
     const formatUserStatus = (row: EmployeeAndCard) => {
@@ -546,7 +531,7 @@ export const Terminals = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredUsersInSoftware} />
                     </>
                 ),
                 selector: (row: EmployeeAndCard) => formatField(row),
@@ -566,25 +551,15 @@ export const Terminals = () => {
             }
         ]);
 
-    // Filtra os dados da tabela de utilizadores
-    const filteredUserDataTable = useMemo(() => {
-        let filteredData: EmployeeAndCard[] = [];
-
-        if (showAllUsers) {
-            return employees;
-        }
-
-        if (showFingerprintUsers) {
-            filteredData = [...filteredData, ...employees.filter(user => user.statusFprint)];
-        }
-        if (showFacialRecognitionUsers) {
-            filteredData = [...filteredData, ...employees.filter(user => user.statusFace)];
-        }
-        return filteredData;
-    }, [employees, showAllUsers, showFingerprintUsers, showFacialRecognitionUsers]);
-
     // Define as colunas excluídas de utilizadores    
     const excludedBioColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+
+    // Define os dados da tabela de biometria
+    const filteredBioDataTable = employeesBio.filter(employee =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(employee[key]) === String(filters[key])
+        )
+    );
 
     // Define as colunas de utilizadores
     const bioColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
@@ -595,7 +570,7 @@ export const Terminals = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredBioDataTable} />
                     </>
                 ),
                 selector: (row: EmployeeAndCard) => row[field.key] || '',
@@ -614,15 +589,15 @@ export const Terminals = () => {
             }
         ]);
 
-    // Define os dados da tabela de biometria
-    const filteredBioDataTable = employeesBio.filter(employee =>
+    // Define as colunas excluídas de utilizadores    
+    const excludedCardColumns = ['statusFprint', 'statusFace', 'statusPalm'];
+
+    // Filtra os dados da tabela de cartões
+    const filteredCardDataTable = employeeCards.filter(employee =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(employee[key]) === String(filters[key])
         )
     );
-
-    // Define as colunas excluídas de utilizadores    
-    const excludedCardColumns = ['statusFprint', 'statusFace', 'statusPalm'];
 
     // Define as colunas de utilizadores
     const cardColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
@@ -641,7 +616,7 @@ export const Terminals = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={employees} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredCardDataTable} />
                     </>
                 ),
                 selector: (row: EmployeeAndCard) => formatField(row),
@@ -659,13 +634,6 @@ export const Terminals = () => {
                 sortable: true,
             }
         ]);
-
-    // Filtra os dados da tabela de cartões
-    const filteredCardDataTable = employeeCards.filter(employee =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(employee[key]) === String(filters[key])
-        )
-    );
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {

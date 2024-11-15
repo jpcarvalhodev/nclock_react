@@ -163,6 +163,13 @@ export const Professions = () => {
         return acc;
     }, {});
 
+    // Filtra os dados da tabela
+    const filteredDataTable = professions.filter(profession =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(profession[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -170,19 +177,12 @@ export const Professions = () => {
             name: (
                 <>
                     {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={professions} />
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={filteredDataTable} />
                 </>
             ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
-
-    // Filtra os dados da tabela
-    const filteredDataTable = professions.filter(profession =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(profession[key]) === String(filters[key])
-        )
-    );
 
     // Define a coluna de ações
     const actionColumn: TableColumn<Profession> = {
@@ -220,8 +220,8 @@ export const Professions = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshProfessions} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={professions} selectedData={selectedRows} fields={professionFields} />
-                        <PrintButton data={professions} fields={professionFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={professionFields} />
+                        <PrintButton data={filteredDataTable} fields={professionFields} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes

@@ -148,41 +148,6 @@ export const TerminalsMB = () => {
         setSelectedTerminal(state.selectedRows[0] || null);
     };
 
-    // Define as colunas de dispositivos
-    const columns: TableColumn<MBDevice>[] = mbDeviceFields
-        .filter(field => selectedColumns.includes(field.key))
-        .sort((a, b) => { if (a.key === 'estadoTerminal') return 1; else if (b.key === 'estadoTerminal') return -1; else return 0; })
-        .map(field => {
-            const formatField = (row: MBDevice) => {
-                switch (field.key) {
-                    case 'estadoTerminal':
-                        return (
-                            <div style={{
-                                height: '10px',
-                                width: '10px',
-                                backgroundColor: row.estadoTerminal ? 'green' : 'red',
-                                borderRadius: '50%',
-                                display: 'inline-block'
-                            }}/>
-                        );
-                    case 'timeReboot':
-                        return row[field.key] === '00:00:00' ? 'Sem tempo de reinício' : row[field.key];
-                    default:
-                        return row[field.key];
-                }
-            };
-            return {
-                name: (
-                    <>
-                        {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={mbDevices} />
-                    </>
-                ),
-                selector: row => formatField(row),
-                sortable: true,
-            };
-        });
-
     // Filtra os dados da tabela de dispositivos
     const filteredDataTable = filteredDevices.filter(device =>
         Object.keys(filters).every(key =>
@@ -198,6 +163,41 @@ export const TerminalsMB = () => {
             }
         })
     );
+
+    // Define as colunas de dispositivos
+    const columns: TableColumn<MBDevice>[] = mbDeviceFields
+        .filter(field => selectedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'estadoTerminal') return 1; else if (b.key === 'estadoTerminal') return -1; else return 0; })
+        .map(field => {
+            const formatField = (row: MBDevice) => {
+                switch (field.key) {
+                    case 'estadoTerminal':
+                        return (
+                            <div style={{
+                                height: '10px',
+                                width: '10px',
+                                backgroundColor: row.estadoTerminal ? 'green' : 'red',
+                                borderRadius: '50%',
+                                display: 'inline-block'
+                            }} />
+                        );
+                    case 'timeReboot':
+                        return row[field.key] === '00:00:00' ? 'Sem tempo de reinício' : row[field.key];
+                    default:
+                        return row[field.key];
+                }
+            };
+            return {
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
+                    </>
+                ),
+                selector: row => formatField(row),
+                sortable: true,
+            };
+        });
 
     // Define as colunas de ação de dispositivos
     const devicesActionColumn: TableColumn<MBDevice> = {

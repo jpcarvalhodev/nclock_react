@@ -159,6 +159,13 @@ export const Categories = () => {
         return acc;
     }, {});
 
+    // Filtra os dados da tabela
+    const filteredDataTable = categories.filter(category =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(category[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -166,19 +173,12 @@ export const Categories = () => {
             name: (
                 <>
                     {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={categories} />
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={filteredDataTable} />
                 </>
             ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
-
-    // Filtra os dados da tabela
-    const filteredDataTable = categories.filter(category =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(category[key]) === String(filters[key])
-        )
-    );
 
     // Define a coluna de ações
     const actionColumn: TableColumn<Category> = {
@@ -216,8 +216,8 @@ export const Categories = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={categories} selectedData={filteredItems} fields={categoryFields} />
-                        <PrintButton data={categories} fields={categoryFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={categoryFields} />
+                        <PrintButton data={filteredDataTable} fields={categoryFields} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes

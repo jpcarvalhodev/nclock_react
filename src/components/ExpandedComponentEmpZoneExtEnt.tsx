@@ -1,5 +1,5 @@
-import { employeeFields, externalEntityFields, zoneFields } from "../helpers/Fields";
-import { Employee, ExternalEntity, Register, Zone } from "../helpers/Types";
+import { employeeFields, entityFields, externalEntityFields, registerFields, zoneFields } from "../helpers/Fields";
+import { Employee, Entity, ExternalEntity, Register, Zone } from "../helpers/Types";
 import '../css/Expanded.css';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import * as apiService from "../helpers/apiService";
@@ -13,14 +13,14 @@ interface Field {
 
 // Função para mapear os nomes das colunas
 const columnNamesMap = (fields: Field[]) => fields.reduce((map, field) => {
-    if (field.key !== 'photo') {
+    if (field.key !== 'photo' && field.key !== 'logotipo' && field.key !== 'profileImage') {
         map[field.key] = field.label;
     }
     return map;
 }, {} as Record<string, string>);
 
 // Define um tipo para os campos possíveis
-type FieldsType = typeof employeeFields | typeof zoneFields | typeof externalEntityFields;
+type FieldsType = typeof employeeFields | typeof zoneFields | typeof externalEntityFields | typeof entityFields | typeof registerFields;
 
 // Define a interface para as propriedades do componente
 interface ExpandedComponentProps<T> {
@@ -29,7 +29,7 @@ interface ExpandedComponentProps<T> {
 }
 
 // Define o componente
-export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | ExternalEntity | Register>({
+export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | ExternalEntity | Register | Entity>({
     data,
     fields
 }: ExpandedComponentProps<T>) => {
@@ -39,15 +39,28 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
 
     const columnNames = columnNamesMap(fields);
 
-    const photo = (data as Employee).photo || (data as Zone).photo || (data as ExternalEntity).photo || (data as Register).profileImage || '';
-    const baseURL = apiService.baseURL?.slice(0, -1);
-    const photoData = photo ? `${baseURL}${photo}` : modalAvatar;
+    // Função para obter a URL da foto
+    const getPhotoUrl = (data: Employee | Zone | ExternalEntity | Register | Entity) => {
+        const photo = (data as Employee).photo ||
+            (data as Zone).photo ||
+            (data as ExternalEntity).photo ||
+            (data as Register).profileImage ||
+            (data as Entity).logotipo;
+
+        if (data as Register && data.profileImage) {
+            return `${apiService.baseURL?.slice(0, -1)}${data.profileImage}`;
+        }
+        if (data as Entity && data.logotipo) {
+            return `${apiService.baseURL}${data.logotipo}`;
+        }
+        return photo ? `${photo}` : modalAvatar;
+    }
 
     return (
         <div className="expanded-details-container">
             <div className="entity-photo">
                 <img
-                    src={photoData}
+                    src={getPhotoUrl(data)}
                     className="entity-photo-img"
                     style={{ borderRadius: '50%' }}
                 />
@@ -56,6 +69,7 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                 {fields.map((field) => {
                     const key = field.key;
                     if (key === 'photo') return null;
+                    if (key === 'logotipo') return null;
                     if (key === 'profileImage') return null;
                     if (key === 'password') return null;
                     if (key === 'confirmPassword') return null;
@@ -109,6 +123,12 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                             break;
                         case 'roles':
                             displayValue = value ? value.join(', ') : 'Conta sem tipo especificado';
+                            break;
+                        case 'createdDate':
+                            displayValue = new Date(value).toLocaleString() || '';
+                            break;
+                        case 'updatedDate':
+                            displayValue = new Date(value).toLocaleString() || '';
                             break;
                         default:
                             if (typeof value === 'object' && value !== null) {

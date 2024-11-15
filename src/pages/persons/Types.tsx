@@ -157,6 +157,13 @@ export const Types = () => {
         return acc;
     }, {});
 
+    // Filtra os dados da tabela
+    const filteredDataTable = externalEntityTypes.filter(externalEntityType =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(externalEntityType[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -164,19 +171,12 @@ export const Types = () => {
             name: (
                 <>
                     {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={externalEntityTypes} />
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={filteredDataTable} />
                 </>
             ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
-
-    // Filtra os dados da tabela
-    const filteredDataTable = externalEntityTypes.filter(externalEntityType =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(externalEntityType[key]) === String(filters[key])
-        )
-    );
 
     // Define a coluna de ações
     const actionColumn: TableColumn<ExternalEntityTypes> = {
@@ -214,8 +214,8 @@ export const Types = () => {
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntitiesTypes} />
                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={externalEntityTypes} selectedData={filteredItems} fields={externalEntityTypeFields} />
-                        <PrintButton data={externalEntityTypes} fields={externalEntityTypeFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={externalEntityTypeFields} />
+                        <PrintButton data={filteredDataTable} fields={externalEntityTypeFields} />
                     </div>
                 </div>
             </div>

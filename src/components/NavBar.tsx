@@ -169,7 +169,6 @@ import cleaning from '../assets/img/navbar/nkiosk/cleaning.png';
 import certificate from '../assets/img/navbar/certificate.png';
 import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
-import { EntityModal } from '../modals/EntityModal';
 import { usePersons } from '../context/PersonsContext';
 import { KioskOptionsModal } from '../modals/KioskOptions';
 
@@ -362,8 +361,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [isMobile, setIsMobile] = useState<boolean>(false);
 	const [showAboutModal, setShowAboutModal] = useState(false);
 	const [showLicenseModal, setShowLicenseModal] = useState(false);
-	const [showEntityModal, setShowEntityModal] = useState(false);
-	const [entityData, setEntityData] = useState<Entity>();
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [showSoftwaresDropdown, setShowSoftwaresDropdown] = useState(false);
 	const [menuStructureStart, setMenuStructureStart] = useState<MenuStructure>({});
@@ -435,6 +432,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	};
 
+	// Função para remover a tab ativa
+	const removeTabsRibbons = () => {
+		if (window.location.pathname === '/') {
+			setActiveTab('');
+		}
+	};
+
+	// UseEffect para atualizar o estado da tab ativa
+	useEffect(() => {
+		removeTabsRibbons();
+	}, [location]);
+
 	// Função para carregar os dados das configurações de email
 	const fetchEmailConfig = async () => {
 		try {
@@ -442,16 +451,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setEmailCompanyConfig(data);
 		} catch (error) {
 			console.error('Erro ao carregar os emails registados:', error);
-		}
-	}
-
-	// Função para carregar os dados das configurações da empresa
-	const fetchCompanyConfig = async () => {
-		try {
-			const data = await apiService.fetchAllCompanyConfig();
-			setEntityData(data);
-		} catch (error) {
-			console.error('Erro ao carregar os empresas:', error);
 		}
 	}
 
@@ -524,36 +523,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	}
 
-	// Função para adicionar os dados da empresa
-	const handleAddCompanyData = async (entityData: FormData) => {
-		try {
-			const data = await apiService.addCompanyConfig(entityData);
-			setEntityData(data);
-			toast.success(data.value || 'Dados da empresa adicionados com sucesso!');
-		} catch (error) {
-			console.error('Erro ao adicionar os dados da empresa:', error);
-		} finally {
-			fetchCompanyConfig();
-		}
-	}
-
-	// Função para atualizar os dados da empresa
-	const handleUpdateCompanyData = async (entityData: FormData) => {
-		try {
-			const data = await apiService.updateCompanyConfig(entityData);
-			setEntityData(data);
-			toast.success(data.value || 'Dados da empresa atualizados com sucesso!');
-		} catch (error) {
-			console.error('Erro ao atualizar os dados da empresa:', error);
-		} finally {
-			fetchCompanyConfig();
-		}
-	}
-
 	// Carregamento inicial dos dados de configuração de email
 	useEffect(() => {
 		fetchEmailConfig();
-		fetchCompanyConfig();
 		fetchKioskConfig();
 	}, []);
 
@@ -1595,9 +1567,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para abrir o modal de licença
 	const toggleLicenseModal = () => setShowLicenseModal(!showLicenseModal);
 
-	// Função para abrir o modal da entidade
-	const toggleEntityModal = () => setShowEntityModal(!showEntityModal);
-
 	// Função para abrir o anydesk em uma nova janela
 	const handleAnydeskWindow = () => {
 		window.open('https://anydesk.com/pt');
@@ -1620,12 +1589,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		setShowLicenseModal(false);
 		fetchAllLicensesWithoutKey();
 	};
-
-	// Função para fechar o modal de entidades
-	const handleCloseEntityModal = () => {
-		setShowEntityModal(false);
-		fetchCompanyConfig();
-	}
 
 	return (
 		<ColorProvider>
@@ -1997,23 +1960,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
-									{(!isMobile || visibleGroup === 'configuracoes nclock') && (
-										<div className="btn-group" role="group">
-											<div className='icon-text-informacoes' style={{ marginTop: 13 }}>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-entidades" disabled>
-													<span className="icon">
-														<img src={settings} alt="botão opções" />
-													</span>
-													<span className="text">Opções</span>
-												</Button>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nclock')}>
-										<span className="title">Configurações</span>
-									</div>
-								</div>
-								<div className="group">
 									{(!isMobile || visibleGroup === 'logs naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-informacoes'>
@@ -2095,6 +2041,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('modulos naccess')}>
 										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nclock') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-informacoes' style={{ marginTop: 13 }}>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-entidades" disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nclock')}>
+										<span className="title">Configurações</span>
 									</div>
 								</div>
 							</div>
@@ -2321,6 +2284,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 										<span className="title">Módulos</span>
 									</div>
 								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes naccess') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes naccess')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -2461,6 +2441,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 										<span className="title">Módulos</span>
 									</div>
 								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nvisitor') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nvisitor')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -2595,6 +2592,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 										<span className="title">Módulos</span>
 									</div>
 								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nview') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nview')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -2719,6 +2733,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nsecur')}>
 										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nsecur') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nsecur')}>
+										<span className="title">Configurações</span>
 									</div>
 								</div>
 							</div>
@@ -2851,12 +2882,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Link to="/nkiosk/nkioskcounter" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<Button /* to="/nkiosk/nkioskcounter" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
 														<img src={count} alt="botão contador" />
 													</span>
 													<span className="text">Contador</span>
-												</Link>
+												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nkiosk/nkioskoccurrences" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
@@ -2987,7 +3018,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 										</div>
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('opcoes nkiosk')}>
-										<span className="title">Opções</span>
+										<span className="title">Configurações</span>
 									</div>
 								</div>
 							</div>
@@ -3136,6 +3167,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nled')}>
 										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nled') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nled')}>
+										<span className="title">Configurações</span>
 									</div>
 								</div>
 							</div>
@@ -3447,12 +3495,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button onClick={toggleEntityModal} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+												<Link to="/configs/entities" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={departments} alt="botão entidade" />
 													</span>
 													<span className="text">Entidade</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Button onClick={toggleLicenseModal} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" >
@@ -3659,7 +3707,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						onClose={() => setShowEmailModal(false)}
 						onSave={handleAddEmailConfig}
 						onUpdate={handleUpdateEmailConfig}
-						entity={emailCompanyConfig}
+						entity={emailCompanyConfig || {}}
 						fields={emailFields}
 						title='Opções de Email'
 					/>
@@ -3670,7 +3718,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						onClose={() => setShowKioskModal(false)}
 						onSave={handleAddKioskConfig}
 						onUpdate={handleUpdateKioskConfig}
-						entity={kioskConfig}
+						entity={kioskConfig || {}}
 						fields={kioskConfigFields}
 						title='Opções de Quiosque'
 					/>
@@ -3709,17 +3757,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 						onClose={handleCloseLicenseModal}
 						onUpdate={handleUpdateLicense}
 						fields={licenseFields}
-					/>
-				)}
-				{showEntityModal && entityData && (
-					<EntityModal
-						open={showEntityModal}
-						onClose={handleCloseEntityModal}
-						onUpdate={handleUpdateCompanyData}
-						onSave={handleAddCompanyData}
-						entity={entityData}
-						fields={entityFields}
-						title='Entidades'
 					/>
 				)}
 			</nav>

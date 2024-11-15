@@ -4,21 +4,22 @@ import { useColor } from "../../../context/ColorContext";
 import { PolarArea } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NkioskGraph = () => {
     const { navbarColor, footerColor } = useColor();
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
     const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
     const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
     const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
-    const deviceSN = 'AGB7234900595';
     const eventDoorId2 = '2';
     const eventDoorId3 = '3';
     const eventDoorId4 = '4';
@@ -26,29 +27,64 @@ export const NkioskGraph = () => {
     // Função para buscar os dados para os gráficos
     const fetchAllData = async () => {
         try {
-            const mbData = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
-            const coinData = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN);
-            const cardData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, deviceSN);
-            const kioskData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, deviceSN);
-            const vpData = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId3, deviceSN);
-            setPayTerminal(mbData);
-            setPayCoins(coinData);
-            setMoveCard(cardData);
-            setMoveKiosk(kioskData);
-            setMoveVP(vpData);
+            if (devices.length === 0) {
+                console.error('Não há dispositivos para buscar dados');
+                return;
+            }
 
-            const totalMove = cardData.concat(kioskData);
+            const mbPromises = devices.map(device =>
+                apiService.fetchKioskTransactionsByMBAndDeviceSN()
+            );
+            const cardPromises = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, device.serialNumber)
+            );
+            const coinPromises = devices.map(device =>
+                apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, device.serialNumber)
+            );
+            const vpPromises = devices.map(device =>
+                apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId3, device.serialNumber)
+            );
+            const kioskPromises = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, device.serialNumber)
+            );
 
+            const [mbResults, cardResults, coinResults, vpResults, kioskResults] = await Promise.all([
+                Promise.all(mbPromises),
+                Promise.all(cardPromises),
+                Promise.all(coinPromises),
+                Promise.all(vpPromises),
+                Promise.all(kioskPromises)
+            ]);
+
+            const combinedMBData = mbResults.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const combinedCardData = cardResults.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const combinedCoinData = coinResults.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const combinedVPData = vpResults.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const combinedKioskData = kioskResults.filter(data => Array.isArray(data) && data.length > 0).flat();
+
+            setPayTerminal(combinedMBData);
+            setPayCoins(combinedCoinData);
+            setMoveCard(combinedCardData);
+            setMoveVP(combinedVPData);
+            setMoveKiosk(combinedKioskData);
+
+            const totalMove = combinedCardData.concat(combinedKioskData);
             setTotalMovements(totalMove);
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao buscar os dados:', error);
+            setPayTerminal([]);
+            setPayCoins([]);
+            setMoveCard([]);
+            setMoveKiosk([]);
+            setMoveVP([]);
+            setTotalMovements([]);
         }
     };
 
     // UseEffect para buscar os dados
     useEffect(() => {
         fetchAllData();
-    }, []);
+    }, [devices]);
 
     // Função para agrupar os dados por mês com base no campo correto
     const groupByMonth = <T extends KioskTransactionMB | KioskTransactionCard>(
@@ -94,7 +130,7 @@ export const NkioskGraph = () => {
                     }
                 }
             } else {
-                console.warn(`Campo ${String(dateField)} inválido ou não é string no item ${index}`, item);
+                console.error(`Campo ${String(dateField)} inválido ou não é string no item ${index}`, item);
             }
         });
 
@@ -136,7 +172,7 @@ export const NkioskGraph = () => {
                 borderWidth: 1
             }
         ]
-    };   
+    };
 
     return (
         <div className="dashboard-container">

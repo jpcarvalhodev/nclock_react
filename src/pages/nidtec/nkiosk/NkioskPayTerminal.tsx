@@ -165,11 +165,6 @@ export const NkioskPayTerminal = () => {
         })
     );
 
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable = Array.from(
-        new Map(filteredDataTable.map(item => [item.id, item])).values()
-    );
-
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
         .filter(field => selectedColumns.includes(field.key))
@@ -212,7 +207,7 @@ export const NkioskPayTerminal = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={uniqueFilteredDataTable} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -291,7 +286,7 @@ export const NkioskPayTerminal = () => {
                             <div className='table-css'>
                                 <DataTable
                                     columns={columns}
-                                    data={uniqueFilteredDataTable}
+                                    data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     paginationPerPage={15}

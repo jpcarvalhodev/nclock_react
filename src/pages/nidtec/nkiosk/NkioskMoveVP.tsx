@@ -5,7 +5,7 @@ import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
@@ -107,7 +107,7 @@ export const NkioskMoveVP = () => {
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = moveVP.filter(moveVPs => selectedDevicesIds.includes(moveVPs.deviceSN));
+            const filtered = moveVP.filter(moveVPs => selectedDevicesIds.includes(moveVPs.deviceSN) || selectedDevicesIds.includes(moveVPs.tpId));
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(moveVP);
@@ -154,27 +154,22 @@ export const NkioskMoveVP = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredDevices.filter(moveCards =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(moveCards).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
-
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable: KioskTransactionCard[] = Array.from(
-        new Set(filteredDataTable.map(item => item.eventTime))
-    ).map(eventTime => {
-        return filteredDataTable.find(item => item.eventTime === eventTime);
-    }).filter((item): item is KioskTransactionCard => item !== undefined);
+    const filteredDataTable = useMemo(() => {
+        return filteredDevices.filter(moveCards =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            ) &&
+            Object.values(moveCards).some(value => {
+                if (value == null) {
+                    return false;
+                } else if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            })
+        );
+    }, [filteredDevices, filters, filterText]);
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
@@ -271,7 +266,7 @@ export const NkioskMoveVP = () => {
                             <div className='table-css'>
                                 <DataTable
                                     columns={columns}
-                                    data={uniqueFilteredDataTable}
+                                    data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     paginationPerPage={15}

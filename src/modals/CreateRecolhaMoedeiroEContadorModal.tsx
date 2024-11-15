@@ -135,7 +135,6 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                 const count = await apiService.fetchContagemSNTransacoes();
                 const deviceCount = count.find((c: any) => c.serialNumber === selectedOption.serialNumber);
                 if (selectedOption.serialNumber === deviceCount.serialNumber) {
-                    console.log(amounts?.amount ? deviceCount.contagemTransacoes * amounts.amount : 0,)
                     setFormData(prevState => ({
                         ...prevState,
                         valorTotalSistema: amounts?.amount ? deviceCount.contagemTransacoes * amounts.amount : 0,

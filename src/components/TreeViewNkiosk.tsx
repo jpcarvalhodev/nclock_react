@@ -7,6 +7,7 @@ import { Devices, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { useLocation } from 'react-router-dom';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -73,6 +74,8 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [deviceData, setDeviceData] = useState<Devices[]>([]);
     const [mbData, setMBData] = useState<MBDevice[]>([]);
+    const [treeViewTitleColor, setTreeViewTitleColor] = useState('#009739');
+    const location = useLocation();
     const selectionChangedRef = { current: false };
 
     // Função para buscar os dados dos dispositivos
@@ -203,9 +206,15 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
         }
     }, [selectedDevicesIds]);
 
+    // Atualiza a cor do título da árvore de acordo com a rota
+    useEffect(() => {
+        const newColor = location.pathname.endsWith('terminalcloseopen') ? '#000000' : '#009739';
+        setTreeViewTitleColor(newColor);
+    }, [location.pathname]);  
+
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text' style={{ color: '#009739' }}>Filtros</p>
+            <p className='treeview-title-text' style={{ color: treeViewTitleColor }}>Filtros</p>
             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
             <Box className="treeViewFlexItem">
                 <RichTreeView

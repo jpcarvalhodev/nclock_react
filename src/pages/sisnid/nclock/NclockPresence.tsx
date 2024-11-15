@@ -171,6 +171,13 @@ export const NclockPresence = () => {
         sortable: true
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredAttendances.filter(attendances =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(attendances[key]) === String(filters[key])
+        )
+    );
+
     // Adicionando as outras colunas
     const otherColumns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
@@ -200,7 +207,7 @@ export const NclockPresence = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: (row: EmployeeAttendanceTimes) => {
@@ -218,13 +225,6 @@ export const NclockPresence = () => {
                 }
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = filteredAttendances.filter(attendances =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(attendances[key]) === String(filters[key])
-        )
-    );
 
     // Combinando colunas, com a coluna de Presença primeiro
     const columns: TableColumn<EmployeeAttendanceTimes>[] = [presenceColumn, ...otherColumns];

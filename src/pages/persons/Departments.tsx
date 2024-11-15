@@ -159,6 +159,13 @@ export const Departments = () => {
         return acc;
     }, {});
 
+    // Filtra os dados da tabela
+    const filteredDataTable = departments.filter(department =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(department[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -166,19 +173,12 @@ export const Departments = () => {
             name: (
                 <>
                     {columnNamesMap[columnKey]}
-                    <SelectFilter column={columnKey} setFilters={setFilters} data={departments} />
+                    <SelectFilter column={columnKey} setFilters={setFilters} data={filteredDataTable} />
                 </>
             ),
             selector: (row: Record<string, any>) => row[columnKey],
             sortable: true,
         }));
-
-    // Filtra os dados da tabela
-    const filteredDataTable = departments.filter(department =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(department[key]) === String(filters[key])
-        )
-    );
 
     // Abre o modal de edição
     const handleEditDepartment = (department: Department) => {

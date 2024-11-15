@@ -11,9 +11,10 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { KioskTransactionMB, MBDevice, } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
-import { Line } from "react-chartjs-2";
+import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
+import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -55,7 +56,8 @@ export const NkioskListPayments = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [lineChartData, setLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
     const eventDoorId = '2';
 
     // Função para buscar as listagens de pagamentos em MB
@@ -199,6 +201,21 @@ export const NkioskListPayments = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = listPayments.filter(payTerminals => selectedDevicesIds.includes(payTerminals.deviceSN) || selectedDevicesIds.includes(payTerminals.tpId));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(listPayments);
+        }
+    }, [selectedDevicesIds, listPayments]); 
+
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -235,7 +252,7 @@ export const NkioskListPayments = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = useMemo(() => {
-        return listPayments.filter(listPayment =>
+        return filteredDevices.filter(listPayment =>
             Object.keys(filters).every(key =>
                 filters[key] === "" || (listPayment[key] != null && String(listPayment[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&
@@ -251,12 +268,7 @@ export const NkioskListPayments = () => {
                 }
                 return false;
             }));
-    }, [listPayments, filters, filterText]);
-
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable = Array.from(
-        new Map(filteredDataTable.map(item => [item.id, item])).values()
-    );
+    }, [listPayments, filters, filterText, filteredDevices]);
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -321,40 +333,6 @@ export const NkioskListPayments = () => {
     // Calcula o total do valor dos pagamentos
     const totalAmount = totalAmountTransactions + totalAmountFixed;
 
-    // Calcula o montante total de pagamentos por mês
-    const calculateMonthlyTotals = (transactions: KioskTransactionMB[]) => {
-        const monthlyTotals = Array(12).fill(0);
-        transactions.forEach(transaction => {
-            if (transaction.timestamp && transaction.amount) {
-                const date = new Date(transaction.timestamp);
-                const month = date.getMonth();
-                const amount = parseFloat(transaction.amount.replace(',', '.'));
-                if (!isNaN(amount)) {
-                    monthlyTotals[month] += amount;
-                }
-            }
-        });
-        return monthlyTotals;
-    };
-
-    // Atualiza os dados do gráfico com base nos pagamentos filtrados
-    useEffect(() => {
-        const monthlyTotals = calculateMonthlyTotals(listPayments);
-        const newLineData = {
-            labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-            datasets: [
-                {
-                    label: 'Total de Pagamentos por Mês',
-                    data: monthlyTotals,
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }
-            ]
-        };
-        setLineChartData(newLineData);
-    }, [listPayments]);
-
     // Função para gerar os dados com nomes substituídos para o export/print
     const payTerminalsCoinsWithNames = listPayments.map(transaction => {
         const terminalMatch = terminalData.find(terminal => terminal.id === transaction.tpId);
@@ -373,73 +351,72 @@ export const NkioskListPayments = () => {
 
     return (
         <TerminalsProvider>
-            <div className="dashboard-container">
+            <div className="main-container">
                 <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='filter-refresh-add-edit-upper-class'>
-                    <div className="datatable-title-text">
-                        <span style={{ color: '#009739' }}>Listagem de Pagamentos</span>
-                    </div>
-                    <div className="datatable-header">
-                        <div>
-                            <input
-                                className='search-input'
-                                type="text"
-                                placeholder="Pesquisa"
-                                value={filterText}
-                                onChange={e => setFilterText(e.target.value)}
-                            />
+                <div className='content-container'>
+                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                        <div className="treeview-container">
+                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                         </div>
-                        <div className="buttons-container-others">
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                            <ExportButton allData={payTerminalsCoinsWithNames} selectedData={selectedRows} fields={transactionMBFields} />
-                            <PrintButton data={payTerminalsCoinsWithNames} fields={transactionMBFields} />
+                        <div className="datatable-container">
+                            <div className="datatable-title-text">
+                                <span style={{ color: '#009739' }}>Listagem de Pagamentos</span>
+                            </div>
+                            <div className="datatable-header">
+                                <div>
+                                    <input
+                                        className='search-input'
+                                        type="text"
+                                        placeholder="Pesquisa"
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                    />
+                                </div>
+                                <div className="buttons-container-others">
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    <ExportButton allData={payTerminalsCoinsWithNames} selectedData={selectedRows} fields={transactionMBFields} />
+                                    <PrintButton data={payTerminalsCoinsWithNames} fields={transactionMBFields} />
+                                </div>
+                                <div className="date-range-search">
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={e => setStartDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <span> até </span>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={e => setEndDate(e.target.value)}
+                                        className='search-input'
+                                    />
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
+                                </div>
+                            </div>
+                            <div className='table-css'>
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={15}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="eventTime"
+                                />
+                                <div style={{ marginLeft: 10 }}>
+                                    <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
+                                </div>
+                            </div>
                         </div>
-                        <div className="date-range-search">
-                            <input
-                                type="date"
-                                value={startDate}
-                                onChange={e => setStartDate(e.target.value)}
-                                className='search-input'
-                            />
-                            <span> até </span>
-                            <input
-                                type="date"
-                                value={endDate}
-                                onChange={e => setEndDate(e.target.value)}
-                                className='search-input'
-                            />
-                            <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
-                        </div>
-                    </div>
-                </div>
-                <div className='content-wrapper-payment'>
-                    <div className="chart-container">
-                        <div className="departments-groups-chart" style={{ flex: 1 }}>
-                            <h2 className="departments-groups-chart-text">Total de Pagamentos: { }</h2>
-                            <Line className="departments-groups-chart-data" data={lineChartData} />
-                        </div>
-                    </div>
-                    <div className="chart-container" style={{ flex: 1, overflowX: 'auto' }}>
-                        <DataTable
-                            columns={columns}
-                            data={uniqueFilteredDataTable}
-                            pagination
-                            paginationPerPage={15}
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            defaultSortAsc={true}
-                            defaultSortFieldId="timestamp"
-                        />
-                        <div style={{ marginLeft: 10 }}>
-                            <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
-                        </div>
-                    </div>
+                    </Split>
                 </div>
                 <Footer style={{ backgroundColor: footerColor }} />
                 {openColumnSelector && (

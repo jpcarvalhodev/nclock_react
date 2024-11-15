@@ -194,20 +194,12 @@ export const User = () => {
         setShowAddModal(true);
     }
 
-    // Função para formatar a data e a hora
-    function formatDateAndTime(input: string | Date): string {
-        const date = typeof input === 'string' ? new Date(input) : input;
-        const options: Intl.DateTimeFormatOptions = {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-        };
-        return new Intl.DateTimeFormat('pt-PT', options).format(date);
-    }
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredEmployees.filter(employee =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(employee[key]) === String(filters[key])
+        )
+    );
 
     // Define as colunas da tabela
     const columns: TableColumn<Employee>[] = employeeFields
@@ -216,15 +208,15 @@ export const User = () => {
             const formatField = (row: Employee) => {
                 switch (field.key) {
                     case 'birthday':
-                        return row.birthday ? formatDateAndTime(row[field.key]) : '';
+                        return new Date(row.birthday).toLocaleString();
                     case 'admissionDate':
-                        return row.admissionDate ? formatDateAndTime(row[field.key]) : '';
-                    case 'biIssuance':
-                        return row.biIssueDate ? formatDateAndTime(row[field.key]) : '';
+                        return new Date(row.admissionDate).toLocaleString();
+                    case 'bIissuance':
+                        return new Date(row.bIissuance).toLocaleString();
                     case 'biValidity':
-                        return row.biValidity ? formatDateAndTime(row[field.key]) : '';
+                        return new Date(row.biValidity).toLocaleString();
                     case 'exitDate':
-                        return row.exitDate ? formatDateAndTime(row[field.key]) : '';
+                        return new Date(row.exitDate).toLocaleString();
                     case 'status':
                         return row.status ? 'Activo' : 'Inactivo';
                     case 'statusEmail':
@@ -255,7 +247,7 @@ export const User = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={data.employees} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: (row: Employee) => {
@@ -265,21 +257,9 @@ export const User = () => {
                     return row[field.key] || '';
                 },
                 sortable: true,
-                cell: (row: Employee) => {
-                    if (field.key === 'enrollNumber') {
-                        return row[field.key] ?? '';
-                    }
-                    return row[field.key] || '';
-                }
+                cell: (row: Employee) => formatField(row)
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = filteredEmployees.filter(employee =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(employee[key]) === String(filters[key])
-        )
-    );
 
     // Função para editar um utente
     const handleEditEmployee = (employee: Employee) => {
@@ -346,8 +326,8 @@ export const User = () => {
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
-                                    <ExportButton allData={employees} selectedData={selectedRows} fields={employeeFields} />
-                                    <PrintButton data={employees} fields={employeeFields} />
+                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={employeeFields} />
+                                    <PrintButton data={filteredDataTable} fields={employeeFields} />
                                 </div>
                             </div>
                             <DataTable

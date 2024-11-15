@@ -135,6 +135,13 @@ export const TerminalCloseOpen = () => {
         setSelectedDeviceRows(state.selectedRows);
     };
 
+    // Filtra os dados da tabela de dispositivos
+    const filteredDeviceDataTable = filteredDevices.filter(device =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(device[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas de dispositivos
     const columns: TableColumn<MBDeviceCloseOpen>[] = mbDeviceCloseOpenFields
         .filter(field => selectedColumns.includes(field.key))
@@ -182,7 +189,7 @@ export const TerminalCloseOpen = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={mbOpenCloseDevices} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDeviceDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -190,13 +197,6 @@ export const TerminalCloseOpen = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.timestamp).getTime() - new Date(rowA.timestamp).getTime()
             };
         });
-
-    // Filtra os dados da tabela de dispositivos
-    const filteredDeviceDataTable = filteredDevices.filter(device =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(device[key]) === String(filters[key])
-        )
-    );
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {

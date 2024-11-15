@@ -523,8 +523,76 @@
 
 @media (min-width: 501px) and (max-width: 1200px) {
 
+    .pessoas-tab,
+    .dispositivos-tab,
+    .configuracao-tab,
+    .ajuda-tab,
+    .nclock-tab,
+    .naccess-tab,
+    .nvisitor-tab,
+    .npark-tab,
+    .ndoor-tab,
+    .npatrol-tab,
+    .ncard-tab,
+    .nview-tab,
+    .nsecur-tab,
+    .nsoftware-tab,
+    .nsystem-tab,
+    .napp-tab,
+    .ncyber-tab,
+    .ndigital-tab,
+    .nserver-tab,
+    .naut-tab,
+    .nequip-tab,
+    .nproject-tab,
+    .ncount-tab,
+    .nbuild-tab,
+    .ncaravan-tab,
+    .nmechanic-tab,
+    .nevents-tab,
+    .nservice-tab,
+    .ntask-tab,
+    .nproduction-tab,
+    .nticket-tab,
+    .nsales-tab,
+    .ninvoice-tab,
+    .ndoc-tab,
+    .nsports-tab,
+    .ngym-tab,
+    .nschool-tab,
+    .nclinic-tab,
+    .noptics-tab,
+    .ngold-tab,
+    .nsmart-tab,
+    .nreality-tab,
+    .nhologram-tab,
+    .npower-tab,
+    .ncharge-tab,
+    .ncity-tab,
+    .nkiosk-tab,
+    .nled-tab,
+    .nfire-tab,
+    .nfurniture-tab,
+    .npartition-tab,
+    .ndecor-tab,
+    .nping-tab,
+    .nconnect-tab,
+    .nlight-tab,
+    .ncomfort-tab,
+    .nsound-tab,
+    .nhome-tab {
+        font-size: 12px !important;
+        margin: 0;
+    }
+
     .logo {
-        font-size: 15px;
+        font-size: 12px;
+    }
+
+    .logoNG {
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
     }
 
     .title-container {

@@ -187,6 +187,13 @@ export const NclockMovement = () => {
     // Remove o campo de observação, número, nome do funcionário e o tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type' && field.key !== 'deviceNumber');
 
+    // Filtra os dados da tabela
+    const filteredDataTable = filteredAttendances.filter(attendances =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(attendances[key]) === String(filters[key])
+        )
+    );
+
     // Define as colunas
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
@@ -222,7 +229,7 @@ export const NclockMovement = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAttendances} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: (row: EmployeeAttendanceTimes) => {
@@ -240,13 +247,6 @@ export const NclockMovement = () => {
                 }
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = filteredAttendances.filter(attendances =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(attendances[key]) === String(filters[key])
-        )
-    );
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -317,8 +317,8 @@ export const NclockMovement = () => {
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em' />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
-                                    <ExportButton allData={filteredAttendances} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
-                                    <PrintButton data={filteredAttendances} fields={employeeAttendanceTimesFields} />
+                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
+                                    <PrintButton data={filteredDataTable} fields={employeeAttendanceTimesFields} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

@@ -153,6 +153,22 @@ export const NkioskGetCoins = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = getCoins.filter(getCoin =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(getCoin).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
+    );
+
     // Define as colunas da tabela
     const columns: TableColumn<RecolhaMoedeiroEContador>[] = recolhaMoedeiroEContadorFields
         .filter(field => selectedColumns.includes(field.key))
@@ -186,7 +202,7 @@ export const NkioskGetCoins = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={getCoins} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -194,22 +210,6 @@ export const NkioskGetCoins = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.dataRecolha).getTime() - new Date(rowA.dataRecolha).getTime()
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = getCoins.filter(getCoin =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(getCoin).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
 
     // Calcula o total do valor das recolhas
     const totalAmount = filteredDataTable.reduce((total, getCoins) => {

@@ -173,21 +173,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         rangeSeparatorText: 'de',
     };
 
-    // Função para formatar a data e a hora
-    function formatDateAndTime(input: string | Date): string {
-        const date = typeof input === 'string' ? new Date(input) : input;
-        const options: Intl.DateTimeFormatOptions = {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-        };
-        return new Intl.DateTimeFormat('pt-PT', options).format(date);
-    }
-
     // Define as colunas da tabela
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
@@ -195,15 +180,15 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             const formatField = (row: Employee) => {
                 switch (field.key) {
                     case 'birthday':
-                        return row.birthday ? formatDateAndTime(row[field.key]) : '';
+                        return new Date(row.birthday).toLocaleString();
                     case 'admissionDate':
-                        return row.admissionDate ? formatDateAndTime(row[field.key]) : '';
-                    case 'biIssuance':
-                        return row.biIssuance ? formatDateAndTime(row[field.key]) : '';
+                        return new Date(row.admissionDate).toLocaleString();
+                    case 'bIissuance':
+                        return new Date(row.bIissuance).toLocaleString();
                     case 'biValidity':
-                        return row.biValidity ? formatDateAndTime(row[field.key]) : '';
+                        return new Date(row.biValidity).toLocaleString();
                     case 'exitDate':
-                        return row.exitDate ? formatDateAndTime(row[field.key]) : '';
+                        return new Date(row.exitDate).toLocaleString();
                     case 'status':
                         return row.status ? 'Activo' : 'Inactivo';
                     case 'statusEmail':
@@ -240,7 +225,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={data.employees} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredData} />
                     </>
                 ),
                 selector: (row: Employee) => {
@@ -250,12 +235,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                     return row[field.key] || '';
                 },
                 sortable: true,
-                cell: (row: Employee) => {
-                    if (field.key === 'enrollNumber') {
-                        return row[field.key] ?? '';
-                    }
-                    return row[field.key] || '';
-                }
+                cell: (row: Employee) => formatField(row)
             };
         });
 

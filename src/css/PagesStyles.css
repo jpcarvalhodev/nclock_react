@@ -54,6 +54,25 @@ body {
     background: white;
     margin: 10px;
     max-height: 550px;
+    max-width: 50%;
+}
+
+.carousel-chart-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
+    border-radius: 5px;
+    background: white;
+    margin: 10px;
+    max-height: 550px;
+    max-width: 50%;
+}
+
+#carousel-chart .carousel .control-dots {
+    bottom: -15px !important;
 }
 
 .dashboard-cards-container {
@@ -238,7 +257,7 @@ body {
     font-size: 14px;
 }
 
-.footer-left {
+.footer-center {
     flex-grow: 1;
     display: flex;
     justify-content: center;
@@ -427,6 +446,7 @@ body {
     background: white;
     margin: 10px;
     max-height: 34rem;
+    max-width: 50%;
 }
 
 .dashboard-carousel-container-pages-no-title {
@@ -441,6 +461,7 @@ body {
     margin: 10px;
     max-height: 34.4rem;
     margin-top: 70px;
+    max-width: 50%;
 }
 
 .dashboard-carousel-container-main {
@@ -454,6 +475,7 @@ body {
     background: white;
     max-height: 37rem;
     margin: 10px;
+    max-width: 50%;
 }
 
 .img-carousel {
@@ -679,10 +701,6 @@ body {
         margin-left: 0;
         width: 100%;
         text-align: center;
-    }
-
-    .footer-right {
-        margin-top: 10px;
     }
 
     .main-container {

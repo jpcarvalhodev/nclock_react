@@ -171,13 +171,6 @@ export const NkioskMoveCard = () => {
         })
     );
 
-    // Remove IDs duplicados na tabela caso existam
-    const uniqueFilteredDataTable: KioskTransactionCard[] = Array.from(
-        new Set(filteredDataTable.map(item => item.eventTime))
-    ).map(eventTime => {
-        return filteredDataTable.find(item => item.eventTime === eventTime);
-    }).filter((item): item is KioskTransactionCard => item !== undefined);
-
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
         .filter(field => selectedColumns.includes(field.key))
@@ -272,7 +265,7 @@ export const NkioskMoveCard = () => {
                             <div className='table-css'>
                                 <DataTable
                                     columns={columns}
-                                    data={uniqueFilteredDataTable}
+                                    data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     paginationPerPage={15}

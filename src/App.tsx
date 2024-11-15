@@ -133,6 +133,7 @@ import { AdsProvider } from './context/AdsContext';
 import { ForgotPassword } from './pages/login&forgot/ForgotPassword';
 import { ResetPassword } from './pages/login&forgot/PasswordReset';
 import { NviewOnlineCameras } from './pages/sisnid/nview/NviewOnlineCameras';
+import { Entities } from './pages/configs/Entities';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -202,6 +203,7 @@ function AnimatedRoutes() {
               <Route path="/devices/AccessControls" element={<PageProtection><AccessControls /></PageProtection>} />
               <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
               <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
+              <Route path="/configs/entities" element={<PageProtection><Entities /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
               <Route path="/nclock/nclockdashboardlicensed" element={<PageProtection><NclockDashboardLicensed /></PageProtection>} />
               <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />

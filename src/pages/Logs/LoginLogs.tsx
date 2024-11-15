@@ -111,6 +111,22 @@ export const LoginLogs = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Filtra os dados da tabela
+    const filteredDataTable = logs.filter(getCoin =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(getCoin).some(value => {
+            if (value == null) {
+                return false;
+            } else if (value instanceof Date) {
+                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+            } else {
+                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+            }
+        })
+    );
+
     // Define as colunas da tabela
     const columns: TableColumn<Logs>[] = logsFields
         .filter(field => selectedColumns.includes(field.key))
@@ -129,7 +145,7 @@ export const LoginLogs = () => {
                 name: (
                     <>
                         {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={logs} />
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
                 selector: row => formatField(row),
@@ -137,22 +153,6 @@ export const LoginLogs = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.createdDate).getTime() - new Date(rowA.createdDate).getTime()
             };
         });
-
-    // Filtra os dados da tabela
-    const filteredDataTable = logs.filter(getCoin =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(getCoin).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    );
 
     return (
         <div className="main-container">
@@ -174,8 +174,8 @@ export const LoginLogs = () => {
                     <div className="buttons-container-others">
                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLogs} />
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={logs} selectedData={selectedRows} fields={logsFields} />
-                        <PrintButton data={logs} fields={logsFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={logsFields} />
+                        <PrintButton data={filteredDataTable} fields={logsFields} />
                     </div>
                     <div className="date-range-search">
                         <input
