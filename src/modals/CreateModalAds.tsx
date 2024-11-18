@@ -76,7 +76,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     useEffect(() => {
         const username = localStorage.getItem('username');
         if (open && username) {
-            setFormData((prevData) => ({ ...prevData, Creador: username }));
+            setFormData({ ...initialValues, Creador: username });
         } else {
             setFormData({});
             setFiles([]);
@@ -163,6 +163,12 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
             default:
                 return '';
         }
+    };
+
+    // Função para fechar o modal
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
     };
 
     // Função para remover um ficheiro
@@ -341,7 +347,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-secondary" onClick={handleClose}>
                     Fechar
                 </Button>
                 <Button variant="outline-primary" onClick={handleCheckForSave}>

@@ -65,6 +65,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     useEffect(() => {
         if (open) {
             fetchEntityData();
+            setFormData(initialValues);
         } else {
             setFormData({});
         }
@@ -96,10 +97,10 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
             const response = await url();
             if (response) {
                 const data: CodeItem[] = response
-                
+
                 if (requiresNextCode) {
                     const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code ?? 0), 0) + 1;
-                    
+
                     setFormData(prevState => ({
                         ...prevState,
                         code: maxCode
@@ -111,7 +112,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
                 }
                 if (requiresNextOrder) {
                     const maxOrder = data.reduce((max: number, item: CodeItem) => Math.max(max, item.order ?? 0), 0) + 1;
-                    
+
                     setFormData(prevState => ({
                         ...prevState,
                         order: maxOrder
@@ -121,12 +122,18 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
                         ...prevState,
                     }));
                 }
-            } 
+            }
         } catch (error) {
             console.error(`Erro ao buscar dados de ${entityType}:`, error);
             toast.error(`Erro ao conectar ao servidor para ${entityType}`);
         }
     };
+
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -178,7 +185,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
                 </form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>
             </Modal.Footer>
         </Modal>

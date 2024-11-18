@@ -35,6 +35,7 @@ interface Field {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -43,7 +44,7 @@ interface UpdateModalProps<T extends Entity> {
 }
 
 // Exporta o componente
-export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, entity, entityType, fields }: UpdateModalProps<T>) => {
+export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, entityType, fields }: UpdateModalProps<T>) => {
     const {
         fetchAllEmployees,
         fetchAllDepartments,
@@ -292,6 +293,13 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         rangeSeparatorText: 'de',
     };
 
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { departmentID, groupID, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as Partial<T>);
+    };
+
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
@@ -437,7 +445,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                         <Col md={7}>
                             <h5>Funcionários</h5>
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
-                            <DataTable
+                                <DataTable
                                     columns={employeeColumns}
                                     data={employeeData}
                                     customStyles={customStyles}
@@ -460,6 +468,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                 </Form>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>

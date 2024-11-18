@@ -109,7 +109,7 @@ export const zoneFields = [
 ];
 
 export const employeeAttendanceTimesFields = [
-    { key: 'attendanceTime', label: 'Data e Hora de presença', type: 'date', required: true },
+    { key: 'attendanceTime', label: 'Data e Hora de presença', type: 'datetime-local', required: true },
     { key: 'deviceId', label: 'Equipamento', type: 'dropdown' },
     { key: 'deviceNumber', label: 'Número do Equipamento', type: 'number' },
     { key: 'employeeId', label: 'Funcionário', type: 'dropdown', required: true },
@@ -194,7 +194,7 @@ export const adsFields = [
 
 export const transactionFields = [
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'cardNo', label: 'Número do Utilizador', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'ID do Evento', type: 'number' },
     { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
@@ -216,7 +216,7 @@ export const transactionMBFields = [
 ];
 
 export const transactionCardFields = [
-    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'cardNo', label: 'Número do Utilizador', type: 'number' },
     { key: 'nameUser', label: 'Nome do Utilizador', type: 'string' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },

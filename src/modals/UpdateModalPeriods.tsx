@@ -24,13 +24,14 @@ interface Field {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
     title: string;
 }
 
-export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: UpdateModalProps<T>) => {
+export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -81,6 +82,13 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
             ...prevState,
             [name]: parsedValue
         }));
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { id, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
     };
 
     // Função para lidar com o clique em guardar
@@ -217,6 +225,7 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                 </Form>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>

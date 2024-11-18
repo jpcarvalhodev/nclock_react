@@ -24,6 +24,7 @@ interface Field {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -31,7 +32,7 @@ interface UpdateModalProps<T extends Entity> {
 }
 
 // Define o componente
-export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
@@ -117,6 +118,13 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
     const resetToDefaultAvatar = () => {
         setProfileImage(modalAvatar);
         setFormData({ ...formData, photo: '' });
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { zoneID, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
     };
 
     // Atualiza o estado do componente com o evento de seleção de arquivo
@@ -304,6 +312,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, en
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>

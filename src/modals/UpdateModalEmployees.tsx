@@ -43,7 +43,6 @@ interface UpdateModalProps<T extends Entity> {
 // Define o componente
 export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
   const {
-    fetchAllEmployees,
     fetchAllDepartments,
     fetchAllGroups,
     fetchEmployeeCardData,

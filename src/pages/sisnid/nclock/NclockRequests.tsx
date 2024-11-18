@@ -56,6 +56,7 @@ export const NclockRequests = () => {
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [filters, setFilters] = useState<Filters>({});
+    const [initialData, setInitialData] = useState<Partial<EmployeeAttendanceTimes> | null>(null);
 
     // Função para buscar todos as assiduidades
     const fetchRequests = () => {
@@ -172,27 +173,18 @@ export const NclockRequests = () => {
     // Remove o campo de número, nome, modo de entrada/saída e tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'inOutMode' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
 
-    // Função para formatar a data e a hora
-    function formatDateAndTime(input: string | Date): string {
-        const date = typeof input === 'string' ? new Date(input) : input;
-        const options: Intl.DateTimeFormatOptions = {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-        };
-        return new Intl.DateTimeFormat('pt-PT', options).format(date);
-    }
-
     // Filtra os dados da tabela
     const filteredDataTable = filteredAttendances.filter(attendances =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )
     );
+
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {
+        setInitialData(attendance);
+        setShowAddAttendanceModal(true);
+    }
 
     // Define as colunas
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
@@ -201,7 +193,7 @@ export const NclockRequests = () => {
             const formatField = (row: EmployeeAttendanceTimes) => {
                 switch (field.key) {
                     case 'attendanceTime':
-                        return formatDateAndTime(row[field.key]);
+                        return new Date(row.attendanceTime).toLocaleString() || '';
                     case 'employeeId':
                         return row.employeeName;
                     case 'inOutMode':
@@ -226,19 +218,9 @@ export const NclockRequests = () => {
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
                     </>
                 ),
-                selector: (row: EmployeeAttendanceTimes) => {
-                    if (field.key === 'attendanceTime') {
-                        return new Date(row[field.key]).getTime();
-                    }
-                    return formatField(row);
-                },
+                selector: row => formatField(row),
                 sortable: true,
-                cell: (row: EmployeeAttendanceTimes) => {
-                    if (field.key === 'attendanceTime') {
-                        return new Date(row.timestamp).toLocaleString();
-                    }
-                    return formatField(row);
-                }
+                sortFunction: (rowA, rowB) => new Date(rowB.attendanceTime).getTime() - new Date(rowA.attendanceTime).getTime()
             };
         });
 
@@ -346,7 +328,7 @@ export const NclockRequests = () => {
                                 selectableRowsHighlight
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
-                                defaultSortAsc={false}
+                                defaultSortAsc={true}
                                 defaultSortFieldId="attendanceTime"
                             />
                         </div>
@@ -360,7 +342,7 @@ export const NclockRequests = () => {
                         onSave={addAttendance}
                         title='Adicionar Pedido de Assiduidade'
                         fields={employeeAttendanceTimesFields}
-                        initialValues={{}}
+                        initialValues={initialData || {}}
                         entityType='pedidos'
                     />
                 )}
@@ -371,6 +353,7 @@ export const NclockRequests = () => {
                         onUpdate={updateAttendance}
                         entity={selectedAttendances[0]}
                         fields={employeeAttendanceTimesFields}
+                        onDuplicate={handleDuplicate}
                         title='Atualizar Assiduidade'
                         entityType='pedidos'
                     />

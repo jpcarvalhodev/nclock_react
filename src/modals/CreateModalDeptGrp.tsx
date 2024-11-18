@@ -9,6 +9,7 @@ import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import DataTable from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
+import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -178,6 +179,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
+            setFormData(initialValues);
         } else {
             setFormData({});
         }
@@ -201,6 +203,12 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             }));
         }
     };
+
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -458,7 +466,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
             {showEmployeeModal && (

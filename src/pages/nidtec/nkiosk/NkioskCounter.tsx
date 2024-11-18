@@ -136,9 +136,9 @@ export const NkioskCounter = () => {
             const formatField = (row: RecolhaMoedeiroEContador) => {
                 switch (field.key) {
                     case 'dataRecolha':
-                        return new Date(row.dataRecolha).toLocaleString();
+                        return new Date(row.dataRecolha).toLocaleString() || '';
                     case 'dataFimIntervencao':
-                        return new Date(row.dataFimIntervencao).toLocaleString();
+                        return new Date(row.dataFimIntervencao).toLocaleString() || '';
                     case 'deviceID':
                         return devices.find(device => device.zktecoDeviceID === row.deviceID)?.deviceName || '';
                     default:
@@ -267,6 +267,7 @@ export const NkioskCounter = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleStartContador}
                 fields={recolhaMoedeiroEContadorFields}
+                initialValuesData={{}}
             />
         </div>
     );

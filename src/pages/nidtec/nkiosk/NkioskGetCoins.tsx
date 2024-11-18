@@ -16,6 +16,7 @@ import { RecolhaMoedeiroEContador } from "../../../helpers/Types";
 import { recolhaMoedeiroEContadorFields } from "../../../helpers/Fields";
 import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
+import { set } from "date-fns";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -45,6 +46,7 @@ export const NkioskGetCoins = () => {
     const [selectedRecolhaMoedeiro, setSelectedRecolhaMoedeiro] = useState<any>(null);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [initialData, setInitialData] = useState<Partial<RecolhaMoedeiroEContador> | null>(null);
 
     // Função para buscar as recolhas do moedeiro
     const fetchAllCoinRecoveredData = async () => {
@@ -169,6 +171,14 @@ export const NkioskGetCoins = () => {
         })
     );
 
+    // Define a função de duplicar funcionários
+    const handleDuplicate = (data: Partial<RecolhaMoedeiroEContador>) => {
+        setInitialData(data);
+        setShowAddModal(true);
+        setSelectedRecolhaMoedeiro(null);
+        setShowUpdateModal(false);
+    }
+
     // Define as colunas da tabela
     const columns: TableColumn<RecolhaMoedeiroEContador>[] = recolhaMoedeiroEContadorFields
         .filter(field => selectedColumns.includes(field.key))
@@ -176,9 +186,9 @@ export const NkioskGetCoins = () => {
             const formatField = (row: RecolhaMoedeiroEContador) => {
                 switch (field.key) {
                     case 'dataRecolha':
-                        return new Date(row.dataRecolha).toLocaleString();
+                        return new Date(row.dataRecolha).toLocaleString() || '';
                     case 'dataFimRecolha':
-                        return new Date(row.dataFimRecolha).toLocaleString();
+                        return new Date(row.dataFimRecolha).toLocaleString() || '';
                     case 'deviceID':
                         return devices.find(device => device.zktecoDeviceID === row.deviceID)?.deviceName || 'Sem Dados';
                     case 'numeroMoedas':
@@ -316,6 +326,7 @@ export const NkioskGetCoins = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddRecolhaMoedeiro}
                 fields={recolhaMoedeiroEContadorFields}
+                initialValuesData={initialData || {}}
             />
             {selectedRecolhaMoedeiro && (
                 <UpdateRecolhaMoedeiroModal
@@ -324,6 +335,7 @@ export const NkioskGetCoins = () => {
                     onUpdate={handleUpdateRecolhaMoedeiro}
                     entity={selectedRecolhaMoedeiro}
                     fields={recolhaMoedeiroEContadorFields}
+                    onDuplicate={handleDuplicate}
                     title="Atualizar Recolha do Moedeiro"
                 />
             )}

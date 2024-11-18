@@ -137,6 +137,12 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
         validateForm();
     };
 
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -266,7 +272,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-secondary" onClick={handleClose}>
                     Fechar
                 </Button>
                 <Button variant="outline-primary" onClick={handleCheckForSave}>

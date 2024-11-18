@@ -43,7 +43,7 @@ interface Field {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
-    onDuplicate?: (entity: T) => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -688,8 +688,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 />
             )}
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
+                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>

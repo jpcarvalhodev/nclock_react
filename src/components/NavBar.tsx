@@ -1583,6 +1583,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para buscar o user logado e a imagem do perfil
 	const findUser = registeredUsers.find(user => user.userName === localStorage.getItem('username'));
 	const userImage = findUser?.profileImage ? `${apiService.baseURL?.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
+	console.log('userImage', userImage);
 
 	// Função para fechar o modal de licenças
 	const handleCloseLicenseModal = () => {
@@ -1646,7 +1647,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<div className='dropdown-content'>
-									<img src={userImage} className='profile-avatar' />
+									<img src={userImage} alt='foto de perfil' style={{ width: '40px', height: '40px', borderRadius: 50 }} />
 									<Dropdown.Item className='dropdown-button' onClick={logout}>Sair</Dropdown.Item>
 								</div>
 							</Dropdown.Menu>

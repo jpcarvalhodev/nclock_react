@@ -153,7 +153,7 @@ export const TerminalCloseOpen = () => {
                         const matchedDevice = mbDevices.find(device => device.id === row.tpId);
                         return matchedDevice ? matchedDevice.nomeQuiosque || '' : '';
                     case 'timestamp':
-                        return new Date(row.timestamp).toLocaleString();
+                        return new Date(row.timestamp).toLocaleString() || '';
                     case 'fechoImage':
                         const imageUrlFecho = row[field.key];
                         if (imageUrlFecho) {

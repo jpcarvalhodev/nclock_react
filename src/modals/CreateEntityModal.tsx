@@ -102,6 +102,12 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
         setFormData(prev => ({ ...prev, [name]: newValue }));
     };
 
+    // Função para lidar com o fechamento do modal
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    };
+
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
@@ -170,7 +176,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
                                 <img
                                     src={deviceImage || no_image}
                                     alt="Logo da entidade"
-                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '25%' }}
+                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '50%' }}
                                     onClick={triggerFileSelectPopup}
                                 />
                                 <div>
@@ -319,7 +325,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-secondary" onClick={handleClose}>
                     Fechar
                 </Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>

@@ -35,6 +35,7 @@ export const AccessControls = () => {
     const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredAccessControl, setFilteredAccessControl] = useState<AccessControl[]>([]);
+    const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(null);
 
     // Função para buscar a listagem de controle de acesso
     const fetchAccessControl = async () => {
@@ -153,6 +154,14 @@ export const AccessControls = () => {
         refreshAccessControl();
     };
 
+    // Define a função de duplicar funcionários
+    const handleDuplicate = (data: Partial<AccessControl>) => {
+        setInitialData(data);
+        setShowAddModal(true);
+        setSelectedAccessControl(null);
+        setShowUpdateModal(false);
+    }
+
     // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -197,11 +206,17 @@ export const AccessControls = () => {
             const formatField = (row: AccessControl) => {
                 switch (field.key) {
                     case 'doorName':
-                        return row.doorName === 'C3 Pro-door4' ? 'Video Porteiro' : 'Torniquete';
+                        if (row.doorName.endsWith('door3')) {
+                            return 'Torniquete';
+                        } else if (row.doorName.endsWith('door4')) {
+                            return 'Video Porteiro';
+                        } else {
+                            return row.doorName;
+                        }
                     case 'createDate':
-                        return new Date(row.createDate).toLocaleString();
+                        return new Date(row.createDate).toLocaleString() || '';
                     case 'updateDate':
-                        return new Date(row.updateDate).toLocaleString();
+                        return new Date(row.updateDate).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -321,7 +336,7 @@ export const AccessControls = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddAccessControl}
                 fields={accessControlFields}
-                initialValues={{}}
+                initialValues={initialData || {}}
             />
             {selectedAccessControl && (
                 <UpdateAccessControlModal
@@ -331,6 +346,7 @@ export const AccessControls = () => {
                     onUpdate={handleUpdateAccessControl}
                     fields={accessControlFields}
                     entity={selectedAccessControl}
+                    onDuplicate={handleDuplicate}
                 />
             )}
         </div>

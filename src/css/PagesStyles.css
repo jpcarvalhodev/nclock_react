@@ -14,6 +14,15 @@ body {
 .datatable-container {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    overflow: auto;
+    margin-left: 8px;
+}
+
+.map-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
 }
 
 .content-container {
@@ -21,12 +30,6 @@ body {
     flex-grow: 1;
     padding: 10px;
     overflow: auto;
-}
-
-.profile-avatar {
-    width: 40px !important;
-    height: 40px !important;
-    margin-bottom: 10px;
 }
 
 .dropdown-content {
@@ -280,12 +283,6 @@ body {
 .treeview-container {
     overflow: auto;
     min-width: 250px;
-}
-
-.datatable-container {
-    height: 100%;
-    overflow: auto;
-    margin-left: 8px;
 }
 
 .datatable-title-text {
@@ -625,12 +622,6 @@ body {
     height: auto;
 }
 
-.main-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
 .calendar-event {
     font-size: 10px;
 }
@@ -688,6 +679,16 @@ body {
 
 @media (max-width: 500px) {
 
+    .chart-container,
+    .calendar-container,
+    .carousel-container,
+    .cards-container,
+    .dashboard-carousel-container-main,
+    .dashboard-carousel-container-pages-no-title,
+    .carousel-chart-container {
+        max-width: 100%;
+    }
+
     .footer {
         flex-direction: column;
     }
@@ -696,7 +697,7 @@ body {
         font-size: 13px;
     }
 
-    .footer-left, 
+    .footer-left,
     .footer-right {
         margin-left: 0;
         width: 100%;
@@ -825,6 +826,16 @@ body {
 
 @media (min-width: 501px) and (max-width: 1200px) {
 
+    .chart-container,
+    .calendar-container,
+    .carousel-container,
+    .cards-container,
+    .dashboard-carousel-container-main,
+    .dashboard-carousel-container-pages-no-title,
+    .carousel-chart-container {
+        max-width: 100%;
+    }
+
     .profile-avatar {
         max-width: 30px;
         max-height: 30px;
@@ -863,6 +874,8 @@ body {
         display: grid !important;
         flex-direction: column;
         grid-template-columns: repeat(4, 1fr);
+        justify-items: center;
+        overflow-y: auto !important;
     }
 
     .card {

@@ -266,7 +266,7 @@ export const NkioskListMovements = () => {
                     case 'eventDoorId':
                         return row.eventDoorId === 4 ? 'Quiosque' : 'Torniquete';
                     case 'eventTime':
-                        return new Date(row.eventTime).toLocaleString();
+                        return new Date(row.eventTime).toLocaleString() || '';
                     default:
                         return value ?? '';
                 }

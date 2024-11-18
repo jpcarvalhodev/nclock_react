@@ -21,7 +21,7 @@ export interface Entity {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
-    onDuplicate?: (entity: T) => void;
+    onDuplicate?: (entity: Partial<T>) => void;
     onUpdate: (entity: Partial<T>) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -39,7 +39,7 @@ interface Field {
 }
 
 // Define o componente
-export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClose, onUpdate, fields, entity }: UpdateModalProps<T>) => {
+export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...entity, doorTimezoneList: [] });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -140,6 +140,13 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
             setShowDoorUpdateModal(true);
             setShowDoorSelectionModal(false);
         }
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { acId, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as Partial<T>);
     };
 
     // Função para lidar com a confirmação da seleção de porta
@@ -343,6 +350,9 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
+                    <Button variant="outline-info" onClick={handleDuplicateClick}>
+                        Duplicar
+                    </Button>
                     <Button variant="outline-secondary" onClick={handleCloseAllModals}>
                         Fechar
                     </Button>

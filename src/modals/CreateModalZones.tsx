@@ -35,7 +35,14 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        if (!open) {
+        if (open) {
+            setFormData(initialValues);
+            if (initialValues.photo) {
+                setProfileImage(initialValues.photo);
+            } else {
+                setProfileImage(null);
+            }
+        } else {
             setFormData({});
             setProfileImage(null);
         }
@@ -111,6 +118,12 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
             [name]: value
         }));
     };
+
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Verifica o formulário e chama a função de salvar
     const handleSaveClick = () => {
@@ -280,7 +293,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >

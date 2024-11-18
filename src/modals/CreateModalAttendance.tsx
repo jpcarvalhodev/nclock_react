@@ -1,11 +1,11 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { Employee } from '../helpers/Types';
-import * as apiService from "../helpers/apiService";
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -32,6 +32,9 @@ interface Props<T> {
 
 // Define o componente
 export const CreateModalAttendance = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
+    const {
+        fetchAllEmployees,
+      } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [dropdownData, setDropdownData] = useState<Record<string, Employee[]>>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -63,7 +66,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employees = await apiService.fetchAllEmployees();
+            const employees = await fetchAllEmployees();
             setDropdownData(prevState => ({
                 ...prevState,
                 employeeId: employees
@@ -78,6 +81,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
+            setFormData(initialValues);
         } else {
             setFormData({});
         }
@@ -128,6 +132,12 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             [name]: value
         }));
     };
+
+    // Função para lidar com o fechamento do modal
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Função para lidar com o clique no botão de guardar
     const handleSaveClick = () => {
@@ -307,7 +317,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                 })}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>

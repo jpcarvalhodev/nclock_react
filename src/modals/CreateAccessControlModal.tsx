@@ -80,15 +80,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
         if (open) {
-            setFormData((prevState) => ({
-                ...prevState,
+            setFormData({
+                ...initialValues,
+                doorTimezoneList: [],
                 createrName: localStorage.getItem('username') || '',
-            }));
+            });
             fetchDropdownOptions();
         } else {
-            setFormData({ ...initialValues, doorTimezoneList: [] });
+            setFormData({
+                ...initialValues,
+                doorTimezoneList: []
+            });
         }
-    }, [open]);
+    }, [open]);    
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: ChangeEvent<any>) => {
@@ -128,6 +132,12 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
             }));
         }
     };
+
+    // Função para fechar o modal
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
@@ -253,7 +263,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-secondary" onClick={handleClose}>
                     Fechar
                 </Button>
                 <Button variant="outline-primary" onClick={handleCheckForSave}>

@@ -16,41 +16,43 @@ interface SelectFilterProps {
 
 // Função de formatação de item de dados
 const formatDataItem = (item: DataItem, column: string) => {
+    const validDate = (dateString: string | Date) => {
+        const date = new Date(dateString);
+        return date.getTime() ? date.toLocaleString() : '';
+    };
+
     switch (column) {
         case 'birthday':
-            return new Date(item.birthday).toLocaleString() || '';
         case 'admissionDate':
-            return new Date(item.admissionDate).toLocaleString() || '';
         case 'bIissuance':
-            return new Date(item.bIissuance).toLocaleString() || '';
         case 'biValidity':
-            return new Date(item.biValidity).toLocaleString() || '';
         case 'exitDate':
-            return new Date(item.exitDate).toLocaleString() || '';
         case 'dateInserted':
-            return new Date(item.dateInserted).toLocaleString() || '';
         case 'dateUpdated':
-            return new Date(item.dateInserted).toLocaleString() || '';
-        case 'status':
-            return item.status ? 'Activo' : 'Inactivo';
-        case 'statusEmail':
-            return item.statusEmail ? 'Activo' : 'Inactivo';
-        case 'rgpdAut':
-            return item.rgpdAut ? 'Autorizado' : 'Não Autorizado';
-        case 'departmentId':
-            return item.departmentName || '';
-        case 'professionId':
-            return item.professionName || '';
-        case 'categoryId':
-            return item.categoryName || '';
-        case 'groupId':
-            return item.groupName || '';
-        case 'zoneId':
-            return item.zoneName || '';
-        case 'externalEntityId':
-            return item.externalEntityName || '';
         case 'attendanceTime':
-            return new Date(item.attendanceTime).toLocaleString() || '';
+        case 'productTime':
+        case 'createDate':
+        case 'updateDate':
+        case 'createTime':
+        case 'updateTime':
+        case 'eventTime':
+        case 'timestamp':
+        case 'dataRecolha':
+        case 'createdTime':
+        case 'dataCreate':
+            return validDate(item[column]);
+        case 'status':
+        case 'statusEmail':
+            return item[column] ? 'Activo' : 'Inactivo';
+        case 'rgpdAut':
+            return item[column] ? 'Autorizado' : 'Não Autorizado';
+        case 'departmentId':
+        case 'professionId':
+        case 'categoryId':
+        case 'groupId':
+        case 'zoneId':
+        case 'externalEntityId':
+            return item[column + 'Name'] || '';
         case 'employeeId':
             return item.employeeName;
         case 'inOutMode':
@@ -68,25 +70,9 @@ const formatDataItem = (item: DataItem, column: string) => {
                 }
             }
         case 'code':
-            return item.code === 0 ? "" : item.code;
         case 'machineNumber':
-            return item.code === 0 ? "" : item.machineNumber;
         case 'cardNumber':
-            return item.cardNumber === 0 ? "" : item.cardNumber;
-        case 'productTime':
-            return new Date(item.productTime).toLocaleString() || '';
-        case 'createDate':
-            return new Date(item.createDate).toLocaleString() || '';
-        case 'updateDate':
-            return new Date(item.updateDate).toLocaleString() || '';
-        case 'createTime':
-            return new Date(item.createTime).toLocaleString() || '';
-        case 'updateTime':
-            return new Date(item.updateTime).toLocaleString() || '';
-        case 'eventTime':
-            return new Date(item.eventTime).toLocaleString() || '';
-        case 'timestamp':
-            return new Date(item.timestamp).toLocaleString() || '';
+            return item[column] === 0 ? "" : item[column];
         case 'eventDoorId':
             switch (item.eventDoorId) {
                 case 1: return 'Terminal';
@@ -96,14 +82,14 @@ const formatDataItem = (item: DataItem, column: string) => {
                 default: return '';
             }
         case 'transactionType':
-            return item[item.transactionType] === 1 ? 'Multibanco' : 'Moedeiro';
+            return item[column] === 1 ? 'Multibanco' : 'Moedeiro';
         case 'estadoTerminal':
-            return item[item.estadoTerminal] ? 'Ligado' : 'Desligado';
+            return item[column] ? 'Ligado' : 'Desligado';
         case 'timeReboot':
-            return item[item.timeReboot] === '00:00:00' ? 'Sem tempo de reinício' : item[item.timeReboot];
+            return item[column] === '00:00:00' ? 'Sem tempo de reinício' : item[column];
         case 'clientTicket':
         case 'merchantTicket':
-            const imageUrl = item[item.clientTicket || item.merchantTicket];
+            const imageUrl = item[column];
             if (imageUrl) {
                 const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
                 const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
@@ -111,14 +97,8 @@ const formatDataItem = (item: DataItem, column: string) => {
             } else {
                 return 'Sem Ticket';
             }
-        case 'dataRecolha':
-            return new Date(item.dataRecolha).toLocaleString() || '';
-        case 'createdTime':
-            return new Date(item.createdTime).toLocaleString() || '';
-        case 'dataCreate':
-            return new Date(item.dataCreate).toLocaleString() || '';
         default:
-            return item[column]?.toString();
+            return item[column] ? item[column].toString() : ' ';
     }
 };
 

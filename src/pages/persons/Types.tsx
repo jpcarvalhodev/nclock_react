@@ -36,6 +36,7 @@ export const Types = () => {
     const [selectedExternalEntityType, setSelectedExternalEntityType] = useState<ExternalEntityTypes | null>(null);
     const [selectedExternalEntityTypeForDelete, setSelectedExternalEntityTypeForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [initialData, setInitialData] = useState<Partial<ExternalEntityTypes> | null>(null);
 
     // Função para buscar os tipos das entidades externas
     const fetchAllExternalEntityTypes = async () => {
@@ -164,6 +165,14 @@ export const Types = () => {
         )
     );
 
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<ExternalEntityTypes>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedExternalEntityType(null);
+        setShowUpdateModal(false);
+    }
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -243,7 +252,7 @@ export const Types = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddExternalEntityTypes}
                 fields={externalEntityTypeFields}
-                initialValues={{}}
+                initialValues={initialData || {}}
                 entityType="tipos"
             />
             {selectedExternalEntityType && (
@@ -253,6 +262,7 @@ export const Types = () => {
                     onUpdate={handleUpdateExternalEntityTypes}
                     entity={selectedExternalEntityType}
                     fields={externalEntityTypeFields}
+                    onDuplicate={handleDuplicate}
                     title="Atualizar Tipo"
                     entityType="tipos"
                 />

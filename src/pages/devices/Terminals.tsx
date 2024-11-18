@@ -104,7 +104,7 @@ export const Terminals = () => {
     const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [initialData, setInitialData] = useState<Devices | null>(null);
+    const [initialData, setInitialData] = useState<Partial<Devices> | null>(null);
     const [mainTabKey, setMainTabKey] = useState('tasks');
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
     const [userTabKey, setUserTabKey] = useState('users');
@@ -647,12 +647,6 @@ export const Terminals = () => {
         setShowUpdateModal(true);
     };
 
-    // Define a função de fechamento do modal de atualização
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-        setSelectedTerminal(null);
-    }
-
     // Define a função de abertura do modal de exclusão dos dispositivos
     const handleOpenDeleteModal = async (zktecoDeviceID: string) => {
         setSelectedDeviceToDelete(zktecoDeviceID);
@@ -660,10 +654,11 @@ export const Terminals = () => {
     };
 
     // Função que manipula a duplicação
-    const handleDuplicate = (devices: Devices) => {
+    const handleDuplicate = (devices: Partial<Devices>) => {
         setInitialData(devices);
-        handleCloseUpdateModal();
         setShowAddModal(true);
+        setShowUpdateModal(false);
+        setSelectedTerminal(null);
     };
 
     // Função que manipula o filtro de utilizadores
@@ -1009,7 +1004,7 @@ export const Terminals = () => {
         }
     }
 
-    // Função para sincronizar todos os utilizadores
+    /* // Função para sincronizar todos os utilizadores
     const handleSyncAllUsers = async () => {
         if (selectedTerminal) {
             setLoadingSyncAllUser(true);
@@ -1019,7 +1014,7 @@ export const Terminals = () => {
         } else {
             toast.error('Selecione um terminal primeiro!');
         }
-    }
+    } */
 
     // Função para manipular os movimentos
     const handleMovements = async () => {
@@ -1546,7 +1541,7 @@ export const Terminals = () => {
                     selectedTerminal && (
                         <UpdateModalDevices
                             open={showUpdateModal}
-                            onClose={handleCloseUpdateModal}
+                            onClose={() => setShowUpdateModal(false)}
                             onDuplicate={handleDuplicate}
                             onUpdate={updateDevice}
                             entity={selectedTerminal}

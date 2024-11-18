@@ -16,6 +16,7 @@ export interface Entity {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -33,7 +34,7 @@ interface Field {
 }
 
 // Define o componente
-export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -80,6 +81,13 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
             ...prevState,
             [name]: value
         }));
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { id, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as Partial<T>);
     };
 
     // Função para verificar se o formulário é válido antes de salvar
@@ -152,6 +160,9 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                    Duplicar
+                </Button>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

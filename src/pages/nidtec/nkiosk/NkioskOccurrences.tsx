@@ -136,7 +136,7 @@ export const NkioskOccurrences = () => {
             const formatField = (row: LimpezasEOcorrencias) => {
                 switch (field.key) {
                     case 'dataCreate':
-                        return new Date(row.dataCreate).toLocaleString();
+                        return new Date(row.dataCreate).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }

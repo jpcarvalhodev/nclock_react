@@ -55,13 +55,13 @@ export const NkioskMoveKiosk = () => {
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
             });
-    
+
             const allData = await Promise.all(promises);
-    
+
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-            
+
             setMoveKiosk(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos no quiosque:', error);
@@ -79,13 +79,13 @@ export const NkioskMoveKiosk = () => {
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate);
             });
-    
+
             const allData = await Promise.all(promises);
 
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-            
+
             setMoveKiosk(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos no quiosque:', error);
@@ -182,7 +182,7 @@ export const NkioskMoveKiosk = () => {
                     case 'eventDoorId':
                         return 'Quiosque';
                     case 'eventTime':
-                        return new Date(row.eventTime).toLocaleString();
+                        return new Date(row.eventTime).toLocaleString() || '';
                     default:
                         return value ?? '';
                 }
@@ -213,6 +213,9 @@ export const NkioskMoveKiosk = () => {
             deviceSN: deviceName,
         };
     });
+
+    // Calcula o valor total dos movimentos
+    const totalAmount = filteredDataTable.length;
 
     return (
         <div className="main-container">
@@ -275,6 +278,9 @@ export const NkioskMoveKiosk = () => {
                                 defaultSortAsc={true}
                                 defaultSortFieldId="eventTime"
                             />
+                        </div>
+                        <div style={{ marginLeft: 10 }}>
+                            <strong>Movimentos do Quiosque: </strong>{totalAmount}
                         </div>
                     </div>
                 </Split>

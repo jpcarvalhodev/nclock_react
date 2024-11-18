@@ -191,9 +191,10 @@ export const Employees = () => {
     // Define a função de duplicar funcionários
     const handleDuplicate = (data: Employee) => {
         setInitialData(data);
-        handleCloseUpdateModal();
         setShowAddModal(true);
-    }
+        setShowUpdateModal(false);
+        setSelectedEmployee(null);
+    };
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredEmployees.filter(employee =>
@@ -209,15 +210,15 @@ export const Employees = () => {
             const formatField = (row: Employee) => {
                 switch (field.key) {
                     case 'birthday':
-                        return new Date(row.birthday).toLocaleString();
+                        return new Date(row.birthday).toLocaleString() || '';
                     case 'admissionDate':
-                        return new Date(row.admissionDate).toLocaleString();
+                        return new Date(row.admissionDate).toLocaleString() || '';
                     case 'bIissuance':
-                        return new Date(row.bIissuance).toLocaleString();
+                        return new Date(row.bIissuance).toLocaleString() || '';
                     case 'biValidity':
-                        return new Date(row.biValidity).toLocaleString();
+                        return new Date(row.biValidity).toLocaleString() || '';
                     case 'exitDate':
-                        return new Date(row.exitDate).toLocaleString();
+                        return new Date(row.exitDate).toLocaleString() || '';
                     case 'status':
                         return row.status ? 'Activo' : 'Inactivo';
                     case 'statusEmail':
@@ -265,12 +266,6 @@ export const Employees = () => {
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
-    };
-
-    // Fecha o modal de edição de funcionário
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-        setSelectedEmployee(null);
     };
 
     // Define as opções de paginação de EN para PT
@@ -363,7 +358,7 @@ export const Employees = () => {
                 {selectedEmployee && (
                     <UpdateModalEmployees
                         open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
                         onDuplicate={handleDuplicate}
                         onUpdate={updateEmployeeAndCard}
                         entity={selectedEmployee}

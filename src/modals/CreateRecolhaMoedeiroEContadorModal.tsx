@@ -20,6 +20,7 @@ interface CreateModalProps<T> {
     onClose: () => void;
     onSave: (data: T) => void;
     fields: Field[];
+    initialValuesData: Partial<T>;
 }
 
 // Interface para os campos do formulário
@@ -39,11 +40,11 @@ const initialValues: Partial<RecolhaMoedeiroEContador> = {
 };
 
 // Define o componente
-export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
+export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValuesData }: CreateModalProps<T>) => {
     const {
         devices,
     } = useContext(TerminalsContext) as DeviceContextType;
-    const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>(initialValues);
+    const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>({ ...initialValues, ...initialValuesData });
     const [amounts, setAmounts] = useState<KioskConfig>();
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -53,7 +54,11 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
         if (open) {
             fetchRecolhas();
             fetchAmount();
-            setFormData({ ...initialValues });
+            if (initialValuesData.deviceID) {
+                setFormData({ ...initialValuesData });
+            } else {
+                setFormData({ ...initialValues });
+            }
         } else {
             setFormData({});
         }
@@ -156,7 +161,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<any>) => {
-        const { name, value, type } = e.target;
+        const { name, value } = e.target;
         let formattedValue = value;
 
         setFormData(prevState => {
@@ -177,6 +182,12 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
             return updatedState;
         });
     };
+
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
@@ -371,7 +382,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-secondary" onClick={handleClose}>
                     Fechar
                 </Button>
                 <Button variant="outline-primary" onClick={handleCheckForSave}>

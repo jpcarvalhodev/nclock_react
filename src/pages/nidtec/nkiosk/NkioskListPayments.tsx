@@ -286,7 +286,7 @@ export const NkioskListPayments = () => {
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
-                        return new Date(row.timestamp).toLocaleString();
+                        return new Date(row.timestamp).toLocaleString() || '';
                     case 'amount':
                         return `${row[field.key]}€`;
                     case 'clientTicket':

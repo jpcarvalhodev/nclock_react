@@ -16,6 +16,7 @@ interface UpdateModalProps<T extends Entity> {
     title: string;
     open: boolean;
     onClose: () => void;
+    onDuplicate: (data: Partial<T>) => void;
     onUpdate: (data: FormData) => void;
     fields: Field[];
     entity: T;
@@ -31,7 +32,7 @@ interface Field {
     errorMessage?: string;
 }
 
-export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUpdate, fields, entity }: UpdateModalProps<T>) => {
+export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -98,6 +99,13 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
             const objectUrl = URL.createObjectURL(file);
             setDeviceImage(objectUrl);
         }
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { id, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as Partial<T>);
     };
 
     // Função para acionar o popup de seleção de arquivo
@@ -184,7 +192,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                                 <img
                                     src={deviceImage || no_image}
                                     alt="Logo da entidade"
-                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '25%' }}
+                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '50%' }}
                                     onClick={triggerFileSelectPopup}
                                 />
                                 <div>
@@ -333,6 +341,9 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                    Duplicar
+                </Button>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

@@ -101,7 +101,7 @@ export const NkioskDoorOpen = () => {
         } else {
             setFilteredDevices(manualOpenDoor);
         }
-    }, [selectedDevicesIds, manualOpenDoor, devices]);    
+    }, [selectedDevicesIds, manualOpenDoor, devices]);
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
@@ -167,7 +167,7 @@ export const NkioskDoorOpen = () => {
             const formatField = (row: ManualOpenDoor) => {
                 switch (field.key) {
                     case 'createdDate':
-                        return new Date(row.createdDate).toLocaleString();
+                        return new Date(row.createdDate).toLocaleString() || '';
                     default:
                         return row[field.key];
                 }
@@ -220,6 +220,9 @@ export const NkioskDoorOpen = () => {
             fetchAllManualOpen();
         }
     }
+
+    // Calcula o valor total dos movimentos
+    const totalAmount = filteredDataTable.length;
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -279,6 +282,9 @@ export const NkioskDoorOpen = () => {
                                 defaultSortAsc={true}
                                 defaultSortFieldId="createdDate"
                             />
+                        </div>
+                        <div style={{ marginLeft: 10 }}>
+                            <strong>Movimentos de Abertura Manual: </strong>{totalAmount}
                         </div>
                         <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
                             <div>

@@ -57,11 +57,11 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
         if (open) {
-            setFormData((prevState) => ({
-                ...prevState,
+            setFormData({
+                ...initialValues,
                 estadoTerminal: 0,
                 timeReboot: '00:00:00',
-            }));
+            });
         } else {
             setFormData({});
         }
@@ -75,6 +75,12 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
             [name]: value
         }));
     };
+
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
@@ -147,7 +153,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-secondary" onClick={handleClose}>
                     Fechar
                 </Button>
                 <Button variant="outline-primary" onClick={handleCheckForSave}>

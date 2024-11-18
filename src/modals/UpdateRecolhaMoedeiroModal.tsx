@@ -23,6 +23,7 @@ interface UpdateModalProps<T extends Entity> {
     title: string;
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -39,7 +40,7 @@ interface Field {
 }
 
 // Define o componente
-export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: UpdateModalProps<T>) => {
+export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields }: UpdateModalProps<T>) => {
     const {
         devices,
     } = useContext(TerminalsContext) as DeviceContextType;
@@ -150,6 +151,13 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                 [key]: value
             }));
         }
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { id, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
     };
 
     // Função para lidar com a mudança de valores nos campos
@@ -372,6 +380,9 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                    Duplicar
+                </Button>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

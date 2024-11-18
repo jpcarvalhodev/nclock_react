@@ -27,26 +27,42 @@ interface ExportButtonProps {
 // Define o tipo de campo para as exceções
 type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | string;
 
-// Função para formatar a data e a hora
-function formatDateAndTime(input: string | Date): string {
-    const date = typeof input === 'string' ? new Date(input) : input;
-    const options: Intl.DateTimeFormatOptions = {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-    };
-    return new Intl.DateTimeFormat('pt-PT', options).format(date);
-}
-
 // Formata o campo com base no tipo de campo
 const formatField = (item: DataItem, fieldKey: FieldKey) => {
+    const currentRoute = window.location.pathname;
+    const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
+    const videoporteiro = currentRoute.endsWith('movevp') ? 'Video Porteiro' : '';
+
+    const validDate = (dateString: string | Date) => {
+        const date = new Date(dateString);
+        return date.getTime() ? date.toLocaleString() : '';
+    };
+
+    if (fieldKey === 'eventTime' && currentRoute.endsWith('movevp')) {
+        return item[fieldKey];
+    }
+
     switch (fieldKey) {
         case 'birthday':
-            return item.birthday ? formatDateAndTime(item.birthday) : '';
+        case 'admissionDate':
+        case 'bIissuance':
+        case 'biValidity':
+        case 'exitDate':
+        case 'dateInserted':
+        case 'dateUpdated':
+        case 'attendanceTime':
+        case 'productTime':
+        case 'createDate':
+        case 'updateDate':
+        case 'createTime':
+        case 'updateTime':
+        case 'eventTime':
+        case 'timestamp':
+        case 'dataRecolha':
+        case 'dataFimRecolha':
+        case 'createdTime':
+        case 'dataCreate':
+            return validDate(item[fieldKey]);
         case 'status':
         case 'statusEmail':
             return item[fieldKey] ? 'Activo' : 'Inactivo';
@@ -55,19 +71,12 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
         case 'employeeId':
             return item.employeeName;
         case 'departmentId':
-            return item.departmentName || '';
         case 'professionId':
-            return item.professionName || '';
         case 'categoryId':
-            return item.categoryName || '';
         case 'groupId':
-            return item.groupName || '';
         case 'zoneId':
-            return item.zoneName || '';
         case 'externalEntityId':
-            return item.externalEntityName || '';
-        case 'attendanceTime':
-            return formatDateAndTime(item[fieldKey]);
+            return item[fieldKey] || '';
         case 'inOutMode':
             if (item.inOutModeDescription) {
                 return item.inOutModeDescription || '';
@@ -83,31 +92,16 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
                 }
             }
         case 'code':
-            return item.code === 0 ? "" : item.code;
         case 'machineNumber':
-            return item.code === 0 ? "" : item.machineNumber;
         case 'cardNumber':
-            return item.cardNumber === 0 ? "" : item.cardNumber;
-        case 'productTime':
-            return item.productTime ? formatDateAndTime(item[fieldKey]) : '';
-        case 'createDate':
-            return new Date(item.createDate).toLocaleString() || '';
-        case 'updateDate':
-            return new Date(item.updateDate).toLocaleString() || '';
-        case 'createTime':
-            return new Date(item.createTime).toLocaleString() || '';
-        case 'updateTime':
-            return new Date(item.updateTime).toLocaleString() || '';
-        case 'eventTime':
-            return new Date(item.eventTime).toLocaleString() || '';
-        case 'timestamp':
-            return item.timestamp ? new Date(item.timestamp).toLocaleString() : '';
+            return item[fieldKey] === 0 ? "" : item[fieldKey];
         case 'eventDoorId':
             switch (item.eventDoorId) {
-                case 1: return 'Terminal';
-                case 2: return 'Moedeiro';
-                case 3: return 'Cartão';
-                case 4: return 'Video Porteiro';
+                case 1: return currentRoute.endsWith('payterminal') ? 'Terminal' : '';
+                case 2: return currentRoute.endsWith('paycoins') ? 'Moedeiro' : '';
+                case 3: return cartao;
+                case 4: return currentRoute.endsWith('movekiosk') ? 'Quiosque' : '';
+                case null: return videoporteiro;
                 default: return '';
             }
         case 'transactionType':
@@ -116,19 +110,9 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
             return item[fieldKey] ? 'Ligado' : 'Desligado';
         case 'timeReboot':
             return item[fieldKey] === '00:00:00' ? 'Sem tempo de reinício' : item[fieldKey];
-        case 'dataRecolha':
-            return new Date(item.dataRecolha).toLocaleString() || '';
-        case 'dataFimRecolha':
-            return new Date(item.dataFimRecolha).toLocaleString() || '';
-        case 'createdTime':
-            return new Date(item.createdTime).toLocaleString() || '';
-        case 'dataCreate':
-            return new Date(item.dataCreate).toLocaleString() || '';
         case 'statusFprint':
-            return item[fieldKey] ? 'Activo' : 'Inactivo';
-        case 'statusFace':
-            return item[fieldKey] ? 'Activo' : 'Inactivo';
         case 'statusPalm':
+        case 'statusFace':
             return item[fieldKey] ? 'Activo' : 'Inactivo';
         default:
             return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';

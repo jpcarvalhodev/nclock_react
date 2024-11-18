@@ -29,6 +29,7 @@ export const Entities = () => {
     const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
     const [selectedEntityToDelete, setSelectedEntityToDelete] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [initialData, setInitialData] = useState<Partial<Entity>>({});
 
     // Função para carregar os dados das entidades
     const fetchCompanyConfig = async () => {
@@ -132,6 +133,14 @@ export const Entities = () => {
         <ExpandedComponentEmpZoneExtEnt data={row} fields={entityFields} />
     );
 
+    // Define a função de duplicar funcionários
+    const handleDuplicate = (data: Partial<Entity>) => {
+        setInitialData(data);
+        setShowAddModal(true);
+        setSelectedEntity(null);
+        setShowUpdateModal(false);
+    }
+
     // Define a abertura do modal de apagar entidade
     const handleOpenDeleteModal = (id: string) => {
         setSelectedEntityToDelete(id);
@@ -163,7 +172,7 @@ export const Entities = () => {
                 switch (field.key) {
                     case 'createdDate':
                     case 'updatedDate':
-                        return new Date(row[field.key]).toLocaleString();
+                        return new Date(row[field.key]).toLocaleString() || '';
                     case 'enabled':
                         return row[field.key] ? 'Activo' : 'Inactivo';
                     default:
@@ -248,7 +257,7 @@ export const Entities = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddCompanyData}
                 fields={entityFields}
-                initialValues={{}}
+                initialValues={initialData || {}}
                 title="Adicionar Entidade"
             />
             {selectedEntity && (
@@ -258,6 +267,7 @@ export const Entities = () => {
                     onUpdate={handleUpdateCompanyData}
                     fields={entityFields}
                     entity={selectedEntity}
+                    onDuplicate={handleDuplicate}
                     title="Atualizar Entidade"
                 />
             )}

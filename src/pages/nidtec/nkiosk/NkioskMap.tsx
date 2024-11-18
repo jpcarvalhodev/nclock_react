@@ -35,12 +35,12 @@ export const NkioskMap = () => {
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='filter-refresh-add-edit-upper-class'>
+            <div className='map-container'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#009739' }}>Mapa do Quiosque</span>
                 </div>
             </div>
-            <div className='d-flex justify-content-center' style={{ minHeight: '70vh' }}>
+            <div className='d-flex justify-content-center' style={{ minHeight: '60vh', flex: 1 }}>
                 <MapContainer center={position} zoom={15} scrollWheelZoom={true} style={{ minWidth: '80vw' }}>
                     <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -48,7 +48,7 @@ export const NkioskMap = () => {
                     />
                     <Marker position={position} icon={customIcon}>
                         <Popup>
-                            R. de São Filipe de Nery 60, 4050-290 Porto <br /> Localização do Quiosque
+                            R. de São Filipe de Nery 60, 4050-290 Porto <br /> Quiosque Clérigos
                         </Popup>
                     </Marker>
                     <MapInitialization position={position} />

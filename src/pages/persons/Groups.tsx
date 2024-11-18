@@ -38,6 +38,7 @@ export const Groups = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [initialData, setInitialData] = useState<Partial<Group> | null>(null);
 
     // Função para buscar os grupos
     const fetchAllGroups = async () => {
@@ -166,6 +167,14 @@ export const Groups = () => {
         )
     );
 
+     // Define os dados iniciais ao duplicar
+     const handleDuplicate = (entity: Partial<Group>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedGroup(null);
+        setShowUpdateModal(false);
+    }
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -238,7 +247,7 @@ export const Groups = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddGroup}
                     fields={groupFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                     entityType='group'
                 />
                 {selectedGroup && (
@@ -250,6 +259,7 @@ export const Groups = () => {
                         entityType='group'
                         title="Atualizar Grupo"
                         fields={groupFields}
+                        onDuplicate={handleDuplicate}
                     />
                 )}
                 <DeleteModal

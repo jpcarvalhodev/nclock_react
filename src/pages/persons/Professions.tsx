@@ -40,6 +40,7 @@ export const Professions = () => {
     const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [selectedRows, setSelectedRows] = useState<Profession[]>([]);
+    const [initialData, setInitialData] = useState<Partial<Profession> | null>(null);
 
     // Função para buscar as profissões
     const fetchAllProfessions = async () => {
@@ -170,6 +171,14 @@ export const Professions = () => {
         )
     );
 
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<Profession>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedProfession(null);
+        setShowUpdateModal(false);
+    }
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -230,7 +239,7 @@ export const Professions = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddProfession}
                     fields={professionFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                     entityType="profissões"
                 />
                 {selectedProfession && (
@@ -240,6 +249,7 @@ export const Professions = () => {
                         onUpdate={handleUpdateProfession}
                         entity={selectedProfession}
                         fields={professionFields}
+                        onDuplicate={handleDuplicate}
                         title="Atualizar Profissão"
                         entityType="profissões"
                     />

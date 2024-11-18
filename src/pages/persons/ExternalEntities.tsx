@@ -43,6 +43,7 @@ export const ExternalEntities = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [initialData, setInitialData] = useState<Partial<ExternalEntity> | null>(null);
     const [data, setData] = useState<DataState>({
         externalEntity: [],
         externalEntityTypes: [],
@@ -163,27 +164,20 @@ export const ExternalEntities = () => {
         rowsPerPageText: 'Linhas por página'
     };
 
-    // Função para formatar a data e a hora
-    function formatDateAndTime(input: string | Date): string {
-        const date = typeof input === 'string' ? new Date(input) : input;
-        const options: Intl.DateTimeFormatOptions = {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-        };
-        return new Intl.DateTimeFormat('pt-PT', options).format(date);
-    }
-
     // Filtra os dados da tabela
     const filteredDataTable = data.externalEntity.filter(externalEntity =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(externalEntity[key]) === String(filters[key])
         )
     );
+
+    // Define os dados iniciais ao duplicar uma entidade externa
+    const handleDuplicate = (entity: Partial<ExternalEntity>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setShowUpdateModal(false);
+        setSelectedExternalEntity(null);
+    }
 
     // Define as colunas da tabela
     const columns: TableColumn<ExternalEntity>[] = externalEntityFields
@@ -193,7 +187,7 @@ export const ExternalEntities = () => {
                 switch (field.key) {
                     case 'dateInserted':
                     case 'dateUpdated':
-                        return row[field.key] ? formatDateAndTime(row[field.key]) : '';
+                        return row[field.key] ? new Date(row[field.key]).toLocaleString() : '';
                     case 'externalEntityTypeId':
                         const typeName = data.externalEntityTypes.find(type => type.externalEntityTypeID === row.externalEntityTypeId)?.name;
                         return typeName;
@@ -278,7 +272,7 @@ export const ExternalEntities = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddExternalEntity}
                     fields={externalEntityFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                 />
                 {selectedExternalEntity && (
                     <UpdateModalExtEnt
@@ -287,6 +281,7 @@ export const ExternalEntities = () => {
                         onUpdate={handleUpdateExternalEntity}
                         entity={selectedExternalEntity}
                         fields={externalEntityFields}
+                        onDuplicate={handleDuplicate}
                         title="Atualizar Entidade Externa"
                     />
                 )}

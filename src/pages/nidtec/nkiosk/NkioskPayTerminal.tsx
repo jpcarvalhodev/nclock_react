@@ -179,7 +179,7 @@ export const NkioskPayTerminal = () => {
                     case 'deviceSN':
                         return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || 'Sem Dados';
                     case 'timestamp':
-                        return new Date(row.timestamp).toLocaleString();
+                        return new Date(row.timestamp).toLocaleString() || '';
                     case 'transactionType':
                         return row[field.key] === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'amount':

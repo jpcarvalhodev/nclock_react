@@ -91,29 +91,40 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
 
     // Formata o campo com base no tipo de campo
     const formatField = (item: DataItem, fieldKey: FieldKey) => {
-
         const currentRoute = window.location.pathname;
         const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
         const videoporteiro = currentRoute.endsWith('movevp') ? 'Video Porteiro' : '';
-
+    
+        const validDate = (dateString: string | Date) => {
+            const date = new Date(dateString);
+            return date.getTime() ? date.toLocaleString() : '';
+        };
+    
         if (fieldKey === 'eventTime' && currentRoute.endsWith('movevp')) {
             return item[fieldKey];
         }
+    
         switch (fieldKey) {
             case 'birthday':
-                return new Date(item.birthday).toLocaleString() || '';
             case 'admissionDate':
-                return new Date(item.admissionDate).toLocaleString() || '';
             case 'bIissuance':
-                return new Date(item.bIissuance).toLocaleString() || '';
             case 'biValidity':
-                return new Date(item.biValidity).toLocaleString() || '';
             case 'exitDate':
-                return new Date(item.exitDate).toLocaleString() || '';
             case 'dateInserted':
-                return new Date(item.dateInserted).toLocaleString() || '';
             case 'dateUpdated':
-                return new Date(item.dateInserted).toLocaleString() || '';
+            case 'attendanceTime':
+            case 'productTime':
+            case 'createDate':
+            case 'updateDate':
+            case 'createTime':
+            case 'updateTime':
+            case 'eventTime':
+            case 'timestamp':
+            case 'dataRecolha':
+            case 'dataFimRecolha':
+            case 'createdTime':
+            case 'dataCreate':
+                return validDate(item[fieldKey]);
             case 'status':
             case 'statusEmail':
                 return item[fieldKey] ? 'Activo' : 'Inactivo';
@@ -122,19 +133,12 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
             case 'employeeId':
                 return item.employeeName;
             case 'departmentId':
-                return item.departmentName || '';
             case 'professionId':
-                return item.professionName || '';
             case 'categoryId':
-                return item.categoryName || '';
             case 'groupId':
-                return item.groupName || '';
             case 'zoneId':
-                return item.zoneName || '';
             case 'externalEntityId':
-                return item.externalEntityName || '';
-            case 'attendanceTime':
-                return new Date(item.attendanceTime).toLocaleString() || '';
+                return item[fieldKey] || '';
             case 'inOutMode':
                 if (item.inOutModeDescription) {
                     return item.inOutModeDescription || '';
@@ -150,25 +154,9 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                     }
                 }
             case 'code':
-                return item.code === 0 ? "" : item.code;
             case 'machineNumber':
-                return item.code === 0 ? "" : item.machineNumber;
             case 'cardNumber':
-                return item.cardNumber === 0 ? "" : item.cardNumber;
-            case 'productTime':
-                return new Date(item.productTime).toLocaleString() || '';
-            case 'createDate':
-                return new Date(item.createDate).toLocaleString() || '';
-            case 'updateDate':
-                return new Date(item.updateDate).toLocaleString() || '';
-            case 'createTime':
-                return new Date(item.createTime).toLocaleString() || '';
-            case 'updateTime':
-                return new Date(item.updateTime).toLocaleString() || '';
-            case 'eventTime':
-                return new Date(item.eventTime).toLocaleString() || '';
-            case 'timestamp':
-                return new Date(item.timestamp).toLocaleString() || '';
+                return item[fieldKey] === 0 ? "" : item[fieldKey];
             case 'eventDoorId':
                 switch (item.eventDoorId) {
                     case 1: return currentRoute.endsWith('payterminal') ? 'Terminal' : '';
@@ -184,24 +172,14 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
                 return item[fieldKey] ? 'Ligado' : 'Desligado';
             case 'timeReboot':
                 return item[fieldKey] === '00:00:00' ? 'Sem tempo de reinício' : item[fieldKey];
-            case 'dataRecolha':
-                return new Date(item.dataRecolha).toLocaleString() || '';
-            case 'dataFimRecolha':
-                return new Date(item.dataFimRecolha).toLocaleString() || '';
-            case 'createdTime':
-                return new Date(item.createdTime).toLocaleString() || '';
-            case 'dataCreate':
-                return new Date(item.dataCreate).toLocaleString() || '';
             case 'statusFprint':
-                return item[fieldKey] ? 'Activo' : 'Inactivo';
-            case 'statusFace':
-                return item[fieldKey] ? 'Activo' : 'Inactivo';
             case 'statusPalm':
+            case 'statusFace':
                 return item[fieldKey] ? 'Activo' : 'Inactivo';
             default:
                 return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
         }
-    };
+    };    
 
     const maxColsPerPage = 8;
     const maxRowsPerPage = 20;

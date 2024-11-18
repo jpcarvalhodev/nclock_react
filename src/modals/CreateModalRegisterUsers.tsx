@@ -121,6 +121,12 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         setFormData({ ...formData, profileImage: '' });
     };
 
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
+
     // Define a função para acionar o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
@@ -312,7 +318,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >

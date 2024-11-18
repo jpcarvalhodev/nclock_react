@@ -8,16 +8,14 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { ExportButton } from "../../../components/ExportButton";
-import { PrintButton } from "../../../components/PrintButton";
 import { Cameras } from "../../../helpers/Types";
 import { cameraFields } from "../../../helpers/Fields";
-import { set } from "date-fns";
 import { toast } from "react-toastify";
 import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal";
 import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
 import { Button } from "react-bootstrap";
 import { DeleteModal } from "../../../modals/DeleteModal";
+import { set } from "date-fns";
 
 export const NviewOnlineCameras = () => {
     const { navbarColor, footerColor } = useColor();
@@ -33,6 +31,7 @@ export const NviewOnlineCameras = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCamerasToDelete, setSelectedCamerasToDelete] = useState<string | null>(null);
     const [selectedCameras, setSelectedCameras] = useState<Cameras | null>(null);
+    const [initialData, setInitialData] = useState<Partial<Cameras> | null>(null);
 
     // Função para buscar as câmeras
     const fetchAllCameras = async () => {
@@ -143,6 +142,14 @@ export const NviewOnlineCameras = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<Cameras>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedCameras(null);
+        setShowUpdateModal(false);
+    }
+
     // Define as colunas da tabela
     const columns: TableColumn<Cameras>[] = cameraFields
         .filter(field => selectedColumns.includes(field.key))
@@ -163,9 +170,9 @@ export const NviewOnlineCameras = () => {
                             return '';
                         }
                     case 'createdDate':
-                        return new Date(row.createdDate).toLocaleString();
+                        return new Date(row.createdDate).toLocaleString() || '';
                     case 'updatedDate':
-                        return new Date(row.createdDate).toLocaleString();
+                        return new Date(row.createdDate).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -263,7 +270,7 @@ export const NviewOnlineCameras = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddCamera}
                 fields={cameraFields}
-                initialValues={{}}
+                initialValues={initialData || {}}
             />
             {selectedCameras && (
                 <UpdateOnlineCameraModal
@@ -272,6 +279,7 @@ export const NviewOnlineCameras = () => {
                     onUpdate={handleUpdateCamera}
                     entity={selectedCameras}
                     fields={cameraFields}
+                    onDuplicate={handleDuplicate}
                     title="Atualizar Câmera"
                 />
             )}

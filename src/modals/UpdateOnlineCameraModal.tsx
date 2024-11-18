@@ -17,6 +17,7 @@ export interface Entity {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -34,7 +35,7 @@ interface Field {
 }
 
 // Define o componente
-export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose, onUpdate, fields, entity }: UpdateModalProps<T>) => {
+export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<Cameras>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -92,6 +93,13 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
     const validateIPAddress = (ip: string) => {
         const regex = /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9])$/;
         return regex.test(ip);
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { id, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
     };
 
     // Função para lidar com a mudança de valor
@@ -241,6 +249,9 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                    Duplicar
+                </Button>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

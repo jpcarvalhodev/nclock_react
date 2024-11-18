@@ -190,9 +190,10 @@ export const Temporaries = () => {
     // Define a função de duplicar funcionários
     const handleDuplicate = (data: Employee) => {
         setInitialData(data);
-        handleCloseUpdateModal();
         setShowAddModal(true);
-    }
+        setShowUpdateModal(false);
+        setSelectedEmployee(null);
+    };
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredEmployees.filter(employee =>
@@ -208,15 +209,15 @@ export const Temporaries = () => {
             const formatField = (row: Employee) => {
                 switch (field.key) {
                     case 'birthday':
-                        return new Date(row.birthday).toLocaleString();
+                        return new Date(row.birthday).toLocaleString() || '';
                     case 'admissionDate':
-                        return new Date(row.admissionDate).toLocaleString();
+                        return new Date(row.admissionDate).toLocaleString() || '';
                     case 'bIissuance':
-                        return new Date(row.bIissuance).toLocaleString();
+                        return new Date(row.bIissuance).toLocaleString() || '';
                     case 'biValidity':
-                        return new Date(row.biValidity).toLocaleString();
+                        return new Date(row.biValidity).toLocaleString() || '';
                     case 'exitDate':
-                        return new Date(row.exitDate).toLocaleString();
+                        return new Date(row.exitDate).toLocaleString() || '';
                     case 'status':
                         return row.status ? 'Activo' : 'Inactivo';
                     case 'statusEmail':
@@ -265,12 +266,6 @@ export const Temporaries = () => {
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
         setShowUpdateModal(true);
-    };
-
-    // Fecha o modal de edição de funcionário provisório
-    const handleCloseUpdateModal = () => {
-        setShowUpdateModal(false);
-        setSelectedEmployee(null);
     };
 
     // Dados da paginação de EN em PT
@@ -358,12 +353,12 @@ export const Temporaries = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={addEmployeeAndCard}
                     fields={employeeFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                 />
                 {selectedEmployee && (
                     <UpdateModalEmployees
                         open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
                         onDuplicate={handleDuplicate}
                         onUpdate={updateEmployeeAndCard}
                         entity={selectedEmployee}

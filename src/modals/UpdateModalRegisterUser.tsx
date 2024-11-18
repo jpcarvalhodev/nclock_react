@@ -29,12 +29,13 @@ interface Props<T extends Entity> {
     title: string;
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: FormData) => Promise<void>;
     entity: T;
     fields: FieldConfig[];
 }
 
-export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: Props<T>) => {
+export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -101,6 +102,13 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     const validatePassword = (password: string): boolean => {
         const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])/;
         return regex.test(password);
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { id, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
     };
 
     // Função para lidar com a mudança de valor
@@ -289,6 +297,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>
             </Modal.Footer>

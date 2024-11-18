@@ -28,6 +28,7 @@ export const NewUsers = () => {
     const [selectedUser, setSelectedUser] = useState<Register | null>(null);
     const [selectedUserToDelete, setSelectedUserToDelete] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [initialData, setInitialData] = useState<Partial<Register> | null>(null);
 
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
@@ -75,6 +76,14 @@ export const NewUsers = () => {
         setSelectedUserToDelete(id);
         setShowDeleteModal(true);
     };
+
+    // Função para duplicar um utilizador
+    const handleDuplicate = (user: Partial<Register>) => {
+        setShowAddModal(true);
+        setInitialData(user);
+        setSelectedUser(null);
+        setShowUpdateModal(false);
+    }
 
     // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
@@ -189,7 +198,7 @@ export const NewUsers = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddUsers}
                 fields={registerFields}
-                initialValues={{}}
+                initialValues={initialData || {}}
             />
             {selectedUser && (
                 <UpdateModalRegisterUsers
@@ -198,6 +207,7 @@ export const NewUsers = () => {
                     onUpdate={handleUpdateUser}
                     entity={selectedUser}
                     fields={registerFields}
+                    onDuplicate={handleDuplicate}
                     title="Atualizar Registo de Utilizador"
                 />
             )}

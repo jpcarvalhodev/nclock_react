@@ -18,6 +18,7 @@ import Split from "react-split";
 import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
 import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
 import { DeleteModal } from "../../modals/DeleteModal";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -50,6 +51,7 @@ export const TerminalsMB = () => {
     const [selectedMBDeviceToDelete, setSelectedMBDeviceToDelete] = useState<string | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [initialData, setInitialData] = useState<Partial<MBDevice> | null>(null);
 
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
@@ -147,6 +149,14 @@ export const TerminalsMB = () => {
     }) => {
         setSelectedTerminal(state.selectedRows[0] || null);
     };
+
+    // Define a função de duplicar funcionários
+    const handleDuplicate = (data: Partial<MBDevice>) => {
+        setInitialData(data);
+        setShowAddModal(true);
+        setSelectedTerminal(null);
+        setShowUpdateModal(false);
+    }
 
     // Filtra os dados da tabela de dispositivos
     const filteredDataTable = filteredDevices.filter(device =>
@@ -345,7 +355,7 @@ export const TerminalsMB = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={addDevice}
                     fields={mbDeviceFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                 />
                 {selectedTerminal && (
                     <UpdateModalDeviceMB
@@ -355,6 +365,7 @@ export const TerminalsMB = () => {
                         onUpdate={updateDevice}
                         entity={selectedTerminal}
                         fields={mbDeviceFields}
+                        onDuplicate={handleDuplicate}
                     />
                 )}
                 {showDeleteModal && (

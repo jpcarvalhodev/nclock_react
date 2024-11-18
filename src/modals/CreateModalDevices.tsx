@@ -58,6 +58,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
         setFormData({ ...initialValues, enabled: true });
+        setSelectedDevice(initialValues.model || '');
         if (initialValues.photo) {
             setDeviceImage(initialValues.photo);
         } else {
@@ -257,9 +258,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        setFormData({});
-        setDeviceImage(null);
-        setSelectedDevice('');
+        window.location.reload();
         onClose();
     }
 

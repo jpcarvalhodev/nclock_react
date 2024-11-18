@@ -24,32 +24,16 @@ interface Props<T> {
     onSave: (data: T) => Promise<void>;
     fields: FieldConfig[];
     title: string;
+    initialValuesData: Partial<T>;
 }
 
 // Define os valores iniciais do formulário para envio de forma padrão
 const initialValues: Partial<TimePeriod> = {
     createrName: localStorage.getItem('username') || '',
-    mondayStart1: '00:00', mondayEnd1: '00:00',
-    tuesdayStart1: '00:00', tuesdayEnd1: '00:00',
-    wednesdayStart1: '00:00', wednesdayEnd1: '00:00',
-    thursdayStart1: '00:00', thursdayEnd1: '00:00',
-    fridayStart1: '00:00', fridayEnd1: '00:00',
-    saturdayStart1: '00:00', saturdayEnd1: '00:00',
-    sundayStart1: '00:00', sundayEnd1: '00:00',
-    mondayStart2: '00:00', mondayEnd2: '00:00', mondayStart3: '00:00', mondayEnd3: '00:00',
-    tuesdayStart2: '00:00', tuesdayEnd2: '00:00', tuesdayStart3: '00:00', tuesdayEnd3: '00:00',
-    wednesdayStart2: '00:00', wednesdayEnd2: '00:00', wednesdayStart3: '00:00', wednesdayEnd3: '00:00',
-    thursdayStart2: '00:00', thursdayEnd2: '00:00', thursdayStart3: '00:00', thursdayEnd3: '00:00',
-    fridayStart2: '00:00', fridayEnd2: '00:00', fridayStart3: '00:00', fridayEnd3: '00:00',
-    saturdayStart2: '00:00', saturdayEnd2: '00:00', saturdayStart3: '00:00', saturdayEnd3: '00:00',
-    sundayStart2: '00:00', sundayEnd2: '00:00', sundayStart3: '00:00', sundayEnd3: '00:00',
-    holidayType1Start1: '00:00', holidayType1End1: '00:00', holidayType1Start2: '00:00', holidayType1End2: '00:00', holidayType1Start3: '00:00', holidayType1End3: '00:00',
-    holidayType2Start1: '00:00', holidayType2End1: '00:00', holidayType2Start2: '00:00', holidayType2End2: '00:00', holidayType2Start3: '00:00', holidayType2End3: '00:00',
-    holidayType3Start1: '00:00', holidayType3End1: '00:00', holidayType3Start2: '00:00', holidayType3End2: '00:00', holidayType3Start3: '00:00', holidayType3End3: '00:00',
 };
 
-export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open, onClose, onSave, fields }: Props<T>) => {
-    const [formData, setFormData] = useState<Partial<TimePeriod>>(initialValues);
+export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open, onClose, onSave, fields, initialValuesData }: Props<T>) => {
+    const [formData, setFormData] = useState<Partial<TimePeriod>>({ ...initialValues, ...initialValuesData });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -79,8 +63,13 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
     useEffect(() => {
         if (open) {
             fetchNextAppId();
+            if (initialValuesData.name) {
+                setFormData({ ...initialValuesData });
+            } else {
+                setFormData({ ...initialValues });
+            }
         } else {
-            setFormData(initialValues);
+            setFormData({});
         }
     }, [open]);
 
@@ -122,6 +111,12 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
             [name]: parsedValue
         }));
     };
+
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
@@ -257,7 +252,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>

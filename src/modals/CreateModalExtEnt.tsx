@@ -91,13 +91,19 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
 
     // Atualiza com a busca de funcionários
     useEffect(() => {
-        if (!open) {
+        if (open) {
             fetchEmployees();
             fetchDropdownOptions();
+            setFormData(initialValues);
+            if (initialValues.photo) {
+                setProfileImage(initialValues.photo);
+            } else {
+                setProfileImage(null);
+            }
         } else {
             setFormData({});
         }
-    }, []);
+    }, [open]);
 
     // Define a mudança de foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,6 +154,12 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
             [name]: parsedValue
         }));
     };
+    
+    // Função para lidar com o fecho
+    const handleClose = () => {
+        window.location.reload();
+        onClose();
+    }
 
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
@@ -425,7 +437,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >

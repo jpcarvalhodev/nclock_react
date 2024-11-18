@@ -17,6 +17,7 @@ import { CreateModalPeriods } from "../../modals/CreateModalPeriods";
 import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
 import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
 import Split from "react-split";
+import { set } from "date-fns";
 
 export const TimePeriods = () => {
     const { navbarColor, footerColor } = useColor();
@@ -32,6 +33,7 @@ export const TimePeriods = () => {
     const [selectedPeriodToDelete, setSelectedPeriodToDelete] = useState<string | null>(null);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredPeriods, setFilteredPeriods] = useState<TimePeriod[]>([]);
+    const [initialData, setInitialData] = useState<Partial<TimePeriod> | null>(null);
 
     // Função para buscar os dados dos períodos
     const fetchTimePeriods = async () => {
@@ -44,7 +46,7 @@ export const TimePeriods = () => {
     };
 
     // Função para adicionar um período
-    const handleAddPeriod = async (newPeriod: TimePeriod) => {
+    const handleAddPeriod = async (newPeriod: Partial<TimePeriod>) => {
         try {
             const data = await apiService.addTimePeriod(newPeriod);
             setPeriod([...period, data]);
@@ -156,6 +158,13 @@ export const TimePeriods = () => {
             filters[key] === "" || String(periods[key]) === String(filters[key])
         )
     );
+
+    const handleDuplicate = (entity: Partial<TimePeriod>) => {
+        setShowAddModal(true);
+        setInitialData(entity);
+        setSelectedPeriod(null);
+        setShowUpdateModal(false);
+    }
 
     // Define as colunas excluídas
     const excludedColumns = timePeriodFields
@@ -285,6 +294,7 @@ export const TimePeriods = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddPeriod}
                 fields={timePeriodFields}
+                initialValuesData={initialData || {}}
             />
             {selectedPeriod && (
                 <UpdateModalPeriods
@@ -293,6 +303,7 @@ export const TimePeriods = () => {
                     onUpdate={handleUpdatePeriod}
                     entity={selectedPeriod}
                     fields={timePeriodFields}
+                    onDuplicate={handleDuplicate}
                     title="Atualizar Período"
                 />
             )}

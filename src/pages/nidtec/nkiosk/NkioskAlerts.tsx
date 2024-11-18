@@ -138,7 +138,7 @@ export const NkioskAlerts = () => {
             const formatField = (row: MBDeviceStatus) => {
                 switch (field.key) {
                     case 'timespam':
-                        return new Date(row.timespam).toLocaleString();
+                        return new Date(row.timespam).toLocaleString() || '';
                     case 'tpId':
                         return mbDevices.find(device => device.id === row.tpId)?.nomeQuiosque || '';
                     default:

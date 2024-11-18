@@ -19,6 +19,7 @@ import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -38,6 +39,7 @@ export const Categories = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [initialData, setInitialData] = useState<Partial<Category> | null>(null);
 
     // Função para buscar as categorias
     const fetchAllCategories = async () => {
@@ -166,6 +168,14 @@ export const Categories = () => {
         )
     );
 
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<Category>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedCategory(null);
+        setShowUpdateModal(false);
+    }
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -226,7 +236,7 @@ export const Categories = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddCategory}
                     fields={categoryFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                     entityType="categorias"
                 />
                 {selectedCategory && (
@@ -236,6 +246,7 @@ export const Categories = () => {
                         onUpdate={handleUpdateCategory}
                         entity={selectedCategory}
                         fields={categoryFields}
+                        onDuplicate={handleDuplicate}
                         title="Atualizar Categoria"
                         entityType="categorias"
                     />

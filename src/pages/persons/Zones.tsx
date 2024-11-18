@@ -18,7 +18,6 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
-import { id } from "date-fns/locale";
 import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
@@ -39,6 +38,7 @@ export const Zones = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [initialData, setInitialData] = useState<Partial<Zone>>();
 
     // Função para buscar as zonas
     const fetchAllZones = async () => {
@@ -154,6 +154,14 @@ export const Zones = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<Zone>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedZone(null);
+        setShowUpdateModal(false);
+    }
+
     // Filtra os dados da tabela
     const filteredDataTable = zones.filter(zone =>
         Object.keys(filters).every(key =>
@@ -249,7 +257,7 @@ export const Zones = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddZone}
                     fields={zoneFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                 />
                 {selectedZone && (
                     <UpdateModalZones
@@ -258,6 +266,7 @@ export const Zones = () => {
                         onUpdate={handleUpdateZone}
                         entity={selectedZone}
                         fields={zoneFields}
+                        onDuplicate={handleDuplicate}
                         title="Atualizar Zona"
                     />
                 )}

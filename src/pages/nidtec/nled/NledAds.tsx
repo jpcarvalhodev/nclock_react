@@ -14,6 +14,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
 import { UpdateModalAds } from "../../../modals/UpdateModalAds";
 import { AdsContext, AdsContextType } from "../../../context/AdsContext";
+import { set } from "date-fns";
 
 export const NledAds = () => {
     const { navbarColor, footerColor } = useColor();
@@ -23,10 +24,11 @@ export const NledAds = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['nomeArquivo', 'tipoArquivo', 'creador', 'dataFim']);
-    const [selectedAds, setSelectedAds] = useState<any>(null);
+    const [selectedAds, setSelectedAds] = useState<Ads | null>(null);
     const [selectedAdsForDelete, setSelectedAdsForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filterText, setFilterText] = useState('');
+    const [initialData, setInitialData] = useState<Partial<Ads>>({});
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
@@ -80,6 +82,14 @@ export const NledAds = () => {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
     };
+
+    // Define os dados iniciais do modal de adicionar publicidade
+    const handleDuplicate = (entity: Partial<Ads>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedAds(null);
+        setShowUpdateModal(false);
+    }
 
     // Define as colunas da tabela
     const columns: TableColumn<Ads>[] = adsFields
@@ -172,7 +182,7 @@ export const NledAds = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddAds}
                     fields={adsFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                     entities="all"
                 />
                 {selectedAds && (
@@ -182,6 +192,7 @@ export const NledAds = () => {
                         onUpdate={(entity) => handleUpdateAds(selectedAds, entity as FormData)}
                         entity={selectedAds}
                         fields={adsFields}
+                        onDuplicate={handleDuplicate}
                         title="Publicidades"
                         entities="all"
                     />

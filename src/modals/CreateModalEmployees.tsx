@@ -46,10 +46,10 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        setFormData({ ...initialValues, status: true });
-        if (initialValues.photo) {
-            setProfileImage(initialValues.photo);
+        if (initialValues.name) {
+            setFormData({ ...initialValues, status: true });
         } else {
+            setFormData({})
             setProfileImage(null);
         }
     }, [initialValues]);
@@ -260,9 +260,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        setFormData({});
-        setCardFormData({});
-        setProfileImage(null);
+        window.location.reload();
         onClose();
     }
 

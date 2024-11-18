@@ -27,6 +27,7 @@ interface Field {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: Ads | FormData) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -41,7 +42,7 @@ interface FileWithOrder {
 }
 
 // Define o componente
-export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdate, entity, entities, fields }: UpdateModalProps<T>) => {
+export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, entities, fields }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [files, setFiles] = useState<FileWithOrder[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -176,6 +177,13 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
         }
     };
 
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { id, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as Partial<T>);
+    };
+
     // Função para remover um ficheiro
     const handleRemoveFile = () => {
         setFiles([]);
@@ -259,7 +267,7 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
-                    <Col md={6}>
+                        <Col md={6}>
                             <Form.Group controlId="formFile">
                                 <Form.Label>Upload de Ficheiros<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <Form.Control
@@ -353,6 +361,9 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                    Duplicar
+                </Button>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

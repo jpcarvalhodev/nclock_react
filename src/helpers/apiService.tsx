@@ -1432,7 +1432,7 @@ export const fetchAllTimePeriods = async () => {
     return response.json();
 }
 
-export const addTimePeriod = async (timePeriod: TimePeriod) => {
+export const addTimePeriod = async (timePeriod: Partial<TimePeriod>) => {
     const response = await fetchWithAuth(`AccTimeSeg/CreateTimezone`, {
         method: 'POST',
         headers: {

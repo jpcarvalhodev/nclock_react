@@ -1,9 +1,9 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import * as apiService from "../helpers/apiService";
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -27,6 +27,7 @@ interface Field {
 interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: Partial<T>) => void;
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
@@ -35,7 +36,10 @@ interface UpdateModalProps<T extends Entity> {
 }
 
 // Define o componente
-export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdate, entity, fields, title, entityType }: UpdateModalProps<T>) => {
+export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType }: UpdateModalProps<T>) => {
+    const {
+        fetchAllEmployees,
+      } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -73,12 +77,12 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employeeResponse = await apiService.fetchAllEmployees();
-            if (employeeResponse.ok) {
-                const employees = await employeeResponse.json();
-                setDropdownData({
-                    employeeId: employees,
-                });
+            const employeeResponse = await fetchAllEmployees();
+            if (employeeResponse) {
+                setDropdownData(prevState => ({
+                    ...prevState,
+                    employeeId: employeeResponse
+                }));
             } else {
                 toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
                 return;
@@ -124,6 +128,13 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
             ...prevState,
             [name]: value
         }));
+    };
+
+     // Função para manipular o clique no botão Duplicar
+     const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { attendanceTimeId, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as Partial<T>);
     };
 
     // Função para lidar com o clique no botão de guardar
@@ -225,7 +236,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                     </>
                 )}
                 {entityType === 'movimentos' && fields.map((field) => {
-                    if (!['deviceId', 'deviceNumber','enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
+                    if (!['deviceId', 'deviceNumber', 'enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
                         return (
                             <Form.Group controlId={`form${field.key}`} key={field.key}>
                                 <Form.Label>
@@ -293,7 +304,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                                 name={field.key}
                                             />
                                         )))}
-                                        {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
+                                {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
                             </Form.Group>
                         );
                     }
@@ -308,6 +319,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                 })}
             </Modal.Body>
             <Modal.Footer>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>

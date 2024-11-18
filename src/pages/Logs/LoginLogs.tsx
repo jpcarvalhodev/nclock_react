@@ -135,7 +135,7 @@ export const LoginLogs = () => {
             const formatField = (row: Logs) => {
                 switch (field.key) {
                     case 'createdDate':
-                        return new Date(row.createdDate).toLocaleString();
+                        return new Date(row.createdDate).toLocaleString() || '';
                     default:
                         return row[field.key] || '';
                 }

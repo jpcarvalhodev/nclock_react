@@ -184,7 +184,7 @@ export const NkioskMoveCard = () => {
                     case 'eventDoorId':
                         return 'Torniquete';
                     case 'eventTime':
-                        return new Date(row.eventTime).toLocaleString();
+                        return new Date(row.eventTime).toLocaleString() || '';
                     default:
                         return value ?? '';
                 }
@@ -215,6 +215,9 @@ export const NkioskMoveCard = () => {
             deviceSN: deviceName,
         };
     });
+
+    // Calcula o valor total dos movimentos
+    const totalAmount = filteredDataTable.length;
 
     return (
         <TerminalsProvider>
@@ -278,6 +281,9 @@ export const NkioskMoveCard = () => {
                                     defaultSortAsc={true}
                                     defaultSortFieldId="eventTime"
                                 />
+                            </div>
+                            <div style={{ marginLeft: 10 }}>
+                                <strong>Movimentos do Torniquete: </strong>{totalAmount}
                             </div>
                         </div>
                     </Split>

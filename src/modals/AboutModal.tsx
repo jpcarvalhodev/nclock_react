@@ -30,12 +30,12 @@ export const AboutModal = ({ open, onClose }: AboutModalProps) => {
                         <Tab.Content>
                             <Tab.Pane eventKey="about">
                                 <Form style={{ marginTop: 10, marginBottom: 10, display: 'flex', flexDirection: 'column' }}>
-                                    <img src={nidgrouplogo} alt="logo nidgroup" style={{ width: '250px', marginTop: 10, marginBottom: 10 }} />
+                                    <img src={nidgrouplogo} alt="logo nidgroup" style={{ width: '250px', marginTop: 10, marginBottom: 20 }} />
                                     <p>NIDGROUP- Business Solutions</p>
                                     <p>Sede Norte: Avenida D. Manuel II n.º 2070, 3º Fração 36, 4470-334 Maia</p>
                                     <p>Sede Sul: Rua Dr. Teófilo Braga n.º 21, 2670-480, Loures</p>
                                     <p>Tel: +351 210 992 230</p>
-                                    <p>E-Mail: info@sisnid.com</p>
+                                    <p>E-Mail: info@nidgroup.pt</p>
                                     <p>https://nidgroup.pt/</p>
                                 </Form>
                             </Tab.Pane>

@@ -180,15 +180,15 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             const formatField = (row: Employee) => {
                 switch (field.key) {
                     case 'birthday':
-                        return new Date(row.birthday).toLocaleString();
+                        return new Date(row.birthday).toLocaleString() || '';
                     case 'admissionDate':
-                        return new Date(row.admissionDate).toLocaleString();
+                        return new Date(row.admissionDate).toLocaleString() || '';
                     case 'bIissuance':
-                        return new Date(row.bIissuance).toLocaleString();
+                        return new Date(row.bIissuance).toLocaleString() || '';
                     case 'biValidity':
-                        return new Date(row.biValidity).toLocaleString();
+                        return new Date(row.biValidity).toLocaleString() || '';
                     case 'exitDate':
-                        return new Date(row.exitDate).toLocaleString();
+                        return new Date(row.exitDate).toLocaleString() || '';
                     case 'status':
                         return row.status ? 'Activo' : 'Inactivo';
                     case 'statusEmail':

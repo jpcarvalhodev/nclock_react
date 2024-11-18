@@ -19,6 +19,7 @@ import { SelectFilter } from '../../components/SelectFilter';
 import * as apiService from "../../helpers/apiService";
 import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
+import { set } from 'date-fns';
 
 // Define a interface para os filtros
 interface Filters {
@@ -38,6 +39,7 @@ export const Departments = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedDepartmentForDelete, setSelectedDepartmentForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
+    const [initialData, setInitialData] = useState<Partial<Department> | null>(null);
 
     // Busca os departamentos
     const fetchAllDepartments = async () => {
@@ -192,6 +194,14 @@ export const Departments = () => {
         setSelectedDepartment(null);
     };
 
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<Department>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedDepartment(null);
+        setShowUpdateModal(false);
+    }
+
     // Abre o modal de deletar
     const handleOpenDeleteModal = (departmentID: string) => {
         const department = departments.find(dep => dep.departmentID === departmentID);
@@ -267,7 +277,7 @@ export const Departments = () => {
                     onClose={() => setShowAddModal(false)}
                     onSave={handleAddDepartment}
                     fields={departmentFields}
-                    initialValues={{}}
+                    initialValues={initialData || {}}
                     entityType='department'
                 />
                 {selectedDepartment && (
@@ -279,6 +289,7 @@ export const Departments = () => {
                         entityType='department'
                         title="Atualizar Departamento"
                         fields={departmentFields}
+                        onDuplicate={handleDuplicate}
                     />
                 )}
                 <DeleteModal

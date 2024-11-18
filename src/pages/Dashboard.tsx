@@ -511,7 +511,7 @@ export const Dashboard = () => {
                 >
                     <h5 className="dashboard-title-text-inside">Notícias</h5>
                     {activeKey === 'LICENÇAS SOFTWARES CLIENTE' && (
-                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
+                        <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true} interval={30000}>
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_sisnid} alt="SISNID" />
                             </div>
