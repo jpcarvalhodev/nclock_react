@@ -17,7 +17,6 @@ export const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   // Verifica se o usuário já está logado
@@ -99,11 +98,11 @@ export const Login = () => {
             </label>
             <label className='password-label'>
               <p>Password:</p>
-              <input type={showPassword ? "text" : "password"} name="password" value={password} placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
+              <input type="password" name="password" value={password} placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
             </label>
           </div>
           <label className='remember_me-label'>
-            Guardar dados?
+            Memorizar dados?
             <input style={{ marginLeft: '10px' }} type="checkbox" name="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
           </label>
           <Link className="btn-my-custom-link" to="/login&forgot/forgotpassword">Esqueceu sua password?</Link>

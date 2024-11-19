@@ -31,12 +31,12 @@ export const employeeFields = [
     { label: 'Estado de Face', key: 'statusFace', type: 'boolean' },
     { label: 'Estado de Palma', key: 'statusPalm', type: 'boolean' },
     { label: 'Tipo', key: 'type', type: 'string' },
-    { label: 'Departamento', key: 'departmentId', type: 'dropdown' },
+    { label: 'Departamento', key: 'departmentId', type: 'dropdown', required: true },
     { label: 'Profissão', key: 'professionId', type: 'dropdown' },
     { label: 'Categoria', key: 'categoryId', type: 'dropdown' },
-    { label: 'Grupo', key: 'groupId', type: 'dropdown', },
-    { label: 'Zona', key: 'zoneId', type: 'dropdown', },
-    { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown', },
+    { label: 'Grupo', key: 'groupId', type: 'dropdown', required: true },
+    { label: 'Zona', key: 'zoneId', type: 'dropdown' },
+    { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown' },
     { label: 'Software', key: 'modulos', type: 'string', required: true },
 ];
 
@@ -125,6 +125,7 @@ export const employeeAttendanceTimesFields = [
 export const deviceFields = [
     { key: "deviceNumber", label: "Número", type: "number", required: true },
     { key: "deviceName", label: "Nome", type: "string", required: true },
+    { key: "status", label: "Estado", type: "boolean" },
     { key: "model", label: "Modelo", type: "string", required: true },
     { key: "ipAddress", label: "Endereço IP", type: "string", required: true },
     { key: "port", label: "Porta", type: "number", required: true },
@@ -147,7 +148,6 @@ export const deviceFields = [
     { key: "producter", label: "Produtor", type: "string" },
     { key: "deviceProtocol", label: "Protocolo", type: "number", required: true },
     { key: "deviceType", label: "Tipo", type: "number", required: true },
-    { key: "status", label: "Estado", type: "boolean" },
     { key: "enabled", label: "Activo", type: "boolean" }
 ];
 
@@ -194,7 +194,7 @@ export const adsFields = [
 
 export const transactionFields = [
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'cardNo', label: 'Número do Utilizador', type: 'number' },
+    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'ID do Evento', type: 'number' },
     { key: 'eventDoorId', label: 'ID da Porta do Evento', type: 'number' },
@@ -216,7 +216,7 @@ export const transactionMBFields = [
 ];
 
 export const transactionCardFields = [
-    { key: 'cardNo', label: 'Número do Utilizador', type: 'number' },
+    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
     { key: 'nameUser', label: 'Nome do Utilizador', type: 'string' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
@@ -470,10 +470,10 @@ export const logsFields = [
 export const cameraFields = [
     { key: 'numeroCamera', label: 'Número', type: 'number', required: true },
     { key: 'nomeCamera', label: 'Nome', type: 'string', required: true },
-    { key: 'ip', label: 'IP', type: 'string', required: true },
+    { key: 'ip', label: 'IP', type: 'string' },
     { key: 'url', label: 'URL', type: 'string', required: true },
-    { key: 'userCamera', label: 'Utilizador', type: 'string', required: true },
-    { key: 'passwordCamera', label: 'Password', type: 'string', required: true },
+    { key: 'userCamera', label: 'Utilizador', type: 'string' },
+    { key: 'passwordCamera', label: 'Password', type: 'string' },
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
     { key: 'updatedDate', label: 'Data de Atualização', type: 'date' },
 ];

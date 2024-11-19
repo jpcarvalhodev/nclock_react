@@ -15,7 +15,6 @@ import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal
 import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
 import { Button } from "react-bootstrap";
 import { DeleteModal } from "../../../modals/DeleteModal";
-import { set } from "date-fns";
 
 export const NviewOnlineCameras = () => {
     const { navbarColor, footerColor } = useColor();
@@ -212,6 +211,7 @@ export const NviewOnlineCameras = () => {
         name: 'Ações',
         cell: (row: Cameras) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCameras(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>

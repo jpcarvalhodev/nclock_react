@@ -159,7 +159,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
-        const { zktecoDeviceID, ...dataWithoutId } = formData;
+        const { zktecoDeviceID, deviceNumber, ...dataWithoutId } = formData;
         onDuplicate(dataWithoutId as T);
     };
 

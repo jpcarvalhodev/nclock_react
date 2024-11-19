@@ -198,6 +198,7 @@ export const Professions = () => {
         name: 'Ações',
         cell: (row: Profession) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditProfession(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.professionID)} >
                     <i className="bi bi-trash-fill"></i>

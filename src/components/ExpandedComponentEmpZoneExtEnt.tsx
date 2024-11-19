@@ -56,8 +56,6 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
         return photo ? `${photo}` : modalAvatar;
     }
 
-    console.log(getPhotoUrl(data));
-
     return (
         <div className="expanded-details-container">
             <div className="entity-photo">

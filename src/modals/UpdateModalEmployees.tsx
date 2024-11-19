@@ -5,9 +5,12 @@ import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
-import { EmployeeCard } from '../helpers/Types';
+import { Department, EmployeeCard, Group } from '../helpers/Types';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import { useLicense } from '../context/LicenseContext';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { CreateModalDeptGrp } from './CreateModalDeptGrp';
+import { departmentFields, groupFields } from '../helpers/Fields';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -55,6 +58,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const [isFormValid, setIsFormValid] = useState(false);
   const fileInputRef = React.createRef<HTMLInputElement>();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showDeptModal, setShowDeptModal] = useState(false);
+  const [showGrpModal, setShowGrpModal] = useState(false);
 
   // Usa useEffect para inicializar o formulário
   useEffect(() => {
@@ -126,6 +131,34 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       });
     } catch (error) {
       console.error('Erro ao buscar os dados de departamentos e grupos', error);
+    }
+  };
+
+  // Adiciona um departamento
+  const handleAddDepartment = async (department: Department) => {
+    try {
+      const data = await apiService.addDepartment(department);
+      toast.success(data.value || 'Departamento adicionado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao adicionar novo departamento:', error);
+    } finally {
+      setShowDeptModal(false);
+      const data = await fetchAllDepartments();
+      setDropdownData(prevState => ({ ...prevState, departmentId: data }));
+    }
+  };
+
+  // Função para adicionar um grupo
+  const handleAddGroup = async (group: Group) => {
+    try {
+      const data = await apiService.addGroup(group);
+      toast.success(data.value || 'Grupo adicionado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao adicionar novo grupo:', error);
+    } finally {
+      setShowGrpModal(false);
+      const data = await fetchAllGroups();
+      setDropdownData(prevState => ({ ...prevState, groupId: data }));
     }
   };
 
@@ -233,7 +266,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   // Função para manipular o clique no botão Duplicar
   const handleDuplicateClick = () => {
     if (!onDuplicate) return;
-    const { employeeID, ...dataWithoutId } = formData;
+    const { employeeID, enrollNumber, ...dataWithoutId } = formData;
     onDuplicate(dataWithoutId as T);
   };
 
@@ -618,67 +651,79 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                     { key: 'biValidity', label: 'Validade de BI', type: 'datetime-local' },
                     { key: 'admissionDate', label: 'Data de Admissão', type: 'datetime-local' },
                     { key: 'exitDate', label: 'Data de Saída', type: 'datetime-local' },
-                    { key: 'departmentId', label: 'Departamento', type: 'dropdown' },
+                    { key: 'departmentId', label: 'Departamento', type: 'dropdown', required: true },
                     { key: 'professionId', label: 'Profissão', type: 'dropdown' },
-                    { key: 'groupId', label: 'Grupo', type: 'dropdown' },
+                    { key: 'groupId', label: 'Grupo', type: 'dropdown', required: true },
                     { key: 'zoneId', label: 'Zona', type: 'dropdown' },
                     { key: 'externalEntityId', label: 'Entidade Externa', type: 'dropdown' }
                   ].map((field) => (
                     <Col md={3} key={field.key}>
                       <Form.Group controlId={`form${field.key}`}>
-                        <Form.Label>{field.label}</Form.Label>
-                        {field.type === 'dropdown' ? (
-                          <Form.Control
-                            as="select"
-                            className="custom-input-height custom-select-font-size"
-                            value={formData[field.key] || ''}
-                            onChange={(e) => handleDropdownChange(field.key, e)}
-                          >
-                            <option value="">Selecione...</option>
-                            {dropdownData[field.key]?.map((option: any) => {
-                              let optionId, optionName;
-                              switch (field.key) {
-                                case 'departmentId':
-                                  optionId = option.departmentID;
-                                  optionName = option.name;
-                                  break;
-                                case 'groupId':
-                                  optionId = option.groupID;
-                                  optionName = option.name;
-                                  break;
-                                case 'professionId':
-                                  optionId = option.professionID;
-                                  optionName = option.description;
-                                  break;
-                                case 'zoneId':
-                                  optionId = option.zoneID;
-                                  optionName = option.name;
-                                  break;
-                                case 'externalEntityId':
-                                  optionId = option.externalEntityID;
-                                  optionName = option.name;
-                                  break;
-                                default:
-                                  optionId = option.id;
-                                  optionName = option.name || option.description;
-                                  break;
-                              }
-                              return (
-                                <option key={optionId} value={optionId}>
-                                  {optionName}
-                                </option>
-                              );
-                            })}
-                          </Form.Control>
-                        ) : (
-                          <Form.Control
-                            type={field.type}
-                            className="custom-input-height custom-select-font-size"
-                            value={formData[field.key] || ''}
-                            onChange={handleChange}
-                            name={field.key}
-                          />
-                        )}
+                        <Form.Label>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}</Form.Label>
+                        <OverlayTrigger
+                          placement="right"
+                          overlay={<Tooltip id={`tooltip-${field.key}`}>Campo Obrigatório</Tooltip>}
+                        >
+                          {field.type === 'dropdown' ? (
+                            <Row>
+                              {(field.key === 'departmentId' || field.key === 'groupId') ? (
+                                <>
+                                  <Col>
+                                    <Form.Control
+                                      as="select"
+                                      className="custom-input-height custom-select-font-size"
+                                      value={formData[field.key] || ''}
+                                      onChange={(e) => handleDropdownChange(field.key, e)}
+                                    >
+                                      <option value="">Selecione...</option>
+                                      {dropdownData[field.key]?.map((option: any) => {
+                                        let optionId = option.id;
+                                        let optionName = option.name || option.description;
+                                        return (
+                                          <option key={optionId} value={optionId}>
+                                            {optionName}
+                                          </option>
+                                        );
+                                      })}
+                                    </Form.Control>
+                                  </Col>
+                                  <Col xs="auto">
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => (field.key === 'departmentId' ? setShowDeptModal(true) : setShowGrpModal(true))} />
+                                  </Col>
+                                </>
+                              ) : (
+                                <Col>
+                                  <Form.Control
+                                    as="select"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData[field.key] || ''}
+                                    onChange={(e) => handleDropdownChange(field.key, e)}
+                                  >
+                                    <option value="">Selecione...</option>
+                                    {dropdownData[field.key]?.map((option: any) => {
+                                      let optionId = option.id;
+                                      let optionName = option.name || option.description;
+                                      return (
+                                        <option key={optionId} value={optionId}>
+                                          {optionName}
+                                        </option>
+                                      );
+                                    })}
+                                  </Form.Control>
+                                </Col>
+                              )}
+                            </Row>
+                          ) : (
+                            <Form.Control
+                              type={field.type}
+                              className="custom-input-height custom-select-font-size"
+                              value={formData[field.key] || ''}
+                              onChange={handleChange}
+                              name={field.key}
+                            />
+                          )}
+                        </OverlayTrigger>
+                        {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
                       </Form.Group>
                     </Col>
                   ))}
@@ -752,6 +797,24 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
         <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
       </Modal.Footer>
+      <CreateModalDeptGrp
+        title="Adicionar Departamento"
+        open={showDeptModal}
+        onClose={() => setShowDeptModal(false)}
+        onSave={handleAddDepartment}
+        fields={departmentFields}
+        initialValues={{}}
+        entityType='department'
+      />
+      <CreateModalDeptGrp
+        title="Adicionar Grupo"
+        open={showGrpModal}
+        onClose={() => setShowGrpModal(false)}
+        onSave={handleAddGroup}
+        fields={groupFields}
+        initialValues={{}}
+        entityType='group'
+      />
     </Modal >
   );
 };

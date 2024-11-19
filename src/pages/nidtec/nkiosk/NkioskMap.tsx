@@ -48,7 +48,7 @@ export const NkioskMap = () => {
                     />
                     <Marker position={position} icon={customIcon}>
                         <Popup>
-                            R. de São Filipe de Nery 60, 4050-290 Porto <br /> Quiosque Clérigos
+                            R. de São Filipe de Nery 60, 4050-290 Porto <br /> Local do Quiosque
                         </Popup>
                     </Marker>
                     <MapInitialization position={position} />

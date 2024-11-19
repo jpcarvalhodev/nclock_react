@@ -28,7 +28,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskMoveCard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -97,8 +97,9 @@ export const NkioskMoveCard = () => {
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
+        fetchAllDevices();
         fetchAllMoveCard();
-    }, [devices]);
+    }, []);
 
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {

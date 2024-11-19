@@ -250,6 +250,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         cell: (row: Employee) => (
             row.employeeID ? (
                 <div style={{ display: 'flex' }}>
+                    <CustomOutlineButton className='action-button' icon='bi bi-copy' onClick={() => handleDuplicateAndClose(row)} />
                     <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
                     <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
                         <i className="bi bi-trash-fill"></i>

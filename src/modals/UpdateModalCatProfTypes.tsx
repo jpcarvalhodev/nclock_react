@@ -45,13 +45,6 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Usa useEffect para inicializar o formulário
-    useEffect(() => {
-        if (entity) {
-            setFormData({ ...entity });
-        }
-    }, [entity]);
-
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -78,6 +71,7 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     useEffect(() => {
         if (open) {
             fetchEntityData();
+            setFormData({ ...entity });
         }
     }, [open]);
 
@@ -128,7 +122,7 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
-        const { categotyID, professionID, externalEntityTypeID, ...dataWithoutId } = formData;
+        const { categotyID, professionID, externalEntityTypeID, code, ...dataWithoutId } = formData;
         onDuplicate(dataWithoutId as Partial<T>);
     };
 

@@ -419,12 +419,16 @@ body {
 }
 
 .delete-button {
-    display: flex !important;
+    display: flex;
+    width: 30px;
+    height: 30px;
+    justify-content: center;
+    align-items: center;
     margin-left: 5px;
-    width: 30px !important;
-    height: 30px !important;
-    justify-content: center !important;
-    align-items: center !important;
+}
+
+.action-button {
+    margin-right: 5px;
 }
 
 .dashboard-content-wrapper {
@@ -657,6 +661,14 @@ body {
 
 .scrollable-tabs .nav-link {
     white-space: nowrap;
+}
+
+.custom-dropdown-toggle::after {
+    display: none !important;
+}
+
+.arrows-modal {
+    margin-right: auto;
 }
 
 @keyframes pulseBorder {

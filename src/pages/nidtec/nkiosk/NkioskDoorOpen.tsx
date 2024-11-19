@@ -48,7 +48,6 @@ export const NkioskDoorOpen = () => {
     const [loadingManualOpen, setLoadingManualOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [filterText, setFilterText] = useState<string>('');
-    const [userTabKey, setUserTabKey] = useState<string>('manualOpen');
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
@@ -106,13 +105,6 @@ export const NkioskDoorOpen = () => {
     // Função para resetar as colunas
     const handleResetColumns = () => {
         setSelectedColumns(['createdDate', 'nomeResponsavel', 'nomeEvento', 'deviceName', 'doorName', 'observacoes']);
-    };
-
-    // Função para alternar a visibilidade das abas
-    const handleUserSelect = (k: string | null) => {
-        if (k) {
-            setUserTabKey(k);
-        }
     };
 
     // Função para alternar a visibilidade das colunas
@@ -192,14 +184,14 @@ export const NkioskDoorOpen = () => {
         rangeSeparatorText: 'de',
     };
 
-    // Função para abrir uma porta manualmente
-    const handleManualOpen = async () => {
+    // Função para abrir manualmente
+    const handleOpenManualDoor = () => {
         setLoadingManualOpen(true);
         setModalOpen(true);
     }
 
-    // Função para fechar o modal
-    const handleManualClose = async () => {
+    // Função para fechar a abertura manual
+    const handleCloseManualDoor = () => {
         setLoadingManualOpen(false);
         setModalOpen(false);
     }
@@ -248,6 +240,12 @@ export const NkioskDoorOpen = () => {
                                 <div className="custom-buttons">
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAllManualOpen} />
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <CustomOutlineButton icon="bi bi-power" onClick={handleOpenManualDoor} iconSize='1.1em' />
+                                        {loadingManualOpen && (
+                                            <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -286,29 +284,6 @@ export const NkioskDoorOpen = () => {
                         <div style={{ marginLeft: 10 }}>
                             <strong>Movimentos de Abertura Manual: </strong>{totalAmount}
                         </div>
-                        <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
-                            <div>
-                                <Tabs
-                                    id="controlled-tab-terminals-buttons"
-                                    activeKey={userTabKey}
-                                    onSelect={handleUserSelect}
-                                    className="nav-modal"
-                                >
-                                    <Tab eventKey="manualOpen" title="Ligação">
-                                        <div style={{ display: "flex", marginTop: 10 }}>
-                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleManualOpen}>
-                                                {loadingManualOpen ? (
-                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                                ) : (
-                                                    <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                )}
-                                                Abertura Remota
-                                            </Button>
-                                        </div>
-                                    </Tab>
-                                </Tabs>
-                            </div>
-                        </div>
                     </div>
                 </Split>
             </div>
@@ -326,7 +301,7 @@ export const NkioskDoorOpen = () => {
             <ManualDoorOpenModal
                 title="Abertura Manual"
                 open={modalOpen}
-                onClose={handleManualClose}
+                onClose={handleCloseManualDoor}
                 onSave={handleManualOpenSave}
                 fields={manualOpenDoorFields}
             />

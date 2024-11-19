@@ -123,13 +123,13 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
         const parsedValue = type === 'number' ? Number(value) : value;
-        if (name === "ip") {
+        /* if (name === "ip") {
             if (validateIPAddress(value)) {
                 setError('');
             } else {
                 setError('Endereço IP inválido');
             }
-        }
+        } */
         setFormData(prev => ({
             ...prev,
             [name]: parsedValue
@@ -184,37 +184,25 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
                                 {errors['numeroCamera'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['numeroCamera']}</div>}
                             </Form.Group>
                             <Form.Group controlId="formIp">
-                                <Form.Label>IP<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-ip">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="string"
-                                        name="ip"
-                                        isInvalid={!!error}
-                                        value={formData.ip || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['ip'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['ip']}</div>}
+                                <Form.Label>IP</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="ip"
+                                    isInvalid={!!error}
+                                    value={formData.ip || ''}
+                                    onChange={handleChange}
+                                />
                             </Form.Group>
                             <Form.Group controlId="formUserCamera">
-                                <Form.Label>Utilizador<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-userCamera">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="string"
-                                        name="userCamera"
-                                        value={formData.userCamera || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['userCamera'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['userCamera']}</div>}
+                                <Form.Label>Utilizador</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="userCamera"
+                                    value={formData.userCamera || ''}
+                                    onChange={handleChange}
+                                />
                             </Form.Group>
                         </Col>
                         <Col md={6}>
@@ -252,20 +240,14 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
                                 {errors['url'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['url']}</div>}
                             </Form.Group>
                             <Form.Group controlId="formPasswordCamera">
-                                <Form.Label>Password<span style={{ color: 'red' }}> *</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-passwordCamera">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="password"
-                                        name="passwordCamera"
-                                        value={formData.passwordCamera || ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
-                                {errors['passwordCamera'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['passwordCamera']}</div>}
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="string"
+                                    name="passwordCamera"
+                                    value={formData.passwordCamera || ''}
+                                    onChange={handleChange}
+                                />
                             </Form.Group>
                         </Col>
                     </Row>

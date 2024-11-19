@@ -28,7 +28,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskMoveVP = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -95,8 +95,9 @@ export const NkioskMoveVP = () => {
 
     // Busca os movimentos de videoporteiro publicidades ao carregar a página
     useEffect(() => {
+        fetchAllDevices();
         fetchAllMoveVP();
-    }, [devices]);
+    }, []);
 
     // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {
