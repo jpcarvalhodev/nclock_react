@@ -14,10 +14,13 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
 import { UpdateModalAds } from "../../../modals/UpdateModalAds";
 import { AdsContext, AdsContextType } from "../../../context/AdsContext";
-import { set } from "date-fns";
+import Split from "react-split";
+import { TreeViewDataNled } from "../../../components/TreeViewNled";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
 export const NledAds = () => {
     const { navbarColor, footerColor } = useColor();
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const { ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds } = useContext(AdsContext) as AdsContextType;
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -29,6 +32,8 @@ export const NledAds = () => {
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filterText, setFilterText] = useState('');
     const [initialData, setInitialData] = useState<Partial<Ads>>({});
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<Ads[]>([]);
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
@@ -39,6 +44,16 @@ export const NledAds = () => {
     const refreshAds = () => {
         fetchAds();
     };
+
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filterDevices = ads.filter(ad => selectedDevicesIds.includes(ad.deviceSN));
+            setFilteredDevices(filterDevices);
+        } else {
+            setFilteredDevices(ads);
+        }
+    }, [selectedDevicesIds, ads, devices]);
 
     // Função para editar uma publicidade
     const handleEditAds = (ads: Ads) => {
@@ -91,6 +106,11 @@ export const NledAds = () => {
         setShowUpdateModal(false);
     }
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Define as colunas da tabela
     const columns: TableColumn<Ads>[] = adsFields
         .filter(field => selectedColumns.includes(field.key))
@@ -123,7 +143,7 @@ export const NledAds = () => {
         });
 
     // Filtra os dados da tabela
-    const filteredDataTable = ads.filter((ad: Ads) =>
+    const filteredDataTable = filteredDevices.filter((ad: Ads) =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (ad[key] != null && String(ad[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -143,6 +163,7 @@ export const NledAds = () => {
         name: 'Ações',
         cell: (row: Ads) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAds(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>
@@ -156,70 +177,50 @@ export const NledAds = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Publicidade</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNled onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Publicidade</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <input
+                                    className='search-input'
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                            </div>
+                        </div>
+                        <div className='content-wrapper'>
+                            <div className='table-css'>
+                                <DataTable
+                                    columns={[...columns, actionColumn]}
+                                    data={filteredDataTable}
+                                    onRowDoubleClicked={handleEditAds}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={15}
+                                    selectableRows
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    defaultSortAsc={false}
+                                    defaultSortFieldId="nomeArquivo"
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <CreateModalAds
-                    title="Publicidades"
-                    open={showAddModal}
-                    onClose={() => setShowAddModal(false)}
-                    onSave={handleAddAds}
-                    fields={adsFields}
-                    initialValues={initialData || {}}
-                    entities="all"
-                />
-                {selectedAds && (
-                    <UpdateModalAds
-                        open={showUpdateModal}
-                        onClose={handleCloseUpdateModal}
-                        onUpdate={(entity) => handleUpdateAds(selectedAds, entity as FormData)}
-                        entity={selectedAds}
-                        fields={adsFields}
-                        onDuplicate={handleDuplicate}
-                        title="Publicidades"
-                        entities="all"
-                    />
-                )}
-                <DeleteModal
-                    open={showDeleteModal}
-                    onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteAds}
-                    entityId={selectedAdsForDelete}
-                />
-            </div>
-            <div className='content-wrapper'>
-                <div className='table-css'>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredDataTable}
-                        onRowDoubleClicked={handleEditAds}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
-                        selectableRows
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        defaultSortAsc={false}
-                        defaultSortFieldId="nomeArquivo"
-                    />
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
@@ -232,6 +233,33 @@ export const NledAds = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
+            <CreateModalAds
+                title="Publicidades"
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={handleAddAds}
+                fields={adsFields}
+                initialValues={initialData || {}}
+                entities="all"
+            />
+            {selectedAds && (
+                <UpdateModalAds
+                    open={showUpdateModal}
+                    onClose={handleCloseUpdateModal}
+                    onUpdate={(entity) => handleUpdateAds(selectedAds, entity as FormData)}
+                    entity={selectedAds}
+                    fields={adsFields}
+                    onDuplicate={handleDuplicate}
+                    title="Publicidades"
+                    entities="all"
+                />
+            )}
+            <DeleteModal
+                open={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={handleDeleteAds}
+                entityId={selectedAdsForDelete}
+            />
         </div>
     );
 }

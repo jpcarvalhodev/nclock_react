@@ -30,6 +30,7 @@ export const Entities = () => {
     const [selectedEntityToDelete, setSelectedEntityToDelete] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [initialData, setInitialData] = useState<Partial<Entity>>({});
+    const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
 
     // Função para carregar os dados das entidades
     const fetchCompanyConfig = async () => {
@@ -141,6 +142,22 @@ export const Entities = () => {
         setShowUpdateModal(false);
     }
 
+     // Seleciona a entidade anterior
+     const handleNextEntity = () => {
+        if (currentEntityIndex < entityData.length - 1) {
+            setCurrentEntityIndex(currentEntityIndex + 1);
+            setSelectedEntity(entityData[currentEntityIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevEntity = () => {
+        if (currentEntityIndex > 0) {
+            setCurrentEntityIndex(currentEntityIndex - 1);
+            setSelectedEntity(entityData[currentEntityIndex - 1]);
+        }
+    };
+
     // Define a abertura do modal de apagar entidade
     const handleOpenDeleteModal = (id: string) => {
         setSelectedEntityToDelete(id);
@@ -198,6 +215,7 @@ export const Entities = () => {
         name: 'Ações',
         cell: (row: Entity) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEntity(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>
@@ -269,6 +287,10 @@ export const Entities = () => {
                     entity={selectedEntity}
                     onDuplicate={handleDuplicate}
                     title="Atualizar Entidade"
+                    onNext={handleNextEntity}
+                    onPrev={handlePrevEntity}
+                    canMoveNext={currentEntityIndex < entityData.length - 1}
+                    canMovePrev={currentEntityIndex > 0}
                 />
             )}
             <DeleteModal

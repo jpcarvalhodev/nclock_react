@@ -40,6 +40,7 @@ export const Departments = () => {
     const [selectedDepartmentForDelete, setSelectedDepartmentForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Department> | null>(null);
+    const [currentDepartmentIndex, setCurrentDepartmentIndex] = useState(0);
 
     // Busca os departamentos
     const fetchAllDepartments = async () => {
@@ -136,6 +137,22 @@ export const Departments = () => {
         )
     );
 
+    // Seleciona o departamento anterior
+    const handleNextDepartment = () => {
+        if (currentDepartmentIndex < departments.length - 1) {
+            setCurrentDepartmentIndex(currentDepartmentIndex + 1);
+            setSelectedDepartment(departments[currentDepartmentIndex + 1]);
+        }
+    };
+
+    // Seleciona o departamento seguinte
+    const handlePrevDepartment = () => {
+        if (currentDepartmentIndex > 0) {
+            setCurrentDepartmentIndex(currentDepartmentIndex - 1);
+            setSelectedDepartment(departments[currentDepartmentIndex - 1]);
+        }
+    };
+
     // Seleciona as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -224,6 +241,7 @@ export const Departments = () => {
         name: 'Ações',
         cell: (row: Department) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDepartment(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentID)} >
                     <i className="bi bi-trash-fill"></i>
@@ -290,6 +308,10 @@ export const Departments = () => {
                         title="Atualizar Departamento"
                         fields={departmentFields}
                         onDuplicate={handleDuplicate}
+                        onNext={handleNextDepartment}
+                        onPrev={handlePrevDepartment}
+                        canMovePrev={currentDepartmentIndex > 0}
+                        canMoveNext={currentDepartmentIndex < departments.length - 1}
                     />
                 )}
                 <DeleteModal

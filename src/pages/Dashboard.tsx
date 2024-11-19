@@ -100,6 +100,7 @@ import banner_nlight from '../assets/img/carousel/banner_nlight.jpg';
 import banner_ncomfort from '../assets/img/carousel/banner_ncomfort.jpg';
 import banner_nsound from '../assets/img/carousel/banner_nsound.jpg';
 import banner_nhome from '../assets/img/carousel/banner_nhome.jpg';
+import banner_news from '../assets/img/carousel/banner_news.jpg';
 import { useColor } from "../context/ColorContext";
 import { useLicense } from "../context/LicenseContext";
 
@@ -512,6 +513,9 @@ export const Dashboard = () => {
                     <h5 className="dashboard-title-text-inside">Notícias</h5>
                     {activeKey === 'LICENÇAS SOFTWARES CLIENTE' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true} interval={30000}>
+                            <div>
+                                <img className="img-carousel-dashboard" src={banner_news} alt="Notícias" />
+                            </div>
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_sisnid} alt="SISNID" />
                             </div>

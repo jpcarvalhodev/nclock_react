@@ -21,12 +21,12 @@ export const PageProtection: React.FC<PageProtectionProps> = ({ children }) => {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         if (payload.exp && Date.now() >= payload.exp * 1000) {
-          localStorage.removeItem('token');
+          localStorage.clear();
           setRedirectTo('/'); 
           return false;
         }
       } catch {
-        localStorage.removeItem('token');
+        localStorage.clear();
         setRedirectTo('/errors/notfound');
         return false;
       }

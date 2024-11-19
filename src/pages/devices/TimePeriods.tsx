@@ -233,6 +233,7 @@ export const TimePeriods = () => {
         name: 'Ações',
         cell: (row: TimePeriod) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditPeriod(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>

@@ -206,8 +206,12 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        window.location.reload();
-        onClose();
+        if (window.location.pathname.startsWith('/persons/Persons') || window.location.pathname.startsWith('/persons/Employees') || window.location.pathname.startsWith('/persons/ExternalEmployees') || window.location.pathname.startsWith('/persons/User') || window.location.pathname.startsWith('/persons/Visitors') || window.location.pathname.startsWith('/persons/Contacts') || window.location.pathname.startsWith('/persons/Temporaries')) {
+            onClose();
+        } else {
+            window.location.reload();
+            onClose();
+        }
     }
 
     // Função para lidar com a mudança de valor

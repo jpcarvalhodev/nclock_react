@@ -41,10 +41,14 @@ interface UpdateModalProps<T extends Entity> {
     fields: Field[];
     entityType: 'department' | 'group';
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Exporta o componente
-export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, entityType, fields }: UpdateModalProps<T>) => {
+export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, entityType, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const {
         fetchAllEmployees,
         fetchAllDepartments,
@@ -296,7 +300,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
-        const { departmentID, groupID, ...dataWithoutId } = formData;
+        const { departmentID, groupID, code, ...dataWithoutId } = formData;
         onDuplicate(dataWithoutId as Partial<T>);
     };
 
@@ -468,6 +472,8 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                 </Form>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

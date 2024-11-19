@@ -36,6 +36,7 @@ export const AccessControls = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredAccessControl, setFilteredAccessControl] = useState<AccessControl[]>([]);
     const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(null);
+    const [currentAccessControlIndex, setCurrentAccessControlIndex] = useState(0);
 
     // Função para buscar a listagem de controle de acesso
     const fetchAccessControl = async () => {
@@ -162,6 +163,22 @@ export const AccessControls = () => {
         setShowUpdateModal(false);
     }
 
+    // Seleciona o controle de acesso anterior
+    const handleNextAccessControl = () => {
+        if (currentAccessControlIndex < accessControl.length - 1) {
+            setCurrentAccessControlIndex(currentAccessControlIndex + 1);
+            setSelectedAccessControl(accessControl[currentAccessControlIndex + 1]);
+        }
+    };
+
+    // Seleciona o controle de acesso seguinte
+    const handlePrevAccessControl = () => {
+        if (currentAccessControlIndex > 0) {
+            setCurrentAccessControlIndex(currentAccessControlIndex - 1);
+            setSelectedAccessControl(accessControl[currentAccessControlIndex - 1]);
+        }
+    };
+
     // Opções de paginação da tabela com troca de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -239,6 +256,7 @@ export const AccessControls = () => {
         name: 'Ações',
         cell: (row: AccessControl) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAccessControl(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
                     <i className="bi bi-trash-fill"></i>
@@ -347,6 +365,10 @@ export const AccessControls = () => {
                     fields={accessControlFields}
                     entity={selectedAccessControl}
                     onDuplicate={handleDuplicate}
+                    onPrev={handlePrevAccessControl}
+                    onNext={handleNextAccessControl}
+                    canMovePrev={currentAccessControlIndex > 0}
+                    canMoveNext={currentAccessControlIndex < accessControl.length - 1}
                 />
             )}
         </div>

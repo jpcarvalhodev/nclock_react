@@ -432,18 +432,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	};
 
-	// Função para remover a tab ativa
-	const removeTabsRibbons = () => {
-		if (window.location.pathname === '/') {
-			setActiveTab('');
-		}
-	};
-
-	// UseEffect para atualizar o estado da tab ativa
-	useEffect(() => {
-		removeTabsRibbons();
-	}, [location]);
-
 	// Função para carregar os dados das configurações de email
 	const fetchEmailConfig = async () => {
 		try {
@@ -1583,7 +1571,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para buscar o user logado e a imagem do perfil
 	const findUser = registeredUsers.find(user => user.userName === localStorage.getItem('username'));
 	const userImage = findUser?.profileImage ? `${apiService.baseURL?.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
-	console.log('userImage', userImage);
 
 	// Função para fechar o modal de licenças
 	const handleCloseLicenseModal = () => {

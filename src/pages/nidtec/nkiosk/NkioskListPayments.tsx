@@ -40,7 +40,7 @@ interface ChartData {
 
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -189,10 +189,11 @@ export const NkioskListPayments = () => {
 
     // Busca as listagens de pagamentos ao carregar a página
     useEffect(() => {
+        fetchAllDevices();
         fetchAllListPaymentsMB();
         fetchAllListPaymentsCoins();
         fetchTerminalData();
-    }, [devices]);
+    }, []);
 
     // Função para atualizar as listagens de pagamentos
     const refreshListPayments = () => {

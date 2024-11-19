@@ -28,7 +28,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -113,8 +113,9 @@ export const NkioskPayCoins = () => {
     // Busca os pagamentos no moedeiro ao carregar a página
     useEffect(() => {
         fetchAllPayCoins();
+        fetchAllDevices();
         fetchTerminalData();
-    }, [devices]);
+    }, []);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {

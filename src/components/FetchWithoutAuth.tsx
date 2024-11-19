@@ -38,12 +38,10 @@ const handleHTTPError = async (response: Response) => {
         case 502:
         case 503:
         case 504:
-            const serverError = await response.json();
-            toast.error(serverError.message || 'Serviço indisponível. Tente novamente mais tarde.');
+            toast.error('Serviço indisponível. Tente novamente mais tarde.');
             break;
         default:
-            const responseError = await response.json();
-            toast.error(responseError.message || 'Erro desconhecido');
+            toast.error('Erro desconhecido');
             break;
     }
 };

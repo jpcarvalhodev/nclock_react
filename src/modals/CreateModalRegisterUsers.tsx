@@ -65,7 +65,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
     
             if (field.key === 'password' && fieldValue) {
                 if (!validatePassword(fieldValue)) {
-                    newErrors[field.key] = 'Obrigatório a password ter 8 caracteres, uma letra maiúscula e um caractere especial';
+                    newErrors[field.key] = 'Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial';
                     isValid = false;
                 }
             }
@@ -242,7 +242,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-password">Obrigatório a password ter 8 caracteres, uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-password">Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
@@ -299,7 +299,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 <Form.Label>Confirmar Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a password ter 8 caracteres, uma letra maiúscula e um caractere especial</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial</Tooltip>}
                                 >
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"

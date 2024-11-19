@@ -216,6 +216,7 @@ export const Zones = () => {
         name: 'Ações',
         cell: (row: Zone) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditZone(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneID)} >
                     <i className="bi bi-trash-fill"></i>

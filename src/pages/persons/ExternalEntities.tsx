@@ -231,6 +231,7 @@ export const ExternalEntities = () => {
         name: 'Ações',
         cell: (row: ExternalEntity) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditExternalEntity(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityID)} >
                     <i className="bi bi-trash-fill"></i>

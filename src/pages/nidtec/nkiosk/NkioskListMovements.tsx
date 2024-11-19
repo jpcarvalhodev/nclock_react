@@ -28,7 +28,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -169,9 +169,10 @@ export const NkioskListMovements = () => {
 
     // Busca as listagens de movimentos ao carregar a página
     useEffect(() => {
+        fetchAllDevices();
         fetchAllListMovementsCard();
         fetchAllListMovementsKiosk();
-    }, [devices]);
+    }, []);
 
     // Função para atualizar as listagens de movimentos
     const refreshListMovements = () => {

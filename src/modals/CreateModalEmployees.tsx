@@ -5,9 +5,13 @@ import '../css/PagesStyles.css';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
-import { Employee, EmployeeCard } from '../helpers/Types';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
 import { useLicense } from '../context/LicenseContext';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { CreateModalDeptGrp } from './CreateModalDeptGrp';
+import { departmentFields, groupFields } from '../helpers/Fields';
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -36,6 +40,11 @@ interface Props<T> {
 // Define o componente
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const { license, getSoftwareEnabledStatus } = useLicense();
+    const {
+        fetchAllEmployees,
+        fetchAllDepartments,
+        fetchAllGroups,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
     const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -43,6 +52,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false)
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [showDeptModal, setShowDeptModal] = useState(false);
+    const [showGrpModal, setShowGrpModal] = useState(false);
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
@@ -52,7 +63,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             setFormData({})
             setProfileImage(null);
         }
-    }, [initialValues]);
+    }, []);
 
     // Atualiza o estado do componente com uma parte das validações
     useEffect(() => {
@@ -98,7 +109,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     // Função para buscar os funcionários e definir o próximo número de matrícula
     const fetchEmployeesAndSetNextEnrollNumber = async () => {
         try {
-            const employees: Employee[] = await apiService.fetchAllEmployees();
+            const employees: Employee[] = await fetchAllEmployees();
             const maxEnrollNumber = employees.reduce((max: number, employee: Employee) => {
                 const currentEnrollNumber = parseInt(employee.enrollNumber);
                 return Math.max(max, currentEnrollNumber);
@@ -116,8 +127,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const departments = await apiService.fetchAllDepartments();
-            const groups = await apiService.fetchAllGroups();
+            const departments = await fetchAllDepartments();
+            const groups = await fetchAllGroups();
             const professions = await apiService.fetchAllProfessions();
             const zones = await apiService.fetchAllZones();
             const externalEntities = await apiService.fetchAllExternalEntities();
@@ -130,6 +141,34 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             });
         } catch (error) {
             console.error('Erro ao buscar os dados de departamentos e grupos', error);
+        }
+    };
+
+    // Adiciona um departamento
+    const handleAddDepartment = async (department: Department) => {
+        try {
+            const data = await apiService.addDepartment(department);
+            toast.success(data.value || 'Departamento adicionado com sucesso!')
+        } catch (error) {
+            console.error('Erro ao adicionar novo departamento:', error);
+        } finally {
+            setShowDeptModal(false);
+            const data = await fetchAllDepartments();
+            setDropdownData(prevState => ({ ...prevState, departmentId: data }));
+        }
+    };
+
+    // Função para adicionar um grupo
+    const handleAddGroup = async (group: Group) => {
+        try {
+            const data = await apiService.addGroup(group);
+            toast.success(data.value || 'Grupo adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar novo grupo:', error);
+        } finally {
+            setShowGrpModal(false);
+            const data = await fetchAllGroups();
+            setDropdownData(prevState => ({ ...prevState, groupId: data }));
         }
     };
 
@@ -260,8 +299,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        window.location.reload();
-        onClose();
+        if (window.location.pathname.startsWith('/persons/Departments') || window.location.pathname.startsWith('/persons/Groups')) {
+            onClose();
+        } else {
+            window.location.reload();
+            onClose();
+        }
     }
 
     // Função para lidar com o clique no botão de salvar
@@ -598,7 +641,6 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                                         name={field.key}
                                                     />
                                                 )}
-                                                {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                     ))}
@@ -614,67 +656,79 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                         { key: 'biValidity', label: 'Validade de BI', type: 'datetime-local' },
                                         { key: 'admissionDate', label: 'Data de Admissão', type: 'datetime-local' },
                                         { key: 'exitDate', label: 'Data de Saída', type: 'datetime-local' },
-                                        { key: 'departmentId', label: 'Departamento', type: 'dropdown' },
+                                        { key: 'departmentId', label: 'Departamento', type: 'dropdown', required: true },
                                         { key: 'professionId', label: 'Profissão', type: 'dropdown' },
-                                        { key: 'groupId', label: 'Grupo', type: 'dropdown' },
+                                        { key: 'groupId', label: 'Grupo', type: 'dropdown', required: true },
                                         { key: 'zoneId', label: 'Zona', type: 'dropdown' },
                                         { key: 'externalEntityId', label: 'Entidade Externa', type: 'dropdown' }
                                     ].map((field) => (
                                         <Col md={3} key={field.key}>
                                             <Form.Group controlId={`form${field.key}`}>
-                                                <Form.Label>{field.label}</Form.Label>
-                                                {field.type === 'dropdown' ? (
-                                                    <Form.Control
-                                                        as="select"
-                                                        className="custom-input-height custom-select-font-size"
-                                                        value={formData[field.key] || ''}
-                                                        onChange={(e) => handleDropdownChange(field.key, e)}
-                                                    >
-                                                        <option value="">Selecione...</option>
-                                                        {dropdownData[field.key]?.map((option: any) => {
-                                                            let optionId, optionName;
-                                                            switch (field.key) {
-                                                                case 'departmentId':
-                                                                    optionId = option.departmentID;
-                                                                    optionName = option.name;
-                                                                    break;
-                                                                case 'groupId':
-                                                                    optionId = option.groupID;
-                                                                    optionName = option.name;
-                                                                    break;
-                                                                case 'professionId':
-                                                                    optionId = option.professionID;
-                                                                    optionName = option.description;
-                                                                    break;
-                                                                case 'zoneId':
-                                                                    optionId = option.zoneID;
-                                                                    optionName = option.name;
-                                                                    break;
-                                                                case 'externalEntityId':
-                                                                    optionId = option.externalEntityID;
-                                                                    optionName = option.name;
-                                                                    break;
-                                                                default:
-                                                                    optionId = option.id;
-                                                                    optionName = option.name || option.description;
-                                                                    break;
-                                                            }
-                                                            return (
-                                                                <option key={optionId} value={optionId}>
-                                                                    {optionName}
-                                                                </option>
-                                                            );
-                                                        })}
-                                                    </Form.Control>
-                                                ) : (
-                                                    <Form.Control
-                                                        type={field.type}
-                                                        className="custom-input-height custom-select-font-size"
-                                                        value={formData[field.key] || ''}
-                                                        onChange={handleChange}
-                                                        name={field.key}
-                                                    />
-                                                )}
+                                                <Form.Label>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}</Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id={`tooltip-${field.key}`}>Campo Obrigatório</Tooltip>}
+                                                >
+                                                    {field.type === 'dropdown' ? (
+                                                        <Row>
+                                                            {(field.key === 'departmentId' || field.key === 'groupId') ? (
+                                                                <>
+                                                                    <Col>
+                                                                        <Form.Control
+                                                                            as="select"
+                                                                            className="custom-input-height custom-select-font-size"
+                                                                            value={formData[field.key] || ''}
+                                                                            onChange={(e) => handleDropdownChange(field.key, e)}
+                                                                        >
+                                                                            <option value="">Selecione...</option>
+                                                                            {dropdownData[field.key]?.map((option: any) => {
+                                                                                let optionId = option.id;
+                                                                                let optionName = option.name || option.description;
+                                                                                return (
+                                                                                    <option key={optionId} value={optionId}>
+                                                                                        {optionName}
+                                                                                    </option>
+                                                                                );
+                                                                            })}
+                                                                        </Form.Control>
+                                                                    </Col>
+                                                                    <Col xs="auto">
+                                                                        <CustomOutlineButton icon="bi-plus" onClick={() => (field.key === 'departmentId' ? setShowDeptModal(true) : setShowGrpModal(true))} />
+                                                                    </Col>
+                                                                </>
+                                                            ) : (
+                                                                <Col>
+                                                                    <Form.Control
+                                                                        as="select"
+                                                                        className="custom-input-height custom-select-font-size"
+                                                                        value={formData[field.key] || ''}
+                                                                        onChange={(e) => handleDropdownChange(field.key, e)}
+                                                                    >
+                                                                        <option value="">Selecione...</option>
+                                                                        {dropdownData[field.key]?.map((option: any) => {
+                                                                            let optionId = option.id;
+                                                                            let optionName = option.name || option.description;
+                                                                            return (
+                                                                                <option key={optionId} value={optionId}>
+                                                                                    {optionName}
+                                                                                </option>
+                                                                            );
+                                                                        })}
+                                                                    </Form.Control>
+                                                                </Col>
+                                                            )}
+                                                        </Row>
+                                                    ) : (
+                                                        <Form.Control
+                                                            type={field.type}
+                                                            className="custom-input-height custom-select-font-size"
+                                                            value={formData[field.key] || ''}
+                                                            onChange={handleChange}
+                                                            name={field.key}
+                                                        />
+                                                    )}
+                                                </OverlayTrigger>
+                                                {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                     ))}
@@ -747,6 +801,24 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
+            <CreateModalDeptGrp
+                title="Adicionar Departamento"
+                open={showDeptModal}
+                onClose={() => setShowDeptModal(false)}
+                onSave={handleAddDepartment}
+                fields={departmentFields}
+                initialValues={{}}
+                entityType='department'
+            />
+            <CreateModalDeptGrp
+                title="Adicionar Grupo"
+                open={showGrpModal}
+                onClose={() => setShowGrpModal(false)}
+                onSave={handleAddGroup}
+                fields={groupFields}
+                initialValues={{}}
+                entityType='group'
+            />
         </Modal>
     );
 };

@@ -7,6 +7,7 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
 import { Doors } from '../helpers/Types';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -26,6 +27,10 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Interface para os campos do formulário
@@ -39,7 +44,7 @@ interface Field {
 }
 
 // Define o componente
-export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity }: UpdateModalProps<T>) => {
+export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...entity, doorTimezoneList: [] });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -350,6 +355,8 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
+                    <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                     <Button variant="outline-info" onClick={handleDuplicateClick}>
                         Duplicar
                     </Button>

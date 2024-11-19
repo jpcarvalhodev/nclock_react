@@ -39,6 +39,7 @@ export const Groups = () => {
     const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Group> | null>(null);
+    const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
 
     // Função para buscar os grupos
     const fetchAllGroups = async () => {
@@ -154,6 +155,22 @@ export const Groups = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Seleciona o grupo anterior
+    const handleNextGroup = () => {
+        if (currentGroupIndex < groups.length - 1) {
+            setCurrentGroupIndex(currentGroupIndex + 1);
+            setSelectedGroup(groups[currentGroupIndex + 1]);
+        }
+    };
+
+    // Seleciona o grupo seguinte
+    const handlePrevGroup = () => {
+        if (currentGroupIndex > 0) {
+            setCurrentGroupIndex(currentGroupIndex - 1);
+            setSelectedGroup(groups[currentGroupIndex - 1]);
+        }
+    };
+
     // Mapeia os nomes das colunas
     const columnNamesMap = groupFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.key] = field.label;
@@ -194,6 +211,7 @@ export const Groups = () => {
         name: 'Ações',
         cell: (row: Group) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)} >
                     <i className="bi bi-trash-fill"></i>
@@ -260,6 +278,10 @@ export const Groups = () => {
                         title="Atualizar Grupo"
                         fields={groupFields}
                         onDuplicate={handleDuplicate}
+                        onNext={handleNextGroup}
+                        onPrev={handlePrevGroup}
+                        canMovePrev={currentGroupIndex > 0}
+                        canMoveNext={currentGroupIndex < groups.length - 1}
                     />
                 )}
                 <DeleteModal

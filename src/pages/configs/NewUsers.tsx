@@ -138,6 +138,7 @@ export const NewUsers = () => {
         name: 'Ações',
         cell: (row: Register) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditUsers(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>

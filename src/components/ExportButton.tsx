@@ -203,12 +203,12 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
 
     return (
         <Dropdown>
-            <Dropdown.Toggle as={CustomOutlineButton} icon='bi-file-earmark-arrow-down' id="dropdown-basic" iconSize='1.1em'>
+            <Dropdown.Toggle as={CustomOutlineButton} icon='bi-file-earmark-arrow-down' id="dropdown-basic" iconSize='1.1em' className="custom-dropdown-toggle">
             </Dropdown.Toggle>
             <Dropdown.Menu>
                 <Dropdown.Item onClick={() => exportToCSV(dataToExport, fileName, fields)}>Exportar em CSV</Dropdown.Item>
                 <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields)}>Exportar em XLSX</Dropdown.Item>
-                <Dropdown.Item as="button" className='dropdown-item'>
+                <Dropdown.Item as="button">
                     <PDFDownloadLink document={<PDFDocument data={dataToExport} fields={fields} />} fileName={`${fileName}.pdf`} style={{ textDecoration: 'none', color: 'inherit' }}>Exportar em PDF</PDFDownloadLink>
                 </Dropdown.Item>
                 <Dropdown.Item onClick={() => exportToTXT(dataToExport, fileName)}>Exportar em TXT</Dropdown.Item>

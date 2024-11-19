@@ -109,7 +109,7 @@ export const Terminals = () => {
     const [userTrackTabKey, setUserTrackTabKey] = useState('users-software');
     const [userTabKey, setUserTabKey] = useState('users');
     const [filters, setFilters] = useState<Filters>({});
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status', 'enabled']);
     const [selectedUserColums, setSelectedUserColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber', 'statusFprint', 'statusFace']);
     const [selectedBioColums, setSelectedBioColumns] = useState<string[]>(['enrollNumber', 'name', 'statusFprint', 'statusFace']);
     const [selectedCardColums, setSelectedCardColumns] = useState<string[]>(['enrollNumber', 'name', 'cardNumber']);
@@ -275,7 +275,7 @@ export const Terminals = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status']);
+        setSelectedColumns(['deviceNumber', 'deviceName', 'model', 'ipAddress', 'status', 'enabled']);
     };
 
     const handleMainSelect = (k: string | null) => {
@@ -705,6 +705,7 @@ export const Terminals = () => {
         name: 'Ações',
         cell: (row: Devices) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDeviceID)}>
                     <i className="bi bi-trash-fill"></i>

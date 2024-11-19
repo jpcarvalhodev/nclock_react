@@ -195,6 +195,7 @@ export const Categories = () => {
         name: 'Ações',
         cell: (row: Category) => (
             <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCategory(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)} >
                     <i className="bi bi-trash-fill"></i>

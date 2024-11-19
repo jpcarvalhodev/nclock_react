@@ -72,7 +72,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
 
             if (field.key === 'password' && fieldValue) {
                 if (!validatePassword(fieldValue)) {
-                    newErrors[field.key] = 'Obrigatório a password ter 8 caracteres, uma letra maiúscula e um caractere especial';
+                    newErrors[field.key] = 'Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial';
                 }
             }
         });

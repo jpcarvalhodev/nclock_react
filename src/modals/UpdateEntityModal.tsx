@@ -4,6 +4,7 @@ import { Modal, Button, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bo
 import { toast } from 'react-toastify';
 import no_image from '../assets/img/terminais/no_image.png';
 import * as apiService from "../helpers/apiService";
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface Entity
 export interface Entity {
@@ -20,6 +21,10 @@ interface UpdateModalProps<T extends Entity> {
     onUpdate: (data: FormData) => void;
     fields: Field[];
     entity: T;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Interface para os campos do formulário
@@ -32,7 +37,7 @@ interface Field {
     errorMessage?: string;
 }
 
-export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity }: UpdateModalProps<T>) => {
+export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -341,6 +346,8 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>
