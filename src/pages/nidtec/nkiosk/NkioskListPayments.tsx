@@ -409,7 +409,7 @@ export const NkioskListPayments = () => {
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
                                     defaultSortAsc={true}
-                                    defaultSortFieldId="eventTime"
+                                    defaultSortFieldId="timestamp"
                                 />
                                 <div style={{ marginLeft: 10 }}>
                                     <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
