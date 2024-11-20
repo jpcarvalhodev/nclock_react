@@ -10,7 +10,7 @@ export interface DeviceContextType {
     mbDevices: MBDevice[];
     employeeDevices: Employee[];
     employeesOnDevice: EmployeesOnDevice[];
-    fetchAllDevices: () => Promise<void>;
+    fetchAllDevices: () => Promise<Devices[]>;
     fetchAllEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllEmployeeDevices: () => Promise<void>;
     fetchUsersOnDevice: (zktecoDeviceID: string) => Promise<void>;
@@ -48,13 +48,15 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [employeesOnDevice, setEmployeesOnDevice] = useState<EmployeesOnDevice[]>([]);
 
     // Função para buscar todos os dispositivos
-    const fetchAllDevices = async () => {
+    const fetchAllDevices = async (): Promise<Devices[]> => {
         try {
             const data = await apiService.fetchAllDevices();
             setDevices(data);
+            return data;
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
         }
+        return [];
     };
 
     // Função para buscar todos os funcionários no dispositivo e salvar no DB

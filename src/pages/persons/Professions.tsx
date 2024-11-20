@@ -41,6 +41,7 @@ export const Professions = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [selectedRows, setSelectedRows] = useState<Profession[]>([]);
     const [initialData, setInitialData] = useState<Partial<Profession> | null>(null);
+    const [currentProfessionIndex, setCurrentProfessionIndex] = useState(0);
 
     // Função para buscar as profissões
     const fetchAllProfessions = async () => {
@@ -171,6 +172,22 @@ export const Professions = () => {
         )
     );
 
+    // Seleciona a entidade anterior
+    const handleNextProfession = () => {
+        if (currentProfessionIndex < professions.length - 1) {
+            setCurrentProfessionIndex(currentProfessionIndex + 1);
+            setSelectedProfession(professions[currentProfessionIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevProfession = () => {
+        if (currentProfessionIndex > 0) {
+            setCurrentProfessionIndex(currentProfessionIndex - 1);
+            setSelectedProfession(professions[currentProfessionIndex - 1]);
+        }
+    };
+
     // Define os dados iniciais ao duplicar
     const handleDuplicate = (entity: Partial<Profession>) => {
         setInitialData(entity);
@@ -253,6 +270,10 @@ export const Professions = () => {
                         onDuplicate={handleDuplicate}
                         title="Atualizar Profissão"
                         entityType="profissões"
+                        canMoveNext={currentProfessionIndex < professions.length - 1}
+                        canMovePrev={currentProfessionIndex > 0}
+                        onNext={handleNextProfession}
+                        onPrev={handlePrevProfession}
                     />
                 )}
                 <DeleteModal
@@ -272,6 +293,7 @@ export const Professions = () => {
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
                         selectableRows
+                        onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

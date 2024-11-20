@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -33,13 +34,17 @@ interface UpdateModalProps<T extends Entity> {
     fields: Field[];
     title: string;
     entityType: 'movimentos' | 'pedidos';
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Define o componente
-export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType }: UpdateModalProps<T>) => {
+export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const {
         fetchAllEmployees,
-      } = useContext(PersonsContext) as PersonsContextType;
+    } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,10 +52,11 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (entity) {
+        if (open && entity) {
+            fetchDropdownOptions();
             setFormData({ ...entity });
         }
-    }, [entity]);
+    }, [open, entity]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -93,13 +99,6 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
         }
     };
 
-    // Atualiza o estado do componente
-    useEffect(() => {
-        if (open) {
-            fetchDropdownOptions();
-        }
-    }, [open]);
-
     // Define a função para mudar o dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
@@ -130,8 +129,8 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
         }));
     };
 
-     // Função para manipular o clique no botão Duplicar
-     const handleDuplicateClick = () => {
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
         if (!onDuplicate) return;
         const { attendanceTimeId, ...dataWithoutId } = formData;
         onDuplicate(dataWithoutId as Partial<T>);
@@ -319,6 +318,8 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                 })}
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

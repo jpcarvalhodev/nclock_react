@@ -47,6 +47,7 @@ export const NkioskGetCoins = () => {
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [initialData, setInitialData] = useState<Partial<RecolhaMoedeiroEContador> | null>(null);
+    const [currentGetCoinIndex, setCurrentGetCoinIndex] = useState(0);
 
     // Função para buscar as recolhas do moedeiro
     const fetchAllCoinRecoveredData = async () => {
@@ -153,6 +154,22 @@ export const NkioskGetCoins = () => {
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
+    };
+
+    // Seleciona a entidade anterior
+    const handleNextGetCoin = () => {
+        if (currentGetCoinIndex < getCoins.length - 1) {
+            setCurrentGetCoinIndex(currentGetCoinIndex + 1);
+            setSelectedRecolhaMoedeiro(getCoins[currentGetCoinIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevGetCoin = () => {
+        if (currentGetCoinIndex > 0) {
+            setCurrentGetCoinIndex(currentGetCoinIndex - 1);
+            setSelectedRecolhaMoedeiro(getCoins[currentGetCoinIndex - 1]);
+        }
     };
 
     // Filtra os dados da tabela
@@ -337,6 +354,10 @@ export const NkioskGetCoins = () => {
                     fields={recolhaMoedeiroEContadorFields}
                     onDuplicate={handleDuplicate}
                     title="Atualizar Recolha do Moedeiro"
+                    canMoveNext={currentGetCoinIndex < getCoins.length - 1}
+                    canMovePrev={currentGetCoinIndex > 0}
+                    onNext={handleNextGetCoin}
+                    onPrev={handlePrevGetCoin}
                 />
             )}
         </div>

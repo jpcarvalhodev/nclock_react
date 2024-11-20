@@ -7,14 +7,23 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionCard } from "../../../helpers/Types";
+import { AuxOut, KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { transactionCardFields } from "../../../helpers/Fields";
+import { auxOutFields, transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
+import { useLocation } from "react-router-dom";
+import { AuxOutModal } from "../../../modals/AuxOutModal";
+import { toast } from "react-toastify";
+
+// Define a interface SaveData
+interface SaveData {
+    deviceSN: string;
+    auxData: FormData;
+}
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -35,7 +44,7 @@ export const NkioskMoveCard = () => {
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'cardNo', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -43,6 +52,9 @@ export const NkioskMoveCard = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
+    const [showAuxOutModal, setShowAuxOutModal] = useState(false);
+    const [loadingAuxOut, setLoadingAuxOut] = useState(false);
+    const location = useLocation();
     const eventDoorId = '3';
 
     // Função para buscar os movimentos dos cartões
@@ -97,15 +109,33 @@ export const NkioskMoveCard = () => {
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
-        fetchAllDevices();
-        fetchAllMoveCard();
-    }, []);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllMoveCard();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
         fetchAllMoveCard();
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Função para abrir a auxiliar
+    const handleOpenAuxOut = async (SaveData: SaveData) => {
+        const { deviceSN, auxData } = SaveData;
+        try {
+            const data = await apiService.openAuxDoor({deviceSN, auxData});
+            toast.success(data.message ||'Torniquete aberto com sucesso!');
+        } catch (error) {
+            console.error('Erro ao abrir a auxiliar:', error);
+        }
+        setShowAuxOutModal(false);
+        setLoadingAuxOut(false);
+    }
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
@@ -128,7 +158,7 @@ export const NkioskMoveCard = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'nameUser', 'cardNo', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -220,6 +250,12 @@ export const NkioskMoveCard = () => {
     // Calcula o valor total dos movimentos
     const totalAmount = filteredDataTable.length;
 
+    // Função para abrir o modal para escolher porta
+    const openAuxOutModal = () => {
+        setShowAuxOutModal(true);
+        setLoadingAuxOut(true);
+    };
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -248,6 +284,7 @@ export const NkioskMoveCard = () => {
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     <ExportButton allData={moveCardWithNames} selectedData={selectedRows} fields={transactionCardFields} />
                                     <PrintButton data={moveCardWithNames} fields={transactionCardFields} />
+                                    <CustomOutlineButton icon="bi bi-arrow-bar-down" onClick={openAuxOutModal} />
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -300,6 +337,16 @@ export const NkioskMoveCard = () => {
                         onSelectAllColumns={onSelectAllColumns}
                     />
                 )}
+                <AuxOutModal
+                    title="Escolha a Auxiliar para Abrir"
+                    open={showAuxOutModal}
+                    onClose={() => {
+                        setShowAuxOutModal(false);
+                        setLoadingAuxOut(false);
+                    }}
+                    onSave={handleOpenAuxOut}
+                    fields={auxOutFields}
+                />
             </div>
         </TerminalsProvider>
     );

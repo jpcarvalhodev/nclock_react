@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { Cameras } from '../helpers/Types';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface Entity
 export interface Entity {
@@ -22,6 +23,10 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Interface para os campos do formulário
@@ -35,7 +40,7 @@ interface Field {
 }
 
 // Define o componente
-export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity }: UpdateModalProps<T>) => {
+export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<Cameras>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -43,12 +48,12 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
-        if (open) {
+        if (open && entity) {
             setFormData({ ...entity });
         } else {
             setFormData({});
         }
-    }, [open]);
+    }, [open, entity]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -231,6 +236,8 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>

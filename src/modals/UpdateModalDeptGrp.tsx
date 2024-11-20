@@ -67,6 +67,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
+    const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -74,12 +75,13 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (entity) {
+        if (open && entity) {
+            fetchDropdownOptions();
             setFormData({ ...entity });
         } else {
             setFormData({} as T);
         }
-    }, [entity]);
+    }, [open, entity]);
 
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
@@ -185,16 +187,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             console.error('Erro ao buscar os dados de funcionários e dispositivos', error);
         }
     };
-
-    // Atualiza o estado do componente ao abrir o modal
-    useEffect(() => {
-        if (open) {
-            fetchDropdownOptions();
-            setFormData({ ...entity });
-        } else {
-            setFormData({} as T);
-        }
-    }, [open, entity]);
 
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (e: React.ChangeEvent<FormControlElement>) => {
@@ -302,6 +294,22 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         if (!onDuplicate) return;
         const { departmentID, groupID, code, ...dataWithoutId } = formData;
         onDuplicate(dataWithoutId as Partial<T>);
+    };
+
+    // Seleciona o funcionário anterior
+    const handleNextEmployee = () => {
+        if (currentEmployeeIndex < employeeData.length - 1) {
+            setCurrentEmployeeIndex(currentEmployeeIndex + 1);
+            setSelectedEmployee(employeeData[currentEmployeeIndex + 1]);
+        }
+    };
+
+    // Seleciona o funcionário seguinte
+    const handlePrevEmployee = () => {
+        if (currentEmployeeIndex > 0) {
+            setCurrentEmployeeIndex(currentEmployeeIndex - 1);
+            setSelectedEmployee(employeeData[currentEmployeeIndex - 1]);
+        }
     };
 
     // Função para lidar com o clique em guardar
@@ -496,6 +504,10 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     onUpdate={updateEmployeeAndCard}
                     entity={selectedEmployee}
                     fields={employeeFields}
+                    canMoveNext={currentEmployeeIndex < employeeData.length - 1}
+                    canMovePrev={currentEmployeeIndex > 0}
+                    onNext={handleNextEmployee}
+                    onPrev={handlePrevEmployee}
                 />
             )}
         </Modal>

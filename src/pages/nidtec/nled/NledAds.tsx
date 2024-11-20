@@ -26,7 +26,7 @@ export const NledAds = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['nomeArquivo', 'tipoArquivo', 'creador', 'dataFim']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['createDate', 'nomeArquivo', 'tipoArquivo', 'creador', 'dataFim']);
     const [selectedAds, setSelectedAds] = useState<Ads | null>(null);
     const [selectedAdsForDelete, setSelectedAdsForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Record<string, string>>({});
@@ -34,6 +34,7 @@ export const NledAds = () => {
     const [initialData, setInitialData] = useState<Partial<Ads>>({});
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<Ads[]>([]);
+    const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
@@ -84,7 +85,7 @@ export const NledAds = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['nomeArquivo', 'tipoArquivo', 'creador', 'dataFim']);
+        setSelectedColumns(['createDate', 'nomeArquivo', 'tipoArquivo', 'creador', 'dataFim']);
     };
 
     // Função para selecionar todas as colunas
@@ -109,6 +110,22 @@ export const NledAds = () => {
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         setSelectedDevicesIds(selectedIds);
+    };
+
+    // Seleciona a publicidade anterior
+    const handleNextAds = () => {
+        if (currentAdsIndex < ads.length - 1) {
+            setCurrentAdsIndex(currentAdsIndex + 1);
+            setSelectedAds(ads[currentAdsIndex + 1]);
+        }
+    };
+
+    // Seleciona a publicidade seguinte
+    const handlePrevAds = () => {
+        if (currentAdsIndex > 0) {
+            setCurrentAdsIndex(currentAdsIndex - 1);
+            setSelectedAds(ads[currentAdsIndex - 1]);
+        }
     };
 
     // Define as colunas da tabela
@@ -252,6 +269,10 @@ export const NledAds = () => {
                     onDuplicate={handleDuplicate}
                     title="Publicidades"
                     entities="all"
+                    onPrev={handlePrevAds}
+                    onNext={handleNextAds}
+                    canMoveNext={currentAdsIndex < ads.length - 1}
+                    canMovePrev={currentAdsIndex > 0}
                 />
             )}
             <DeleteModal

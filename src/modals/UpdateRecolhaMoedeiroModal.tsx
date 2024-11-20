@@ -8,6 +8,7 @@ import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
 import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
 import { KioskConfig, RecolhaMoedeiroEContador } from '../helpers/Types';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -27,6 +28,10 @@ interface UpdateModalProps<T extends Entity> {
     onUpdate: (entity: T) => Promise<void>;
     entity: T;
     fields: Field[];
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Interface para os campos do formulário
@@ -40,7 +45,7 @@ interface Field {
 }
 
 // Define o componente
-export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields }: UpdateModalProps<T>) => {
+export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const {
         devices,
     } = useContext(TerminalsContext) as DeviceContextType;
@@ -51,7 +56,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
-        if (open) {
+        if (open && entity) {
             fetchRecolhas();
             fetchAmount();
             setFormData({ ...entity });
@@ -380,6 +385,8 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>

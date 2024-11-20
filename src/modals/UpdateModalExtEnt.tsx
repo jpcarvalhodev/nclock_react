@@ -5,6 +5,7 @@ import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -35,10 +36,14 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Exporta o componente
-export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
@@ -48,10 +53,15 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (entity) {
+        if (open && entity) {
             setFormData({ ...entity });
         }
-    }, [entity]);
+        if (open && entity && entity.photo) {
+            setProfileImage(entity.photo);
+        } else {
+            setProfileImage(modalAvatar);
+        }
+    }, [open, entity]);
 
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
@@ -462,6 +472,8 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

@@ -129,7 +129,7 @@ export const deviceFields = [
     { key: "model", label: "Modelo", type: "string", required: true },
     { key: "ipAddress", label: "Endereço IP", type: "string", required: true },
     { key: "port", label: "Porta", type: "number", required: true },
-    { key: "photo", label: "Foto", type: "string" },
+    { key: "sPhoto", label: "Foto", type: "string" },
     { key: "code", label: "Código", type: "number" },
     { key: "platform", label: "Platforma", type: "string" },
     { key: "firmware", label: "Firmware", type: "string" },
@@ -182,6 +182,7 @@ export const employeeFaceFields = [
 ];
 
 export const adsFields = [
+    { key: 'createDate', label: 'Data de Criação', type: 'Date' },
     { key: 'nomeArquivo', label: 'Nome do Arquivo', type: 'string' },
     { key: 'tipoArquivo', label: 'Tipo de Arquivo', type: 'number' },
     { key: 'creador', label: 'Criador', type: 'string' },
@@ -190,6 +191,7 @@ export const adsFields = [
     { key: 'ordem', label: 'Ordem', type: 'number' },
     { key: 'tempoExecucaoImagens', label: 'Tempo de Execução', type: 'number' },
     { key: 'dataFim', label: 'Data para Encerrar', type: 'Date' },
+    { key: 'updateDate', label: 'Data de Atualização', type: 'Date' },
 ];
 
 export const transactionFields = [
@@ -216,12 +218,13 @@ export const transactionMBFields = [
 ];
 
 export const transactionCardFields = [
-    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'pin', label: 'Número do Utilizador', type: 'number' },
     { key: 'nameUser', label: 'Nome do Utilizador', type: 'string' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
-    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventDoorId', label: 'Nome', type: 'number' },
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
 ];
 
 export const registerFields = [
@@ -488,4 +491,18 @@ export const kioskConfigFields = [
     { key: 'amount', label: 'Valor', type: 'number', required: true },
     { key: 'totalMoedas', label: 'Total de Moedas', type: 'number', required: true },
     { key: 'emails', label: 'E-Mails', type: 'string', required: true },
+];
+
+export const auxOutFields = [
+    { key: 'nrAuxOut', label: 'Número da Auxiliar', type: 'number', required: true },
+    { key: 'time', label: 'Tempo para Abrir', type: 'number', required: true }
+];
+
+export const auxiliariesFields = [
+    { key: 'nome', label: 'Nome', type: 'string', required: true },
+    { key: 'auxNo', label: 'Nº Auxiliar', type: 'number' },
+    { key: 'auxType', label: 'Contacto', type: 'number' },
+    { key: 'deviceId', label: 'Dispositivo', type: 'string' },
+    { key: 'timezoneId', label: 'Período', type: 'string' },
+    { key: 'enabled', label: 'Activo', type: 'boolean' },
 ];

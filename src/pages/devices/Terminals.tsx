@@ -150,6 +150,7 @@ export const Terminals = () => {
     const [showDoorModal, setShowDoorModal] = useState(false);
     const [loadingUsersInTerminalData, setLoadingUsersInTerminalData] = useState(false);
     const [loadingTerminals, setLoadingTerminals] = useState(false);
+    const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
 
     // Função para mesclar os dados de utilizadores e cartões
     const mergeEmployeeAndCardData = (
@@ -213,7 +214,7 @@ export const Terminals = () => {
     // Função para buscar todos os utilizadores no terminal
     useEffect(() => {
         const fetchUsersInTerminal = async () => {
-            if (selectedTerminal) {
+            if (selectedTerminal && selectedTerminal.status) {
                 setLoadingUsersInTerminalData(true);
                 try {
                     await fetchUsersOnDevice(selectedTerminal.zktecoDeviceID);
@@ -377,6 +378,22 @@ export const Terminals = () => {
             filters[key] === "" || String(device[key]) === String(filters[key])
         )
     );
+
+    // Seleciona a entidade anterior
+    const handleNextDevice = () => {
+        if (currentDeviceIndex < devices.length - 1) {
+            setCurrentDeviceIndex(currentDeviceIndex + 1);
+            setSelectedTerminal(devices[currentDeviceIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevDevice = () => {
+        if (currentDeviceIndex > 0) {
+            setCurrentDeviceIndex(currentDeviceIndex - 1);
+            setSelectedTerminal(devices[currentDeviceIndex - 1]);
+        }
+    };
 
     // Define as colunas de dispositivos
     const deviceColumns: TableColumn<Devices>[] = deviceFields
@@ -989,7 +1006,7 @@ export const Terminals = () => {
             await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingUser(false);
         } else {
-            toast.error('Selecione um terminal primeiro!');
+            toast.warn('Selecione um terminal primeiro!');
         }
     }
 
@@ -1001,7 +1018,7 @@ export const Terminals = () => {
             setLoadingAllUser(false);
             setSelectedDeviceRows([]);
         } else {
-            toast.error('Selecione um terminal primeiro!');
+            toast.warn('Selecione um terminal primeiro!');
         }
     }
 
@@ -1013,7 +1030,7 @@ export const Terminals = () => {
             setLoadingSyncAllUser(false);
             setSelectedDeviceRows([]);
         } else {
-            toast.error('Selecione um terminal primeiro!');
+            toast.warn('Selecione um terminal primeiro!');
         }
     } */
 
@@ -1025,7 +1042,7 @@ export const Terminals = () => {
             setLoadingMovements(false);
             setSelectedDeviceRows([]);
         } else {
-            toast.error('Selecione um terminal primeiro!');
+            toast.warn('Selecione um terminal primeiro!');
         }
     }
 
@@ -1037,7 +1054,7 @@ export const Terminals = () => {
             setLoadingDeleteAllUsers(false);
             setSelectedDeviceRows([]);
         } else {
-            toast.error('Selecione um terminal primeiro!');
+            toast.warn('Selecione um terminal primeiro!');
         }
     }
 
@@ -1049,7 +1066,7 @@ export const Terminals = () => {
             setLoadingRestartDevice(false);
             setSelectedDeviceRows([]);
         } else {
-            toast.error('Selecione um terminal primeiro!');
+            toast.warn('Selecione um terminal primeiro!');
         }
     }
 
@@ -1064,7 +1081,7 @@ export const Terminals = () => {
             setLoadingSendClock(false);
             setSelectedDeviceRows([]);
         } else {
-            toast.error('Selecione um terminal primeiro!');
+            toast.warn('Selecione um terminal primeiro!');
         }
     }
 
@@ -1082,7 +1099,7 @@ export const Terminals = () => {
             setLoadingSyncTime(false);
             setSelectedDeviceRows([]);
         } else {
-            toast.error('Selecione um terminal primeiro!');
+            toast.warn('Selecione um terminal primeiro!');
         }
     }
 
@@ -1114,8 +1131,12 @@ export const Terminals = () => {
 
     // Função para abrir o modal para escolher porta
     const openDoorModal = () => {
-        setShowDoorModal(true);
-        setLoadingOpenDoor(true);
+        if (selectedTerminal) {
+            setShowDoorModal(true);
+            setLoadingOpenDoor(true);
+        } else {
+            toast.warn('Selecione um terminal primeiro!');
+        }
     }
 
     return (
@@ -1548,6 +1569,10 @@ export const Terminals = () => {
                             entity={selectedTerminal}
                             fields={deviceFields}
                             title="Atualizar Terminal"
+                            onPrev={handlePrevDevice}
+                            onNext={handleNextDevice}
+                            canMovePrev={currentDeviceIndex > 0}
+                            canMoveNext={currentDeviceIndex < devices.length - 1}
                         />
                     )
                 }

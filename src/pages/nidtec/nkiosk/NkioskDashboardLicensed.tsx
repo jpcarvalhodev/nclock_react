@@ -12,6 +12,7 @@ import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionMB } from "../../../helpers/Types";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { Line } from "react-chartjs-2";
+import { useLocation } from "react-router-dom";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -63,10 +64,11 @@ const messages = {
 
 export const NkioskDashboardLicensed = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [lineChartData, setLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
     const [totalPayments, setTotalPayments] = useState<KioskTransactionMB[]>([]);
+    const location = useLocation();
     const eventDoorId2 = '2';
 
     // Função para buscar os dados para os gráficos
@@ -102,8 +104,14 @@ export const NkioskDashboardLicensed = () => {
 
     // UseEffect para buscar os dados
     useEffect(() => {
-        fetchAllData();
-    }, [devices]);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllData();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para renderizar os eventos no calendário
     const MyEvent = ({ event }: MyEventProps) => {

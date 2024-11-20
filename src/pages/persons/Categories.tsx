@@ -40,6 +40,7 @@ export const Categories = () => {
     const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Category> | null>(null);
+    const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
 
     // Função para buscar as categorias
     const fetchAllCategories = async () => {
@@ -136,6 +137,22 @@ export const Categories = () => {
             setSelectedColumns(selectedColumns.filter(col => col !== columnName));
         } else {
             setSelectedColumns([...selectedColumns, columnName]);
+        }
+    };
+
+    // Seleciona a entidade anterior
+    const handleNextCategory = () => {
+        if (currentCategoryIndex < categories.length - 1) {
+            setCurrentCategoryIndex(currentCategoryIndex + 1);
+            setSelectedCategory(categories[currentCategoryIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevCategory = () => {
+        if (currentCategoryIndex > 0) {
+            setCurrentCategoryIndex(currentCategoryIndex - 1);
+            setSelectedCategory(categories[currentCategoryIndex - 1]);
         }
     };
 
@@ -250,6 +267,10 @@ export const Categories = () => {
                         onDuplicate={handleDuplicate}
                         title="Atualizar Categoria"
                         entityType="categorias"
+                        canMoveNext={currentCategoryIndex < categories.length - 1}
+                        canMovePrev={currentCategoryIndex > 0}
+                        onPrev={handlePrevCategory}
+                        onNext={handleNextCategory}
                     />
                 )}
                 <DeleteModal

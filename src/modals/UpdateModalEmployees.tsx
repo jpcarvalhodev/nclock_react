@@ -41,10 +41,14 @@ interface UpdateModalProps<T extends Entity> {
   entity: T;
   fields: Field[];
   title: string;
+  onNext: () => void;
+  onPrev: () => void;
+  canMoveNext: boolean;
+  canMovePrev: boolean;
 }
 
 // Define o componente
-export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
   const {
     fetchAllDepartments,
     fetchAllGroups,
@@ -63,10 +67,21 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Usa useEffect para inicializar o formulário
   useEffect(() => {
-    if (entity) {
+    if (open && entity) {
+      fetchDropdownOptions();
+      fetchEmployeesCards();
       setFormData({ ...entity });
+    } else {
+      setFormData({ ...entity });
+      setCardFormData({});
+      setProfileImage(null);
     }
-  }, [entity]);
+    if (entity && entity.photo) {
+      setProfileImage(entity.photo);
+    } else {
+      setProfileImage(modalAvatar);
+    }
+  }, [open, entity]);
 
   // Atualiza o estado do componente com parte das validações dos campos
   useEffect(() => {
@@ -161,27 +176,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       setDropdownData(prevState => ({ ...prevState, groupId: data }));
     }
   };
-
-  // Atualiza o estado do componente
-  useEffect(() => {
-    if (open) {
-      fetchDropdownOptions();
-      fetchEmployeesCards();
-    } else {
-      setFormData({ ...entity });
-      setCardFormData({});
-      setProfileImage(null);
-    }
-  }, [open]);
-
-  // Atualiza o estado da foto
-  useEffect(() => {
-    if (entity && entity.photo) {
-      setProfileImage(entity.photo);
-    } else {
-      setProfileImage(modalAvatar);
-    }
-  }, [entity]);
 
   // Define a mudança de foto
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -793,6 +787,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         </Tab.Container>
       </Modal.Body>
       <Modal.Footer>
+        <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+        <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
         <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
         <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
         <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

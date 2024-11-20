@@ -29,6 +29,7 @@ export const NewUsers = () => {
     const [selectedUserToDelete, setSelectedUserToDelete] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [initialData, setInitialData] = useState<Partial<Register> | null>(null);
+    const [currentUserIndex, setCurrentUserIndex] = useState(0);
 
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
@@ -89,6 +90,22 @@ export const NewUsers = () => {
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
+    };
+
+    // Seleciona a entidade anterior
+    const handleNextUser = () => {
+        if (currentUserIndex < registeredUsers.length - 1) {
+            setCurrentUserIndex(currentUserIndex + 1);
+            setSelectedUser(registeredUsers[currentUserIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevUser = () => {
+        if (currentUserIndex > 0) {
+            setCurrentUserIndex(currentUserIndex - 1);
+            setSelectedUser(registeredUsers[currentUserIndex - 1]);
+        }
     };
 
     // Define o componente de linha expandida
@@ -210,6 +227,10 @@ export const NewUsers = () => {
                     fields={registerFields}
                     onDuplicate={handleDuplicate}
                     title="Atualizar Registo de Utilizador"
+                    canMoveNext={currentUserIndex < registeredUsers.length - 1}
+                    canMovePrev={currentUserIndex > 0}
+                    onNext={handleNextUser}
+                    onPrev={handlePrevUser}
                 />
             )}
             <DeleteModal

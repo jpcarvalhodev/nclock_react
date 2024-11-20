@@ -142,21 +142,29 @@ export const Entities = () => {
         setShowUpdateModal(false);
     }
 
-     // Seleciona a entidade anterior
-     const handleNextEntity = () => {
-        if (currentEntityIndex < entityData.length - 1) {
-            setCurrentEntityIndex(currentEntityIndex + 1);
-            setSelectedEntity(entityData[currentEntityIndex + 1]);
-        }
+    // Define a função de próxima entidade
+    const handleNextEntity = () => {
+        setCurrentEntityIndex(prevIndex => {
+            if (prevIndex < entityData.length - 1) {
+                const newIndex = prevIndex + 1;
+                setSelectedEntity(entityData[newIndex]);
+                return newIndex;
+            }
+            return prevIndex;
+        });
     };
-
-    // Seleciona a entidade seguinte
+    
+    // Define a função de entidade anterior
     const handlePrevEntity = () => {
-        if (currentEntityIndex > 0) {
-            setCurrentEntityIndex(currentEntityIndex - 1);
-            setSelectedEntity(entityData[currentEntityIndex - 1]);
-        }
-    };
+        setCurrentEntityIndex(prevIndex => {
+            if (prevIndex > 0) {
+                const newIndex = prevIndex - 1;
+                setSelectedEntity(entityData[newIndex]);
+                return newIndex;
+            }
+            return prevIndex;
+        });
+    };    
 
     // Define a abertura do modal de apagar entidade
     const handleOpenDeleteModal = (id: string) => {

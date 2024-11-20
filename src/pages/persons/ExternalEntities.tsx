@@ -44,6 +44,7 @@ export const ExternalEntities = () => {
     const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<ExternalEntity> | null>(null);
+    const [currentExtEntIndex, setCurrentExtEntIndex] = useState(0);
     const [data, setData] = useState<DataState>({
         externalEntity: [],
         externalEntityTypes: [],
@@ -179,6 +180,22 @@ export const ExternalEntities = () => {
         setSelectedExternalEntity(null);
     }
 
+    // Seleciona a entidade anterior
+    const handleNextExtEnt = () => {
+        if (currentExtEntIndex < externalEntities.length - 1) {
+            setCurrentExtEntIndex(currentExtEntIndex + 1);
+            setSelectedExternalEntity(externalEntities[currentExtEntIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevExtEnt = () => {
+        if (currentExtEntIndex > 0) {
+            setCurrentExtEntIndex(currentExtEntIndex - 1);
+            setSelectedExternalEntity(externalEntities[currentExtEntIndex - 1]);
+        }
+    };
+
     // Define as colunas da tabela
     const columns: TableColumn<ExternalEntity>[] = externalEntityFields
         .filter(field => selectedColumns.includes(field.key))
@@ -284,6 +301,10 @@ export const ExternalEntities = () => {
                         fields={externalEntityFields}
                         onDuplicate={handleDuplicate}
                         title="Atualizar Entidade Externa"
+                        canMoveNext={currentExtEntIndex < externalEntities.length - 1}
+                        canMovePrev={currentExtEntIndex > 0}
+                        onNext={handleNextExtEnt}
+                        onPrev={handlePrevExtEnt}
                     />
                 )}
                 <DeleteModal

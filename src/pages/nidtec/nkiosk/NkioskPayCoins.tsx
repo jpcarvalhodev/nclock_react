@@ -7,7 +7,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionMB, MBDevice } from "../../../helpers/Types";
+import { Devices, KioskTransactionMB, MBDevice } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
@@ -15,6 +15,8 @@ import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -44,6 +46,7 @@ export const NkioskPayCoins = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
+    const location = useLocation();
     const eventDoorId = '2';
 
     // Função para buscar os pagamentos no moedeiro
@@ -110,12 +113,35 @@ export const NkioskPayCoins = () => {
         }
     }
 
+    // Função para buscar os dados da última recolha
+    const fetchAllDataFromLastRecolha = async () => {
+        if (selectedDevicesIds.length === 0) {
+            toast.warn('Selecione um dispositivo primeiro!');
+        }
+        try {
+            const data = await apiService.fetchDataFimRecolha(selectedDevicesIds[0]);
+            const lastRecolhaDate = new Date(data);
+            const filteredData = payCoins.filter(payCoin => {
+                const payCoinDate = new Date(payCoin.timestamp).toISOString();
+                return payCoinDate >= lastRecolhaDate.toISOString();
+            });
+            setPayCoins(filteredData);
+        } catch (error) {
+            console.error('Erro ao buscar os dados da última recolha:', error);
+        }
+    }
+
     // Busca os pagamentos no moedeiro ao carregar a página
     useEffect(() => {
-        fetchAllPayCoins();
-        fetchAllDevices();
-        fetchTerminalData();
-    }, []);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllPayCoins();
+                fetchTerminalData();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {
@@ -276,6 +302,7 @@ export const NkioskPayCoins = () => {
                                     <PrintButton data={payCoinsWithNames} fields={transactionMBFields.filter(field => field.key !== 'clientTicket' && field.key !== 'merchantTicket' && field.key !== 'tpId' && field.key !== 'email')} />
                                 </div>
                                 <div className="date-range-search">
+                                    <CustomOutlineButton icon="bi bi-cash-coin" onClick={fetchAllDataFromLastRecolha} iconSize='1.1em' />
                                     <input
                                         type="date"
                                         value={startDate}

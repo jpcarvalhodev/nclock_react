@@ -57,6 +57,7 @@ export const User = () => {
     const [initialData, setInitialData] = useState<Employee | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+    const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -201,6 +202,22 @@ export const User = () => {
             filters[key] === "" || String(employee[key]) === String(filters[key])
         )
     );
+
+    // Seleciona o funcionário anterior
+    const handleNextEmployee = () => {
+        if (currentEmployeeIndex < data.employees.length - 1) {
+            setCurrentEmployeeIndex(currentEmployeeIndex + 1);
+            setSelectedEmployee(data.employees[currentEmployeeIndex + 1]);
+        }
+    };
+
+    // Seleciona o funcionário seguinte
+    const handlePrevEmployee = () => {
+        if (currentEmployeeIndex > 0) {
+            setCurrentEmployeeIndex(currentEmployeeIndex - 1);
+            setSelectedEmployee(data.employees[currentEmployeeIndex - 1]);
+        }
+    };
 
     // Define as colunas da tabela
     const columns: TableColumn<Employee>[] = employeeFields
@@ -365,6 +382,10 @@ export const User = () => {
                         entity={selectedEmployee}
                         fields={employeeFields}
                         title="Atualizar Utente"
+                        canMoveNext={currentEmployeeIndex < data.employees.length - 1}
+                        canMovePrev={currentEmployeeIndex > 0}
+                        onNext={handleNextEmployee}
+                        onPrev={handlePrevEmployee}
                     />
                 )}
                 <DeleteModal

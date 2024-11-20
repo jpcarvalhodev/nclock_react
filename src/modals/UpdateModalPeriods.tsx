@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { Col, Form, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface Entity
 export interface Entity {
@@ -29,19 +30,23 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
-export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields }: UpdateModalProps<T>) => {
+export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (entity) {
+        if (open && entity) {
             setFormData({ ...entity });
         }
-    }, [entity]);
+    }, [open, entity]);
 
     // Usa useEffect para validar o formulário
     useEffect(() => {
@@ -225,6 +230,8 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                 </Form>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

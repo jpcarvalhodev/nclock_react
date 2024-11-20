@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, Row } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -34,10 +35,14 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Define o componente
-export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields }: UpdateModalProps<T>) => {
+export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -45,7 +50,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (open) {
+        if (open && entity) {
             fetchDropdownOptions();
             setFormData({ ...entity });
         }
@@ -352,7 +357,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                             </Form.Group>
                         </Col>
                         <Col md={3}>
-                        <Form.Group controlId="formDoorNo">
+                            <Form.Group controlId="formDoorNo">
                                 <Form.Label>Número de Porta</Form.Label>
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
@@ -413,6 +418,8 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

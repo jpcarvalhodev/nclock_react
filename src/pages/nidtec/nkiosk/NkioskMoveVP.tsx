@@ -15,6 +15,7 @@ import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
+import { useLocation } from "react-router-dom";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -43,6 +44,7 @@ export const NkioskMoveVP = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
+    const location = useLocation();
     const eventDoorId = '3';
 
     // Função para buscar os movimentos de videoporteiro
@@ -95,9 +97,14 @@ export const NkioskMoveVP = () => {
 
     // Busca os movimentos de videoporteiro publicidades ao carregar a página
     useEffect(() => {
-        fetchAllDevices();
-        fetchAllMoveVP();
-    }, []);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllMoveVP();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {

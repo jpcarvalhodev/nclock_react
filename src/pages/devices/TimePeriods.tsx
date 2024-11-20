@@ -34,6 +34,7 @@ export const TimePeriods = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredPeriods, setFilteredPeriods] = useState<TimePeriod[]>([]);
     const [initialData, setInitialData] = useState<Partial<TimePeriod> | null>(null);
+    const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
 
     // Função para buscar os dados dos períodos
     const fetchTimePeriods = async () => {
@@ -159,6 +160,23 @@ export const TimePeriods = () => {
         )
     );
 
+    // Seleciona a entidade anterior
+    const handleNextPeriod = () => {
+        if (currentPeriodIndex < period.length - 1) {
+            setCurrentPeriodIndex(currentPeriodIndex + 1);
+            setSelectedPeriod(period[currentPeriodIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevPeriod = () => {
+        if (currentPeriodIndex > 0) {
+            setCurrentPeriodIndex(currentPeriodIndex - 1);
+            setSelectedPeriod(period[currentPeriodIndex - 1]);
+        }
+    };
+
+    // Função para duplicar um período
     const handleDuplicate = (entity: Partial<TimePeriod>) => {
         setShowAddModal(true);
         setInitialData(entity);
@@ -306,6 +324,10 @@ export const TimePeriods = () => {
                     fields={timePeriodFields}
                     onDuplicate={handleDuplicate}
                     title="Atualizar Período"
+                    canMoveNext={currentPeriodIndex < period.length - 1}
+                    canMovePrev={currentPeriodIndex > 0}
+                    onNext={handleNextPeriod}
+                    onPrev={handlePrevPeriod}
                 />
             )}
             <DeleteModal

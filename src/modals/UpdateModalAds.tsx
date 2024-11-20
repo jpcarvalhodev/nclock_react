@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, Row } from 'react-bootstrap';
 import { Ads } from '../helpers/Types';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface Entity
 export interface Entity {
@@ -33,6 +34,10 @@ interface UpdateModalProps<T extends Entity> {
     fields: Field[];
     title: string;
     entities: 'all' | 'photo' | 'video';
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Interface para os ficheiros com ordem
@@ -42,7 +47,7 @@ interface FileWithOrder {
 }
 
 // Define o componente
-export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, entities, fields }: UpdateModalProps<T>) => {
+export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, entities, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [files, setFiles] = useState<FileWithOrder[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -56,10 +61,12 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (entity) {
+        const username = localStorage.getItem('username');
+        if (open && username && entity) {
             setFormData({ ...entity });
+            setFormData((prevData) => ({ ...prevData, Creador: username }));
         }
-    }, [entity]);
+    }, [open, entity]);
 
     // Extensões permitidas para imagens e vídeos
     const allowedImageExtensions = ['jpg', 'jpeg', 'png'];
@@ -86,14 +93,6 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
         setErrors(newErrors);
         setIsFormValid(isValid);
     }, [formData, fields]);
-
-    // UseEffect para definir o campo "Criador" automaticamente a partir do localStorage
-    useEffect(() => {
-        const username = localStorage.getItem('username');
-        if (username) {
-            setFormData((prevData) => ({ ...prevData, Creador: username }));
-        }
-    }, [open]);
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -361,6 +360,8 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>

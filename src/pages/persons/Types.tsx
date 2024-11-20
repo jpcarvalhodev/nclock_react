@@ -37,6 +37,7 @@ export const Types = () => {
     const [selectedExternalEntityTypeForDelete, setSelectedExternalEntityTypeForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<ExternalEntityTypes> | null>(null);
+    const [currentExternalEntityTypeIndex, setCurrentExternalEntityTypeIndex] = useState(0);
 
     // Função para buscar os tipos das entidades externas
     const fetchAllExternalEntityTypes = async () => {
@@ -173,6 +174,22 @@ export const Types = () => {
         setShowUpdateModal(false);
     }
 
+    // Seleciona a entidade anterior
+    const handleNextType = () => {
+        if (currentExternalEntityTypeIndex < externalEntityTypes.length - 1) {
+            setCurrentExternalEntityTypeIndex(currentExternalEntityTypeIndex + 1);
+            setSelectedExternalEntityType(externalEntityTypes[currentExternalEntityTypeIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevType = () => {
+        if (currentExternalEntityTypeIndex > 0) {
+            setCurrentExternalEntityTypeIndex(currentExternalEntityTypeIndex - 1);
+            setSelectedExternalEntityType(externalEntityTypes[currentExternalEntityTypeIndex - 1]);
+        }
+    };
+
     // Define as colunas da tabela
     const tableColumns = selectedColumns
         .map(columnKey => ({
@@ -266,6 +283,10 @@ export const Types = () => {
                     onDuplicate={handleDuplicate}
                     title="Atualizar Tipo"
                     entityType="tipos"
+                    canMoveNext={currentExternalEntityTypeIndex < externalEntityTypes.length - 1}
+                    canMovePrev={currentExternalEntityTypeIndex > 0}
+                    onNext={handleNextType}
+                    onPrev={handlePrevType}
                 />
             )}
             <DeleteModal

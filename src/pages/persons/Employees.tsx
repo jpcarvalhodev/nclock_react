@@ -57,7 +57,7 @@ export const Employees = () => {
     const [initialData, setInitialData] = useState<Employee | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
-
+    const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -186,6 +186,22 @@ export const Employees = () => {
         selectedRows: Employee[];
     }) => {
         setSelectedRows(state.selectedRows);
+    };
+
+    // Seleciona o funcionário anterior
+    const handleNextEmployee = () => {
+        if (currentEmployeeIndex < data.employees.length - 1) {
+            setCurrentEmployeeIndex(currentEmployeeIndex + 1);
+            setSelectedEmployee(data.employees[currentEmployeeIndex + 1]);
+        }
+    };
+
+    // Seleciona o funcionário seguinte
+    const handlePrevEmployee = () => {
+        if (currentEmployeeIndex > 0) {
+            setCurrentEmployeeIndex(currentEmployeeIndex - 1);
+            setSelectedEmployee(data.employees[currentEmployeeIndex - 1]);
+        }
     };
 
     // Define a função de duplicar funcionários
@@ -365,6 +381,10 @@ export const Employees = () => {
                         entity={selectedEmployee}
                         fields={employeeFields}
                         title="Atualizar Funcionário"
+                        canMoveNext={currentEmployeeIndex < data.employees.length - 1}
+                        canMovePrev={currentEmployeeIndex > 0}
+                        onPrev={handlePrevEmployee}
+                        onNext={handleNextEmployee}
                     />
                 )}
                 <DeleteModal

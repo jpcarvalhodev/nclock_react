@@ -57,6 +57,7 @@ export const Temporaries = () => {
     const [initialData, setInitialData] = useState<Employee | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+    const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -268,6 +269,22 @@ export const Temporaries = () => {
         setShowUpdateModal(true);
     };
 
+    // Seleciona o funcionário anterior
+    const handleNextEmployee = () => {
+        if (currentEmployeeIndex < data.employees.length - 1) {
+            setCurrentEmployeeIndex(currentEmployeeIndex + 1);
+            setSelectedEmployee(data.employees[currentEmployeeIndex + 1]);
+        }
+    };
+
+    // Seleciona o funcionário seguinte
+    const handlePrevEmployee = () => {
+        if (currentEmployeeIndex > 0) {
+            setCurrentEmployeeIndex(currentEmployeeIndex - 1);
+            setSelectedEmployee(data.employees[currentEmployeeIndex - 1]);
+        }
+    };
+
     // Dados da paginação de EN em PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -365,6 +382,10 @@ export const Temporaries = () => {
                         entity={selectedEmployee}
                         fields={employeeFields}
                         title="Atualizar Provisório"
+                        canMoveNext={currentEmployeeIndex < data.employees.length - 1}
+                        canMovePrev={currentEmployeeIndex > 0}
+                        onNext={handleNextEmployee}
+                        onPrev={handlePrevEmployee}
                     />
                 )}
                 <DeleteModal

@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Auxiliaries, AuxOut, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -1275,6 +1275,16 @@ export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, d
     return response.json();
 }
 
+export const fetchDataFimRecolha = async (deviceSN: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/GetLastDataFimRecolha?sn=${deviceSN}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CRIAÇÃO DE CONTAS, ENTIDADES E EMAILS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1921,6 +1931,90 @@ export const updateKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(kioskConfig)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }	
+    return response.json();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE AUXILIAR DE SAÍDA///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const openAuxDoor = async (data: {deviceSN: string, auxData: FormData}) => {
+    const auxDataObj: { [key: string]: any } = {};
+    data.auxData.forEach((value, key) => {
+        auxDataObj[key] = value;
+    });
+    const response = await fetchWithAuth(`KioskTransaction/OpenAuxOutDevice/${data.deviceSN}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(auxDataObj)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE AUXILIARES///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllAux = async () => {
+    const response = await fetchWithAuth(`AccAux/GetAllAux`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const fetchInAux = async () => {
+    const response = await fetchWithAuth(`AccAux/GetAllInAux`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const fetchOutAux = async () => {
+    const response = await fetchWithAuth(`AccAux/GetAllOutAux`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const fetchOutAuxEnabled = async () => {
+    const response = await fetchWithAuth(`AccAux/GetAllOutAuxEnabeld`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const updateAllAux = async (aux: Auxiliaries) => {
+    const response = await fetchWithAuth(`AccAux/UpdateAux`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(aux)
     });
     if (!response.ok) {
         const errorData = await response.json();

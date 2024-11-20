@@ -31,6 +31,7 @@ export const NviewOnlineCameras = () => {
     const [selectedCamerasToDelete, setSelectedCamerasToDelete] = useState<string | null>(null);
     const [selectedCameras, setSelectedCameras] = useState<Cameras | null>(null);
     const [initialData, setInitialData] = useState<Partial<Cameras> | null>(null);
+    const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
 
     // Função para buscar as câmeras
     const fetchAllCameras = async () => {
@@ -148,6 +149,22 @@ export const NviewOnlineCameras = () => {
         setSelectedCameras(null);
         setShowUpdateModal(false);
     }
+    
+    // Seleciona a entidade anterior
+    const handleNextCamera = () => {
+        if (currentCameraIndex < cameras.length - 1) {
+            setCurrentCameraIndex(currentCameraIndex + 1);
+            setSelectedCameras(cameras[currentCameraIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevCamera = () => {
+        if (currentCameraIndex > 0) {
+            setCurrentCameraIndex(currentCameraIndex - 1);
+            setSelectedCameras(cameras[currentCameraIndex - 1]);
+        }
+    };
 
     // Define as colunas da tabela
     const columns: TableColumn<Cameras>[] = cameraFields
@@ -281,6 +298,10 @@ export const NviewOnlineCameras = () => {
                     fields={cameraFields}
                     onDuplicate={handleDuplicate}
                     title="Atualizar Câmera"
+                    canMoveNext={currentCameraIndex < cameras.length - 1}
+                    canMovePrev={currentCameraIndex > 0}
+                    onNext={handleNextCamera}
+                    onPrev={handlePrevCamera}
                 />
             )}
             <DeleteModal

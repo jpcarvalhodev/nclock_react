@@ -39,6 +39,7 @@ export const Zones = () => {
     const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<string | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Zone>>();
+    const [currentZoneIndex, setCurrentZoneIndex] = useState(0);
 
     // Função para buscar as zonas
     const fetchAllZones = async () => {
@@ -162,6 +163,22 @@ export const Zones = () => {
         setShowUpdateModal(false);
     }
 
+     // Seleciona a entidade anterior
+     const handleNextZone = () => {
+        if (currentZoneIndex < zones.length - 1) {
+            setCurrentZoneIndex(currentZoneIndex + 1);
+            setSelectedZone(zones[currentZoneIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevZone = () => {
+        if (currentZoneIndex > 0) {
+            setCurrentZoneIndex(currentZoneIndex - 1);
+            setSelectedZone(zones[currentZoneIndex - 1]);
+        }
+    };
+
     // Filtra os dados da tabela
     const filteredDataTable = zones.filter(zone =>
         Object.keys(filters).every(key =>
@@ -269,6 +286,10 @@ export const Zones = () => {
                         fields={zoneFields}
                         onDuplicate={handleDuplicate}
                         title="Atualizar Zona"
+                        canMoveNext={currentZoneIndex < zones.length - 1}
+                        canMovePrev={currentZoneIndex > 0}
+                        onNext={handleNextZone}
+                        onPrev={handlePrevZone}
                     />
                 )}
                 <DeleteModal

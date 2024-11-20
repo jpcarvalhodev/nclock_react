@@ -70,7 +70,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (open) {
+        if (open && entity) {
             setFormData({ ...entity });
             const imageURL = entity.logotipo ? `${apiService.baseURL}${entity.logotipo}` : no_image;
             setDeviceImage(imageURL);
@@ -78,7 +78,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
             setFormData({});
             setDeviceImage(null);
         }
-    }, [open]);
+    }, [open, entity]);
 
     // Função para validar o formulário
     const validateForm = () => {

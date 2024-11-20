@@ -15,6 +15,7 @@ import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
+import { useLocation } from "react-router-dom";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -35,7 +36,7 @@ export const NkioskMoveKiosk = () => {
     const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'cardNo', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -43,6 +44,7 @@ export const NkioskMoveKiosk = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
+    const location = useLocation();
     const eventDoorId = '4';
 
     // Função para buscar os movimentos do quiosque
@@ -95,9 +97,14 @@ export const NkioskMoveKiosk = () => {
 
     // Busca os movimentos de quiosque ao carregar a página
     useEffect(() => {
-        fetchAllDevices();
-        fetchAllMoveKiosk();
-    }, []);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllMoveKiosk();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para atualizar os movimentos de quiosque
     const refreshMoveKiosk = () => {
@@ -126,7 +133,7 @@ export const NkioskMoveKiosk = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'nameUser', 'cardNo', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas

@@ -52,6 +52,7 @@ export const TerminalsMB = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [initialData, setInitialData] = useState<Partial<MBDevice> | null>(null);
+    const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
 
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
@@ -157,6 +158,22 @@ export const TerminalsMB = () => {
         setSelectedTerminal(null);
         setShowUpdateModal(false);
     }
+
+    // Seleciona a entidade anterior
+    const handleNextDevice = () => {
+        if (currentDeviceIndex < mbDevices.length - 1) {
+            setCurrentDeviceIndex(currentDeviceIndex + 1);
+            setSelectedTerminal(mbDevices[currentDeviceIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevDevice = () => {
+        if (currentDeviceIndex > 0) {
+            setCurrentDeviceIndex(currentDeviceIndex - 1);
+            setSelectedTerminal(mbDevices[currentDeviceIndex - 1]);
+        }
+    };
 
     // Filtra os dados da tabela de dispositivos
     const filteredDataTable = filteredDevices.filter(device =>
@@ -367,6 +384,10 @@ export const TerminalsMB = () => {
                         entity={selectedTerminal}
                         fields={mbDeviceFields}
                         onDuplicate={handleDuplicate}
+                        onPrev={handlePrevDevice}
+                        onNext={handleNextDevice}
+                        canMovePrev={currentDeviceIndex > 0}
+                        canMoveNext={currentDeviceIndex < mbDevices.length - 1}
                     />
                 )}
                 {showDeleteModal && (

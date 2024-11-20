@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface Entity
 export interface Entity {
@@ -21,6 +22,10 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Interface para os campos do formulário
@@ -34,7 +39,7 @@ interface Field {
 }
 
 // Define o componente
-export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -63,7 +68,7 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (open) {
+        if (open && entity) {
             setFormData((prevState) => ({
                 ...prevState,
                 estadoTerminal: 0,
@@ -72,7 +77,7 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
         } else {
             setFormData({ ...entity } as T);
         }
-    }, [open]);
+    }, [open, entity]);
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: ChangeEvent<any>) => {
@@ -160,6 +165,8 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>

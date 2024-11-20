@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
-import { Doors } from "../helpers/Types";
+import { Auxiliaries, Doors, TimePeriod } from "../helpers/Types";
 import React from "react";
 import no_image from "../assets/img/terminais/no_image.png";
 import { toast } from "react-toastify";
 import { TerminalsContext, DeviceContextType } from "../context/TerminalsContext";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../components/CustomStylesDataTable";
-import { doorsFields } from "../helpers/Fields";
+import { auxiliariesFields, doorsFields } from "../helpers/Fields";
 import { SelectFilter } from "../components/SelectFilter";
 import * as apiService from "../helpers/apiService";
 import { UpdateModalDoor } from "./UpdateModalDoor";
@@ -21,6 +21,8 @@ import inbio460 from "../assets/img/terminais/inbio460.webp";
 import profacex from "../assets/img/terminais/profacex.webp";
 import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { UpdateModalAux } from "./UpdateModaAux";
 
 // Define a interface Entity
 export interface Entity {
@@ -48,9 +50,13 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
-export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const {
         fetchAllDevices,
         fetchAllDoorData,
@@ -66,19 +72,32 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState('');
+    const [currentDoorIndex, setCurrentDoorIndex] = useState(0);
+    const [auxiliaries, setAuxiliaries] = useState<Auxiliaries[]>([]);
+    const [showAuxUpdateModal, setShowAuxUpdateModal] = useState(false);
+    const [selectedAux, setSelectedAux] = useState<Auxiliaries | null>(null);
+    const [period, setPeriod] = useState<TimePeriod[]>([]);
+    const [currentAuxIndex, setCurrentAuxIndex] = useState(0);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
-        setFormData({ ...entity } as T);
-        const matchedDevice = deviceOptions.find(option => option.label === entity.model);
-        if (matchedDevice) {
-            setSelectedDevice(matchedDevice.value);
-            setDeviceImage(matchedDevice.img);
-        } else {
-            setSelectedDevice('');
-            setDeviceImage(no_image);
+        if (open && entity) {
+            setFormData({ ...entity } as T);
+            const matchedDevice = deviceOptions.find(option => option.label === entity.model);
+            if (matchedDevice) {
+                setSelectedDevice(matchedDevice.value);
+                setDeviceImage(matchedDevice.img);
+            } else {
+                setSelectedDevice('');
+                setDeviceImage(no_image);
+            }
+            if (entity && entity.photo) {
+                setDeviceImage(entity.photo);
+            } else {
+                setDeviceImage(no_image);
+            }
         }
-    }, [entity]);
+    }, [open, entity]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -119,11 +138,25 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         setIsFormValid(isValid);
     };
 
+    // Função para buscar os períodos
+    const fetchPeriods = async () => {
+        const dataPeriods = await apiService.fetchAllTimePeriods();
+        setPeriod(dataPeriods);
+    }
+
     // Função para buscar as portas e filtrar pelo SN
     const fetchDoors = async () => {
         const dataDoors = await fetchAllDoorData();
         const filteredDoors = dataDoors.filter((door) => door.devId === entity.zktecoDeviceID);
         setDoors(filteredDoors);
+    }
+
+    // Função para buscar as auxiliares
+    const fetchAuxiliaries = async () => {
+        const dataAuxiliaries = await apiService.fetchAllAux();
+        const filteredAuxiliaries = dataAuxiliaries.filter((aux: Auxiliaries) => aux.deviceId === entity.zktecoDeviceID);
+        console.log(filteredAuxiliaries);
+        setAuxiliaries(filteredAuxiliaries);
     }
 
     // Função para lidar com a atualização das portas
@@ -133,7 +166,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             const updatedData = { ...door, ...data };
             const updatedDoors = doors.map(d => d.id === door.id ? { ...d, ...updatedData } : d);
             setDoors(updatedDoors);
-            toast.success(data?.message || 'Porta atualizada com sucesso!');
+            toast.success(data.message || 'Porta atualizada com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar a porta:', error);
         } finally {
@@ -141,20 +174,28 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         }
     }
 
+    // Função para lidar com a atualização das auxiliares
+    const handleUpdateAux = async (aux: Auxiliaries) => {
+        try {
+            const data = await apiService.updateAllAux(aux);
+            const updatedData = { ...aux, ...data };
+            const updatedAux = auxiliaries.map(a => a.id === aux.id ? { ...a, ...updatedData } : a);
+            setAuxiliaries(updatedAux);
+            toast.success(data.message || 'Auxiliar atualizada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar a porta:', error);
+        } finally {
+            setShowAuxUpdateModal(false);
+        }
+    }
+
     // UseEffect para atualizar lista de todos os dispositivos
     useEffect(() => {
         fetchAllDevices();
         fetchDoors();
+        fetchAuxiliaries();
+        fetchPeriods();
     }, []);
-
-    // Atualiza o estado da foto
-    useEffect(() => {
-        if (entity && entity.photo) {
-            setDeviceImage(entity.photo);
-        } else {
-            setDeviceImage(no_image);
-        }
-    }, [entity]);
 
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
@@ -167,6 +208,12 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const handleEditDoors = (row: Doors) => {
         setSelectedDoor(row);
         setShowUpdateModal(true);
+    }
+
+    // Função para lidar com a edição das auxiliares
+    const handleEditAux = (row: Auxiliaries) => {
+        setSelectedAux(row);
+        setShowAuxUpdateModal(true);
     }
 
     // Função para lidar com a mudança da imagem
@@ -197,7 +244,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     setDeviceImage(dataUrl);
                     setFormData(prevFormData => ({
                         ...prevFormData,
-                        photo: dataUrl
+                        sPhoto: dataUrl
                     }));
                 };
                 image.src = readerEvent.target?.result as string;
@@ -226,7 +273,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         setFormData(prevFormData => ({
             ...prevFormData,
             model: deviceOption ? deviceOption.label : '',
-            photo: deviceOption?.img || no_image
+            sPhoto: deviceOption?.img || no_image
         }));
     };
 
@@ -260,6 +307,22 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             filters[key] === "" || String(door[key]) === String(filters[key])
         )
     );
+
+    // Seleciona a entidade anterior
+    const handleNextDoor = () => {
+        if (currentDoorIndex < doors.length - 1) {
+            setCurrentDoorIndex(currentDoorIndex + 1);
+            setSelectedDoor(doors[currentDoorIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevDoor = () => {
+        if (currentDoorIndex > 0) {
+            setCurrentDoorIndex(currentDoorIndex - 1);
+            setSelectedDoor(doors[currentDoorIndex - 1]);
+        }
+    };
 
     // Define as colunas que serão exibidas
     const includedColumns = ['enabled', 'name', 'doorNo', 'lockDelay'];
@@ -298,6 +361,83 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 sortable: true,
                 cell: (row: Doors) => {
                     if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                }
+            };
+        });
+
+    // Filtra os dados da tabela
+    const filteredAuxDataTable = auxiliaries.filter(aux =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(aux[key]) === String(filters[key])
+        )
+    );
+
+    // Seleciona a entidade anterior
+    const handleNextAux = () => {
+        if (currentAuxIndex < auxiliaries.length - 1) {
+            setCurrentAuxIndex(currentAuxIndex + 1);
+            setSelectedAux(auxiliaries[currentAuxIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevAux = () => {
+        if (currentAuxIndex > 0) {
+            setCurrentAuxIndex(currentAuxIndex - 1);
+            setSelectedAux(auxiliaries[currentAuxIndex - 1]);
+        }
+    };
+
+    // Define as colunas
+    const auxColumns: TableColumn<Auxiliaries>[] = auxiliariesFields
+        .map(field => {
+            const formatField = (row: Auxiliaries) => {
+                switch (field.key) {
+                    case 'enabled':
+                        return row[field.key] === true ? 'Activo' : 'Inactivo';
+                    case 'createdData':
+                        return new Date(row[field.key]).toLocaleDateString();
+                    case 'updatedData':
+                        return new Date(row[field.key]).toLocaleDateString();
+                    case 'deviceId':
+                        return row[field.key] === entity.zktecoDeviceID ? entity.deviceName : 'Sem Dispositivo';
+                    case 'timezoneId':
+                        return period.find((p) => p.id === row[field.key])?.name || 'Sem Período';
+                    case 'auxType':
+                        switch (row[field.key]) {
+                            case 0:
+                                return 'Sem Contacto';
+                            case 1:
+                                return 'NO';
+                            case 2:
+                                return 'NC';
+                            default:
+                                return '';
+                        }
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                id: field.key,
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredAuxDataTable} />
+                    </>
+                ),
+                selector: (row: Auxiliaries) => {
+                    if (field.key === 'auxNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                },
+                sortable: true,
+                cell: (row: Auxiliaries) => {
+                    if (field.key === 'auxNo') {
                         return row[field.key];
                     }
                     return formatField(row);
@@ -462,6 +602,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                 </Nav.Item>
                                 <Nav.Item>
                                     <Nav.Link eventKey="portas">Portas</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="auxiliares">Auxiliares</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                             <Tab.Content>
@@ -662,11 +805,32 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                 paginationComponentOptions={paginationOptions}
                                                 paginationPerPage={5}
                                                 paginationRowsPerPageOptions={[5, 10]}
+                                                selectableRows
                                                 onRowDoubleClicked={handleEditDoors}
                                                 noDataComponent="Não existem dados disponíveis para exibir."
                                                 customStyles={customStyles}
                                                 defaultSortAsc={true}
                                                 defaultSortFieldId="doorNo"
+                                            />
+                                        </Row>
+                                    </Form>
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="auxiliares">
+                                    <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                        <Row>
+                                            <DataTable
+                                                columns={auxColumns}
+                                                data={filteredAuxDataTable}
+                                                pagination
+                                                paginationComponentOptions={paginationOptions}
+                                                paginationPerPage={5}
+                                                paginationRowsPerPageOptions={[5, 10]}
+                                                selectableRows
+                                                onRowDoubleClicked={handleEditAux}
+                                                noDataComponent="Não existem dados disponíveis para exibir."
+                                                customStyles={customStyles}
+                                                defaultSortAsc={true}
+                                                defaultSortFieldId="auxNo"
                                             />
                                         </Row>
                                     </Form>
@@ -678,16 +842,35 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             </Modal.Body>
             {selectedDoor && (
                 <UpdateModalDoor
-                    key={selectedDoor ? selectedDoor.id : null}
                     open={showUpdateModal}
                     onClose={() => setShowUpdateModal(false)}
                     onUpdate={handleUpdateDoor}
                     entity={selectedDoor}
                     fields={doorsFields}
                     title="Atualizar Porta"
+                    canMoveNext={currentDoorIndex < doors.length - 1}
+                    canMovePrev={currentDoorIndex > 0}
+                    onNext={handleNextDoor}
+                    onPrev={handlePrevDoor}
+                />
+            )}
+            {selectedAux && (
+                <UpdateModalAux
+                    open={showAuxUpdateModal}
+                    onClose={() => setShowAuxUpdateModal(false)}
+                    onUpdate={handleUpdateAux}
+                    entity={selectedAux}
+                    fields={auxiliariesFields}
+                    title="Atualizar Auxiliar"
+                    canMoveNext={currentAuxIndex < auxiliaries.length - 1}
+                    canMovePrev={currentAuxIndex > 0}
+                    onNext={handleNextAux}
+                    onPrev={handlePrevAux}
                 />
             )}
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

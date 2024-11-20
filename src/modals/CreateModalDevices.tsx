@@ -162,7 +162,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                     setDeviceImage(dataUrl);
                     setFormData(prevFormData => ({
                         ...prevFormData,
-                        photo: dataUrl
+                        sPhoto: dataUrl
                     }));
                 };
                 image.src = readerEvent.target?.result as string;
@@ -191,7 +191,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         setFormData(prevFormData => ({
             ...prevFormData,
             model: deviceOption ? deviceOption.label : '',
-            photo: deviceOption?.img || no_image
+            sPhoto: deviceOption?.img || no_image
         }));
     };
 

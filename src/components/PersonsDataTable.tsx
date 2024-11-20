@@ -53,6 +53,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
     const [filters, setFilters] = useState<Filters>({});
+    const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -157,6 +158,22 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         selectedRows: Employee[];
     }) => {
         setSelectedRows(state.selectedRows);
+    };
+
+    // Seleciona o funcionário anterior
+    const handleNextEmployee = () => {
+        if (currentEmployeeIndex < data.employees.length - 1) {
+            setCurrentEmployeeIndex(currentEmployeeIndex + 1);
+            setSelectedEmployee(data.employees[currentEmployeeIndex + 1]);
+        }
+    };
+
+    // Seleciona o funcionário seguinte
+    const handlePrevEmployee = () => {
+        if (currentEmployeeIndex > 0) {
+            setCurrentEmployeeIndex(currentEmployeeIndex - 1);
+            setSelectedEmployee(data.employees[currentEmployeeIndex - 1]);
+        }
     };
 
     // Função que manipula a duplicação e fecha o modal de atualização
@@ -294,6 +311,10 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                             entity={selectedEmployee}
                             fields={employeeFields}
                             title="Atualizar Pessoa"
+                            onPrev={handlePrevEmployee}
+                            onNext={handleNextEmployee}
+                            canMoveNext={currentEmployeeIndex < data.employees.length - 1}
+                            canMovePrev={currentEmployeeIndex > 0}
                         />
                     )}
                     {showDeleteModal && (

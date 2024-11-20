@@ -15,6 +15,7 @@ import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { useLocation } from "react-router-dom";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -58,6 +59,7 @@ export const NkioskListPayments = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
+    const location = useLocation();
     const eventDoorId = '2';
 
     // Função para buscar as listagens de pagamentos em MB
@@ -189,11 +191,16 @@ export const NkioskListPayments = () => {
 
     // Busca as listagens de pagamentos ao carregar a página
     useEffect(() => {
-        fetchAllDevices();
-        fetchAllListPaymentsMB();
-        fetchAllListPaymentsCoins();
-        fetchTerminalData();
-    }, []);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllListPaymentsMB();
+                fetchAllListPaymentsCoins();
+                fetchTerminalData();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para atualizar as listagens de pagamentos
     const refreshListPayments = () => {
@@ -210,7 +217,7 @@ export const NkioskListPayments = () => {
         } else {
             setFilteredDevices(listPayments);
         }
-    }, [selectedDevicesIds, listPayments]); 
+    }, [selectedDevicesIds, listPayments]);
 
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {

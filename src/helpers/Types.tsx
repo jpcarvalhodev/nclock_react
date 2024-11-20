@@ -594,3 +594,22 @@ export type KioskConfig = {
     totalMoedas: number;
     emails: string[];
 }
+
+export type AuxOut = {
+    [key: string]: any;
+    id: string;
+    nrAuxOut: number;
+    time: number;
+}
+
+export type Auxiliaries = {
+    [key: string]: any;
+    id: string;
+    nome: string;
+    auxInOut: number;
+    auxNo: number;
+    auxType: number;
+    deviceId: string;
+    timezoneId: string;
+    enable: boolean;
+}

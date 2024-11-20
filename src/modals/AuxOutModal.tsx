@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { DoorDevice, Doors } from '../helpers/Types';
+import { AuxOut } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
+import { TerminalsContext, DeviceContextType } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -17,13 +18,18 @@ export interface Entity {
     [key: string]: any;
 }
 
+// Define a interface SaveData
+interface SaveData {
+    deviceSN: string;
+    auxData: FormData;
+}
+
 // Interface para as propriedades do modal
-interface DoorModalProps<T extends Entity> {
+interface AuxOutModalProps<T extends Entity> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
-    entity: T;
+    onSave: (data: SaveData) => void;
     fields: Field[];
 }
 
@@ -38,24 +44,27 @@ interface Field {
 }
 
 // Valores iniciais do formulário
-const initialValues: Partial<DoorDevice> = {
+const initialValues: Partial<AuxOut> = {
     time: 5
 }
 
 // Define o componente
-export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, entity, fields }: DoorModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<DoorDevice>>({ ...entity, ...initialValues });
+export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fields }: AuxOutModalProps<T>) => {
+    const {
+        devices
+    } = useContext(TerminalsContext) as DeviceContextType;
+    const [formData, setFormData] = useState<Partial<AuxOut>>({ nrAuxOut: 0, time: initialValues.time, deviceSN: '' });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
-        if (entity) {
+        if (open) {
             fetchDropdownOptions();
-            setFormData({ ...entity, ...initialValues });
+            setFormData({ ...initialValues });
         }
-    }, [entity]);
+    }, [open]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -82,13 +91,16 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const door = await apiService.fetchAllDoors();
-            const filteredDoors = door.filter((door: Doors) => door.devId === entity.zktecoDeviceID);
+            const data = await apiService.fetchOutAuxEnabled();
+            const auxWithOptions = data.map((aux: AuxOut) => ({
+                ...aux,
+                deviceSN: devices.find(device => device.zktecoDeviceID === aux.deviceId)?.serialNumber || ''
+            }));
             setDropdownData({
-                nrDoor: filteredDoors
+                nrAuxOut: auxWithOptions
             });
         } catch (error) {
-            console.error('Erro ao buscar os dados de portas', error);
+            console.error('Erro ao buscar os dados das auxiliares', error);
         }
     };
 
@@ -97,18 +109,18 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
         const { value } = e.target;
         const selectedOption = dropdownData[key]?.find((option: any) => {
             switch (key) {
-                case 'nrDoor':
-                    return option.doorNo === value;
+                case 'nrAuxOut':
+                    return option.auxNo === parseInt(value, 10);
                 default:
                     return false;
             }
         });
 
         if (selectedOption) {
-            const idKey = key;
             setFormData(prevState => ({
                 ...prevState,
-                [idKey]: value
+                [key]: value,
+                deviceSN: selectedOption.deviceSN
             }));
         } else {
             setFormData(prevState => ({
@@ -138,7 +150,15 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData as T);
+        const formDataToSend = new FormData();
+        formDataToSend.append('nrAuxOut', String(formData.nrAuxOut));
+        formDataToSend.append('time', String(formData.time));
+        
+        onSave({
+            auxData: formDataToSend,
+            deviceSN: formData.deviceSN
+        });
+        
         onClose();
     };
 
@@ -151,8 +171,8 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
                 <div className="container-fluid">
                     <Row>
                         <Col md={6}>
-                            <Form.Group controlId="formNrDoor">
-                                <Form.Label>Porta<span style={{ color: 'red' }}> *</span></Form.Label>
+                            <Form.Group controlId="formNrAuxOut">
+                                <Form.Label>Auxiliar<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
                                     overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
@@ -160,20 +180,20 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
                                     <Form.Control
                                         as="select"
                                         className="custom-input-height custom-select-font-size"
-                                        value={formData.nrDoor || ''}
-                                        onChange={(e) => handleDropdownChange('nrDoor', e)}
+                                        value={formData.nrAuxOut || ''}
+                                        onChange={(e) => handleDropdownChange('nrAuxOut', e)}
                                     >
                                         <option value="">Selecione...</option>
-                                        {dropdownData.nrDoor?.sort((a, b) => a.doorNo - b.doorNo).map((option: any) => {
+                                        {dropdownData.nrAuxOut?.sort((a, b) => a.auxNo - b.auxNo).map((option: any) => {
                                             let optionId, optionName;
-                                            switch ('nrDoor') {
-                                                case 'nrDoor':
-                                                    optionId = option.doorNo;
-                                                    optionName = option.name;
+                                            switch ('nrAuxOut') {
+                                                case 'nrAuxOut':
+                                                    optionId = option.auxNo;
+                                                    optionName = option.nome;
                                                     break;
                                                 default:
-                                                    optionId = option.doorNo;
-                                                    optionName = option.name;
+                                                    optionId = option.auxNo;
+                                                    optionName = option.nome;
                                                     break;
                                             }
                                             return (
@@ -184,12 +204,12 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
                                         })}
                                     </Form.Control>
                                 </OverlayTrigger>
-                                {errors['nrDoor'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nrDoor']}</div>}
+                                {errors['nrAuxOut'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nrAuxOut']}</div>}
                             </Form.Group>
                         </Col>
                         <Col md={6}>
                             <Form.Group controlId="formTime">
-                                <Form.Label>Tempo Aberta<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <Form.Label>Tempo para Abrir<span style={{ color: 'red' }}> *</span></Form.Label>
                                 <OverlayTrigger
                                     placement="right"
                                     overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}

@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface Entity
 export interface Entity {
@@ -29,10 +30,14 @@ interface UpdateModalProps<T extends Entity> {
     entity: T;
     fields: Field[];
     title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Define o componente
-export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title }: UpdateModalProps<T>) => {
+export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
@@ -41,10 +46,15 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, on
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (entity) {
+        if (open && entity) {
             setFormData({ ...entity });
         }
-    }, [entity]);
+        if (entity && entity.photo) {
+            setProfileImage(entity.photo);
+        } else {
+            setProfileImage(modalAvatar);
+        }
+    }, [open, entity]);
 
     // useEffect para validar o formulário
     useEffect(() => {
@@ -312,6 +322,8 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, on
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

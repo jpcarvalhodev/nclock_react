@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
 // Define a interface Entity
 export interface Entity {
@@ -32,6 +33,10 @@ interface UpdateModalProps<T extends Entity> {
     fields: Field[];
     title: string;
     entityType: 'categorias' | 'profissões' | 'tipos';
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Define a interface para os itens de código
@@ -40,7 +45,7 @@ interface CodeItem {
 }
 
 // Exporta o componente
-export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType }: UpdateModalProps<T>) => {
+export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -69,11 +74,11 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
 
     // Usa useEffect para buscar os dados de categoria/profissão
     useEffect(() => {
-        if (open) {
+        if (open && entity) {
             fetchEntityData();
             setFormData({ ...entity });
         }
-    }, [open]);
+    }, [open, entity]);
 
     // Função para buscar os dados de categoria, profissão ou tipo
     const fetchEntityData = async () => {
@@ -172,6 +177,8 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
                 </form>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

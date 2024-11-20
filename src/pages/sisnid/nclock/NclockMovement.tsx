@@ -57,6 +57,7 @@ export const NclockMovement = () => {
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<EmployeeAttendanceTimes>>({});
+    const [currentAttendanceIndex, setCurrentAttendanceIndex] = useState(0);
 
     // Função para buscar todos as assiduidades
     const fetchMovements = () => {
@@ -166,9 +167,25 @@ export const NclockMovement = () => {
         if (selectedEmployeeId) {
             setShowAddAttendanceModal(true);
         } else {
-            toast.error('Selecione um funcionário para adicionar uma assiduidade');
+            toast.warn('Selecione um funcionário primeiro!');
         }
     }
+
+    // Seleciona a assiduidade anterior
+    const handleNextAttendance = () => {
+        if (currentAttendanceIndex < attendanceMovement.length - 1) {
+            setCurrentAttendanceIndex(currentAttendanceIndex + 1);
+            setSelectedAttendances([attendanceMovement[currentAttendanceIndex + 1]]);
+        }
+    };
+
+    // Seleciona a assiduidade seguinte
+    const handlePrevDepartment = () => {
+        if (currentAttendanceIndex > 0) {
+            setCurrentAttendanceIndex(currentAttendanceIndex - 1);
+            setSelectedAttendances([attendanceMovement[currentAttendanceIndex - 1]]);
+        }
+    };
 
     // Remove o campo de observação, número, nome do funcionário e o tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type' && field.key !== 'deviceNumber');
@@ -363,6 +380,10 @@ export const NclockMovement = () => {
                         onDuplicate={handleDuplicate}
                         title='Atualizar Assiduidade'
                         entityType='movimentos'
+                        onNext={handleNextAttendance}
+                        onPrev={handlePrevDepartment}
+                        canMoveNext={currentAttendanceIndex < attendanceMovement.length - 1}
+                        canMovePrev={currentAttendanceIndex > 0}
                     />
                 )}
                 {selectedAttendanceToDelete && showDeleteModal && (

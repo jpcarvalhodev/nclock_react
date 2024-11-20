@@ -15,6 +15,7 @@ import Split from "react-split";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
+import { useLocation } from "react-router-dom";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -37,7 +38,7 @@ export const NkioskListMovements = () => {
     const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'cardNo', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -45,6 +46,7 @@ export const NkioskListMovements = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
+    const location = useLocation();
     const eventDoorId = '3';
     const eventDoorId2 = '4';
 
@@ -58,13 +60,13 @@ export const NkioskListMovements = () => {
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
             });
-    
+
             const allData = await Promise.all(promises);
-    
+
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-            
+
             setListMovementCard(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
@@ -82,13 +84,13 @@ export const NkioskListMovements = () => {
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
             });
-    
+
             const allData = await Promise.all(promises);
-    
+
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
             const combinedData = validData.flat();
-            
+
             setListMovementKiosk(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
@@ -104,21 +106,21 @@ export const NkioskListMovements = () => {
                 setListMovementKiosk([]);
                 return;
             }
-    
+
             const promisesMovementCard = devices.map(device =>
                 apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.deviceSN, startDate, endDate)
             );
-    
+
             const promisesMovementKiosk = devices.map(device =>
                 apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.deviceSN, startDate, endDate)
             );
-    
+
             const resultsMovementCard = await Promise.all(promisesMovementCard);
             const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-    
+
             const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
             const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
-    
+
             setListMovementCard(validDataCard);
             setListMovementKiosk(validDataKiosk);
         } catch (error) {
@@ -169,10 +171,15 @@ export const NkioskListMovements = () => {
 
     // Busca as listagens de movimentos ao carregar a página
     useEffect(() => {
-        fetchAllDevices();
-        fetchAllListMovementsCard();
-        fetchAllListMovementsKiosk();
-    }, []);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllListMovementsCard();
+                fetchAllListMovementsKiosk();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para atualizar as listagens de movimentos
     const refreshListMovements = () => {
@@ -202,7 +209,7 @@ export const NkioskListMovements = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'nameUser', 'cardNo', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -289,7 +296,7 @@ export const NkioskListMovements = () => {
 
     // Calcula o valor total dos movimentos
     const totalAmount = filteredDataTable.length;
-    
+
     // Função para gerar os dados com nomes substituídos para o export/print
     const moveCardKioskWithNames = listMovements.map(transaction => {
 

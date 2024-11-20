@@ -55,6 +55,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
+    const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -296,6 +297,22 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         rangeSeparatorText: 'de',
     };
 
+    // Seleciona o funcionário anterior
+    const handleNextEmployee = () => {
+        if (currentEmployeeIndex < employeeData.length - 1) {
+            setCurrentEmployeeIndex(currentEmployeeIndex + 1);
+            setSelectedEmployee(employeeData[currentEmployeeIndex + 1]);
+        }
+    };
+
+    // Seleciona o funcionário seguinte
+    const handlePrevEmployee = () => {
+        if (currentEmployeeIndex > 0) {
+            setCurrentEmployeeIndex(currentEmployeeIndex - 1);
+            setSelectedEmployee(employeeData[currentEmployeeIndex - 1]);
+        }
+    };
+
     // Função para lidar com o clique no botão de guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
@@ -491,6 +508,10 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                     onUpdate={updateEmployeeAndCard}
                     entity={selectedEmployee}
                     fields={employeeFields}
+                    canMoveNext={currentEmployeeIndex < employeeData.length - 1}
+                    canMovePrev={currentEmployeeIndex > 0}
+                    onNext={handleNextEmployee}
+                    onPrev={handlePrevEmployee}
                 />
             )}
         </Modal>
