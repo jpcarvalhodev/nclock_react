@@ -45,7 +45,7 @@ import nhome from '../../../assets/img/navbar/navbar/nhome.webp';
 import nidsof from '../../../assets/img/navbar/navbar/nidsof.webp';
 import nidtec from '../../../assets/img/navbar/navbar/nidtec.png';
 import nidplace from '../../../assets/img/navbar/navbar/nidplace.webp';
-import sisnidlogo from '../../../assets/img/navbar/navbar/sisnidlogo.png';
+import sisnidlogo from '../../../assets/img/navbar/navbar/sisnidlogo.webp';
 import ncount from '../../../assets/img/navbar/navbar/ncount.png';
 import nbuild from '../../../assets/img/navbar/navbar/nbuild.png';
 import ncaravan from '../../../assets/img/navbar/navbar/ncaravan.png';

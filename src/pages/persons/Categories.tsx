@@ -109,6 +109,9 @@ export const Categories = () => {
     // Função para editar uma categoria
     const handleEditCategory = (category: Category) => {
         setSelectedCategory(category);
+        const sortedCategories = categories.sort((a, b) => a.code - b.code);
+        const categoryIndex = sortedCategories.findIndex(c => c.categoryID === category.categoryID);
+        setCurrentCategoryIndex(categoryIndex);
         setShowUpdateModal(true);
     };
 
@@ -142,17 +145,19 @@ export const Categories = () => {
 
     // Seleciona a entidade anterior
     const handleNextCategory = () => {
-        if (currentCategoryIndex < categories.length - 1) {
+        const sortedCategories = categories.sort((a, b) => a.code - b.code);
+        if (currentCategoryIndex < sortedCategories.length - 1) {
             setCurrentCategoryIndex(currentCategoryIndex + 1);
-            setSelectedCategory(categories[currentCategoryIndex + 1]);
+            setSelectedCategory(sortedCategories[currentCategoryIndex + 1]);
         }
     };
 
     // Seleciona a entidade seguinte
     const handlePrevCategory = () => {
+        const sortedCategories = categories.sort((a, b) => a.code - b.code);
         if (currentCategoryIndex > 0) {
             setCurrentCategoryIndex(currentCategoryIndex - 1);
-            setSelectedCategory(categories[currentCategoryIndex - 1]);
+            setSelectedCategory(sortedCategories[currentCategoryIndex - 1]);
         }
     };
 

@@ -682,7 +682,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                                                         >
                                                                             <option value="">Selecione...</option>
                                                                             {dropdownData[field.key]?.map((option: any) => {
-                                                                                let optionId = option.id;
+                                                                                let optionId = option.departmentID || option.groupID;
                                                                                 let optionName = option.name || option.description;
                                                                                 return (
                                                                                     <option key={optionId} value={optionId}>
@@ -706,7 +706,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                                                     >
                                                                         <option value="">Selecione...</option>
                                                                         {dropdownData[field.key]?.map((option: any) => {
-                                                                            let optionId = option.id;
+                                                                            let optionId = option.professionID || option.zoneID || option.externalEntityID;
                                                                             let optionName = option.name || option.description;
                                                                             return (
                                                                                 <option key={optionId} value={optionId}>

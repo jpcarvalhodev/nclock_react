@@ -210,7 +210,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button variant="outline-success" onClick={handleCheckForSave}>
                     Abrir
                 </Button>
             </Modal.Footer>

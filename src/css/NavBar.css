@@ -98,14 +98,19 @@
 
 .tab-content-navbar {
     background-color: white;
-    overflow-x: auto;
 }
 
 .section {
     display: flex;
     border-bottom: 1px solid #ccc;
     background-color: white;
-    overflow-x: auto;
+}
+
+#nclock .section {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    background-color: white;
+    overflow: auto;
 }
 
 .group {
@@ -311,6 +316,11 @@
     padding: -10px;
 }
 
+.dropdown-kiosk {
+    position: relative;
+    z-index: 1000;
+}
+
 .ribbon-icon {
     cursor: pointer;
     position: absolute;
@@ -344,7 +354,8 @@
 }
 
 #dropdown-basic::after,
-#dropdown-basic-2::after {
+#dropdown-basic-2::after,
+#dropdown-basic-3::after {
     display: none !important;
 }
 

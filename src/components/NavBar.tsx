@@ -20,7 +20,7 @@ import interventionAreas from '../assets/img/navbar/pessoas/interventionAreas.pn
 import businessAreas from '../assets/img/navbar/pessoas/businessAreas.png';
 import internalContacts from '../assets/img/navbar/pessoas/internalContacts.png';
 import Dropdown from 'react-bootstrap/Dropdown';
-import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.png';
+import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.webp';
 import nclock from '../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../assets/img/navbar/navbar/naccess.webp';
 import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
@@ -139,7 +139,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailFields, entityFields, kioskConfigFields, licenseFields } from '../helpers/Fields';
+import { adsFields, emailFields, kioskConfigFields, licenseFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -171,6 +171,8 @@ import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
 import { usePersons } from '../context/PersonsContext';
 import { KioskOptionsModal } from '../modals/KioskOptions';
+import contact from '../assets/img/navbar/ajuda/contact.png';
+import { ContactModal } from '../modals/ContactModal';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -195,8 +197,8 @@ interface MenuItem {
 	active?: boolean;
 	onClick?: () => void;
 	label: string;
-	image: any;
-	alt: string;
+	image?: any;
+	alt?: string;
 	key: string;
 	className?: string;
 	submenu?: MenuItem[];
@@ -366,6 +368,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [menuStructureStart, setMenuStructureStart] = useState<MenuStructure>({});
 	const [menuStructureNG, setMenuStructureNG] = useState<MenuStructure>({});
 	const [kioskConfig, setKioskConfig] = useState<KioskConfig>();
+	const [showContactModal, setShowContactModal] = useState(false);
+	const [showKioskDropdown, setShowKioskDropdown] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -885,15 +889,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		return () => clearTimeout(timer);
 	}, [showPessoasRibbon, showDispositivosRibbon, showConfiguracaoRibbon, showAjudaRibbon, showNclockRibbon, showNaccessRibbon, showNvisitorRibbon, showNparkRibbon, showNdoorRibbon, showNpatrolRibbon, showNcardRibbon, showNviewRibbon, showNsecurRibbon, showNsoftwareRibbon, showNsystemRibbon, showNappRibbon, showNcyberRibbon, showNdigitalRibbon, showNserverRibbon, showNautRibbon, showNequipRibbon, showNprojectRibbon, showNsmartRibbon, showNrealityRibbon, showNhologramRibbon, showNpowerRibbon, showNchargeRibbon, showNcityRibbon, showNkioskRibbon, showNledRibbon, showNfireRibbon, showNfurnitureRibbon, showNpartitionRibbon, showNdecorRibbon, showNpingRibbon, showNconnectRibbon, showNlightRibbon, showNcomfortRibbon, showNsoundRibbon, showNhomeRibbon]);
 
-	// Função para alternar o submenu
-	const toggleSubMenu = (menuKey: string) => {
-		if (activeMenu === menuKey) {
-			setActiveMenu(null);
-		} else {
-			setActiveMenu(menuKey);
-		}
-	};
-
 	// Define a estrutura do menu de softwares
 	useEffect(() => {
 		const enabledSoftware = getSoftwareEnabledStatus(license);
@@ -1010,6 +1005,22 @@ export const NavBar = ({ style }: NavBarProps) => {
 		setMenuStructureNG(newMenuStructure);
 	}, [license]);
 
+	// Estrutura de menu opcional para o nkiosk
+	const KioskOptionalMenuStructure: MenuStructure = {
+		contador: {
+			label: 'Contador Passagem',
+			key: 'contador',
+		},
+		sensor: {
+			label: 'Sensor Movimento',
+			key: 'sensor',
+		},
+		fotocelula: {
+			label: 'Fotocélula Segurança',
+			key: 'fotocelula',
+		},
+	};
+
 	// Define a estrutura do menu do nidgroup
 	useEffect(() => {
 		const enabledSoftware = getSoftwareEnabledStatus(license);
@@ -1104,11 +1115,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 			return null;
 		}
 		return (
-			<div key={menuKey as string} className='menu'>
+			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && setActiveMenu(menuKey as string)} onMouseLeave={() => setActiveMenu(null)}>
 				<MenuItem
 					key={menuKey as string}
 					active={activeMenu === menuKey}
-					onClick={() => menu.submenu ? toggleSubMenu(String(menuKey)) : handleTab(String(menuKey))}
+					onClick={() => !menu.submenu && handleTab(String(menuKey))}
 					image={menu.image}
 					alt={menu.alt}
 					label={menu.label}
@@ -1552,6 +1563,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para abrir o modal de acerca de
 	const toggleAboutModalOpen = () => setShowAboutModal(!showAboutModal);
 
+	// Função para abrir o modal de contacto
+	const toggleContactModal = () => setShowContactModal(!showContactModal);
+
 	// Função para abrir o modal de licença
 	const toggleLicenseModal = () => setShowLicenseModal(!showLicenseModal);
 
@@ -1630,7 +1644,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="user-section">
 						<Dropdown className='dropdown-icon'>
 							<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
-								<span className='user-info'>{user.name}</span>
+								<span className='user-info'><i className="bi bi-escape"></i> {user.name}</span>
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<div className='dropdown-content'>
@@ -2979,12 +2993,26 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'modulos nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
-													<span className="icon">
-														<img src={module} alt="botão opcionais" />
-													</span>
-													<span className="text">Opcionais</span>
-												</Button>
+												<Dropdown
+													onMouseOver={() => setShowKioskDropdown(true)}
+													onMouseLeave={() => setShowKioskDropdown(false)}
+													show={showKioskDropdown}
+													className='dropdown-kiosk'
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+														<span className="icon">
+															<img src={module} alt="botão opcionais" />
+														</span>
+														<span className="text">Opcionais</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(KioskOptionalMenuStructure).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, KioskOptionalMenuStructure)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
 											</div>
 										</div>
 									)}
@@ -3664,6 +3692,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
+												<Button onClick={toggleContactModal} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={contact} alt="botão contacto" />
+													</span>
+													<span className="text">Contacto</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
 												<Button onClick={handleAnydeskWindow} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={anydesk} alt="botão anydesk" />
@@ -3737,6 +3773,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<AboutModal
 						open={showAboutModal}
 						onClose={() => setShowAboutModal(false)}
+					/>
+				)}
+				{showContactModal && (
+					<ContactModal
+						open={showContactModal}
+						onClose={() => setShowContactModal(false)}
 					/>
 				)}
 				{showLicenseModal && (

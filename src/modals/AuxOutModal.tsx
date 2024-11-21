@@ -232,8 +232,8 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
-                    Guardar
+                <Button variant="outline-success" onClick={handleCheckForSave}>
+                    Abrir
                 </Button>
             </Modal.Footer>
         </Modal >

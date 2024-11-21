@@ -30,7 +30,7 @@ const handleHTTPError = async (response: Response) => {
 
     switch (response.status) {
         case 404:
-            toast.error('Página não encontrada');
+            console.error('Erro 404: Página não encontrada');
             window.location.href = '/errors/notfound';
             break;
         case 500:
@@ -38,10 +38,10 @@ const handleHTTPError = async (response: Response) => {
         case 502:
         case 503:
         case 504:
-            toast.error('Serviço indisponível. Tente novamente mais tarde.');
+            console.error('Serviço indisponível. Tente novamente mais tarde.');
             break;
         default:
-            toast.error('Erro desconhecido');
+            console.error('Erro desconhecido');
             break;
     }
 };

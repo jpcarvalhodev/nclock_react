@@ -110,6 +110,9 @@ export const Professions = () => {
     // Função para abrir o modal de editar profissão
     const handleEditProfession = (profession: Profession) => {
         setSelectedProfession(profession);
+        const sortedProfession = professions.sort((a, b) => a.code - b.code);
+        const professionIndex = sortedProfession.findIndex(p => p.professionID === profession.professionID);
+        setCurrentProfessionIndex(professionIndex);
         setShowUpdateModal(true);
     };
 
@@ -174,17 +177,19 @@ export const Professions = () => {
 
     // Seleciona a entidade anterior
     const handleNextProfession = () => {
-        if (currentProfessionIndex < professions.length - 1) {
+        const sortedProfession = professions.sort((a, b) => a.code - b.code);
+        if (currentProfessionIndex < sortedProfession.length - 1) {
             setCurrentProfessionIndex(currentProfessionIndex + 1);
-            setSelectedProfession(professions[currentProfessionIndex + 1]);
+            setSelectedProfession(sortedProfession[currentProfessionIndex + 1]);
         }
     };
 
     // Seleciona a entidade seguinte
     const handlePrevProfession = () => {
+        const sortedProfession = professions.sort((a, b) => a.code - b.code);
         if (currentProfessionIndex > 0) {
             setCurrentProfessionIndex(currentProfessionIndex - 1);
-            setSelectedProfession(professions[currentProfessionIndex - 1]);
+            setSelectedProfession(sortedProfession[currentProfessionIndex - 1]);
         }
     };
 

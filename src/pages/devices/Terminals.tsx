@@ -381,17 +381,19 @@ export const Terminals = () => {
 
     // Seleciona a entidade anterior
     const handleNextDevice = () => {
-        if (currentDeviceIndex < devices.length - 1) {
+        const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
+        if (currentDeviceIndex < sortedDevices.length - 1) {
             setCurrentDeviceIndex(currentDeviceIndex + 1);
-            setSelectedTerminal(devices[currentDeviceIndex + 1]);
+            setSelectedTerminal(sortedDevices[currentDeviceIndex + 1]);
         }
     };
 
     // Seleciona a entidade seguinte
     const handlePrevDevice = () => {
+        const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
         if (currentDeviceIndex > 0) {
             setCurrentDeviceIndex(currentDeviceIndex - 1);
-            setSelectedTerminal(devices[currentDeviceIndex - 1]);
+            setSelectedTerminal(sortedDevices[currentDeviceIndex - 1]);
         }
     };
 
@@ -661,6 +663,9 @@ export const Terminals = () => {
     // Define a função de abertura do modal de edição dos dispositivos
     const handleEditDevices = (row: Devices) => {
         setSelectedTerminal(row);
+        const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
+        const devicesIndex = sortedDevices.findIndex(device => device.zktecoDeviceID === row.zktecoDeviceID);
+        setCurrentDeviceIndex(devicesIndex);
         setShowUpdateModal(true);
     };
 

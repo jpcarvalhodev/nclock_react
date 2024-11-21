@@ -205,17 +205,19 @@ export const ExternalEmployees = () => {
 
     // Seleciona o funcionário anterior
     const handleNextEmployee = () => {
-        if (currentEmployeeIndex < data.employees.length - 1) {
+        const sortedEmployees = data.employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+        if (currentEmployeeIndex < sortedEmployees.length - 1) {
             setCurrentEmployeeIndex(currentEmployeeIndex + 1);
-            setSelectedEmployee(data.employees[currentEmployeeIndex + 1]);
+            setSelectedEmployee(sortedEmployees[currentEmployeeIndex + 1]);
         }
     };
 
     // Seleciona o funcionário seguinte
     const handlePrevEmployee = () => {
+        const sortedEmployees = data.employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
         if (currentEmployeeIndex > 0) {
             setCurrentEmployeeIndex(currentEmployeeIndex - 1);
-            setSelectedEmployee(data.employees[currentEmployeeIndex - 1]);
+            setSelectedEmployee(sortedEmployees[currentEmployeeIndex - 1]);
         }
     };
 
@@ -282,6 +284,9 @@ export const ExternalEmployees = () => {
     // Função para editar um funcionário externo
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
+        const sortedEmployees = data.employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+        const employeeIndex = sortedEmployees.findIndex(emp => emp.employeeID === employee.employeeID);
+        setCurrentEmployeeIndex(employeeIndex);
         setShowUpdateModal(true);
     };
 

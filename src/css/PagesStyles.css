@@ -671,6 +671,11 @@ body {
     margin-right: auto;
 }
 
+.img-contact-modal {
+    height: calc(100vh - 350px);
+    width: calc(100vw - 830px);
+}
+
 @keyframes pulseBorder {
     0% {
         box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);

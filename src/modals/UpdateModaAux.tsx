@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
-import { Col, Row } from 'react-bootstrap';
+import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
@@ -200,33 +200,39 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
                         </Col>
                         <Col md={3}>
                             <Form.Group controlId="formTimezoneId">
-                                <Form.Label>Período</Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    className="custom-input-height custom-select-font-size"
-                                    value={formData.timezoneId || ''}
-                                    onChange={(e) => handleDropdownChange('timezoneId', e)}
+                                <Form.Label>Período<span style={{ color: 'red' }}> *</span></Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
                                 >
-                                    <option value="">Selecione...</option>
-                                    {dropdownData.timezoneId?.map((option: any) => {
-                                        let optionId, optionName;
-                                        switch ('timezoneId') {
-                                            case 'timezoneId':
-                                                optionId = option.id;
-                                                optionName = option.name;
-                                                break;
-                                            default:
-                                                optionId = option.id;
-                                                optionName = option.name;
-                                                break;
-                                        }
-                                        return (
-                                            <option key={optionId} value={optionId}>
-                                                {optionName}
-                                            </option>
-                                        );
-                                    })}
-                                </Form.Control>
+                                    <Form.Control
+                                        as="select"
+                                        className="custom-input-height custom-select-font-size"
+                                        value={formData.timezoneId || ''}
+                                        onChange={(e) => handleDropdownChange('timezoneId', e)}
+                                    >
+                                        <option value="">Selecione...</option>
+                                        {dropdownData.timezoneId?.map((option: any) => {
+                                            let optionId, optionName;
+                                            switch ('timezoneId') {
+                                                case 'timezoneId':
+                                                    optionId = option.id;
+                                                    optionName = option.name;
+                                                    break;
+                                                default:
+                                                    optionId = option.id;
+                                                    optionName = option.name;
+                                                    break;
+                                            }
+                                            return (
+                                                <option key={optionId} value={optionId}>
+                                                    {optionName}
+                                                </option>
+                                            );
+                                        })}
+                                    </Form.Control>
+                                </OverlayTrigger>
+                                {errors['timezoneId'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['timezoneId']}</div>}
                             </Form.Group>
                         </Col>
                     </Row>

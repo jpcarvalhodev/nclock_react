@@ -139,17 +139,19 @@ export const Departments = () => {
 
     // Seleciona o departamento anterior
     const handleNextDepartment = () => {
-        if (currentDepartmentIndex < departments.length - 1) {
+        const sortedDepartments = departments.sort((a, b) => a.code - b.code);
+        if (currentDepartmentIndex < sortedDepartments.length - 1) {
             setCurrentDepartmentIndex(currentDepartmentIndex + 1);
-            setSelectedDepartment(departments[currentDepartmentIndex + 1]);
+            setSelectedDepartment(sortedDepartments[currentDepartmentIndex + 1]);
         }
     };
 
     // Seleciona o departamento seguinte
     const handlePrevDepartment = () => {
+        const sortedDepartments = departments.sort((a, b) => a.code - b.code);
         if (currentDepartmentIndex > 0) {
             setCurrentDepartmentIndex(currentDepartmentIndex - 1);
-            setSelectedDepartment(departments[currentDepartmentIndex - 1]);
+            setSelectedDepartment(sortedDepartments[currentDepartmentIndex - 1]);
         }
     };
 
@@ -202,6 +204,9 @@ export const Departments = () => {
     // Abre o modal de edição
     const handleEditDepartment = (department: Department) => {
         setSelectedDepartment(department);
+        const sortedDepartments = departments.sort((a, b) => a.code - b.code);
+        const departmentIndex = sortedDepartments.findIndex(dep => dep.departmentID === department.departmentID);
+        setCurrentDepartmentIndex(departmentIndex);
         setShowUpdateModal(true);
     };
 

@@ -11,6 +11,7 @@ import { useLicense } from '../context/LicenseContext';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { CreateModalDeptGrp } from './CreateModalDeptGrp';
 import { departmentFields, groupFields } from '../helpers/Fields';
+import { set } from 'date-fns';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -281,6 +282,26 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const handleCardChange = (e: ChangeEvent<FormControlElement>) => {
     const { name, value, type } = e.target;
     const parsedValue = type === 'number' ? Number(value) : value;
+
+    if (name === 'devicePassword' && value.length === 0) {
+      setCardFormData(prevState => ({
+        ...prevState,
+        devicePassword: ''
+      }));
+    }
+
+    if (name === 'cardNumber' && value.length > 0) {
+      setCardFormData(prevState => ({
+        ...prevState,
+        deviceEnabled: true
+      }));
+    } else {
+      setCardFormData(prevState => ({
+        ...prevState,
+        deviceEnabled: false
+      }));
+    }
+
     setCardFormData(prevState => ({
       ...prevState,
       [name]: parsedValue
@@ -671,7 +692,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                                     >
                                       <option value="">Selecione...</option>
                                       {dropdownData[field.key]?.map((option: any) => {
-                                        let optionId = option.id;
+                                        let optionId = option.departmentID || option.groupID;
                                         let optionName = option.name || option.description;
                                         return (
                                           <option key={optionId} value={optionId}>
@@ -695,7 +716,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                                   >
                                     <option value="">Selecione...</option>
                                     {dropdownData[field.key]?.map((option: any) => {
-                                      let optionId = option.id;
+                                      let optionId = option.professionID || option.zoneID || option.externalEntityID;
                                       let optionName = option.name || option.description;
                                       return (
                                         <option key={optionId} value={optionId}>
@@ -762,7 +783,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                         onChange={handleCardChange}
                         name="devicePrivelage"
                       >
-                        <option value="">Selecione...</option>
                         <option value="0">Não</option>
                         <option value="1">Sim</option>
                       </Form.Select>
@@ -777,6 +797,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                         value={cardFormData.devicePassword || ''}
                         onChange={handleCardChange}
                         name="devicePassword"
+                        maxLength={6}
                       />
                     </Form.Group>
                   </Col>

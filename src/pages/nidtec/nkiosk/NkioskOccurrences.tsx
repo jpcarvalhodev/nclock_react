@@ -14,6 +14,11 @@ import { PrintButton } from "../../../components/PrintButton";
 import { toast } from "react-toastify";
 import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
 import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
+import { DeleteModal } from "../../../modals/DeleteModal";
+import { Button } from "react-bootstrap";
+import { UpdateLimpezaOcorrenciaModal } from "../../../modals/UpdateLimpezaOcorrenciaModal";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import { useLocation } from "react-router-dom";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -30,6 +35,7 @@ export const NkioskOccurrences = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
+    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const [occurrences, setOccurrences] = useState<LimpezasEOcorrencias[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -40,6 +46,13 @@ export const NkioskOccurrences = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedOcurrencesForDelete, setSelectedOcurrencesForDelete] = useState<string | null>(null);
+    const [initialData, setInitialData] = useState<Partial<LimpezasEOcorrencias> | null>(null);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedOccurrence, setSelectedOccurrence] = useState<LimpezasEOcorrencias | null>(null);
+    const [currentOccurrenceIndex, setCurrentOccurrenceIndex] = useState(0);
+    const location = useLocation();
     const tipo = 2;
 
     // Função para buscar as Ocorrências
@@ -84,10 +97,43 @@ export const NkioskOccurrences = () => {
         }
     };
 
+    // Função para atualizar ocorrências
+    const handleUpdateOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
+        try {
+            const data = await apiService.updateOccurrence(occurrence);
+            setOccurrences(occurrences.map(oc => (oc.id === data.id ? data : oc)));
+            toast.success(data.message || 'Ocorrência atualizada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar ocorrência:', error);
+        } finally {
+            setShowAddModal(false);
+            fetchAllOcorrencias();
+        }
+    };
+
+    // Função para apagar Ocorrências
+    const handleDeleteOcurrences = async (id: string) => {
+        try {
+            const data = await apiService.deleteOccurrence(id);
+            toast.success(data.message || 'Ocorrência apagada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao apagar ocorrência:', error);
+        } finally {
+            setShowDeleteModal(false);
+            fetchAllOcorrencias();
+        }
+    }
+
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
-        fetchAllOcorrencias();
-    }, []);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllOcorrencias();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para atualizar as recolhas do moedeiro
     const refreshOcorrencias = () => {
@@ -129,6 +175,42 @@ export const NkioskOccurrences = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<LimpezasEOcorrencias>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedOccurrence(null);
+        setShowUpdateModal(false);
+    }
+
+    // Função para abrir o modal de atualização
+    const handleEditOcorrencias = (entity: LimpezasEOcorrencias) => {
+        setSelectedOccurrence(entity);
+        setShowUpdateModal(true);
+    }
+
+    // Seleciona a entidade anterior
+    const handleNextOccurences = () => {
+        if (currentOccurrenceIndex < occurrences.length - 1) {
+            setCurrentOccurrenceIndex(currentOccurrenceIndex + 1);
+            setSelectedOccurrence(occurrences[currentOccurrenceIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevOccurences = () => {
+        if (currentOccurrenceIndex > 0) {
+            setCurrentOccurrenceIndex(currentOccurrenceIndex - 1);
+            setSelectedOccurrence(occurrences[currentOccurrenceIndex - 1]);
+        }
+    };
+
+    // Função para abrir o modal de apagar limpeza
+    const handleOpenDeleteModal = (id: string) => {
+        setSelectedOcurrencesForDelete(id);
+        setShowDeleteModal(true);
+    };
+
     // Define as colunas da tabela
     const columns: TableColumn<LimpezasEOcorrencias>[] = limpezasEOcorrenciasFields
         .filter(field => selectedColumns.includes(field.key))
@@ -137,6 +219,8 @@ export const NkioskOccurrences = () => {
                 switch (field.key) {
                     case 'dataCreate':
                         return new Date(row.dataCreate).toLocaleString() || '';
+                    case 'deviceId':
+                        return devices.find(device => device.zktecoDeviceID === row.deviceId)?.deviceName || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -154,6 +238,22 @@ export const NkioskOccurrences = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.dataCreate).getTime() - new Date(rowA.dataCreate).getTime()
             };
         });
+
+    // Define a coluna de ações
+    const actionColumn: TableColumn<LimpezasEOcorrencias> = {
+        name: 'Ações',
+        cell: (row: LimpezasEOcorrencias) => (
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditOcorrencias(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
+            </div>
+        ),
+        selector: (row: LimpezasEOcorrencias) => row.id,
+        ignoreRowClick: true,
+    };
 
     // Filtra os dados da tabela
     const filteredDataTable = occurrences.filter(getCoin =>
@@ -214,7 +314,7 @@ export const NkioskOccurrences = () => {
                 </div>
                 <div className='table-css'>
                     <DataTable
-                        columns={columns}
+                        columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
@@ -247,6 +347,28 @@ export const NkioskOccurrences = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddOcorrencia}
                 fields={limpezasEOcorrenciasFields}
+                initialValuesData={initialData || {}}
+            />
+            {selectedOccurrence && (
+                <UpdateLimpezaOcorrenciaModal
+                    title="Atualizar Ocorrência"
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onUpdate={handleUpdateOcorrencia}
+                    fields={limpezasEOcorrenciasFields}
+                    entity={selectedOccurrence}
+                    onDuplicate={handleDuplicate}
+                    canMoveNext={currentOccurrenceIndex < occurrences.length - 1}
+                    canMovePrev={currentOccurrenceIndex > 0}
+                    onNext={handleNextOccurences}
+                    onPrev={handlePrevOccurences}
+                />
+            )}
+            <DeleteModal
+                open={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={handleDeleteOcurrences}
+                entityId={selectedOcurrencesForDelete}
             />
         </div>
     );

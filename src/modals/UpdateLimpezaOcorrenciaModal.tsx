@@ -5,20 +5,32 @@ import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import * as apiService from "../helpers/apiService";
 import { LimpezasEOcorrencias } from '../helpers/Types';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
+// Define a interface Entity
+export interface Entity {
+    id: string;
+    [key: string]: any;
+}
+
 // Interface para as propriedades do modal
-interface CreateModalProps<T> {
-    title: string;
+interface UpdateModalProps<T extends Entity> {
     open: boolean;
     onClose: () => void;
-    onSave: (data: T) => void;
+    onDuplicate: (entity: Partial<T>) => void
+    onUpdate: (entity: T) => Promise<void>;
+    entity: T;
     fields: Field[];
-    initialValuesData: Partial<T>;
+    title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    canMoveNext: boolean;
+    canMovePrev: boolean;
 }
 
 // Interface para os campos do formulário
@@ -31,28 +43,24 @@ interface Field {
     errorMessage?: string;
 }
 
-// Valores iniciais
-const initialValues: Partial<LimpezasEOcorrencias> = {
-    dataCreate: new Date(),
-    responsavel: localStorage.getItem('username') || '',
-};
-
 // Define o componente
-export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValuesData }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<LimpezasEOcorrencias>>({ ...initialValuesData, ...initialValues });
+export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
+    const [formData, setFormData] = useState<Partial<LimpezasEOcorrencias>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
-        if (open) {
+        if (open && entity) {
             fetchDropdownOptions();
-            setFormData({ ...initialValuesData, ...initialValues });
+            setFormData({ ...entity });
         } else {
             setFormData({});
         }
-    }, [open]);
+    }, [open, entity]);
+
+    console.log('formData', formData);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -114,7 +122,14 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
         }
     };
 
-    // Função para lidar com a mudança de valores nos campos
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { id, numeroCamera, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
+    };
+
+    // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value, type } = e.target;
         const formattedValue = type === 'number' ? parseFloat(value) || 0 : value;
@@ -135,7 +150,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData as T);
+        onUpdate(formData as T);
         onClose();
     };
 
@@ -238,6 +253,11 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                 </div>
             </Modal.Body>
             <Modal.Footer>
+                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                    Duplicar
+                </Button>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

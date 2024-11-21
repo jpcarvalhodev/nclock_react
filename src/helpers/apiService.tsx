@@ -1618,7 +1618,7 @@ export const updateLicenses = async (key: string, licences: License[]) => {
         },
         body: JSON.stringify(licences)
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -1737,6 +1737,62 @@ export const addOccurrence = async (occurrence: LimpezasEOcorrencias) => {
     return response.json();
 }
 
+export const updateCleaning = async (cleaning: LimpezasEOcorrencias) => {
+    const response = await fetchWithAuth(`KioskTransaction/UpdateLimpezasWCAsync?id=${cleaning.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cleaning)
+        });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const updateOccurrence = async (occurrence: LimpezasEOcorrencias) => {
+    const response = await fetchWithAuth(`KioskTransaction/UpdateKioskOcorrencia?id=${occurrence.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(occurrence)
+        });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const deleteCleaning = async (id: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/DeleteLimpezasWCAsync?id=${id}`, {
+        method: 'DELETE'
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const deleteOccurrence = async (id: string) => {
+    const response = await fetchWithAuth(`KioskTransaction/DeleteKioskOcorrencia?id=${id}`, {
+        method: 'DELETE'
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CONTADORES//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1767,7 +1823,7 @@ export const startContador = async (contador: RecolhaMoedeiroEContador) => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }
 
@@ -1782,7 +1838,7 @@ export const endContador = async (contadorId: string) => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }
 
@@ -1862,7 +1918,7 @@ export const addCamera = async (camera: Cameras) => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }
 
@@ -1878,7 +1934,7 @@ export const updateCamera = async (camera: Cameras) => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }
 
@@ -1890,7 +1946,7 @@ export const deleteCamera = async (id: string) => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }
 
@@ -1904,7 +1960,7 @@ export const fetchKioskConfig = async () => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }
 
@@ -1920,7 +1976,7 @@ export const addKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }
 
@@ -1936,7 +1992,7 @@ export const updateKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }
 
@@ -1944,7 +2000,7 @@ export const updateKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE AUXILIAR DE SAÍDA///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export const openAuxDoor = async (data: {deviceSN: string, auxData: FormData}) => {
+export const openAuxDoor = async (data: { deviceSN: string, auxData: FormData }) => {
     const auxDataObj: { [key: string]: any } = {};
     data.auxData.forEach((value, key) => {
         auxDataObj[key] = value;
@@ -2009,7 +2065,7 @@ export const fetchOutAuxEnabled = async () => {
 }
 
 export const updateAllAux = async (aux: Auxiliaries) => {
-    const response = await fetchWithAuth(`AccAux/UpdateAux`, {
+    const response = await fetchWithAuth(`AccAux/UpdateAux?id=${aux.auxId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -2020,6 +2076,6 @@ export const updateAllAux = async (aux: Auxiliaries) => {
         const errorData = await response.json();
         toast.error(errorData.message);
         throw new Error;
-    }	
+    }
     return response.json();
 }

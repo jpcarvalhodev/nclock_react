@@ -554,7 +554,7 @@ export type LimpezasEOcorrencias = {
     dataCreate: Date;
     responsavel: string;
     observacoes: string;
-    deviceID: string;
+    deviceId: string;
 }
 
 export type Logs = {

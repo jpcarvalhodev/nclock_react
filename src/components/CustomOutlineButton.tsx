@@ -11,7 +11,7 @@ interface CustomOutlineButtonProps {
 }
 
 export const CustomOutlineButton = forwardRef<HTMLButtonElement, CustomOutlineButtonProps>(
-  ({ onClick, icon, iconSize, className, disabled }, ref) => {
+  ({ onClick, icon, iconSize, className, disabled, ...props }, ref) => {
     const [isHovered, setIsHovered] = useState(false);
 
     // Define o estilo base para o botão
@@ -44,6 +44,7 @@ export const CustomOutlineButton = forwardRef<HTMLButtonElement, CustomOutlineBu
         ref={ref}
         className={className}
         disabled={disabled}
+        {...props}
         style={isHovered ? hoverStyle : baseStyle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

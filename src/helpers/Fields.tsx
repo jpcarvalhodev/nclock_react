@@ -503,6 +503,6 @@ export const auxiliariesFields = [
     { key: 'auxNo', label: 'Nº Auxiliar', type: 'number' },
     { key: 'auxType', label: 'Contacto', type: 'number' },
     { key: 'deviceId', label: 'Dispositivo', type: 'string' },
-    { key: 'timezoneId', label: 'Período', type: 'string' },
+    { key: 'timezoneId', label: 'Período', type: 'string', required: true },
     { key: 'enabled', label: 'Activo', type: 'boolean' },
 ];

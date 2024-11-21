@@ -106,6 +106,9 @@ export const Types = () => {
     // Função para abrir o modal de editar entidade externa
     const handleEditExternalEntity = (externalEntityType: ExternalEntityTypes) => {
         setSelectedExternalEntityType(externalEntityType);
+        const sortedTypes = externalEntityTypes.sort((a, b) => a.order - b.order);
+        const typeIndex = sortedTypes.findIndex(type => type.externalEntityTypeID === externalEntityType.externalEntityTypeID);
+        setCurrentExternalEntityTypeIndex(typeIndex);
         setShowUpdateModal(true);
     };
 
@@ -176,17 +179,19 @@ export const Types = () => {
 
     // Seleciona a entidade anterior
     const handleNextType = () => {
-        if (currentExternalEntityTypeIndex < externalEntityTypes.length - 1) {
+        const sortedTypes = externalEntityTypes.sort((a, b) => a.order - b.order);
+        if (currentExternalEntityTypeIndex < sortedTypes.length - 1) {
             setCurrentExternalEntityTypeIndex(currentExternalEntityTypeIndex + 1);
-            setSelectedExternalEntityType(externalEntityTypes[currentExternalEntityTypeIndex + 1]);
+            setSelectedExternalEntityType(sortedTypes[currentExternalEntityTypeIndex + 1]);
         }
     };
 
     // Seleciona a entidade seguinte
     const handlePrevType = () => {
+        const sortedTypes = externalEntityTypes.sort((a, b) => a.order - b.order);
         if (currentExternalEntityTypeIndex > 0) {
             setCurrentExternalEntityTypeIndex(currentExternalEntityTypeIndex - 1);
-            setSelectedExternalEntityType(externalEntityTypes[currentExternalEntityTypeIndex - 1]);
+            setSelectedExternalEntityType(sortedTypes[currentExternalEntityTypeIndex - 1]);
         }
     };
 

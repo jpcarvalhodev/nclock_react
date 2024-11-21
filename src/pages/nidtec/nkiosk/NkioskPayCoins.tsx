@@ -336,7 +336,7 @@ export const NkioskPayCoins = () => {
                                     defaultSortFieldId="timestamp"
                                 />
                             </div>
-                            <div style={{ marginLeft: 30 }}>
+                            <div style={{ marginLeft: 10 }}>
                                 <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                             </div>
                         </div>

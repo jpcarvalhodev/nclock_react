@@ -127,6 +127,9 @@ export const NviewOnlineCameras = () => {
     // Define a função de edição de controle de acesso
     const handleEditCameras = (cameras: Cameras) => {
         setSelectedCameras(cameras);
+        const sortedCameras = cameras.sort((a: Cameras, b: Cameras) => a.numeroCamera - b.numeroCamera);
+        const camerasIndex = sortedCameras.findIndex((camera: Cameras) => camera.id === cameras.id);
+        setCurrentCameraIndex(camerasIndex);
         setShowUpdateModal(true);
     };
 
@@ -152,17 +155,19 @@ export const NviewOnlineCameras = () => {
     
     // Seleciona a entidade anterior
     const handleNextCamera = () => {
-        if (currentCameraIndex < cameras.length - 1) {
+        const sortedCameras = cameras.sort((a: Cameras, b: Cameras) => a.numeroCamera - b.numeroCamera);
+        if (currentCameraIndex < sortedCameras.length - 1) {
             setCurrentCameraIndex(currentCameraIndex + 1);
-            setSelectedCameras(cameras[currentCameraIndex + 1]);
+            setSelectedCameras(sortedCameras[currentCameraIndex + 1]);
         }
     };
 
     // Seleciona a entidade seguinte
     const handlePrevCamera = () => {
+        const sortedCameras = cameras.sort((a: Cameras, b: Cameras) => a.numeroCamera - b.numeroCamera);
         if (currentCameraIndex > 0) {
             setCurrentCameraIndex(currentCameraIndex - 1);
-            setSelectedCameras(cameras[currentCameraIndex - 1]);
+            setSelectedCameras(sortedCameras[currentCameraIndex - 1]);
         }
     };
 

@@ -14,6 +14,11 @@ import { PrintButton } from "../../../components/PrintButton";
 import { toast } from "react-toastify";
 import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
 import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
+import { Button } from "react-bootstrap";
+import { DeleteModal } from "../../../modals/DeleteModal";
+import { UpdateLimpezaOcorrenciaModal } from "../../../modals/UpdateLimpezaOcorrenciaModal";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import { useLocation } from "react-router-dom";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -30,6 +35,7 @@ export const NkioskCleaning = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
+    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const [cleaning, setCleaning] = useState<LimpezasEOcorrencias[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -40,6 +46,13 @@ export const NkioskCleaning = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedCleaning, setSelectedCleaning] = useState<LimpezasEOcorrencias | null>(null);
+    const [initialData, setInitialData] = useState<Partial<LimpezasEOcorrencias> | null>(null);
+    const [currentCleaningIndex, setCurrentCleaningIndex] = useState(0);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedCleaningForDelete, setSelectedCleaningForDelete] = useState<string | null>(null);
+    const location = useLocation();
     const tipo = 1;
 
     // Função para buscar as limpezas
@@ -84,10 +97,44 @@ export const NkioskCleaning = () => {
         }
     };
 
+    // Função para atualizar limpezas
+    const handleUpdateCleaning = async (limpezas: LimpezasEOcorrencias) => {
+        try {
+            const data = await apiService.updateCleaning(limpezas);
+            const updatedCleaning = cleaning.map(cleaning => cleaning.id === data.id ? data : cleaning);
+            setCleaning(updatedCleaning);
+            toast.success(data.message || 'Limpeza atualizada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar a limpeza:', error);
+        } finally {
+            setShowUpdateModal(false);
+            refreshLimpezas();
+        }
+    }
+
+    // Função para apagar limpezas
+    const handleDeleteCleaning = async (id: string) => {
+        try {
+            const data = await apiService.deleteCleaning(id);
+            toast.success(data.message || 'Limpeza apagada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao apagar a limpeza:', error);
+        } finally {
+            setShowDeleteModal(false);
+            refreshLimpezas();
+        }
+    };
+
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
-        fetchAllLimpezas();
-    }, []);
+        const fetchDevices = async () => {
+            const data = await fetchAllDevices();
+            if (data.length > 0) {
+                fetchAllLimpezas();
+            }
+        }
+        fetchDevices();
+    }, [location]);
 
     // Função para atualizar as recolhas do moedeiro
     const refreshLimpezas = () => {
@@ -129,6 +176,42 @@ export const NkioskCleaning = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<LimpezasEOcorrencias>) => {
+        setInitialData(entity);
+        setShowAddModal(true);
+        setSelectedCleaning(null);
+        setShowUpdateModal(false);
+    }
+
+    // Função para abrir o modal de atualização
+    const handleEditLimpezas = (entity: LimpezasEOcorrencias) => {
+        setSelectedCleaning(entity);
+        setShowUpdateModal(true);
+    }
+
+    // Seleciona a entidade anterior
+    const handleNextCleaning = () => {
+        if (currentCleaningIndex < cleaning.length - 1) {
+            setCurrentCleaningIndex(currentCleaningIndex + 1);
+            setSelectedCleaning(cleaning[currentCleaningIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevCleaning = () => {
+        if (currentCleaningIndex > 0) {
+            setCurrentCleaningIndex(currentCleaningIndex - 1);
+            setSelectedCleaning(cleaning[currentCleaningIndex - 1]);
+        }
+    };
+
+    // Função para abrir o modal de apagar limpeza
+    const handleOpenDeleteModal = (id: string) => {
+        setSelectedCleaningForDelete(id);
+        setShowDeleteModal(true);
+    };
+
     // Filtra os dados da tabela
     const filteredDataTable = cleaning.filter(getCoin =>
         Object.keys(filters).every(key =>
@@ -148,12 +231,13 @@ export const NkioskCleaning = () => {
     // Define as colunas da tabela
     const columns: TableColumn<LimpezasEOcorrencias>[] = limpezasEOcorrenciasFields
         .filter(field => selectedColumns.includes(field.key))
-        .filter(field => field.key !== 'deviceId')
         .map(field => {
             const formatField = (row: LimpezasEOcorrencias) => {
                 switch (field.key) {
                     case 'dataCreate':
                         return new Date(row.dataCreate).toLocaleString() || '';
+                    case 'deviceId':
+                        return devices.find(device => device.zktecoDeviceID === row.deviceId)?.deviceName || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -171,6 +255,22 @@ export const NkioskCleaning = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.dataCreate).getTime() - new Date(rowA.dataCreate).getTime()
             };
         });
+
+    // Define a coluna de ações
+    const actionColumn: TableColumn<LimpezasEOcorrencias> = {
+        name: 'Ações',
+        cell: (row: LimpezasEOcorrencias) => (
+            <div style={{ display: 'flex' }}>
+                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditLimpezas(row)} />
+                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
+                    <i className="bi bi-trash-fill"></i>
+                </Button>{' '}
+            </div>
+        ),
+        selector: (row: LimpezasEOcorrencias) => row.id,
+        ignoreRowClick: true,
+    };
 
     return (
         <div className="main-container">
@@ -215,11 +315,12 @@ export const NkioskCleaning = () => {
                 </div>
                 <div className='table-css'>
                     <DataTable
-                        columns={columns}
+                        columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
+                        onRowDoubleClicked={handleEditLimpezas}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         clearSelectedRows={clearSelectionToggle}
@@ -248,6 +349,28 @@ export const NkioskCleaning = () => {
                 onClose={() => setShowAddModal(false)}
                 onSave={handleAddLimpezas}
                 fields={limpezasEOcorrenciasFields}
+                initialValuesData={initialData || {}}
+            />
+            {selectedCleaning && (
+                <UpdateLimpezaOcorrenciaModal
+                    title="Atualizar Limpeza"
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onUpdate={handleUpdateCleaning}
+                    fields={limpezasEOcorrenciasFields}
+                    onDuplicate={handleDuplicate}
+                    entity={selectedCleaning}
+                    canMoveNext={currentCleaningIndex < cleaning.length - 1}
+                    canMovePrev={currentCleaningIndex > 0}
+                    onNext={handleNextCleaning}
+                    onPrev={handlePrevCleaning}
+                />
+            )}
+            <DeleteModal
+                open={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={handleDeleteCleaning}
+                entityId={selectedCleaningForDelete}
             />
         </div>
     );
