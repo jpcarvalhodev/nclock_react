@@ -346,7 +346,8 @@ export const NgymDashboard = () => {
                     <p>- Administrar marcações e reservas;</p>
                     <p>- Acionar envio de avisos e informações;</p>
                     <p>- Gerir documentos e faturação.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-ngym/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

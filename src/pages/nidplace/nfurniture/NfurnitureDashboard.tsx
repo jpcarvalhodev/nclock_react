@@ -347,7 +347,8 @@ export const NfurnitureDashboard = () => {
                     <p>- Conectar e interligar equipamentos;</p>
                     <p>- Modernizar o seu espaço de trabalho;</p>
                     <p>- Proporcionar um local tecnológico aos seus colaboradores.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidplace.pt/produto/software-nfurniture/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

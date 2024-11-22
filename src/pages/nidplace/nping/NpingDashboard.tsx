@@ -344,7 +344,8 @@ export const NpingDashboard = () => {
                     <p>- Reduzir custos, adquirindo largura de banda e hardware apenas de acordo com a sua necessidade;</p>
                     <p>- Eliminar problemas de desempenho de servidor e gargalos de largura de banda;</p>
                     <p>- Melhorar a qualidade do seu serviço por ser proativo.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidplace.pt/produto/software-nping/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

@@ -338,7 +338,8 @@ export const NserviceDashboard = () => {
                 </div>
                 <div className="dashboard-carousel-container">
                     <h3 className="dashboard-title-text-inside">Software Nservice - Gestão de Serviços</h3>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-nservice/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

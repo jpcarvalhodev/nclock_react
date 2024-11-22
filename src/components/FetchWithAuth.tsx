@@ -38,7 +38,6 @@ const handleHTTPError = async (response: Response) => {
 
     switch (response.status) {
         case 400:
-            toast.error('Dados inválidos. Por favor, verifique os dados inseridos e tente novamente.');
             console.error('Erro 400: Requisição inválida');
             break;
         case 401:
@@ -49,7 +48,6 @@ const handleHTTPError = async (response: Response) => {
             console.error('Erro 403: Você não tem licenciamento para acessar esta página');
             break;
         case 404:
-            toast.error('Página não encontrada. Por favor, verifique a URL e tente novamente.');
             console.error('Erro 404: Página não encontrada');
             window.location.href = '/errors/notfound';
             break;

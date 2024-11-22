@@ -347,7 +347,8 @@ export const NcityDashboard = () => {
                     <p>- Melhorar a acessibilidade ao transporte;</p>
                     <p>- Criar benefícios económicos;</p>
                     <p>- Aumentar a qualidade de vida.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidtec.pt/produto/software-ncity/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

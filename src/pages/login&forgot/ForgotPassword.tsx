@@ -53,14 +53,16 @@ export const ForgotPassword = () => {
 
   return (
     <div className="background-login">
-      <form className='form-login' onSubmit={handleForgotPasswordFormSubmit}>
-        <img className='logo-login' src="/logo_login.png" alt="Logo Login" onClick={returnToLogin} style={{ cursor: 'pointer' }} />
-        <label className='email-label'>
-          Email:
-          <input style={{ marginLeft: '20px', flex: 1 }} type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </label>
-        <Button className="btn-my-custom-button" type='submit'>Enviar</Button>
-      </form>
+      <div className='forgot-container' id='forgot'>
+        <form className='form-login' onSubmit={handleForgotPasswordFormSubmit}>
+          <img className='logo-login' src="/logo_login.png" alt="Logo Login" onClick={returnToLogin} style={{ cursor: 'pointer' }} />
+          <label className='email-label'>
+            Email:
+            <input className='input-email' style={{ marginLeft: '20px', flex: 1 }} type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </label>
+          <Button style={{ marginTop: 20 }} variant='outline-light' type='submit'>Enviar</Button>
+        </form>
+      </div>
     </div>
   );
 };

@@ -506,3 +506,8 @@ export const auxiliariesFields = [
     { key: 'timezoneId', label: 'Período', type: 'string', required: true },
     { key: 'enabled', label: 'Activo', type: 'boolean' },
 ];
+
+export const resetFields = [
+    { key: 'deviceId', label: 'Nome do Local', type: 'string', required: true },
+    { key: 'observation', label: 'Observação', type: 'string' }
+];

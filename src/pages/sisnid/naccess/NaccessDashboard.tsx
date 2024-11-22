@@ -344,7 +344,8 @@ export const NaccessDashboard = () => {
                     <p>- Gerir, de forma otimizada, os acessos;</p>
                     <p>- Manusear facil e intuitivamente a interface;</p>
                     <p>- Formar uma mais valia na gestão de acessos do seu negócio ou espaço.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://naccess.pt/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

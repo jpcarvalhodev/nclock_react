@@ -1,3 +1,58 @@
+#product-tabs .tab-NCLOCK { background-color: #0050a0; color: white; }
+#product-tabs .tab-NACCESS { background-color: #0050a0; color: white; }
+#product-tabs .tab-NVISITOR { background-color: #0050a0; color: white; }
+#product-tabs .tab-NPARK { background-color: #0050a0; color: white; }
+#product-tabs .tab-NDOOR { background-color: #0050a0; color: white; }
+#product-tabs .tab-NPATROL { background-color: #0050a0; color: white; }
+#product-tabs .tab-NCARD { background-color: #0050a0; color: white; }
+#product-tabs .tab-NVIEW { background-color: #0050a0; color: white; }
+#product-tabs .tab-NSECUR { background-color: #0050a0; color: white; }
+#product-tabs .tab-NSOFTWARE { background-color: #D01313; color: white; }
+#product-tabs .tab-NSYSTEM { background-color: #D01313; color: white; }
+#product-tabs .tab-NAPP { background-color: #D01313; color: white; }
+#product-tabs .tab-NCYBER { background-color: #D01313; color: white; }
+#product-tabs .tab-NDIGITAL { background-color: #D01313; color: white; }
+#product-tabs .tab-NSERVER { background-color: #D01313; color: white; }
+#product-tabs .tab-NAUT { background-color: #D01313; color: white; }
+#product-tabs .tab-NEQUIP { background-color: #D01313; color: white; }
+#product-tabs .tab-NPROJECT { background-color: #D01313; color: white; }
+#product-tabs .tab-NCOUNT { background-color: #D01313; color: white; }
+#product-tabs .tab-NBUILD { background-color: #D01313; color: white; }
+#product-tabs .tab-NCARAVAN { background-color: #D01313; color: white; }
+#product-tabs .tab-NMECHANIC { background-color: #D01313; color: white; }
+#product-tabs .tab-NEVENTS { background-color: #D01313; color: white; }
+#product-tabs .tab-NSERVICE { background-color: #D01313; color: white; }
+#product-tabs .tab-NTASK { background-color: #D01313; color: white; }
+#product-tabs .tab-NPRODUCTION { background-color: #D01313; color: white; }
+#product-tabs .tab-NTICKET { background-color: #D01313; color: white; }
+#product-tabs .tab-NSALES { background-color: #D01313; color: white; }
+#product-tabs .tab-NINVOICE { background-color: #D01313; color: white; }
+#product-tabs .tab-NDOC { background-color: #D01313; color: white; }
+#product-tabs .tab-NSPORTS { background-color: #D01313; color: white; }
+#product-tabs .tab-NGYM { background-color: #D01313; color: white; }
+#product-tabs .tab-NSCHOOL { background-color: #D01313; color: white; }
+#product-tabs .tab-NCLINIC { background-color: #D01313; color: white; }
+#product-tabs .tab-NOPTICS { background-color: #D01313; color: white; }
+#product-tabs .tab-NGOLD { background-color: #D01313; color: white; }
+#product-tabs .tab-NSMART { background-color: #009739; color: white; }
+#product-tabs .tab-NREALITY { background-color: #009739; color: white; }
+#product-tabs .tab-NHOLOGRAM { background-color: #009739; color: white; }
+#product-tabs .tab-NPOWER { background-color: #009739; color: white; }
+#product-tabs .tab-NCHARGE { background-color: #009739; color: white; }
+#product-tabs .tab-NCITY { background-color: #009739; color: white; }
+#product-tabs .tab-NKIOSK { background-color: #009739; color: white; }
+#product-tabs .tab-NLED { background-color: #009739; color: white; }
+#product-tabs .tab-NFIRE { background-color: #009739; color: white; }
+#product-tabs .tab-NFURNITURE { background-color: #FEC629; color: white; }
+#product-tabs .tab-NPARTITION { background-color: #FEC629; color: white; }
+#product-tabs .tab-NDECOR { background-color: #FEC629; color: white; }
+#product-tabs .tab-NPING { background-color: #FEC629; color: white; }
+#product-tabs .tab-NCONNECT { background-color: #FEC629; color: white; }
+#product-tabs .tab-NLIGHT { background-color: #FEC629; color: white; }
+#product-tabs .tab-NCOMFORT { background-color: #FEC629; color: white; }
+#product-tabs .tab-NSOUND { background-color: #FEC629; color: white; }
+#product-tabs .tab-NHOME { background-color: #FEC629; color: white; }
+
 body {
     display: flex;
     flex-direction: column;
@@ -647,6 +702,13 @@ body {
     grid-template-columns: repeat(5, 1fr);
 }
 
+#product-tabs .nav-tabs {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding-left: 25px;
+}
+
 .scrollable-tabs {
     display: flex;
     flex-wrap: nowrap;
@@ -672,8 +734,7 @@ body {
 }
 
 .img-contact-modal {
-    height: calc(100vh - 350px);
-    width: calc(100vw - 830px);
+    width: 1080px;
 }
 
 @keyframes pulseBorder {
@@ -927,7 +988,19 @@ body {
     }
 }
 
+@media (max-width: 2560px) {
+
+    .card {
+        width: 120px;
+    }
+    
+}
+
 @media (max-width: 1920px) {
+
+    .card {
+        width: 121px;
+    }
 
     .card-container.cards-center {
         width: 68vw;
@@ -945,6 +1018,10 @@ body {
 
 @media (max-width: 1600px) {
 
+    .card {
+        width: 120px;
+    }
+
     .card-container.cards-center {
         width: 81vw;
     }
@@ -957,6 +1034,11 @@ body {
         width: 81%;
     }
 
+    .img-contact-modal {
+        height: 550px;
+        width: 1080px;
+    }
+
 }
 
 @media (max-width: 1366px) {
@@ -967,16 +1049,21 @@ body {
 
     .card-container.cards-center {
         width: 86vw;
-        height: 20vh;
+        height: 25vh;
     }
 
     .card-container.cards-left {
         width: 86vw;
-        height: 20vh;
+        height: 25vh;
     }
 
     .nav.nav-pills {
         width: 86%;
+    }
+
+    .img-contact-modal {
+        height: 430px;
+        width: 1080px;
     }
 
 }

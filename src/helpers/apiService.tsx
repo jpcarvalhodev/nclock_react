@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Auxiliaries, AuxOut, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Auxiliaries, AuxOut, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, Register, ResetCoin, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -1678,6 +1678,22 @@ export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroECon
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(recolhaMoedeiro)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error;
+    }
+    return response.json();
+}
+
+export const resetRecolhaMoedeiro = async (resetCoin: ResetCoin) => {
+    const response = await fetchWithAuth(`KioskTransaction/ResetRecolhaMoedeiro?deviceId=${resetCoin.deviceId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(resetCoin.observation)
     });
     if (!response.ok) {
         const errorData = await response.json();

@@ -346,7 +346,8 @@ export const NappDashboard = () => {
                     <p>- Garantir maior produtividade;</p>
                     <p>- Aumentar a notoriedade;</p>
                     <p>- Aumentar o reconhecimento da marca.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-napp/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

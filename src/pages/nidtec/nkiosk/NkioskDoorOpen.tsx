@@ -207,7 +207,6 @@ export const NkioskDoorOpen = () => {
         } catch (error) {
             setLoadingManualOpen(false);
             console.error('Erro ao abrir manualmente', error);
-            toast.error('Erro ao abrir manualmente.');
         } finally {
             fetchAllManualOpen();
         }

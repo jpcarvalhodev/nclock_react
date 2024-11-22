@@ -346,7 +346,8 @@ export const NschoolDashboard = () => {
                     <p>- Apoiar as instituições de ensino superior nas rotinas das comunidades educativas;</p>
                     <p>- Promover a racionalização dos recursos internos das instituições;</p>
                     <p>- Facilitar a venda de bilhetes e produtos, o controlo de acessos e outras operações em locais de visita.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-nschool/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

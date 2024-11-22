@@ -613,3 +613,10 @@ export type Auxiliaries = {
     timezoneId: string;
     enable: boolean;
 }
+
+export type ResetCoin = {
+    [key: string]: any;
+    id: string;
+    deviceId: string;
+    observation: string;
+}

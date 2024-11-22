@@ -346,7 +346,8 @@ export const NsystemDashboard = () => {
                     <p>- Permitir o fluxo independente de processamento de dados;</p>
                     <p>- Integrar ferramentas de controlo interno;</p>
                     <p>- Garantir os objetivos da empresa serão atingidos de maneira objetiva, eficiente e direta.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-nsystem/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

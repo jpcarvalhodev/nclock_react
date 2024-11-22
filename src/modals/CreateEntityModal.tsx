@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { Modal, Button, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import no_image from '../assets/img/terminais/no_image.png';
+import no_entity from '../assets/img/navbar/no_entity.png';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
@@ -174,7 +174,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
                         <Row>
                             <Col md={12} className='img-modal'>
                                 <img
-                                    src={deviceImage || no_image}
+                                    src={deviceImage || no_entity}
                                     alt="Logo da entidade"
                                     style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '50%' }}
                                     onClick={triggerFileSelectPopup}

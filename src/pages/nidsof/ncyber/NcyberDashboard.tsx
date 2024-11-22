@@ -347,7 +347,8 @@ export const NcyberDashboard = () => {
                     <p>- Melhorar o tempo de recuperação após alguma ameça ou violação;</p>
                     <p>- Proteger os utilizadores finais;</p>
                     <p>- Aumentar o grau de confiança no produto para os clientes.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-ncyber/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

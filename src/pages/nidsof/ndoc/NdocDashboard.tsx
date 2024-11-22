@@ -345,7 +345,8 @@ export const NdocDashboard = () => {
                     <p>- Aceder a documentação digital, em tempo real, e em qualquer dispositivo;</p>
                     <p>- Controlar documentos por entidade e processo;</p>
                     <p>- Criar workflow.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-ndoc/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

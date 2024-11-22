@@ -345,7 +345,8 @@ export const NpartitionDashboard = () => {
                     <p>- Usufruir de interfaces intuitivas e personalizadas;</p>
                     <p>- Identificar rapidamente anomalias através de notificações.</p>
                     <p>- Garantir um suporte especializado por parte de técnicos.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidplace.pt/produto/software-npartition/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

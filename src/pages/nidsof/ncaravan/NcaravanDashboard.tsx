@@ -346,7 +346,8 @@ export const NcaravanDashboard = () => {
                     <p>- Gerir as reservas e pagamentos online;</p>
                     <p>- Usufruir de plataforma de supervisão totalmente web;</p>
                     <p>- Ter um sistema de intercomunicação integrado entre cliente e supervisor.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-ncaravan/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

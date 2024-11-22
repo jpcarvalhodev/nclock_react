@@ -345,7 +345,8 @@ export const NtaskDashboard = () => {
                     <p>- Gerir tarefas e serviços;</p>
                     <p>- Controlar o tempo de cada atividade;</p>
                     <p>- Organizar e delegar tarefas.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-ntask/" target="_blank" rel="noopener noreferrer">aqui</a></p>                    
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

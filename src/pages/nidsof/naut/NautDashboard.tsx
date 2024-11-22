@@ -346,7 +346,8 @@ export const NautDashboard = () => {
                     <p>- Permitir a transformação digitalmente as organizações;</p>
                     <p>- Reduzir os custos operacionais das organizações;</p>
                     <p>- Permitir, a partir da tecnologia Big Data e a IA, extrair informações empresariais dos dados e tomar decisões de uma forma mais eficaz.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-naut/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

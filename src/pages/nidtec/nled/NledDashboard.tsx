@@ -346,7 +346,8 @@ export const NledDashboard = () => {
                     <p>- Reduzir os tempos de perceção dos consumidores;</p>
                     <p>- Aprimorar a imagem e a marca;</p>
                     <p>- Garantir poupança face ao métodos de Marketing tradicional.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidtec.pt/produto/software-nled/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

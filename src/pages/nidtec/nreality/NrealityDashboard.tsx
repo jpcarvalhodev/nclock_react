@@ -346,7 +346,8 @@ export const NrealityDashboard = () => {
                     <p>- Manter um investimento inicial reduzido;</p>
                     <p>- Reduzir o (re)trabalho, ao permitir uma pré-visualização;</p>
                     <p>- Simular cenários reais controlados.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidtec.pt/produto/software-nreality/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

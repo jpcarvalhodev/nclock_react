@@ -344,6 +344,7 @@ export const NvisitorDashboard = () => {
                     <p>- Gerir, de forma otimizada, as visitas de fornecedores ou outras pessoas externas;</p>
                     <p>- Criar sistemas automatizados;</p>
                     <p>- Integrar com outros softwares.</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nvisitor.pt/" target="_blank" rel="noopener noreferrer">aqui</a></p>
                     <p>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>

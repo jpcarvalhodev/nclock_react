@@ -12,11 +12,13 @@ import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
 import { toast } from "react-toastify";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import { RecolhaMoedeiroEContador } from "../../../helpers/Types";
-import { recolhaMoedeiroEContadorFields } from "../../../helpers/Fields";
+import { RecolhaMoedeiroEContador, ResetCoin } from "../../../helpers/Types";
+import { recolhaMoedeiroEContadorFields, resetFields } from "../../../helpers/Fields";
 import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
 import { set } from "date-fns";
+import { Spinner } from "react-bootstrap";
+import { ResetCoinModal } from "../../../modals/ResetCoinModal";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -48,9 +50,11 @@ export const NkioskGetCoins = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [initialData, setInitialData] = useState<Partial<RecolhaMoedeiroEContador> | null>(null);
     const [currentGetCoinIndex, setCurrentGetCoinIndex] = useState(0);
+    const [loadingReset, setLoadingReset] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     // Função para buscar as recolhas do moedeiro
-    const fetchAllCoinRecoveredData = async () => {
+    const fetchAllCoin = async () => {
         try {
             const data = await apiService.fetchRecolhasMoedeiro();
             if (Array.isArray(data)) {
@@ -107,12 +111,12 @@ export const NkioskGetCoins = () => {
 
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
-        fetchAllCoinRecoveredData();
+        fetchAllCoin();
     }, []);
 
     // Função para atualizar as recolhas do moedeiro
     const refreshRecolhaMoedeiro = () => {
-        fetchAllCoinRecoveredData();
+        fetchAllCoin();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -260,6 +264,27 @@ export const NkioskGetCoins = () => {
         };
     });
 
+     // Função para abrir manualmente
+     const handleReset = () => {
+        setLoadingReset(true);
+        setModalOpen(true);
+    }
+
+    // Função para enviar a abertura manualmente
+    const handleResetCoins = async (resetCoin: ResetCoin) => {
+        setModalOpen(false);
+        try {
+            const data = await apiService.resetRecolhaMoedeiro(resetCoin);
+            setLoadingReset(false);
+            toast.success(data.message || 'Abertura manual com sucesso!');
+        } catch (error) {
+            setLoadingReset(false);
+            console.error('Erro ao abrir manualmente', error);
+        } finally {
+            fetchAllCoin();
+        }
+    }
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -283,6 +308,12 @@ export const NkioskGetCoins = () => {
                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         <ExportButton allData={getCoinsWithNames} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
                         <PrintButton data={getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
+                            {loadingReset && (
+                                <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
+                            )}
+                        </div>
                     </div>
                     <div className="date-range-search">
                         <input
@@ -358,6 +389,15 @@ export const NkioskGetCoins = () => {
                     canMovePrev={currentGetCoinIndex > 0}
                     onNext={handleNextGetCoin}
                     onPrev={handlePrevGetCoin}
+                />
+            )}
+            {modalOpen && (
+                <ResetCoinModal
+                    open={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                    onSave={handleResetCoins}
+                    fields={resetFields}
+                    title="Reset de Recolha do Moedeiro"
                 />
             )}
         </div>

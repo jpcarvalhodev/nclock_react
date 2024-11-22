@@ -346,7 +346,8 @@ export const NkioskDashboard = () => {
                     <p>- Tornar o ambiente mais moderno e agradável;</p>
                     <p>- Interagir de forma eficiente com a jornada do cliente;</p>
                     <p>- Automatizar os processos e sistemas self-service.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidtec.pt/produto/software-nkiosk/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

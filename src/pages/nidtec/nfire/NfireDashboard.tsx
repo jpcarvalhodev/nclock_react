@@ -345,7 +345,8 @@ export const NfireDashboard = () => {
                     <p>- Diminui o perigo;</p>
                     <p>- Aumentar a segurança no local de trabalho;</p>
                     <p>- Seguir as normas e leis do país.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidtec.pt/produto/software-nfire/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

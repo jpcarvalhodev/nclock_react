@@ -253,7 +253,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             default:
                 return prop.charAt(0).toUpperCase() + prop.slice(1);
         }
-    }
+    }  
 
     return (
         <div>
@@ -330,7 +330,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                                     eventKey={product}
                                     title={product.toUpperCase()}
                                     key={product}
-                                    tabClassName={formData[product].enable ? 'enabled-tab' : ''}
+                                    tabClassName={`nav-item ${formData[product].enable ? 'enabled-tab' : ''} tab-${product.toUpperCase()}`}
                                 >
                                     <Row>
                                         {Object.entries(formData[product])

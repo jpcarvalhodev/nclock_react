@@ -344,7 +344,8 @@ export const NcardDashboard = () => {
                     <p>- Gerir a carteira de clientes;</p>
                     <p>- Registar e organizar dados;</p>
                     <p>- Integrar sistema de pontos e descontos.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://ncard.pt/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

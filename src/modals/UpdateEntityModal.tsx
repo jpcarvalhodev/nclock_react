@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { Modal, Button, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import no_image from '../assets/img/terminais/no_image.png';
+import no_entity from '../assets/img/navbar/no_entity.png';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
@@ -72,7 +72,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
     useEffect(() => {
         if (open && entity) {
             setFormData({ ...entity });
-            const imageURL = entity.logotipo ? `${apiService.baseURL}${entity.logotipo}` : no_image;
+            const imageURL = entity.logotipo ? `${apiService.baseURL}${entity.logotipo}` : no_entity;
             setDeviceImage(imageURL);
         } else {
             setFormData({});
@@ -195,7 +195,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                         <Row>
                             <Col md={12} className='img-modal'>
                                 <img
-                                    src={deviceImage || no_image}
+                                    src={deviceImage || no_entity}
                                     alt="Logo da entidade"
                                     style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '50%' }}
                                     onClick={triggerFileSelectPopup}

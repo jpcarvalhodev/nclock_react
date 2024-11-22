@@ -1,5 +1,5 @@
 import Modal from "react-bootstrap/Modal";
-import banner_contact from '../assets/img/carousel/banner_contact.jpg';
+import banner_contact from '../assets/img/carousel/banner_contact.png';
 
 // Define a propriedade da interface
 interface ContactProps {

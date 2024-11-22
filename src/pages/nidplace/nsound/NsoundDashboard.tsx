@@ -345,7 +345,8 @@ export const NsoundDashboard = () => {
                     <p>- Consultar histórico dos dispositivos;</p>
                     <p>- Identificar rapidamente anomalias através de notificações;</p>
                     <p>- Integrar com soluções EVAC – Sistemas de Alarme e Evacuação por Voz.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidplace.pt/produto/software-nsound/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

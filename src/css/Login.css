@@ -2,7 +2,7 @@
     background-image: url(/public/bg_login.jpg);
     background-size: cover;
     height: 100vh;
-    width: 100%;
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -11,89 +11,201 @@
 .login-container {
     display: flex;
     flex-direction: column;
+    margin-left: auto;
+    margin-right: 100px;
+}
+
+#login .logo-login {
+    max-width: 250px;
+}
+
+#login .profile-login {
+    max-width: 150px;
+}
+
+#login .form-login-entity {
+    height: 350px !important;
+}
+
+#login .header-entity {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-top: -40px;
+    margin-bottom: 40px;
+}
+
+#login .language-login {
+    display: flex;
     align-items: center;
 }
 
-.logo-login {
-    max-width: 200px;
-}
-
-.form-login {
+#login .license-button {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    background-color: white;
-    border-radius: 10px;
-    width: 500px;
-}
-
-.form-login input[type="text"],
-.form-login input[type="password"] {
-    margin: 15px;
-    padding: 10px;
-    width: 300px;
-}
-
-.form-login input[type="submit"] {
-    margin-top: 20px;
-    padding: 10px 20px;
-}
-
-.username-password-labels {
-    display: flex;
-    flex-direction: column;
-    align-items: end;
-}
-
-.username-label {
-    display: flex;
-    flex-direction: column;
     margin-top: 30px;
-    align-items: start;
+    width: 50%;
 }
 
-.username-label p {
-    margin-left: 15px;
+#login .button-language {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    height: 30px;
+    width: 30px;
 }
 
-.password-label {
+#login .form-login {
     display: flex;
     flex-direction: column;
+    background-color: rgba(133, 133, 133, 0.9);
+    border-radius: 10px;
+    width: 700px;
+    height: 420px;
+    padding: 50px;
+}
+
+#login .row-username-password {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#login .col-username-password {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+#login .form-login input[type="text"],
+#login .form-login-entity input[type="text"],
+#login .form-login input[type="password"] {
+    height: 40px;
+    width: 100%;
+}
+
+#login .input-username-password {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+#login .col-profile-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#login .username-password-labels {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#login .username-label {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    align-items: start;
+    color: white;
+}
+
+#login .password-label {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
     margin-bottom: 20px;
     align-items: start;
+    color: white;
 }
 
-.password-label p {
-    margin-left: 15px;
+#login .buttons-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 50px;
 }
 
-.remember_me-label {
-    margin-bottom: 20px;
+#login .div-logo-p {
+    display: flex;
+    align-items: center;
+    margin-top: 50px;
 }
 
-.btn-my-custom-button {
-    border-color: #0050a0 !important;
-    color: #0050a0 !important;
-    background-color: transparent !important;
+#login .footer-login {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 60px;
+    width: 100%;
 }
 
-.btn-my-custom-button:hover {
-    background-color: #0050a0 !important;
-    color: white !important;
-}
-
-.btn-my-custom-link {
-    color: #0050a0;
-    margin-bottom: 20px;
-}
-
-.custom-progress-bar {
-    background: #0050a0 !important;
+#login .footer-entity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 65px;
+    width: 100%;
 }
 
 @media (max-width: 500px) {
 
-    .form-login {
-        width: 350px;
+    .background-login {
+        height: 100% !important;
+        width: 100% !important;
     }
+
+    .login-container {
+        justify-content: center;
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 20px;
+    }
+
+    #login .header-entity {
+        margin-top: -25px;
+        margin-bottom: 0;
+    }
+
+    #login .footer-entity {
+        margin-top: 60px;
+    }
+
+    #login .form-login {
+        padding: 30px;
+        width: 400px;
+    }
+
+    #login .form-login-entity {
+        height: 300px !important;
+    }
+
+    #login .profile-login {
+        max-width: 100px;
+    }
+
+    #login .div-logo-p {
+        flex-direction: column;
+        margin-top: 30px;
+    }
+
+    #login .buttons-container {
+        flex-direction: column;
+        margin-top: 20px;
+    }
+
+    #login .footer-login {
+        margin-top: 40px;
+    }
+}
+
+@media (min-width: 501px) and (max-width: 1200px) {
+
+    .login-container {
+        justify-content: center;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
 }

@@ -346,7 +346,8 @@ export const NhologramDashboard = () => {
                     <p>- Leitura e reprodução de quase todo o tipo de ficheiros multimédia;</p>
                     <p>- Ligação com o wi-fi e/ou bluetooth;</p>
                     <p>- Flexibilidade no suporte de vários sistemas operativos.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidtec.pt/produto/software-nhologram/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

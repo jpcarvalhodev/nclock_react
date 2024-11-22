@@ -347,7 +347,8 @@ export const NprojectDashboard = () => {
                     <p>- Maior possibilidade de testar ideias;</p>
                     <p>- Maior proximidade com a realidade;</p>
                     <p>- Gerir as estimativas de custo e listas a partir de relatórios.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-nproject/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

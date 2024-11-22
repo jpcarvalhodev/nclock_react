@@ -18,8 +18,21 @@ import Split from "react-split";
 import { TreeViewDataNled } from "../../../components/TreeViewNled";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
 export const NledAds = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const { ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds } = useContext(AdsContext) as AdsContextType;
     const [showAddModal, setShowAddModal] = useState(false);
@@ -35,6 +48,8 @@ export const NledAds = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<Ads[]>([]);
     const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
@@ -217,6 +232,22 @@ export const NledAds = () => {
                                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                                 <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <CustomOutlineButton icon="bi-search" iconSize='1.1em' />
                             </div>
                         </div>
                         <div className='content-wrapper'>

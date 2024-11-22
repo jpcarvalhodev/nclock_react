@@ -2,9 +2,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import '../../css/Login.css';
 import { useEffect, useState } from 'react';
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Col, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
+import profileAvatar from '../../assets/img/navbar/navbar/profileAvatar.png';
+import no_entity from '../../assets/img/navbar/no_entity.png';
 
 // Interface para o usuário
 type User = {
@@ -88,26 +90,68 @@ export const Login = () => {
 
   return (
     <div className="background-login">
-      <div className="login-container">
-        <form className='form-login' onSubmit={handleLoginFormSubmit}>
-          <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
-          <div className='username-password-labels'>
-            <label className='username-label'>
-              <p>Nome de Utilizador:</p>
-              <input type="text" name="username" value={username} placeholder='Nome de Utilizador' onChange={(e) => setUsername(e.target.value)} />
-            </label>
-            <label className='password-label'>
-              <p>Password:</p>
-              <input type="password" name="password" value={password} placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
-            </label>
+      <div className="login-container" id='login'>
+        <form className='form-login form-login-entity'>
+          <div className='header-entity'>
+            <p style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>NIDGROUP - Business Solutions</p>
           </div>
-          <label className='remember_me-label'>
-            Memorizar dados?
-            <input style={{ marginLeft: '10px' }} type="checkbox" name="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
-          </label>
-          <Link className="btn-my-custom-link" to="/login&forgot/forgotpassword">Esqueceu sua password?</Link>
-          <Button className="btn-my-custom-button" type='submit'>Login</Button>
+          <div className='username-password-labels'>
+            <Row className='row-username-password'>
+              <Col className='col-profile-img'>
+                <img className='profile-login' src={no_entity} alt="foto perfil" />
+              </Col>
+              <Col className='col-username-password'>
+                <label className='username-label'>
+                  <p>Licenciado a:</p>
+                  <input className='input-username-password' type="text" name="username" readOnly />
+                </label>
+                <Button className='license-button' variant='outline-light'>Licenças</Button>
+              </Col>
+            </Row>
+          </div>
+          <footer className='footer-entity'>
+            <div className='language-login'>
+              <p style={{ fontSize: 10, margin: 0, color: 'white' }}>Idioma:</p>
+              <Button className="button-language" variant='outline-light'>PT</Button>
+            </div>
+            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>Versão Software: 1</p>
+          </footer>
         </form>
+        <form className='form-login' style={{ marginTop: 30 }} onSubmit={handleLoginFormSubmit}>
+          <div className='username-password-labels'>
+            <Row className='row-username-password'>
+              <Col className='col-username-password'>
+                <label className='username-label'>
+                  <p>Nome de Utilizador:</p>
+                  <input className='input-username-password' type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                </label>
+                <label className='password-label'>
+                  <p>Password:</p>
+                  <input className='input-username-password' type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                </label>
+              </Col>
+              <Col className='col-profile-img'>
+                <img className='profile-login' src={profileAvatar} alt="foto perfil" />
+              </Col>
+            </Row>
+          </div>
+          <div className='buttons-container'>
+            <Button variant='outline-light' type='submit'>Login</Button>
+            <label style={{ color: 'white' }}>
+              Memorizar dados?
+              <input style={{ marginLeft: '10px' }} type="checkbox" name="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
+            </label>
+            <Link style={{ color: 'white' }} to="/login&forgot/forgotpassword">Recuperar password?</Link>
+          </div>
+          <footer className='footer-login'>
+            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>Developed by NIDGROUP - Smart Solutions</p>
+            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>www.nidgroup.pt</p>
+          </footer>
+        </form>
+        <div className='div-logo-p'>
+          <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
+          <p style={{ marginLeft: 20, marginTop: 15, color: 'white', fontSize: 16, fontWeight: 'bold' }}>Seja Bem Vindo!</p>
+        </div>
       </div>
     </div>
   );

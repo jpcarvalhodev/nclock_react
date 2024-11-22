@@ -344,7 +344,8 @@ export const NparkDashboard = () => {
                     <p>- Gerir, fácil e praticamente, o parque;</p>
                     <p>- Garantir o controlo de acessos;</p>
                     <p>- Diminuir ocorrências e estacionamentos indevidos.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://npark.pt/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

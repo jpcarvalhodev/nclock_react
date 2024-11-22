@@ -914,7 +914,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
 					{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
 					{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
-					{ label: 'Nsoftwares', image: sisnidlogo, alt: 'nsoftwares', key: 'nsoftwares' }
+					{ label: 'Nsoftware', image: sisnidlogo, alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidsof: {
@@ -950,7 +950,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
 					{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
 					{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
-					{ label: 'Nsoftwares', image: nidsof, alt: 'nsoftwares', key: 'nsoftwares' }
+					{ label: 'Nsoftware', image: nidsof, alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidtec: {
@@ -968,7 +968,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
 					{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
 					{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
-					{ label: 'Nsoftwares', image: nidtec, alt: 'nsoftwares', key: 'nsoftwares' }
+					{ label: 'Nsoftware', image: nidtec, alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidplace: {
@@ -986,7 +986,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
 					{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
 					{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
-					{ label: 'Nsoftwares', image: nidplace, alt: 'nsoftwares', key: 'nsoftwares' }
+					{ label: 'Nsoftware', image: nidplace, alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 
@@ -1644,7 +1644,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="user-section">
 						<Dropdown className='dropdown-icon'>
 							<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
-								<span className='user-info'><i className="bi bi-escape"></i> {user.name}</span>
+								<span className='user-info'><i className="bi bi-door-open" style={{ marginRight: 10 }}></i>{user.name}</span>
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<div className='dropdown-content'>

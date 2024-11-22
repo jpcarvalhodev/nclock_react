@@ -346,7 +346,8 @@ export const NequipDashboard = () => {
                     <p>- Manter o rigor e controlo na faturação de serviços a clientes relacionados com a distribuição dos recursos;</p>
                     <p>- Gerir de forma eficiente os recursos disponíveis;</p>
                     <p>- Controlar os recursos em trânsito e emissão dos respetivos documentos legais.</p>
-                    <p style={{ marginTop: 50 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
+                    <p style={{ marginTop: 30 }}>Para mais detalhes do software, visite o site <a href="https://nidsof.pt/produto/software-nequip/" target="_blank" rel="noopener noreferrer">aqui</a></p>
+                    <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

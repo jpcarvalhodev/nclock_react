@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../../css/PasswordReset.css';
+import '../../css/ForgotPassword.css';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
@@ -8,8 +8,6 @@ import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 // Define a página de redefinição de senha
 export const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
   const navigate = useNavigate();
@@ -65,18 +63,20 @@ export const ResetPassword = () => {
     } catch (error) {
       console.error("Erro:", error);
     }
-  };
+  }
 
   return (
     <div className="background-login">
-      <form className='form-login' onSubmit={handleResetPasswordFormSubmit}>
-        <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
-        <div className='password-field'>
-          <p>Nova Password:</p>
-          <input type={showPassword ? "text" : "password"} name="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-        </div>
-        <Button className="btn-my-custom-button" type='submit'>Redefinir Password</Button>
-      </form>
+      <div className='forgot-container' id='forgot'>
+        <form className='form-login' onSubmit={handleResetPasswordFormSubmit}>
+          <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
+          <div className='email-label'>
+            <p>Nova Password:</p>
+            <input className='input-email' style={{ flex: 1 }} type="password" name="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+          </div>
+          <Button style={{ marginTop: 30 }} variant='outline-light' type='submit'>Redefinir Password</Button>
+        </form>
+      </div>
     </div>
   );
 };
