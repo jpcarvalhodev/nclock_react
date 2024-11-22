@@ -119,6 +119,10 @@
     color: white;
 }
 
+#login .profile-login {
+    border-radius: 25%;
+}
+
 #login .buttons-container {
     display: flex;
     justify-content: space-between;
