@@ -12,6 +12,8 @@ import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
 import { Logs } from "../../helpers/Types";
 import { logsFields } from "../../helpers/Fields";
+import Split from "react-split";
+import { TreeViewDataHistory } from "../../components/TreeViewHistory";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -37,6 +39,8 @@ export const HistoryLogs = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
 
     // Função para buscar os logs
     const fetchAllLogs = async () => {
@@ -77,6 +81,16 @@ export const HistoryLogs = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filterLogs = logs.filter(log => selectedDevicesIds.includes(log.taskId));
+            setFilteredDevices(filterLogs);
+        } else {
+            setFilteredDevices(logs);
+        }
+    }, [selectedDevicesIds, logs]);
+
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -111,8 +125,13 @@ export const HistoryLogs = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Filtra os dados da tabela
-    const filteredDataTable = logs.filter(getCoin =>
+    const filteredDataTable = filteredDevices.filter(getCoin =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -157,60 +176,67 @@ export const HistoryLogs = () => {
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="datatable-container">
-                <div className="datatable-title-text">
-                    <span style={{ color: '#000000' }}>Logs de Histórico</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataHistory onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLogs} />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={logsFields} />
-                        <PrintButton data={filteredDataTable} fields={logsFields} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#000000' }}>Logs de Histórico</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <input
+                                    className='search-input'
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLogs} />
+                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={logsFields} />
+                                <PrintButton data={filteredDataTable} fields={logsFields} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <CustomOutlineButton icon="bi-search" onClick={fetchLogsBetweenDates} iconSize='1.1em' />
+                            </div>
+                        </div>
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                defaultSortAsc={true}
+                                defaultSortFieldId="createdDate"
+                            />
+                        </div>
                     </div>
-                    <div className="date-range-search">
-                        <input
-                            type="date"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <span> até </span>
-                        <input
-                            type="date"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <CustomOutlineButton icon="bi-search" onClick={fetchLogsBetweenDates} iconSize='1.1em' />
-                    </div>
-                </div>
-                <div className='table-css'>
-                    <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        defaultSortAsc={true}
-                        defaultSortFieldId="createdDate"
-                    />
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (

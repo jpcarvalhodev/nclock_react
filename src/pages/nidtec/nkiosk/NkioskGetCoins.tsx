@@ -270,6 +270,12 @@ export const NkioskGetCoins = () => {
         setModalOpen(true);
     }
 
+    // Função para fechar o modal de reset
+    const handleCloseReset = () => {
+        setLoadingReset(false);
+        setModalOpen(false);
+    }
+
     // Função para enviar a abertura manualmente
     const handleResetCoins = async (resetCoin: ResetCoin) => {
         setModalOpen(false);
@@ -394,7 +400,7 @@ export const NkioskGetCoins = () => {
             {modalOpen && (
                 <ResetCoinModal
                     open={modalOpen}
-                    onClose={() => setModalOpen(false)}
+                    onClose={handleCloseReset}
                     onSave={handleResetCoins}
                     fields={resetFields}
                     title="Reset de Recolha do Moedeiro"

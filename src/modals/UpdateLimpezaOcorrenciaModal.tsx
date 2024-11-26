@@ -60,8 +60,6 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
         }
     }, [open, entity]);
 
-    console.log('formData', formData);
-
     // UseEffect para validar o formulário
     useEffect(() => {
         const newErrors: Record<string, string> = {};
