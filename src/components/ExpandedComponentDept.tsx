@@ -40,11 +40,11 @@ export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: Exp
     // Função para formatar o valor a ser exibido com base no tipo e no nome do campo
     const formatDisplayValue = (value: any, key: string, departments: DepartmentData[]): string => {
         if (value === null || value === undefined) {
-            return 'N/A';
+            return '';
         } else if (key === 'paiId') {
             return departments.find(dept => dept.code === value)?.name || '';
         } else if (typeof value === 'object' && value !== null) {
-            return JSON.stringify(value, null, 2);
+            return JSON.stringify(value, null, 2) || '';
         }
         return value.toString();
     };
