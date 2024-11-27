@@ -62,7 +62,6 @@ export const Categories = () => {
         } catch (error) {
             console.error('Erro ao adicionar nova categoria:', error);
         } finally {
-            setShowAddModal(false);
             refreshCategories();
         }
     };
@@ -77,7 +76,6 @@ export const Categories = () => {
         } catch (error) {
             console.error('Erro ao atualizar categoria:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshCategories();
         }
     };
@@ -91,7 +89,6 @@ export const Categories = () => {
         } catch (error) {
             console.error('Erro ao apagar categoria:', error);
         } finally {
-            setShowDeleteModal(false);
             refreshCategories();
         }
     };

@@ -161,7 +161,6 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, on
     // Atualiza o estado do componente com o envio do formulário
     const handleSubmit = async () => {
         await onUpdate(formData);
-        onClose();
     };
 
     // Define as opções de tipo

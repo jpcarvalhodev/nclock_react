@@ -130,7 +130,6 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
             return;
         }
         onUpdate(formData as T);
-        onClose();
     };
 
     // Define as seleções de contacto

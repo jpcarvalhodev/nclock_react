@@ -128,13 +128,12 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     };
 
     // Função para salvar os dados
-    const handleSave = () => {
+    const handleUpdate = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
         onUpdate(formData as T);
-        onClose();
     };
 
     // Define as seleções de modo de verificação
@@ -423,7 +422,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleSave}>
+                <Button variant="outline-primary" onClick={handleUpdate}>
                     Guardar
                 </Button>
             </Modal.Footer>

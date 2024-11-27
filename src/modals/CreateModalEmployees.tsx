@@ -57,13 +57,21 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        if (initialValues.name) {
-            setFormData({ ...initialValues, status: true });
+        if (open) {
+            fetchEmployeesAndSetNextEnrollNumber();
+            fetchDropdownOptions();
+            if (initialValues.name) {
+                setFormData({ ...initialValues, status: true });
+            } else {
+                setFormData({})
+                setProfileImage(null);
+            }
         } else {
-            setFormData({})
+            setFormData({});
+            setCardFormData({});
             setProfileImage(null);
         }
-    }, []);
+    }, [open]);
 
     // Atualiza o estado do componente com uma parte das validações
     useEffect(() => {
@@ -171,18 +179,6 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             setDropdownData(prevState => ({ ...prevState, groupId: data }));
         }
     };
-
-    // Atualiza o estado do componente ao abrir o modal
-    useEffect(() => {
-        if (open) {
-            fetchEmployeesAndSetNextEnrollNumber();
-            fetchDropdownOptions();
-        } else {
-            setFormData({});
-            setCardFormData({});
-            setProfileImage(null);
-        }
-    }, [open]);
 
     // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -798,8 +794,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button variant="outline-secondary" type="button" onClick={handleClose}>Fechar</Button>
+                <Button variant="outline-primary" type="button" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
             <CreateModalDeptGrp
                 title="Adicionar Departamento"

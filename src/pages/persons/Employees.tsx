@@ -91,7 +91,6 @@ export const Employees = () => {
             setData({ ...data, employees: employees });
         }
         refreshEmployees();
-        setShowAddModal(false);
     };
 
     // Função para atualizar um funcionário e um cartão
@@ -102,14 +101,12 @@ export const Employees = () => {
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
-        setShowUpdateModal(false);
         refreshEmployees();
     };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee(employeeId);
-        setShowDeleteModal(false);
         refreshEmployees();
     }
 
@@ -143,6 +140,15 @@ export const Employees = () => {
             setFilteredEmployees(employees);
         }
     }, [selectedEmployeeIds, employees]);
+
+    // Atualiza o índice do funcionário selecionado
+    useEffect(() => {
+        if (selectedEmployee) {
+            const sortedEmployees = filteredEmployees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+            const employeeIndex = sortedEmployees.findIndex(emp => emp.employeeID === selectedEmployee.employeeID);
+            setCurrentEmployeeIndex(employeeIndex);
+        }
+    }, [selectedEmployee, data.employees]);  
 
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -190,7 +196,7 @@ export const Employees = () => {
 
     // Seleciona o funcionário anterior
     const handleNextEmployee = () => {
-        const sortedEmployees = data.employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+        const sortedEmployees = filteredEmployees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
         if (currentEmployeeIndex < sortedEmployees.length - 1) {
             setCurrentEmployeeIndex(currentEmployeeIndex + 1);
             setSelectedEmployee(sortedEmployees[currentEmployeeIndex + 1]);
@@ -199,7 +205,7 @@ export const Employees = () => {
 
     // Seleciona o funcionário seguinte
     const handlePrevEmployee = () => {
-        const sortedEmployees = data.employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+        const sortedEmployees = filteredEmployees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
         if (currentEmployeeIndex > 0) {
             setCurrentEmployeeIndex(currentEmployeeIndex - 1);
             setSelectedEmployee(sortedEmployees[currentEmployeeIndex - 1]);
@@ -283,7 +289,7 @@ export const Employees = () => {
     // Define a função de edição de funcionários
     const handleEditEmployee = (employee: Employee) => {
         setSelectedEmployee(employee);
-        const sortedEmployees = data.employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+        const sortedEmployees = filteredEmployees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
         const employeeIndex = sortedEmployees.findIndex(emp => emp.employeeID === employee.employeeID);
         setCurrentEmployeeIndex(employeeIndex);
         setShowUpdateModal(true);

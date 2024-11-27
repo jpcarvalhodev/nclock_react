@@ -94,7 +94,6 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
     };
 
     // Define as opções para o campo modelo

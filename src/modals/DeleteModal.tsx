@@ -16,7 +16,6 @@ export const DeleteModal = ({ open, onClose, onDelete, entityId }: DeleteModalPr
     const handleDelete = () => {
         if (entityId) {
             onDelete(entityId);
-            onClose();
         }
     };
 

@@ -90,6 +90,9 @@ export const Login = () => {
 
   return (
     <div className="background-login">
+      <div className='div-logo-p'>
+        <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
+      </div>
       <div className="login-container" id='login'>
         <form className='form-login form-login-entity'>
           <div className='header-entity'>
@@ -98,7 +101,9 @@ export const Login = () => {
           <div className='username-password-labels'>
             <Row className='row-username-password'>
               <Col className='col-profile-img'>
-                <img className='profile-login' src={no_entity} alt="foto perfil" />
+                <div className="image-container">
+                  <img className="profile-login" src={no_entity} alt="foto perfil" />
+                </div>
               </Col>
               <Col className='col-username-password'>
                 <label className='username-label'>
@@ -131,7 +136,9 @@ export const Login = () => {
                 </label>
               </Col>
               <Col className='col-profile-img'>
-                <img className='profile-login' src={profileAvatar} alt="foto perfil" />
+                <div className="image-container">
+                  <img className='profile-login' src={profileAvatar} alt="foto perfil" />
+                </div>
               </Col>
             </Row>
           </div>
@@ -148,10 +155,6 @@ export const Login = () => {
             <p style={{ fontSize: 10, margin: 0, color: 'white' }}>www.nidgroup.pt</p>
           </footer>
         </form>
-        <div className='div-logo-p'>
-          <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
-          <p style={{ marginLeft: 20, marginTop: 15, color: 'white', fontSize: 16, fontWeight: 'bold' }}>Seja Bem Vindo!</p>
-        </div>
       </div>
     </div>
   );

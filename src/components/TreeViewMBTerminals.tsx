@@ -69,7 +69,7 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
-    const [expandedIds, setExpandedIds] = useState<string[]>([]);
+    const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [mbData, setMBData] = useState<MBDevice[]>([]);
     const selectionChangedRef = { current: false };
@@ -117,12 +117,8 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
     }, [mbData]);
 
     // Função para lidar com a expansão dos itens
-    const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {
-        if (nodeIds.length < expandedIds.length) {
-            setExpandedIds(collectAllExpandableItemIds(items));
-        } else {
-            setExpandedIds(nodeIds);
-        }
+    const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
+        setExpandedIds(nodeIds);
     };
 
     // Função para lidar com a mudança de seleção dos itens

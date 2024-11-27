@@ -212,16 +212,16 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
     };
 
     // Função para verificar se o formulário é válido antes de salvar
-    const handleCheckForSave = () => {
+    const handleCheckForUpdate = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        handleSave();
+        handleUpdate();
     }
 
     // Função para salvar os dados
-    const handleSave = () => {
+    const handleUpdate = () => {
         const doorTimeEntry = {
             doorId: formData.doorId,
             timezoneId: formData.timezoneId,
@@ -235,7 +235,6 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
         };
 
         onUpdate(updatedFormData as Partial<T>);
-        handleCloseAllModals();
     };
 
     return (
@@ -363,7 +362,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                     <Button variant="outline-secondary" onClick={handleCloseAllModals}>
                         Fechar
                     </Button>
-                    <Button variant="outline-primary" onClick={handleCheckForSave}>
+                    <Button variant="outline-primary" onClick={handleCheckForUpdate}>
                         Guardar
                     </Button>
                 </Modal.Footer>

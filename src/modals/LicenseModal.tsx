@@ -175,7 +175,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         } else {
             setIsModalVisible(false);
             onUpdate(key, formData as License[]);
-            onClose();
         }
     };
 

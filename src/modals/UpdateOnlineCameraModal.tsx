@@ -137,7 +137,6 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
     // Função para salvar os dados
     const handleSave = () => {
         onUpdate(formData as T);
-        onClose();
     };
 
     return (

@@ -61,7 +61,6 @@ export const Groups = () => {
         } catch (error) {
             console.error('Erro ao adicionar novo grupo:', error);
         } finally {
-            setShowAddModal(false);
             refreshGroups();
         }
     };
@@ -76,7 +75,6 @@ export const Groups = () => {
         } catch (error) {
             console.error('Erro ao atualizar grupo:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshGroups();
         }
     };
@@ -90,7 +88,6 @@ export const Groups = () => {
         } catch (error) {
             console.error('Erro ao apagar grupo:', error);
         } finally {
-            setShowDeleteModal(false);
             refreshGroups();
         }
     };
@@ -99,6 +96,15 @@ export const Groups = () => {
     useEffect(() => {
         fetchAllGroups();
     }, []);
+
+    // Atualiza o índice do funcionário selecionado
+    useEffect(() => {
+        if (selectedGroup) {
+            const sortedGroups = groups.sort((a, b) => a.name.localeCompare(b.name));
+            const groupIndex = sortedGroups.findIndex(grp => grp.groupID === selectedGroup.groupID);
+            setCurrentGroupIndex(groupIndex);
+        }
+    }, [selectedGroup, groups]);  
 
     // Função para atualizar os grupos
     const refreshGroups = () => {

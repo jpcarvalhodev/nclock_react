@@ -143,7 +143,6 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     // Função para submeter o formulário
     const handleSubmit = async () => {
         await onUpdate(formData);
-        onClose();
     };
 
     return (

@@ -211,7 +211,6 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
     // Função para submeter o formulário
     const handleSubmit = async () => {
         await onUpdate(formData);
-        onClose();
     };
 
     return (

@@ -72,14 +72,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
-        setShowUpdateModal(false);
         refreshEmployees();
     };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee(employeeId);
-        setShowDeleteModal(false);
         refreshEmployees();
     };
 
@@ -126,6 +124,15 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             setSelectedRows([]);
         }
     }, [resetSelectionInternal]);
+
+    // Atualiza o índice do funcionário selecionado
+    useEffect(() => {
+        if (selectedEmployee) {
+            const sortedEmployees = data.employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+            const employeeIndex = sortedEmployees.findIndex(emp => emp.employeeID === selectedEmployee.employeeID);
+            setCurrentEmployeeIndex(employeeIndex);
+        }
+    }, [selectedEmployee, data.employees]);    
 
     // Abre o modal de exclusão de funcionário
     const handleOpenDeleteModal = (employee: Employee) => {

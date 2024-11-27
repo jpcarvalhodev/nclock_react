@@ -117,7 +117,6 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             return;
         }
         onSave(kioskFormData as T);
-        onClose();
     };
 
     // Função para lidar com o clique em atualizar
@@ -127,7 +126,6 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             return;
         }
         onUpdate(kioskFormData as T);
-        onClose();
     }
 
     return (

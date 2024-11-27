@@ -72,7 +72,6 @@ export const Persons = () => {
             setData({ ...data, employees: employees });
         }
         refreshEmployees();
-        setShowAddModal(false);
     };
 
     // Função para selecionar funcionários

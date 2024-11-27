@@ -139,7 +139,6 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
     };
 
     return (

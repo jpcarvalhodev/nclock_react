@@ -228,6 +228,7 @@ export type Ads = {
     URLArquivo: string;
     Ordem: number;
     tempoExecucaoImagens: number;
+    createDate: Date;
     dataFim: Date;
 };
 

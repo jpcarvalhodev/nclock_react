@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { departmentFields } from '../helpers/Fields';
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 
 // Define a interface para os dados do departamento
 interface DepartmentData {
@@ -19,6 +20,9 @@ interface ExpandedComponentProps {
 
 // Define o componente
 export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: ExpandedComponentProps) => {
+    const {
+        departments
+    } = useContext(PersonsContext) as PersonsContextType;
     const [subdepartments, setSubdepartments] = useState<DepartmentData[]>(data.subdepartments || []);
 
     // Usa useEffect para buscar subdepartamentos quando o componente é montado ou data/fetchSubdepartments mudam
@@ -33,10 +37,12 @@ export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: Exp
         }
     }, [data, fetchSubdepartments]);
 
-    // Função para formatar o valor a ser exibido com base no tipo
-    const formatDisplayValue = (value: any, type: string): string => {
+    // Função para formatar o valor a ser exibido com base no tipo e no nome do campo
+    const formatDisplayValue = (value: any, key: string, departments: DepartmentData[]): string => {
         if (value === null || value === undefined) {
             return 'N/A';
+        } else if (key === 'paiId') {
+            return departments.find(dept => dept.code === value)?.name || '';
         } else if (typeof value === 'object' && value !== null) {
             return JSON.stringify(value, null, 2);
         }
@@ -48,7 +54,7 @@ export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: Exp
             <div>
                 {departmentFields.map(({ key, label, type }) => {
                     const value = data[key];
-                    const displayValue = formatDisplayValue(value, type);
+                    const displayValue = formatDisplayValue(value, key, departments);
                     return (
                         <div key={key} className="entity-detail">
                             <strong>{label}: </strong>{displayValue}

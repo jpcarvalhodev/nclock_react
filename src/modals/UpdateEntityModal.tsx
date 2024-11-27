@@ -181,7 +181,6 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
         }
 
         onUpdate(dataToSend);
-        onClose();
     };
 
     return (

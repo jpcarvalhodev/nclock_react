@@ -82,21 +82,18 @@ export const NclockMovement = () => {
     // Função para adicionar um movimento
     const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
         await handleAddAttendance(attendance);
-        setShowAddAttendanceModal(false);
         refreshAttendance();
     }
 
     // Função para atualizar um movimento
     const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
         await handleUpdateAttendance(attendance);
-        setShowUpdateAttendanceModal(false);
         refreshAttendance();
     }
 
     // Função para deletar um movimento
     const deleteAttendance = async (attendanceTimeId: string) => {
         await handleDeleteAttendance(attendanceTimeId);
-        setShowDeleteModal(false);
         refreshAttendance();
     }
 
@@ -131,6 +128,15 @@ export const NclockMovement = () => {
         }
     }, [selectedEmployeeId, selectedEmployeeIds]);
 
+    // Atualiza o índice selecionado
+    useEffect(() => {
+        if (selectedAttendances && selectedAttendances.length > 0) {
+            const sortedAttendances = filteredAttendances.sort((a, b) => a.attendanceTime.toString().localeCompare(b.attendanceTime.toString()));
+            const attendanceIndex = sortedAttendances.findIndex(att => att.attendanceTimeId === selectedAttendances[0].attendanceTimeId);
+            setCurrentAttendanceIndex(attendanceIndex);
+        }
+    }, [selectedAttendances, filteredAttendances]);
+
     // Define a seleção de funcionários
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         setSelectedEmployeeIds(selectedIds);
@@ -164,7 +170,11 @@ export const NclockMovement = () => {
 
     // Função para abrir o modal de adição de assiduidade
     const handleOpenAddAttendanceModal = () => {
-        if (selectedEmployeeId) {
+        if (selectedEmployeeIds.length > 0) {
+            setInitialData({
+                ...initialData,
+                selectedEmployeeIds: selectedEmployeeIds[0]
+            });
             setShowAddAttendanceModal(true);
         } else {
             toast.warn('Selecione um funcionário primeiro!');
@@ -173,9 +183,9 @@ export const NclockMovement = () => {
 
     // Seleciona a assiduidade anterior
     const handleNextAttendance = () => {
-        if (currentAttendanceIndex < attendanceMovement.length - 1) {
+        if (currentAttendanceIndex < filteredAttendances.length - 1) {
             setCurrentAttendanceIndex(currentAttendanceIndex + 1);
-            setSelectedAttendances([attendanceMovement[currentAttendanceIndex + 1]]);
+            setSelectedAttendances([filteredAttendances[currentAttendanceIndex + 1]]);
         }
     };
 
@@ -183,7 +193,7 @@ export const NclockMovement = () => {
     const handlePrevDepartment = () => {
         if (currentAttendanceIndex > 0) {
             setCurrentAttendanceIndex(currentAttendanceIndex - 1);
-            setSelectedAttendances([attendanceMovement[currentAttendanceIndex - 1]]);
+            setSelectedAttendances([filteredAttendances[currentAttendanceIndex - 1]]);
         }
     };
 
@@ -366,7 +376,7 @@ export const NclockMovement = () => {
                         onSave={addAttendance}
                         title='Adicionar Assiduidade'
                         fields={employeeAttendanceTimesFields}
-                        initialValues={initialData || {}}
+                        initialValues={initialData}
                         entityType='movimentos'
                     />
                 )}
@@ -380,10 +390,10 @@ export const NclockMovement = () => {
                         onDuplicate={handleDuplicate}
                         title='Atualizar Assiduidade'
                         entityType='movimentos'
-                        onNext={handleNextAttendance}
-                        onPrev={handlePrevDepartment}
-                        canMoveNext={currentAttendanceIndex < attendanceMovement.length - 1}
-                        canMovePrev={currentAttendanceIndex > 0}
+                        onNext={handlePrevDepartment}
+                        onPrev={handleNextAttendance}
+                        canMoveNext={currentAttendanceIndex > 0}
+                        canMovePrev={currentAttendanceIndex < filteredAttendances.length - 1}
                     />
                 )}
                 {selectedAttendanceToDelete && showDeleteModal && (

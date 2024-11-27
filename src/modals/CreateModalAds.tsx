@@ -237,7 +237,6 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
         }
 
         onSave(dataToSend);
-        onClose();
     };
 
     return (

@@ -92,7 +92,6 @@ export const NkioskCleaning = () => {
         } catch (error) {
             console.error('Erro ao criar nova limpeza:', error);
         } finally {
-            setShowAddModal(false);
             refreshLimpezas();
         }
     };
@@ -107,7 +106,6 @@ export const NkioskCleaning = () => {
         } catch (error) {
             console.error('Erro ao atualizar a limpeza:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshLimpezas();
         }
     }
@@ -120,7 +118,6 @@ export const NkioskCleaning = () => {
         } catch (error) {
             console.error('Erro ao apagar a limpeza:', error);
         } finally {
-            setShowDeleteModal(false);
             refreshLimpezas();
         }
     };

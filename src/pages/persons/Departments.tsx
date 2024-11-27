@@ -86,7 +86,6 @@ export const Departments = () => {
         } catch (error) {
             console.error('Erro ao adicionar novo departamento:', error);
         } finally {
-            setShowAddModal(false);
             refreshDepartments();
         }
     };
@@ -101,7 +100,6 @@ export const Departments = () => {
         } catch (error) {
             console.error('Erro ao atualizar departamento:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshDepartments();
         }
     };
@@ -115,7 +113,6 @@ export const Departments = () => {
         } catch (error) {
             console.error('Erro ao apagar departamento:', error);
         } finally {
-            setShowDeleteModal(false);
             refreshDepartments();
         }
     };
@@ -197,7 +194,14 @@ export const Departments = () => {
                     <SelectFilter column={columnKey} setFilters={setFilters} data={filteredDataTable} />
                 </>
             ),
-            selector: (row: Record<string, any>) => row[columnKey],
+            selector: (row: Record<string, any>) => {
+                switch (columnKey) {
+                    case 'paiId':
+                        return departments.find(dept => dept.code === row.paiId)?.name || '';
+                    default:
+                        return row[columnKey];
+                }
+            },
             sortable: true,
         }));
 

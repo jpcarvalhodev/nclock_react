@@ -174,7 +174,6 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         }
 
         onUpdate(dataToSend);
-        onClose();
     };
 
     // Define as seleções de tipo de conta

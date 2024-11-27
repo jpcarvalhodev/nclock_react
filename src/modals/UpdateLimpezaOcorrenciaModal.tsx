@@ -149,7 +149,6 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
     // Função para salvar os dados
     const handleSave = () => {
         onUpdate(formData as T);
-        onClose();
     };
 
     return (

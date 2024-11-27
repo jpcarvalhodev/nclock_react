@@ -59,7 +59,6 @@ export const Types = () => {
         } catch (error) {
             console.error('Erro ao adicionar nova entidade externa:', error);
         } finally {
-            setShowAddModal(false);
             refreshExternalEntitiesTypes();
         }
     };
@@ -74,7 +73,6 @@ export const Types = () => {
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshExternalEntitiesTypes();
         }
     };
@@ -88,7 +86,6 @@ export const Types = () => {
         } catch (error) {
             console.error('Erro ao apagar entidade externa:', error);
         } finally {
-            setShowDeleteModal(false);
             refreshExternalEntitiesTypes();
         }
     };

@@ -55,7 +55,6 @@ export const NkioskCounter = () => {
         } catch (error) {
             console.error('Erro ao criar contador:', error);
         } finally {
-            setShowAddModal(false);
             refreshCounter();
         }
     };

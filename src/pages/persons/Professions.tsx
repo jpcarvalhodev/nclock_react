@@ -18,7 +18,6 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
-import { id } from "date-fns/locale";
 import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
@@ -63,7 +62,6 @@ export const Professions = () => {
         } catch (error) {
             console.error('Erro ao adicionar nova profissão:', error);
         } finally {
-            setShowAddModal(false);
             refreshProfessions();
         }
     };
@@ -78,7 +76,6 @@ export const Professions = () => {
         } catch (error) {
             console.error('Erro ao atualizar a profissão:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshProfessions();
         }
     };
@@ -92,7 +89,6 @@ export const Professions = () => {
         } catch (error) {
             console.error('Erro ao apagar a profissão:', error);
         } finally {
-            setShowDeleteModal(false);
             refreshProfessions();
         }
     };

@@ -90,7 +90,6 @@ export const NkioskGetCoins = () => {
         } catch (error) {
             console.error('Erro ao criar recolha do moedeiro:', error);
         } finally {
-            setShowAddModal(false);
             refreshRecolhaMoedeiro();
         }
     };
@@ -104,7 +103,6 @@ export const NkioskGetCoins = () => {
         } catch (error) {
             console.error('Erro ao atualizar recolha do moedeiro:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshRecolhaMoedeiro();
         }
     };

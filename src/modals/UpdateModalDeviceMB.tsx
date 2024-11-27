@@ -107,7 +107,6 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
     // Função para salvar os dados
     const handleSave = () => {
         onUpdate(formData as T);
-        onClose();
     };
 
     // Define as opções para o campo modelo

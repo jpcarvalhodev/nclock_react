@@ -23,7 +23,6 @@ import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { UpdateModalAux } from "./UpdateModaAux";
-import { set } from "date-fns";
 
 // Define a interface Entity
 export interface Entity {
@@ -465,7 +464,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // Define a função para enviar
     const handleSubmit = async () => {
         await onUpdate(formData);
-        onClose();
     };
 
     // Opções de dispositivos

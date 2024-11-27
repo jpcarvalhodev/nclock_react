@@ -44,7 +44,7 @@ export const departmentFields = [
     { label: 'Código', key: 'code', type: 'number', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Descrição', key: 'description', type: 'string' },
-    { label: 'ID de Parente', key: 'paiId', type: 'dropdown' },
+    { label: 'Departamento Pai', key: 'paiId', type: 'dropdown' },
 ];
 
 export const categoryFields = [

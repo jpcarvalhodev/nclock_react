@@ -321,7 +321,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const handleSubmit = async () => {
     const updatedCardFormData = { ...cardFormData, employeeID: formData.employeeID };
     await onUpdate(formData, updatedCardFormData);
-    onClose();
   };
 
   // Define as opções de tipo

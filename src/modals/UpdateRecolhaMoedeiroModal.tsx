@@ -204,7 +204,6 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     // Função para salvar os dados
     const handleSave = () => {
         onUpdate(formData as T);
-        onClose();
     };
 
     return (

@@ -103,7 +103,6 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
             return;
         }
         onUpdate(formData as T);
-        onClose();
     };
 
     // Traduz as keys dos dias da semana

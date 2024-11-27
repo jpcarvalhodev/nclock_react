@@ -92,7 +92,6 @@ export const NkioskOccurrences = () => {
         } catch (error) {
             console.error('Erro ao criar nova ocorrência:', error);
         } finally {
-            setShowAddModal(false);
             fetchAllOcorrencias();
         }
     };
@@ -106,7 +105,6 @@ export const NkioskOccurrences = () => {
         } catch (error) {
             console.error('Erro ao atualizar ocorrência:', error);
         } finally {
-            setShowAddModal(false);
             fetchAllOcorrencias();
         }
     };
@@ -119,7 +117,6 @@ export const NkioskOccurrences = () => {
         } catch (error) {
             console.error('Erro ao apagar ocorrência:', error);
         } finally {
-            setShowDeleteModal(false);
             fetchAllOcorrencias();
         }
     }

@@ -324,7 +324,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para submeter o formulário
     const handleSubmit = async () => {
         await onUpdate(formData);
-        onClose();
     };
 
     // Define os campos required
@@ -414,7 +413,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                 {entityType === 'department' && (
                                     <Col md={6}>
                                         <Form.Group controlId="formPaiId">
-                                            <Form.Label>ID de Parente</Form.Label>
+                                            <Form.Label>Departamento Pai</Form.Label>
                                             <Form.Control
                                                 as="select"
                                                 name="paiId"
@@ -422,7 +421,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                 onChange={handleDropdownChange}
                                                 className="custom-input-height custom-select-font-size"
                                             >
-                                                <option value="">Selecione...</option>
+                                                <option value="0">Selecione...</option>
                                                 {dropdownData.departments.map(option => (
                                                     <option key={option.code} value={option.code}>
                                                         {option.name}

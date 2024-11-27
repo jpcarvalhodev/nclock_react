@@ -255,7 +255,6 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
         }
 
         onUpdate(dataToSend);
-        onClose();
     };
 
     return (

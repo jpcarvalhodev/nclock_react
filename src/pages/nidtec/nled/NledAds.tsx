@@ -71,6 +71,15 @@ export const NledAds = () => {
         }
     }, [selectedDevicesIds, ads, devices]);
 
+    // Atualiza o índice selecionado
+    useEffect(() => {
+        if (selectedAds && selectedAds.length > 0) {
+            const sortedAds = ads.sort((a, b) => a.createDate.toString().localeCompare(b.createDate.toString()));
+            const adsIndex = sortedAds.findIndex(ad => ad.id === selectedAds[0].id);
+            setCurrentAdsIndex(adsIndex);
+        }
+    }, [selectedAds, ads]);
+
     // Função para editar uma publicidade
     const handleEditAds = (ads: Ads) => {
         setSelectedAds(ads);
@@ -300,10 +309,10 @@ export const NledAds = () => {
                     onDuplicate={handleDuplicate}
                     title="Publicidades"
                     entities="all"
-                    onPrev={handlePrevAds}
-                    onNext={handleNextAds}
-                    canMoveNext={currentAdsIndex < ads.length - 1}
-                    canMovePrev={currentAdsIndex > 0}
+                    onPrev={handleNextAds}
+                    onNext={handlePrevAds}
+                    canMoveNext={currentAdsIndex > 0}
+                    canMovePrev={currentAdsIndex < ads.length - 1}
                 />
             )}
             <DeleteModal

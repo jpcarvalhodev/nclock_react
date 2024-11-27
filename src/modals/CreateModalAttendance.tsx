@@ -30,11 +30,22 @@ interface Props<T> {
     entityType: 'movimentos' | 'pedidos';
 }
 
+// Função para formatar a data e hora atuais para o formato adequado
+const getCurrentDateTimeLocal = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 // Define o componente
 export const CreateModalAttendance = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
     const {
         fetchAllEmployees,
-      } = useContext(PersonsContext) as PersonsContextType;
+    } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [dropdownData, setDropdownData] = useState<Record<string, Employee[]>>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -48,7 +59,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             const fieldValue = formData[field.key];
             let valid = true;
 
-            
+
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
             }
@@ -71,6 +82,14 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                 ...prevState,
                 employeeId: employees
             }));
+            const selectedEmployee = employees.find(emp => emp.employeeID === initialValues.selectedEmployeeIds);
+            if (selectedEmployee) {
+                setFormData(prevState => ({
+                    ...prevState,
+                    employeeId: selectedEmployee.employeeID,
+                    employeeName: selectedEmployee.name,
+                }));
+            }
         } catch (error) {
             toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
             console.error(error);
@@ -81,7 +100,11 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
-            setFormData(initialValues);
+            setFormData(prevState => ({
+                ...prevState,
+                initialValues,
+                attendanceTime: getCurrentDateTimeLocal()
+            }));
         } else {
             setFormData({});
         }
@@ -235,7 +258,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                     </>
                 )}
                 {entityType === 'movimentos' && fields.map((field) => {
-                    if (!['deviceId', 'deviceNumber','enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
+                    if (!['deviceId', 'deviceNumber', 'enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
                         return (
                             <Form.Group controlId={`form${field.key}`} key={field.key}>
                                 <Form.Label>

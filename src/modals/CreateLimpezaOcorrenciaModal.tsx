@@ -136,7 +136,6 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
     };
 
     return (

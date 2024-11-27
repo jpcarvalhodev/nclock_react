@@ -148,7 +148,6 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     // Define a função para enviar
     const handleSubmit = () => {
         onUpdate(formData);
-        onClose();
     };
 
     // Opções do tipo
@@ -162,7 +161,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal">
             <Modal.Header closeButton>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
@@ -289,7 +288,6 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                                 onChange={handleChange}
                                                 name={field.key}
                                             >
-                                                <option value="">Selecione...</option>
                                                 {typeOptions.map(option => (
                                                     <option key={option.value} value={option.value}>{option.label}</option>
                                                 ))}

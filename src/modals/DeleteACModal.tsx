@@ -92,7 +92,6 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
     // Função para apagar a entidade
     const handleDelete = () => {
         onDelete([entity.employeesId], selectedDoor?.doorId);
-        handleCloseAllModals();
     };
 
     return (

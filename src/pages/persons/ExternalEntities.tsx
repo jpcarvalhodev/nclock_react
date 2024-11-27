@@ -73,7 +73,6 @@ export const ExternalEntities = () => {
         } catch (error) {
             console.error('Erro ao adicionar nova entidade externa:', error);
         }
-        setShowAddModal(false);
         refreshExternalEntities();
     };
 
@@ -87,7 +86,6 @@ export const ExternalEntities = () => {
         } catch (error) {
             console.error('Erro ao atualizar entidade externa:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshExternalEntities();
         }
     };
@@ -101,7 +99,6 @@ export const ExternalEntities = () => {
         } catch (error) {
             console.error('Erro ao apagar entidade externa:', error);
         } finally {
-            setShowDeleteModal(false);
             refreshExternalEntities();
         }
     };
@@ -110,6 +107,15 @@ export const ExternalEntities = () => {
     useEffect(() => {
         fetchAllExternalEntitiesData();
     }, []);
+
+    // Atualiza o índice do funcionário selecionado
+    useEffect(() => {
+        if (selectedExternalEntity) {
+            const sortedExtEnt = externalEntities.sort((a, b) => a.name.localeCompare(b.name));
+            const extEntIndex = sortedExtEnt.findIndex(extEnt => extEnt.externalEntityID === selectedExternalEntity.externalEntityID);
+            setCurrentExtEntIndex(extEntIndex);
+        }
+    }, [selectedExternalEntity, externalEntities]); 
 
     // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {

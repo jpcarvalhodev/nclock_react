@@ -8,6 +8,12 @@
     justify-content: center;
 }
 
+.div-logo-p {
+    margin-left: 100px;
+    margin-top: 100px;
+    margin-bottom: auto;
+}
+
 .login-container {
     display: flex;
     flex-direction: column;
@@ -20,7 +26,8 @@
 }
 
 #login .profile-login {
-    max-width: 150px;
+    max-width: 100px;
+    object-fit: cover;
 }
 
 #login .form-login-entity {
@@ -90,6 +97,18 @@
     background-color: rgba(255, 255, 255, 0.6);
 }
 
+#login .image-container {
+    width: 130px;
+    height: 130px;
+    border-radius: 10%;
+    overflow: hidden;
+    background-color: rgba(170, 170, 170, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
 #login .col-profile-img {
     display: flex;
     justify-content: center;
@@ -128,12 +147,6 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-top: 50px;
-}
-
-#login .div-logo-p {
-    display: flex;
-    align-items: center;
     margin-top: 50px;
 }
 

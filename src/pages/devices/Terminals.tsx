@@ -26,7 +26,6 @@ import { PersonsContext, PersonsContextType } from "../../context/PersonsContext
 import { useColor } from "../../context/ColorContext";
 import * as apiService from "../../helpers/apiService";
 import { DoorModal } from "../../modals/DoorModal";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -233,7 +232,6 @@ export const Terminals = () => {
     const addDevice = async (device: Devices) => {
         setLoadingTerminals(true);
         await handleAddDevice(device);
-        setShowAddModal(false);
         setLoadingTerminals(false);
         refreshAll();
     }
@@ -241,7 +239,6 @@ export const Terminals = () => {
     // Função para atualizar um dispositivo
     const updateDevice = async (device: Devices) => {
         await handleUpdateDevice(device);
-        setShowUpdateModal(false);
         refreshAll();
     }
 
@@ -249,7 +246,6 @@ export const Terminals = () => {
     const deleteDevice = async () => {
         if (selectedDeviceToDelete) {
             await handleDeleteDevice(selectedDeviceToDelete);
-            setShowDeleteModal(false);
             refreshAll();
         }
     }

@@ -331,7 +331,6 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             return acc;
         }, {});
         onSave(payload as T);
-        onClose();
     };
 
     // Define os campos required
@@ -421,7 +420,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                 {entityType === 'department' && (
                                     <Col md={6}>
                                         <Form.Group controlId="formPaiId">
-                                            <Form.Label>ID de Parente</Form.Label>
+                                            <Form.Label>Departamento Pai</Form.Label>
                                             <Form.Control
                                                 as="select"
                                                 name="paiId"
@@ -429,7 +428,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                 onChange={handleDropdownChange}
                                                 className="custom-input-height custom-select-font-size"
                                             >
-                                                <option value="">Selecione...</option>
+                                                <option value="0">Selecione...</option>
                                                 {dropdownData.departments.map(option => (
                                                     <option key={option.code} value={option.code}>
                                                         {option.name}

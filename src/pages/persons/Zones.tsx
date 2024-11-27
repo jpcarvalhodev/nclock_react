@@ -61,7 +61,6 @@ export const Zones = () => {
         } catch (error) {
             console.error('Erro ao adicionar nova zona:', error);
         } finally {
-            setShowAddModal(false);
             refreshZones();
         }
     };
@@ -76,7 +75,6 @@ export const Zones = () => {
         } catch (error) {
             console.error('Erro ao atualizar zona:', error);
         } finally {
-            setShowUpdateModal(false);
             refreshZones();
         }
     };
@@ -90,7 +88,6 @@ export const Zones = () => {
         } catch (error) {
             console.error('Erro ao apagar zona:', error);
         } finally {
-            setShowDeleteModal(false);
             refreshZones();
         }
     };
@@ -99,6 +96,15 @@ export const Zones = () => {
     useEffect(() => {
         fetchAllZones();
     }, []);
+
+    // Atualiza o índice do funcionário selecionado
+    useEffect(() => {
+        if (selectedZone) {
+            const sortedZone = zones.sort((a, b) => a.name.localeCompare(b.name));
+            const zoneIndex = sortedZone.findIndex(zone => zone.zoneID === selectedZone.zoneID);
+            setCurrentZoneIndex(zoneIndex);
+        }
+    }, [selectedZone, zones]); 
 
     // Função para atualizar as zonas
     const refreshZones = () => {

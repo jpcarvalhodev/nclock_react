@@ -133,7 +133,6 @@ export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave,
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
     };
 
     return (

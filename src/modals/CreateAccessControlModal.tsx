@@ -163,7 +163,6 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         };
 
         onSave(updatedFormData as Partial<T>);
-        onClose();
     };
 
 
