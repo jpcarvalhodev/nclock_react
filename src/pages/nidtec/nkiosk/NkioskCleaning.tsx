@@ -14,7 +14,7 @@ import { PrintButton } from "../../../components/PrintButton";
 import { toast } from "react-toastify";
 import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
 import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateLimpezaOcorrenciaModal } from "../../../modals/UpdateLimpezaOcorrenciaModal";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
@@ -287,9 +287,24 @@ export const NkioskCleaning = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLimpezas} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLimpezas} />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={limpezasEOcorrenciasFields} />
                         <PrintButton data={filteredDataTable} fields={limpezasEOcorrenciasFields} />
                     </div>
@@ -307,7 +322,12 @@ export const NkioskCleaning = () => {
                             onChange={e => setEndDate(e.target.value)}
                             className='search-input'
                         />
-                        <CustomOutlineButton icon="bi-search" onClick={fetchLimpezasBetweenDates} iconSize='1.1em' />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Buscar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-search" onClick={fetchLimpezasBetweenDates} iconSize='1.1em' />
+                        </OverlayTrigger>
                     </div>
                 </div>
                 <div className='table-css'>

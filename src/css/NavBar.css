@@ -353,10 +353,14 @@
     cursor: pointer;
 }
 
+.menu-item-image {
+    width: 30px;
+}
+
 #dropdown-basic::after,
 #dropdown-basic-2::after,
 #dropdown-basic-3::after {
-    display: none !important;
+    display: none;
 }
 
 .nav-item:hover,

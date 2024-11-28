@@ -20,6 +20,7 @@ import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
 import { set } from "date-fns";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 // Define a interface para os filtros
 interface Filters {
@@ -243,9 +244,24 @@ export const Categories = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={categoryFields} />
                         <PrintButton data={filteredDataTable} fields={categoryFields} />
                     </div>

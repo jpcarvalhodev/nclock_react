@@ -15,7 +15,7 @@ import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsC
 import { RecolhaMoedeiroEContador } from "../../../helpers/Types";
 import { recolhaMoedeiroEContadorFields } from "../../../helpers/Fields";
 import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
-import { Button, Spinner, Tab, Tabs } from "react-bootstrap";
+import { Button, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react-bootstrap";
 
 export const NkioskCounter = () => {
     const { navbarColor, footerColor } = useColor();
@@ -201,9 +201,24 @@ export const NkioskCounter = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCounter} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCounter} />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        </OverlayTrigger>
                         <ExportButton allData={getCounterWithNames} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
                         <PrintButton data={getCounterWithNames} fields={recolhaMoedeiroEContadorFields} />
                     </div>

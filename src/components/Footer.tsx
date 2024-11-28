@@ -42,7 +42,7 @@ export const Footer = ({ style }: FooterProps) => {
           <p>{currentYear} ®NIDGROUP por SISNID - Todos os direitos reservados</p>
         </div>
         <div className="footer-right">
-          <p>Versão: 1</p>
+          <p>Versão: 1.0.0.0</p>
         </div>
       </footer>
     </ColorProvider>

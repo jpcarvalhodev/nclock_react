@@ -15,6 +15,7 @@ import { PersonsContext, PersonsContextType, PersonsProvider } from '../../conte
 import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
 import { toast } from 'react-toastify';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -148,9 +149,24 @@ export const Persons = () => {
                                     />
                                 </div>
                                 <div className="buttons-container">
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Adicionar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    </OverlayTrigger>
                                     <ExportButton allData={filteredData} selectedData={filteredData} fields={employeeFields} />
                                     <PrintButton data={filteredData} fields={employeeFields} />
                                 </div>

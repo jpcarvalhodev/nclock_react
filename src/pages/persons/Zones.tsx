@@ -19,6 +19,7 @@ import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 // Define a interface para os filtros
 interface Filters {
@@ -104,7 +105,7 @@ export const Zones = () => {
             const zoneIndex = sortedZone.findIndex(zone => zone.zoneID === selectedZone.zoneID);
             setCurrentZoneIndex(zoneIndex);
         }
-    }, [selectedZone, zones]); 
+    }, [selectedZone, zones]);
 
     // Função para atualizar as zonas
     const refreshZones = () => {
@@ -169,8 +170,8 @@ export const Zones = () => {
         setShowUpdateModal(false);
     }
 
-     // Seleciona a entidade anterior
-     const handleNextZone = () => {
+    // Seleciona a entidade anterior
+    const handleNextZone = () => {
         if (currentZoneIndex < zones.length - 1) {
             setCurrentZoneIndex(currentZoneIndex + 1);
             setSelectedZone(zones[currentZoneIndex + 1]);
@@ -268,9 +269,24 @@ export const Zones = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={zoneFields} />
                         <PrintButton data={filteredDataTable} fields={zoneFields} />
                     </div>

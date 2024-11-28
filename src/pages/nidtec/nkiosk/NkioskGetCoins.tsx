@@ -17,7 +17,7 @@ import { recolhaMoedeiroEContadorFields, resetFields } from "../../../helpers/Fi
 import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
 import { set } from "date-fns";
-import { Spinner } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { ResetCoinModal } from "../../../modals/ResetCoinModal";
 
 // Formata a data para o início do dia às 00:00
@@ -262,8 +262,8 @@ export const NkioskGetCoins = () => {
         };
     });
 
-     // Função para abrir manualmente
-     const handleReset = () => {
+    // Função para abrir manualmente
+    const handleReset = () => {
         setLoadingReset(true);
         setModalOpen(true);
     }
@@ -307,13 +307,33 @@ export const NkioskGetCoins = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        </OverlayTrigger>
                         <ExportButton allData={getCoinsWithNames} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
                         <PrintButton data={getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip>Reset</Tooltip>}
+                            >
+                                <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
+                            </OverlayTrigger>
                             {loadingReset && (
                                 <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
                             )}
@@ -333,7 +353,12 @@ export const NkioskGetCoins = () => {
                             onChange={e => setEndDate(e.target.value)}
                             className='search-input'
                         />
-                        <CustomOutlineButton icon="bi-search" onClick={fetchCoinsBetweenDates} iconSize='1.1em' />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Buscar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-search" onClick={fetchCoinsBetweenDates} iconSize='1.1em' />
+                        </OverlayTrigger>
                     </div>
                 </div>
                 <div className='table-css'>

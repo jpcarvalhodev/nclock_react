@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 import profileAvatar from '../../assets/img/navbar/navbar/profileAvatar.png';
 import no_entity from '../../assets/img/navbar/no_entity.png';
+import entity from '../../assets/assist_img/logo_quiosque.jpeg';
 
 // Interface para o usuário
 type User = {
@@ -94,21 +95,22 @@ export const Login = () => {
         <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
       </div>
       <div className="login-container" id='login'>
-        <form className='form-login form-login-entity'>
+        <form className='form-login-entity'>
           <div className='header-entity'>
             <p style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>NIDGROUP - Business Solutions</p>
+            <p style={{ fontSize: 10, marginTop: 7, color: 'white' }}>www.nidgroup.pt</p>
           </div>
           <div className='username-password-labels'>
             <Row className='row-username-password'>
               <Col className='col-profile-img'>
                 <div className="image-container">
-                  <img className="profile-login" src={no_entity} alt="foto perfil" />
+                  <img className="profile-login" src={entity} alt="foto perfil" />
                 </div>
               </Col>
               <Col className='col-username-password'>
                 <label className='username-label'>
-                  <p>Licenciado a:</p>
-                  <input className='input-username-password' type="text" name="username" readOnly />
+                  <p>Licenciado a Empresa:</p>
+                  <input className='input-username-password' type="text" name="username" value="União das Freguesias de Cedofeita, Santo Ildefonso, Sé, Miragaia, São Nicolau e Vitória" readOnly />
                 </label>
                 <Button className='license-button' variant='outline-light'>Licenças</Button>
               </Col>
@@ -119,7 +121,7 @@ export const Login = () => {
               <p style={{ fontSize: 10, margin: 0, color: 'white' }}>Idioma:</p>
               <Button className="button-language" variant='outline-light'>PT</Button>
             </div>
-            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>Versão Software: 1</p>
+            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>Versão Software: 1.0.0.0</p>
           </footer>
         </form>
         <form className='form-login' style={{ marginTop: 30 }} onSubmit={handleLoginFormSubmit}>
@@ -135,7 +137,7 @@ export const Login = () => {
                   <input className='input-username-password' type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </label>
               </Col>
-              <Col className='col-profile-img'>
+              <Col className='col-profile-img-2'>
                 <div className="image-container">
                   <img className='profile-login' src={profileAvatar} alt="foto perfil" />
                 </div>
@@ -143,7 +145,7 @@ export const Login = () => {
             </Row>
           </div>
           <div className='buttons-container'>
-            <Button variant='outline-light' type='submit'>Login</Button>
+            <Button variant='outline-light' type='submit'>Entrar</Button>
             <label style={{ color: 'white' }}>
               Memorizar dados?
               <input style={{ marginLeft: '10px' }} type="checkbox" name="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
@@ -151,8 +153,8 @@ export const Login = () => {
             <Link style={{ color: 'white' }} to="/login&forgot/forgotpassword">Recuperar password?</Link>
           </div>
           <footer className='footer-login'>
-            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>Developed by NIDGROUP - Smart Solutions</p>
-            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>www.nidgroup.pt</p>
+            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>Developed by NIDSOF - Smart Solutions</p>
+            <p style={{ fontSize: 10, margin: 0, color: 'white' }}>www.nidsof.pt</p>
           </footer>
         </form>
       </div>

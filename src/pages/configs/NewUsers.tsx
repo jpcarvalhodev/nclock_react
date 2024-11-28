@@ -12,7 +12,7 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
 import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { usePersons } from "../../context/PersonsContext";
 
@@ -184,9 +184,24 @@ export const NewUsers = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshUsers} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshUsers} />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        </OverlayTrigger>
                     </div>
                 </div>
             </div>

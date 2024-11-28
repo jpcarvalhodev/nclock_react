@@ -13,6 +13,7 @@ import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../../context/MovementContext";
 import { useColor } from "../../../context/ColorContext";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 // Define a interface para os filtros
 interface Filters {
@@ -243,8 +244,20 @@ export const NclockPresence = () => {
                                     />
                                 </div>
                                 <div className="buttons-container">
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em' />
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
+                                        />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
+                                        />
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                             <DataTable

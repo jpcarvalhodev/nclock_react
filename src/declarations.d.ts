@@ -1,6 +1,7 @@
 // Declarações de módulos de imagem que não possuem tipos
 declare module '*.png';
 declare module '*.jpg';
+declare module '*.jpeg';
 declare module '*.webp';
 
 // Declarações de módulos que não possuem tipos

@@ -105,7 +105,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
 
     // Função para validar a senha
     const validatePassword = (password: string): boolean => {
-        const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])/;
+        const regex = /^(?=.*[A-Z])(?=.*[!@#$&*-_])/;
         return regex.test(password);
     };
 

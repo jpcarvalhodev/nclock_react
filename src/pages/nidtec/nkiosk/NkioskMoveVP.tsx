@@ -12,10 +12,11 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
 import { useLocation } from "react-router-dom";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -235,7 +236,7 @@ export const NkioskMoveVP = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkioskDisp onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
@@ -252,8 +253,18 @@ export const NkioskMoveVP = () => {
                                     />
                                 </div>
                                 <div className="buttons-container-others">
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    </OverlayTrigger>
                                     <ExportButton allData={moveVPWithNames} selectedData={selectedRows} fields={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')} />
                                     <PrintButton data={moveVPWithNames} fields={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')} />
                                 </div>
@@ -271,7 +282,12 @@ export const NkioskMoveVP = () => {
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
                                     />
-                                    <CustomOutlineButton icon="bi-search" onClick={fetchMovementVPBetweenDates} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementVPBetweenDates} iconSize='1.1em' />
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                             <div className='table-css'>

@@ -4,7 +4,7 @@ import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { Button, Tab, Tabs } from "react-bootstrap";
+import { Button, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { ManualOpenDoor } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
@@ -237,10 +237,25 @@ export const NkioskDoorOpen = () => {
                                     onChange={e => setFilterText(e.target.value)}
                                 />
                                 <div className="custom-buttons">
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAllManualOpen} />
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAllManualOpen} />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
+                                    </OverlayTrigger>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <CustomOutlineButton icon="bi bi-power" onClick={handleOpenManualDoor} iconSize='1.1em' />
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={<Tooltip>Abrir</Tooltip>}
+                                        >
+                                            <CustomOutlineButton icon="bi bi-power" onClick={handleOpenManualDoor} iconSize='1.1em' />
+                                        </OverlayTrigger>
                                         {loadingManualOpen && (
                                             <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
                                         )}
@@ -260,7 +275,12 @@ export const NkioskDoorOpen = () => {
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
                                     />
-                                    <CustomOutlineButton icon="bi-search" onClick={fetchManualOpenBetweenDates} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-search" onClick={fetchManualOpenBetweenDates} iconSize='1.1em' />
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                         </div>

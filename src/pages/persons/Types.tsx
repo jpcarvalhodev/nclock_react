@@ -7,7 +7,7 @@ import { NavBar } from "../../components/NavBar";
 import { categoryFields, externalEntityTypeFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExternalEntityTypes } from "../../helpers/Types";
 import { toast } from "react-toastify";
 import { SelectFilter } from "../../components/SelectFilter";
@@ -240,9 +240,24 @@ export const Types = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntitiesTypes} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntitiesTypes} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={externalEntityTypeFields} />
                         <PrintButton data={filteredDataTable} fields={externalEntityTypeFields} />
                     </div>

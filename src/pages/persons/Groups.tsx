@@ -19,6 +19,7 @@ import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 // Define a interface para os filtros
 interface Filters {
@@ -104,7 +105,7 @@ export const Groups = () => {
             const groupIndex = sortedGroups.findIndex(grp => grp.groupID === selectedGroup.groupID);
             setCurrentGroupIndex(groupIndex);
         }
-    }, [selectedGroup, groups]);  
+    }, [selectedGroup, groups]);
 
     // Função para atualizar os grupos
     const refreshGroups = () => {
@@ -190,8 +191,8 @@ export const Groups = () => {
         )
     );
 
-     // Define os dados iniciais ao duplicar
-     const handleDuplicate = (entity: Partial<Group>) => {
+    // Define os dados iniciais ao duplicar
+    const handleDuplicate = (entity: Partial<Group>) => {
         setInitialData(entity);
         setShowAddModal(true);
         setSelectedGroup(null);
@@ -258,9 +259,24 @@ export const Groups = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={groupWithNames} selectedData={filteredItems} fields={groupFields} />
                         <PrintButton data={groupWithNames} fields={groupFields} />
                     </div>

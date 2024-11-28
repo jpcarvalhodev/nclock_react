@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
-import { Modal, Button, Spinner } from 'react-bootstrap';
+import { Modal, Button, Spinner, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { PDFDocument } from './PDFDocument';
 import { CustomOutlineButton } from './CustomOutlineButton';
 
@@ -52,8 +52,12 @@ export const PrintButton = ({ data, fields, renderTimeout = 5000 }: PrintButtonP
 
     return (
         <>
-            <CustomOutlineButton onClick={handleShowModal} icon='bi-printer' iconSize='1.1em'></CustomOutlineButton >
-
+            <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Imprimir</Tooltip>}
+            >
+                <CustomOutlineButton onClick={handleShowModal} icon='bi-printer' iconSize='1.1em'></CustomOutlineButton >
+            </OverlayTrigger>
             <Modal show={showModal} onHide={handleCloseModal} size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>Visualizar PDF</Modal.Title>

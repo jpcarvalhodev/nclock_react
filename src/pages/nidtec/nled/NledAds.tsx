@@ -8,7 +8,7 @@ import { useColor } from "../../../context/ColorContext";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { adsFields } from "../../../helpers/Fields";
 import { Ads } from "../../../helpers/Types";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
@@ -238,9 +238,24 @@ export const NledAds = () => {
                                 />
                             </div>
                             <div className="buttons-container-others">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
-                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
                             </div>
                             <div className="date-range-search">
                                 <input
@@ -256,7 +271,12 @@ export const NledAds = () => {
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'
                                 />
-                                <CustomOutlineButton icon="bi-search" iconSize='1.1em' />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" iconSize='1.1em' />
+                                </OverlayTrigger>
                             </div>
                         </div>
                         <div className='content-wrapper'>

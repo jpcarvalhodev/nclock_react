@@ -5,14 +5,14 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import * as apiService from "../../helpers/apiService";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { AccessControl, Doors } from "../../helpers/Types";
 import { accessControlFields } from "../../helpers/Fields";
 import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import Split from "react-split";
@@ -62,10 +62,10 @@ export const AccessControls = () => {
     };
 
     // Função para editar o controle de acesso
-    const handleUpdateAccessControl = async (newAccessControl: Partial<AccessControl>, door?: Partial<Doors>) => {
+    const handleUpdateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         try {
-            const data = await apiService.updateAccessControl(newAccessControl, door);
-            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.id === data.id ? data : item));
+            const data = await apiService.updateAccessControl(newAccessControl);
+            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.id === data.id ? { ...item, acc: [data.acc[0]] } : item));
             toast.success(data.message || 'Controle de acesso atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao editar o controle de acesso:', error);
@@ -290,9 +290,24 @@ export const AccessControls = () => {
                                 />
                             </div>
                             <div className="buttons-container-others">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAccessControl} />
-                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAccessControl} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
                             </div>
                         </div>
                         <div className='table-css'>
@@ -309,15 +324,21 @@ export const AccessControls = () => {
                                 selectableRowsHighlight
                                 expandableRows
                                 expandableRowsComponent={(props) => {
-                                    const doors = props.data.doors || [];
+                                    const accessControlEntries = props.data.acc || [];
+
                                     return (
-                                        <ExpandedComponentAC
-                                            data={doors}
-                                            fields={[
-                                                { key: 'doorName', label: 'Nome da Porta' },
-                                                { key: 'timezoneName', label: 'Nome do Fuso Horário' }
-                                            ]}
-                                        />
+                                        <div>
+                                            {accessControlEntries.map((entry: Record<string, any>, index: Key | null | undefined) => (
+                                                <ExpandedComponentAC
+                                                    key={index}
+                                                    data={[entry]}
+                                                    fields={[
+                                                        { key: 'doorName', label: 'Nome da Porta' },
+                                                        { key: 'timezoneName', label: 'Nome do Fuso Horário' }
+                                                    ]}
+                                                />
+                                            ))}
+                                        </div>
                                     );
                                 }}
                                 noDataComponent="Não existem dados disponíveis para exibir."

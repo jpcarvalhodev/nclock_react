@@ -1,8 +1,7 @@
 .background-login {
     background-image: url(/public/bg_login.jpg);
     background-size: cover;
-    height: 100vh;
-    width: 100vw;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -10,7 +9,7 @@
 
 .div-logo-p {
     margin-left: 100px;
-    margin-top: 100px;
+    margin-top: 70px;
     margin-bottom: auto;
 }
 
@@ -18,7 +17,7 @@
     display: flex;
     flex-direction: column;
     margin-left: auto;
-    margin-right: 100px;
+    margin-right: 150px;
 }
 
 #login .logo-login {
@@ -26,17 +25,24 @@
 }
 
 #login .profile-login {
-    max-width: 100px;
+    max-width: 120px;
+    height: auto;
+    border-radius: 50%;
     object-fit: cover;
 }
 
 #login .form-login-entity {
-    height: 350px !important;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(133, 133, 133, 0.9);
+    border-radius: 10px;
+    height: 350px;
+    padding: 50px;
 }
 
 #login .header-entity {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     width: 100%;
     margin-top: -40px;
     margin-bottom: 40px;
@@ -69,8 +75,8 @@
     flex-direction: column;
     background-color: rgba(133, 133, 133, 0.9);
     border-radius: 10px;
-    width: 700px;
-    height: 420px;
+    width: 600px;
+    height: 350px;
     padding: 50px;
 }
 
@@ -84,6 +90,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    flex: 2;
 }
 
 #login .form-login input[type="text"],
@@ -106,12 +113,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 #login .col-profile-img {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#login .col-profile-img-2 {
+    display: flex;
+    justify-content: flex-end;
     align-items: center;
 }
 
@@ -124,7 +137,6 @@
 #login .username-label {
     display: flex;
     flex-direction: column;
-    margin-top: 10px;
     align-items: start;
     color: white;
 }
@@ -138,23 +150,19 @@
     color: white;
 }
 
-#login .profile-login {
-    border-radius: 25%;
-}
-
 #login .buttons-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-top: 50px;
+    margin-top: 20px;
 }
 
 #login .footer-login {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 60px;
+    margin-top: 20px;
     width: 100%;
 }
 
@@ -162,7 +170,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 65px;
+    margin-top: 60px;
     width: 100%;
 }
 
@@ -173,25 +181,29 @@
         width: 100% !important;
     }
 
+    .div-logo-p {
+        display: none;
+    } 
+
     .login-container {
         justify-content: center;
         margin-left: 0;
         margin-right: 0;
-        margin-top: 20px;
     }
 
     #login .header-entity {
-        margin-top: -25px;
+        margin-top: -50px;
         margin-bottom: 0;
     }
 
     #login .footer-entity {
-        margin-top: 60px;
+        margin-top: 20px;
     }
 
     #login .form-login {
+        margin-top: 10px !important;
         padding: 30px;
-        width: 400px;
+        width: 390px;
     }
 
     #login .form-login-entity {
@@ -202,18 +214,12 @@
         max-width: 100px;
     }
 
-    #login .div-logo-p {
-        flex-direction: column;
-        margin-top: 30px;
-    }
-
     #login .buttons-container {
-        flex-direction: column;
         margin-top: 20px;
     }
 
     #login .footer-login {
-        margin-top: 40px;
+        margin-top: 30px;
     }
 }
 
@@ -222,7 +228,7 @@
     .login-container {
         justify-content: center;
         margin-left: 0;
-        margin-right: 0;
+        margin-right: 100px;
     }
 
 }

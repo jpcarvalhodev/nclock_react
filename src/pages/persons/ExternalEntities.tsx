@@ -19,6 +19,7 @@ import { SelectFilter } from "../../components/SelectFilter";
 import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 interface DataState {
     externalEntity: ExternalEntity[];
@@ -115,7 +116,7 @@ export const ExternalEntities = () => {
             const extEntIndex = sortedExtEnt.findIndex(extEnt => extEnt.externalEntityID === selectedExternalEntity.externalEntityID);
             setCurrentExtEntIndex(extEntIndex);
         }
-    }, [selectedExternalEntity, externalEntities]); 
+    }, [selectedExternalEntity, externalEntities]);
 
     // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {
@@ -283,9 +284,24 @@ export const ExternalEntities = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntities} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntities} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={externalEntityFields} />
                         <PrintButton data={filteredDataTable} fields={externalEntityFields} />
                     </div>

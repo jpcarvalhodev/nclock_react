@@ -173,6 +173,9 @@ import { usePersons } from '../context/PersonsContext';
 import { KioskOptionsModal } from '../modals/KioskOptions';
 import contact from '../assets/img/navbar/ajuda/contact.png';
 import { ContactModal } from '../modals/ContactModal';
+import counter from '../assets/img/navbar/nkiosk/counter.png';
+import sensor from '../assets/img/navbar/nkiosk/sensor.png';
+import cell from '../assets/img/navbar/nkiosk/cell.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -370,6 +373,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [kioskConfig, setKioskConfig] = useState<KioskConfig>();
 	const [showContactModal, setShowContactModal] = useState(false);
 	const [showKioskDropdown, setShowKioskDropdown] = useState(false);
+	const [userImage, setUserImage] = useState('');
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -435,6 +439,25 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setUser({ name: userName, email: userEmail });
 		}
 	};
+
+	// Função para buscar o user logado e a imagem do perfil
+	useEffect(() => {
+		const preloadImage = (src: string) => {
+			const img = new Image();
+			img.src = src;
+		};
+
+		const fetchAndSetUserImage = () => {
+			const username = localStorage.getItem('username');
+			const findUser = registeredUsers.find(user => user.userName === username); 
+			const imageUrl = findUser?.profileImage ? `${apiService.baseURL?.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
+
+			setUserImage(imageUrl);
+			preloadImage(imageUrl);
+		};
+
+		fetchAndSetUserImage();
+	}, []);
 
 	// Função para carregar os dados das configurações de email
 	const fetchEmailConfig = async () => {
@@ -1009,14 +1032,17 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const KioskOptionalMenuStructure: MenuStructure = {
 		contador: {
 			label: 'Contador Passagem',
+			image: counter,
 			key: 'contador',
 		},
 		sensor: {
 			label: 'Sensor Movimento',
+			image: sensor,
 			key: 'sensor',
 		},
 		fotocelula: {
 			label: 'Fotocélula Segurança',
+			image: cell,
 			key: 'fotocelula',
 		},
 	};
@@ -1103,7 +1129,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			onClick={onClick}
 			style={{ display: 'flex', flexDirection: 'row' }}
 		>
-			<img src={image} alt={alt} />
+			<img src={image} alt={alt} className='menu-item-image' />
 			<span>{label}</span>
 		</li>
 	);
@@ -1123,6 +1149,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					image={menu.image}
 					alt={menu.alt}
 					label={menu.label}
+					className="menu-item"
 				/>
 				{activeMenu === menuKey && menu.submenu && (
 					<div className="submenu">
@@ -1134,7 +1161,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								image={item.image}
 								alt={item.alt}
 								label={item.label}
-								className="menu-item"
+								className="submenu-item"
 							/>
 						))}
 					</div>
@@ -1581,10 +1608,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Rota para verificar as ribbons
 	const currentRoute = window.location.pathname;
-
-	// Função para buscar o user logado e a imagem do perfil
-	const findUser = registeredUsers.find(user => user.userName === localStorage.getItem('username'));
-	const userImage = findUser?.profileImage ? `${apiService.baseURL?.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
 
 	// Função para fechar o modal de licenças
 	const handleCloseLicenseModal = () => {
@@ -2997,7 +3020,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseOver={() => setShowKioskDropdown(true)}
 													onMouseLeave={() => setShowKioskDropdown(false)}
 													show={showKioskDropdown}
-													className='dropdown-kiosk'
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
 														<span className="icon">
@@ -3008,7 +3030,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<Dropdown.Menu>
 														<div style={{ position: 'relative' }}>
 															{Object.keys(KioskOptionalMenuStructure).map((menuKey) => (
-																<div key={menuKey}>{renderMenu(menuKey, KioskOptionalMenuStructure)}</div>
+																<div style={{ fontSize: '0.8rem' }} key={menuKey}>{renderMenu(menuKey, KioskOptionalMenuStructure)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
@@ -3546,14 +3568,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">
-														<img src={settings} alt="botão opções" />
-													</span>
-													<span className="text">Opções</span>
-												</Button>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
-													<span className="icon">
 														<img src={timeZone} alt="botão fusos horários" />
 													</span>
 													<span className="text">Fusos Horários</span>
@@ -3565,6 +3579,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<img src={nacionalities} alt="botão nacionalidades" />
 													</span>
 													<span className="text">Nacionalidades</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
 												</Button>
 											</div>
 										</div>

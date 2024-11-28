@@ -13,6 +13,7 @@ import { useColor } from "../../context/ColorContext";
 import * as apiService from "../../helpers/apiService";
 import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
 import Split from "react-split";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 // Define a interface para os filtros
 interface Filters {
@@ -219,8 +220,18 @@ export const TerminalCloseOpen = () => {
                             </div>
                             <div className="datatable-header">
                                 <div className="buttons-container-others">
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOpenCloseDevices} />
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOpenCloseDevices} />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
+                                    </OverlayTrigger>
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -236,7 +247,12 @@ export const TerminalCloseOpen = () => {
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
                                     />
-                                    <CustomOutlineButton icon="bi-search" onClick={fetchAllDevicesBetweenDates} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-search" onClick={fetchAllDevicesBetweenDates} iconSize='1.1em' />
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                             <div className="deviceMobile">

@@ -1516,10 +1516,10 @@ export const addAccessControl = async (accessControl: Partial<AccessControl>) =>
     return response.json();
 }
 
-export const updateAccessControl = async (accessControl: Partial<AccessControl>, door?: Partial<Doors>) => {
-    let url = `AccessControle/UpdateAccessControle?id=${accessControl.employeesId}`;
-    if (door) {
-        url += `&doorId=${door.id}`;
+export const updateAccessControl = async (accessControl: Partial<AccessControl>) => {
+    let url = `AccessControle/UpdateAccessControle?employeesId=${accessControl.employeesId}`;
+    if (accessControl.doorId) {
+        url += `&doorId=${accessControl.doorId}`;
     }
     const response = await fetchWithAuth(url, {
         method: 'PUT',

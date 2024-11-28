@@ -45,7 +45,7 @@ interface Field {
 
 // Define o componente
 export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...entity, doorTimezoneList: [] });
+    const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -55,17 +55,17 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
-        if (entity.doors && entity.doors.length > 1) {
+        if (entity.acc && entity.acc?.length > 1) {
             setSelectedDoor(null);
-        } else if (entity.doors.length === 1) {
-            setSelectedDoor(entity.doors[0]);
+        } else if (entity.acc?.length === 1) {
+            setSelectedDoor(entity.acc[0]);
             setFormData({
                 ...formData,
-                doorId: entity.doors[0].doorId,
-                timezoneId: entity.doors[0].timezoneId
+                doorId: entity.acc[0].doorId,
+                timezoneId: entity.acc[0].timezoneId
             });
         }
-    }, [entity.doors]);
+    }, [entity.acc]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -111,26 +111,23 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
         if (open) {
             handleOpen();
             fetchDropdownOptions();
+            if (selectedDoor) {
+                setFormData({
+                    ...formData,
+                    doorId: selectedDoor.doorId,
+                    timezoneId: selectedDoor.timezoneId,
+                    acId: selectedDoor.acId
+                });
+            }
         }
-    }, [open]);
-
-    // UseEffect para atualizar a seleção de porta
-    useEffect(() => {
-        if (selectedDoor) {
-            setFormData({
-                ...formData,
-                doorId: selectedDoor.doorId,
-                timezoneId: selectedDoor.timezoneId
-            });
-        }
-    }, [selectedDoor]);
+    }, [open, selectedDoor]);
 
     // Função para lidar com a seleção de porta caso haja mais de uma
     const handleOpen = () => {
-        if (entity.doors && entity.doors.length > 1) {
+        if (entity.acc && entity.acc.length > 1) {
             setShowDoorSelectionModal(true);
-        } else if (entity.doors.length === 1) {
-            setSelectedDoor(entity.doors[0]);
+        } else if (entity.acc.length === 1) {
+            setSelectedDoor(entity.acc[0]);
             setShowDoorUpdateModal(true);
             setShowDoorSelectionModal(false);
         }
@@ -139,11 +136,17 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
     // Função para lidar com a seleção de porta
     const handleDoorSelection = (e: React.ChangeEvent<FormControlElement>) => {
         const doorId = e.target.value;
-        const door = entity.doors.find((d: Doors) => d.doorId === doorId);
+        const door = entity.acc.find((d: any) => d.doorId === doorId);
         if (door) {
             setSelectedDoor(door);
             setShowDoorUpdateModal(true);
             setShowDoorSelectionModal(false);
+            setFormData(prevState => ({
+                ...prevState,
+                doorId: door.doorId,
+                timezoneId: door.timezoneId,
+                acId: door.acId
+            }));
         }
     };
 
@@ -159,6 +162,11 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
         if (selectedDoor) {
             setShowDoorSelectionModal(false);
             setShowDoorUpdateModal(true);
+            setFormData({
+                ...formData,
+                doorId: selectedDoor.doorId,
+                timezoneId: selectedDoor.timezoneId
+            });
         } else {
             toast.warn("Por favor, selecione uma porta antes de continuar.");
         }
@@ -211,6 +219,18 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
         onClose();
     };
 
+    // Função para filtrar os dados antes de enviar
+    const filterDataForSubmission = (data: Partial<T>): Partial<T> => {
+        const acId = data.acc && data.acc.length > 0 ? data.acc[0].acId : undefined;
+        return {
+            acId: acId,
+            employeesId: data.employeesId,
+            doorId: data.doorId,
+            timezoneId: data.timezoneId,
+            createrName: data.createrName
+        } as unknown as Partial<T>;
+    };
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForUpdate = () => {
         if (!isFormValid) {
@@ -222,19 +242,8 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
 
     // Função para salvar os dados
     const handleUpdate = () => {
-        const doorTimeEntry = {
-            doorId: formData.doorId,
-            timezoneId: formData.timezoneId,
-        };
-
-        const { doorId, timezoneId, ...restFormData } = formData;
-
-        const updatedFormData = {
-            ...restFormData,
-            doorTimezoneList: [...(restFormData.doorTimezoneList || []), doorTimeEntry]
-        };
-
-        onUpdate(updatedFormData as Partial<T>);
+        const dataToSubmit = filterDataForSubmission(formData);
+        onUpdate(dataToSubmit as Partial<T>);
     };
 
     return (
@@ -248,7 +257,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                         <Form.Label>Porta</Form.Label>
                         <Form.Control as="select" value={selectedDoor?.doorId || ''} onChange={(e) => handleDoorSelection(e)}>
                             <option>Selecione...</option>
-                            {entity.doors.map((door: Doors, index: number) => (
+                            {entity.acc?.map((door: Doors, index: number) => (
                                 <option key={index} value={door.doorId}>{door.doorName}</option>
                             ))}
                         </Form.Control>
@@ -294,7 +303,6 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                                                 onChange={(e) => handleDropdownChange(field.key, e)}
                                                 style={{ overflowY: 'auto', maxHeight: '200px' }}
                                             >
-                                                <option value="">Selecione...</option>
                                                 {dropdownData[field.key]
                                                     ? dropdownData[field.key]
                                                         .sort((a, b) => {

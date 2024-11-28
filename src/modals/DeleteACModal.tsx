@@ -31,30 +31,26 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
-        if (entity.doors && entity.doors.length > 1) {
-            setSelectedDoor(null);
-        } else if (entity.doors.length === 1) {
-            setSelectedDoor(entity.doors[0]);
-            setFormData({
-                ...formData,
-                doorId: entity.doors[0].doorId,
-            });
-        }
-    }, [entity.doors]);
-
-    // Atualiza o estado do componente ao abrir o modal
-    useEffect(() => {
         if (open) {
             handleOpen();
+            if (entity.acc && entity.acc.length > 1) {
+                setSelectedDoor(null);
+            } else if (entity.acc.length === 1) {
+                setSelectedDoor(entity.acc[0]);
+                setFormData({
+                    ...formData,
+                    doorId: entity.acc[0].doorId,
+                });
+            }
         }
-    }, [open]);
+    }, [open, entity.acc]);
 
     // Função para lidar com a seleção de porta caso haja mais de uma
     const handleOpen = () => {
-        if (entity.doors && entity.doors.length > 1) {
+        if (entity.acc && entity.acc.length > 1) {
             setShowDoorSelectionModal(true);
-        } else if (entity.doors.length === 1) {
-            setSelectedDoor(entity.doors[0]);
+        } else if (entity.acc.length === 1) {
+            setSelectedDoor(entity.acc[0]);
             setShowDoorUpdateModal(true);
             setShowDoorSelectionModal(false);
         }
@@ -73,7 +69,7 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
     // Função para lidar com a seleção de porta
     const handleDoorSelection = (e: React.ChangeEvent<FormControlElement>) => {
         const doorId = e.target.value;
-        const door = entity.doors.find((d: Doors) => d.doorId === doorId);
+        const door = entity.acc.find((d: Doors) => d.doorId === doorId);
         if (door) {
             setSelectedDoor(door);
             setShowDoorUpdateModal(true);
@@ -105,7 +101,7 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
                         <Form.Label>Porta</Form.Label>
                         <Form.Control as="select" value={selectedDoor?.doorId || ''} onChange={(e) => handleDoorSelection(e)}>
                             <option>Selecione...</option>
-                            {entity.doors.sort((a: Doors, b: Doors) => a.doorName.localeCompare(b.doorName)).map((door: Doors, index: number) => (
+                            {entity.acc.sort((a: Doors, b: Doors) => a.doorName.localeCompare(b.doorName)).map((door: Doors, index: number) => (
                                 <option key={index} value={door.doorId}>{door.doorName}</option>
                             ))}
                         </Form.Control>

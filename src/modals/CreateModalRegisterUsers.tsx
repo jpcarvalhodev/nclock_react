@@ -110,7 +110,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
 
     // Função para validar a senha
     const validatePassword = (password: string): boolean => {
-        const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])/;
+        const regex = /^(?=.*[A-Z])(?=.*[!@#$&*-_])/;
         return regex.test(password);
     };
 

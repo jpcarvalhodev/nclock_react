@@ -16,6 +16,7 @@ import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../..
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { PrintButton } from "../../../components/PrintButton";
 import { useLocation } from "react-router-dom";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -269,8 +270,18 @@ export const NkioskPayTerminal = () => {
                                     />
                                 </div>
                                 <div className="buttons-container-others">
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayTerminal} />
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayTerminal} />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    </OverlayTrigger>
                                     <ExportButton allData={payTerminalsWithNames} selectedData={selectedRows} fields={transactionMBFields} />
                                     <PrintButton data={payTerminalsWithNames} fields={transactionMBFields} />
                                 </div>
@@ -288,7 +299,12 @@ export const NkioskPayTerminal = () => {
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
                                     />
-                                    <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                             <div className='table-css'>

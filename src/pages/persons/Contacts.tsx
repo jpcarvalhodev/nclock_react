@@ -21,6 +21,7 @@ import { PersonsContext, PersonsContextType, PersonsProvider } from '../../conte
 import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
 import { toast } from 'react-toastify';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para os filtros
 interface Filters {
@@ -148,7 +149,7 @@ export const Contacts = () => {
             const employeeIndex = sortedEmployees.findIndex(emp => emp.employeeID === selectedEmployee.employeeID);
             setCurrentEmployeeIndex(employeeIndex);
         }
-    }, [selectedEmployee, data.employees]);  
+    }, [selectedEmployee, data.employees]);
 
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -347,9 +348,24 @@ export const Contacts = () => {
                                     />
                                 </div>
                                 <div className="buttons-container">
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Adicionar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                                    </OverlayTrigger>
                                     <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={employeeFields} />
                                     <PrintButton data={filteredDataTable} fields={employeeFields} />
                                 </div>

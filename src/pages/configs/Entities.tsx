@@ -10,7 +10,7 @@ import * as apiService from "../../helpers/apiService";
 import { Entity } from "../../helpers/Types";
 import { toast } from "react-toastify";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { entityFields } from "../../helpers/Fields";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
@@ -153,7 +153,7 @@ export const Entities = () => {
             return prevIndex;
         });
     };
-    
+
     // Define a função de entidade anterior
     const handlePrevEntity = () => {
         setCurrentEntityIndex(prevIndex => {
@@ -164,7 +164,7 @@ export const Entities = () => {
             }
             return prevIndex;
         });
-    };    
+    };
 
     // Define a abertura do modal de apagar entidade
     const handleOpenDeleteModal = (id: string) => {
@@ -252,9 +252,24 @@ export const Entities = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEntity} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEntity} />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        </OverlayTrigger>
                     </div>
                 </div>
             </div>

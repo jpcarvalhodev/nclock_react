@@ -10,7 +10,7 @@ export const ExpandedComponentGeneric = ({ data, fields }: ExpandedComponentProp
         if (typeof value === 'object' && value !== null) {
             return JSON.stringify(value, null, 2);
         } else if (value === undefined) { 
-            return 'N/A';
+            return '';
         }
         return value.toString();
     };

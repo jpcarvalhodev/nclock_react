@@ -7,17 +7,18 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { AuxOut, KioskTransactionCard } from "../../../helpers/Types";
+import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { auxOutFields, transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
 import { useLocation } from "react-router-dom";
 import { AuxOutModal } from "../../../modals/AuxOutModal";
 import { toast } from "react-toastify";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 
 // Define a interface SaveData
 interface SaveData {
@@ -128,8 +129,8 @@ export const NkioskMoveCard = () => {
     const handleOpenAuxOut = async (SaveData: SaveData) => {
         const { deviceSN, auxData } = SaveData;
         try {
-            const data = await apiService.openAuxDoor({deviceSN, auxData});
-            toast.success(data.message ||'Torniquete aberto com sucesso!');
+            const data = await apiService.openAuxDoor({ deviceSN, auxData });
+            toast.success(data.message || 'Torniquete aberto com sucesso!');
         } catch (error) {
             console.error('Erro ao abrir a auxiliar:', error);
         }
@@ -263,7 +264,7 @@ export const NkioskMoveCard = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkioskDisp onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
@@ -280,11 +281,26 @@ export const NkioskMoveCard = () => {
                                     />
                                 </div>
                                 <div className="buttons-container-others">
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                    </OverlayTrigger>
                                     <ExportButton allData={moveCardWithNames} selectedData={selectedRows} fields={transactionCardFields} />
                                     <PrintButton data={moveCardWithNames} fields={transactionCardFields} />
-                                    <CustomOutlineButton icon="bi bi-arrow-bar-down" onClick={openAuxOutModal} />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Abaixar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-bar-down" onClick={openAuxOutModal} />
+                                    </OverlayTrigger>
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -300,7 +316,12 @@ export const NkioskMoveCard = () => {
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
                                     />
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                    >
                                     <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                             <div className='table-css'>

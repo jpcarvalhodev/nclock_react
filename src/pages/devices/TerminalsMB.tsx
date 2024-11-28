@@ -4,7 +4,7 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../../components/CustomStylesDataTable";
-import { Button, Tab, Tabs } from "react-bootstrap";
+import { Button, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { SelectFilter } from "../../components/SelectFilter";
 import { MBDevice } from "../../helpers/Types";
 import { mbDeviceFields } from "../../helpers/Fields";
@@ -301,9 +301,24 @@ export const TerminalsMB = () => {
                                         onChange={e => setFilterText(e.target.value)}
                                     />
                                     <div className="custom-buttons">
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
-                                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={<Tooltip>Atualizar</Tooltip>}
+                                        >
+                                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={<Tooltip>Adicionar</Tooltip>}
+                                        >
+                                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={<Tooltip>Colunas</Tooltip>}
+                                        >
+                                            <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
+                                        </OverlayTrigger>
                                     </div>
                                 </div>
                             </div>

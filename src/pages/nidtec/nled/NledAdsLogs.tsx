@@ -9,6 +9,7 @@ import * as apiService from "../../../helpers/apiService";
 import { Ads } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { adsFields } from "../../../helpers/Fields";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 export const NledAdsLogs = () => {
     const { navbarColor, footerColor } = useColor();
@@ -102,7 +103,12 @@ export const NledAdsLogs = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
+                        </OverlayTrigger>
                     </div>
                 </div>
             </div>

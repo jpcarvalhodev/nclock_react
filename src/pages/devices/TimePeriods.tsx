@@ -12,7 +12,7 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { TimePeriod } from "../../helpers/Types";
 import { timePeriodFields } from "../../helpers/Fields";
 import { DeleteModal } from "../../modals/DeleteModal";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { CreateModalPeriods } from "../../modals/CreateModalPeriods";
 import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
 import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
@@ -285,9 +285,24 @@ export const TimePeriods = () => {
                                 />
                             </div>
                             <div className="buttons-container-others">
-                                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPeriods} />
-                                <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPeriods} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip>Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
                             </div>
                         </div>
                         <div className='table-css'>

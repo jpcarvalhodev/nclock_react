@@ -83,7 +83,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                 setIsCheckVisible(false);
                 showModal();
             } else {
-                toast.warn('Chave inválida, tente novamente.');
+                toast.warn('Password inválida, tente novamente.');
             }
         } catch (error) {
             console.error('Erro ao verificar chave:', error);
@@ -258,18 +258,18 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         <div>
             <Modal show={isCheckVisible} onHide={onClose} backdrop="static">
                 <Modal.Header closeButton>
-                    <Modal.Title>Inserir Chave</Modal.Title>
+                    <Modal.Title>Inserir Password</Modal.Title>
                 </Modal.Header>
                 <InputGroup className='license-check-modal'>
                     <FormControl
-                        placeholder="Insira a chave de licenciamento"
+                        placeholder="Insira a password de licenciamento"
                         value={key}
                         onChange={handleKeyChange}
                         type='password'
                     />
                 </InputGroup>
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-                    <Button style={{ width: '40%' }} variant="outline-primary" onClick={verifyKey}>Verificar Chave</Button>
+                    <Button style={{ width: '40%' }} variant="outline-primary" onClick={verifyKey}>Verificar Password</Button>
                 </div>
             </Modal>
             <Modal show={isModalVisible} onHide={handleClose} backdrop="static" size='xl'>

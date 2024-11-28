@@ -134,6 +134,7 @@ import { ForgotPassword } from './pages/login&forgot/ForgotPassword';
 import { ResetPassword } from './pages/login&forgot/PasswordReset';
 import { NviewOnlineCameras } from './pages/sisnid/nview/NviewOnlineCameras';
 import { Entities } from './pages/configs/Entities';
+import { CustomSpinner } from './components/CustomSpinner';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -162,9 +163,7 @@ function AnimatedRoutes() {
     <div>
       {loading && (
         <div className="loading-spinner">
-          <Spinner animation="border" role="status" className="large-spinner">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+          <CustomSpinner />
         </div>
       )}
       <TransitionGroup>

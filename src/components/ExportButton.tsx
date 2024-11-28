@@ -3,8 +3,8 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { CustomOutlineButton } from './CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
 import { PDFDocument } from './PDFDocument';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para os itens de dados
 interface DataItem {
@@ -203,8 +203,13 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
 
     return (
         <Dropdown>
-            <Dropdown.Toggle as={CustomOutlineButton} icon='bi-file-earmark-arrow-down' id="dropdown-basic" iconSize='1.1em' className="custom-dropdown-toggle">
-            </Dropdown.Toggle>
+            <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Exportar</Tooltip>}
+            >
+                <Dropdown.Toggle as={CustomOutlineButton} icon='bi-file-earmark-arrow-down' id="dropdown-basic" iconSize='1.1em' className="custom-dropdown-toggle">
+                </Dropdown.Toggle>
+            </OverlayTrigger>
             <Dropdown.Menu>
                 <Dropdown.Item onClick={() => exportToCSV(dataToExport, fileName, fields)}>Exportar em CSV</Dropdown.Item>
                 <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields)}>Exportar em XLSX</Dropdown.Item>
