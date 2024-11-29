@@ -206,21 +206,21 @@ export const NclockAll = () => {
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
                                         />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
                                         />
                                     </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
-                                    <PrintButton data={filteredDataTable} fields={employeeAttendanceTimesFields} />
+                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeAttendanceTimesFields} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeAttendanceTimesFields} />
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -237,8 +237,8 @@ export const NclockAll = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchAllBetweenDates} iconSize='1.1em' />
                                     </OverlayTrigger>

@@ -283,11 +283,26 @@ export const NclockRequests = () => {
         name: 'Ações',
         cell: (row: EmployeeAttendanceTimes) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAssiduity([row])} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.attendanceTimeId)}>
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAssiduity([row])} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.attendanceTimeId)}>
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: EmployeeAttendanceTimes) => row.employeeID,
@@ -319,28 +334,28 @@ export const NclockRequests = () => {
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
                                         />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Adicionar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em'
                                         />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
                                         />
                                     </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={employeeAttendanceTimesFields} />
-                                    <PrintButton data={filteredDataTable} fields={employeeAttendanceTimesFields} />
+                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeAttendanceTimesFields} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeAttendanceTimesFields} />
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -357,8 +372,8 @@ export const NclockRequests = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchRequestsBetweenDates} iconSize='1.1em' />
                                     </OverlayTrigger>

@@ -229,7 +229,8 @@ export const NkioskListMovements = () => {
         selectedCount: number;
         selectedRows: KioskTransactionCard[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -253,7 +254,8 @@ export const NkioskListMovements = () => {
                     return value.toString().toLowerCase().includes(filterText.toLowerCase());
                 }
             })
-        );
+        )
+        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.dataRecolha).getTime());
 
     // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
     const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {
@@ -299,16 +301,22 @@ export const NkioskListMovements = () => {
     const totalAmount = filteredDataTable.length;
 
     // Função para gerar os dados com nomes substituídos para o export/print
-    const moveCardKioskWithNames = listMovements.map(transaction => {
-
+    const transformTransactionWithNames = (transaction: { deviceSN: string; }) => {
+    
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
         const deviceName = deviceMatch?.deviceName || 'Sem Dados';
-
+    
         return {
             ...transaction,
             deviceSN: deviceName,
         };
-    });
+    };
+
+    // Dados com nomes substituídos para o export/print
+    const listMoveWithNames = listMovements.map(transformTransactionWithNames);
+
+    // Transforma as linhas selecionadas com nomes substituídos
+    const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
     return (
         <TerminalsProvider>
@@ -335,19 +343,19 @@ export const NkioskListMovements = () => {
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={moveCardKioskWithNames} selectedData={selectedRows} fields={combinedMovements} />
-                                    <PrintButton data={moveCardKioskWithNames} fields={combinedMovements} />
+                                    <ExportButton allData={listMoveWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={combinedMovements} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={combinedMovements} />
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -364,8 +372,8 @@ export const NkioskListMovements = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
                                     </OverlayTrigger>

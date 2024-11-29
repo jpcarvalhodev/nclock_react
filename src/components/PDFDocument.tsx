@@ -94,16 +94,20 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
         const currentRoute = window.location.pathname;
         const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
         const videoporteiro = currentRoute.endsWith('movevp') ? 'Video Porteiro' : '';
-    
+
         const validDate = (dateString: string | Date) => {
             const date = new Date(dateString);
             return date.getTime() ? date.toLocaleString() : '';
         };
-    
+
+        if (fieldKey === 'eventTime' && currentRoute.endsWith('nkioskcounter')) {
+            return item[fieldKey];
+        }
+
         if (fieldKey === 'eventTime' && currentRoute.endsWith('movevp')) {
             return item[fieldKey];
         }
-    
+
         switch (fieldKey) {
             case 'birthday':
             case 'admissionDate':
@@ -124,6 +128,7 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
             case 'dataFimRecolha':
             case 'createdTime':
             case 'dataCreate':
+            case 'createdDate':
                 return validDate(item[fieldKey]);
             case 'status':
             case 'statusEmail':
@@ -179,7 +184,7 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
             default:
                 return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
         }
-    };    
+    };
 
     const maxColsPerPage = 8;
     const maxRowsPerPage = 20;

@@ -19,7 +19,6 @@ import { SelectFilter } from '../../components/SelectFilter';
 import * as apiService from "../../helpers/apiService";
 import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
-import { set } from 'date-fns';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para os filtros
@@ -42,6 +41,7 @@ export const Departments = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Department> | null>(null);
     const [currentDepartmentIndex, setCurrentDepartmentIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<Department[]>([]);
 
     // Busca os departamentos
     const fetchAllDepartments = async () => {
@@ -128,12 +128,15 @@ export const Departments = () => {
         fetchAllDepartments();
     };
 
-    // Filtra os departamentos
-    const filteredItems = departments.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
+    // Função para selecionar as linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Department[];
+    }) => {
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => a.code - b.code);
+        setSelectedRows(sortedSelectedRows);
+    };
 
     // Seleciona o departamento anterior
     const handleNextDepartment = () => {
@@ -251,11 +254,26 @@ export const Departments = () => {
         name: 'Ações',
         cell: (row: Department) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDepartment(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentID)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDepartment(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.departmentID)} >
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: Department) => row.departmentID,
@@ -293,25 +311,25 @@ export const Departments = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshDepartments} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Adicionar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
-                        <ExportButton allData={departmentWithNames} selectedData={filteredItems} fields={departmentFields} />
-                        <PrintButton data={departmentWithNames} fields={departmentFields} />
+                        <ExportButton allData={departmentWithNames} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={departmentFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={departmentFields} />
                     </div>
                 </div>
                 <CreateModalDeptGrp
@@ -356,6 +374,7 @@ export const Departments = () => {
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
                         selectableRows
+                        onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={(props) => (
                             <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />

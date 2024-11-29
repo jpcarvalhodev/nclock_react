@@ -8,6 +8,7 @@ import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { AttendanceProvider } from '../context/MovementContext';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -271,8 +272,13 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   return (
     <AttendanceProvider>
       <Box className="TreeViewContainer">
-      <p className='treeview-title-text' style={{ color: '#0050a0' }}>Filtros</p>
-      <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+        <p className='treeview-title-text' style={{ color: '#0050a0' }}>Filtros</p>
+        <OverlayTrigger
+          placement="right"
+          overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+        >
+          <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+        </OverlayTrigger>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect={true}

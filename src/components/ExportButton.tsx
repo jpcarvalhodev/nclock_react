@@ -38,6 +38,10 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
         return date.getTime() ? date.toLocaleString() : '';
     };
 
+    if (fieldKey === 'eventTime' && currentRoute.endsWith('nkioskcounter')) {
+        return item[fieldKey];
+    }
+
     if (fieldKey === 'eventTime' && currentRoute.endsWith('movevp')) {
         return item[fieldKey];
     }
@@ -62,6 +66,7 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
         case 'dataFimRecolha':
         case 'createdTime':
         case 'dataCreate':
+        case 'createdDate':
             return validDate(item[fieldKey]);
         case 'status':
         case 'statusEmail':
@@ -204,8 +209,8 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
     return (
         <Dropdown>
             <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip>Exportar</Tooltip>}
+                placement="left"
+                overlay={<Tooltip className="custom-tooltip">Exportar</Tooltip>}
             >
                 <Dropdown.Toggle as={CustomOutlineButton} icon='bi-file-earmark-arrow-down' id="dropdown-basic" iconSize='1.1em' className="custom-dropdown-toggle">
                 </Dropdown.Toggle>

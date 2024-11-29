@@ -221,14 +221,14 @@ export const TerminalCloseOpen = () => {
                             <div className="datatable-header">
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOpenCloseDevices} />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                     </OverlayTrigger>
@@ -248,8 +248,8 @@ export const TerminalCloseOpen = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchAllDevicesBetweenDates} iconSize='1.1em' />
                                     </OverlayTrigger>

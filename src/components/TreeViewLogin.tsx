@@ -9,6 +9,7 @@ import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { useLocation } from 'react-router-dom';
 import { set } from 'date-fns';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -94,7 +95,7 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const usersMap = new Map();
-    
+
         logData.forEach(log => {
             const userName = log.userName || 'Sem Nome';
             if (!usersMap.has(userName)) {
@@ -115,7 +116,7 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
         usersMap.forEach((user) => {
             user.children.sort((a: { createdDate: string | number | Date; }, b: { createdDate: string | number | Date; }) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
         });
-    
+
         const treeItems = [
             {
                 id: 'nidgroup',
@@ -193,12 +194,17 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
         if (selectionChangedRef.current) {
             selectionChangedRef.current = false;
         }
-    }, [selectedDevicesIds]); 
+    }, [selectedDevicesIds]);
 
     return (
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: '#000000' }}>Filtros</p>
-            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+            >
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            </OverlayTrigger>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

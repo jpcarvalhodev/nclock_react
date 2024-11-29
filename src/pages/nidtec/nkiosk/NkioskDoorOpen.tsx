@@ -15,8 +15,8 @@ import * as apiService from "../../../helpers/apiService";
 import { manualOpenDoorFields } from "../../../helpers/Fields";
 import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
 import Split from "react-split";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 
 // Define a interface para os filtros
 interface Filters {
@@ -42,7 +42,7 @@ export const NkioskDoorOpen = () => {
     pastDate.setDate(currentDate.getDate() - 30);
     const [manualOpenDoor, setManualOpenDoor] = useState<ManualOpenDoor[]>([]);
     const [filters, setFilters] = useState<Filters>({});
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nomeResponsavel', 'nomeEvento', 'deviceName', 'doorName', 'observacoes']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nomeResponsavel', 'deviceName', 'doorName', 'observacoes']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [selectedManualOpen, setSelectedManualOpen] = useState<ManualOpenDoor | null>(null);
     const [loadingManualOpen, setLoadingManualOpen] = useState(false);
@@ -104,7 +104,7 @@ export const NkioskDoorOpen = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['createdDate', 'nomeResponsavel', 'nomeEvento', 'deviceName', 'doorName', 'observacoes']);
+        setSelectedColumns(['createdDate', 'nomeResponsavel', 'deviceName', 'doorName', 'observacoes']);
     };
 
     // Função para alternar a visibilidade das colunas
@@ -221,7 +221,7 @@ export const NkioskDoorOpen = () => {
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                        <TreeViewDataNkioskDisp onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text" style={{ color: '#009739' }}>
@@ -238,21 +238,21 @@ export const NkioskDoorOpen = () => {
                                 />
                                 <div className="custom-buttons">
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAllManualOpen} />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                     </OverlayTrigger>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip>Abrir</Tooltip>}
+                                            placement="left"
+                                            overlay={<Tooltip className="custom-tooltip">Abrir</Tooltip>}
                                         >
                                             <CustomOutlineButton icon="bi bi-power" onClick={handleOpenManualDoor} iconSize='1.1em' />
                                         </OverlayTrigger>
@@ -276,8 +276,8 @@ export const NkioskDoorOpen = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchManualOpenBetweenDates} iconSize='1.1em' />
                                     </OverlayTrigger>

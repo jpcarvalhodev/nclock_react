@@ -117,7 +117,8 @@ export const LoginLogs = () => {
         selectedCount: number;
         selectedRows: Logs[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -145,7 +146,8 @@ export const LoginLogs = () => {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
             }
         })
-    );
+    )
+    .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<Logs>[] = logsFields
@@ -198,19 +200,19 @@ export const LoginLogs = () => {
                             </div>
                             <div className="buttons-container-others">
                                 <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip>Atualizar</Tooltip>}
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLogs} />
                                 </OverlayTrigger>
                                 <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip>Colunas</Tooltip>}
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={logsFields} />
-                                <PrintButton data={filteredDataTable} fields={logsFields} />
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={logsFields} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={logsFields} />
                             </div>
                             <div className="date-range-search">
                                 <input
@@ -227,8 +229,8 @@ export const LoginLogs = () => {
                                     className='search-input'
                                 />
                                 <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip>Buscar</Tooltip>}
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-search" onClick={fetchLogsBetweenDates} iconSize='1.1em' />
                                 </OverlayTrigger>

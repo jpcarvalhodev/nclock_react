@@ -9,6 +9,7 @@ import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { useLocation } from 'react-router-dom';
 import { set } from 'date-fns';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -198,7 +199,12 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
     return (
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: '#000000' }}>Filtros</p>
-            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+            >
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            </OverlayTrigger>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

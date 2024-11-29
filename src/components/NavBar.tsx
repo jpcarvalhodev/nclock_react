@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { EmailUser, Entity, KioskConfig } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -373,11 +373,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [kioskConfig, setKioskConfig] = useState<KioskConfig>();
 	const [showContactModal, setShowContactModal] = useState(false);
 	const [showKioskDropdown, setShowKioskDropdown] = useState(false);
+	const [showUserDropdown, setShowUserDropdown] = useState(false);
 	const [userImage, setUserImage] = useState('');
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
-		Nclock: setShowNclockRibbon, Naccess: setShowNaccessRibbon, Nvisitor: setShowNvisitorRibbon, Npark: setShowNparkRibbon, Ndoor: setShowNdoorRibbon,
+		Pessoas: setShowPessoasRibbon, Dispositivos: setShowDispositivosRibbon, Configurações: setShowConfiguracaoRibbon, Ajuda: setShowAjudaRibbon, Nclock: setShowNclockRibbon, Naccess: setShowNaccessRibbon, Nvisitor: setShowNvisitorRibbon, Npark: setShowNparkRibbon, Ndoor: setShowNdoorRibbon,
 		Npatrol: setShowNpatrolRibbon, Ncard: setShowNcardRibbon, Nview: setShowNviewRibbon, Nsecur: setShowNsecurRibbon, Nsoftware: setShowNsoftwareRibbon,
 		Nsystem: setShowNsystemRibbon, Napp: setShowNappRibbon, Ncyber: setShowNcyberRibbon, Ndigital: setShowNdigitalRibbon, Nserver: setShowNserverRibbon,
 		Naut: setShowNautRibbon, Nequip: setShowNequipRibbon, Nproject: setShowNprojectRibbon, Ncount: setShowNcountRibbon, Nbuild: setShowNbuildRibbon, Ncaravan: setShowNcaravanRibbon, Nmechanic: setShowNmechanicRibbon,
@@ -449,7 +450,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 		const fetchAndSetUserImage = () => {
 			const username = localStorage.getItem('username');
-			const findUser = registeredUsers.find(user => user.userName === username); 
+			const findUser = registeredUsers.find(user => user.userName === username);
 			const imageUrl = findUser?.profileImage ? `${apiService.baseURL?.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
 
 			setUserImage(imageUrl);
@@ -457,7 +458,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		};
 
 		fetchAndSetUserImage();
-	}, []);
+	}, [license]);
 
 	// Função para carregar os dados das configurações de email
 	const fetchEmailConfig = async () => {
@@ -697,14 +698,17 @@ export const NavBar = ({ style }: NavBarProps) => {
 	};
 
 	// Função para lidar com o clique no ribbon
-	const handleRibbonClick = (tabName: RibbonName) => {
-		if (tabName in ribbons) {
-			const [setRibbon, ribbonName] = ribbons[tabName];
-
+	const handleRibbonClick = (ribbonName: RibbonName) => {
+		if (activeTab === ribbonName) {
+			const [setRibbon] = ribbons[ribbonName as RibbonName];
+			setRibbon(false);
+			setActiveTab('');
+		} else {
 			Object.keys(ribbons).forEach((key) => {
 				const [setOtherRibbon] = ribbons[key as RibbonName];
 				setOtherRibbon(false);
 			});
+			const [setRibbon] = ribbons[ribbonName as RibbonName];
 			setRibbon(true);
 			setActiveTab(ribbonName);
 		}
@@ -1123,14 +1127,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 	}, [license]);
 
 	// Define o componente do item de menu
-	const MenuItem = ({ active, onClick, image, alt, label, className }: MenuItem) => (
+	const MenuItem = ({ active, onClick, image, alt, label }: MenuItem) => (
 		<li
 			className={`image-text ${active ? 'active' : ''}`}
 			onClick={onClick}
 			style={{ display: 'flex', flexDirection: 'row' }}
 		>
 			<img src={image} alt={alt} className='menu-item-image' />
-			<span>{label}</span>
+			<span className='menu-item-text'>{label}</span>
 		</li>
 	);
 
@@ -1620,7 +1624,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 			<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
 				<div className="nav-container">
 					<div className='logos'>
-						<Dropdown onMouseOver={() => setShowDropdown(true)} onMouseLeave={() => setShowDropdown(false)} show={showDropdown} className='dropdown-icon'>
+						<Dropdown onMouseOver={() => setShowDropdown(true)}
+							onMouseLeave={() => setTimeout(() => setShowDropdown(false), 300)}
+							show={showDropdown}
+							className='dropdown-icon'
+						>
 							<Dropdown.Toggle variant="basic" id="dropdown-basic">
 								<span className="logo">NIDGROUP</span>
 							</Dropdown.Toggle>
@@ -1649,7 +1657,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={() => handleRibbonClick('configuracao')}>CONFIGURAÇÃO</a>
 						</li>
 						<div className='logos'>
-							<Dropdown onMouseOver={() => setShowSoftwaresDropdown(true)} onMouseLeave={() => setShowSoftwaresDropdown(false)} show={showSoftwaresDropdown} className='dropdown-icon'>
+							<Dropdown
+								onMouseOver={() => setShowSoftwaresDropdown(true)}
+								onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 300)}
+								show={showSoftwaresDropdown}
+								className='dropdown-icon'
+							>
 								<Dropdown.Toggle variant="basic" id="dropdown-basic">
 									<span className="logoNG">NSOFTWARES</span>
 								</Dropdown.Toggle>
@@ -1665,7 +1678,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</li>
 					</ul>
 					<div className="user-section">
-						<Dropdown className='dropdown-icon'>
+						<Dropdown
+							onMouseOver={() => setShowUserDropdown(true)}
+							onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 300)}
+							show={showUserDropdown}
+							className='dropdown-icon'
+						>
 							<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
 								<span className='user-info'><i className="bi bi-door-open" style={{ marginRight: 10 }}></i>{user.name}</span>
 							</Dropdown.Toggle>
@@ -1985,31 +2003,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
-									{(!isMobile || visibleGroup === 'logs naccess') && (
-										<div className="btn-group" role="group">
-											<div className='icon-text-informacoes'>
-												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de logins" />
-													</span>
-													<span className="text">Logins</span>
-												</Link>
-											</div>
-											<div className='icon-text-informacoes'>
-												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de histórico" />
-													</span>
-													<span className="text">Histórico</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('logs naccess')}>
-										<span className="title">Logs</span>
-									</div>
-								</div>
-								<div className="group">
 									{(!isMobile || visibleGroup === 'alertas naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-informacoes'>
@@ -2226,31 +2219,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
-									{(!isMobile || visibleGroup === 'logs naccess') && (
-										<div className="btn-group" role="group">
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de logins" />
-													</span>
-													<span className="text">Logins</span>
-												</Link>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de histórico" />
-													</span>
-													<span className="text">Histórico</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('logs naccess')}>
-										<span className="title">Logs</span>
-									</div>
-								</div>
-								<div className="group">
 									{(!isMobile || visibleGroup === 'alertas naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2383,31 +2351,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
-									{(!isMobile || visibleGroup === 'logs nvisitor') && (
-										<div className="btn-group" role="group">
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de logins" />
-													</span>
-													<span className="text">Logins</span>
-												</Link>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de histórico" />
-													</span>
-													<span className="text">Histórico</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('logs nvisitor')}>
-										<span className="title">Logs</span>
-									</div>
-								</div>
-								<div className="group">
 									{(!isMobile || visibleGroup === 'alertas nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2534,31 +2477,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
-									{(!isMobile || visibleGroup === 'logs nview') && (
-										<div className="btn-group" role="group">
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de logins" />
-													</span>
-													<span className="text">Logins</span>
-												</Link>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de histórico" />
-													</span>
-													<span className="text">Histórico</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('logs nview')}>
-										<span className="title">Logs</span>
-									</div>
-								</div>
-								<div className="group">
 									{(!isMobile || visibleGroup === 'alertas nview') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2674,31 +2592,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('alarmes nsecur')}>
 										<span className="title">Alarmes</span>
-									</div>
-								</div>
-								<div className="group">
-									{(!isMobile || visibleGroup === 'logs nsecur') && (
-										<div className="btn-group" role="group">
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de logins" />
-													</span>
-													<span className="text">Logins</span>
-												</Link>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de histórico" />
-													</span>
-													<span className="text">Histórico</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('logs nsecur')}>
-										<span className="title">Logs</span>
 									</div>
 								</div>
 								<div className="group">
@@ -2872,7 +2765,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={intercom} alt="botão vídeo porteiro" />
 													</span>
-													<span className="text">Videoporteiro</span>
+													<span className="text">Video Porteiro</span>
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
@@ -2907,12 +2800,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="/nkiosk/nkioskcounter" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
+												<Link to="/nkiosk/nkioskcounter" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={count} alt="botão contador" />
 													</span>
 													<span className="text">Contador</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nkiosk/nkioskoccurrences" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
@@ -2943,31 +2836,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('zonas nkiosk')}>
 										<span className="title">Zonas</span>
-									</div>
-								</div>
-								<div className="group">
-									{(!isMobile || visibleGroup === 'logs nkiosk') && (
-										<div className="btn-group" role="group">
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de logins" />
-													</span>
-													<span className="text">Logins</span>
-												</Link>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de histórico" />
-													</span>
-													<span className="text">Histórico</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('logs nkiosk')}>
-										<span className="title">Logs</span>
 									</div>
 								</div>
 								<div className="group">
@@ -3018,7 +2886,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowKioskDropdown(true)}
-													onMouseLeave={() => setShowKioskDropdown(false)}
+													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 300)}
 													show={showKioskDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
@@ -3028,9 +2896,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<span className="text">Opcionais</span>
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
-														<div style={{ position: 'relative' }}>
+														<div>
 															{Object.keys(KioskOptionalMenuStructure).map((menuKey) => (
-																<div style={{ fontSize: '0.8rem' }} key={menuKey}>{renderMenu(menuKey, KioskOptionalMenuStructure)}</div>
+																<div key={menuKey}>{renderMenu(menuKey, KioskOptionalMenuStructure)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
@@ -3113,39 +2981,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('anuncios nled')}>
 										<span className="title">Anúncios</span>
-									</div>
-								</div>
-								<div className="group">
-									{(!isMobile || visibleGroup === 'logs nled') && (
-										<div className="btn-group" role="group">
-											<div className='icon-text-pessoas'>
-												<Button /* to="" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
-													<span className="icon">
-														<img src={logs} alt="botão log de publicidade" />
-													</span>
-													<span className="text">Publicidade</span>
-												</Button>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de logins" />
-													</span>
-													<span className="text">Logins</span>
-												</Link>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={logs} alt="botão log de histórico" />
-													</span>
-													<span className="text">Histórico</span>
-												</Link>
-											</div>
-										</div>
-									)}
-									<div className="title-container" onClick={() => toggleGroupVisibility('logs nled')}>
-										<span className="title">Logs</span>
 									</div>
 								</div>
 								<div className="group">
@@ -3648,6 +3483,22 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'actividade configuracoes') && (
 										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/logs/loginlogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={logs} alt="botão log de logins" />
+													</span>
+													<span className="text">Logins</span>
+												</Link>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/logs/historylogs" type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={logs} alt="botão log de histórico" />
+													</span>
+													<span className="text">Histórico</span>
+												</Link>
+											</div>
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button ribbon-button-pessoas" disabled>
 													<span className="icon">

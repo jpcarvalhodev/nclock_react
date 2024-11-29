@@ -1104,8 +1104,12 @@ export const deleteEmployeeCard = async (cardId: string) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DAS PUBLICIDADES////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export const fetchAllAds = async () => {
-    const response = await fetchWithAuth(`Publicidade`);
+export const fetchAllAds = async (startDate?: string, endDate?: string) => {
+    let url = `Publicidade`;
+    if (startDate && endDate) {
+        url += `?startTime=${startDate}&endTime=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -1814,42 +1818,11 @@ export const deleteOccurrence = async (id: string) => {
 
 
 export const fetchAllContador = async (startDate?: string, endDate?: string) => {
-    let url = `KioskTransaction/GetAllContadorMoedeiro`;
+    let url = `KioskTransaction/GetKioskAllContador`;
     if (startDate && endDate) {
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
-    if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message);
-        throw new Error;
-    }
-    return response.json();
-}
-
-export const startContador = async (contador: RecolhaMoedeiroEContador) => {
-    const response = await fetchWithAuth(`KioskTransaction/StartContadorMoedasAsync`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(contador)
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message);
-        throw new Error;
-    }
-    return response.json();
-}
-
-export const endContador = async (contadorId: string) => {
-    const response = await fetchWithAuth(`KioskTransaction/EndContadorMoedasAsync?recolhaId=${contadorId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);

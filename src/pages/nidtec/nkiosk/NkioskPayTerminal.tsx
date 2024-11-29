@@ -149,7 +149,8 @@ export const NkioskPayTerminal = () => {
         selectedCount: number;
         selectedRows: KioskTransactionMB[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -172,7 +173,8 @@ export const NkioskPayTerminal = () => {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
             }
         })
-    );
+    )
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -231,20 +233,26 @@ export const NkioskPayTerminal = () => {
     }, 0);
 
     // Função para gerar os dados com nomes substituídos para o export/print
-    const payTerminalsWithNames = payTerminal.map(transaction => {
+    const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {
         const terminalMatch = terminalData.find(terminal => terminal.id === transaction.tpId);
         const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
-
+    
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
         const deviceName = deviceMatch?.deviceName || 'Sem Dados';
-
+    
         return {
             ...transaction,
             tpId: terminalName,
             deviceSN: deviceName,
             amount: `${transaction.amount}€`,
         };
-    });
+    };
+
+    // Transforma os dados dos pagamentos com nomes substituídos
+    const payTerminalsWithNames = payTerminal.map(transformTransactionWithNames);
+
+    // Transforma as linhas selecionadas com nomes substituídos
+    const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
     return (
         <TerminalsProvider>
@@ -271,19 +279,19 @@ export const NkioskPayTerminal = () => {
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayTerminal} />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={payTerminalsWithNames} selectedData={selectedRows} fields={transactionMBFields} />
-                                    <PrintButton data={payTerminalsWithNames} fields={transactionMBFields} />
+                                    <ExportButton allData={payTerminalsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : payTerminalsWithNames} fields={transactionMBFields} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : payTerminalsWithNames} fields={transactionMBFields} />
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -300,8 +308,8 @@ export const NkioskPayTerminal = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Buscar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
                                     </OverlayTrigger>

@@ -41,6 +41,7 @@ export const Zones = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Zone>>();
     const [currentZoneIndex, setCurrentZoneIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<Zone[]>([]);
 
     // Função para buscar as zonas
     const fetchAllZones = async () => {
@@ -130,13 +131,6 @@ export const Zones = () => {
         setShowDeleteModal(true);
     };
 
-    // Filtra as zonas
-    const filteredItems = zones.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
-
     // Função para alternar a visibilidade das colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -144,6 +138,15 @@ export const Zones = () => {
         } else {
             setSelectedColumns([...selectedColumns, columnName]);
         }
+    };
+
+    // Função para lidar com a seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Zone[];
+    }) => {
+        setSelectedRows(state.selectedRows);
     };
 
     // Função para resetar as colunas
@@ -240,11 +243,26 @@ export const Zones = () => {
         name: 'Ações',
         cell: (row: Zone) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditZone(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneID)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditZone(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zoneID)} >
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: Zone) => row.zoneID,
@@ -270,25 +288,25 @@ export const Zones = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshZones} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Adicionar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={zoneFields} />
-                        <PrintButton data={filteredDataTable} fields={zoneFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={zoneFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={zoneFields} />
                     </div>
                 </div>
                 <CreateModalZones
@@ -331,6 +349,7 @@ export const Zones = () => {
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
                         selectableRows
+                        onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."

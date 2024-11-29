@@ -8,6 +8,7 @@ import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { useLocation } from 'react-router-dom';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -73,7 +74,6 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [deviceData, setDeviceData] = useState<Devices[]>([]);
-    const [mbData, setMBData] = useState<MBDevice[]>([]);
     const [treeViewTitleColor, setTreeViewTitleColor] = useState('#009739');
     const location = useLocation();
     const selectionChangedRef = { current: false };
@@ -88,20 +88,9 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
         }
     };
 
-    // Função para buscar os dados dos dispositivos multibanco
-    const fetchAllMBDevices = async () => {
-        try {
-            const deviceData = await apiService.fetchAllMBDevices();
-            setMBData(deviceData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos dispositivos:', error);
-        }
-    }
-
     // Busca os dados ao carregar o componente
     useEffect(() => {
         fetchAllData();
-        fetchAllMBDevices();
     }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
@@ -109,12 +98,6 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
         const buildDeviceTree = deviceData.map(device => ({
             id: device.serialNumber,
             label: device.deviceName || 'Sem Nome',
-            children: []
-        }));
-
-        const buildTerminalTree = mbData.map(device => ({
-            id: device.id,
-            label: device.nomeQuiosque || 'Sem Nome',
             children: []
         }));
 
@@ -127,12 +110,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
                         id: 'dispositivos',
                         label: 'DISPOSITIVOS',
                         children: buildDeviceTree
-                    },
-                    {
-                        id: 'terminais',
-                        label: 'TERMINAIS',
-                        children: buildTerminalTree
-                    },
+                    }
                 ],
             },
         ];
@@ -140,7 +118,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [deviceData, mbData]);
+    }, [deviceData]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
@@ -206,12 +184,17 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
     useEffect(() => {
         const newColor = location.pathname.endsWith('terminalcloseopen') ? '#000000' : '#009739';
         setTreeViewTitleColor(newColor);
-    }, [location.pathname]);  
+    }, [location.pathname]);
 
     return (
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: treeViewTitleColor }}>Filtros</p>
-            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+            >
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            </OverlayTrigger>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

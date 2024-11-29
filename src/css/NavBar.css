@@ -282,8 +282,7 @@
 }
 
 .user-info:hover {
-    border: 1px solid white;
-    border-radius: 5px 5px 0 0;
+    border: none;
 }
 
 .profile-avatar {
@@ -292,10 +291,7 @@
 
 .image-text {
     align-items: center;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin: 5px;
     cursor: pointer;
 }
 
@@ -349,12 +345,15 @@
 }
 
 .submenu>div {
-    padding: 8px 16px;
     cursor: pointer;
 }
 
 .menu-item-image {
     width: 30px;
+}
+
+.menu-item-text {
+    font-size: 14px;
 }
 
 #dropdown-basic::after,

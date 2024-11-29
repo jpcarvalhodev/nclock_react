@@ -13,7 +13,7 @@ import { cameraFields } from "../../../helpers/Fields";
 import { toast } from "react-toastify";
 import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal";
 import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DeleteModal } from "../../../modals/DeleteModal";
 
 export const NviewOnlineCameras = () => {
@@ -152,7 +152,7 @@ export const NviewOnlineCameras = () => {
         setSelectedCameras(null);
         setShowUpdateModal(false);
     }
-    
+
     // Seleciona a entidade anterior
     const handleNextCamera = () => {
         const sortedCameras = cameras.sort((a: Cameras, b: Cameras) => a.numeroCamera - b.numeroCamera);
@@ -233,11 +233,26 @@ export const NviewOnlineCameras = () => {
         name: 'Ações',
         cell: (row: Cameras) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCameras(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCameras(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: Cameras) => row.id,
@@ -262,9 +277,27 @@ export const NviewOnlineCameras = () => {
                         />
                     </div>
                     <div className="buttons-container-others">
-                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCameras} />
-                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        <OverlayTrigger
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCameras} iconSize='1.1em'
+                            />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em'
+                            />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em'
+                            />
+                        </OverlayTrigger>
                     </div>
                 </div>
                 <div className='table-css'>

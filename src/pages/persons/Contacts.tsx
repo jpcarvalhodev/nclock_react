@@ -192,7 +192,8 @@ export const Contacts = () => {
         selectedCount: number;
         selectedRows: Employee[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => parseInt(a.enrollNumber) - parseInt(b.enrollNumber));
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Define a função de duplicar contactos
@@ -313,11 +314,26 @@ export const Contacts = () => {
         name: 'Ações',
         cell: (row: Employee) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeID)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.employeeID)} >
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: Employee) => row.employeeID,
@@ -349,25 +365,25 @@ export const Contacts = () => {
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Adicionar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                                     </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={employeeFields} />
-                                    <PrintButton data={filteredDataTable} fields={employeeFields} />
+                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeFields} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeFields} />
                                 </div>
                             </div>
                             <DataTable

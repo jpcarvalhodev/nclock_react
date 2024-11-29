@@ -163,7 +163,8 @@ export const NkioskOccurrences = () => {
         selectedCount: number;
         selectedRows: LimpezasEOcorrencias[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime());
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -241,7 +242,12 @@ export const NkioskOccurrences = () => {
         name: 'Ações',
         cell: (row: LimpezasEOcorrencias) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
                 <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditOcorrencias(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>
@@ -266,7 +272,8 @@ export const NkioskOccurrences = () => {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
             }
         })
-    );
+    )
+    .sort((a, b) => new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime());
 
     return (
         <div className="main-container">
@@ -287,25 +294,25 @@ export const NkioskOccurrences = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOcorrencias} />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Adicionar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
-                        <PrintButton data={filteredDataTable} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -322,8 +329,8 @@ export const NkioskOccurrences = () => {
                             className='search-input'
                         />
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Buscar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-search" onClick={fetchOcorrenciasBetweenDates} iconSize='1.1em' />
                         </OverlayTrigger>

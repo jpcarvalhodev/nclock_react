@@ -42,6 +42,7 @@ export const Categories = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Category> | null>(null);
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<Category[]>([]);
 
     // Função para buscar as categorias
     const fetchAllCategories = async () => {
@@ -125,12 +126,15 @@ export const Categories = () => {
         setShowDeleteModal(true);
     };
 
-    // Filtra as categorias
-    const filteredItems = categories.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
+    // Define a função selecionar uma linha
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Category[];
+    }) => {
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => a.code - b.code);
+        setSelectedRows(sortedSelectedRows);
+    };
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -215,11 +219,26 @@ export const Categories = () => {
         name: 'Ações',
         cell: (row: Category) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCategory(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCategory(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.categoryID)} >
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: Category) => row.categoryID,
@@ -245,25 +264,25 @@ export const Categories = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCategories} />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Adicionar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={categoryFields} />
-                        <PrintButton data={filteredDataTable} fields={categoryFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={categoryFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={categoryFields} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes
@@ -308,6 +327,7 @@ export const Categories = () => {
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
                         selectableRows
+                        onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

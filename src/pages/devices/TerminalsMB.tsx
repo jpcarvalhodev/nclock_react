@@ -231,11 +231,26 @@ export const TerminalsMB = () => {
         name: 'Ações',
         cell: (row: MBDevice) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)}>
-                    <i className="bi bi-trash-fill"></i>
-                </Button>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)}>
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: MBDevice) => row.id,
@@ -302,20 +317,20 @@ export const TerminalsMB = () => {
                                     />
                                     <div className="custom-buttons">
                                         <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip>Atualizar</Tooltip>}
+                                            placement="left"
+                                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                         >
                                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
                                         </OverlayTrigger>
                                         <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip>Adicionar</Tooltip>}
+                                            placement="left"
+                                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                         >
                                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                         </OverlayTrigger>
                                         <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip>Colunas</Tooltip>}
+                                            placement="left"
+                                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                         >
                                             <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                         </OverlayTrigger>

@@ -105,7 +105,8 @@ export const NkioskAlerts = () => {
         selectedCount: number;
         selectedRows: MBDeviceStatus[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.timespam).getTime() - new Date(a.timespam).getTime());
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -128,7 +129,8 @@ export const NkioskAlerts = () => {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
             }
         })
-    );
+    )
+    .sort((a, b) => new Date(b.timespam).getTime() - new Date(a.timespam).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<MBDeviceStatus>[] = mbDeviceStatusFields
@@ -179,19 +181,19 @@ export const NkioskAlerts = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshTasks} />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={selectedRows} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
-                        <PrintButton data={filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
                     </div>
                     <div className="date-range-search">
                         <input
@@ -208,8 +210,8 @@ export const NkioskAlerts = () => {
                             className='search-input'
                         />
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Buscar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-search" onClick={fetchAlertsBetweenDates} iconSize='1.1em' />
                         </OverlayTrigger>

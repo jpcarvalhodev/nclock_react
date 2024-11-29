@@ -41,6 +41,7 @@ export const Groups = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Group> | null>(null);
     const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<Group[]>([]);
 
     // Função para buscar os grupos
     const fetchAllGroups = async () => {
@@ -130,12 +131,14 @@ export const Groups = () => {
         setShowDeleteModal(true);
     };
 
-    // Função para filtrar os grupos
-    const filteredItems = groups.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
+    // Função para selecionar as linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Group[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -218,11 +221,26 @@ export const Groups = () => {
         name: 'Ações',
         cell: (row: Group) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)} >
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: Group) => row.groupID,
@@ -260,25 +278,25 @@ export const Groups = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshGroups} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Adicionar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
-                        <ExportButton allData={groupWithNames} selectedData={filteredItems} fields={groupFields} />
-                        <PrintButton data={groupWithNames} fields={groupFields} />
+                        <ExportButton allData={groupWithNames} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={groupFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={groupFields} />
                     </div>
                 </div>
                 <CreateModalDeptGrp
@@ -323,6 +341,7 @@ export const Groups = () => {
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
                         selectableRows
+                        onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

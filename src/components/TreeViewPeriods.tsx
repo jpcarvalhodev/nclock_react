@@ -7,6 +7,7 @@ import { TimePeriod } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -179,7 +180,12 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
     return (
         <Box className="TreeViewContainer">
             <p className='treeview-title-text'>Filtros</p>
-            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+            >
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            </OverlayTrigger>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

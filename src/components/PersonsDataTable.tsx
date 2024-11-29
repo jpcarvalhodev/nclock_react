@@ -3,7 +3,7 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
-import { Button } from 'react-bootstrap';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { DeleteModal } from '../modals/DeleteModal';
 import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
 import { CustomOutlineButton } from './CustomOutlineButton';
@@ -30,6 +30,7 @@ interface PersonsDataTableProps {
     onRefreshData: (data: DataState) => void;
     filteredData: Employee[];
     onDuplicate: (employee: Employee) => void;
+    onSelectedRowsChange: (selectedRows: Employee[]) => void;
 }
 
 // Define a interface para os filtros
@@ -38,7 +39,7 @@ interface Filters {
 }
 
 // Define o componente
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate }: PersonsDataTableProps) => {
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate, onSelectedRowsChange }: PersonsDataTableProps) => {
     const {
         fetchAllEmployees,
         handleUpdateEmployee,
@@ -107,7 +108,9 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             )
         );
 
-        filteredEmployees(filteredByColumnFilters);
+        const sortedFilteredData = filteredByColumnFilters.sort((a, b) => parseInt(a.enrollNumber) - parseInt(b.enrollNumber));
+
+        filteredEmployees(sortedFilteredData);
     }, [selectedEmployeeIds, filterText, filters, data.employees]);
 
     // Reseta a seleção de funcionários
@@ -132,7 +135,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             const employeeIndex = sortedEmployees.findIndex(emp => emp.employeeID === selectedEmployee.employeeID);
             setCurrentEmployeeIndex(employeeIndex);
         }
-    }, [selectedEmployee, data.employees]);    
+    }, [selectedEmployee, data.employees]);
 
     // Abre o modal de exclusão de funcionário
     const handleOpenDeleteModal = (employee: Employee) => {
@@ -167,7 +170,9 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         selectedCount: number;
         selectedRows: Employee[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => parseInt(a.enrollNumber) - parseInt(b.enrollNumber));
+        setSelectedRows(sortedSelectedRows);
+        onSelectedRowsChange(sortedSelectedRows);
     };
 
     // Seleciona o funcionário anterior
@@ -279,11 +284,26 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         cell: (row: Employee) => (
             row.employeeID ? (
                 <div style={{ display: 'flex' }}>
-                    <CustomOutlineButton className='action-button' icon='bi bi-copy' onClick={() => handleDuplicateAndClose(row)} />
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
-                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
-                        <i className="bi bi-trash-fill"></i>
-                    </Button>{' '}
+                    <OverlayTrigger
+                        placement="left"
+                        overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                    >
+                        <CustomOutlineButton className='action-button' icon='bi bi-copy' onClick={() => handleDuplicateAndClose(row)} />
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                        placement="left"
+                        overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                    >
+                        <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                        placement="left"
+                        overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                    >
+                        <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
+                            <i className="bi bi-trash-fill"></i>
+                        </Button>
+                    </OverlayTrigger>
                 </div>
             ) : null
         ),

@@ -7,6 +7,7 @@ import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -205,7 +206,7 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
   // Função para lidar com a expansão dos itens
   const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
     setExpandedIds(nodeIds);
-  };  
+  };
 
   // Função para lidar com a mudança de seleção dos itens
   const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
@@ -274,8 +275,13 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
   return (
     <PersonsProvider>
       <Box className="TreeViewContainer">
-      <p className='treeview-title-text'>Filtros</p>
-      <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+        <p className='treeview-title-text'>Filtros</p>
+        <OverlayTrigger
+          placement="right"
+          overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+        >
+          <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+        </OverlayTrigger>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect

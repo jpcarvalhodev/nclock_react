@@ -10,32 +10,45 @@ import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
-import { toast } from "react-toastify";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import { RecolhaMoedeiroEContador } from "../../../helpers/Types";
-import { recolhaMoedeiroEContadorFields } from "../../../helpers/Fields";
-import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
-import { Button, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react-bootstrap";
+import { Counter } from "../../../helpers/Types";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { counterFields } from "../../../helpers/Fields";
+import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
+import Split from "react-split";
+
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}`;
+}
 
 export const NkioskCounter = () => {
     const { navbarColor, footerColor } = useColor();
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const [counter, setCounter] = useState<RecolhaMoedeiroEContador[]>([]);
+    const [counter, setCounter] = useState<Counter[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotal', 'deviceID']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'pin', 'nameUser', 'eventType', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
-    const [selectedRows, setSelectedRows] = useState<RecolhaMoedeiroEContador[]>([]);
+    const [selectedRows, setSelectedRows] = useState<Counter[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [userTabKey, setUserTabKey] = useState<string>('endCounter');
-    const [loadingEndCounter, setLoadingEndCounter] = useState(false);
-    const [selectedCounter, setSelectedCounter] = useState<RecolhaMoedeiroEContador | null>(null);
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<Counter[]>([]);
 
     // Função para buscar os contadores
-    const fetchAllCounter = async () => {
+    const fetchAllCounter = async (startDate?: string, endDate?: string) => {
         try {
-            const data = await apiService.fetchAllContador();
+            const data = await apiService.fetchAllContador(startDate, endDate);
             if (Array.isArray(data)) {
                 setCounter(data);
             } else {
@@ -46,35 +59,25 @@ export const NkioskCounter = () => {
         }
     };
 
-    // Função para iniciar contador
-    const handleStartContador = async (contador: RecolhaMoedeiroEContador) => {
-        try {
-            const data = await apiService.startContador(contador);
-            setCounter([...counter, data]);
-            toast.success(data.message || 'Contador iniciado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao criar contador:', error);
-        } finally {
-            refreshCounter();
-        }
-    };
-
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
         fetchAllCounter();
     }, []);
 
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = counter.filter(count => selectedDevicesIds.includes(count.deviceSN));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(counter);
+        }
+    }, [selectedDevicesIds, counter]);
+
     // Função para atualizar as recolhas do moedeiro
     const refreshCounter = () => {
         fetchAllCounter();
         setClearSelectionToggle(!clearSelectionToggle);
-    };
-
-    // Função para alternar a visibilidade das abas
-    const handleUserSelect = (k: string | null) => {
-        if (k) {
-            setUserTabKey(k);
-        }
     };
 
     // Função para selecionar as colunas
@@ -88,7 +91,7 @@ export const NkioskCounter = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotal', 'deviceID']);
+        setSelectedColumns(['eventTime', 'pin', 'nameUser', 'eventType', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -100,10 +103,10 @@ export const NkioskCounter = () => {
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: RecolhaMoedeiroEContador[];
+        selectedRows: Counter[];
     }) => {
-        setSelectedRows(state.selectedRows);
-        setSelectedCounter(state.selectedRows[0] || null);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -112,8 +115,13 @@ export const NkioskCounter = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Filtra os dados da tabela
-    const filteredDataTable = counter.filter(getCoin =>
+    const filteredDataTable = filteredDevices.filter(getCoin =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -126,20 +134,18 @@ export const NkioskCounter = () => {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
             }
         })
-    );
+    )
+    .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
 
     // Define as colunas da tabela
-    const columns: TableColumn<RecolhaMoedeiroEContador>[] = recolhaMoedeiroEContadorFields
+    const columns: TableColumn<Counter>[] = counterFields
         .filter(field => selectedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'deviceSN') return 1; else if (b.key === 'deviceSN') return -1; else return 0; })
         .map(field => {
-            const formatField = (row: RecolhaMoedeiroEContador) => {
+            const formatField = (row: Counter) => {
                 switch (field.key) {
-                    case 'dataRecolha':
-                        return new Date(row.dataRecolha).toLocaleString() || '';
-                    case 'dataFimIntervencao':
-                        return new Date(row.dataFimIntervencao).toLocaleString() || '';
-                    case 'deviceID':
-                        return devices.find(device => device.zktecoDeviceID === row.deviceID)?.deviceName || '';
+                    case 'deviceSN':
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -158,116 +164,144 @@ export const NkioskCounter = () => {
             };
         });
 
-    // Função para encerrar o contador selecionado
-    const handleEndCounter = async () => {
-        if (selectedCounter) {
-            setLoadingEndCounter(true);
-            const data = await apiService.endContador(selectedCounter.id);
-            toast.success(data.message || 'Contador encerrado com sucesso!');
-            setLoadingEndCounter(false);
-            refreshCounter();
-        } else {
-            toast.error('Selecione um contador primeiro!');
-        }
-    }
-
     // Função para gerar os dados com nomes substituídos para o export/print
-    const getCounterWithNames = counter.map(transaction => {
+    const transformTransactionWithNames = (transaction: { deviceSN: string; }) => {
 
-        const deviceMatch = devices.find(device => device.zktecoDeviceID === transaction.deviceID);
+        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
         const deviceName = deviceMatch?.deviceName || 'Sem Dados';
 
         return {
             ...transaction,
-            deviceID: deviceName,
+            deviceSN: deviceName,
         };
-    });
+    };
+
+    // Dados dos pagamentos com nomes substituídos
+    const getCounterWithNames = filteredDataTable.map(transformTransactionWithNames);
+
+    // Transforma as linhas selecionadas com nomes substituídos
+    const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
+
+    // Calcula o total dos pagamentos Multibanco
+    const totalMBAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Multibanco').length;
+
+    // Calcula o total dos pagamentos Moedeiro
+    const totalCoinAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Moedeiro').length;
+
+    // Calcula o total de movimentos Torniquete
+    const totalCardAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Torniquete').length;
+
+    // Calcula o total de movimentos Quiosque
+    const totalKioskAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Quiosque').length;
+
+    // Calcula o total de movimentos Video Porteiro
+    const totalVPAmount = filteredDataTable.filter(transaction => transaction.eventType === 'VideoPorteiro').length;
+
+    // Calcula o total de aberuras manuais
+    const totalManualOpenAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Abertura Manual').length;
 
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="datatable-container">
-                <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Contadores</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkioskDisp onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCounter} />
-                        </OverlayTrigger>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Adicionar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        </OverlayTrigger>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        </OverlayTrigger>
-                        <ExportButton allData={getCounterWithNames} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
-                        <PrintButton data={getCounterWithNames} fields={recolhaMoedeiroEContadorFields} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Contador de Dados</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <input
+                                    className='search-input'
+                                    type="text"
+                                    placeholder="Pesquisa"
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshCounter} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={getCounterWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCounterWithNames} fields={counterFields} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCounterWithNames} fields={counterFields} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={() => fetchAllCounter(startDate, endDate)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                            </div>
+                        </div>
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={15}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                defaultSortAsc={true}
+                                defaultSortFieldId="eventTime"
+                            />
+                        </div>
+                        <div style={{ marginLeft: 10 }}>
+                            <strong>Total de Pagamentos Multibanco: </strong>{totalMBAmount}
+                        </div>
+                        <div style={{ marginLeft: 10, marginTop: 5 }}>
+                            <strong>Total de Pagamentos Moedeiro: </strong>{totalCoinAmount}
+                        </div>
+                        <div style={{ marginLeft: 10, marginTop: 5 }}>
+                            <strong>Total de Movimentos Torniquete: </strong>{totalCardAmount}
+                        </div>
+                        <div style={{ marginLeft: 10, marginTop: 5 }}>
+                            <strong>Total de Movimentos Quiosque: </strong>{totalKioskAmount}
+                        </div>
+                        <div style={{ marginLeft: 10, marginTop: 5 }}>
+                            <strong>Total de Movimentos Video Porteiro: </strong>{totalVPAmount}
+                        </div>
+                        <div style={{ marginLeft: 10, marginTop: 5 }}>
+                            <strong>Total de Aberturas Manuais: </strong>{totalManualOpenAmount}
+                        </div>
                     </div>
-                </div>
-                <div className='table-css'>
-                    <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        defaultSortAsc={true}
-                        defaultSortFieldId="dataRecolha"
-                    />
-                </div>
-                <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
-                    <div>
-                        <Tabs
-                            id="controlled-tab-terminals-buttons"
-                            activeKey={userTabKey}
-                            onSelect={handleUserSelect}
-                            className="nav-modal"
-                        >
-                            <Tab eventKey="endCounter" title="Contador">
-                                <div style={{ display: "flex", marginTop: 10 }}>
-                                    <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleEndCounter}>
-                                        {loadingEndCounter ? (
-                                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                        ) : (
-                                            <i className="bi bi-stop-circle" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                        )}
-                                        Encerrar
-                                    </Button>
-                                </div>
-                            </Tab>
-                        </Tabs>
-                    </div>
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={recolhaMoedeiroEContadorFields}
+                    columns={counterFields}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
@@ -275,14 +309,6 @@ export const NkioskCounter = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            <CreateRecolhaMoedeiroEContadorModal
-                title="Iniciar Contador"
-                open={showAddModal}
-                onClose={() => setShowAddModal(false)}
-                onSave={handleStartContador}
-                fields={recolhaMoedeiroEContadorFields}
-                initialValuesData={{}}
-            />
         </div>
     );
 }

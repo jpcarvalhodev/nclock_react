@@ -7,6 +7,7 @@ import { Devices, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -179,7 +180,12 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
     return (
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: 'black' }}>Filtros</p>
-            <CustomOutlineButton onClick={() => fetchAllMBDevices()} icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
+            <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+            >
+                <CustomOutlineButton onClick={() => fetchAllMBDevices()} icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>
+            </OverlayTrigger>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

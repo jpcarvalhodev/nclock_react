@@ -621,3 +621,20 @@ export type ResetCoin = {
     deviceId: string;
     observation: string;
 }
+
+export type Counter = {
+    [key: string]: any;
+    id: string;
+    cardNo: number;
+    nameUser: string;
+    deviceSN: string;
+    deviceName: string;
+    eventNo: number;
+    eventName: string;
+    eventDoorId: number;
+    eventDoorName: string;
+    eventType: string;
+    eventTime: Date;
+    pin: number;
+    verifyModeNo: number;
+}

@@ -737,6 +737,11 @@ body {
     width: 1080px;
 }
 
+.custom-tooltip {
+    font-size: 10px;
+    z-index: 1000;
+}
+
 @keyframes pulseBorder {
     0% {
         box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
@@ -765,6 +770,7 @@ body {
     .dashboard-carousel-container-pages-no-title,
     .carousel-chart-container {
         max-width: 100%;
+        margin-top: 20px !important;
     }
 
     .footer {
@@ -818,12 +824,12 @@ body {
         flex-direction: column;
     }
 
-    .departments-groups-chart-text {
-        margin-bottom: 100px;
+    .departments-groups-chart {
+        height: 400px !important;
     }
 
-    .dashboard-calendar {
-        width: 350px !important;
+    .departments-groups-chart-text {
+        margin-bottom: 100px;
     }
 
     .cards-container {

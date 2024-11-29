@@ -149,7 +149,8 @@ export const NkioskGetCoins = () => {
         selectedCount: number;
         selectedRows: RecolhaMoedeiroEContador[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.dataRecolha).getTime() - new Date(a.dataRecolha).getTime());
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -188,7 +189,8 @@ export const NkioskGetCoins = () => {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
             }
         })
-    );
+    )
+    .sort((a, b) => new Date(b.dataRecolha).getTime() - new Date(a.dataRecolha).getTime());
 
     // Define a função de duplicar funcionários
     const handleDuplicate = (data: Partial<RecolhaMoedeiroEContador>) => {
@@ -251,7 +253,7 @@ export const NkioskGetCoins = () => {
     }, 0);
 
     // Função para gerar os dados com nomes substituídos para o export/print
-    const getCoinsWithNames = getCoins.map(transaction => {
+    const transformTransactionWithNames = (transaction: { deviceID: string; }) => {
 
         const deviceMatch = devices.find(device => device.zktecoDeviceID === transaction.deviceID);
         const deviceName = deviceMatch?.deviceName || 'Sem Dados';
@@ -260,7 +262,13 @@ export const NkioskGetCoins = () => {
             ...transaction,
             deviceID: deviceName,
         };
-    });
+    };
+
+    // Dados dos pagamentos com nomes substituídos
+    const getCoinsWithNames = filteredDataTable.map(transformTransactionWithNames);
+
+    // Transforma as linhas selecionadas com nomes substituídos
+    const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
     // Função para abrir manualmente
     const handleReset = () => {
@@ -308,29 +316,29 @@ export const NkioskGetCoins = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Adicionar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
-                        <ExportButton allData={getCoinsWithNames} selectedData={selectedRows} fields={recolhaMoedeiroEContadorFields} />
-                        <PrintButton data={getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
+                        <ExportButton allData={getCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <OverlayTrigger
-                                placement="top"
-                                overlay={<Tooltip>Reset</Tooltip>}
+                                placement="left"
+                                overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}
                             >
                                 <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
                             </OverlayTrigger>
@@ -354,8 +362,8 @@ export const NkioskGetCoins = () => {
                             className='search-input'
                         />
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Buscar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-search" onClick={fetchCoinsBetweenDates} iconSize='1.1em' />
                         </OverlayTrigger>

@@ -53,8 +53,8 @@ export const PrintButton = ({ data, fields, renderTimeout = 5000 }: PrintButtonP
     return (
         <>
             <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip>Imprimir</Tooltip>}
+                placement="left"
+                overlay={<Tooltip className="custom-tooltip">Imprimir</Tooltip>}
             >
                 <CustomOutlineButton onClick={handleShowModal} icon='bi-printer' iconSize='1.1em'></CustomOutlineButton >
             </OverlayTrigger>

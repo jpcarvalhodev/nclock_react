@@ -38,6 +38,7 @@ export const Types = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<ExternalEntityTypes> | null>(null);
     const [currentExternalEntityTypeIndex, setCurrentExternalEntityTypeIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<ExternalEntityTypes[]>([]);
 
     // Função para buscar os tipos das entidades externas
     const fetchAllExternalEntityTypes = async () => {
@@ -121,12 +122,15 @@ export const Types = () => {
         setShowDeleteModal(true);
     };
 
-    // Filtra as categorias
-    const filteredItems = externalEntityTypes.filter(item =>
-        Object.keys(item).some(key =>
-            String(item[key]).toLowerCase().includes(filterText.toLowerCase())
-        )
-    );
+    // Função para selecionar as linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: ExternalEntityTypes[];
+    }) => {
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => a.order - b.order);
+        setSelectedRows(sortedSelectedRows);
+    };
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -211,11 +215,26 @@ export const Types = () => {
         name: 'Ações',
         cell: (row: ExternalEntityTypes) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditExternalEntity(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityTypeID)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditExternalEntity(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityTypeID)} >
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: ExternalEntityTypes) => row.categoryID,
@@ -241,25 +260,25 @@ export const Types = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Atualizar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshExternalEntitiesTypes} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Adicionar</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Colunas</Tooltip>}
+                            placement="left"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={filteredItems} fields={externalEntityTypeFields} />
-                        <PrintButton data={filteredDataTable} fields={externalEntityTypeFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={externalEntityTypeFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={externalEntityTypeFields} />
                     </div>
                 </div>
             </div>
@@ -273,6 +292,7 @@ export const Types = () => {
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={15}
                         selectableRows
+                        onSelectedRowsChange={handleRowSelected}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         defaultSortAsc={true}

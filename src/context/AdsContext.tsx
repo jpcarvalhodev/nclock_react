@@ -6,7 +6,7 @@ import { Ads } from '../helpers/Types';
 // Define o tipo do contexto
 export interface AdsContextType {
   ads: Ads[];
-  fetchAds: () => Promise<void>;
+  fetchAds: (startDate?: string, endDate?: string) => Promise<void>;
   handleAddAds: (ads: FormData) => Promise<void>;
   handleUpdateAds: (ads: Ads, ad: FormData) => Promise<void>;
   handleDeleteAds: (id: string) => Promise<void>;
@@ -20,10 +20,14 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
   const [ads, setAds] = useState<Ads[]>([]);
 
   // Função para buscar todas as publicidades
-  const fetchAds = async () => {
+  const fetchAds = async (startDate?: string, endDate?: string) => {
     try {
-      const data = await apiService.fetchAllAds();
-      setAds(data);
+      const data = await apiService.fetchAllAds(startDate, endDate);
+      if (data) {
+        setAds(data);
+      } else {
+        setAds([]);
+      }
     } catch (error) {
       console.error('Erro ao buscar os dados das publicidades:', error);
     }

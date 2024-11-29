@@ -204,11 +204,26 @@ export const NledAds = () => {
         name: 'Ações',
         cell: (row: Ads) => (
             <div style={{ display: 'flex' }}>
-                <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAds(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAds(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="left"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
+                        <i className="bi bi-trash-fill"></i>
+                    </Button>
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: Ads) => row.id,
@@ -239,20 +254,20 @@ export const NledAds = () => {
                             </div>
                             <div className="buttons-container-others">
                                 <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip>Atualizar</Tooltip>}
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                                 </OverlayTrigger>
                                 <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip>Adicionar</Tooltip>}
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip>Colunas</Tooltip>}
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
@@ -272,10 +287,10 @@ export const NledAds = () => {
                                     className='search-input'
                                 />
                                 <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip>Buscar</Tooltip>}
+                                    placement="left"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi-search" iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-search" onClick={() => fetchAds(startDate, endDate)} iconSize='1.1em' />
                                 </OverlayTrigger>
                             </div>
                         </div>

@@ -452,8 +452,8 @@ export const manualOpenDoorFields = [
     { key: 'nomeResponsavel', label: 'Nome do Utilizador', type: 'string' },
     { key: 'nomeEvento', label: 'Nome do Evento', type: 'string' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'deviceName', label: 'Nome do Local', type: 'string' },
     { key: 'doorName', label: 'Nome', type: 'string' },
+    { key: 'deviceName', label: 'Nome do Local', type: 'string' },
 ];
 
 export const limpezasEOcorrenciasFields = [
@@ -465,19 +465,19 @@ export const limpezasEOcorrenciasFields = [
 ];
 
 export const logsFields = [
+    { key: 'createdDate', label: 'Data de Criação', type: 'date' },
     { key: 'userName', label: 'Nome do Utilizador', type: 'string' },
     { key: 'description', label: 'Descrição', type: 'string' },
-    { key: 'createdDate', label: 'Data de Criação', type: 'date' },
 ];
 
 export const cameraFields = [
+    { key: 'createdDate', label: 'Data de Criação', type: 'date' },
     { key: 'numeroCamera', label: 'Número', type: 'number', required: true },
     { key: 'nomeCamera', label: 'Nome', type: 'string', required: true },
     { key: 'ip', label: 'IP', type: 'string' },
     { key: 'url', label: 'URL', type: 'string', required: true },
     { key: 'userCamera', label: 'Utilizador', type: 'string' },
     { key: 'passwordCamera', label: 'Password', type: 'string' },
-    { key: 'createdDate', label: 'Data de Criação', type: 'date' },
     { key: 'updatedDate', label: 'Data de Atualização', type: 'date' },
 ];
 
@@ -510,4 +510,14 @@ export const auxiliariesFields = [
 export const resetFields = [
     { key: 'deviceId', label: 'Nome do Local', type: 'string', required: true },
     { key: 'observation', label: 'Observação', type: 'string' }
+];
+
+export const counterFields = [
+    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'pin', label: 'Número do Utilizador', type: 'number' },
+    { key: 'nameUser', label: 'Nome do Utilizador', type: 'string' },
+    { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
+    { key: 'eventType', label: 'Tipo do Evento', type: 'string' },
+    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
 ];

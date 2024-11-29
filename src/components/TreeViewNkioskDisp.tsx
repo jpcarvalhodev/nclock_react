@@ -3,11 +3,11 @@ import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { Devices, MBDevice } from '../helpers/Types';
+import { Devices } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
-import { useLocation } from 'react-router-dom';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -180,7 +180,12 @@ export function TreeViewDataNkioskDisp({ onSelectDevices }: TreeViewDataNkioskDi
     return (
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: '#009739' }}>Filtros</p>
-            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            <OverlayTrigger
+                placement="right"
+                overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+            >
+                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+            </OverlayTrigger>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

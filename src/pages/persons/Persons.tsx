@@ -20,7 +20,6 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 // Define a página de pessoas
 export const Persons = () => {
     const {
-        employees,
         data,
         setData,
         setEmployees,
@@ -40,6 +39,7 @@ export const Persons = () => {
     const [filterText, setFilterText] = useState('');
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
     const [initialData, setInitialData] = useState<Employee | null>(null);
+    const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -114,6 +114,11 @@ export const Persons = () => {
         }
     };
 
+    // Atualiza o estado de seleção de funcionários
+    const handleSelectedRowsChange = (selectedRows: Employee[]) => {
+        setSelectedRows(selectedRows);
+    };
+
     // Função para resetar as colunas
     const handleResetColumns = () => {
         setSelectedColumns(defaultColumns);
@@ -150,25 +155,25 @@ export const Persons = () => {
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Atualizar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Adicionar</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip>Colunas</Tooltip>}
+                                        placement="left"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                     </OverlayTrigger>
-                                    <ExportButton allData={filteredData} selectedData={filteredData} fields={employeeFields} />
-                                    <PrintButton data={filteredData} fields={employeeFields} />
+                                    <ExportButton allData={filteredData} selectedData={selectedRows.length > 0 ? selectedRows : filteredData} fields={employeeFields} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredData} fields={employeeFields} />
                                 </div>
                             </div>
                             <PersonsDataTable
@@ -182,6 +187,7 @@ export const Persons = () => {
                                 onRefreshData={setData}
                                 filteredData={filteredData}
                                 onDuplicate={handleDuplicate}
+                                onSelectedRowsChange={handleSelectedRowsChange}
                             />
                         </div>
                     </Split>
