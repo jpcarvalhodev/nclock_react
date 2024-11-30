@@ -27,7 +27,7 @@ export const ResetPassword = () => {
 
   // Função para validar a senha
   const validatePassword = (password: string): boolean => {
-    const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])/;
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$&*-_])/;
     return regex.test(password);
   };
 
@@ -36,7 +36,7 @@ export const ResetPassword = () => {
     event.preventDefault();
 
     if (!isPasswordValid(newPassword)) {
-      toast.error('A password deve ter pelo menos 8 caracteres.');
+      toast.error('Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial');
       return;
     }
 
