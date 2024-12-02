@@ -400,7 +400,6 @@ body {
     display: flex;
     flex-direction: row;
     gap: 10px;
-    overflow-x: hidden;
 }
 
 .buttons-container-others-mb {
@@ -408,7 +407,6 @@ body {
     flex-direction: row;
     gap: 10px;
     width: 100%;
-    overflow-x: hidden;
 }
 
 .status-text {
