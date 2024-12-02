@@ -206,14 +206,14 @@ export const NclockAll = () => {
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
                                         />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
@@ -237,7 +237,7 @@ export const NclockAll = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchAllBetweenDates} iconSize='1.1em' />

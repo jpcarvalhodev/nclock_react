@@ -126,6 +126,7 @@ export const NkioskPayCoins = () => {
                 const payCoinDate = new Date(payCoin.timestamp).toISOString();
                 return payCoinDate >= lastRecolhaDate.toISOString();
             });
+            setStartDate(formatDateToStartOfDay(lastRecolhaDate));
             setPayCoins(filteredData);
         } catch (error) {
             console.error('Erro ao buscar os dados da última recolha:', error);
@@ -306,13 +307,13 @@ export const NkioskPayCoins = () => {
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshPayCoins} />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
@@ -322,8 +323,8 @@ export const NkioskPayCoins = () => {
                                 </div>
                                 <div className="date-range-search">
                                     <OverlayTrigger
-                                        placement="left"
-                                        overlay={<Tooltip className="custom-tooltip">Busca Recolha</Tooltip>}
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Moedas Online</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi bi-cash-coin" onClick={fetchAllDataFromLastRecolha} iconSize='1.1em' />
                                     </OverlayTrigger>
@@ -341,7 +342,7 @@ export const NkioskPayCoins = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsCoinBetweenDates} iconSize='1.1em' />

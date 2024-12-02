@@ -200,7 +200,7 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: '#000000' }}>Filtros</p>
             <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
                 <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>

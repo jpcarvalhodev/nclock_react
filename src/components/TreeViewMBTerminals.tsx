@@ -181,7 +181,7 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: 'black' }}>Filtros</p>
             <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
                 <CustomOutlineButton onClick={() => fetchAllMBDevices()} icon="bi-arrow-clockwise" iconSize='1.1em'></CustomOutlineButton>

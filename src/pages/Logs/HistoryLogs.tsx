@@ -200,13 +200,13 @@ export const HistoryLogs = () => {
                             </div>
                             <div className="buttons-container-others">
                                 <OverlayTrigger
-                                    placement="left"
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshLogs} />
                                 </OverlayTrigger>
                                 <OverlayTrigger
-                                    placement="left"
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
@@ -229,7 +229,7 @@ export const HistoryLogs = () => {
                                     className='search-input'
                                 />
                                 <OverlayTrigger
-                                    placement="left"
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-search" onClick={fetchLogsBetweenDates} iconSize='1.1em' />

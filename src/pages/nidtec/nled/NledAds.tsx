@@ -205,19 +205,19 @@ export const NledAds = () => {
         cell: (row: Ads) => (
             <div style={{ display: 'flex' }}>
                 <OverlayTrigger
-                    placement="left"
+                    placement="top"
                     overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
                 >
                     <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
-                    placement="left"
+                    placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
                     <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAds(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
-                    placement="left"
+                    placement="top"
                     overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
                 >
                     <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
@@ -254,19 +254,19 @@ export const NledAds = () => {
                             </div>
                             <div className="buttons-container-others">
                                 <OverlayTrigger
-                                    placement="left"
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAds} />
                                 </OverlayTrigger>
                                 <OverlayTrigger
-                                    placement="left"
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
-                                    placement="left"
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
@@ -287,7 +287,7 @@ export const NledAds = () => {
                                     className='search-input'
                                 />
                                 <OverlayTrigger
-                                    placement="left"
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi-search" onClick={() => fetchAds(startDate, endDate)} iconSize='1.1em' />

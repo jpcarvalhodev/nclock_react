@@ -209,7 +209,7 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
     return (
         <Dropdown>
             <OverlayTrigger
-                placement="left"
+                placement="top"
                 overlay={<Tooltip className="custom-tooltip">Exportar</Tooltip>}
             >
                 <Dropdown.Toggle as={CustomOutlineButton} icon='bi-file-earmark-arrow-down' id="dropdown-basic" iconSize='1.1em' className="custom-dropdown-toggle">

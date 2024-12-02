@@ -245,14 +245,14 @@ export const NclockPresence = () => {
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
                                         />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'

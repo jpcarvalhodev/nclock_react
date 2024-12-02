@@ -285,19 +285,19 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             row.employeeID ? (
                 <div style={{ display: 'flex' }}>
                     <OverlayTrigger
-                        placement="left"
+                        placement="top"
                         overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
                     >
                         <CustomOutlineButton className='action-button' icon='bi bi-copy' onClick={() => handleDuplicateAndClose(row)} />
                     </OverlayTrigger>
                     <OverlayTrigger
-                        placement="left"
+                        placement="top"
                         overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                     >
                         <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
                     </OverlayTrigger>
                     <OverlayTrigger
-                        placement="left"
+                        placement="top"
                         overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
                     >
                         <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >

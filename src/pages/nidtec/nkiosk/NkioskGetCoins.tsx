@@ -316,19 +316,19 @@ export const NkioskGetCoins = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="left"
+                            placement="top"
                             overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="left"
+                            placement="top"
                             overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="left"
+                            placement="top"
                             overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
@@ -337,7 +337,7 @@ export const NkioskGetCoins = () => {
                         <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <OverlayTrigger
-                                placement="left"
+                                placement="top"
                                 overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}
                             >
                                 <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
@@ -362,7 +362,7 @@ export const NkioskGetCoins = () => {
                             className='search-input'
                         />
                         <OverlayTrigger
-                            placement="left"
+                            placement="top"
                             overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-search" onClick={fetchCoinsBetweenDates} iconSize='1.1em' />

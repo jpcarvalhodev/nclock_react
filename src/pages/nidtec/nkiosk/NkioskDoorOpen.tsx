@@ -238,20 +238,20 @@ export const NkioskDoorOpen = () => {
                                 />
                                 <div className="custom-buttons">
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAllManualOpen} />
                                     </OverlayTrigger>
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                     </OverlayTrigger>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <OverlayTrigger
-                                            placement="left"
+                                            placement="top"
                                             overlay={<Tooltip className="custom-tooltip">Abrir</Tooltip>}
                                         >
                                             <CustomOutlineButton icon="bi bi-power" onClick={handleOpenManualDoor} iconSize='1.1em' />
@@ -276,7 +276,7 @@ export const NkioskDoorOpen = () => {
                                         className='search-input'
                                     />
                                     <OverlayTrigger
-                                        placement="left"
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-search" onClick={fetchManualOpenBetweenDates} iconSize='1.1em' />

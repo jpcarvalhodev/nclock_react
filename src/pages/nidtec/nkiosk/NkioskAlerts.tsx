@@ -181,13 +181,13 @@ export const NkioskAlerts = () => {
                     </div>
                     <div className="buttons-container-others">
                         <OverlayTrigger
-                            placement="left"
+                            placement="top"
                             overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshTasks} />
                         </OverlayTrigger>
                         <OverlayTrigger
-                            placement="left"
+                            placement="top"
                             overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
@@ -210,7 +210,7 @@ export const NkioskAlerts = () => {
                             className='search-input'
                         />
                         <OverlayTrigger
-                            placement="left"
+                            placement="top"
                             overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-search" onClick={fetchAlertsBetweenDates} iconSize='1.1em' />

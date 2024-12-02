@@ -400,6 +400,7 @@ body {
     display: flex;
     flex-direction: row;
     gap: 10px;
+    overflow-x: hidden;
 }
 
 .buttons-container-others-mb {
@@ -407,6 +408,7 @@ body {
     flex-direction: row;
     gap: 10px;
     width: 100%;
+    overflow-x: hidden;
 }
 
 .status-text {
@@ -739,7 +741,11 @@ body {
 
 .custom-tooltip {
     font-size: 10px;
-    z-index: 1000;
+    position: fixed;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 0;
 }
 
 @keyframes pulseBorder {
