@@ -119,6 +119,14 @@ export const NkioskPayCoins = () => {
         if (selectedDevicesIds.length === 0) {
             toast.warn('Selecione um dispositivo primeiro!');
         }
+        const hasDispositivosOrNidGroup = selectedDevicesIds.some(id => 
+            id === 'dispositivos' || id === 'nidgroup'
+        );
+    
+        if (hasDispositivosOrNidGroup) {
+            toast.warn('Selecione somente locais!');
+            return;
+        }
         try {
             const data = await apiService.fetchDataFimRecolha(selectedDevicesIds[0]);
             const lastRecolhaDate = new Date(data);
