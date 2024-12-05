@@ -1,14 +1,31 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import React from 'react';
+import { Entity } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
+import { set } from 'date-fns';
 
 // Estilos para o documento PDF
 const styles = StyleSheet.create({
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    entityName: {
+        fontSize: 12,
+    },
+    entityLogo: {
+        width: 50,
+        height: 50,
+        borderRadius: 25
+    },
     page: {
         flexDirection: 'column',
         backgroundColor: '#FFF',
         padding: 10,
     },
-    aboveHeader: {
+    belowHeader: {
         fontSize: 12,
         textAlign: 'right',
         marginBottom: 5,
@@ -76,6 +93,8 @@ interface Field {
 interface PDFDocumentProps {
     data: any[];
     fields: { label: string; key: string }[];
+    entity: Entity[];
+    entityLogo: Blob | null;
 }
 
 // Define a interface para os itens de dados
@@ -84,10 +103,13 @@ interface DataItem {
 }
 
 // Define o tipo de campo para as exceções
-type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | string;
+type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | 'isPresent' | 'urlArquivo' | 'fechoImage' | 'aberturaImage' | string;
 
 // Componente para renderizar o documento PDF
-export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
+export const PDFDocument = ({ data, fields, entity, entityLogo }: PDFDocumentProps) => {
+
+    // Obtém o nome e o logotipo da entidade
+    const entityName = entity && entity.length > 0 && entity[0].nome ? entity[0].nome : 'Nome da entidade não disponível';
 
     // Formata o campo com base no tipo de campo
     const formatField = (item: DataItem, fieldKey: FieldKey) => {
@@ -181,6 +203,8 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
             case 'statusPalm':
             case 'statusFace':
                 return item[fieldKey] ? 'Activo' : 'Inactivo';
+            case 'isPresent':
+                return item[fieldKey] ? 'Presente' : 'Ausente';
             default:
                 return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
         }
@@ -189,7 +213,7 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
     const maxColsPerPage = 8;
     const maxRowsPerPage = 20;
     const allColumns = ['eventId', 'appId', 'timezoneId', 'doorId', 'id', 'deviceId', 'birthday', 'admissionDate', 'biIssuance', 'biValidity', 'exitDate', 'status', 'statusEmail', 'rgpdAut', 'departmentId', 'professionId', 'categoryId', 'groupId', 'zoneId', 'externalEntityId', 'attendanceTime', 'inOutMode', 'code', 'machineNumber', 'cardNumber', 'productTime', 'createDate', 'updateDate', 'createTime', 'updateTime', 'eventTime', 'timestamp', 'transactionType', 'estadoTerminal', 'timeReboot', 'dataRecolha'];
-    const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo'];
+    const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo', 'url', 'passwordCamera', 'urlArquivo', 'fechoImage', 'aberturaImage'];
 
     const updateColumnsToIgnore = () => {
         const idColumns = allColumns.filter(column => column.toLowerCase().includes('id'));
@@ -220,38 +244,43 @@ export const PDFDocument = ({ data, fields }: PDFDocumentProps) => {
 
     return (
         <Document>
-            {fieldGroups.map((fieldGroup, groupIndex) => (
-                <React.Fragment key={groupIndex}>
-                    {
-                        splitDataIntoGroups(data, maxRowsPerPage).map((dataGroup, pageIndex) => (
-                            <Page size="A4" orientation="landscape" style={styles.page} key={pageIndex}>
-                                <Text style={styles.aboveHeader}>Gerado em {new Date().toLocaleString()}</Text>
-                                <View style={styles.table}>
-                                    <View style={styles.tableRow}>
-                                        {fieldGroup.map(field => (
-                                            <View key={field.key} style={styles.tableColHeader}>
-                                                <Text style={styles.tableCellHeader}>{field.label}</Text>
+            {
+                fieldGroups.map((fieldGroup, groupIndex) => (
+                    <React.Fragment key={groupIndex}>
+                        {
+                            splitDataIntoGroups(data, maxRowsPerPage).map((dataGroup, pageIndex) => (
+                                <Page size="A4" orientation="landscape" style={styles.page} key={pageIndex}>
+                                    <View style={styles.headerContainer}>
+                                        <Text style={styles.entityName}>{entityName}</Text>
+                                        <Image src={entityLogo ? URL.createObjectURL(entityLogo) : 'Logo da entidade não disponível'} style={styles.entityLogo} />
+                                    </View>
+                                    <Text style={styles.belowHeader}>Gerado em {new Date().toLocaleString()}</Text>
+                                    <View style={styles.table}>
+                                        <View style={styles.tableRow}>
+                                            {fieldGroup.map(field => (
+                                                <View key={field.key} style={styles.tableColHeader}>
+                                                    <Text style={styles.tableCellHeader}>{field.label}</Text>
+                                                </View>
+                                            ))}
+                                        </View>
+                                        {dataGroup.map((item, rowIndex) => (
+                                            <View key={rowIndex} style={styles.tableRow}>
+                                                {fieldGroup.map(field => {
+                                                    const value = formatField(item, field.key);
+                                                    return (
+                                                        <View key={field.key} style={styles.tableCol}>
+                                                            <Text style={styles.tableCell}>{value}</Text>
+                                                        </View>
+                                                    );
+                                                })}
                                             </View>
                                         ))}
                                     </View>
-                                    {dataGroup.map((item, rowIndex) => (
-                                        <View key={rowIndex} style={styles.tableRow}>
-                                            {fieldGroup.map(field => {
-                                                const value = formatField(item, field.key);
-                                                return (
-                                                    <View key={field.key} style={styles.tableCol}>
-                                                        <Text style={styles.tableCell}>{value}</Text>
-                                                    </View>
-                                                );
-                                            })}
-                                        </View>
-                                    ))}
-                                </View>
-                                <Text style={styles.footer}>NIDGROUP - Business Solutions</Text>
-                            </Page>
-                        ))}
-                </React.Fragment>
-            ))}
+                                    <Text style={styles.footer}>NIDGROUP - Business Solutions</Text>
+                                </Page>
+                            ))}
+                    </React.Fragment>
+                ))}
         </Document>
     );
 };

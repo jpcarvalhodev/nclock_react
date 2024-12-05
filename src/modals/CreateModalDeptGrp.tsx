@@ -9,7 +9,6 @@ import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import DataTable from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
-import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -465,7 +464,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
                                 <DataTable
                                     columns={employeeColumns}
-                                    data={employeeData}
+                                    data={employeeData.length > 0 ? employeeData : employees}
                                     customStyles={customStyles}
                                     noHeader
                                     pagination
@@ -480,7 +479,20 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                 />
                             </div>
-                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
+                            <div style={{ display: 'flex' }}>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton className="action-button" icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Trocar Dept/Grp</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-right" /* onClick={applyDeptGroupChange} */ />
+                                </OverlayTrigger>
+                            </div>
                         </Col>
                     </Row>
                 </Form>

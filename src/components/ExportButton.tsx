@@ -5,6 +5,9 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { PDFDocument } from './PDFDocument';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { Entity } from '../helpers/Types';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para os itens de dados
 interface DataItem {
@@ -25,10 +28,11 @@ interface ExportButtonProps {
 }
 
 // Define o tipo de campo para as exceções
-type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | string;
+type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | 'isPresent' | 'urlArquivo' | 'fechoImage' | 'aberturaImage' | string;
 
 // Formata o campo com base no tipo de campo
 const formatField = (item: DataItem, fieldKey: FieldKey) => {
+
     const currentRoute = window.location.pathname;
     const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
     const videoporteiro = currentRoute.endsWith('movevp') ? 'Video Porteiro' : '';
@@ -119,6 +123,18 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
         case 'statusPalm':
         case 'statusFace':
             return item[fieldKey] ? 'Activo' : 'Inactivo';
+        case 'isPresent':
+            return item[fieldKey] ? 'Presente' : 'Ausente';
+        case 'clientTicket':
+        case 'merchantTicket':
+        case 'photo':
+        case 'logotipo':
+        case 'url':
+        case 'passwordCamera':
+        case 'urlArquivo':
+        case 'fechoImage':
+        case 'aberuraImage':
+            return '';
         default:
             return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
     }
@@ -205,6 +221,43 @@ const exportToTXT = (data: DataItem[], fileName: string): void => {
 export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProps) => {
     const fileName = 'dados_exportados';
     const dataToExport = selectedData.length > 0 ? selectedData : allData;
+    const [entity, setEntity] = useState<Entity[]>([]);
+    const [entityLogo, setEntityLogo] = useState<Blob | null>(null);
+    const [isEntityLoading, setIsEntityLoading] = useState(true);
+    const [isEntityLogoLoading, setIsEntityLogoLoading] = useState(true);
+
+    // Busca as entidades para exibir no PDF
+    const fetchEntityData = async () => {
+        setIsEntityLoading(true);
+        try {
+            const data = await apiService.fetchAllCompanyConfig();
+            setEntity(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error('Erro ao buscar entidades:', error);
+            setEntity([]);
+        } finally {
+            setIsEntityLoading(false);
+        }
+    };
+
+    // Obtém o logotipo da entidade
+    const fetchLogo = async () => {
+        setIsEntityLogoLoading(true);
+        try {
+            const logo = await apiService.fetchCompanyLogo();
+            setEntityLogo(logo);
+        } catch (error) {
+            console.error('Erro ao buscar logotipo:', error);
+        } finally {
+            setIsEntityLogoLoading(false);
+        }
+    };
+
+    // Busca as entidades ao montar o componente
+    useEffect(() => {
+        fetchEntityData();
+        fetchLogo();
+    }, []);
 
     return (
         <Dropdown>
@@ -219,7 +272,15 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
                 <Dropdown.Item onClick={() => exportToCSV(dataToExport, fileName, fields)}>Exportar em CSV</Dropdown.Item>
                 <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields)}>Exportar em XLSX</Dropdown.Item>
                 <Dropdown.Item as="button">
-                    <PDFDownloadLink document={<PDFDocument data={dataToExport} fields={fields} />} fileName={`${fileName}.pdf`} style={{ textDecoration: 'none', color: 'inherit' }}>Exportar em PDF</PDFDownloadLink>
+                    {isEntityLoading && isEntityLogoLoading && !entityLogo && (
+                        <PDFDownloadLink
+                            document={<PDFDocument data={dataToExport} fields={fields} entity={entity} entityLogo={entityLogo} />}
+                            fileName={`${fileName}.pdf`}
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                            Exportar em PDF
+                        </PDFDownloadLink>
+                    )}
                 </Dropdown.Item>
                 <Dropdown.Item onClick={() => exportToTXT(dataToExport, fileName)}>Exportar em TXT</Dropdown.Item>
             </Dropdown.Menu>

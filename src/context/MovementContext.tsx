@@ -2,6 +2,7 @@ import { createContext, useContext, useState, ReactNode, useCallback, useEffect 
 import { Department, Employee, EmployeeAttendanceTimes, Group } from "../helpers/Types";
 import { toast } from "react-toastify";
 import * as apiService from "../helpers/apiService";
+import { set } from 'date-fns';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -69,6 +70,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             if (options?.postFetch) {
                 options.postFetch(data);
             }
+            setAttendance(data);
             return data;
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
@@ -144,10 +146,27 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todas as assiduidades ao carregar o componente
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            fetchAllAttendances();
-        }
-    }, [localStorage.getItem('token')]);
+        const fetchOnTokenChange = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                await fetchAllAttendances();
+            }
+        };
+
+        fetchOnTokenChange();
+
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'token' && event.newValue) {
+                fetchOnTokenChange();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
 
     // Definindo o valor do contexto
     const contextValue = {

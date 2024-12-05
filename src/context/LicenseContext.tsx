@@ -2,6 +2,7 @@ import { createContext, useState, useContext, ReactNode, useEffect } from 'react
 import * as apiService from '../helpers/apiService';
 import { toast } from 'react-toastify';
 import { License } from '../helpers/Types';
+import { useLocation } from 'react-router-dom';
 
 // Define o tipo do contexto
 interface LicenseContextType {
@@ -24,13 +25,21 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     const getSoftwareEnabledStatus = (license: Partial<License>) => {
         const softwareEnabled: { [key: string]: boolean } = {};
 
-        Object.keys(license).forEach(key => {
-            const item = license[key];
+        const storedNif = localStorage.getItem('nif');
+
+        let licenseObj: Partial<License> = {};
+        if (Array.isArray(license)) {
+            licenseObj = license.find(lic => lic.nif === storedNif) || license[0];
+        } else {
+            licenseObj = license;
+        }
+
+        Object.keys(licenseObj).forEach(key => {
+            const item = licenseObj[key];
             if (typeof item === 'object' && item !== null && 'enable' in item) {
                 softwareEnabled[key] = item.enable;
             }
         });
-
         return softwareEnabled;
     };
 
@@ -75,10 +84,24 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todas as licenças ao carregar o componente
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            fetchAllLicensesWithoutKey();
-        }
-    }, [localStorage.getItem('token')]);
+        const fetchOnTokenChange = async () => {
+            await fetchAllLicensesWithoutKey();
+        };
+
+        fetchOnTokenChange();
+
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'token' && event.newValue) {
+                fetchOnTokenChange();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
 
     return (
         <LicenseContext.Provider value={{ license, setLicense, getSoftwareEnabledStatus, fetchAllLicenses, fetchAllLicensesWithoutKey, handleUpdateLicense }}>

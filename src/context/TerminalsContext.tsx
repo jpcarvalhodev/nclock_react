@@ -63,6 +63,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
         try {
             const data = await apiService.fetchAllEmployeesOnDevice(zktecoDeviceID);
+            setEmployeesOnDevice(data);
             toast.success(data.message || 'Funcionários recolhidos com sucesso!');
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -349,10 +350,27 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todos os dispositivos ao carregar o componente
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            fetchAllDevices();
-            fetchAllMBDevices();
-        }
+        const fetchOnTokenChange = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                await fetchAllDevices();
+                await fetchAllMBDevices();
+            }
+        };
+
+        fetchOnTokenChange();
+
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'token' && event.newValue) {
+                fetchOnTokenChange();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     // Define o valor do contexto

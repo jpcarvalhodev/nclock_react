@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
 import { ColorProvider, useColor } from "../context/ColorContext";
-import { Entity } from "../helpers/Types";
-import * as apiService from "../helpers/apiService";
+import { useEntity } from "../context/EntityContext";
 
 interface FooterProps {
   style?: React.CSSProperties;
@@ -9,28 +7,16 @@ interface FooterProps {
 
 export const Footer = ({ style }: FooterProps) => {
   const { footerColor } = useColor();
+  const { entity } = useEntity();
   const currentYear = new Date().getFullYear();
-  const [entityName, setEntityName] = useState<Entity[]>([]);
-
-  // useEffect para carregar o nome da entidade
-  useEffect(() => {
-    fetchEntityName();
-  }, []);
-
-  // Busca o nome da entidade
-  const fetchEntityName = async () => {
-    try {
-      const data = await apiService.fetchAllCompanyConfig();
-      setEntityName(data);
-    } catch (error) {
-      console.error('Erro ao buscar o nome da entidade:', error);
-    }
-  }
 
   // Função para truncar texto
   const truncateText = (text: string, limit: number) => {
     return text.length > limit ? text.substring(0, limit) + '...' : text;
   };
+
+  // Busca o nome da entidade
+  const entityName = entity.filter((item) => item.nome);
 
   return (
     <ColorProvider>

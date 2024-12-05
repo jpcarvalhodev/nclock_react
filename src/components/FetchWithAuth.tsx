@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import * as apiService from "../helpers/apiService";
 
 // Define as opções de requisição

@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
-import { Col, Row } from 'react-bootstrap';
+import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { Ads } from '../helpers/Types';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
@@ -359,8 +359,18 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
-                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+                >
+                    <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+                >
+                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                </OverlayTrigger>
                 <Button variant="outline-info" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>

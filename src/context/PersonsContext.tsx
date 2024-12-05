@@ -104,6 +104,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             if (options?.postFetch) {
                 options.postFetch(data);
             }
+            setEmployees(data);
             return data;
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);
@@ -326,15 +327,32 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todos os dados ao carregar o componente
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            fetchAllData();
-            fetchAllEmployees();
-            fetchAllDepartments();
-            fetchAllGroups();
-            fetchAllRegisteredUsers();
-            fetchAllCardData();
-        }
-    }, [localStorage.getItem('token')]);
+        const fetchOnTokenChange = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                await fetchAllData();
+                await fetchAllEmployees();
+                await fetchAllDepartments();
+                await fetchAllGroups();
+                await fetchAllRegisteredUsers();
+                await fetchAllCardData();
+            }
+        };
+
+        fetchOnTokenChange();
+
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'token' && event.newValue) {
+                fetchOnTokenChange();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
 
     // Define o valor do contexto
     const contextValue: PersonsContextType = {

@@ -19,6 +19,8 @@ import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
 import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { set } from "date-fns";
+import { ExportButton } from "../../components/ExportButton";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -53,6 +55,7 @@ export const TerminalsMB = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [initialData, setInitialData] = useState<Partial<MBDevice> | null>(null);
     const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<MBDevice[]>([]);
 
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
@@ -148,6 +151,7 @@ export const TerminalsMB = () => {
         selectedCount: number;
         selectedRows: MBDevice[];
     }) => {
+        setSelectedRows(state.selectedRows);
         setSelectedTerminal(state.selectedRows[0] || null);
     };
 
@@ -304,7 +308,7 @@ export const TerminalsMB = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text" style={{ color: '#000000' }}>
-                                <span>Terminais Multibanco</span>
+                                <span>Terminais</span>
                             </div>
                             <div className="datatable-header">
                                 <div className="buttons-container-others-mb">
@@ -334,6 +338,8 @@ export const TerminalsMB = () => {
                                         >
                                             <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                         </OverlayTrigger>
+                                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceFields} />
+                                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceFields} />
                                     </div>
                                 </div>
                             </div>

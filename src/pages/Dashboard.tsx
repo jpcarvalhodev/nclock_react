@@ -192,14 +192,9 @@ const extractSoftwareNameFromTabKey = (tabKey: string) => {
 // Define a página principal
 export const Dashboard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { license, getSoftwareEnabledStatus, fetchAllLicensesWithoutKey } = useLicense();
+    const { license, fetchAllLicensesWithoutKey, getSoftwareEnabledStatus } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('LICENÇAS SOFTWARES CLIENTE');
-
-    // Busca as licenças ao carregar a página
-    useEffect(() => {
-        fetchAllLicensesWithoutKey();
-    }, []);
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -210,8 +205,13 @@ export const Dashboard = () => {
             const softwareName = extractSoftwareNameFromTabKey(tab.tabKey);
 
             const softwareEnabled = getSoftwareEnabledStatus(license);
+            const transformedSoftwareEnabled = Object.keys(softwareEnabled).reduce<Record<string, boolean>>((newObj, key) => {
+                const newKey = key.replace('n', 'N');
+                newObj[newKey] = softwareEnabled[key];
+                return newObj;
+            }, {});
 
-            if (activeKey === 'LICENÇAS SOFTWARES CLIENTE' && softwareName && softwareEnabled[softwareName]) {
+            if (activeKey === 'LICENÇAS SOFTWARES CLIENTE' && softwareName && transformedSoftwareEnabled[softwareName]) {
                 route = route.replace('dashboard', 'dashboardlicensed');
             }
 
@@ -322,7 +322,7 @@ export const Dashboard = () => {
 
         const softwareEnabledStatus = getSoftwareEnabledStatus(license);
         const cards = cardData[tabKey].filter(card => {
-            return softwareEnabledStatus[`${card.tab.charAt(0).toUpperCase()}${card.tab.slice(1)}`];
+            return softwareEnabledStatus[card.tab];
         });
         const numCards = cards.length;
         const alignmentClass = numCards <= maxVisibleCards ? 'cards-center' : 'cards-left';

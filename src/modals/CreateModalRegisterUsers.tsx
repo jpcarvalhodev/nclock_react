@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import React from 'react';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import * as apiService from "../helpers/apiService";
+import hidepass from '../assets/img/login/hidepass.png';
+import showpass from '../assets/img/login/showpass.png';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -35,6 +37,8 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // useEffect para limpar o formulário quando o modal é fechado
     useEffect(() => {
@@ -58,11 +62,11 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             if (field.required && (fieldValue === null || fieldValue === '')) {
                 isValid = false;
             }
-    
+
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 isValid = false;
             }
-    
+
             if (field.key === 'password' && fieldValue) {
                 if (!validatePassword(fieldValue)) {
                     newErrors[field.key] = 'Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial';
@@ -175,6 +179,16 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         { value: 'User', label: 'Utilizador' }
     ];
 
+    // Alterna a visibilidade da password
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    // Alterna a visibilidade da confirmação da password
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl'>
             <Modal.Header closeButton>
@@ -237,23 +251,42 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 </OverlayTrigger>
                                 {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
                             </Form.Group>
-                            <Form.Group controlId="formPassword">
+                            <Form.Group controlId="formPassword" style={{ position: 'relative', marginBottom: '30px' }}>
                                 <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-password">Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial</Tooltip>}
-                                >
+                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         name="password"
                                         value={formData.password || ''}
                                         onChange={handleChange}
                                         autoComplete='off'
                                         minLength={8}
+                                        style={{ paddingRight: '40px', flex: 1 }}
                                     />
-                                </OverlayTrigger>
-                                {errors.password && <Form.Text className="text-danger">{errors.password}</Form.Text>}
+                                    <Button
+                                        variant="outline-secondary"
+                                        onClick={togglePasswordVisibility}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '5%',
+                                            right: '10px',
+                                            border: 'none',
+                                            backgroundColor: 'transparent',
+                                            padding: 0,
+                                            zIndex: 5
+                                        }}
+                                    >
+                                        <img
+                                            src={showPassword ? hidepass : showpass}
+                                            alt={showPassword ? "Esconder password" : "Mostrar password"}
+                                            style={{ width: 20, height: 20 }}
+                                        />
+                                    </Button>
+                                </div>
+                                <div style={{ minHeight: '20px', marginTop: '5px' }}>
+                                    {errors.password && <Form.Text className="text-danger">{errors.password}</Form.Text>}
+                                </div>
                             </Form.Group>
                         </Col>
                         <Col md={3}>
@@ -294,23 +327,42 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 </OverlayTrigger>
                                 {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
                             </Form.Group>
-                            <Form.Group controlId="formConfirmPassword">
+                            <Form.Group controlId="formConfirmPassword" style={{ position: 'relative', marginBottom: '30px' }}>
                                 <Form.Label>Confirmar Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-confirmPassword">Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial</Tooltip>}
-                                >
+                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                     <Form.Control
                                         className="custom-input-height custom-select-font-size"
-                                        type="password"
+                                        type={showConfirmPassword ? "text" : "password"}
                                         name="confirmPassword"
                                         value={formData.confirmPassword || ''}
                                         onChange={handleChange}
                                         autoComplete='off'
                                         minLength={8}
+                                        style={{ paddingRight: '40px', flex: 1 }}
                                     />
-                                </OverlayTrigger>
-                                {errors.confirmPassword && <Form.Text className="text-danger">{errors.confirmPassword}</Form.Text>}
+                                    <Button
+                                        variant="outline-secondary"
+                                        onClick={toggleConfirmPasswordVisibility}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '5%',
+                                            right: '10px',
+                                            border: 'none',
+                                            backgroundColor: 'transparent',
+                                            padding: 0,
+                                            zIndex: 5
+                                        }}
+                                    >
+                                        <img
+                                            src={showConfirmPassword ? hidepass : showpass}
+                                            alt={showConfirmPassword ? "Esconder password" : "Mostrar password"}
+                                            style={{ width: 20, height: 20 }}
+                                        />
+                                    </Button>
+                                </div>
+                                <div style={{ minHeight: '20px', marginTop: '5px' }}>
+                                    {errors.confirmPassword && <Form.Text className="text-danger">{errors.confirmPassword}</Form.Text>}
+                                </div>
                             </Form.Group>
                         </Col>
                     </Row>

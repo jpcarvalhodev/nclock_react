@@ -17,6 +17,8 @@ import { AdsContext, AdsContextType } from "../../../context/AdsContext";
 import Split from "react-split";
 import { TreeViewDataNled } from "../../../components/TreeViewNled";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import { ExportButton } from "../../../components/ExportButton";
+import { PrintButton } from "../../../components/PrintButton";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -50,6 +52,7 @@ export const NledAds = () => {
     const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedRows, setSelectedRows] = useState<Ads[]>([]);
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
@@ -150,6 +153,16 @@ export const NledAds = () => {
             setCurrentAdsIndex(currentAdsIndex - 1);
             setSelectedAds(ads[currentAdsIndex - 1]);
         }
+    };
+
+    // Define a função selecionar uma linha
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Ads[];
+    }) => {
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime());
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Define as colunas da tabela
@@ -271,6 +284,8 @@ export const NledAds = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={adsFields} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={adsFields} />
                             </div>
                             <div className="date-range-search">
                                 <input
@@ -304,6 +319,7 @@ export const NledAds = () => {
                                     paginationComponentOptions={paginationOptions}
                                     paginationPerPage={15}
                                     selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
                                     defaultSortAsc={false}

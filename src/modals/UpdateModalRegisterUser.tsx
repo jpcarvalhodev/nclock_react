@@ -8,6 +8,8 @@ import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import React from 'react';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import hidepass from '../assets/img/login/hidepass.png';
+import showpass from '../assets/img/login/showpass.png';
 
 // Define a interface Entity
 export interface Entity {
@@ -47,6 +49,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [showPassword, setShowPassword] = useState(false);
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
@@ -182,6 +185,11 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         { value: 'User', label: 'Utilizador' }
     ];
 
+    // Alterna a visibilidade da password
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl'>
             <Modal.Header closeButton>
@@ -244,18 +252,39 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 </OverlayTrigger>
                                 {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
                             </Form.Group>
-                            <Form.Group controlId="formPassword">
+                            <Form.Group controlId="formPassword" style={{ position: 'relative', marginBottom: '30px' }}>
                                 <Form.Label>Password</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="password"
-                                    name="password"
-                                    value={formData.password || ''}
-                                    onChange={handleChange}
-                                    autoComplete='off'
-                                    minLength={8}
-                                />
-                                {errors.password && <Form.Text className="text-danger">{errors.password}</Form.Text>}
+                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        value={formData.password || ''}
+                                        onChange={handleChange}
+                                        autoComplete='off'
+                                        minLength={8}
+                                        style={{ paddingRight: '40px', flex: 1 }}
+                                    />
+                                    <Button
+                                        variant="outline-secondary"
+                                        onClick={togglePasswordVisibility}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '5%',
+                                            right: '10px',
+                                            border: 'none',
+                                            backgroundColor: 'transparent',
+                                            padding: 0,
+                                            zIndex: 5
+                                        }}
+                                    >
+                                        <img
+                                            src={showPassword ? hidepass : showpass}
+                                            alt={showPassword ? "Esconder password" : "Mostrar password"}
+                                            style={{ width: 20, height: 20 }}
+                                        />
+                                    </Button>
+                                </div>
                             </Form.Group>
                         </Col>
                         <Col md={3}>
@@ -301,8 +330,18 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
-                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+                >
+                    <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+                >
+                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                </OverlayTrigger>
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>

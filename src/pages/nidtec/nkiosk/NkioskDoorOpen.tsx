@@ -17,6 +17,8 @@ import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
+import { ExportButton } from "../../../components/ExportButton";
+import { PrintButton } from "../../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -52,6 +54,7 @@ export const NkioskDoorOpen = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<ManualOpenDoor[]>([]);
+    const [selectedRows, setSelectedRows] = useState<ManualOpenDoor[]>([]);
 
     // Função para buscar os dados de aberturas manuais
     const fetchAllManualOpen = async () => {
@@ -133,6 +136,7 @@ export const NkioskDoorOpen = () => {
         selectedCount: number;
         selectedRows: ManualOpenDoor[];
     }) => {
+        setSelectedRows(state.selectedRows);
         setSelectedManualOpen(state.selectedRows[0] || null);
     };
 
@@ -215,6 +219,23 @@ export const NkioskDoorOpen = () => {
     // Calcula o valor total dos movimentos
     const totalAmount = filteredDataTable.length;
 
+    // Função para gerar os dados com nomes substituídos para o export/print
+    const transformTransactionWithNames = (transaction: { deviceName: string; }) => {
+    
+        const deviceMatch = devices.find(device => device.deviceName === transaction.deviceName);
+    
+        return {
+            ...transaction,
+            deviceSN: deviceMatch,
+        };
+    };
+
+    // Dados com nomes substituídos
+    const manualOpenWithNames = filteredDataTable.map(transformTransactionWithNames);
+
+    // Transforma as linhas selecionadas com nomes substituídos
+    const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -249,6 +270,8 @@ export const NkioskDoorOpen = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                     </OverlayTrigger>
+                                    <ExportButton allData={manualOpenWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : manualOpenWithNames} fields={manualOpenDoorFields} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : manualOpenWithNames} fields={manualOpenDoorFields} />
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <OverlayTrigger
                                             placement="top"

@@ -168,7 +168,7 @@ export const Types = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || String(externalEntityType[key]) === String(filters[key])
         )
-    );
+    ).sort((a, b) => a.order - b.order);
 
     // Define os dados iniciais ao duplicar
     const handleDuplicate = (entity: Partial<ExternalEntityTypes>) => {

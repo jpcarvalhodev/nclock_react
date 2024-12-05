@@ -9,6 +9,7 @@ import { PersonsProvider } from './context/PersonsContext';
 import { ColorProvider } from './context/ColorContext';
 import { AdsProvider } from './context/AdsContext';
 import { LicenseProvider } from './context/LicenseContext';
+import { EntityProvider } from './context/EntityContext';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -17,15 +18,18 @@ root.render(
   <React.StrictMode>
     <LicenseProvider>
       <ColorProvider>
-        <PersonsProvider>
-          <AttendanceProvider>
-            <TerminalsProvider>
-              <AdsProvider>
-                <App />
-              </AdsProvider>
-            </TerminalsProvider>
-          </AttendanceProvider>
-        </PersonsProvider>
+        <EntityProvider>
+          <PersonsProvider>
+            <AttendanceProvider>
+              <TerminalsProvider>
+
+                <AdsProvider>
+                  <App />
+                </AdsProvider>
+              </TerminalsProvider>
+            </AttendanceProvider>
+          </PersonsProvider>
+        </EntityProvider>
       </ColorProvider>
     </LicenseProvider>
   </React.StrictMode>

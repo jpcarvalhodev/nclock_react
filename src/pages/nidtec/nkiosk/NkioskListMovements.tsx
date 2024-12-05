@@ -8,8 +8,8 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { KioskTransactionCard } from "../../../helpers/Types";
-import { transactionCardFields } from "../../../helpers/Fields";
+import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
@@ -17,6 +17,8 @@ import { PrintButton } from "../../../components/PrintButton";
 import { useLocation } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
+import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
+import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -30,6 +32,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useColor();
+    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
     const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
@@ -47,6 +50,8 @@ export const NkioskListMovements = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
     const location = useLocation();
     const eventDoorId = '3';
     const eventDoorId2 = '4';
@@ -97,6 +102,17 @@ export const NkioskListMovements = () => {
             console.error('Erro ao buscar os dados de movimentos de cartões:', error);
             setListMovementKiosk([]);
         }
+    };
+
+    // Função para atualizar um funcionário e um cartão
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+        await handleUpdateEmployee(employee);
+        if (card.cardId) {
+            await handleUpdateEmployeeCard(card as EmployeeCard);
+        } else {
+            await handleAddEmployeeCard(card as EmployeeCard);
+        }
+        window.location.reload();
     };
 
     // Função para buscar os movimentos entre datas
@@ -265,10 +281,32 @@ export const NkioskListMovements = () => {
         return acc;
     }, [] as typeof transactionCardFields);
 
+    // Função para abrir o modal de edição
+    const handleOpenEditModal = (person: KioskTransactionCard) => {
+        const employeeDetails = employees.find(emp => emp.name === person.nameUser);
+        if (employeeDetails) {
+            setSelectedEmployee(employeeDetails);
+            setShowEditModal(true);
+        } else {
+            console.error("Funcionário não encontrado:", person.nameUser);
+        }
+    };
+
     const columns: TableColumn<KioskTransactionCard>[] = combinedMovements
         .filter(field => selectedColumns.includes(field.key))
         .sort((a, b) => (a.key === 'eventTime' ? -1 : b.key === 'eventTime' ? 1 : 0))
         .map(field => {
+            if (field.key === 'nameUser') {
+                return {
+                    ...field,
+                    name: field.label,
+                    cell: (row: KioskTransactionCard) => (
+                        <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
+                            {row.nameUser}
+                        </div>
+                    )
+                };
+            }
             const formatField = (row: KioskTransactionCard) => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
@@ -302,10 +340,10 @@ export const NkioskListMovements = () => {
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { deviceSN: string; }) => {
-    
+
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
         const deviceName = deviceMatch?.deviceName || 'Sem Dados';
-    
+
         return {
             ...transaction,
             deviceSN: deviceName,
@@ -411,6 +449,16 @@ export const NkioskListMovements = () => {
                         onColumnToggle={toggleColumn}
                         onResetColumns={resetColumns}
                         onSelectAllColumns={onSelectAllColumns}
+                    />
+                )}
+                {selectedEmployee && (
+                    <UpdateModalEmployees
+                        open={showEditModal}
+                        onClose={() => setShowEditModal(false)}
+                        onUpdate={updateEmployeeAndCard}
+                        entity={selectedEmployee}
+                        fields={employeeFields}
+                        title="Atualizar Funcionário"
                     />
                 )}
             </div>

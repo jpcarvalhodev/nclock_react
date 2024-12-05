@@ -51,6 +51,9 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
             }
+            if (field.type === 'time' && fieldValue === '00:00') {
+                valid = true;
+            }
 
             return valid;
         });
@@ -118,13 +121,56 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
         onClose();
     }
 
+    // Função para tratar valores vazios ou undefined
+    const prepareFormData = (data: Partial<TimePeriod>) => {
+        const updatedData = { ...data };
+
+        Object.keys(daysOfWeek).forEach(day => {
+            const startKeys = [`${day}Start1`, `${day}Start2`, `${day}Start3`] as (keyof TimePeriod)[];
+            const endKeys = [`${day}End1`, `${day}End2`, `${day}End3`] as (keyof TimePeriod)[];
+
+            startKeys.forEach(startKey => {
+                if (!updatedData[startKey]) {
+                    updatedData[startKey] = '00:00';
+                }
+            });
+
+            endKeys.forEach(endKey => {
+                if (!updatedData[endKey]) {
+                    updatedData[endKey] = '00:00';
+                }
+            });
+        });
+
+        const holidayTypes = ['holidayType1', 'holidayType2', 'holidayType3'];
+        holidayTypes.forEach(type => {
+            const startKeys = [`${type}Start1`, `${type}Start2`, `${type}Start3`] as (keyof TimePeriod)[];
+            const endKeys = [`${type}End1`, `${type}End2`, `${type}End3`] as (keyof TimePeriod)[];
+
+            startKeys.forEach(startKey => {
+                if (!updatedData[startKey]) {
+                    updatedData[startKey] = '00:00';
+                }
+            });
+
+            endKeys.forEach(endKey => {
+                if (!updatedData[endKey]) {
+                    updatedData[endKey] = '00:00';
+                }
+            });
+        });
+
+        return updatedData;
+    };
+
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onSave(formData as T);
+        const preparedData = prepareFormData(formData);
+        onSave(preparedData as T);
     };
 
     // Traduz as keys dos dias da semana

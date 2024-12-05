@@ -75,10 +75,27 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
 
   // Busca as publicidades ao carregar o componente
   useEffect(() => {
-    if (localStorage.getItem('token')) {
-      fetchAds();
-    }
-  }, [localStorage.getItem('token')]);
+    const fetchOnTokenChange = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            await fetchAds();
+        }
+    };
+
+    fetchOnTokenChange();
+
+    const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === 'token' && event.newValue) {
+            fetchOnTokenChange();
+        }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+}, []);
 
   return (
     <AdsContext.Provider value={{ ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds }}>

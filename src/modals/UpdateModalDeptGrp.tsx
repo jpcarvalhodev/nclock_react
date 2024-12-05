@@ -11,6 +11,7 @@ import { UpdateModalEmployees } from './UpdateModalEmployees';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import DataTable from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
+import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -68,6 +69,8 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
+    const [showSelectDeptGrpModal, setShowSelectDeptGrpModal] = useState(false);
+    const [selectedDeptGrp, setSelectedDeptGrp] = useState(null);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -289,6 +292,25 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         rangeSeparatorText: 'de',
     };
 
+    // Função para aplicar a mudança de departamento/grupo
+    const handleDeptGroupChange = () => {
+        if (selectedRow && selectedEmployee) {
+            let updatedEmployee = { ...selectedEmployee };
+            if (entityType === 'department') {
+                updatedEmployee.departmentId = selectedRow.id;
+            } else if (entityType === 'group') {
+                updatedEmployee.groupId = selectedRow.id;
+            }
+            updateEmployeeAndCard(updatedEmployee, {});
+        } else {
+            toast.warn('Selecione um departamento/grupo e um funcionário para trocar.');
+        }
+    }
+
+    const applyDeptGroupChange = () => {
+        setShowSelectDeptGrpModal(true);
+    }
+
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
@@ -458,7 +480,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
                                 <DataTable
                                     columns={employeeColumns}
-                                    data={employeeData}
+                                    data={employeeData.length > 0 ? employeeData : employees}
                                     customStyles={customStyles}
                                     noHeader
                                     pagination
@@ -467,20 +489,44 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     paginationRowsPerPageOptions={[5, 10, 15, 20]}
                                     onRowDoubleClicked={handleEmployeeClick}
                                     selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
                                     selectableRowsNoSelectAll={true}
                                     defaultSortAsc={true}
                                     defaultSortFieldId='enrollNumber'
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                 />
                             </div>
-                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
+                            <div style={{ display: 'flex' }}>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton className="action-button" icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Trocar Dept/Grp</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-right" onClick={applyDeptGroupChange} />
+                                </OverlayTrigger>
+                            </div>
                         </Col>
                     </Row>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
-                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+                >
+                    <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+                >
+                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                </OverlayTrigger>
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

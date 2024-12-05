@@ -135,7 +135,7 @@ export const NkioskCounter = () => {
             }
         })
     )
-    .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
+        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<Counter>[] = counterFields
@@ -182,23 +182,11 @@ export const NkioskCounter = () => {
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
-    // Calcula o total dos pagamentos Multibanco
-    const totalMBAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Multibanco').length;
-
-    // Calcula o total dos pagamentos Moedeiro
-    const totalCoinAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Moedeiro').length;
-
     // Calcula o total de movimentos Torniquete
-    const totalCardAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Torniquete').length;
-
+    const totalCardAmount = filteredDataTable.filter(transaction => transaction.eventType !== 'Quiosque').length;
+    
     // Calcula o total de movimentos Quiosque
     const totalKioskAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Quiosque').length;
-
-    // Calcula o total de movimentos Video Porteiro
-    const totalVPAmount = filteredDataTable.filter(transaction => transaction.eventType === 'VideoPorteiro').length;
-
-    // Calcula o total de aberuras manuais
-    const totalManualOpenAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Abertura Manual').length;
 
     return (
         <div className="main-container">
@@ -277,23 +265,11 @@ export const NkioskCounter = () => {
                                 defaultSortFieldId="eventTime"
                             />
                         </div>
-                        <div style={{ marginLeft: 10 }}>
-                            <strong>Total de Pagamentos Multibanco: </strong>{totalMBAmount}
-                        </div>
-                        <div style={{ marginLeft: 10, marginTop: 5 }}>
-                            <strong>Total de Pagamentos Moedeiro: </strong>{totalCoinAmount}
-                        </div>
                         <div style={{ marginLeft: 10, marginTop: 5 }}>
                             <strong>Total de Movimentos Torniquete: </strong>{totalCardAmount}
                         </div>
                         <div style={{ marginLeft: 10, marginTop: 5 }}>
                             <strong>Total de Movimentos Quiosque: </strong>{totalKioskAmount}
-                        </div>
-                        <div style={{ marginLeft: 10, marginTop: 5 }}>
-                            <strong>Total de Movimentos Video Porteiro: </strong>{totalVPAmount}
-                        </div>
-                        <div style={{ marginLeft: 10, marginTop: 5 }}>
-                            <strong>Total de Aberturas Manuais: </strong>{totalManualOpenAmount}
                         </div>
                     </div>
                 </Split>

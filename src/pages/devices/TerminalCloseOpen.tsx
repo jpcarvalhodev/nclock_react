@@ -14,6 +14,8 @@ import * as apiService from "../../helpers/apiService";
 import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
 import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { ExportButton } from "../../components/ExportButton";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -133,7 +135,8 @@ export const TerminalCloseOpen = () => {
         selectedCount: number;
         selectedRows: MBDeviceCloseOpen[];
     }) => {
-        setSelectedDeviceRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        setSelectedDeviceRows(sortedSelectedRows);
     };
 
     // Filtra os dados da tabela de dispositivos
@@ -232,6 +235,8 @@ export const TerminalCloseOpen = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                     </OverlayTrigger>
+                                    <ExportButton allData={filteredDeviceDataTable} selectedData={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={mbDeviceCloseOpenFields} />
+                                    <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={mbDeviceCloseOpenFields} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

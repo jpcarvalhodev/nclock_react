@@ -45,7 +45,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const {
         devices,
     } = useContext(TerminalsContext) as DeviceContextType;
-    const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, enabled: true });
+    const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [error, setError] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
@@ -57,7 +57,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
-        setFormData({ ...initialValues, enabled: true });
+        setFormData({ ...initialValues });
         setSelectedDevice(initialValues.model || '');
         if (initialValues.photo) {
             setDeviceImage(initialValues.photo);
@@ -309,24 +309,18 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formModel">
-                            <Form.Label>Modelo<span style={{ color: 'red' }}> *</span></Form.Label>
-                            <OverlayTrigger
-                                placement="right"
-                                overlay={<Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>}
+                            <Form.Label>Modelo</Form.Label>
+                            <Form.Select
+                                name="model"
+                                value={selectedDevice}
+                                onChange={handleDeviceChange}
+                                className="custom-input-height custom-select-font-size"
                             >
-                                <Form.Select
-                                    name="model"
-                                    value={selectedDevice}
-                                    onChange={handleDeviceChange}
-                                    className="custom-input-height custom-select-font-size"
-                                >
-                                    <option value="">Selecione</option>
-                                    {deviceOptions.map(option => (
-                                        <option key={option.value} value={option.value}>{option.label}</option>
-                                    ))}
-                                </Form.Select>
-                            </OverlayTrigger>
-                            {errors['model'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['model']}</div>}
+                                <option value="">Selecione</option>
+                                {deviceOptions.map(option => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </Form.Select>
                         </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -410,6 +404,9 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                 <Nav.Item>
                                     <Nav.Link eventKey="portas">Portas</Nav.Link>
                                 </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="auxiliares">Auxiliares</Nav.Link>
+                                </Nav.Item>
                             </Nav>
                             <Tab.Content>
                                 <Tab.Pane eventKey="comunicacao">
@@ -419,39 +416,27 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                 <Row>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formIpAddress">
-                                                            <Form.Label>IP<span style={{ color: 'red' }}> *</span></Form.Label>
-                                                            <OverlayTrigger
-                                                                placement="right"
-                                                                overlay={<Tooltip id="tooltip-ipAddress">Campo obrigatório</Tooltip>}
-                                                            >
-                                                                <Form.Control
-                                                                    type="string"
-                                                                    name="ipAddress"
-                                                                    value={formData['ipAddress'] || ''}
-                                                                    onChange={handleChange}
-                                                                    isInvalid={!!error}
-                                                                    className="custom-input-height custom-select-font-size"
-                                                                />
-                                                            </OverlayTrigger>
-                                                            {errors['ipAddress'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['ipAddress']}</div>}
+                                                            <Form.Label>IP</Form.Label>
+                                                            <Form.Control
+                                                                type="string"
+                                                                name="ipAddress"
+                                                                value={formData['ipAddress'] || ''}
+                                                                onChange={handleChange}
+                                                                isInvalid={!!error}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formPort">
-                                                            <Form.Label>Porta<span style={{ color: 'red' }}> *</span></Form.Label>
-                                                            <OverlayTrigger
-                                                                placement="right"
-                                                                overlay={<Tooltip id="tooltip-port">Campo obrigatório</Tooltip>}
-                                                            >
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    name="port"
-                                                                    value={formData['port'] || ''}
-                                                                    onChange={handleChange}
-                                                                    className="custom-input-height custom-select-font-size"
-                                                                />
-                                                            </OverlayTrigger>
-                                                            {errors['port'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['port']}</div>}
+                                                            <Form.Label>Porta</Form.Label>
+                                                            <Form.Control
+                                                                type="number"
+                                                                name="port"
+                                                                value={formData['port'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
@@ -468,24 +453,18 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formDeviceProtocol">
-                                                            <Form.Label>Protocolo <span style={{ color: 'red' }}> *</span></Form.Label>
-                                                            <OverlayTrigger
-                                                                placement="right"
-                                                                overlay={<Tooltip id="tooltip-deviceProtocol">Campo obrigatório</Tooltip>}
+                                                            <Form.Label>Protocolo</Form.Label>
+                                                            <Form.Select
+                                                                name="deviceProtocol"
+                                                                value={formData['deviceProtocol'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
                                                             >
-                                                                <Form.Select
-                                                                    name="deviceProtocol"
-                                                                    value={formData['deviceProtocol'] || ''}
-                                                                    onChange={handleChange}
-                                                                    className="custom-input-height custom-select-font-size"
-                                                                >
-                                                                    <option value="">Selecione</option>
-                                                                    <option value="1">Standalone</option>
-                                                                    <option value="2">Pull</option>
-                                                                    <option value="3">Push</option>
-                                                                </Form.Select>
-                                                            </OverlayTrigger>
-                                                            {errors['deviceProtocol'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceProtocol']}</div>}
+                                                                <option value="">Selecione</option>
+                                                                <option value="1">Standalone</option>
+                                                                <option value="2">Pull</option>
+                                                                <option value="3">Push</option>
+                                                            </Form.Select>
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
@@ -554,41 +533,29 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                             />
                                                         </Form.Group>
                                                         <Form.Group controlId="formDeviceType">
-                                                            <Form.Label>Tipo <span style={{ color: 'red' }}>*</span></Form.Label>
-                                                            <OverlayTrigger
-                                                                placement="right"
-                                                                overlay={<Tooltip id="tooltip-deviceType">Campo obrigatório</Tooltip>}
+                                                            <Form.Label>Tipo</Form.Label>
+                                                            <Form.Select
+                                                                name="deviceType"
+                                                                value={formData['deviceType'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
                                                             >
-                                                                <Form.Select
-                                                                    name="deviceType"
-                                                                    value={formData['deviceType'] || ''}
-                                                                    onChange={handleChange}
-                                                                    className="custom-input-height custom-select-font-size"
-                                                                >
-                                                                    <option value="">Selecione</option>
-                                                                    <option value="1">Assiduidade</option>
-                                                                    <option value="2">Controle de Acesso</option>
-                                                                </Form.Select>
-                                                            </OverlayTrigger>
-                                                            {errors['deviceType'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['deviceType']}</div>}
+                                                                <option value="">Selecione</option>
+                                                                <option value="1">Assiduidade</option>
+                                                                <option value="2">Controle de Acesso</option>
+                                                            </Form.Select>
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formSerialNumber">
-                                                            <Form.Label>Número de Série<span style={{ color: 'red' }}> *</span></Form.Label>
-                                                            <OverlayTrigger
-                                                                placement="right"
-                                                                overlay={<Tooltip id="tooltip-serialNumber">Campo obrigatório</Tooltip>}
-                                                            >
-                                                                <Form.Control
-                                                                    type="string"
-                                                                    name="serialNumber"
-                                                                    value={formData['serialNumber'] || ''}
-                                                                    onChange={handleChange}
-                                                                    className="custom-input-height custom-select-font-size"
-                                                                />
-                                                            </OverlayTrigger>
-                                                            {errors['serialNumber'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['serialNumber']}</div>}
+                                                            <Form.Label>Número de Série</Form.Label>
+                                                            <Form.Control
+                                                                type="string"
+                                                                name="serialNumber"
+                                                                value={formData['serialNumber'] || ''}
+                                                                onChange={handleChange}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
                                                         </Form.Group>
                                                     </Col>
                                                 </Row>
@@ -604,7 +571,21 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                 data={filteredDataTable}
                                                 pagination
                                                 paginationComponentOptions={paginationOptions}
-                                                noDataComponent="Os dados de portas só serão exibidos após adicionar o dispositivo."
+                                                noDataComponent="Os dados de portas só serão exibidos após adicionar e ativar o dispositivo."
+                                                customStyles={customStyles}
+                                            />
+                                        </Row>
+                                    </Form>
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="auxiliares">
+                                    <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                        <Row>
+                                            <DataTable
+                                                columns={columns}
+                                                data={filteredDataTable}
+                                                pagination
+                                                paginationComponentOptions={paginationOptions}
+                                                noDataComponent="Os dados de auxiliares só serão exibidos após adicionar e ativar o dispositivo."
                                                 customStyles={customStyles}
                                             />
                                         </Row>

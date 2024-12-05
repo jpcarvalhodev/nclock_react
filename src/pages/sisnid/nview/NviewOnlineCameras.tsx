@@ -15,6 +15,8 @@ import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal
 import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DeleteModal } from "../../../modals/DeleteModal";
+import { ExportButton } from "../../../components/ExportButton";
+import { PrintButton } from "../../../components/PrintButton";
 
 export const NviewOnlineCameras = () => {
     const { navbarColor, footerColor } = useColor();
@@ -44,6 +46,7 @@ export const NviewOnlineCameras = () => {
             }
         } catch (error) {
             console.error('Erro ao buscar os dados das câmeras:', error);
+            setCameras([]);
         }
     };
 
@@ -125,10 +128,10 @@ export const NviewOnlineCameras = () => {
     };
 
     // Define a função de edição de controle de acesso
-    const handleEditCameras = (cameras: Cameras) => {
-        setSelectedCameras(cameras);
-        const sortedCameras = cameras.sort((a: Cameras, b: Cameras) => a.numeroCamera - b.numeroCamera);
-        const camerasIndex = sortedCameras.findIndex((camera: Cameras) => camera.id === cameras.id);
+    const handleEditCameras = (selectedCamera: Cameras) => {
+        const sortedCameras = [...cameras].sort((a: Cameras, b: Cameras) => a.numeroCamera - b.numeroCamera);
+        const camerasIndex = sortedCameras.findIndex((cam: Cameras) => cam.id === selectedCamera.id);
+        setSelectedCameras(selectedCamera);
         setCurrentCameraIndex(camerasIndex);
         setShowUpdateModal(true);
     };
@@ -298,6 +301,8 @@ export const NviewOnlineCameras = () => {
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em'
                             />
                         </OverlayTrigger>
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={cameraFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={cameraFields} />
                     </div>
                 </div>
                 <div className='table-css'>

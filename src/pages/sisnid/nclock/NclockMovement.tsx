@@ -2,10 +2,10 @@ import Split from 'react-split';
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar"
 import { useContext, useEffect, useState } from "react";
-import { EmployeeAttendanceTimes } from "../../../helpers/Types";
+import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { ExportButton } from "../../../components/ExportButton";
-import { employeeAttendanceTimesFields } from "../../../helpers/Fields";
+import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
 import { toast } from "react-toastify";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { DeleteModal } from "../../../modals/DeleteModal";
@@ -20,6 +20,8 @@ import { SelectFilter } from '../../../components/SelectFilter';
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../../context/MovementContext';
 import { useColor } from '../../../context/ColorContext';
 import { PrintButton } from '../../../components/PrintButton';
+import { PersonsContext, PersonsContextType } from '../../../context/PersonsContext';
+import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
 
 // Define a interface para os filtros
 interface Filters {
@@ -40,6 +42,7 @@ export const NclockMovement = () => {
         handleDeleteAttendance
     } = useContext(AttendanceContext) as AttendanceContextType;
     const { navbarColor, footerColor } = useColor();
+    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
     const [attendanceMovement, setAttendanceMovement] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
@@ -58,6 +61,8 @@ export const NclockMovement = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<EmployeeAttendanceTimes>>({});
     const [currentAttendanceIndex, setCurrentAttendanceIndex] = useState(0);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
 
     // Função para buscar todos as assiduidades
     const fetchMovements = () => {
@@ -96,6 +101,17 @@ export const NclockMovement = () => {
         await handleDeleteAttendance(attendanceTimeId);
         refreshAttendance();
     }
+
+    // Função para atualizar um funcionário e um cartão
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+        await handleUpdateEmployee(employee);
+        if (card.cardId) {
+            await handleUpdateEmployeeCard(card as EmployeeCard);
+        } else {
+            await handleAddEmployeeCard(card as EmployeeCard);
+        }
+        window.location.reload();
+    };
 
     // Atualiza os dados de renderização
     useEffect(() => {
@@ -213,18 +229,38 @@ export const NclockMovement = () => {
         setShowAddAttendanceModal(true);
     }
 
+     // Função para abrir o modal de edição
+     const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
+        const employeeDetails = employees.find(emp => emp.name === person.nameUser);
+        if (employeeDetails) {
+            setSelectedEmployee(employeeDetails);
+            setShowEditModal(true);
+        } else {
+            console.error("Funcionário não encontrado:", person.nameUser);
+        }
+    };
+
     // Define as colunas
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
+            if (field.key === 'employeeId') {
+                return {
+                    ...field,
+                    name: field.label,
+                    cell: (row: EmployeeAttendanceTimes) => (
+                        <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
+                            {row.employeeName}
+                        </div>
+                    )
+                };
+            }
             const formatField = (row: EmployeeAttendanceTimes) => {
                 switch (field.key) {
                     case 'attendanceTime':
                         return new Date(row.attendanceTime).toLocaleString() || '';
                     case 'deviceId':
                         return row.deviceNumber || '';
-                    case 'employeeId':
-                        return row.employeeName || '';
                     case 'inOutMode':
                         if (row.inOutModeDescription) {
                             return row.inOutModeDescription || '';
@@ -450,6 +486,16 @@ export const NclockMovement = () => {
                         onColumnToggle={handleColumnToggle}
                         onResetColumns={handleResetColumns}
                         onSelectAllColumns={handleSelectAllColumns}
+                    />
+                )}
+                {selectedEmployee && (
+                    <UpdateModalEmployees
+                        open={showEditModal}
+                        onClose={() => setShowEditModal(false)}
+                        onUpdate={updateEmployeeAndCard}
+                        entity={selectedEmployee}
+                        fields={employeeFields}
+                        title="Atualizar Funcionário"
                     />
                 )}
             </div>

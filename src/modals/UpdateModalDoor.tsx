@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
-import { Col, Row } from 'react-bootstrap';
+import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 
@@ -417,8 +417,18 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
-                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+                >
+                    <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+                >
+                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                </OverlayTrigger>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

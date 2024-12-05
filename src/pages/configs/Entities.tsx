@@ -4,11 +4,9 @@ import { NavBar } from "../../components/NavBar";
 import { useColor } from "../../context/ColorContext";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { customStyles } from "../../components/CustomStylesDataTable";
-import * as apiService from "../../helpers/apiService";
 import { Entity } from "../../helpers/Types";
-import { toast } from "react-toastify";
 import { SelectFilter } from "../../components/SelectFilter";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -16,10 +14,11 @@ import { entityFields } from "../../helpers/Fields";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { CreateEntityModal } from "../../modals/CreateEntityModal";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
+import { EntityContext, EntityContextType } from "../../context/EntityContext";
 
 export const Entities = () => {
     const { navbarColor, footerColor } = useColor();
-    const [entityData, setEntityData] = useState<Entity[]>([]);
+    const { entity, fetchAllEntity, addEntity, updateEntity, deleteEntity } = useContext(EntityContext) as EntityContextType;
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nome', 'nif', 'email', 'enabled']);
     const [filterText, setFilterText] = useState("");
@@ -32,70 +31,24 @@ export const Entities = () => {
     const [initialData, setInitialData] = useState<Partial<Entity>>({});
     const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
 
-    // Função para carregar os dados das entidades
-    const fetchCompanyConfig = async () => {
-        try {
-            const data = await apiService.fetchAllCompanyConfig();
-            if (Array.isArray(data)) {
-                setEntityData(data);
-            } else {
-                setEntityData([]);
-            }
-        } catch (error) {
-            console.error('Erro ao carregar os empresas:', error);
-        }
-    }
-
     // Função para adicionar os dados da entidade
     const handleAddCompanyData = async (entityData: FormData) => {
-        try {
-            const data = await apiService.addCompanyConfig(entityData);
-            if (Array.isArray(data)) {
-                setEntityData(data);
-            }
-            toast.success(data.value || 'Dados da empresa adicionados com sucesso!');
-        } catch (error) {
-            console.error('Erro ao adicionar os dados da empresa:', error);
-        } finally {
-            fetchCompanyConfig();
-        }
+        await addEntity(entityData);
     }
 
     // Função para atualizar os dados da entidade
     const handleUpdateCompanyData = async (entityData: FormData) => {
-        try {
-            const data = await apiService.updateCompanyConfig(entityData);
-            if (Array.isArray(data)) {
-                setEntityData(data);
-            }
-            toast.success(data.value || 'Dados da empresa atualizados com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar os dados da empresa:', error);
-        } finally {
-            fetchCompanyConfig();
-        }
+        await updateEntity(entityData);
     }
 
     // Função para apagar os dados da entidade
     const handleDeleteCompanyData = async (id: string) => {
-        try {
-            const data = await apiService.deleteCompanyConfig(id);
-            toast.success(data.value || 'Dados da empresa apagados com sucesso!');
-        } catch (error) {
-            console.error('Erro ao apagar os dados da empresa:', error);
-        } finally {
-            fetchCompanyConfig();
-        }
+        await deleteEntity(id);
     }
-
-    // Busca os utilizadores ao carregar a página
-    useEffect(() => {
-        fetchCompanyConfig();
-    }, []);
 
     // Função para atualizar as entidade
     const refreshEntity = () => {
-        fetchCompanyConfig();
+        fetchAllEntity();
     };
 
     // Função para editar uma entidade
@@ -145,9 +98,9 @@ export const Entities = () => {
     // Define a função de próxima entidade
     const handleNextEntity = () => {
         setCurrentEntityIndex(prevIndex => {
-            if (prevIndex < entityData.length - 1) {
+            if (prevIndex < entity.length - 1) {
                 const newIndex = prevIndex + 1;
-                setSelectedEntity(entityData[newIndex]);
+                setSelectedEntity(entity[newIndex]);
                 return newIndex;
             }
             return prevIndex;
@@ -159,7 +112,7 @@ export const Entities = () => {
         setCurrentEntityIndex(prevIndex => {
             if (prevIndex > 0) {
                 const newIndex = prevIndex - 1;
-                setSelectedEntity(entityData[newIndex]);
+                setSelectedEntity(entity[newIndex]);
                 return newIndex;
             }
             return prevIndex;
@@ -179,12 +132,13 @@ export const Entities = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = entityData.filter(user =>
+    const filteredDataTable = Array.isArray(entity) ? entity.filter(user =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(user[key]) === String(filters[key])
         )
-    );
+    ) : [];
 
+    // Define as colunas excluídas
     const excludedColumns = ['logotipo'];
 
     // Define as colunas da tabela
@@ -327,7 +281,7 @@ export const Entities = () => {
                     title="Atualizar Entidade"
                     onNext={handleNextEntity}
                     onPrev={handlePrevEntity}
-                    canMoveNext={currentEntityIndex < entityData.length - 1}
+                    canMoveNext={currentEntityIndex < entity.length - 1}
                     canMovePrev={currentEntityIndex > 0}
                 />
             )}

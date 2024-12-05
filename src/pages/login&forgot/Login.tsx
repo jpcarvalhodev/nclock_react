@@ -2,16 +2,25 @@ import { useNavigate, Link } from 'react-router-dom';
 import '../../css/Login.css';
 import { useEffect, useState } from 'react';
 import React from 'react';
-import { Button, Col, Row } from 'react-bootstrap';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 import profileAvatar from '../../assets/img/navbar/navbar/profileAvatar.png';
 import no_entity from '../../assets/img/navbar/no_entity.png';
 import entity from '../../assets/assist_img/logo_quiosque.jpeg';
+import hidepass from '../../assets/img/login/hidepass.png';
+import showpass from '../../assets/img/login/showpass.png';
+import * as apiService from "../../helpers/apiService";
+import { License } from '../../helpers/Types';
+import { LoginLicenseModal } from '../../modals/LoginLicenseModal';
+
+// Define a interface para os itens de campo
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 // Interface para o usuário
 type User = {
   username: string;
+  entidadeNif: number;
   password: string;
 };
 
@@ -21,6 +30,28 @@ export const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [company, setCompany] = useState<License[]>([]);
+  const [selectedNif, setSelectedNif] = useState<number>(0);
+  const [showModal, setShowModal] = useState(false);
+
+  const fetchLicenseData = async () => {
+    try {
+      const data = await apiService.fetchLicensesWithoutKey();
+      setCompany(data);
+      setSelectedNif(Number(data[0].nif));
+      if (!data.ok) {
+        console.error('Falha ao obter os dados da licença.');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+    }
+  };
+
+  // Obtém os dados da licença
+  useEffect(() => {
+    fetchLicenseData();
+  }, []);
 
   // Verifica se o usuário já está logado
   useEffect(() => {
@@ -29,14 +60,36 @@ export const Login = () => {
       navigate('/dashboard');
     } else {
       const savedUsername = localStorage.getItem('rememberMeUser');
+      const savedNif = localStorage.getItem('rememberMeNif');
       const savedPassword = localStorage.getItem('rememberMePassword');
-      if (savedUsername && savedPassword) {
+      if (savedUsername && savedNif && savedPassword) {
         setUsername(savedUsername);
+        setSelectedNif(Number(savedNif));
         setPassword(savedPassword);
         setRememberMe(true);
       }
     }
   }, [navigate]);
+
+  // Função atualizada para setar o NIF junto com o nome da empresa
+  const handleCompanyChange = (event: React.ChangeEvent<FormControlElement>) => {
+    const selectedLicense = company.find(license => license.name === event.target.value);
+    setSelectedNif(selectedLicense ? Number(selectedLicense.nif) : 0);
+  };
+
+  // Função para inserir a chave de licença
+  const insertLicenseKey = async (licenseKey: string) => {
+    try {
+      const data = await apiService.importLicense(licenseKey);
+      if (data.ok) {
+        toast.success(data.message || 'Chave inserida com sucesso!');
+      }
+    } catch (error) {
+      console.error('Erro ao inserir chave:', error);
+    } finally {
+      setShowModal(false);
+    }
+  }
 
   // Função para fazer login
   const handleLoginFormSubmit = async (event: React.FormEvent) => {
@@ -44,6 +97,7 @@ export const Login = () => {
 
     const user: User = {
       username,
+      entidadeNif: selectedNif,
       password,
     };
 
@@ -64,29 +118,31 @@ export const Login = () => {
       } else {
         const data = await response.json();
 
-        if (data.token == null) {
-          toast.error('Ocorreu um erro ao fazer login. Tente novamente.');
-          return;
-        }
-
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', username);
+        localStorage.setItem('nif', selectedNif.toString());
 
         if (rememberMe) {
           localStorage.setItem('rememberMeUser', username);
+          localStorage.setItem('rememberMeNif', selectedNif.toString());
           localStorage.setItem('rememberMePassword', password);
         } else {
           localStorage.removeItem('rememberMeUser');
+          localStorage.removeItem('rememberMeNif');
           localStorage.removeItem('rememberMePassword');
         }
-
+        
         toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
         navigate('/dashboard');
       }
     } catch (error) {
       console.error('Erro:', error);
-      toast.error('Problema com o servidor, contacte o administrador.');
     }
+  };
+
+  // Alterna a visibilidade da password
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -108,11 +164,15 @@ export const Login = () => {
                 </div>
               </Col>
               <Col className='col-username-password'>
-                <label className='username-label'>
-                  <p>Licenciado a Empresa:</p>
-                  <input className='input-username-password' type="text" name="username" value="União das Freguesias de Cedofeita, Santo Ildefonso, Sé, Miragaia, São Nicolau e Vitória" readOnly />
-                </label>
-                <Button className='license-button' variant='outline-light'>Licenças</Button>
+                <Form.Group controlId="companySelect">
+                  <Form.Label className='username-label'>Licenciado a Empresa:</Form.Label>
+                  <Form.Control as="select" className='input-username-password' value={username} onChange={handleCompanyChange}>
+                    {company.map((license, index) => (
+                      <option key={index} value={license.name}>{license.name}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+                <Button className='license-button' variant='outline-light' onClick={() => setShowModal(true)} >Licenças</Button>
               </Col>
             </Row>
           </div>
@@ -134,7 +194,12 @@ export const Login = () => {
                 </label>
                 <label className='password-label'>
                   <p>Password:</p>
-                  <input className='input-username-password' type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <div className="password-input-container">
+                    <input className='input-username-password' type={showPassword ? "text" : "password"} name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <button type="button" className="toggle-password" onClick={togglePasswordVisibility} >
+                      {showPassword ? <img src={hidepass} alt="esconde password" /> : <img src={showpass} alt="mostra password" />}
+                    </button>
+                  </div>
                 </label>
               </Col>
               <Col className='col-profile-img-2'>
@@ -158,6 +223,12 @@ export const Login = () => {
           </footer>
         </form>
       </div>
+      <LoginLicenseModal
+        title='Inserir Chave'
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={insertLicenseKey}
+      />
     </div>
   );
 };

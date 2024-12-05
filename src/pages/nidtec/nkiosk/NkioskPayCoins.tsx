@@ -124,7 +124,7 @@ export const NkioskPayCoins = () => {
         );
     
         if (hasDispositivosOrNidGroup) {
-            toast.warn('Selecione somente locais!');
+            toast.warn('Selecione apenas o dispositivo!');
             return;
         }
         try {

@@ -290,7 +290,7 @@ export const Departments = () => {
             ...transaction,
             paiId: departmentName,
         };
-    });
+    }).sort((a, b) => a.code - b.code);
 
     return (
         <div className="main-container">
@@ -328,8 +328,8 @@ export const Departments = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
-                        <ExportButton allData={departmentWithNames} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={departmentFields} />
-                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={departmentFields} />
+                        <ExportButton allData={departmentWithNames} selectedData={selectedRows.length > 0 ? selectedRows : departmentWithNames} fields={departmentFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : departmentWithNames} fields={departmentFields} />
                     </div>
                 </div>
                 <CreateModalDeptGrp

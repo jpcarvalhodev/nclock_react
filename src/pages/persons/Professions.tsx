@@ -171,7 +171,7 @@ export const Professions = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || String(profession[key]) === String(filters[key])
         )
-    );
+    ).sort((a, b) => a.code - b.code);
 
     // Seleciona a entidade anterior
     const handleNextProfession = () => {

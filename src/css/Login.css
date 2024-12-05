@@ -142,12 +142,41 @@
 }
 
 #login .password-label {
-    display: flex;
     flex-direction: column;
     margin-top: 10px;
     margin-bottom: 20px;
     align-items: start;
     color: white;
+}
+
+#login .password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+#login .input-username-password {
+    width: calc(100% - 40px);
+    padding-right: 10px;
+}
+
+#login .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
+    padding: 0;
+}
+
+#login .toggle-password img {
+    width: 100%;
+    height: auto;
 }
 
 #login .buttons-container {
@@ -183,7 +212,7 @@
 
     .div-logo-p {
         display: none;
-    } 
+    }
 
     .login-container {
         justify-content: center;

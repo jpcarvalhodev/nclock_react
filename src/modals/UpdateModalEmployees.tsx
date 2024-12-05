@@ -5,13 +5,14 @@ import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
-import { Department, EmployeeCard, Group } from '../helpers/Types';
+import { Department, EmployeeCard, Group, KioskTransactionCard } from '../helpers/Types';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import { useLicense } from '../context/LicenseContext';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { CreateModalDeptGrp } from './CreateModalDeptGrp';
 import { departmentFields, groupFields } from '../helpers/Fields';
-import { set } from 'date-fns';
+import hidepass from '../assets/img/login/hidepass.png';
+import showpass from '../assets/img/login/showpass.png';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -42,10 +43,10 @@ interface UpdateModalProps<T extends Entity> {
   entity: T;
   fields: Field[];
   title: string;
-  onNext: () => void;
-  onPrev: () => void;
-  canMoveNext: boolean;
-  canMovePrev: boolean;
+  onNext?: () => void;
+  onPrev?: () => void;
+  canMoveNext?: boolean;
+  canMovePrev?: boolean;
 }
 
 // Define o componente
@@ -65,6 +66,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showDeptModal, setShowDeptModal] = useState(false);
   const [showGrpModal, setShowGrpModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Usa useEffect para inicializar o formulário
   useEffect(() => {
@@ -138,13 +140,21 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       const professions = await apiService.fetchAllProfessions();
       const zones = await apiService.fetchAllZones();
       const externalEntities = await apiService.fetchAllExternalEntities();
+      const entities = await apiService.fetchAllCompanyConfig();
       setDropdownData({
         departmentId: departments,
         groupId: groups,
         professionId: professions,
         zoneId: zones,
-        externalEntityId: externalEntities
+        externalEntityId: externalEntities,
+        entidadeId: entities
       });
+      if (entities.length === 1) {
+        setFormData(prevState => ({
+          ...prevState,
+          entidadeId: entities[0].id
+        }));
+      }
     } catch (error) {
       console.error('Erro ao buscar os dados de departamentos e grupos', error);
     }
@@ -239,6 +249,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
           return option.zoneID === value;
         case 'externalEntityId':
           return option.externalEntityID === value;
+        case 'entidadeId':
+          return option.id === value;
         default:
           return false;
       }
@@ -266,9 +278,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   };
 
   // Define a função para mudar o campo
-  const handleChange = (e: React.ChangeEvent<any>) => {
+  const handleChange = (e: ChangeEvent<FormControlElement>) => {
     const { name, value } = e.target;
-    let parsedValue = value;
+    let parsedValue: any = value;
     if (name === 'gender') {
       parsedValue = value === 'true';
     }
@@ -276,6 +288,22 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       ...prevState,
       [name]: parsedValue
     }));
+
+    if (name === 'name') {
+      const names = value.split(' ');
+      let shortName = '';
+      if (names.length > 1) {
+        shortName = `${names[0]} ${names[names.length - 1]}`;
+      } else if (names.length === 1) {
+        shortName = names[0];
+      }
+      setFormData(prevState => ({
+        ...prevState,
+        shortName: shortName
+      }));
+    }
+
+    validateForm();
   };
 
   // Função para lidar com a mudança de dados do cartão
@@ -401,6 +429,11 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     { value: false, label: 'Feminino' }
   ];
 
+  // Alterna a visibilidade da password
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
       <Modal.Header closeButton>
@@ -456,7 +489,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-name">Obrigatório ter 5 caracteres ou mais</Tooltip>}
+                overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
               >
                 <Form.Control
                   type="string"
@@ -475,7 +508,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-shortName">Obrigatório ter entre 5 a 20 caracteres</Tooltip>}
+                overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
               >
                 <Form.Control
                   type="string"
@@ -570,26 +603,30 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                 name="rgpdAut"
               />
             </Form.Group>
-            <Form.Group controlId="formModulos" style={{ marginTop: 12 }}>
-              <Form.Label>Software <span style={{ color: 'red' }}>*</span></Form.Label>
+            <Form.Group controlId="formEntidadeId" style={{ marginTop: 12 }}>
+              <Form.Label>Entidade <span style={{ color: 'red' }}>*</span></Form.Label>
               <OverlayTrigger
                 placement="left"
-                overlay={<Tooltip id="tooltip-modulos">Obrigatório escolher um software</Tooltip>}
+                overlay={<Tooltip id="tooltip-modulos">Obrigatório escolher uma entidade</Tooltip>}
               >
                 <Form.Control
                   as="select"
                   className="custom-input-height custom-select-font-size"
-                  value={formData.modulos || ''}
-                  onChange={handleChange}
-                  name="modulos"
+                  value={formData.entidadeId || ''}
+                  onChange={(e) => handleDropdownChange('entidadeId', e)}
                 >
-                  <option value="">Selecione...</option>
-                  {filteredModuleOptions.map(option => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
+                  {dropdownData.entidadeId?.map((option: any) => {
+                    let optionId = option.id;
+                    let optionName = option.nome
+                    return (
+                      <option key={optionId} value={optionId}>
+                        {optionName}
+                      </option>
+                    );
+                  })}
                 </Form.Control>
               </OverlayTrigger>
-              {errors.modulos && <Form.Text className="text-danger">{errors.modulos}</Form.Text>}
+              {errors.entidadeId && <Form.Text className="text-danger">{errors.entidadeId}</Form.Text>}
             </Form.Group>
           </Col>
         </Row>
@@ -748,20 +785,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Form style={{ marginTop: 10, marginBottom: 10 }}>
                 <Row>
                   <Col md={3}>
-                    <Form.Group controlId="formDeviceEnabled" className="d-flex align-items-center mt-3">
-                      <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Dispositivo Activado:</Form.Label>
-                      <Form.Check
-                        type="switch"
-                        id="custom-switch-device-enabled"
-                        checked={cardFormData.deviceEnabled || false}
-                        onChange={(e) => setCardFormData({ ...cardFormData, deviceEnabled: e.target.checked })}
-                        className="ms-auto"
-                        label=""
-                        name="deviceEnabled"
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={3}>
                     <Form.Group controlId="formCardNumber">
                       <Form.Label>Número do Cartão</Form.Label>
                       <Form.Control
@@ -791,13 +814,26 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                     <Form.Group controlId="formDevicePassword">
                       <Form.Label>Password do Dispositivo</Form.Label>
                       <Form.Control
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         className="custom-input-height custom-select-font-size"
                         value={cardFormData.devicePassword || ''}
                         onChange={handleCardChange}
                         name="devicePassword"
                         maxLength={6}
+                        style={{ paddingRight: '40px' }}
                       />
+                      <Button variant="outline-secondary" onClick={togglePasswordVisibility} style={{
+                        position: 'absolute',
+                        top: '88%',
+                        right: '310px',
+                        transform: 'translateY(-50%)',
+                        border: 'none',
+                        backgroundColor: 'transparent',
+                        padding: 0,
+                        zIndex: 5
+                      }}>
+                        <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
+                      </Button>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -807,8 +843,18 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         </Tab.Container>
       </Modal.Body>
       <Modal.Footer>
-        <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
-        <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+        >
+          <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+        >
+          <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+        </OverlayTrigger>
         <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
         <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
         <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

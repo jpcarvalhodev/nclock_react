@@ -190,7 +190,7 @@ export const Categories = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || String(category[key]) === String(filters[key])
         )
-    );
+    ).sort((a, b) => a.code - b.code);
 
     // Define os dados iniciais ao duplicar
     const handleDuplicate = (entity: Partial<Category>) => {

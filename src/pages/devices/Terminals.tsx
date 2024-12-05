@@ -26,6 +26,8 @@ import { PersonsContext, PersonsContextType } from "../../context/PersonsContext
 import { useColor } from "../../context/ColorContext";
 import * as apiService from "../../helpers/apiService";
 import { DoorModal } from "../../modals/DoorModal";
+import { ExportButton } from "../../components/ExportButton";
+import { PrintButton } from "../../components/PrintButton";
 
 // Define a interface para os filtros
 interface Filters {
@@ -314,7 +316,8 @@ export const Terminals = () => {
         selectedCount: number;
         selectedRows: Devices[];
     }) => {
-        setSelectedDeviceRows(state.selectedRows);
+        const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
+        setSelectedDeviceRows(sortedDevices);
         setSelectedTerminal(state.selectedRows[0] || null);
     };
 
@@ -1161,7 +1164,7 @@ export const Terminals = () => {
                 <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className='filter-refresh-add-edit-upper-class'>
                     <div className="datatable-title-text" style={{ color: '#000000' }}>
-                        <span>Terminais</span>
+                        <span>Equipamentos</span>
                     </div>
                     <div className="datatable-header">
                         <div className="buttons-container-others" style={{ flexGrow: 1 }}>
@@ -1183,6 +1186,8 @@ export const Terminals = () => {
                             >
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                             </OverlayTrigger>
+                            <ExportButton allData={filteredDeviceDataTable} selectedData={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={deviceFields} />
+                            <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={deviceFields} />
                         </div>
                     </div>
                 </div>
@@ -1614,6 +1619,13 @@ export const Terminals = () => {
                             onClose={() => setShowDeleteModal(false)}
                             onDelete={deleteDevice}
                             entityId={selectedDeviceToDelete}
+                            message={
+                                <>
+                                    Apagar todos os utilizadores nos terminais marcados?
+                                    <br />
+                                    Atenção que esta operação elimina os dados de todos os utilizadores existentes nos terminais.
+                                </>
+                            }
                         />
                     )
                 }

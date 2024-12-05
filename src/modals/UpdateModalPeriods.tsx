@@ -5,6 +5,7 @@ import { Col, Form, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap'
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { TimePeriod } from '../helpers/Types';
 
 // Define a interface Entity
 export interface Entity {
@@ -56,11 +57,14 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
             const fieldValue = formData[field.key];
             let valid = true;
 
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
                 valid = false;
             }
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
+            if (field.type === 'time' && fieldValue === '00:00') {
+                valid = true;
             }
 
             return valid;
@@ -89,6 +93,48 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
         }));
     };
 
+    // Função para tratar valores vazios ou undefined
+    const prepareFormData = (data: Partial<TimePeriod>) => {
+        const updatedData = { ...data };
+
+        Object.keys(daysOfWeek).forEach(day => {
+            const startKeys = [`${day}Start1`, `${day}Start2`, `${day}Start3`] as (keyof TimePeriod)[];
+            const endKeys = [`${day}End1`, `${day}End2`, `${day}End3`] as (keyof TimePeriod)[];
+
+            startKeys.forEach(startKey => {
+                if (!updatedData[startKey]) {
+                    updatedData[startKey] = '00:00';
+                }
+            });
+
+            endKeys.forEach(endKey => {
+                if (!updatedData[endKey]) {
+                    updatedData[endKey] = '00:00';
+                }
+            });
+        });
+
+        const holidayTypes = ['holidayType1', 'holidayType2', 'holidayType3'];
+        holidayTypes.forEach(type => {
+            const startKeys = [`${type}Start1`, `${type}Start2`, `${type}Start3`] as (keyof TimePeriod)[];
+            const endKeys = [`${type}End1`, `${type}End2`, `${type}End3`] as (keyof TimePeriod)[];
+
+            startKeys.forEach(startKey => {
+                if (!updatedData[startKey]) {
+                    updatedData[startKey] = '00:00';
+                }
+            });
+
+            endKeys.forEach(endKey => {
+                if (!updatedData[endKey]) {
+                    updatedData[endKey] = '00:00';
+                }
+            });
+        });
+
+        return updatedData;
+    };
+
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
@@ -102,7 +148,8 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
-        onUpdate(formData as T);
+        const preparedData = prepareFormData(formData);
+        onUpdate(preparedData as T);
     };
 
     // Traduz as keys dos dias da semana
@@ -229,8 +276,18 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
-                <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+                >
+                    <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+                >
+                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                </OverlayTrigger>
                 <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>

@@ -5,6 +5,9 @@ import { License } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import hidepass from '../assets/img/login/hidepass.png';
+import showpass from '../assets/img/login/showpass.png';
+import { set } from 'date-fns';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -43,6 +46,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
     // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
     useEffect(() => {
@@ -79,7 +83,12 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         try {
             const isKeyValid = await fetchAllLicenses(key);
             if (isKeyValid && isKeyValid !== null && isKeyValid !== undefined && Object.keys(isKeyValid).length > 0) {
-                setFormData(isKeyValid);
+                const storedNif = localStorage.getItem('nif');
+                let licenseObj: Partial<License> = {};
+                if (Array.isArray(isKeyValid)) {
+                    licenseObj = isKeyValid.find(key => key.nif === storedNif) || isKeyValid[0];
+                    setFormData(licenseObj);
+                }
                 setIsCheckVisible(false);
                 showModal();
             } else {
@@ -153,13 +162,8 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     const defaultValueFor = (property: string) => {
         switch (property) {
             case 'createDate':
+            case 'pacote':
                 return null;
-            case 'devices':
-            case 'users':
-            case 'validacao':
-                return 0;
-            case 'enable':
-                return false;
             default:
                 return null;
         }
@@ -167,15 +171,18 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
     // Função para atualizar os dados
     const handleUpdate = () => {
-        const isEntidadeNumberValid = formData.entidadeNumber && formData.entidadeNumber > 0;
-        const isNifValid = formData.nif && formData.nif > 0;
-        if (!isFormValid || !isEntidadeNumberValid || !isNifValid) {
+        if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         } else {
+            onUpdate(key, [{ ...formData }] as License[]);
             setIsModalVisible(false);
-            onUpdate(key, formData as License[]);
         }
+    };
+
+    // Alterna a visibilidade da password
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     // Função para renderizar os softwares
@@ -197,20 +204,18 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                                     name={`${product}.${prop}`}
                                 />
                             );
-                        case 'users':
                         case 'validacao':
-                        case 'devices':
                             return (
                                 <Form.Control
-                                    type="text"
+                                    type="number"
                                     name={`${product}.${prop}`}
-                                    value={value || 0}
+                                    value={value || ''}
                                     onChange={handleChange}
                                     className="custom-input-height custom-select-font-size"
-                                    min={prop === 'devices' ? '0' : undefined}
                                 />
                             );
-                        case 'sn':
+                        case 'pacote':
+                        case 'createDate':
                             return (
                                 <Form.Control
                                     type="text"
@@ -252,7 +257,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             default:
                 return prop.charAt(0).toUpperCase() + prop.slice(1);
         }
-    }  
+    }
 
     return (
         <div>
@@ -265,8 +270,21 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         placeholder="Insira a password de licenciamento"
                         value={key}
                         onChange={handleKeyChange}
-                        type='password'
+                        type={showPassword ? "text" : "password"}
+                        style={{ paddingRight: '40px' }}
                     />
+                    <Button variant="outline-secondary" onClick={togglePasswordVisibility} style={{
+                        position: 'absolute',
+                        top: '50%',
+                        right: '35px',
+                        transform: 'translateY(-50%)',
+                        border: 'none',
+                        backgroundColor: 'transparent',
+                        padding: 0,
+                        zIndex: 5
+                    }}>
+                        <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
+                    </Button>
                 </InputGroup>
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
                     <Button style={{ width: '40%' }} variant="outline-primary" onClick={verifyKey}>Verificar Password</Button>
@@ -281,43 +299,90 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         <Col md={3}>
                             <Form.Group controlId="formEntidadeNumber">
                                 <Form.Label>
-                                    Número da Entidade <span style={{ color: 'red' }}>*</span>
+                                    Número da Entidade
                                 </Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-entidadeNumber">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        type="number"
-                                        className="custom-input-height custom-select-font-size"
-                                        value={formData.entidadeNumber || ''}
-                                        onChange={handleChange}
-                                        name="entidadeNumber"
-                                        required
-                                    />
-                                </OverlayTrigger>
-                                {errors.entidadeNumber && <Form.Text className="text-danger">{errors.entidadeNumber}</Form.Text>}
+                                <Form.Control
+                                    type="number"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.entidadeNumber || ''}
+                                    onChange={handleChange}
+                                    name="entidadeNumber"
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={3}>
+                            <Form.Group controlId="formName">
+                                <Form.Label>
+                                    Nome
+                                </Form.Label>
+                                <Form.Control
+                                    type="string"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.name || ''}
+                                    onChange={handleChange}
+                                    name="name"
+                                />
                             </Form.Group>
                         </Col>
                         <Col md={3}>
                             <Form.Group controlId="formNif">
                                 <Form.Label>
-                                    NIF <span style={{ color: 'red' }}>*</span>
+                                    NIF
+                                </Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.nif || ''}
+                                    onChange={handleChange}
+                                    name="nif"
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={3}>
+                            <Form.Group controlId="formUsers">
+                                <Form.Label>
+                                    utilizadores
+                                </Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.users || ''}
+                                    onChange={handleChange}
+                                    name="users"
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={3}>
+                            <Form.Group controlId="formDevices">
+                                <Form.Label>
+                                    Dispositivos
+                                </Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    className="custom-input-height custom-select-font-size"
+                                    value={formData.devices || ''}
+                                    onChange={handleChange}
+                                    name="devices"
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={3}>
+                            <Form.Group controlId="formSn">
+                                <Form.Label>
+                                    Número de Série
                                 </Form.Label>
                                 <OverlayTrigger
                                     placement="right"
-                                    overlay={<Tooltip id="tooltip-nif">Campo obrigatório</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-name">Separe os números por vírgula</Tooltip>}
                                 >
                                     <Form.Control
-                                        type="number"
+                                        type="string"
                                         className="custom-input-height custom-select-font-size"
-                                        value={formData.nif || ''}
+                                        value={formData.sn || ''}
                                         onChange={handleChange}
-                                        name="nif"
-                                        required
+                                        name="sn"
                                     />
                                 </OverlayTrigger>
-                                {errors.nif && <Form.Text className="text-danger">{errors.nif}</Form.Text>}
                             </Form.Group>
                         </Col>
                     </Row>

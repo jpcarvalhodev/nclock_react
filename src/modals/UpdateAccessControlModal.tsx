@@ -362,8 +362,18 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
-                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                    <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+                    >
+                        <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                        placement="top"
+                        overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+                    >
+                        <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                    </OverlayTrigger>
                     <Button variant="outline-info" onClick={handleDuplicateClick}>
                         Duplicar
                     </Button>

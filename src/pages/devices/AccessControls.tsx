@@ -18,6 +18,8 @@ import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import Split from "react-split";
 import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
 import { DeleteACModal } from "../../modals/DeleteACModal";
+import { PrintButton } from "../../components/PrintButton";
+import { ExportButton } from "../../components/ExportButton";
 
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useColor();
@@ -133,7 +135,8 @@ export const AccessControls = () => {
         selectedCount: number;
         selectedRows: AccessControl[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedAccessControl = state.selectedRows.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+        setSelectedRows(sortedAccessControl);
     };
 
     // Define a função de edição de controle de acesso
@@ -292,7 +295,7 @@ export const AccessControls = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#000000' }}>Controle de Acesso</span>
+                            <span style={{ color: '#000000' }}>Planos de Acessos</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -323,6 +326,8 @@ export const AccessControls = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={accessControlFields} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={accessControlFields} />
                             </div>
                         </div>
                         <div className='table-css'>

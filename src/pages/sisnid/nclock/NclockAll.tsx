@@ -6,8 +6,8 @@ import "../../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { ExportButton } from "../../../components/ExportButton";
 import { useContext, useEffect, useState } from "react";
-import { EmployeeAttendanceTimes } from "../../../helpers/Types";
-import { employeeAttendanceTimesFields } from "../../../helpers/Fields";
+import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
+import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import Split from 'react-split';
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
@@ -16,6 +16,8 @@ import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "..
 import { useColor } from "../../../context/ColorContext";
 import { PrintButton } from "../../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
+import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
 // Define a interface para os filtros
 interface Filters {
@@ -32,6 +34,7 @@ export const NclockAll = () => {
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
     } = useContext(AttendanceContext) as AttendanceContextType;
+    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
     const { navbarColor, footerColor } = useColor();
     const [attendanceAll, setAttendanceAll] = useState<EmployeeAttendanceTimes[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -43,6 +46,8 @@ export const NclockAll = () => {
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [filters, setFilters] = useState<Filters>({});
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
 
     // Função para buscar todos as assiduidades
     const fetchAll = () => {
@@ -61,6 +66,17 @@ export const NclockAll = () => {
                 setFilteredAttendances(filteredData);
             }
         });
+    };
+
+    // Função para atualizar um funcionário e um cartão
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+        await handleUpdateEmployee(employee);
+        if (card.cardId) {
+            await handleUpdateEmployeeCard(card as EmployeeCard);
+        } else {
+            await handleAddEmployeeCard(card as EmployeeCard);
+        }
+        window.location.reload();
     };
 
     // Atualiza a lista de funcionários ao carregar a página
@@ -128,16 +144,36 @@ export const NclockAll = () => {
         )
     );
 
+    // Função para abrir o modal de edição
+    const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
+        const employeeDetails = employees.find(emp => emp.name === person.nameUser);
+        if (employeeDetails) {
+            setSelectedEmployee(employeeDetails);
+            setShowEditModal(true);
+        } else {
+            console.error("Funcionário não encontrado:", person.nameUser);
+        }
+    };
+
     // Define as colunas
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
+            if (field.key === 'employeeName') {
+                return {
+                    ...field,
+                    name: field.label,
+                    cell: (row: EmployeeAttendanceTimes) => (
+                        <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
+                            {row.employeeName}
+                        </div>
+                    )
+                };
+            }
             const formatField = (row: EmployeeAttendanceTimes) => {
                 switch (field.key) {
                     case 'attendanceTime':
                         return new Date(row.attendanceTime).toLocaleString() || '';
-                    case 'employeeId':
-                        return row.employeeName;
                     case 'inOutMode':
                         switch (row[field.key]) {
                             case 0: return 'Entrada';
@@ -270,6 +306,16 @@ export const NclockAll = () => {
                         onColumnToggle={handleColumnToggle}
                         onResetColumns={handleResetColumns}
                         onSelectAllColumns={handleSelectAllColumns}
+                    />
+                )}
+                {selectedEmployee && (
+                    <UpdateModalEmployees
+                        open={showEditModal}
+                        onClose={() => setShowEditModal(false)}
+                        onUpdate={updateEmployeeAndCard}
+                        entity={selectedEmployee}
+                        fields={employeeFields}
+                        title="Atualizar Funcionário"
                     />
                 )}
             </div>

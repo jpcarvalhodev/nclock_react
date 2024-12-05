@@ -33,6 +33,8 @@ export type Employee = {
     statusFace: boolean;
     statusPalm: boolean;
     type: string;
+    entidadeId: string;
+    entidadeName: string;
     departmentId: string;
     departmentName: string;
     professionId: string;
@@ -45,7 +47,6 @@ export type Employee = {
     zoneName: string;
     externalEntityId: string;
     externalEntityName: string;
-    modulos: string
 };
 
 export type Department = {
@@ -195,7 +196,6 @@ export type EmployeeCard = {
     id: string;
     devicePassword: string;
     devicePrivelage: number;
-    deviceEnabled: boolean;
     cardNumber: string;
 };
 
@@ -488,15 +488,17 @@ export type License = {
     [key: string]: any;
     id: string;
     entidadeNumber: number;
+    name: string;
     nif: number;
+    users: number;
+    devices: number;
+    sn: string;
     products: {
         [key: string]: {
             enable: boolean;
-            users: number;
             validacao: number;
             createDate: string;
-            devices: number;
-            sn: string;
+            pacote: string;
         }
     };
 };

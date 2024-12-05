@@ -18,6 +18,8 @@ import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
 import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
 import Split from "react-split";
 import { set } from "date-fns";
+import { ExportButton } from "../../components/ExportButton";
+import { PrintButton } from "../../components/PrintButton";
 
 export const TimePeriods = () => {
     const { navbarColor, footerColor } = useColor();
@@ -35,6 +37,7 @@ export const TimePeriods = () => {
     const [filteredPeriods, setFilteredPeriods] = useState<TimePeriod[]>([]);
     const [initialData, setInitialData] = useState<Partial<TimePeriod> | null>(null);
     const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
 
     // Função para buscar os dados dos períodos
     const fetchTimePeriods = async () => {
@@ -159,6 +162,15 @@ export const TimePeriods = () => {
             filters[key] === "" || String(periods[key]) === String(filters[key])
         )
     );
+
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: TimePeriod[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
 
     // Seleciona a entidade anterior
     const handleNextPeriod = () => {
@@ -287,7 +299,7 @@ export const TimePeriods = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#000000' }}>Períodos</span>
+                            <span style={{ color: '#000000' }}>Períodos de Horários</span>
                         </div>
                         <div className="datatable-header">
                             <div>
@@ -318,6 +330,8 @@ export const TimePeriods = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={timePeriodFields} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={timePeriodFields} />
                             </div>
                         </div>
                         <div className='table-css'>
@@ -329,6 +343,7 @@ export const TimePeriods = () => {
                                 paginationComponentOptions={paginationOptions}
                                 paginationPerPage={15}
                                 selectableRows
+                                onSelectedRowsChange={handleRowSelected}
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
                             />

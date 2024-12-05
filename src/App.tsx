@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { Spinner } from 'react-bootstrap';
 import { Login } from './pages/login&forgot/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Employees } from './pages/persons/Employees';
@@ -135,6 +134,7 @@ import { ResetPassword } from './pages/login&forgot/PasswordReset';
 import { NviewOnlineCameras } from './pages/sisnid/nview/NviewOnlineCameras';
 import { Entities } from './pages/configs/Entities';
 import { CustomSpinner } from './components/CustomSpinner';
+import { EntityProvider } from './context/EntityContext';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -305,20 +305,22 @@ function App() {
   return (
     <LicenseProvider>
       <ColorProvider>
-        <PersonsProvider>
-          <AttendanceProvider>
-            <TerminalsProvider>
-              <AdsProvider>
-                <Router>
-                  <ToastContainer />
-                  <AnimatedRoutes />
-                </Router>
-              </AdsProvider>
-            </TerminalsProvider>
-          </AttendanceProvider>
-        </PersonsProvider>
+        <EntityProvider>
+          <PersonsProvider>
+            <AttendanceProvider>
+              <TerminalsProvider>
+                <AdsProvider>
+                  <Router>
+                    <ToastContainer />
+                    <AnimatedRoutes />
+                  </Router>
+                </AdsProvider>
+              </TerminalsProvider>
+            </AttendanceProvider>
+          </PersonsProvider>
+        </EntityProvider>
       </ColorProvider>
-    </LicenseProvider>
+    </LicenseProvider >
   );
 }
 

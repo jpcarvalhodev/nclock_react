@@ -187,12 +187,8 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   }, [data]);
 
   // Função para lidar com a expansão dos itens
-  const handleToggle = (e: SyntheticEvent, nodeIds: string[]) => {
-    if (nodeIds.length < expandedIds.length) {
-      setExpandedIds(collectAllExpandableItemIds(items));
-    } else {
-      setExpandedIds(nodeIds);
-    }
+  const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
+    setExpandedIds(nodeIds);
   };
 
   // Função para lidar com a mudança de seleção dos itens
