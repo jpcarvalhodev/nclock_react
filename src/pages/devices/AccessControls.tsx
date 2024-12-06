@@ -336,7 +336,7 @@ export const AccessControls = () => {
                                 data={filteredDataTable}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
-                                paginationPerPage={15}
+                                paginationPerPage={20}
                                 onRowDoubleClicked={handleEditAccessControl}
                                 selectableRows
                                 onSelectedRowsChange={handleRowSelected}
@@ -363,6 +363,7 @@ export const AccessControls = () => {
                                 }}
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                striped
                                 defaultSortAsc={true}
                                 defaultSortFieldId='enrollNumber'
                             />

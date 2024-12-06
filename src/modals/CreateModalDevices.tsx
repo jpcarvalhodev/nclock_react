@@ -573,6 +573,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                 paginationComponentOptions={paginationOptions}
                                                 noDataComponent="Os dados de portas só serão exibidos após adicionar e ativar o dispositivo."
                                                 customStyles={customStyles}
+                                                striped
                                             />
                                         </Row>
                                     </Form>
@@ -587,6 +588,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                 paginationComponentOptions={paginationOptions}
                                                 noDataComponent="Os dados de auxiliares só serão exibidos após adicionar e ativar o dispositivo."
                                                 customStyles={customStyles}
+                                                striped
                                             />
                                         </Row>
                                     </Form>

@@ -392,7 +392,7 @@ export const Contacts = () => {
                                 onRowDoubleClicked={handleEditEmployee}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
-                                paginationPerPage={15}
+                                paginationPerPage={20}
                                 expandableRows
                                 expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                                 selectableRows
@@ -401,6 +401,7 @@ export const Contacts = () => {
                                 selectableRowsHighlight
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                striped
                                 defaultSortAsc={true}
                                 defaultSortFieldId='enrollNumber'
                             />

@@ -325,13 +325,14 @@ export const Categories = () => {
                         onRowDoubleClicked={handleEditCategory}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId="code"
                     />

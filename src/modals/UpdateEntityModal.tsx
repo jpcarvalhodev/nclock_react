@@ -17,7 +17,7 @@ interface UpdateModalProps<T extends Entity> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onDuplicate: (data: Partial<T>) => void;
+    onDuplicate?: (data: Partial<T>) => void;
     onUpdate: (data: FormData) => void;
     fields: Field[];
     entity: T;
@@ -144,7 +144,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
             dataToSend.append('Nome', formData.nome);
         }
         if (formData.morada) {
-            dataToSend.append('morada', formData.morada);
+            dataToSend.append('Morada', formData.morada);
         }
         if (formData.cPostal) {
             dataToSend.append('CPostal', formData.cPostal);

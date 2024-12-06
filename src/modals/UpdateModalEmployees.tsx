@@ -70,16 +70,16 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Usa useEffect para inicializar o formulário
   useEffect(() => {
-    if (open && entity) {
+    if (open) {
       fetchDropdownOptions();
       fetchEmployeesCards();
       setFormData({ ...entity });
     } else {
-      setFormData({ ...entity });
+      setFormData({} as T);
       setCardFormData({});
       setProfileImage(null);
     }
-    if (entity && entity.photo) {
+    if (entity.photo) {
       setProfileImage(entity.photo);
     } else {
       setProfileImage(modalAvatar);
@@ -604,10 +604,10 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               />
             </Form.Group>
             <Form.Group controlId="formEntidadeId" style={{ marginTop: 12 }}>
-              <Form.Label>Entidade <span style={{ color: 'red' }}>*</span></Form.Label>
+              <Form.Label>Entidade</Form.Label>
               <OverlayTrigger
                 placement="left"
-                overlay={<Tooltip id="tooltip-modulos">Obrigatório escolher uma entidade</Tooltip>}
+                overlay={<Tooltip id="tooltip-modulos">Escolha a sua entidade</Tooltip>}
               >
                 <Form.Control
                   as="select"
@@ -626,7 +626,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   })}
                 </Form.Control>
               </OverlayTrigger>
-              {errors.entidadeId && <Form.Text className="text-danger">{errors.entidadeId}</Form.Text>}
             </Form.Group>
           </Col>
         </Row>
@@ -782,7 +781,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               </Form>
             </Tab.Pane>
             <Tab.Pane eventKey="cartoes">
-              <Form style={{ marginTop: 10, marginBottom: 10 }}>
+              <Form style={{ marginTop: 10, marginBottom: 85 }}>
                 <Row>
                   <Col md={3}>
                     <Form.Group controlId="formCardNumber">
@@ -824,7 +823,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                       />
                       <Button variant="outline-secondary" onClick={togglePasswordVisibility} style={{
                         position: 'absolute',
-                        top: '88%',
+                        top: '73%',
                         right: '310px',
                         transform: 'translateY(-50%)',
                         border: 'none',

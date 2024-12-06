@@ -188,8 +188,20 @@ export const Terminals = () => {
         );
 
         setEmployees(mergedData);
-        setEmployeesBio(filteredEmployeesBio);
-        setEmployeeCards(filteredEmployeesCard);
+        
+        const employeeBio = filteredEmployeesBio.slice().sort((a, b) => {
+            const aNum = parseInt(a.enrollNumber || '0', 10);
+            const bNum = parseInt(b.enrollNumber || '0', 10);
+            return aNum - bNum;
+        });
+        setEmployeesBio(employeeBio);
+
+        const employeeCard = filteredEmployeesCard.slice().sort((a, b) => {
+            const aNum = parseInt(a.cardNumber || '0', 10);
+            const bNum = parseInt(b.cardNumber || '0', 10);
+            return aNum - bNum;
+        });
+        setEmployeeCards(employeeCard);
     };
 
     // Função para buscar todas as transações de quiosques
@@ -333,15 +345,24 @@ export const Terminals = () => {
     // Filtra os utilizadores no terminal
     const filteredUsersInTerminal = useMemo(() => {
         if (selectedTerminal) {
-            return employeesOnDevice;
+            return employeesOnDevice.slice().sort((a, b) => {
+                const aNum = parseInt(a.pin || '0', 10);
+                const bNum = parseInt(b.pin || '0', 10);
+                return aNum - bNum;
+            });
         } else {
             return [];
         }
     }, [employeesOnDevice, selectedTerminal]);
 
+    // Define as colunas de funcionário no dispositivo
     const filteredUsersInSoftware = useMemo(() => {
         if (employees) {
-            return employees;
+            return employees.slice().sort((a, b) => {
+                const aNum = parseInt(a.enrollNumber || '0', 10);
+                const bNum = parseInt(b.enrollNumber || '0', 10);
+                return aNum - bNum;
+            });
         } else {
             return [];
         }
@@ -1202,7 +1223,7 @@ export const Terminals = () => {
                                 data={filteredDeviceDataTable}
                                 onRowDoubleClicked={handleEditDevices}
                                 pagination
-                                paginationPerPage={15}
+                                paginationPerPage={20}
                                 paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                 paginationComponentOptions={paginationOptions}
                                 selectableRows
@@ -1210,6 +1231,7 @@ export const Terminals = () => {
                                 selectableRowsHighlight
                                 noDataComponent="Não há dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                striped
                                 defaultSortAsc={true}
                                 defaultSortFieldId="deviceNumber"
                             />
@@ -1241,6 +1263,7 @@ export const Terminals = () => {
                                                     paginationComponentOptions={paginationOptions}
                                                     noDataComponent="Não há actividades disponíveis para exibir."
                                                     customStyles={customStyles}
+                                                    striped
                                                 />
                                         ) : (
                                             <p style={{ textAlign: "center" }}>Selecione um terminal para ver as actividades.</p>
@@ -1260,6 +1283,7 @@ export const Terminals = () => {
                                                 paginationComponentOptions={paginationOptions}
                                                 noDataComponent="Não há movimentos disponíveis para exibir."
                                                 customStyles={customStyles}
+                                                striped
                                             />
                                         ) : (
                                             <p style={{ textAlign: "center" }}>Selecione um terminal para ver os movimentos.</p>
@@ -1282,13 +1306,14 @@ export const Terminals = () => {
                                                     columns={userColumns}
                                                     data={filteredUsersInSoftware}
                                                     pagination
-                                                    paginationPerPage={15}
+                                                    paginationPerPage={20}
                                                     paginationComponentOptions={paginationOptions}
                                                     selectableRows
                                                     onSelectedRowsChange={handleUserRowSelected}
                                                     selectableRowsHighlight
                                                     noDataComponent="Não há dados disponíveis para exibir."
                                                     customStyles={customStyles}
+                                                    striped
                                                     defaultSortAsc={true}
                                                     defaultSortFieldId='enrollNumber'
                                                 />
@@ -1330,13 +1355,14 @@ export const Terminals = () => {
                                                 columns={employeeOnDeviceColumns}
                                                 data={filteredUsersInTerminal}
                                                 pagination
-                                                paginationPerPage={15}
+                                                paginationPerPage={20}
                                                 paginationComponentOptions={paginationOptions}
                                                 selectableRows
                                                 onSelectedRowsChange={handleUserRowSelected}
                                                 selectableRowsHighlight
                                                 noDataComponent={selectedTerminal ? "Não há dados disponíveis para exibir." : "Selecione um terminal para exibir os utilizadores."}
                                                 customStyles={customStyles}
+                                                striped
                                                 defaultSortAsc={true}
                                                 defaultSortFieldId='pin'
                                             />
@@ -1347,13 +1373,16 @@ export const Terminals = () => {
                                             columns={bioColumns}
                                             data={filteredBioDataTable}
                                             pagination
-                                            paginationPerPage={15}
+                                            paginationPerPage={20}
                                             paginationComponentOptions={paginationOptions}
                                             selectableRows
                                             onSelectedRowsChange={handleUserRowSelected}
                                             selectableRowsHighlight
                                             noDataComponent="Não há dados disponíveis para exibir."
                                             customStyles={customStyles}
+                                            striped
+                                            defaultSortAsc={true}
+                                            defaultSortFieldId='enrollNumber'
                                         />
                                     </Tab>
                                     <Tab eventKey="cards-taken" title="Cartões recolhidos">
@@ -1361,13 +1390,16 @@ export const Terminals = () => {
                                             columns={cardColumns}
                                             data={filteredCardDataTable}
                                             pagination
-                                            paginationPerPage={15}
+                                            paginationPerPage={20}
                                             paginationComponentOptions={paginationOptions}
                                             selectableRows
                                             onSelectedRowsChange={handleUserRowSelected}
                                             selectableRowsHighlight
                                             noDataComponent="Não há dados disponíveis para exibir."
                                             customStyles={customStyles}
+                                            striped
+                                            defaultSortAsc={true}
+                                            defaultSortFieldId='cardNumber'
                                         />
                                     </Tab>
                                 </Tabs>
@@ -1377,13 +1409,14 @@ export const Terminals = () => {
                                     columns={stateColumns}
                                     data={filteredStateDataTable}
                                     pagination
-                                    paginationPerPage={15}
+                                    paginationPerPage={20}
                                     paginationComponentOptions={paginationOptions}
                                     selectableRows
                                     onSelectedRowsChange={handleDeviceRowSelected}
                                     selectableRowsHighlight
                                     noDataComponent="Não há dados disponíveis para exibir."
                                     customStyles={customStyles}
+                                    striped
                                 />
                             </Tab>
                         </Tabs>

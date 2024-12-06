@@ -360,7 +360,7 @@ export const ExternalEntities = () => {
                         columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         onRowDoubleClicked={handleEditExternalEntity}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         selectableRows
@@ -369,6 +369,7 @@ export const ExternalEntities = () => {
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId="name"
                     />

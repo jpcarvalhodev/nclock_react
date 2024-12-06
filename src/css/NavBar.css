@@ -2,103 +2,92 @@
 .nav {
     display: flex;
     align-items: center;
-    height: 35px;
+    top: 0;
+    left: 0;
+    right: 0;
 }
 
 .logos {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 30px;
+    height: 35px;
 }
 
 .logo {
     font-weight: bold;
     font-size: 15px;
-    padding: 10px;
-    line-height: 0;
     color: white;
     cursor: pointer;
 }
 
 .logoNG {
     font-size: 15px;
-    padding: 10px;
     line-height: 0;
     color: white;
     cursor: pointer;
 }
 
-.dropdown-toggle:focus,
-.dropdown-toggle:active {
-    outline: none;
-    border: none;
-}
-
-.dropdown:hover .dropdown-menu {
-    display: block;
-}
-
-.pessoas-tab,
-.dispositivos-tab,
-.configuracao-tab,
-.ajuda-tab,
-.nclock-tab,
-.naccess-tab,
-.nvisitor-tab,
-.npark-tab,
-.ndoor-tab,
-.npatrol-tab,
-.ncard-tab,
-.nview-tab,
-.nsecur-tab,
-.nsoftware-tab,
-.nsystem-tab,
-.napp-tab,
-.ncyber-tab,
-.ndigital-tab,
-.nserver-tab,
-.naut-tab,
-.nequip-tab,
-.nproject-tab,
-.ncount-tab,
-.nbuild-tab,
-.ncaravan-tab,
-.nmechanic-tab,
-.nevents-tab,
-.nservice-tab,
-.ntask-tab,
-.nproduction-tab,
-.nticket-tab,
-.nsales-tab,
-.ninvoice-tab,
-.ndoc-tab,
-.nsports-tab,
-.ngym-tab,
-.nschool-tab,
-.nclinic-tab,
-.noptics-tab,
-.ngold-tab,
-.nsmart-tab,
-.nreality-tab,
-.nhologram-tab,
-.npower-tab,
-.ncharge-tab,
-.ncity-tab,
-.nkiosk-tab,
-.nled-tab,
-.nfire-tab,
-.nfurniture-tab,
-.npartition-tab,
-.ndecor-tab,
-.nping-tab,
-.nconnect-tab,
-.nlight-tab,
-.ncomfort-tab,
-.nsound-tab,
-.nhome-tab {
+.nav-container .pessoas-tab,
+.nav-container .dispositivos-tab,
+.nav-container .configuracao-tab,
+.nav-container .ajuda-tab,
+.nav-container .nclock-tab,
+.nav-container .naccess-tab,
+.nav-container .nvisitor-tab,
+.nav-container .npark-tab,
+.nav-container .ndoor-tab,
+.nav-container .npatrol-tab,
+.nav-container .ncard-tab,
+.nav-container .nview-tab,
+.nav-container .nsecur-tab,
+.nav-container .nsoftware-tab,
+.nav-container .nsystem-tab,
+.nav-container .napp-tab,
+.nav-container .ncyber-tab,
+.nav-container .ndigital-tab,
+.nav-container .nserver-tab,
+.nav-container .naut-tab,
+.nav-container .nequip-tab,
+.nav-container .nproject-tab,
+.nav-container .ncount-tab,
+.nav-container .nbuild-tab,
+.nav-container .ncaravan-tab,
+.nav-container .nmechanic-tab,
+.nav-container .nevents-tab,
+.nav-container .nservice-tab,
+.nav-container .ntask-tab,
+.nav-container .nproduction-tab,
+.nav-container .nticket-tab,
+.nav-container .nsales-tab,
+.nav-container .ninvoice-tab,
+.nav-container .ndoc-tab,
+.nav-container .nsports-tab,
+.nav-container .ngym-tab,
+.nav-container .nschool-tab,
+.nav-container .nclinic-tab,
+.nav-container .noptics-tab,
+.nav-container .ngold-tab,
+.nav-container .nsmart-tab,
+.nav-container .nreality-tab,
+.nav-container .nhologram-tab,
+.nav-container .npower-tab,
+.nav-container .ncharge-tab,
+.nav-container .ncity-tab,
+.nav-container .nkiosk-tab,
+.nav-container .nled-tab,
+.nav-container .nfire-tab,
+.nav-container .nfurniture-tab,
+.nav-container .npartition-tab,
+.nav-container .ndecor-tab,
+.nav-container .nping-tab,
+.nav-container .nconnect-tab,
+.nav-container .nlight-tab,
+.nav-container .ncomfort-tab,
+.nav-container .nsound-tab,
+.nav-container .nhome-tab {
     color: white;
-    height: 30px;
+    height: 34px;
 }
 
 .tab-content-navbar {
@@ -270,6 +259,7 @@
     margin-left: auto;
     background-color: transparent;
     display: flex;
+    height: 35px;
 }
 
 .user-info {
@@ -304,10 +294,6 @@
 .dropdown-icon img {
     width: 30px;
     height: 30px;
-}
-
-.dropdown-content {
-    padding: -10px;
 }
 
 .dropdown-kiosk {
@@ -353,9 +339,19 @@
     font-size: 14px;
 }
 
-#dropdown-basic::after,
-#dropdown-basic-2::after,
-#dropdown-basic-3::after {
+#dropdown-navbar .dropdown-toggle,
+#dropdown-navbar .dropdown-toggle:focus,
+#dropdown-navbar .dropdown-toggle:active {
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+#dropdown-basic-4::after {
     display: none;
 }
 
@@ -370,22 +366,22 @@
 .nav-link:hover {
     color: white;
     cursor: pointer;
-    height: 30px;
     border-radius: 5px;
 }
 
 .nav-item.active .nav-link {
     border-color: white;
-    height: 35px;
 }
 
 @keyframes pulseBorder {
     0% {
         box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
     }
+
     70% {
         box-shadow: 0 0 10px 10px rgba(204, 169, 44, 0);
     }
+
     100% {
         box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
     }
@@ -393,6 +389,11 @@
 
 .current-active {
     animation: pulseBorder 2s infinite;
+}
+
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
 }
 
 @media (max-width: 500px) {

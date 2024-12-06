@@ -69,8 +69,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
-    const [showSelectDeptGrpModal, setShowSelectDeptGrpModal] = useState(false);
-    const [selectedDeptGrp, setSelectedDeptGrp] = useState(null);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -149,7 +147,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para lidar com o clique em um funcionário
     const handleEmployeeClick = (employee: Employee) => {
         setSelectedEmployee(employee);
-        setShowEmployeeModal(true);
+        setShowUpdateEmployeeModal(true);
     };
 
     // Função para lidar com a seleção de um departamento
@@ -307,10 +305,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }
     }
 
-    const applyDeptGroupChange = () => {
-        setShowSelectDeptGrpModal(true);
-    }
-
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
@@ -460,6 +454,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     columns={entityType === 'department' ? departmentColumns : groupColumns}
                                     data={entityType === 'department' ? dropdownData.departments : dropdownData.groups}
                                     customStyles={customStyles}
+                                    striped
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}
@@ -480,8 +475,9 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
                                 <DataTable
                                     columns={employeeColumns}
-                                    data={employeeData.length > 0 ? employeeData : employees}
+                                    data={employeeData}
                                     customStyles={customStyles}
+                                    striped
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}
@@ -507,7 +503,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Trocar Dept/Grp</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-right" onClick={applyDeptGroupChange} />
+                                    <CustomOutlineButton icon="bi bi-arrow-left-right" />
                                 </OverlayTrigger>
                             </div>
                         </Col>
@@ -541,7 +537,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     initialValues={{}}
                 />
             )}
-            {showUpdateEmployeeModal && selectedEmployee && (
+            {selectedEmployee && (
                 <UpdateModalEmployees
                     title='Atualizar Funcionário'
                     open={showUpdateEmployeeModal}

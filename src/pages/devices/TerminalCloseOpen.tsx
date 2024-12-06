@@ -266,12 +266,13 @@ export const TerminalCloseOpen = () => {
                                     data={filteredDeviceDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={15}
+                                    paginationPerPage={20}
                                     selectableRows
                                     onSelectedRowsChange={handleDeviceRowSelected}
                                     selectableRowsHighlight
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
+                                    striped
                                     defaultSortAsc={true}
                                     defaultSortFieldId="timestamp"
                                 />

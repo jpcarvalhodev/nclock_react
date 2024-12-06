@@ -339,13 +339,14 @@ export const Groups = () => {
                         onRowDoubleClicked={handleEditGroup}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId="name"
                     />

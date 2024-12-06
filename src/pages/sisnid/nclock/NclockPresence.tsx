@@ -311,6 +311,7 @@ export const NclockPresence = () => {
                                 selectableRowsHighlight
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
+                                striped
                                 defaultSortAsc={true}
                                 defaultSortFieldId="attendanceTime"
                             />

@@ -444,6 +444,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     columns={entityType === 'department' ? departmentColumns : groupColumns}
                                     data={entityType === 'department' ? dropdownData.departments : dropdownData.groups}
                                     customStyles={customStyles}
+                                    striped
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}
@@ -466,6 +467,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     columns={employeeColumns}
                                     data={employeeData.length > 0 ? employeeData : employees}
                                     customStyles={customStyles}
+                                    striped
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}
@@ -490,7 +492,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Trocar Dept/Grp</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-right" /* onClick={applyDeptGroupChange} */ />
+                                    <CustomOutlineButton icon="bi bi-arrow-left-right" />
                                 </OverlayTrigger>
                             </div>
                         </Col>

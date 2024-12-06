@@ -8,11 +8,14 @@ export const customStyles: TableStyles = {
             padding: 0,
             margin: 0,
         },
+        stripedStyle: {
+            backgroundColor: '#f2f2f2',
+        },
     },
     headCells: {
         style: {
             minHeight: '30px',
-            backgroundColor: '#f0f0f0',
+            backgroundColor: '#ccc',
             color: '#333',
             fontWeight: 'bold',
             border: 'none',
@@ -23,7 +26,7 @@ export const customStyles: TableStyles = {
     headRow: {
         style: {
             minHeight: '30px',
-            backgroundColor: '#f0f0f0',
+            backgroundColor: '#ccc',
             padding: 0,
             margin: 0,
         },

@@ -433,13 +433,14 @@ export const NkioskListPayments = () => {
                                     data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={15}
+                                    paginationPerPage={20}
                                     selectableRows
                                     onSelectedRowsChange={handleRowSelected}
                                     clearSelectedRows={clearSelectionToggle}
                                     selectableRowsHighlight
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
+                                    striped
                                     defaultSortAsc={true}
                                     defaultSortFieldId="timestamp"
                                 />

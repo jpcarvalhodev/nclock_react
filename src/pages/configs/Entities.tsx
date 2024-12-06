@@ -9,7 +9,6 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { Entity } from "../../helpers/Types";
 import { SelectFilter } from "../../components/SelectFilter";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { DeleteModal } from "../../modals/DeleteModal";
 import { entityFields } from "../../helpers/Fields";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { CreateEntityModal } from "../../modals/CreateEntityModal";
@@ -18,32 +17,18 @@ import { EntityContext, EntityContextType } from "../../context/EntityContext";
 
 export const Entities = () => {
     const { navbarColor, footerColor } = useColor();
-    const { entity, fetchAllEntity, addEntity, updateEntity, deleteEntity } = useContext(EntityContext) as EntityContextType;
+    const { entity, fetchAllEntity, updateEntity } = useContext(EntityContext) as EntityContextType;
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nome', 'nif', 'email', 'enabled']);
     const [filterText, setFilterText] = useState("");
     const [filters, setFilters] = useState<Record<string, string>>({});
-    const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
-    const [selectedEntityToDelete, setSelectedEntityToDelete] = useState<string | null>(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [initialData, setInitialData] = useState<Partial<Entity>>({});
     const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
-
-    // Função para adicionar os dados da entidade
-    const handleAddCompanyData = async (entityData: FormData) => {
-        await addEntity(entityData);
-    }
 
     // Função para atualizar os dados da entidade
     const handleUpdateCompanyData = async (entityData: FormData) => {
         await updateEntity(entityData);
-    }
-
-    // Função para apagar os dados da entidade
-    const handleDeleteCompanyData = async (id: string) => {
-        await deleteEntity(id);
     }
 
     // Busca todas as entidades
@@ -60,6 +45,53 @@ export const Entities = () => {
     const handleEditEntity = (User: Entity) => {
         setSelectedEntity(User);
         setShowUpdateModal(true);
+    };
+
+    // Função para desativar uma entidade
+    const handleDisableEntity = async (entity: Entity) => {
+        const updatedEntity = { ...entity, enabled: false };
+        const formData = new FormData();
+        if (updatedEntity.id) {
+            formData.append('id', String(updatedEntity.id));
+        }
+        if (updatedEntity.nome) {
+            formData.append('Nome', updatedEntity.nome);
+        }
+        if (updatedEntity.morada) {
+            formData.append('Morada', updatedEntity.morada);
+        }
+        if (updatedEntity.cPostal) {
+            formData.append('CPostal', updatedEntity.cPostal);
+        }
+        if (updatedEntity.localidade) {
+            formData.append('Localidade', updatedEntity.localidade);
+        }
+        if (updatedEntity.telefone) {
+            formData.append('Telefone', updatedEntity.telefone);
+        }
+        if (updatedEntity.telemovel) {
+            formData.append('Telemovel', updatedEntity.telemovel);
+        }
+        if (updatedEntity.email) {
+            formData.append('Email', updatedEntity.email);
+        }
+        if (updatedEntity.nif) {
+            formData.append('NIF', String(updatedEntity.nif));
+        }
+        if (updatedEntity.www) {
+            formData.append('WWW', updatedEntity.www);
+        }
+        if (updatedEntity.observacoes) {
+            formData.append('Observacoes', updatedEntity.observacoes);
+        }
+        if (updatedEntity.enabled !== undefined) {
+            formData.append('Enabled', updatedEntity.enabled ? 'true' : 'false');
+        }
+        if (updatedEntity.logotipo) {
+            formData.append('Logotipo', updatedEntity.logotipo);
+        }
+        await handleUpdateCompanyData(formData);
+        refreshEntity();
     };
 
     // Fecha o modal de edição de entidade
@@ -92,14 +124,6 @@ export const Entities = () => {
         <ExpandedComponentEmpZoneExtEnt data={row} fields={entityFields} />
     );
 
-    // Define a função de duplicar funcionários
-    const handleDuplicate = (data: Partial<Entity>) => {
-        setInitialData(data);
-        setShowAddModal(true);
-        setSelectedEntity(null);
-        setShowUpdateModal(false);
-    }
-
     // Define a função de próxima entidade
     const handleNextEntity = () => {
         setCurrentEntityIndex(prevIndex => {
@@ -122,12 +146,6 @@ export const Entities = () => {
             }
             return prevIndex;
         });
-    };
-
-    // Define a abertura do modal de apagar entidade
-    const handleOpenDeleteModal = (id: string) => {
-        setSelectedEntityToDelete(id);
-        setShowDeleteModal(true);
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -184,22 +202,16 @@ export const Entities = () => {
             <div style={{ display: 'flex' }}>
                 <OverlayTrigger
                     placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
-                >
-                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                </OverlayTrigger>
-                <OverlayTrigger
-                    placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
                     <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEntity(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                    overlay={<Tooltip className="custom-tooltip">Desactivar</Tooltip>}
                 >
-                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
-                        <i className="bi bi-trash-fill"></i>
+                    <Button className='delete-button' variant="outline-danger" onClick={() => handleDisableEntity(row)} >
+                        <i className="bi bi-slash-circle"></i>
                     </Button>
                 </OverlayTrigger>
             </div>
@@ -234,12 +246,6 @@ export const Entities = () => {
                         </OverlayTrigger>
                         <OverlayTrigger
                             placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        </OverlayTrigger>
-                        <OverlayTrigger
-                            placement="top"
                             overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
@@ -255,26 +261,19 @@ export const Entities = () => {
                         onRowDoubleClicked={handleEditEntity}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         selectableRows
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId='createdDate'
                     />
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
-            <CreateEntityModal
-                open={showAddModal}
-                onClose={() => setShowAddModal(false)}
-                onSave={handleAddCompanyData}
-                fields={entityFields}
-                initialValues={initialData || {}}
-                title="Adicionar Entidade"
-            />
             {selectedEntity && (
                 <UpdateEntityModal
                     open={showUpdateModal}
@@ -282,7 +281,6 @@ export const Entities = () => {
                     onUpdate={handleUpdateCompanyData}
                     fields={entityFields}
                     entity={selectedEntity}
-                    onDuplicate={handleDuplicate}
                     title="Atualizar Entidade"
                     onNext={handleNextEntity}
                     onPrev={handlePrevEntity}
@@ -290,12 +288,6 @@ export const Entities = () => {
                     canMovePrev={currentEntityIndex > 0}
                 />
             )}
-            <DeleteModal
-                open={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteCompanyData}
-                entityId={selectedEntityToDelete}
-            />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={entityFields.filter(field => !excludedColumns.includes(field.key))}

@@ -290,11 +290,12 @@ export const Types = () => {
                         onRowDoubleClicked={handleEditExternalEntity}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId="order"
                     />

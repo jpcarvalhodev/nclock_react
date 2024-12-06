@@ -126,7 +126,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
             dataToSend.append('Nome', formData.nome);
         }
         if (formData.morada) {
-            dataToSend.append('morada', formData.morada);
+            dataToSend.append('Morada', formData.morada);
         }
         if (formData.cPostal) {
             dataToSend.append('CPostal', formData.cPostal);

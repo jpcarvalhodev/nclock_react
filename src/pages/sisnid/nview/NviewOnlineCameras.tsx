@@ -311,7 +311,7 @@ export const NviewOnlineCameras = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         clearSelectedRows={clearSelectionToggle}
@@ -319,6 +319,7 @@ export const NviewOnlineCameras = () => {
                         onRowDoubleClicked={handleEditCameras}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId="createdDate"
                     />

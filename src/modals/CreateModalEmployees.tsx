@@ -511,7 +511,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             <Form.Label>Entidade <span style={{ color: 'red' }}>*</span></Form.Label>
                             <OverlayTrigger
                                 placement="left"
-                                overlay={<Tooltip id="tooltip-modulos">Obrigatório escolher uma entidade</Tooltip>}
+                                overlay={<Tooltip id="tooltip-modulos">Escolha a sua entidade</Tooltip>}
                             >
                                 <Form.Control
                                     as="select"
@@ -530,7 +530,6 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                     })}
                                 </Form.Control>
                             </OverlayTrigger>
-                            {errors.entidadeId && <Form.Text className="text-danger">{errors.entidadeId}</Form.Text>}
                         </Form.Group>
                     </Col>
                 </Row>
@@ -685,7 +684,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             </Form>
                         </Tab.Pane>
                         <Tab.Pane eventKey="cartoes">
-                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                            <Form style={{ marginTop: 10, marginBottom: 85 }}>
                                 <Row>
                                     <Col md={3}>
                                         <Form.Group controlId="formCardNumber">
@@ -728,7 +727,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                             />
                                             <Button variant="outline-secondary" onClick={togglePasswordVisibility} style={{
                                                 position: 'absolute',
-                                                top: '88%',
+                                                top: '73%',
                                                 right: '310px',
                                                 transform: 'translateY(-50%)',
                                                 border: 'none',

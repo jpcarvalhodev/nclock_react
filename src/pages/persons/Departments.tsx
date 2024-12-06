@@ -372,7 +372,7 @@ export const Departments = () => {
                         onRowDoubleClicked={handleEditDepartment}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         expandableRows
@@ -381,6 +381,7 @@ export const Departments = () => {
                         )}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId="code"
                     />

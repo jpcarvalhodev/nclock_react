@@ -343,7 +343,7 @@ export const NkioskCleaning = () => {
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         onRowDoubleClicked={handleEditLimpezas}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
@@ -351,6 +351,7 @@ export const NkioskCleaning = () => {
                         selectableRowsHighlight
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId="dataCreate"
                     />

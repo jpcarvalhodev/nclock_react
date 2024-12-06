@@ -788,6 +788,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     onRowDoubleClicked={handleEditDoors}
                                                     noDataComponent="Não existem dados disponíveis para exibir."
                                                     customStyles={customStyles}
+                                                    striped
                                                     defaultSortAsc={true}
                                                     defaultSortFieldId="doorNo"
                                                 />
@@ -813,6 +814,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     onRowDoubleClicked={handleEditAux}
                                                     noDataComponent="Não existem dados disponíveis para exibir."
                                                     customStyles={customStyles}
+                                                    striped
                                                     defaultSortAsc={true}
                                                     defaultSortFieldId="auxNo"
                                                 />

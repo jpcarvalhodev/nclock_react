@@ -123,8 +123,8 @@ import { NkioskOccurrences } from './pages/nidtec/nkiosk/NkioskOccurrences';
 import { NkioskCounter } from './pages/nidtec/nkiosk/NkioskCounter';
 import { NledAds } from './pages/nidtec/nled/NledAds';
 import { NkioskAlerts } from './pages/nidtec/nkiosk/NkioskAlerts';
-import { LoginLogs } from './pages/Logs/LoginLogs';
-import { HistoryLogs } from './pages/Logs/HistoryLogs';
+import { LoginLogs } from './pages/configs/LoginLogs';
+import { HistoryLogs } from './pages/configs/HistoryLogs';
 import { PersonsProvider } from './context/PersonsContext';
 import { AttendanceProvider } from './context/MovementContext';
 import { TerminalsProvider } from './context/TerminalsContext';
@@ -180,8 +180,6 @@ function AnimatedRoutes() {
               <Route path='/login&forgot/resetpassword' element={<ResetPassword />} />
               <Route path="/errors/notfound" element={<NotFound />} />
               <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
-              <Route path="/logs/loginlogs" element={<PageProtection><LoginLogs /></PageProtection>} />
-              <Route path="/logs/historylogs" element={<PageProtection><HistoryLogs /></PageProtection>} />
               <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />
               <Route path="/persons/employees" element={<PageProtection><Employees /></PageProtection>} />
               <Route path="/persons/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
@@ -203,6 +201,8 @@ function AnimatedRoutes() {
               <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
               <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
               <Route path="/configs/entities" element={<PageProtection><Entities /></PageProtection>} />
+              <Route path="/configs/loginlogs" element={<PageProtection><LoginLogs /></PageProtection>} />
+              <Route path="/configs/historylogs" element={<PageProtection><HistoryLogs /></PageProtection>} />
               <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
               <Route path="/nclock/nclockdashboardlicensed" element={<PageProtection><NclockDashboardLicensed /></PageProtection>} />
               <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />

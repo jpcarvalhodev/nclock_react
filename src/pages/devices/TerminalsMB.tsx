@@ -349,13 +349,14 @@ export const TerminalsMB = () => {
                                     data={filteredDataTable}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={15}
+                                    paginationPerPage={20}
                                     selectableRows
                                     onSelectedRowsChange={handleDeviceRowSelected}
                                     selectableRowsHighlight
                                     onRowDoubleClicked={handleEditDevices}
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                     customStyles={customStyles}
+                                    striped
                                 />
                             </div>
                             <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>

@@ -130,6 +130,9 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                         case 'updatedDate':
                             displayValue = new Date(value).toLocaleString() || '';
                             break;
+                        case 'enabled':
+                            displayValue = value ? 'Activo' : 'Inactivo';
+                            break;
                         default:
                             if (typeof value === 'object' && value !== null) {
                                 displayValue = JSON.stringify(value, null, 2);

@@ -37,7 +37,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const addEntity = async (entity: FormData) => {
         try {
             const data = await apiService.addCompanyConfig(entity);
-            setEntity(data);
+            setEntity(Array.isArray(data) ? data : []);
             toast.success('Entidade adicionada com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar entidade:', error);
@@ -50,7 +50,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const updateEntity = async (entity: FormData) => {
         try {
             const data = await apiService.updateCompanyConfig(entity);
-            setEntity(data);
+            setEntity(Array.isArray(data) ? data : []);
             toast.success('Entidade atualizada com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar entidade:', error);

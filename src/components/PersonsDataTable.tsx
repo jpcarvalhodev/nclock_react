@@ -321,7 +321,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         highlightOnHover
                         pagination
                         paginationComponentOptions={paginationOptions}
-                        paginationPerPage={15}
+                        paginationPerPage={20}
                         onRowDoubleClicked={handleRowDoubleClicked}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
@@ -331,6 +331,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         clearSelectedRows={resetSelectionInternal}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
+                        striped
                         defaultSortAsc={true}
                         defaultSortFieldId='enrollNumber'
                     />

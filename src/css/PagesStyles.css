@@ -475,7 +475,7 @@ body {
 }
 
 .delete-button {
-    display: flex;
+    display: flex !important;
     width: 30px;
     height: 30px;
     justify-content: center;
@@ -733,7 +733,7 @@ body {
 }
 
 .arrows-modal {
-    margin-right: auto;
+    margin-right: auto !important;
 }
 
 .img-contact-modal {

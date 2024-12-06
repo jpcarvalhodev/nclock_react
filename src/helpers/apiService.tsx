@@ -165,8 +165,12 @@ export const updateEmployee = async (employee: Employee) => {
 };
 
 export const deleteEmployee = async (employeeID: string) => {
-    const response = await fetchWithAuth(`Employees/DeleteEmployee/${employeeID}`, {
-        method: 'DELETE'
+    const response = await fetchWithAuth(`Employees/DeleteEmployee`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([employeeID])
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1328,7 +1332,7 @@ export const fetchCompanyLogo = async (selectedNif: number) => {
     const response = await fetchWithAuth(`Configuration/GetEntidadeImage?nif=${selectedNif}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        console.error(errorData.message || errorData.error);
         throw new Error();
     }
     return response.blob();
@@ -1417,11 +1421,11 @@ export const addCompanyConfig = async (companyEmail: FormData) => {
     return response.json();
 }
 
-export const updateCompanyConfig = async (companyEmail: FormData) => {
-    const companyId = companyEmail.get('id');
-    const response = await fetchWithAuth(`Configuration/UpadateCompany?id=${companyId}`, {
+export const updateCompanyConfig = async (companyData: FormData) => {
+    const id = companyData.get('id');
+    const response = await fetchWithAuth(`Configuration/UpadateCompany?id=${id}`, {
         method: 'PUT',
-        body: companyEmail
+        body: companyData
     });
     if (!response.ok) {
         const errorData = await response.json();

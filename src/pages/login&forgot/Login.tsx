@@ -41,7 +41,6 @@ export const Login = () => {
   const fetchLicenseData = async () => {
     try {
       const data = await apiService.fetchLicensesWithoutKey();
-      console.log(data);
       setCompany(data);
       setSelectedNif(Number(data[0].nif));
       if (!data.ok) {
@@ -56,7 +55,6 @@ export const Login = () => {
   const fetchLogo = async (selectedNif: number) => {
     try {
       const data = await apiService.fetchCompanyLogo(selectedNif);
-      console.log(data);
       setEntityLogo(URL.createObjectURL(data));
     } catch (error) {
       console.error('Erro:', error);

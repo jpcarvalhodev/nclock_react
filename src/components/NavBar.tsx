@@ -1724,6 +1724,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							onMouseLeave={() => setTimeout(() => setShowDropdown(false), 300)}
 							show={showDropdown}
 							className='dropdown-icon'
+							id='dropdown-navbar'
 						>
 							<Dropdown.Toggle variant="basic" id="dropdown-basic">
 								<span className="logo">NIDGROUP</span>
@@ -1758,8 +1759,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 								onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 300)}
 								show={showSoftwaresDropdown}
 								className='dropdown-icon'
+								id='dropdown-navbar'
 							>
-								<Dropdown.Toggle variant="basic" id="dropdown-basic">
+								<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
 									<span className="logoNG">NSOFTWARES</span>
 								</Dropdown.Toggle>
 								<Dropdown.Menu>
@@ -1779,8 +1781,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 							onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 300)}
 							show={showUserDropdown}
 							className='dropdown-icon'
+							id='dropdown-navbar'
 						>
-							<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
+							<Dropdown.Toggle variant="basic" id="dropdown-basic-3">
 								<span className='user-info'><i className="bi bi-door-open" style={{ marginRight: 10 }}></i>{user.name}</span>
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
@@ -2124,7 +2127,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
 														<span className="icon">
 															<img src={print} alt="botão listagens" />
 														</span>
@@ -2353,7 +2356,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
 														<span className="icon">
 															<img src={print} alt="botão listagens" />
 														</span>
@@ -2498,7 +2501,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
 														<span className="icon">
 															<img src={print} alt="botão listagens" />
 														</span>
@@ -2637,7 +2640,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
 														<span className="icon">
 															<img src={print} alt="botão listagens" />
 														</span>
@@ -2768,7 +2771,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
 														<span className="icon">
 															<img src={print} alt="botão listagens" />
 														</span>
@@ -3025,7 +3028,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
 														<span className="icon">
 															<img src={print} alt="botão listagens" />
 														</span>
@@ -3063,7 +3066,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 300)}
 													show={showKioskDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
 														<span className="icon">
 															<img src={module} alt="botão opcionais" />
 														</span>
@@ -3183,7 +3186,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-3">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
 														<span className="icon">
 															<img src={print} alt="botão listagens" />
 														</span>
@@ -3663,7 +3666,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'actividade configuracoes') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Link to="/logs/loginlogs" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/logs/loginlogs' ? 'current-active' : ''}`}>
+												<Link to="/configs/loginlogs" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/logs/loginlogs' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={logs} alt="botão log de logins" />
 													</span>
@@ -3671,7 +3674,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Link to="/logs/historylogs" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/logs/historylogs' ? 'current-active' : ''}`}>
+												<Link to="/configs/historylogs" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/logs/historylogs' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={logs} alt="botão log de histórico" />
 													</span>
