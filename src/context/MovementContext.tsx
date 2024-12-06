@@ -147,9 +147,13 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     // Busca todas as assiduidades ao carregar o componente
     useEffect(() => {
         const fetchOnTokenChange = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                await fetchAllAttendances();
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    await fetchAllAttendances();
+                }
+            } catch (error) {
+                console.error('Erro ao buscar presenças:', error);
             }
         };
 

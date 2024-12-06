@@ -196,7 +196,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                                 <img
                                     src={deviceImage || no_entity}
                                     alt="Logo da entidade"
-                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '50%' }}
+                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '10%' }}
                                     onClick={triggerFileSelectPopup}
                                 />
                                 <div>

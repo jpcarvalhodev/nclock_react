@@ -11,7 +11,7 @@ import entity from '../../assets/assist_img/logo_quiosque.jpeg';
 import hidepass from '../../assets/img/login/hidepass.png';
 import showpass from '../../assets/img/login/showpass.png';
 import * as apiService from "../../helpers/apiService";
-import { License } from '../../helpers/Types';
+import { License, LicenseKey } from '../../helpers/Types';
 import { LoginLicenseModal } from '../../modals/LoginLicenseModal';
 
 // Define a interface para os itens de campo
@@ -28,6 +28,8 @@ type User = {
 export const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
+  const [entityLogo, setEntityLogo] = useState<string>(no_entity);
+  const [companyName, setCompanyName] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -35,9 +37,11 @@ export const Login = () => {
   const [selectedNif, setSelectedNif] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
 
+  // Função para obter os dados da licença
   const fetchLicenseData = async () => {
     try {
       const data = await apiService.fetchLicensesWithoutKey();
+      console.log(data);
       setCompany(data);
       setSelectedNif(Number(data[0].nif));
       if (!data.ok) {
@@ -47,6 +51,17 @@ export const Login = () => {
       console.error('Erro:', error);
     }
   };
+
+  // Função para obter a imagem da entidade
+  const fetchLogo = async (selectedNif: number) => {
+    try {
+      const data = await apiService.fetchCompanyLogo(selectedNif);
+      console.log(data);
+      setEntityLogo(URL.createObjectURL(data));
+    } catch (error) {
+      console.error('Erro:', error);
+    }
+  }
 
   // Obtém os dados da licença
   useEffect(() => {
@@ -74,20 +89,27 @@ export const Login = () => {
   // Função atualizada para setar o NIF junto com o nome da empresa
   const handleCompanyChange = (event: React.ChangeEvent<FormControlElement>) => {
     const selectedLicense = company.find(license => license.name === event.target.value);
-    setSelectedNif(selectedLicense ? Number(selectedLicense.nif) : 0);
+    if (selectedLicense) {
+      fetchLogo(Number(selectedLicense.nif));
+      setSelectedNif(Number(selectedLicense.nif));
+      setCompanyName(selectedLicense.name);
+    } else {
+      setEntityLogo(no_entity);
+      setSelectedNif(0);
+      setCompanyName('');
+    }
   };
 
   // Função para inserir a chave de licença
-  const insertLicenseKey = async (licenseKey: string) => {
+  const insertLicenseKey = async (licenseKey: Partial<LicenseKey>) => {
     try {
       const data = await apiService.importLicense(licenseKey);
-      if (data.ok) {
-        toast.success(data.message || 'Chave inserida com sucesso!');
-      }
+      toast.success(data.message || 'Chave inserida com sucesso!');
     } catch (error) {
       console.error('Erro ao inserir chave:', error);
     } finally {
       setShowModal(false);
+      window.location.reload();
     }
   }
 
@@ -113,12 +135,13 @@ export const Login = () => {
       if (response.status === 401) {
         toast.error('Dados incorretos. Tente novamente.');
       } else if (!response.ok) {
-        toast.error('Falha ao fazer login. Tente novamente.');
+        const data = await response.json();
+        toast.error(data.message || 'Erro ao fazer login.');
         throw new Error;
       } else {
         const data = await response.json();
 
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('token', data.response.token);
         localStorage.setItem('username', username);
         localStorage.setItem('nif', selectedNif.toString());
 
@@ -131,7 +154,7 @@ export const Login = () => {
           localStorage.removeItem('rememberMeNif');
           localStorage.removeItem('rememberMePassword');
         }
-        
+
         toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
         navigate('/dashboard');
       }
@@ -160,13 +183,14 @@ export const Login = () => {
             <Row className='row-username-password'>
               <Col className='col-profile-img'>
                 <div className="image-container">
-                  <img className="profile-login" src={entity} alt="foto perfil" />
+                  <img className="profile-login-entity" src={entityLogo} alt="foto entidade" />
                 </div>
               </Col>
               <Col className='col-username-password'>
                 <Form.Group controlId="companySelect">
                   <Form.Label className='username-label'>Licenciado a Empresa:</Form.Label>
-                  <Form.Control as="select" className='input-username-password' value={username} onChange={handleCompanyChange}>
+                  <Form.Control as="select" className='input-username-password' value={companyName} onChange={handleCompanyChange}>
+                    <option value="">Selecione...</option>
                     {company.map((license, index) => (
                       <option key={index} value={license.name}>{license.name}</option>
                     ))}

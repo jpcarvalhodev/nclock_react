@@ -523,3 +523,7 @@ export const counterFields = [
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
 ];
+
+export const licenseKey = [
+    { key: 'licenseKey', label: 'Chave', type: 'string' },
+];

@@ -640,3 +640,9 @@ export type Counter = {
     pin: number;
     verifyModeNo: number;
 }
+
+export type LicenseKey = {
+    [key: string]: any;
+    id: string;
+    licenseKey: string;
+}

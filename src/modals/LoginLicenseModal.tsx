@@ -3,18 +3,19 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import '../css/PagesStyles.css';
 import { Col, Form, Row } from 'react-bootstrap';
+import { LicenseKey } from '../helpers/Types';
 
 // Interface para as propriedades do modal
 interface LoginLicenseModalProps<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: string) => void;
+    onSave: (data: Partial<LicenseKey>) => void;
 }
 
 // Define o componente
 export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, onClose, onSave }: LoginLicenseModalProps<T>) => {
-    const [formData, setFormData] = useState<T>({} as T);
+    const [formData, setFormData] = useState<Partial<LicenseKey>>({ licenseKey: '' })
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<any>) => {
@@ -27,8 +28,7 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
 
     // Função para salvar os dados
     const handleSave = () => {
-        console.log('formData:', formData);
-        onSave(formData as unknown as string);
+        onSave(formData);
     };
 
     return (

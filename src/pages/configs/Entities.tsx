@@ -4,7 +4,7 @@ import { NavBar } from "../../components/NavBar";
 import { useColor } from "../../context/ColorContext";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { Entity } from "../../helpers/Types";
 import { SelectFilter } from "../../components/SelectFilter";
@@ -45,6 +45,11 @@ export const Entities = () => {
     const handleDeleteCompanyData = async (id: string) => {
         await deleteEntity(id);
     }
+
+    // Busca todas as entidades
+    useEffect(() => {
+        fetchAllEntity();
+    }, []);
 
     // Função para atualizar as entidade
     const refreshEntity = () => {

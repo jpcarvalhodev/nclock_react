@@ -74,9 +74,13 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     // Busca todas as entidades ao carregar o componente
     useEffect(() => {
         const fetchOnTokenChange = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                await fetchAllEntity();
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    await fetchAllEntity();
+                }
+            } catch (error) {
+                console.error('Erro ao buscar entidades:', error);
             }
         };
 

@@ -277,7 +277,7 @@ export const NpingDashboard = () => {
         return (
             <div className="dashboard-cards-container">
                 {numCards > maxVisibleCards && (
-                    <Button id="arrow-cards" className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
+                    <Button id="arrow-cards" style={{ backgroundColor: '#D9D9D9', borderColor: '#D9D9D9', color: 'black' }} className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
                 )}
                 <div id="cardContainer" className={`card-container ${alignmentClass}`} ref={cardContainerRef}>
                     {cards.map((card, index) => {
@@ -295,7 +295,7 @@ export const NpingDashboard = () => {
                     })}
                 </div>
                 {numCards > maxVisibleCards && (
-                    <Button className="arrows-cards" onClick={scrollRight}>{">"}</Button>
+                    <Button className="arrows-cards" style={{ backgroundColor: '#D9D9D9', borderColor: '#D9D9D9', color: 'black' }} onClick={scrollRight}>{">"}</Button>
                 )}
             </div>
         );

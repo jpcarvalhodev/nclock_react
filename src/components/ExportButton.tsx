@@ -244,7 +244,8 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
     const fetchLogo = async () => {
         setIsEntityLogoLoading(true);
         try {
-            const logo = await apiService.fetchCompanyLogo();
+            const nif = localStorage.getItem('nif');
+            const logo = await apiService.fetchCompanyLogo(Number(nif));
             setEntityLogo(logo);
         } catch (error) {
             console.error('Erro ao buscar logotipo:', error);

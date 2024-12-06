@@ -2,11 +2,14 @@
 .nav {
     display: flex;
     align-items: center;
+    height: 35px;
 }
 
 .logos {
     display: flex;
+    justify-content: center;
     align-items: center;
+    height: 30px;
 }
 
 .logo {
@@ -26,7 +29,8 @@
     cursor: pointer;
 }
 
-.dropdown-toggle:focus {
+.dropdown-toggle:focus,
+.dropdown-toggle:active {
     outline: none;
     border: none;
 }
@@ -94,6 +98,7 @@
 .nsound-tab,
 .nhome-tab {
     color: white;
+    height: 30px;
 }
 
 .tab-content-navbar {
@@ -354,14 +359,24 @@
     display: none;
 }
 
+.nav-item,
+.nav-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .nav-item:hover,
 .nav-link:hover {
     color: white;
     cursor: pointer;
+    height: 30px;
+    border-radius: 5px;
 }
 
 .nav-item.active .nav-link {
     border-color: white;
+    height: 35px;
 }
 
 @keyframes pulseBorder {

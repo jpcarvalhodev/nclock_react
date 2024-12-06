@@ -85,7 +85,11 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     // Busca todas as licenças ao carregar o componente
     useEffect(() => {
         const fetchOnTokenChange = async () => {
-            await fetchAllLicensesWithoutKey();
+            try {
+                await fetchAllLicensesWithoutKey();
+            } catch (error) {
+                console.error('Erro ao buscar licenças:', error);
+            }
         };
 
         fetchOnTokenChange();

@@ -16,7 +16,7 @@ export const Footer = ({ style }: FooterProps) => {
   };
 
   // Busca o nome da entidade
-  const entityName = entity.filter((item) => item.nome);
+  const entityName = Array.isArray(entity) ? entity.filter((item) => item.nome) : [];
 
   return (
     <ColorProvider>

@@ -304,6 +304,7 @@ body {
     width: 100%;
     color: #fff;
     padding: 10px;
+    height: 35px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -565,7 +566,7 @@ body {
 
 .nav.nav-pills {
     width: 71%;
-    height: 40px;
+    height: 35px;
     margin: 0 auto;
     border-radius: 10px;
     background-color: #D9D9D9;
@@ -594,6 +595,7 @@ body {
     transition: 0.3s ease-in-out;
     text-align: center;
     z-index: 0;
+    height: 35px;
 }
 
 .nav.nav-pills .nav-link::before {
@@ -615,6 +617,7 @@ body {
 .nav.nav-pills .nav-link.active {
     color: white;
     background-color: black;
+    font-size: 16px;
 }
 
 .nav.nav-pills .nav-link:hover {
@@ -1013,11 +1016,11 @@ body {
     }
 
     .card-container.cards-center {
-        width: 68vw;
+        width: 68.5vw;
     }
 
     .card-container.cards-left {
-        width: 68vw;
+        width: 68.5vw;
     }
 
     .nav.nav-pills {

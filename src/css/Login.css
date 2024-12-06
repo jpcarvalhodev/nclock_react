@@ -27,7 +27,14 @@
 #login .profile-login {
     max-width: 120px;
     height: auto;
-    border-radius: 50%;
+    border-radius: 10%;
+    object-fit: cover;
+}
+
+#login .profile-login-entity {
+    max-width: 120px;
+    height: auto;
+    border-radius: 10%;
     object-fit: cover;
 }
 

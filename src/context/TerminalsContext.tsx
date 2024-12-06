@@ -351,10 +351,14 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Busca todos os dispositivos ao carregar o componente
     useEffect(() => {
         const fetchOnTokenChange = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                await fetchAllDevices();
-                await fetchAllMBDevices();
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    await fetchAllDevices();
+                    await fetchAllMBDevices();
+                }
+            } catch (error) {
+                console.error('Erro ao buscar dados dos dispositivos:', error);
             }
         };
 

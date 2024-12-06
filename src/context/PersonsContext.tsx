@@ -328,14 +328,18 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Busca todos os dados ao carregar o componente
     useEffect(() => {
         const fetchOnTokenChange = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                await fetchAllData();
-                await fetchAllEmployees();
-                await fetchAllDepartments();
-                await fetchAllGroups();
-                await fetchAllRegisteredUsers();
-                await fetchAllCardData();
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    await fetchAllData();
+                    await fetchAllEmployees();
+                    await fetchAllDepartments();
+                    await fetchAllGroups();
+                    await fetchAllRegisteredUsers();
+                    await fetchAllCardData();
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar dados após mudança de token:', error);
             }
         };
 

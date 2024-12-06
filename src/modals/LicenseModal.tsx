@@ -341,7 +341,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         <Col md={3}>
                             <Form.Group controlId="formUsers">
                                 <Form.Label>
-                                    utilizadores
+                                    Utilizadores
                                 </Form.Label>
                                 <Form.Control
                                     type="number"
