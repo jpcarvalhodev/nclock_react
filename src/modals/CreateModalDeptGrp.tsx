@@ -314,12 +314,28 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
     // Função para lidar com o clique no botão de guardar
     const handleSaveClick = () => {
-        if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
-            return;
+        const newErrors: Record<string, string> = {};
+    
+        fields.forEach((field) => {
+          const fieldValue = formData[field.key];
+          if (
+            field.required &&
+            (!fieldValue ||
+              (typeof fieldValue === "string" && fieldValue.trim() === ""))
+          ) {
+            newErrors[field.key] = `${field.label} é obrigatório.`;
+          }
+        });
+    
+        setErrors(newErrors);
+    
+        if (Object.keys(newErrors).length === 0) {
+          // Se não há erros, chama a função onSave
+          handleSave();
+        } else {
+          toast.error("Por favor, corrija os erros no formulário.");
         }
-        handleSave();
-    };
+      };
 
     // Função para guardar os dados
     const handleSave = () => {
@@ -396,7 +412,9 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                 name="name"
                                                 value={formData['name'] || ''}
                                                 onChange={handleChange}
-                                                className="custom-input-height custom-select-font-size"
+                                                className={`custom-input-height custom-select-font-size ${
+                                                    errors.name ? "is-invalid" : ""
+                                                  }`}
                                                 required
                                             />
                                         </OverlayTrigger>

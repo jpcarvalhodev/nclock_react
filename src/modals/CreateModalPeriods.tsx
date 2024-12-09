@@ -79,9 +79,10 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
     // Função para buscar o próximo ID do App
     const fetchNextAppId = async () => {
         const apiData = await apiService.fetchAllTimePeriods();
-        if (apiData.length > 0 && apiData[apiData.length - 1].appId) {
-            const lastAppId = apiData[apiData.length - 1].appId;
-            const nextId = parseInt(lastAppId, 10) + 1;
+
+        if (apiData.length > 0) {
+            const maxAppId = apiData.reduce((max: number, item: { appId: string; }) => Math.max(max, parseInt(item.appId, 10)), 0);
+            const nextId = maxAppId + 1;
             const nextAppId = nextId.toString();
 
             setFormData(prevState => ({

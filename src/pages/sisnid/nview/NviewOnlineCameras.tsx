@@ -246,7 +246,7 @@ export const NviewOnlineCameras = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditCameras(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditCameras(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"

@@ -434,7 +434,7 @@ export const NkioskListMovements = () => {
                                     defaultSortAsc={true}
                                     defaultSortFieldId="eventTime"
                                 />
-                                <div style={{ marginLeft: 10 }}>
+                                <div style={{ marginLeft: 10, marginTop: -40 }}>
                                     <strong>Movimentos Totais: </strong>{totalAmount}
                                 </div>
                             </div>

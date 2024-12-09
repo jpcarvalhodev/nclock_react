@@ -266,10 +266,10 @@ export const NkioskCleaning = () => {
                 >
                     <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 </OverlayTrigger>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditLimpezas(row)} />
+                <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditLimpezas(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                </Button>
             </div>
         ),
         selector: (row: LimpezasEOcorrencias) => row.id,

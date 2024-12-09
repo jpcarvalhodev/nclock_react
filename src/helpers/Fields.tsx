@@ -330,7 +330,7 @@ export const doorFields = [
 
 export const accessControlFields = [
     { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
-    { key: 'shortName', label: 'Nome Curto', type: 'string' },
+    { key: 'shortName', label: 'Nome', type: 'string' },
     { key: 'enrollNumber', label: 'Número', type: 'string' },
     { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
     { key: 'doorName', label: 'Nome da Porta', type: 'string' },

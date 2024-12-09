@@ -444,7 +444,7 @@ export const NkioskListPayments = () => {
                                     defaultSortAsc={true}
                                     defaultSortFieldId="timestamp"
                                 />
-                                <div style={{ marginLeft: 10 }}>
+                                <div style={{ marginLeft: 10, marginTop: -40 }}>
                                     <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                                 </div>
                             </div>

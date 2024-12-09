@@ -264,7 +264,6 @@
 
 .user-info {
     font-size: 15px;
-    padding: .650rem;
     color: white;
     text-transform: uppercase;
 }
@@ -355,6 +354,12 @@
     display: none;
 }
 
+#dropdown-basic::after,
+#dropdown-basic-2::after,
+#dropdown-basic-3::after {
+    color: white;
+}
+
 .nav-item,
 .nav-link {
     display: flex;
@@ -373,22 +378,8 @@
     border-color: white;
 }
 
-@keyframes pulseBorder {
-    0% {
-        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
-    }
-
-    70% {
-        box-shadow: 0 0 10px 10px rgba(204, 169, 44, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
-    }
-}
-
 .current-active {
-    animation: pulseBorder 2s infinite;
+    box-shadow: 0 0 5px rgba(128, 128, 128, 1);
 }
 
 input::-ms-reveal,

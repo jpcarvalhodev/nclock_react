@@ -1,8 +1,6 @@
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import React from 'react';
 import { Entity } from '../helpers/Types';
-import * as apiService from "../helpers/apiService";
-import { set } from 'date-fns';
 
 // Estilos para o documento PDF
 const styles = StyleSheet.create({
@@ -18,7 +16,7 @@ const styles = StyleSheet.create({
     entityLogo: {
         width: 50,
         height: 50,
-        borderRadius: 25
+        borderRadius: 10,
     },
     page: {
         flexDirection: 'column',

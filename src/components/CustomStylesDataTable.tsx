@@ -4,17 +4,20 @@ import { TableStyles } from 'react-data-table-component';
 export const customStyles: TableStyles = {
     rows: {
         style: {
-            minHeight: '35px',
+            minHeight: '28px',
             padding: 0,
             margin: 0,
         },
         stripedStyle: {
             backgroundColor: '#f2f2f2',
         },
+        highlightOnHoverStyle: {
+            backgroundColor: '#ccc',
+        },
     },
     headCells: {
         style: {
-            minHeight: '30px',
+            height: '30px',
             backgroundColor: '#ccc',
             color: '#333',
             fontWeight: 'bold',

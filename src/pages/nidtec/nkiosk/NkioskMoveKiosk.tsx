@@ -350,7 +350,7 @@ export const NkioskMoveKiosk = () => {
                                 defaultSortFieldId="eventTime"
                             />
                         </div>
-                        <div style={{ marginLeft: 10 }}>
+                        <div style={{ marginLeft: 10, marginTop: -40 }}>
                             <strong>Movimentos do Quiosque: </strong>{totalAmount}
                         </div>
                     </div>

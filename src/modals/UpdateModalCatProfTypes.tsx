@@ -169,6 +169,7 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
                                 name={field.key}
                                 value={formData[field.key] || ''}
                                 onChange={e => handleInputChange(field.key, e)}
+                                maxLength={field.type === 'acronym' ? 4 : 50}
                             />
                             {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
                         </div>

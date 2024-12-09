@@ -316,7 +316,7 @@ export const NkioskMoveVP = () => {
                                     defaultSortFieldId="eventTime"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10 }}>
+                            <div style={{ marginLeft: 10, marginTop: -40 }}>
                                 <strong>Movimentos do Video Porteiro: </strong>{totalAmount}
                             </div>
                         </div>

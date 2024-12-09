@@ -231,7 +231,7 @@ export const Groups = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditGroup(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"

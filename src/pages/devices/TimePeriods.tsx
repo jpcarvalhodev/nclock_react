@@ -273,7 +273,7 @@ export const TimePeriods = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditPeriod(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditPeriod(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"

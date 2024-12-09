@@ -67,7 +67,7 @@ export const AccessControls = () => {
     const handleUpdateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         try {
             const data = await apiService.updateAccessControl(newAccessControl);
-            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.id === data.id ? { ...item, acc: [data.acc[0]] } : item));
+            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.acId === data.acId ? { ...item, acc: [data.acc[0]] } : item));
             toast.success(data.message || 'Controle de acesso atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao editar o controle de acesso:', error);
@@ -269,7 +269,7 @@ export const AccessControls = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAccessControl(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditAccessControl(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"

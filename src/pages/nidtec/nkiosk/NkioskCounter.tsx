@@ -266,7 +266,7 @@ export const NkioskCounter = () => {
                                 defaultSortFieldId="eventTime"
                             />
                         </div>
-                        <div style={{ marginLeft: 10, marginTop: 5 }}>
+                        <div style={{ marginLeft: 10, marginTop: -40 }}>
                             <strong>Total de Movimentos Torniquete: </strong>{totalCardAmount}
                         </div>
                         <div style={{ marginLeft: 10, marginTop: 5 }}>

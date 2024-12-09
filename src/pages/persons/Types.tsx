@@ -225,7 +225,7 @@ export const Types = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditExternalEntity(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditExternalEntity(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"

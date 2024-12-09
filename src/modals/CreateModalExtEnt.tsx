@@ -154,7 +154,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
             [name]: parsedValue
         }));
     };
-    
+
     // Função para lidar com o fecho
     const handleClose = () => {
         window.location.reload();
@@ -164,10 +164,27 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [key]: value
-        }));
+        const selectedOption = dropdownData[key]?.find((option: any) => {
+            switch (key) {
+                case 'externalEntityTypeId':
+                    return option.externalEntityTypeId === value;
+                default:
+                    return false;
+            }
+        });
+
+        if (selectedOption) {
+            const idKey = key;
+            setFormData(prevState => ({
+                ...prevState,
+                [idKey]: value
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                [key]: value
+            }));
+        }
     };
 
     // Define o clique no botão de salvar
@@ -256,7 +273,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             >
                                 <option value="">Selecione...</option>
                                 {dropdownData.externalEntityTypeId?.map((option) => (
-                                    <option key={option.externalEntityTypeId} value={option.externalEntityTypeId}>
+                                    <option key={option.externalEntityTypeID} value={option.externalEntityTypeID}>
                                         {option.name}
                                     </option>
                                 ))}

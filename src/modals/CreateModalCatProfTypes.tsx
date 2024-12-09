@@ -178,6 +178,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
                                 name={field.key}
                                 value={formData[field.key] || ''}
                                 onChange={handleChange}
+                                maxLength={field.key === 'acronym' ? 4 : 50}
                             />
                             {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
                         </div>

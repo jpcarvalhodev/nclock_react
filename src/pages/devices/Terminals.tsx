@@ -757,7 +757,7 @@ export const Terminals = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditDevices(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"
@@ -1654,9 +1654,7 @@ export const Terminals = () => {
                             entityId={selectedDeviceToDelete}
                             message={
                                 <>
-                                    Apagar todos os utilizadores nos terminais marcados?
-                                    <br />
-                                    Atenção que esta operação elimina os dados de todos os utilizadores existentes nos terminais.
+                                    Apagar todos os terminais selecionados?
                                 </>
                             }
                         />

@@ -15,6 +15,8 @@ import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedCompone
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { usePersons } from "../../context/PersonsContext";
+import { ExportButton } from "../../components/ExportButton";
+import { PrintButton } from "../../components/PrintButton";
 
 export const NewUsers = () => {
     const { navbarColor, footerColor } = useColor();
@@ -30,6 +32,7 @@ export const NewUsers = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [initialData, setInitialData] = useState<Partial<Register> | null>(null);
     const [currentUserIndex, setCurrentUserIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<Register[]>([]);
 
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
@@ -90,6 +93,15 @@ export const NewUsers = () => {
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
+    };
+
+    // Seleciona a linha da tabela
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Register[];
+    }) => {
+        setSelectedRows(state.selectedRows);
     };
 
     // Seleciona a entidade anterior
@@ -165,7 +177,7 @@ export const NewUsers = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditUsers(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditUsers(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"
@@ -217,6 +229,8 @@ export const NewUsers = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={registerFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={registerFields} />
                     </div>
                 </div>
             </div>
@@ -230,6 +244,7 @@ export const NewUsers = () => {
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={20}
                         selectableRows
+                        onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."

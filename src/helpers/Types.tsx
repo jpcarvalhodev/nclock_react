@@ -486,7 +486,7 @@ export type MBDeviceCloseOpen = {
 
 export type License = {
     [key: string]: any;
-    id: string;
+    id?: string;
     entidadeNumber: number;
     name: string;
     nif: number;

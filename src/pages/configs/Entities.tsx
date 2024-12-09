@@ -14,6 +14,8 @@ import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedCompone
 import { CreateEntityModal } from "../../modals/CreateEntityModal";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
 import { EntityContext, EntityContextType } from "../../context/EntityContext";
+import { ExportButton } from "../../components/ExportButton";
+import { PrintButton } from "../../components/PrintButton";
 
 export const Entities = () => {
     const { navbarColor, footerColor } = useColor();
@@ -25,6 +27,7 @@ export const Entities = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
     const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
+    const [selectedRows, setSelectedRows] = useState<Entity[]>([]);
 
     // Função para atualizar os dados da entidade
     const handleUpdateCompanyData = async (entityData: FormData) => {
@@ -154,6 +157,16 @@ export const Entities = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Seleciona a linha da tabela
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Entity[];
+    }) => {
+        const sortedEntity = state.selectedRows.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
+        setSelectedRows(sortedEntity);
+    };
+
     // Filtra os dados da tabela
     const filteredDataTable = Array.isArray(entity) ? entity.filter(user =>
         Object.keys(filters).every(key =>
@@ -204,7 +217,7 @@ export const Entities = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEntity(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditEntity(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"
@@ -250,6 +263,8 @@ export const Entities = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={entityFields} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={entityFields} />
                     </div>
                 </div>
             </div>
@@ -263,6 +278,7 @@ export const Entities = () => {
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={20}
                         selectableRows
+                        onSelectedRowsChange={handleRowSelected}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."

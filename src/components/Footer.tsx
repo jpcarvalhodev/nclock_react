@@ -15,14 +15,22 @@ export const Footer = ({ style }: FooterProps) => {
     return text.length > limit ? text.substring(0, limit) + '...' : text;
   };
 
+  // Obtém o NIF armazenado no localStorage
+  const storedNif = localStorage.getItem("nif");
+
+  // Busca o nome da entidade correspondente ao NIF
+  const loggedEntity = Array.isArray(entity)
+  ? entity.find((item) => item.nif === Number(storedNif))
+  : null;
+
   // Busca o nome da entidade
-  const entityName = Array.isArray(entity) ? entity.filter((item) => item.nome) : [];
+  const entityName = loggedEntity?.nome || "Sem Entidade";
 
   return (
     <ColorProvider>
       <footer className="footer" style={{ backgroundColor: footerColor }}>
         <div>
-          <p>{entityName.length > 0 ? truncateText(entityName[0].nome, 20) : 'Sem Entidade'}</p>
+          <p>{truncateText(entityName, 20)}</p>
         </div>
         <div className="footer-center">
           <p>{currentYear} ®NIDGROUP por SISNID - Todos os direitos reservados</p>

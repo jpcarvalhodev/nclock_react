@@ -248,7 +248,7 @@ export const NkioskOccurrences = () => {
                 >
                     <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 </OverlayTrigger>
-                <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditOcorrencias(row)} />
+                <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditOcorrencias(row)} />
                 <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
                     <i className="bi bi-trash-fill"></i>
                 </Button>{' '}

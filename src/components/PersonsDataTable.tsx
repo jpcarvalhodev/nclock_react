@@ -294,7 +294,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         placement="top"
                         overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                     >
-                        <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
+                        <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
                     </OverlayTrigger>
                     <OverlayTrigger
                         placement="top"

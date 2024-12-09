@@ -104,7 +104,7 @@ export const PrintButton = ({ data, fields, renderTimeout }: PrintButtonProps) =
             >
                 <CustomOutlineButton onClick={handleShowModal} icon='bi-printer' iconSize='1.1em'></CustomOutlineButton >
             </OverlayTrigger>
-            <Modal show={showModal} onHide={handleCloseModal} size="lg">
+            <Modal show={showModal} onHide={handleCloseModal} size="xl" backdrop='static'>
                 <Modal.Header closeButton>
                     <Modal.Title>Visualizar PDF</Modal.Title>
                 </Modal.Header>
@@ -113,7 +113,7 @@ export const PrintButton = ({ data, fields, renderTimeout }: PrintButtonProps) =
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
                             <CustomSpinner />
                         </div> :
-                        <PDFViewer width="100%" height="600">
+                        <PDFViewer width="100%" height="600px">
                             <PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} />
                         </PDFViewer>
                     }

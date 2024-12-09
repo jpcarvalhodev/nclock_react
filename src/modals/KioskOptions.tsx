@@ -191,7 +191,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         type="email"
                                                         as="textarea"
                                                         name="emails"
-                                                        value={Array.isArray(kioskFormData.emails) ? kioskFormData.emails.join(', ') : ''}
+                                                        value={Array.isArray(kioskFormData.emails) ? kioskFormData.emails.join(',') : ''}
                                                         onChange={handleChange}
                                                         multiple
                                                         rows={4}

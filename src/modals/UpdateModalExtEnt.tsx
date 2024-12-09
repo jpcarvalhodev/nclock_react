@@ -193,10 +193,27 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [key]: value
-        }));
+        const selectedOption = dropdownData[key]?.find((option: any) => {
+            switch (key) {
+                case 'externalEntityTypeId':
+                    return option.externalEntityTypeId === value;
+                default:
+                    return false;
+            }
+        });
+
+        if (selectedOption) {
+            const idKey = key;
+            setFormData(prevState => ({
+                ...prevState,
+                [idKey]: value
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                [key]: value
+            }));
+        }
     };
 
     // Função para lidar com os dados dos campos

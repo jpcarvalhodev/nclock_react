@@ -227,7 +227,7 @@ export const NledAds = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
-                    <CustomOutlineButton icon='bi bi-pencil-fill' onClick={() => handleEditAds(row)} />
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditAds(row)} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"

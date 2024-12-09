@@ -171,7 +171,7 @@ export const NkioskPayTerminal = () => {
                 return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
             } else {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
+            } 
         })
     )
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -333,7 +333,7 @@ export const NkioskPayTerminal = () => {
                                     defaultSortFieldId="timestamp"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10 }}>
+                            <div style={{ marginLeft: 10, marginTop: -40 }}>
                                 <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                             </div>
                         </div>

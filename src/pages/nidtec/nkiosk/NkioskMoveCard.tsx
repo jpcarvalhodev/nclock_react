@@ -388,7 +388,7 @@ export const NkioskMoveCard = () => {
                                     defaultSortFieldId="eventTime"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10 }}>
+                            <div style={{ marginLeft: 10, marginTop: -40 }}>
                                 <strong>Movimentos do Torniquete: </strong>{totalAmount}
                             </div>
                         </div>
