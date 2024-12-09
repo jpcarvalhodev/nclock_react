@@ -27,6 +27,21 @@ const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}`;
 }
 
+// Função para converter string em data
+const convertStringToDate = (dateStr: string) => {
+    const parts = dateStr.split(' ');
+    const dateParts = parts[0].split('/');
+    const timeParts = parts[1].split(':');
+    return new Date(
+        parseInt(dateParts[2], 10),
+        parseInt(dateParts[1], 10) - 1,
+        parseInt(dateParts[0], 10),
+        parseInt(timeParts[0], 10),
+        parseInt(timeParts[1], 10),
+        parseInt(timeParts[2], 10)
+    );
+};
+
 export const NkioskCounter = () => {
     const { navbarColor, footerColor } = useColor();
     const currentDate = new Date();
@@ -50,7 +65,11 @@ export const NkioskCounter = () => {
         try {
             const data = await apiService.fetchAllContador(startDate, endDate);
             if (Array.isArray(data)) {
-                setCounter(data);
+                const convertedData = data.map(item => ({
+                    ...item,
+                    eventTime: convertStringToDate(item.eventTime)
+                }));
+                setCounter(convertedData);
             } else {
                 setCounter([]);
             }
@@ -122,6 +141,7 @@ export const NkioskCounter = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(getCoin =>
+        getCoin.eventTime >= new Date(startDate) && getCoin.eventTime <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -135,7 +155,7 @@ export const NkioskCounter = () => {
             }
         })
     )
-        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
+    .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<Counter>[] = counterFields
@@ -144,6 +164,8 @@ export const NkioskCounter = () => {
         .map(field => {
             const formatField = (row: Counter) => {
                 switch (field.key) {
+                    case 'eventTime':
+                        return new Date(row.eventTime).toLocaleString();
                     case 'deviceSN':
                         return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || '';
                     default:
@@ -184,7 +206,7 @@ export const NkioskCounter = () => {
 
     // Calcula o total de movimentos Torniquete
     const totalCardAmount = filteredDataTable.filter(transaction => transaction.eventType !== 'Quiosque').length;
-    
+
     // Calcula o total de movimentos Quiosque
     const totalKioskAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Quiosque').length;
 
@@ -266,11 +288,14 @@ export const NkioskCounter = () => {
                                 defaultSortFieldId="eventTime"
                             />
                         </div>
-                        <div style={{ marginLeft: 10, marginTop: -40 }}>
-                            <strong>Total de Movimentos Torniquete: </strong>{totalCardAmount}
-                        </div>
-                        <div style={{ marginLeft: 10, marginTop: 5 }}>
-                            <strong>Total de Movimentos Quiosque: </strong>{totalKioskAmount}
+                        <div style={{ display: "flex" }}>
+                            <div style={{ marginLeft: 10, marginRight: 10 }}>
+                                <strong>Total de Movimentos Torniquete: </strong>{totalCardAmount}
+                            </div>
+                            <p>|</p>
+                            <div style={{ marginLeft: 10 }}>
+                                <strong>Total de Movimentos Quiosque: </strong>{totalKioskAmount}
+                            </div>
                         </div>
                     </div>
                 </Split>

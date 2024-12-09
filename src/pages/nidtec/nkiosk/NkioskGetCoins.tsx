@@ -177,6 +177,7 @@ export const NkioskGetCoins = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = getCoins.filter(getCoin =>
+        new Date(getCoin.dataRecolha) >= new Date(startDate) && new Date(getCoin.dataRecolha) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -388,11 +389,14 @@ export const NkioskGetCoins = () => {
                         defaultSortFieldId="dataRecolha"
                     />
                 </div>
-                <div style={{ marginLeft: 30 }}>
-                    <strong>Valor Total das Recolhas: </strong>{totalAmount.toFixed(2)}€
-                </div>
-                <div style={{ marginLeft: 30 }}>
-                    <strong>Valor Total de Diferença de Recolhas: </strong>{totalAmountDifference.toFixed(2)}€
+                <div style={{ display: "flex" }}>
+                    <div style={{ marginLeft: 10, marginRight: 10 }}>
+                        <strong>Valor Total das Recolhas: </strong>{totalAmount.toFixed(2)}€
+                    </div>
+                    <p>|</p>
+                    <div style={{ marginLeft: 10 }}>
+                        <strong>Valor Total de Diferença de Recolhas: </strong>{totalAmountDifference.toFixed(2)}€
+                    </div>
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

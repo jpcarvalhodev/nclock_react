@@ -212,6 +212,7 @@ export const NkioskPayCoins = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(payCoin =>
+        new Date(payCoin.timestamp) >= new Date(startDate) && new Date(payCoin.timestamp) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (payCoin[key] != null && String(payCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -375,7 +376,7 @@ export const NkioskPayCoins = () => {
                                     defaultSortFieldId="timestamp"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10, marginTop: -40 }}>
+                            <div style={{ marginLeft: 10 }}>
                                 <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                             </div>
                         </div>

@@ -141,6 +141,7 @@ export const TerminalCloseOpen = () => {
 
     // Filtra os dados da tabela de dispositivos
     const filteredDeviceDataTable = filteredDevices.filter(device =>
+        new Date(device.timestamp) >= new Date(startDate) && new Date(device.timestamp) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || String(device[key]) === String(filters[key])
         )

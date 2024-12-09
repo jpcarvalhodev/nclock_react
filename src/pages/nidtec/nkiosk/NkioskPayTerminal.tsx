@@ -161,6 +161,7 @@ export const NkioskPayTerminal = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(payTerminals =>
+        new Date(payTerminals.timestamp) >= new Date(startDate) && new Date(payTerminals.timestamp) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (payTerminals[key] != null && String(payTerminals[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -333,7 +334,7 @@ export const NkioskPayTerminal = () => {
                                     defaultSortFieldId="timestamp"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10, marginTop: -40 }}>
+                            <div style={{ marginLeft: 10 }}>
                                 <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                             </div>
                         </div>

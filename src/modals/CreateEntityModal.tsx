@@ -167,7 +167,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="modal-body-scrollable">
+            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 55 }}>
                 <div className="container-fluid">
                     <Row>
                         <Row>

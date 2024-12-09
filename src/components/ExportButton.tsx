@@ -42,14 +42,6 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
         return date.getTime() ? date.toLocaleString() : '';
     };
 
-    if (fieldKey === 'eventTime' && currentRoute.endsWith('nkioskcounter')) {
-        return item[fieldKey];
-    }
-
-    if (fieldKey === 'eventTime' && currentRoute.endsWith('movevp')) {
-        return item[fieldKey];
-    }
-
     switch (fieldKey) {
         case 'birthday':
         case 'admissionDate':

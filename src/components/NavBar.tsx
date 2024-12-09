@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailUser, Entity, KioskConfig } from '../helpers/Types';
+import { EmailUser, KioskConfig } from '../helpers/Types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
@@ -66,7 +66,6 @@ import search from '../assets/img/navbar/naccess/search.png';
 import imports from '../assets/img/navbar/naccess/imports.png';
 import controlPanel from '../assets/img/navbar/naccess/controlPanel.png';
 import terminal from '../assets/img/navbar/dispositivos/terminal.png';
-import accessPlan from '../assets/img/navbar/dispositivos/accessPlan.png';
 import timePlan from '../assets/img/navbar/dispositivos/timePlan.png';
 import camera from '../assets/img/navbar/dispositivos/camera.png';
 import database from '../assets/img/navbar/configuracao/database.png';
@@ -801,7 +800,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para lidar com a aba
 	const handleTab = (tabName: string) => {
 		clearAllTabs();
-	
+
 		if (tabName === 'dashboard') {
 			setActiveTab('');
 			localStorage.removeItem('activeTab');
@@ -812,7 +811,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			const isSoftwareEnabled = softwareEnabled[softwareName] ? true : false;
 			const isSoftwareCliente = menuStructureStart.cliente.submenu?.some(item => item.label.toLowerCase() === softwareName) ? true : false;
 			const finalRoute = (softwareName && isSoftwareEnabled && isSoftwareCliente) ? `${route}licensed` : route;
-	
+
 			if (activeTab === tabName) {
 				setTab(false);
 				setRibbon(false);
@@ -834,7 +833,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				navigate(finalRoute);
 			}
 		}
-	};	
+	};
 
 	// Função para fazer logout
 	const logout = async () => {
@@ -1726,7 +1725,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							className='dropdown-icon'
 							id='dropdown-navbar'
 						>
-							<Dropdown.Toggle variant="basic" id="dropdown-basic">
+							<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
 								<span className="logo">NIDGROUP</span>
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
@@ -2122,7 +2121,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nclock') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-informacoes'>
-												<Dropdown
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagens" />
+													</span>
+													<span className="text">Listagens</span>
+												</Button>
+												{/* <Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2140,7 +2145,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown>
+												</Dropdown> */}
 											</div>
 											<div className='icon-text-informacoes'>
 												<Link to="/nclock/nclockgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockgraph' ? 'current-active' : ''}`}>
@@ -2351,7 +2356,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Dropdown
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagens" />
+													</span>
+													<span className="text">Listagens</span>
+												</Button>
+												{/* <Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2369,7 +2380,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown>
+												</Dropdown> */}
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/naccess/naccessgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/naccess/naccessgraph' ? 'current-active' : ''}`}>
@@ -2496,7 +2507,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Dropdown
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagens" />
+													</span>
+													<span className="text">Listagens</span>
+												</Button>
+												{/* <Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2514,7 +2531,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown>
+												</Dropdown> */}
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nvisitor/nvisitorgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nvisitor/nvisitorgraph' ? 'current-active' : ''}`}>
@@ -2766,7 +2783,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nsecur') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Dropdown
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagens" />
+													</span>
+													<span className="text">Listagens</span>
+												</Button>
+												{/* <Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2784,7 +2807,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown>
+												</Dropdown> */}
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nsecur/nsecurgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsecur/nsecurgraph' ? 'current-active' : ''}`}>
@@ -3023,7 +3046,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Dropdown
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagens" />
+													</span>
+													<span className="text">Listagens</span>
+												</Button>
+												{/* <Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -3041,7 +3070,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown>
+												</Dropdown> */}
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nkiosk/nkioskgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkioskgraph' ? 'current-active' : ''}`}>
@@ -3061,7 +3090,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'modulos nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Dropdown
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+												{/* <Dropdown
 													onMouseOver={() => setShowKioskDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 300)}
 													show={showKioskDropdown}
@@ -3079,7 +3114,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown>
+												</Dropdown> */}
 											</div>
 										</div>
 									)}
@@ -3181,7 +3216,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nled') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Dropdown
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagens" />
+													</span>
+													<span className="text">Listagens</span>
+												</Button>
+												{/* <Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -3199,7 +3240,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown>
+												</Dropdown> */}
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nled/nledgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nled/nledgraph' ? 'current-active' : ''}`}>

@@ -276,12 +276,20 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
     <PersonsProvider>
       <Box className="TreeViewContainer">
         <p className='treeview-title-text'>Filtros</p>
-        <OverlayTrigger
-          placement="top"
-          overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-        >
-          <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
-        </OverlayTrigger>
+        <div style={{ display: 'flex' }}>
+          <CustomSearchBox
+            label="Pesquisa"
+            variant="outlined"
+            size='small'
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+          >
+            <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+          </OverlayTrigger>
+        </div>
         <Box className="treeViewFlexItem">
           <RichTreeView
             multiSelect
@@ -294,12 +302,6 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
             onExpandedItemsChange={handleToggle}
           />
         </Box>
-        <CustomSearchBox
-          label="Pesquisa"
-          variant="outlined"
-          size="small"
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
       </Box>
     </PersonsProvider>
   );

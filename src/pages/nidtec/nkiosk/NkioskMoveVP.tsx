@@ -28,6 +28,21 @@ const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}`;
 }
 
+// Função para converter string em data
+const convertStringToDate = (dateStr: string) => {
+    const parts = dateStr.split(' ');
+    const dateParts = parts[0].split('/');
+    const timeParts = parts[1].split(':');
+    return new Date(
+        parseInt(dateParts[2], 10),
+        parseInt(dateParts[1], 10) - 1,
+        parseInt(dateParts[0], 10),
+        parseInt(timeParts[0], 10),
+        parseInt(timeParts[1], 10),
+        parseInt(timeParts[2], 10)
+    );
+};
+
 export const NkioskMoveVP = () => {
     const { navbarColor, footerColor } = useColor();
     const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
@@ -63,7 +78,7 @@ export const NkioskMoveVP = () => {
 
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
-            const combinedData = validData.flat();
+            const combinedData = validData.flat().map(data => ({ ...data, eventTime: convertStringToDate(data.eventTime) }));
 
             setMoveVP(combinedData);
         } catch (error) {
@@ -87,7 +102,7 @@ export const NkioskMoveVP = () => {
 
             const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
 
-            const combinedData = validData.flat();
+            const combinedData = validData.flat().map(data => ({ ...data, eventTime: convertStringToDate(data.eventTime) }));
 
             setMoveVP(combinedData);
         } catch (error) {
@@ -166,6 +181,7 @@ export const NkioskMoveVP = () => {
     // Filtra os dados da tabela
     const filteredDataTable = useMemo(() => {
         return filteredDevices.filter(moveCards =>
+            moveCards.eventTime >= new Date(startDate) && moveCards.eventTime <= new Date(endDate) &&
             Object.keys(filters).every(key =>
                 filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&
@@ -179,8 +195,8 @@ export const NkioskMoveVP = () => {
                 }
             })
         )
-        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
-    }, [filteredDevices, filters, filterText]);
+            .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
+    }, [filteredDevices, filters, filterText, startDate, endDate]);
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
@@ -193,6 +209,8 @@ export const NkioskMoveVP = () => {
             const formatField = (row: KioskTransactionCard) => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
+                    case 'eventTime':
+                        return new Date(value).toLocaleString();
                     case 'deviceSN':
                         return devices.find(device => device.serialNumber === value)?.deviceName ?? '';
                     case 'eventDoorId':
@@ -218,10 +236,10 @@ export const NkioskMoveVP = () => {
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { deviceSN: string; }) => {
-    
+
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
         const deviceName = deviceMatch?.deviceName || 'Sem Dados';
-    
+
         return {
             ...transaction,
             deviceSN: deviceName,
@@ -316,7 +334,7 @@ export const NkioskMoveVP = () => {
                                     defaultSortFieldId="eventTime"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10, marginTop: -40 }}>
+                            <div style={{ marginLeft: 10 }}>
                                 <strong>Movimentos do Video Porteiro: </strong>{totalAmount}
                             </div>
                         </div>

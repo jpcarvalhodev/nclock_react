@@ -95,7 +95,7 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const usersMap = new Map();
-    
+
         logData.forEach(log => {
             const userName = log.userName || 'Sem Nome';
             if (!usersMap.has(userName)) {
@@ -116,7 +116,7 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
         usersMap.forEach((user) => {
             user.children.sort((a: { createdDate: string | number | Date; }, b: { createdDate: string | number | Date; }) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
         });
-    
+
         const treeItems = [
             {
                 id: 'nidgroup',
@@ -194,17 +194,25 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
         if (selectionChangedRef.current) {
             selectionChangedRef.current = false;
         }
-    }, [selectedDevicesIds]); 
+    }, [selectedDevicesIds]);
 
     return (
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: '#000000' }}>Filtros</p>
-            <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-            >
-                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
-            </OverlayTrigger>
+            <div style={{ display: 'flex' }}>
+                <CustomSearchBox
+                    label="Pesquisa"
+                    variant="outlined"
+                    size='small'
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                >
+                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+                </OverlayTrigger>
+            </div>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}
@@ -217,12 +225,6 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
                     onExpandedItemsChange={handleToggle}
                 />
             </Box>
-            <CustomSearchBox
-                label="Pesquisa"
-                variant="outlined"
-                size="small"
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
         </Box>
     );
 }

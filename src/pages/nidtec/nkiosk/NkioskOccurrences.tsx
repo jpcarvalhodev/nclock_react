@@ -260,6 +260,7 @@ export const NkioskOccurrences = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = occurrences.filter(getCoin =>
+        new Date(getCoin.dataCreate) >= new Date(startDate) && new Date(getCoin.dataCreate) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

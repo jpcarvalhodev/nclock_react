@@ -23,6 +23,7 @@ import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { UpdateModalAux } from "./UpdateModaAux";
+import { set } from "date-fns";
 
 // Define a interface Entity
 export interface Entity {
@@ -77,9 +78,12 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [showAuxUpdateModal, setShowAuxUpdateModal] = useState(false);
     const [selectedAux, setSelectedAux] = useState<Auxiliaries | null>(null);
     const [period, setPeriod] = useState<TimePeriod[]>([]);
+    const [auxIn, setAuxIn] = useState<Auxiliaries[]>([]);
+    const [auxOut, setAuxOut] = useState<Auxiliaries[]>([]);
     const [currentAuxIndex, setCurrentAuxIndex] = useState(0);
     const [loadingDoorData, setLoadingDoorData] = useState(false);
-    const [loadingAuxData, setLoadingAuxData] = useState(false);
+    const [loadingAuxInData, setLoadingAuxInData] = useState(false);
+    const [loadingAuxOutData, setLoadingAuxOutData] = useState(false);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
@@ -160,6 +164,14 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         setAuxiliaries(filteredAuxiliaries);
     }
 
+    // UseEffect para filtrar as auxiliares de entrada e saída
+    useEffect(() => {
+        const auxInData = auxiliaries.filter(aux => aux.auxInOut === 0);
+        const auxOutData = auxiliaries.filter(aux => aux.auxInOut === 1);
+        setAuxIn(auxInData);
+        setAuxOut(auxOutData);
+    }, [auxiliaries]);
+
     // Função para lidar com a atualização das portas
     const handleUpdateDoor = async (door: Doors) => {
         try {
@@ -185,12 +197,14 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             const updatedAux = auxiliaries.map(a => a.id === aux.id ? { ...a, ...updatedData } : a);
             setAuxiliaries(updatedAux);
             toast.success(data.message || 'Auxiliar atualizada com sucesso!');
-            setLoadingAuxData(false);
+            setLoadingAuxInData(false);
+            setLoadingAuxOutData(false);
         } catch (error) {
             console.error('Erro ao atualizar a porta:', error);
         } finally {
             setShowAuxUpdateModal(false);
-            setLoadingAuxData(false);
+            setLoadingAuxInData(false);
+            setLoadingAuxOutData(false);
         }
     }
 
@@ -220,7 +234,11 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const handleEditAux = (row: Auxiliaries) => {
         setSelectedAux(row);
         setShowAuxUpdateModal(true);
-        setLoadingAuxData(true);
+        if (row.auxInOut === 0) {
+            setLoadingAuxInData(true);
+        } else {
+            setLoadingAuxOutData(true);
+        }
     }
 
     // Função para lidar com a mudança da imagem
@@ -798,27 +816,53 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="auxiliares">
                                     <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                                        <Row>
-                                            {loadingAuxData ?
-                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                                </div> :
-                                                <DataTable
-                                                    columns={auxColumns}
-                                                    data={filteredAuxDataTable}
-                                                    pagination
-                                                    paginationComponentOptions={paginationOptions}
-                                                    paginationPerPage={5}
-                                                    paginationRowsPerPageOptions={[5, 10]}
-                                                    selectableRows
-                                                    onRowDoubleClicked={handleEditAux}
-                                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                                    customStyles={customStyles}
-                                                    striped
-                                                    defaultSortAsc={true}
-                                                    defaultSortFieldId="auxNo"
-                                                />
-                                            }
+                                        <Row style={{ display: "flex", flexDirection: "column" }}>
+                                            <Col>
+                                                <h6>IN</h6>
+                                                {loadingAuxInData ?
+                                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                    </div> :
+                                                    <DataTable
+                                                        columns={auxColumns}
+                                                        data={auxIn}
+                                                        pagination
+                                                        paginationComponentOptions={paginationOptions}
+                                                        paginationPerPage={5}
+                                                        paginationRowsPerPageOptions={[5, 10]}
+                                                        selectableRows
+                                                        onRowDoubleClicked={handleEditAux}
+                                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                                        customStyles={customStyles}
+                                                        striped
+                                                        defaultSortAsc={true}
+                                                        defaultSortFieldId="auxNo"
+                                                    />
+                                                }
+                                            </Col>
+                                            <Col>
+                                                <h6>OUT</h6>
+                                                {loadingAuxOutData ?
+                                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                    </div> :
+                                                    <DataTable
+                                                        columns={auxColumns}
+                                                        data={auxOut}
+                                                        pagination
+                                                        paginationComponentOptions={paginationOptions}
+                                                        paginationPerPage={5}
+                                                        paginationRowsPerPageOptions={[5, 10]}
+                                                        selectableRows
+                                                        onRowDoubleClicked={handleEditAux}
+                                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                                        customStyles={customStyles}
+                                                        striped
+                                                        defaultSortAsc={true}
+                                                        defaultSortFieldId="auxNo"
+                                                    />
+                                                }
+                                            </Col>
                                         </Row>
                                     </Form>
                                 </Tab.Pane>
@@ -830,7 +874,10 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             {selectedDoor && (
                 <UpdateModalDoor
                     open={showUpdateModal}
-                    onClose={() => setShowUpdateModal(false)}
+                    onClose={() => {
+                        setShowUpdateModal(false)
+                        setLoadingDoorData(false)
+                    }}
                     onUpdate={handleUpdateDoor}
                     entity={selectedDoor}
                     fields={doorsFields}
@@ -844,7 +891,11 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             {selectedAux && (
                 <UpdateModalAux
                     open={showAuxUpdateModal}
-                    onClose={() => setShowAuxUpdateModal(false)}
+                    onClose={() => {
+                        setShowAuxUpdateModal(false);
+                        setLoadingAuxInData(false);
+                        setLoadingAuxOutData(false);
+                    }}
                     onUpdate={handleUpdateAux}
                     entity={selectedAux}
                     fields={auxiliariesFields}

@@ -354,7 +354,6 @@
     display: none;
 }
 
-#dropdown-basic::after,
 #dropdown-basic-2::after,
 #dropdown-basic-3::after {
     color: white;

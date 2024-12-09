@@ -206,6 +206,7 @@ export const NkioskMoveCard = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(moveCards =>
+        new Date(moveCards.eventTime) >= new Date(startDate) && new Date(moveCards.eventTime) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -388,7 +389,7 @@ export const NkioskMoveCard = () => {
                                     defaultSortFieldId="eventTime"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10, marginTop: -40 }}>
+                            <div style={{ marginLeft: 10 }}>
                                 <strong>Movimentos do Torniquete: </strong>{totalAmount}
                             </div>
                         </div>

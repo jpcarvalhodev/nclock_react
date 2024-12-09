@@ -235,7 +235,6 @@ export const Login = () => {
                     ))}
                   </Form.Control>
                 </Form.Group>
-                ;
                 <Button
                   className="license-button"
                   variant="outline-light"

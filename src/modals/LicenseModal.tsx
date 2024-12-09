@@ -1,17 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Modal,
-  Button,
-  Form,
-  InputGroup,
-  FormControl,
-  Col,
-  OverlayTrigger,
-  Tooltip,
-  Row,
-  Tabs,
-  Tab,
-} from "react-bootstrap";
+import { Modal, Button, Form, InputGroup, FormControl, Col, OverlayTrigger, Tooltip, Row, Tabs, Tab } from "react-bootstrap";
 import { useLicense } from "../context/LicenseContext";
 import { License } from "../helpers/Types";
 import { toast } from "react-toastify";
@@ -19,7 +7,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
-import { set } from "date-fns";
 
 // Define o tipo FormControlElement
 type FormControlElement =
@@ -52,12 +39,7 @@ interface UpdateModalProps<T> {
   fields: Field[];
 }
 
-export const LicenseModal = <T extends Entity>({
-  open,
-  onClose,
-  onUpdate,
-  fields,
-}: UpdateModalProps<T>) => {
+export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields }: UpdateModalProps<T>) => {
   const { fetchAllLicenses, fetchAllLicensesWithoutKey } = useLicense();
   const [formData, setFormData] = useState<Partial<License>>({});
   const [isCheckVisible, setIsCheckVisible] = useState<boolean>(false);
@@ -70,7 +52,6 @@ export const LicenseModal = <T extends Entity>({
   const [entities, setEntities] = useState<Array<License>>([]);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [activeEntityNif, setActiveEntityNif] = useState<string | undefined>(undefined);
-
 
   // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
   useEffect(() => {
@@ -111,6 +92,7 @@ export const LicenseModal = <T extends Entity>({
         setEntities(isKeyValid);
         const defaultNif = isKeyValid[0]?.nif?.toString() || "";
         setActiveTab(defaultNif);
+        setActiveEntityNif(defaultNif);
         setFormData(isKeyValid[0]);
         setIsCheckVisible(false);
         showModal();
@@ -207,7 +189,7 @@ export const LicenseModal = <T extends Entity>({
       } else {
         parsedValue = value || defaultValueFor(name);
       }
-      
+
       setFormData((prevState) => {
         const updatedFormData = {
           ...prevState,
@@ -237,7 +219,7 @@ export const LicenseModal = <T extends Entity>({
         ? { ...prevEntities[prevEntities.length - 1] }
         : {
           nif: 0,
-          name: "Nova Licença",
+          name: "",
           entidadeNumber: 0,
           users: 0,
           devices: 0,
@@ -251,7 +233,7 @@ export const LicenseModal = <T extends Entity>({
         users: 0,
         devices: 0,
         sn: "",
-        name: "Nova Licença",
+        name: "",
         entidadeNumber: baseEntity.entidadeNumber + 1,
       };
 
@@ -556,7 +538,7 @@ export const LicenseModal = <T extends Entity>({
                 </div>
               </Tab>
             ))}
-            <Tab eventKey="new-license" title="+ Nova Licença">
+            <Tab eventKey="new-license" title="Nova Licença">
               <div className="p-3">
                 <h5>Clique para criar uma nova licença.</h5>
               </div>

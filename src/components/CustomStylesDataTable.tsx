@@ -2,6 +2,13 @@ import { TableStyles } from 'react-data-table-component';
 
 // Define estilização customizada para o DataTable
 export const customStyles: TableStyles = {
+    pagination: {
+        style: {
+            minHeight: 0,
+            padding: 0,
+            margin: 0,
+        },
+    },
     rows: {
         style: {
             minHeight: '28px',

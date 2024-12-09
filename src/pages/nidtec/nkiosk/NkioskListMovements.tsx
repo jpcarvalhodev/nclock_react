@@ -258,6 +258,7 @@ export const NkioskListMovements = () => {
     // Filtra os dados da tabela com base no filtro de 'eventName'
     const filteredDataTable = filteredDevices
         .filter(listMovement =>
+            new Date(listMovement.eventTime) >= new Date(startDate) && new Date(listMovement.eventTime) <= new Date(endDate) &&
             Object.keys(filters).every(key =>
                 filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&
@@ -434,7 +435,7 @@ export const NkioskListMovements = () => {
                                     defaultSortAsc={true}
                                     defaultSortFieldId="eventTime"
                                 />
-                                <div style={{ marginLeft: 10, marginTop: -40 }}>
+                                <div style={{ marginLeft: 10 }}>
                                     <strong>Movimentos Totais: </strong>{totalAmount}
                                 </div>
                             </div>

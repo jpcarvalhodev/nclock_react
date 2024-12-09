@@ -16,6 +16,7 @@ import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
 import { toast } from 'react-toastify';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { DeleteModal } from '../../modals/DeleteModal';
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -26,7 +27,8 @@ export const Persons = () => {
         fetchAllEmployees,
         fetchAllCardData,
         handleAddEmployee,
-        handleAddEmployeeCard
+        handleAddEmployeeCard,
+        handleDeleteEmployee
     } = useContext(PersonsContext) as PersonsContextType;
     const { navbarColor, footerColor } = useColor();
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
@@ -40,6 +42,8 @@ export const Persons = () => {
     const defaultColumns = ['enrollNumber', 'name', 'shortName'];
     const [initialData, setInitialData] = useState<Employee | null>(null);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -79,6 +83,28 @@ export const Persons = () => {
     const handleSelectEmployees = (employeeIds: string[]) => {
         setSelectedEmployeeIds(employeeIds);
         setShowAllEmployees(employeeIds.length === 0);
+    };
+
+    // Função para deletar vários funcionários
+    const handleSelectedEmployeesToDelete = () => {
+        const employeeIds = Array.from(new Set(selectedRows.map(employee => employee.employeeID)));
+        setSelectedEmployeeToDelete(employeeIds.length ? employeeIds[0] : null);
+        setShowDeleteModal(true);
+    };
+
+    // Função para deletar funcionários sequencialmente
+    const deleteSelectedEmployees = async (employeeIds: string[]) => {
+        for (let id of employeeIds) {
+            await handleDeleteEmployee(id);
+            refreshEmployees();
+        }
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        const employeeIds = Array.from(new Set(selectedRows.map(employee => employee.employeeID)));
+        setShowDeleteModal(false);
+        deleteSelectedEmployees(employeeIds);
     };
 
     // Busca todos os dados
@@ -172,6 +198,12 @@ export const Persons = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em' />
                                     </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedEmployeesToDelete} iconSize='1.1em' />
+                                    </OverlayTrigger>
                                     <ExportButton allData={filteredData} selectedData={selectedRows.length > 0 ? selectedRows : filteredData} fields={employeeFields} />
                                     <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredData} fields={employeeFields} />
                                 </div>
@@ -211,6 +243,14 @@ export const Persons = () => {
                         onColumnToggle={handleColumnToggle}
                         onResetColumns={handleResetColumns}
                         onSelectAllColumns={handleSelectAllColumns}
+                    />
+                )}
+                {showDeleteModal && (
+                    <DeleteModal
+                        open={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        onDelete={startDeletionProcess}
+                        entityId={selectedEmployeeToDelete}
                     />
                 )}
             </div>

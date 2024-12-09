@@ -189,12 +189,20 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
     return (
         <Box className="TreeViewContainer">
             <p className='treeview-title-text' style={{ color: treeViewTitleColor }}>Filtros</p>
-            <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-            >
-                <CustomOutlineButton icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
-            </OverlayTrigger>
+            <div style={{ display: 'flex' }}>
+                <CustomSearchBox
+                    label="Pesquisa"
+                    variant="outlined"
+                    size='small'
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                >
+                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+                </OverlayTrigger>
+            </div>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}
@@ -207,12 +215,6 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
                     onExpandedItemsChange={handleToggle}
                 />
             </Box>
-            <CustomSearchBox
-                label="Pesquisa"
-                variant="outlined"
-                size="small"
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
         </Box>
     );
 }

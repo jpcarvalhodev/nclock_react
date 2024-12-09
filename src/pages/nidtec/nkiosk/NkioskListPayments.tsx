@@ -263,6 +263,7 @@ export const NkioskListPayments = () => {
     // Filtra os dados da tabela
     const filteredDataTable = useMemo(() => {
         return filteredDevices.filter(listPayment =>
+            new Date(listPayment.timestamp) >= new Date(startDate) && new Date(listPayment.timestamp) <= new Date(endDate) &&
             Object.keys(filters).every(key =>
                 filters[key] === "" || (listPayment[key] != null && String(listPayment[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&
@@ -279,7 +280,7 @@ export const NkioskListPayments = () => {
                 return false;
             }))
             .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    }, [listPayments, filters, filterText, filteredDevices]);
+    }, [listPayments, filters, filterText, filteredDevices, startDate, endDate]);
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -444,7 +445,7 @@ export const NkioskListPayments = () => {
                                     defaultSortAsc={true}
                                     defaultSortFieldId="timestamp"
                                 />
-                                <div style={{ marginLeft: 10, marginTop: -40 }}>
+                                <div style={{ marginLeft: 10 }}>
                                     <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                                 </div>
                             </div>

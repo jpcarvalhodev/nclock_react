@@ -139,6 +139,7 @@ export const NclockAll = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredAttendances.filter(attendances =>
+        new Date(attendances.attendanceTime) >= new Date(startDate) && new Date(attendances.attendanceTime) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || String(attendances[key]) === String(filters[key])
         )

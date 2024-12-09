@@ -181,6 +181,7 @@ export const NkioskMoveKiosk = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(moveKiosks =>
+        new Date(moveKiosks.eventTime) >= new Date(startDate) && new Date(moveKiosks.eventTime) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (moveKiosks[key] != null && String(moveKiosks[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -350,7 +351,7 @@ export const NkioskMoveKiosk = () => {
                                 defaultSortFieldId="eventTime"
                             />
                         </div>
-                        <div style={{ marginLeft: 10, marginTop: -40 }}>
+                        <div style={{ marginLeft: 10 }}>
                             <strong>Movimentos do Quiosque: </strong>{totalAmount}
                         </div>
                     </div>
