@@ -40,7 +40,8 @@ interface UpdateModalProps<T extends Entity> {
 export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
@@ -51,7 +52,7 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
 
     // Usa useEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -72,7 +73,29 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -145,6 +168,7 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -203,6 +227,7 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
+                                        className={`${showValidationErrors ? 'error-border' : ''}`}
                                     />
                                 </OverlayTrigger>
                                 <Form.Control.Feedback type="invalid">
@@ -229,44 +254,28 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                                 <Col md={6} key={key}>
                                     <Form.Group as={Row} style={{ marginBottom: 10 }}>
                                         <Form.Label column sm="2">
-                                            {label}:<span style={{ color: 'red' }}>*</span>
+                                            {label}:
                                         </Form.Label>
                                         <Col sm="3">
-                                            <OverlayTrigger
-                                                placement="right"
-                                                overlay={<Tooltip id={`tooltip-${key}Start1`}>Campo obrigatório</Tooltip>}
-                                            >
-                                                <Form.Control
-                                                    type="time"
-                                                    name={`${key}Start1`}
-                                                    value={formData[`${key}Start1`] || ''}
-                                                    onChange={handleChange}
-                                                    isInvalid={!!errors[`${key}Start1`]}
-                                                />
-                                            </OverlayTrigger>
-                                            <Form.Control.Feedback type="invalid">
-                                                {errors[`${key}Start1`]}
-                                            </Form.Control.Feedback>
+                                            <Form.Control
+                                                type="time"
+                                                name={`${key}Start1`}
+                                                value={formData[`${key}Start1`] || ''}
+                                                onChange={handleChange}
+                                                isInvalid={!!errors[`${key}Start1`]}
+                                            />
                                         </Col>
                                         <Col sm="1" className="d-flex align-items-center justify-content-center">
                                             <span>-</span>
                                         </Col>
                                         <Col sm="3">
-                                            <OverlayTrigger
-                                                placement="right"
-                                                overlay={<Tooltip id={`tooltip-${key}End1`}>Campo obrigatório</Tooltip>}
-                                            >
-                                                <Form.Control
-                                                    type="time"
-                                                    name={`${key}End1`}
-                                                    value={formData[`${key}End1`] || ''}
-                                                    onChange={handleChange}
-                                                    isInvalid={!!errors[`${key}End1`]}
-                                                />
-                                            </OverlayTrigger>
-                                            <Form.Control.Feedback type="invalid">
-                                                {errors[`${key}End1`]}
-                                            </Form.Control.Feedback>
+                                            <Form.Control
+                                                type="time"
+                                                name={`${key}End1`}
+                                                value={formData[`${key}End1`] || ''}
+                                                onChange={handleChange}
+                                                isInvalid={!!errors[`${key}End1`]}
+                                            />
                                         </Col>
                                     </Form.Group>
                                 </Col>

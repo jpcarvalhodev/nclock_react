@@ -5,6 +5,7 @@ import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstr
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 import { KioskConfig } from '../helpers/Types';
+import { set } from 'date-fns';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -30,7 +31,8 @@ interface Props<T> {
 export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
     const [kioskFormData, setKioskFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
@@ -52,26 +54,48 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
         }
     }, [open]);
 
-    // Função para validar o formulário e gerenciar os erros
+    // Usa useEffect para validar o formulário
+    useEffect(() => {
+        const newErrors: Record<string, boolean> = {};
+
+        const isValid = fields.every(field => {
+            const fieldValue = kioskFormData[field.key];
+            let valid = true;
+
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                valid = false;
+            }
+
+            return valid;
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        validateForm();
+    }, [kioskFormData, fields]);
+
+    // Função para validar o formulário
     const validateForm = () => {
-        const newErrors: Record<string, string> = {};
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
         let isValid = true;
 
-        fields.forEach(field => {
+        fields.forEach((field) => {
             const fieldValue = kioskFormData[field.key];
-            if (field.required && (fieldValue === undefined || fieldValue === null || (field.type === 'number' && fieldValue !== 0 && !fieldValue))) {
+            if (field.required && !fieldValue) {
                 isValid = false;
-            } else if (field.required && typeof fieldValue === 'string' && fieldValue.trim() === '') {
-                isValid = false;
-            } else if (field.type === 'number' && fieldValue !== null && isNaN(fieldValue)) {
-                isValid = false;
-            } else if (field.validate && !field.validate(fieldValue)) {
-                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
             }
         });
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        return isValid;
     };
 
     // Chame validateForm apropriadamente em useEffect
@@ -113,6 +137,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -122,6 +147,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
     // Função para lidar com o clique em atualizar
     const handleUpdateClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -153,7 +179,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     overlay={<Tooltip id="tooltip-amount">Campo obrigatório</Tooltip>}
                                                 >
                                                     <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         type="number"
                                                         name="amount"
                                                         value={kioskFormData.amount || 0}
@@ -169,7 +195,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     overlay={<Tooltip id="tooltip-totalMoedas">Campo obrigatório</Tooltip>}
                                                 >
                                                     <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         type="number"
                                                         name="totalMoedas"
                                                         value={kioskFormData.totalMoedas || ''}
@@ -187,7 +213,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     overlay={<Tooltip id="tooltip-emails">Digite os e-mails separados por vírgula.</Tooltip>}
                                                 >
                                                     <Form.Control
-                                                        className="textarea custom-select-font-size"
+                                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         type="email"
                                                         as="textarea"
                                                         name="emails"

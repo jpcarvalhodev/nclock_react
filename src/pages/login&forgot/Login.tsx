@@ -7,18 +7,20 @@ import { toast } from "react-toastify";
 import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
 import profileAvatar from "../../assets/img/navbar/navbar/profileAvatar.png";
 import no_entity from "../../assets/img/navbar/no_entity.png";
-import entity from "../../assets/assist_img/logo_quiosque.jpeg";
 import hidepass from "../../assets/img/login/hidepass.png";
 import showpass from "../../assets/img/login/showpass.png";
 import * as apiService from "../../helpers/apiService";
 import { License, LicenseKey } from "../../helpers/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
+import { useAds } from "../../context/AdsContext";
+import { useEntity } from "../../context/EntityContext";
+import { useAttendance } from "../../context/MovementContext";
+import { useLicense } from "../../context/LicenseContext";
+import { usePersons } from "../../context/PersonsContext";
+import { useTerminals } from "../../context/TerminalsContext";
 
 // Define a interface para os itens de campo
-type FormControlElement =
-  | HTMLInputElement
-  | HTMLSelectElement
-  | HTMLTextAreaElement;
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 // Interface para o usuário
 type User = {
@@ -30,6 +32,12 @@ type User = {
 // Define a página de login
 export const Login = () => {
   const navigate = useNavigate();
+  const { fetchAds } = useAds();
+  const { fetchAllEntity } = useEntity();
+  const { fetchAllLicensesWithoutKey } = useLicense();
+  const { fetchAllAttendances } = useAttendance();
+  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData } = usePersons();
+  const { fetchAllDevices, fetchAllMBDevices } = useTerminals();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [companyName, setCompanyName] = useState("");
@@ -41,7 +49,7 @@ export const Login = () => {
   const [showModal, setShowModal] = useState(false);
 
   // Função para obter os dados da licença
-  const fetchLicenseData = async () => { 
+  const fetchLicenseData = async () => {
     try {
       const data = await apiService.fetchLicensesWithoutKey();
       setCompany(data);
@@ -88,12 +96,8 @@ export const Login = () => {
   }, [navigate]);
 
   // Função atualizada para setar o NIF junto com o nome da empresa
-  const handleCompanyChange = (
-    event: React.ChangeEvent<FormControlElement>
-  ) => {
-    const selectedLicense = company.find(
-      (license) => license.name === event.target.value
-    );
+  const handleCompanyChange = (event: React.ChangeEvent<FormControlElement>) => {
+    const selectedLicense = company.find(license => license.name === event.target.value);
     if (selectedLicense) {
       fetchLogo(Number(selectedLicense.nif));
       setSelectedNif(Number(selectedLicense.nif));
@@ -101,24 +105,9 @@ export const Login = () => {
     } else {
       setEntityLogo(no_entity);
       setSelectedNif(0);
-      setCompanyName("");
+      setCompanyName('');
     }
   };
-
-  useEffect(() => {
-    if (company.length > 0) {
-      const defaultLicense = company.find(license => license.default === true) || company[0]; // Exemplo de regra
-      if (defaultLicense) {
-        setCompanyName(defaultLicense.name);
-        fetchLogo(Number(defaultLicense.nif));
-        setSelectedNif(Number(defaultLicense.nif));
-      } else {
-        setCompanyName('');
-        setEntityLogo(no_entity);
-        setSelectedNif(0);
-      }
-    }
-  }, [company]);
 
   // Função para inserir a chave de licença
   const insertLicenseKey = async (licenseKey: Partial<LicenseKey>) => {
@@ -178,7 +167,25 @@ export const Login = () => {
         toast.info(
           `Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`
         );
-        navigate("/dashboard");
+
+        try {
+          await Promise.all([
+            fetchAllLicensesWithoutKey(),
+            fetchAllEmployees(),
+            fetchAllDepartments(),
+            fetchAllGroups(),
+            fetchAllRegisteredUsers(),
+            fetchAllCardData(),
+            fetchAds(),
+            fetchAllEntity(),
+            fetchAllAttendances(),
+            fetchAllDevices(),
+            fetchAllMBDevices()
+          ]);
+          navigate("/dashboard");
+        } catch (error) {
+          console.error('Erro ao carregar dados após o login:', error);
+        }
       }
     } catch (error) {
       console.error("Erro:", error);

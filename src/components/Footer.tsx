@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ColorProvider, useColor } from "../context/ColorContext";
-import { useEntity } from "../context/EntityContext";
 import * as apiService from "../helpers/apiService";
+import { useLicense } from "../context/LicenseContext";
 
 interface FooterProps {
   style?: React.CSSProperties;
@@ -9,7 +9,7 @@ interface FooterProps {
 
 export const Footer = ({ style }: FooterProps) => {
   const { footerColor } = useColor();
-  const { entity } = useEntity();
+  const { license } = useLicense();
   const currentYear = new Date().getFullYear();
   const [entityName, setEntityName] = useState<string>("");
 
@@ -22,13 +22,11 @@ export const Footer = ({ style }: FooterProps) => {
   useEffect(() => {
     const storedNif = localStorage.getItem("nif");
 
-    const loggedEntity = Array.isArray(entity)
-      ? entity.find((item) => item.nif === Number(storedNif))
-      : null;
+    const loggedEntity = Array.isArray(license) ? license.find((item) => item.nif === storedNif) : null;
 
-    const entityNameData = loggedEntity?.nome || "Sem Entidade";
+    const entityNameData = loggedEntity?.name || "Sem Entidade";
     setEntityName(entityNameData);
-  }, [entity]);
+  }, [license]);
 
   return (
     <ColorProvider>

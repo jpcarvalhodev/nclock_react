@@ -48,22 +48,22 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [dropdownData, setDropdownData] = useState<Record<string, Employee[]>>({});
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
             let valid = true;
 
-
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
             }
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+            if (field.required && !fieldValue) {
                 valid = false;
             }
 
@@ -72,7 +72,29 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
@@ -165,6 +187,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     // Função para lidar com o clique no botão de guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -187,7 +210,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size={entityType === 'movimentos' ? 'sm' : 'lg'}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal">
             <Modal.Header closeButton>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
@@ -207,12 +230,13 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                                     >
                                         <Form.Control
                                             type="datetime-local"
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             value={formData.attendanceTime || ''}
                                             onChange={handleChange}
                                             name="attendanceTime"
                                         />
                                     </OverlayTrigger>
+                                    {errors.attendanceTime && <div style={{ color: 'red', fontSize: 'small' }}>{errors.attendanceTime}</div>}
                                 </Form.Group>
                             </div>
                             <div className="col-md-6">
@@ -227,7 +251,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                                     >
                                         <Form.Control
                                             as="select"
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             value={formData.employeeId || ''}
                                             onChange={(e) => handleDropdownChange('employeeId', e)}
                                         >
@@ -239,6 +263,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                                             ))}
                                         </Form.Control>
                                     </OverlayTrigger>
+                                    {errors.employeeId && <div style={{ color: 'red', fontSize: 'small' }}>{errors.employeeId}</div>}
                                 </Form.Group>
                             </div>
                         </div>
@@ -312,7 +337,6 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                                                 onChange={handleChange}
                                                 name={field.key}
                                             >
-                                                <option value="">Selecione...</option>
                                                 {typeOptions.map(option => (
                                                     <option key={option.value} value={option.value}>{option.label}</option>
                                                 ))}
@@ -326,6 +350,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                                                 name={field.key}
                                             />
                                         )))}
+                                {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
                             </Form.Group>
                         );
                     }

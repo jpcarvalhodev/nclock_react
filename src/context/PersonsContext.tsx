@@ -325,15 +325,6 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    // Busca todos os dados ao carregar o componente
-    useEffect(() => {
-        fetchAllEmployees();
-        fetchAllDepartments();
-        fetchAllGroups();
-        fetchAllRegisteredUsers();
-        fetchAllCardData();
-    }, []);
-
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,

@@ -348,12 +348,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    // Busca todos os dispositivos ao carregar o componente
-    useEffect(() => {
-        fetchAllDevices();
-        fetchAllMBDevices();
-    }, []);
-
     // Define o valor do contexto
     const contextValue: DeviceContextType = {
         devices,

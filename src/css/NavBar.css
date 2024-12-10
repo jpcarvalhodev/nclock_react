@@ -1,3 +1,7 @@
+body {
+    overflow: hidden;
+}
+
 .nav-container,
 .nav {
     display: flex;
@@ -98,6 +102,7 @@
     display: flex;
     border-bottom: 1px solid #ccc;
     background-color: white;
+    overflow-x: auto;
 }
 
 .group {
@@ -364,7 +369,8 @@
 
 #dropdown-navbar .dropdown-menu {
     margin-right: 10px !important;
-    transform: translate(0px, 40px) !important;
+    transform: translate(0px, 40px, 0) !important;
+    max-width: 100%;
 }
 
 #dropdown-basic-4::after {

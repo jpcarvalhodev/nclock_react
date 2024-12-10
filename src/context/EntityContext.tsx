@@ -71,11 +71,6 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    // Busca todas as entidades ao carregar o componente
-    useEffect(() => {
-        fetchAllEntity();
-    }, []);
-
     return (
         <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity }}>
             {children}

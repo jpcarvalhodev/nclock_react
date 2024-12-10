@@ -37,8 +37,6 @@ interface FileWithOrder {
 export const CreateModalAds = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, entities, initialValues }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [files, setFiles] = useState<FileWithOrder[]>([]);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isFormValid, setIsFormValid] = useState(false);
     const [fileInputKey, setFileInputKey] = useState(Date.now());
 
     // Função para resetar o input de arquivo
@@ -49,28 +47,6 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     // Extensões permitidas para imagens e vídeos
     const allowedImageExtensions = ['jpg', 'jpeg', 'png'];
     const allowedVideoExtensions = ['mp4', 'avi', 'mov', 'mkv'];
-
-    // UseEffect para validar o formulário
-    useEffect(() => {
-        const newErrors: Record<string, string> = {};
-
-        const isValid = fields.every(field => {
-            const fieldValue = formData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
-            }
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
-            }
-
-            return valid;
-        });
-
-        setErrors(newErrors);
-        setIsFormValid(isValid);
-    }, [formData, fields]);
 
     // UseEffect para definir o campo "Criador" automaticamente a partir do localStorage
     useEffect(() => {
@@ -179,10 +155,10 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
-        if (!isFormValid) {
+        /* if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
-        }
+        } */
         handleSave();
     }
 
@@ -311,7 +287,6 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                                             {entities !== 'video' && <option value={1}>Imagem</option>}
                                             {entities !== 'photo' && <option value={2}>Vídeo</option>}
                                         </Form.Control>
-                                        {errors['tipoArquivo'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['tipoArquivo']}</div>}
                                     </Form.Group>
                                 </Col>
                             </Row>

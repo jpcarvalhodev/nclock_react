@@ -45,9 +45,10 @@ const initialValues: Partial<DoorDevice> = {
 // Define o componente
 export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, entity, fields }: DoorModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<DoorDevice>>({ ...entity, ...initialValues });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
@@ -59,7 +60,7 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -77,7 +78,29 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
@@ -130,6 +153,7 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -158,7 +182,7 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
                                 >
                                     <Form.Control
                                         as="select"
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         value={formData.nrDoor || ''}
                                         onChange={(e) => handleDropdownChange('nrDoor', e)}
                                     >
@@ -194,7 +218,7 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
                                     overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="number"
                                         name="time"
                                         value={formData.time || ''}

@@ -19,6 +19,7 @@ import inbio460 from "../assets/img/terminais/inbio460.webp";
 import profacex from "../assets/img/terminais/profacex.webp";
 import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
+import { set } from "date-fns";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -46,7 +47,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         devices,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [error, setError] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState('');
@@ -54,6 +55,8 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [noData, setNoData] = useState<Doors[]>([]);
     const [filters, setFilters] = useState<Record<string, string>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
+    const [showIpValidationErrors, setShowIpValidationErrors] = useState(false);
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
@@ -68,7 +71,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -91,18 +94,23 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // Função para validar o formulário
     const validateForm = () => {
-        const isValid = fields.every(field => {
-            const fieldValue = formData?.[field.key];
-            if (field.required) {
-                if (typeof fieldValue === 'string') {
-                    return fieldValue.trim() !== '';
-                }
-                return fieldValue !== null && fieldValue !== undefined;
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
             }
-            return true;
         });
 
+        setErrors(newErrors);
         setIsFormValid(isValid);
+        return isValid;
     };
 
     // UseEffect para atualizar lista de todos os dispositivos
@@ -201,9 +209,9 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         const parsedValue = (name === 'deviceType' || name === 'deviceProtocol') ? Number(value) : (type === 'number' ? Number(value) : value);
         if (name === "ipAddress") {
             if (validateIPAddress(value)) {
-                setError('');
+                validateForm();
             } else {
-                setError('Endereço IP inválido');
+                setShowIpValidationErrors(true);
             }
         }
         setFormData(prev => ({
@@ -250,6 +258,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -300,7 +309,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                     name="deviceName"
                                     value={formData['deviceName'] || ''}
                                     onChange={handleChange}
-                                    className="custom-input-height custom-select-font-size"
+                                    className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                 >
                                 </Form.Control>
                             </OverlayTrigger>
@@ -332,7 +341,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                             >
                                 <Form.Control
                                     type="number"
-                                    className="custom-input-height custom-select-font-size"
+                                    className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                     value={formData.deviceNumber || ''}
                                     onChange={handleChange}
                                     name="deviceNumber"
@@ -422,7 +431,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                                 name="ipAddress"
                                                                 value={formData['ipAddress'] || ''}
                                                                 onChange={handleChange}
-                                                                isInvalid={!!error}
+                                                                isInvalid={showIpValidationErrors && !validateIPAddress(formData['ipAddress'] || '')}
                                                                 className="custom-input-height custom-select-font-size"
                                                             />
                                                         </Form.Group>

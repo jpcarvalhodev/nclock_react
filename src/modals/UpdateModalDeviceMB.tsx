@@ -41,12 +41,13 @@ interface Field {
 // Define o componente
 export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<T>({ ...entity } as T);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -64,7 +65,29 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
@@ -98,6 +121,7 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -153,7 +177,7 @@ export const UpdateModalDeviceMB = <T extends Entity>({ open, onClose, onUpdate,
                                             value={formData[field.key] || ''}
                                             onChange={handleChange}
                                             name={field.key}
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         />
                                     )}
                                     {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}

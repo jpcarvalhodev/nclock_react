@@ -52,9 +52,10 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     const [showUpdateEmployeeModal, setShowUpdateEmployeeModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -62,7 +63,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -80,7 +81,29 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
@@ -314,28 +337,13 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
     // Função para lidar com o clique no botão de guardar
     const handleSaveClick = () => {
-        const newErrors: Record<string, string> = {};
-    
-        fields.forEach((field) => {
-          const fieldValue = formData[field.key];
-          if (
-            field.required &&
-            (!fieldValue ||
-              (typeof fieldValue === "string" && fieldValue.trim() === ""))
-          ) {
-            newErrors[field.key] = `${field.label} é obrigatório.`;
-          }
-        });
-    
-        setErrors(newErrors);
-    
-        if (Object.keys(newErrors).length === 0) {
-          // Se não há erros, chama a função onSave
-          handleSave();
-        } else {
-          toast.error("Por favor, corrija os erros no formulário.");
+        if (!isFormValid) {
+            setShowValidationErrors(true);
+            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            return;
         }
-      };
+        handleSave();
+    };
 
     // Função para guardar os dados
     const handleSave = () => {
@@ -387,7 +395,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                         name="code"
                                                         value={formData['code'] || ''}
                                                         onChange={handleChange}
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         required
                                                     />
                                                 </OverlayTrigger>
@@ -412,9 +420,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                 name="name"
                                                 value={formData['name'] || ''}
                                                 onChange={handleChange}
-                                                className={`custom-input-height custom-select-font-size ${
-                                                    errors.name ? "is-invalid" : ""
-                                                  }`}
+                                                className="custom-input-height custom-select-font-size"
                                                 required
                                             />
                                         </OverlayTrigger>

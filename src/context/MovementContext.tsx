@@ -144,11 +144,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Busca todas as assiduidades ao carregar o componente
-    useEffect(() => {
-        fetchAllAttendances();
-    }, []);
-
     // Definindo o valor do contexto
     const contextValue = {
         attendance,

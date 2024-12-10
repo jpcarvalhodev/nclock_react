@@ -33,15 +33,16 @@ interface Field {
 // Define o componente
 export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({});
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [allDoors, setAllDoors] = useState<Doors[]>([]);
     const [filteredDoors, setFilteredDoors] = useState<Doors[]>([]);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -59,7 +60,29 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
@@ -121,9 +144,10 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         const keysToCheck = ['deviceId', 'doorId', 'observacoes'];
-        const areAllRequiredFieldsFilled  = keysToCheck.every(key => formData[key]);
-        if (!isFormValid || !areAllRequiredFieldsFilled ) {
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+        const areAllRequiredFieldsFilled = keysToCheck.every(key => formData[key]);
+        if (!isFormValid || !areAllRequiredFieldsFilled) {
+            setShowValidationErrors(true);
+            toast.warn('Preencha todos os campos obrigatórios antes de abrir.');
             return;
         }
         handleSave();
@@ -165,7 +189,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                                     {field.type === 'dropdown' ? (
                                         <Form.Control
                                             as="select"
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             value={formData[field.key] || ''}
                                             onChange={(e) => handleDropdownChange(field.key, e)}
                                         >
@@ -192,7 +216,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                                     ) : (
                                         <Form.Control
                                             type={field.type}
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             value={formData[field.key] || ''}
                                             onChange={handleChange}
                                             name={field.key}

@@ -40,9 +40,10 @@ const initialValues: Partial<LimpezasEOcorrencias> = {
 // Define o componente
 export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValuesData }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<LimpezasEOcorrencias>>({ ...initialValuesData, ...initialValues });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);    
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
@@ -56,7 +57,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -74,7 +75,29 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
@@ -127,6 +150,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -154,7 +178,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                                     overlay={<Tooltip id="tooltip-dataCreate">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="datetime-local"
                                         name="dataCreate"
                                         value={formData.dataCreate ? new Date(formData.dataCreate).toISOString().slice(0, 16) : ''}
@@ -172,7 +196,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                                     overlay={<Tooltip id="tooltip-responsavel">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="string"
                                         name="responsavel"
                                         value={formData.responsavel || ''}
@@ -192,7 +216,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
                                 >
                                     <Form.Control
                                         as="select"
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         value={formData.deviceId || ''}
                                         onChange={(e) => handleDropdownChange('deviceId', e)}
                                     >

@@ -47,8 +47,9 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
@@ -60,7 +61,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -78,7 +79,29 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+     // Função para validar o formulário
+     const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
@@ -139,6 +162,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     // Função para lidar com o clique no botão de guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -181,7 +205,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                     >
                                         <Form.Control
                                             type="datetime-local"
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             value={formData.attendanceTime || ''}
                                             onChange={handleChange}
                                             name="attendanceTime"
@@ -202,7 +226,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                     >
                                         <Form.Control
                                             as="select"
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             value={formData.employeeId || ''}
                                             onChange={(e) => handleDropdownChange('employeeId', e)}
                                         >

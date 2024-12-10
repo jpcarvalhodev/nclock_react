@@ -66,9 +66,10 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [showUpdateEmployeeModal, setShowUpdateEmployeeModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -86,7 +87,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -104,7 +105,29 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
@@ -331,6 +354,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -381,7 +405,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                         name="code"
                                                         value={formData['code'] || ''}
                                                         onChange={handleChange}
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         required
                                                     />
                                                 </OverlayTrigger>

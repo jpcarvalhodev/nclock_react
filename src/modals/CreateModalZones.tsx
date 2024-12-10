@@ -32,7 +32,8 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     useEffect(() => {
         if (open) {
@@ -50,7 +51,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
 
     // useEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -68,7 +69,29 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Atualiza o valor do campo da foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,6 +151,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     // Verifica o formulário e chama a função de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -164,7 +188,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                             >
                                 <Form.Control
                                     type="string"
-                                    className="custom-input-height custom-select-font-size"
+                                    className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                     value={formData.name || ''}
                                     onChange={handleChange}
                                     name="name"
@@ -185,7 +209,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                             >
                                 <Form.Control
                                     type="string"
-                                    className="custom-input-height custom-select-font-size"
+                                    className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                     value={formData.acronym || ''}
                                     onChange={handleChange}
                                     name="acronym"

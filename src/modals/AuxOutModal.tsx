@@ -54,9 +54,10 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
         devices
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<AuxOut>>({ nrAuxOut: 0, time: initialValues.time, deviceSN: '' });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
@@ -68,7 +69,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -86,7 +87,29 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
@@ -142,6 +165,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -153,7 +177,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
         const formDataToSend = new FormData();
         formDataToSend.append('nrAuxOut', String(formData.nrAuxOut));
         formDataToSend.append('time', String(formData.time));
-        
+
         onSave({
             auxData: formDataToSend,
             deviceSN: formData.deviceSN
@@ -177,7 +201,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
                                 >
                                     <Form.Control
                                         as="select"
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         value={formData.nrAuxOut || ''}
                                         onChange={(e) => handleDropdownChange('nrAuxOut', e)}
                                     >
@@ -213,7 +237,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
                                     overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="number"
                                         name="time"
                                         value={formData.time || ''}

@@ -753,6 +753,10 @@ body {
     top: 0;
 }
 
+.error-border {
+    border-color: #D01313 !important;
+}
+
 @keyframes pulseBorder {
     0% {
         box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);

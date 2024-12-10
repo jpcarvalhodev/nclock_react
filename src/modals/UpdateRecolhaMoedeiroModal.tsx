@@ -50,9 +50,10 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
         devices,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>({ ...entity });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [amounts, setAmounts] = useState<KioskConfig>();
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
@@ -65,7 +66,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -83,7 +84,29 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Buscar as recolhas para o moedeiro
     const fetchRecolhas = async () => {
@@ -195,6 +218,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -274,7 +298,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                     overlay={<Tooltip id="tooltip-numeroMoedas">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="number"
                                         name="numeroMoedas"
                                         value={formData.numeroMoedas === undefined ? 0 : formData.numeroMoedas}
@@ -315,7 +339,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                 >
                                     <Form.Control
                                         as="select"
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         value={formData.deviceID || ''}
                                         onChange={(e) => handleDropdownChange('deviceID', e)}
                                     >

@@ -82,11 +82,6 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Busca todas as licenças ao carregar o componente
-    useEffect(() => {
-        fetchAllLicensesWithoutKey();
-    }, []);
-
     return (
         <LicenseContext.Provider value={{ license, setLicense, getSoftwareEnabledStatus, fetchAllLicenses, fetchAllLicensesWithoutKey, handleUpdateLicense }}>
             {children}

@@ -73,11 +73,6 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Busca as publicidades ao carregar o componente
-  useEffect(() => {
-    fetchAds();
-  }, []);
-
   return (
     <AdsContext.Provider value={{ ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds }}>
       {children}

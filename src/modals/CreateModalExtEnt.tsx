@@ -38,11 +38,12 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza com a validação do formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -63,7 +64,29 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
@@ -190,6 +213,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     // Define o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -219,7 +243,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             >
                                 <Form.Control
                                     type="string"
-                                    className="custom-input-height custom-select-font-size"
+                                    className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                     value={formData.name || ''}
                                     onChange={handleChange}
                                     name="name"
@@ -251,7 +275,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                             >
                                 <Form.Control
                                     type="number"
-                                    className="custom-input-height custom-select-font-size"
+                                    className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                     value={formData.nif || ''}
                                     onChange={handleChange}
                                     name="nif"

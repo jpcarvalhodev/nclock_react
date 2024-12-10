@@ -26,15 +26,16 @@ interface Field {
 
 export const CreateEntityModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -55,6 +56,27 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
         validateForm();
     }, [formData, fields]);
 
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
+
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
         if (open) {
@@ -64,22 +86,6 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
             setDeviceImage(null);
         }
     }, [open]);
-
-    // Função para validar o formulário
-    const validateForm = () => {
-        const isValid = fields.every(field => {
-            const fieldValue = formData?.[field.key];
-            if (field.required) {
-                if (typeof fieldValue === 'string') {
-                    return fieldValue.trim() !== '';
-                }
-                return fieldValue !== null && fieldValue !== undefined;
-            }
-            return true;
-        });
-
-        setIsFormValid(isValid);
-    };
 
     // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,6 +117,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -237,7 +244,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
                                     overlay={<Tooltip id="tooltip-nif">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="number"
                                         name="nif"
                                         value={formData.nif}
@@ -255,7 +262,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
                                     overlay={<Tooltip id="tooltip-nome">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="text"
                                         name="nome"
                                         value={formData.nome}

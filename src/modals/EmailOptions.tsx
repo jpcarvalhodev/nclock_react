@@ -30,7 +30,8 @@ interface Props<T> {
 export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
     const [emailFormData, setEmailFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
@@ -54,24 +55,48 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         }
     }, [open]);
 
-    // Função para validar o formulário e gerenciar os erros
+    // Usa useEffect para validar o formulário
+    useEffect(() => {
+        const newErrors: Record<string, boolean> = {};
+
+        const isValid = fields.every(field => {
+            const fieldValue = emailFormData[field.key];
+            let valid = true;
+
+            if (field.required && (fieldValue === undefined || fieldValue === '')) {
+                valid = false;
+            }
+            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+                valid = false;
+            }
+
+            return valid;
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        validateForm();
+    }, [emailFormData, fields]);
+
+    // Função para validar o formulário
     const validateForm = () => {
-        const newErrors: Record<string, string> = {};
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
         let isValid = true;
 
-        fields.forEach(field => {
+        fields.forEach((field) => {
             const fieldValue = emailFormData[field.key];
-            if (field.required && (fieldValue === undefined || fieldValue === '' || (Array.isArray(fieldValue) && fieldValue.length === 0))) {
+            if (field.required && !fieldValue) {
                 isValid = false;
-            } else if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                isValid = false;
-            } else if (field.validate && !field.validate(fieldValue)) {
-                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
             }
         });
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        return isValid;
     };
 
     // Chame validateForm apropriadamente em useEffect
@@ -114,6 +139,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -123,6 +149,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
     // Função para lidar com o clique em atualizar
     const handleUpdateClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -166,7 +193,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     overlay={<Tooltip id="tooltip-usernameEmail">Campo obrigatório</Tooltip>}
                                                 >
                                                     <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         type="text"
                                                         name="usernameEmail"
                                                         value={emailFormData.usernameEmail || ''}
@@ -185,7 +212,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     overlay={<Tooltip id="tooltip-passwordEmail">Campo obrigatório</Tooltip>}
                                                 >
                                                     <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         type="password"
                                                         name="passwordEmail"
                                                         value={emailFormData.passwordEmail || ''}
@@ -204,7 +231,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     overlay={<Tooltip id="tooltip-hostSMTP">Campo obrigatório</Tooltip>}
                                                 >
                                                     <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         type="email"
                                                         name="hostSMTP"
                                                         value={emailFormData.hostSMTP || ''}
@@ -223,7 +250,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     overlay={<Tooltip id="tooltip-portSMTP">Campo obrigatório</Tooltip>}
                                                 >
                                                     <Form.Control
-                                                        className="custom-input-height custom-select-font-size"
+                                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         type='text'
                                                         name="portSMTP"
                                                         value={emailFormData.portSMTP || ''}

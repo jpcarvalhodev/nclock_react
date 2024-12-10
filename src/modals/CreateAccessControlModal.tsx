@@ -34,13 +34,14 @@ interface Field {
 // Define o componente
 export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...initialValues, doorTimezoneList: [] });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -58,7 +59,29 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
+            }
+        });
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+        return isValid;
+    };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
@@ -92,7 +115,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                 doorTimezoneList: []
             });
         }
-    }, [open]);    
+    }, [open]);
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: ChangeEvent<any>) => {
@@ -142,6 +165,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -197,7 +221,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                     {field.type === 'dropdown' ? (
                                         <Form.Control
                                             as="select"
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             value={formData[field.key] || ''}
                                             onChange={(e) => handleDropdownChange(field.key, e)}
                                             style={{ overflowY: 'auto', maxHeight: '200px' }}
@@ -248,7 +272,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                     ) : (
                                         <Form.Control
                                             type={field.type}
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             value={formData[field.key] || ''}
                                             onChange={handleChange}
                                             name={field.key}

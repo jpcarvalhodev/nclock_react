@@ -63,8 +63,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         fetchAllDoorData,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<T>({ ...entity } as T);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
@@ -84,6 +83,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [loadingDoorData, setLoadingDoorData] = useState(false);
     const [loadingAuxInData, setLoadingAuxInData] = useState(false);
     const [loadingAuxOutData, setLoadingAuxOutData] = useState(false);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
+    const [showIpValidationErrors, setShowIpValidationErrors] = useState(false);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
@@ -107,7 +108,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -130,18 +131,23 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // Função para validar o formulário
     const validateForm = () => {
-        const isValid = fields.every(field => {
-            const fieldValue = formData?.[field.key];
-            if (field.required) {
-                if (typeof fieldValue === 'string') {
-                    return fieldValue.trim() !== '';
-                }
-                return fieldValue !== null && fieldValue !== undefined;
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
             }
-            return true;
         });
 
+        setErrors(newErrors);
         setIsFormValid(isValid);
+        return isValid;
     };
 
     // Função para buscar os períodos
@@ -308,9 +314,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         const parsedValue = type === 'number' ? Number(value) : value;
         if (name === "ipAddress") {
             if (validateIPAddress(value)) {
-                setError('');
+                validateForm();
             } else {
-                setError('Endereço IP inválido');
+                setShowIpValidationErrors(true);
             }
         }
         setFormData(prev => ({
@@ -473,6 +479,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // Função para lidar com o clique no botão de salvar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -517,7 +524,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                     name="deviceName"
                                     value={formData['deviceName'] || ''}
                                     onChange={handleChange}
-                                    className="custom-input-height custom-select-font-size"
+                                    className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                 >
                                 </Form.Control>
                             </OverlayTrigger>
@@ -549,7 +556,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                             >
                                 <Form.Control
                                     type="number"
-                                    className="custom-input-height custom-select-font-size"
+                                    className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                     value={formData.deviceNumber || ''}
                                     onChange={handleChange}
                                     name="deviceNumber"
@@ -643,13 +650,10 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                                     name="ipAddress"
                                                                     value={formData['ipAddress'] || ''}
                                                                     onChange={handleChange}
-                                                                    isInvalid={!!error}
+                                                                    isInvalid={showIpValidationErrors && !validateIPAddress(formData['ipAddress'] || '')}
                                                                     className="custom-input-height custom-select-font-size"
                                                                 />
                                                             </OverlayTrigger>
-                                                            <Form.Control.Feedback type="invalid">
-                                                                {error}
-                                                            </Form.Control.Feedback>
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>

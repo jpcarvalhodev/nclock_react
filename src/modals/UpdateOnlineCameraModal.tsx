@@ -42,9 +42,10 @@ interface Field {
 // Define o componente
 export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<Cameras>>({ ...entity });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
-    const [error, setError] = useState('');
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
+    const [showIpValidationErrors, setShowIpValidationErrors] = useState(false);
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
@@ -57,7 +58,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -80,18 +81,23 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
 
     // Função para validar o formulário
     const validateForm = () => {
-        const isValid = fields.every(field => {
-            const fieldValue = formData?.[field.key];
-            if (field.required) {
-                if (typeof fieldValue === 'string') {
-                    return fieldValue.trim() !== '';
-                }
-                return fieldValue !== null && fieldValue !== undefined;
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
             }
-            return true;
         });
 
+        setErrors(newErrors);
         setIsFormValid(isValid);
+        return isValid;
     };
 
     // Função para validar o endereço IP
@@ -113,9 +119,9 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
         const parsedValue = type === 'number' ? Number(value) : value;
         if (name === "ip") {
             if (validateIPAddress(value)) {
-                setError('');
+                validateForm();
             } else {
-                setError('Endereço IP inválido');
+                setShowIpValidationErrors(true);
             }
         }
         setFormData(prev => ({
@@ -128,6 +134,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -155,7 +162,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                                     overlay={<Tooltip id="tooltip-numeroCamera">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="number"
                                         name="numeroCamera"
                                         value={formData.numeroCamera || ''}
@@ -170,7 +177,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                                     className="custom-input-height custom-select-font-size"
                                     type="string"
                                     name="ip"
-                                    isInvalid={!!error}
+                                    isInvalid={showIpValidationErrors && !validateIPAddress(formData.ip || '')}
                                     value={formData.ip || ''}
                                     onChange={handleChange}
                                 />
@@ -194,7 +201,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                                     overlay={<Tooltip id="tooltip-nomeCamera">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="string"
                                         name="nomeCamera"
                                         value={formData.nomeCamera || ''}
@@ -210,7 +217,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                                     overlay={<Tooltip id="tooltip-url">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="string"
                                         name="url"
                                         placeholder='Coloque a URL completa'

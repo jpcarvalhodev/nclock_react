@@ -17,6 +17,17 @@ export interface Entity {
     [key: string]: any;
 }
 
+// Define a interface para os itens de erro
+interface ErrorDetails {
+    hasError: boolean;
+    message: string;
+}
+
+// Define a interface para os itens de erro
+interface ErrorRecord {
+    [key: string]: ErrorDetails;
+}
+
 // Define a interface para as propriedades do componente
 interface FieldConfig {
     label: string;
@@ -45,13 +56,14 @@ interface Props<T extends Entity> {
 export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors, setErrors] = useState<ErrorRecord>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [showPassword, setShowPassword] = useState(false);
     const [passwordPlaceholder, setPasswordPlaceholder] = useState('●●●●●●●●');
     const [password, setPassword] = useState('');
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
@@ -67,7 +79,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
 
     // Usa useEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: ErrorRecord = {};
         let isValid = true;
 
         fields.forEach(field => {
@@ -80,16 +92,39 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                 isValid = false;
             }
 
-            if (field.key === 'password' && fieldValue) {
-                if (!validatePassword(fieldValue)) {
-                    newErrors[field.key] = 'Obrigatório a password ter 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial';
-                }
-            }
         });
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]);
+
+    // Função para validar o formulário
+    const validateForm = () => {
+        let newErrors: ErrorRecord = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = { hasError: true, message: 'Este campo é obrigatório.' };
+            } else if (field.validate && !field.validate(fieldValue)) {
+                isValid = false;
+                newErrors[field.key] = { hasError: true, message: field.errorMessage || 'Erro de validação.' };
+            } else {
+                newErrors[field.key] = { hasError: false, message: '' };
+            }
+        });
+
+        if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+            isValid = false;
+            newErrors['confirmPassword'] = { hasError: true, message: 'A senha e a confirmação não coincidem.' };
+        }
+
+        setErrors(newErrors);
+        setIsFormValid(isValid);
+    };
 
     // Define a mudança de foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,6 +202,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         if (!isFormValid) {
+            setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
         }
@@ -250,14 +286,14 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                     overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="text"
                                         name="name"
                                         value={formData.name || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
+                                {errors['name'] && errors['name'].hasError && <Form.Text className="text-danger">{errors['name'].message}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formEmailAddress">
                                 <Form.Label>E-Mail <span style={{ color: 'red' }}>*</span></Form.Label>
@@ -266,14 +302,14 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                     overlay={<Tooltip id="tooltip-emailAddress">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="email"
                                         name="emailAddress"
                                         value={formData.emailAddress || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
+                                {errors['emailAddress'] && errors['emailAddress'].hasError && <Form.Text className="text-danger">{errors['emailAddress'].message}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formPassword" style={{ position: 'relative', marginBottom: '30px' }}>
                                 <Form.Label>Password</Form.Label>
@@ -320,14 +356,14 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                     overlay={<Tooltip id="tooltip-userName">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="text"
                                         name="userName"
                                         value={formData.userName || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors.userName && <Form.Text className="text-danger">{errors.userName}</Form.Text>}
+                                {errors['userName'] && errors['userName'].hasError && <Form.Text className="text-danger">{errors['userName'].message}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formRoles">
                                 <Form.Label>Tipo de Conta <span style={{ color: 'red' }}>*</span></Form.Label>
@@ -336,7 +372,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                     overlay={<Tooltip id="tooltip-roles">Campo obrigatório</Tooltip>}
                                 >
                                     <Form.Control
-                                        className="custom-input-height custom-select-font-size"
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         as="select"
                                         name="roles"
                                         value={formData.roles || ''}
@@ -348,7 +384,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                         ))}
                                     </Form.Control>
                                 </OverlayTrigger>
-                                {errors.emailAddress && <Form.Text className="text-danger">{errors.emailAddress}</Form.Text>}
+                                {errors['roles'] && errors['roles'].hasError && <Form.Text className="text-danger">{errors['roles'].message}</Form.Text>}
                             </Form.Group>
                         </Col>
                     </Row>

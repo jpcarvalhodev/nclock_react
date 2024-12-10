@@ -50,8 +50,6 @@ interface FileWithOrder {
 export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, entities, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [files, setFiles] = useState<FileWithOrder[]>([]);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isFormValid, setIsFormValid] = useState(false);
     const [fileInputKey, setFileInputKey] = useState(Date.now());
 
     // Função para resetar o input de arquivo
@@ -71,28 +69,6 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
     // Extensões permitidas para imagens e vídeos
     const allowedImageExtensions = ['jpg', 'jpeg', 'png'];
     const allowedVideoExtensions = ['mp4', 'avi', 'mov', 'mkv'];
-
-    // UseEffect para validar o formulário
-    useEffect(() => {
-        const newErrors: Record<string, string> = {};
-
-        const isValid = fields.every(field => {
-            const fieldValue = formData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
-            }
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
-            }
-
-            return valid;
-        });
-
-        setErrors(newErrors);
-        setIsFormValid(isValid);
-    }, [formData, fields]);
 
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,10 +167,10 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
-        if (!isFormValid) {
+        /* if (!isFormValid) {
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
-        }
+        } */
         handleSave();
     }
 

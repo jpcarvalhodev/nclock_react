@@ -63,10 +63,11 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const fileInputRef = React.createRef<HTMLInputElement>();
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [showDeptModal, setShowDeptModal] = useState(false);
   const [showGrpModal, setShowGrpModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   // Usa useEffect para inicializar o formulário
   useEffect(() => {
@@ -88,7 +89,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Atualiza o estado do componente com parte das validações dos campos
   useEffect(() => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: Record<string, boolean> = {};
 
     const isValid = fields.every(field => {
       const fieldValue = formData[field.key];
@@ -111,13 +112,24 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Valida o formulário
   const validateForm = () => {
-    const isValid = fields.every(field => {
+    if (!showValidationErrors) return true;
+    let newErrors: Record<string, boolean> = {};
+    let isValid = true;
+
+    fields.forEach((field) => {
       const fieldValue = formData[field.key];
-      const valueAsString = fieldValue != null ? String(fieldValue).trim() : '';
-      return !field.required || (field.required && valueAsString !== '');
+      if (field.required && !fieldValue) {
+        isValid = false;
+        newErrors[field.key] = true;
+      } else {
+        newErrors[field.key] = false;
+      }
     });
+
+    setErrors(newErrors);
     setIsFormValid(isValid);
-  }
+    return isValid;
+  };
 
   // Função para buscar os cartões dos funcionários
   const fetchEmployeesCards = async () => {
@@ -339,6 +351,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   // Define a função para salvar
   const handleSaveClick = () => {
     if (!isFormValid) {
+      setShowValidationErrors(true);
       toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
       return;
     }
@@ -440,13 +453,13 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body-scrollable">
-        <Row>
+        <Row style={{ marginBottom: 20 }}>
           <Col md={3} className='img-modal'>
             <img
               src={profileImage || modalAvatar}
               alt="Profile Avatar"
               style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover' }}
-              onDoubleClick={triggerFileSelectPopup}
+              onClick={triggerFileSelectPopup}
             />
             <div>
               <input
@@ -456,11 +469,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                 onChange={handleImageChange}
                 ref={fileInputRef}
               />
-            </div>
-            <div>
-              <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
-                Remover Foto
-              </Button>
             </div>
           </Col>
           <Col md={3}>
@@ -478,7 +486,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   value={formData.enrollNumber || ''}
                   onChange={handleChange}
                   name="enrollNumber"
-                  required
                 />
               </OverlayTrigger>
               {errors.enrollNumber && <Form.Text className="text-danger">{errors.enrollNumber}</Form.Text>}
@@ -493,11 +500,10 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               >
                 <Form.Control
                   type="string"
-                  className="custom-input-height custom-select-font-size"
+                  className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                   value={formData.name || ''}
                   onChange={handleChange}
                   name="name"
-                  required
                 />
               </OverlayTrigger>
               {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
@@ -512,11 +518,10 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               >
                 <Form.Control
                   type="string"
-                  className="custom-input-height custom-select-font-size"
+                  className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                   value={formData.shortName || ''}
                   onChange={handleChange}
                   name="shortName"
-                  required
                   maxLength={20}
                 />
               </OverlayTrigger>
@@ -605,27 +610,22 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
             </Form.Group>
             <Form.Group controlId="formEntidadeId" style={{ marginTop: 12 }}>
               <Form.Label>Entidade</Form.Label>
-              <OverlayTrigger
-                placement="left"
-                overlay={<Tooltip id="tooltip-modulos">Escolha a sua entidade</Tooltip>}
+              <Form.Control
+                as="select"
+                className="custom-input-height custom-select-font-size"
+                value={formData.entidadeId || ''}
+                onChange={(e) => handleDropdownChange('entidadeId', e)}
               >
-                <Form.Control
-                  as="select"
-                  className="custom-input-height custom-select-font-size"
-                  value={formData.entidadeId || ''}
-                  onChange={(e) => handleDropdownChange('entidadeId', e)}
-                >
-                  {dropdownData.entidadeId?.map((option: any) => {
-                    let optionId = option.id;
-                    let optionName = option.nome
-                    return (
-                      <option key={optionId} value={optionId}>
-                        {optionName}
-                      </option>
-                    );
-                  })}
-                </Form.Control>
-              </OverlayTrigger>
+                {dropdownData.entidadeId?.map((option: any) => {
+                  let optionId = option.id;
+                  let optionName = option.nome
+                  return (
+                    <option key={optionId} value={optionId}>
+                      {optionName}
+                    </option>
+                  );
+                })}
+              </Form.Control>
             </Form.Group>
           </Col>
         </Row>
@@ -635,7 +635,24 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Nav.Link eventKey="dadosPessoais">Dados Pessoais</Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="dadosProfissionais">Dados Profissionais</Nav.Link>
+              <Nav.Link eventKey="dadosProfissionais">
+                Dados Profissionais
+                {showValidationErrors && (
+                  <span
+                    style={{
+                      color: "white",
+                      backgroundColor: "red",
+                      borderRadius: "50%",
+                      padding: "0 5px",
+                      fontSize: "8px",
+                      marginLeft: "5px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    !
+                  </span>
+                )}
+              </Nav.Link>
             </Nav.Item>
             <Nav.Item>
               <Nav.Link eventKey="cartoes">Cartões</Nav.Link>
@@ -721,7 +738,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                                   <Col>
                                     <Form.Control
                                       as="select"
-                                      className="custom-input-height custom-select-font-size"
+                                      className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                       value={formData[field.key] || ''}
                                       onChange={(e) => handleDropdownChange(field.key, e)}
                                     >

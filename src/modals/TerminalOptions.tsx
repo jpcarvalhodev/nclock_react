@@ -18,7 +18,7 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
 
     /* // useEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, string> = {};
+        const newErrors: Record<string, boolean> = {};
 
         const isValid = fields.every(field => {
             const fieldValue = formData[field.key];
@@ -36,22 +36,28 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
 
         setErrors(newErrors);
         setIsFormValid(isValid);
+        validateForm();
     }, [formData, fields]); */
 
     /* // Função para validar o formulário
     const validateForm = () => {
-        const isValid = fields.every(field => {
-            const fieldValue = formData?.[field.key];
-            if (field.required) {
-                if (typeof fieldValue === 'string') {
-                    return fieldValue.trim() !== '';
-                }
-                return fieldValue !== null && fieldValue !== undefined;
+        if (!showValidationErrors) return true;
+        let newErrors: Record<string, boolean> = {};
+        let isValid = true;
+
+        fields.forEach((field) => {
+            const fieldValue = formData[field.key];
+            if (field.required && !fieldValue) {
+                isValid = false;
+                newErrors[field.key] = true;
+            } else {
+                newErrors[field.key] = false;
             }
-            return true;
         });
 
+        setErrors(newErrors);
         setIsFormValid(isValid);
+        return isValid;
     }; */
 
     // Função para validar o endereço IP

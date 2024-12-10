@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import * as apiService from "../helpers/apiService";
 
 // Define as opções de requisição
@@ -29,6 +28,10 @@ export const fetchWithoutAuth = async (endpoint: string, options: FetchOptions =
 const handleHTTPError = async (response: Response) => {
 
     switch (response.status) {
+        case 401:
+            console.error('Erro 401: Você não tem permissão para acessar esta página');
+            window.location.href = '/';
+            break;
         case 404:
             console.error('Erro 404: Página não encontrada');
             window.location.href = '/errors/notfound';
