@@ -17,6 +17,24 @@ import { PrintButton } from '../../components/PrintButton';
 import { toast } from 'react-toastify';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { DeleteModal } from '../../modals/DeleteModal';
+import { TextFieldProps, TextField } from '@mui/material';
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
+}
 
 // Define a página de pessoas
 export const Persons = () => {
@@ -171,13 +189,14 @@ export const Persons = () => {
                             </div>
                             <div className="datatable-header">
                                 <div>
-                                    <input
-                                        type="text"
-                                        placeholder="Pesquisa"
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        className='search-input'
-                                    />
+                                    <CustomSearchBox
+                            label="Pesquisa"
+                            variant="outlined"
+                            size='small'
+                            value={filterText}
+                            onChange={e => setFilterText(e.target.value)}
+                            style={{ marginTop: -5 }}
+                        />
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger

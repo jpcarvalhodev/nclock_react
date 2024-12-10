@@ -21,6 +21,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+import { TextFieldProps, TextField } from "@mui/material";
 
 // Define a interface SaveData
 interface SaveData {
@@ -36,6 +37,23 @@ const formatDateToStartOfDay = (date: Date): string => {
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
 }
 
 export const NkioskMoveCard = () => {
@@ -319,13 +337,14 @@ export const NkioskMoveCard = () => {
                             </div>
                             <div className="datatable-header">
                                 <div>
-                                    <input
-                                        className='search-input'
-                                        type="text"
-                                        placeholder="Pesquisa"
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                    />
+                                    <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5}}
+                                />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
@@ -344,7 +363,7 @@ export const NkioskMoveCard = () => {
                                     <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={transactionCardFields} />
                                     <OverlayTrigger
                                         placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Abaixar</Tooltip>}
+                                        overlay={<Tooltip className="custom-tooltip">Braço</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi bi-arrow-bar-down" onClick={openAuxOutModal} />
                                     </OverlayTrigger>

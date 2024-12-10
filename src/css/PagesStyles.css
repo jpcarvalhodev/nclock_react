@@ -387,12 +387,6 @@ body {
     gap: 10px;
 }
 
-.search-input {
-    height: 30px;
-    border-width: 1px;
-    border-color: #0050a0;
-}
-
 .filter-refresh-add-edit-upper-class {
     margin-top: 10px;
     margin-left: 10px;
@@ -423,6 +417,12 @@ body {
     margin-left: auto;
     margin-right: 30px;
     gap: 10px;
+}
+
+.search-input {
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: #0050a0;
 }
 
 .split {

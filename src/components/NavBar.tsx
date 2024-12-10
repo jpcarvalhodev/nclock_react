@@ -459,7 +459,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		};
 
 		fetchAndSetUserImage();
-	}, []);
+	}, [registeredUsers]);
 
 	// Função para carregar os dados das configurações de email
 	const fetchEmailConfig = async () => {
@@ -1787,7 +1787,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<div className='dropdown-content'>
-									<img src={userImage} alt='foto de perfil' style={{ width: '40px', height: '40px', borderRadius: 50 }} />
+									<img src={userImage} style={{ width: '40px', height: '40px', borderRadius: 50 }} />
 									<Dropdown.Item className='dropdown-button' onClick={logout}>Sair</Dropdown.Item>
 								</div>
 							</Dropdown.Menu>

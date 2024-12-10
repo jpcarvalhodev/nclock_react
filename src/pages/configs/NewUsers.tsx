@@ -17,6 +17,24 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { usePersons } from "../../context/PersonsContext";
 import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
+import { TextFieldProps, TextField } from "@mui/material";
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
+}
 
 export const NewUsers = () => {
     const { navbarColor, footerColor } = useColor();
@@ -202,12 +220,13 @@ export const NewUsers = () => {
                 </div>
                 <div className="datatable-header">
                     <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
+                        <CustomSearchBox
+                            label="Pesquisa"
+                            variant="outlined"
+                            size='small'
                             value={filterText}
                             onChange={e => setFilterText(e.target.value)}
+                            style={{ marginTop: -5 }}
                         />
                     </div>
                     <div className="buttons-container-others">

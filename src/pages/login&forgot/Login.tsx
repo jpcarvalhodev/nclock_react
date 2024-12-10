@@ -190,6 +190,11 @@ export const Login = () => {
     setShowPassword(!showPassword);
   };
 
+  // Função para truncar texto
+  const truncateText = (text: string, limit: number) => {
+    return text.length > limit ? text.substring(0, limit) + '...' : text;
+  };
+
   return (
     <div className="background-login">
       <div className="div-logo-p">
@@ -230,7 +235,7 @@ export const Login = () => {
                     <option value="">Selecione...</option>
                     {company.map((license, index) => (
                       <option key={index} value={license.name}>
-                        {license.name}
+                        {truncateText(license.name, 30)}
                       </option>
                     ))}
                   </Form.Control>
@@ -253,7 +258,7 @@ export const Login = () => {
               </Button>
             </div>
             <p style={{ fontSize: 10, margin: 0, color: "white" }}>
-              Versão Software: 1.0.0.0
+              Versão Software: {apiService.version}
             </p>
           </footer>
         </form>

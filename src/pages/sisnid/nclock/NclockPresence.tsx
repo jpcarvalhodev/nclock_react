@@ -18,6 +18,7 @@ import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+import { TextFieldProps, TextField } from "@mui/material";
 
 // Define a interface para os filtros
 interface Filters {
@@ -32,6 +33,23 @@ interface EmployeeAttendanceWithPresence extends EmployeeAttendanceTimes {
 // Este objeto mapeará IDs de funcionários para seus respectivos status de presença
 interface EmployeeStatus {
     [key: string]: EmployeeAttendanceTimes & { isPresent: boolean };
+}
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
 }
 
 // Define a página de presença
@@ -273,13 +291,14 @@ export const NclockPresence = () => {
                             </div>
                             <div className="datatable-header">
                                 <div>
-                                    <input
-                                        type="text"
-                                        placeholder="Pesquisa"
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        className='search-input'
-                                    />
+                                    <CustomSearchBox
+                            label="Pesquisa"
+                            variant="outlined"
+                            size='small'
+                            value={filterText}
+                            onChange={e => setFilterText(e.target.value)}
+                            style={{ marginTop: -5 }}
+                        />
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger

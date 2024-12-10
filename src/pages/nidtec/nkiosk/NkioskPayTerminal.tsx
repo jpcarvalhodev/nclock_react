@@ -15,8 +15,8 @@ import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { PrintButton } from "../../../components/PrintButton";
-import { useLocation } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -28,9 +28,26 @@ const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}`;
 }
 
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
+}
+
 export const NkioskPayTerminal = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -46,7 +63,6 @@ export const NkioskPayTerminal = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
-    const location = useLocation();
 
     // Função para buscar os pagamentos dos terminais
     const fetchAllPayTerminal = async () => {
@@ -89,18 +105,6 @@ export const NkioskPayTerminal = () => {
             console.error('Erro ao buscar os dados dos terminais:', error);
         }
     }
-
-    // Busca os pagamentos dos terminais ao carregar a página
-    useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllPayTerminal();
-                fetchTerminalData();
-            }
-        }
-        fetchDevices();
-    }, [location]);
 
     // Função para atualizar os pagamentos dos terminais
     const refreshPayTerminal = () => {
@@ -270,13 +274,14 @@ export const NkioskPayTerminal = () => {
                             </div>
                             <div className="datatable-header">
                                 <div>
-                                    <input
-                                        className='search-input'
-                                        type="text"
-                                        placeholder="Pesquisa"
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                    />
+                                    <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5}}
+                                />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger

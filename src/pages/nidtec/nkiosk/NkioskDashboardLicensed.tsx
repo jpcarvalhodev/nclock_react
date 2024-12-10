@@ -9,7 +9,7 @@ import { ptBR } from 'date-fns/locale';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionMB } from "../../../helpers/Types";
+import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { Line } from "react-chartjs-2";
 import { useLocation } from "react-router-dom";
@@ -70,6 +70,10 @@ export const NkioskDashboardLicensed = () => {
     const [totalPayments, setTotalPayments] = useState<KioskTransactionMB[]>([]);
     const location = useLocation();
     const eventDoorId2 = '2';
+    const eventDoorId3 = '3';
+    const eventDoorId4 = '4';
+
+    console.log('devices:', devices);
 
     // Função para buscar os dados para os gráficos
     const fetchAllData = async () => {
@@ -86,16 +90,52 @@ export const NkioskDashboardLicensed = () => {
                 apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, device.serialNumber)
             );
 
-            const [mbResults, coinResults] = await Promise.all([
+            const cardPromises = devices.map(device => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, device.serialNumber);
+            });
+
+            const kioskPromises = devices.map(device => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, device.serialNumber);
+            });
+
+            const [mbResults, coinResults, cardResults, kioskResults] = await Promise.all([
                 Promise.all(mbPromises),
                 Promise.all(coinPromises),
+                Promise.all(cardPromises),
+                Promise.all(kioskPromises)
             ]);
 
             const combinedMBData = mbResults.filter(data => Array.isArray(data) && data.length > 0).flat();
             const combinedCoinData = coinResults.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const combinedCardData = cardResults.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const combinedKioskData = kioskResults.filter(data => Array.isArray(data) && data.length > 0).flat();
 
             const totalPayments = combinedMBData.concat(combinedCoinData);
             setTotalPayments(totalPayments);
+
+            const totalMove = combinedCardData.concat(combinedKioskData);
+
+            const eventSet = new Set();
+            const newEvents = totalMove.reduce((acc: CalendarEvent[], item: KioskTransactionCard) => {
+                const eventDate = new Date(item.eventTime);
+                const dateKey = eventDate.toISOString().split('T')[0];
+                const eventKey = dateKey + '|' + item.eventName + '|' + item.eventDoorId;
+    
+                if (!eventSet.has(eventKey)) {
+                    eventSet.add(eventKey);
+                    acc.push({
+                        id: item.eventTime + item.eventName,
+                        title: item.eventDoorId === 3 ? 'Torniquete' : 'Quiosque',
+                        start: eventDate,
+                        end: eventDate,
+                        allDay: true,
+                        uniqueId: item.eventTime + item.eventName
+                    });
+                }
+                return acc;
+            }, [] as CalendarEvent[]);
+
+            setEvents(newEvents);
         } catch (error) {
             console.error('Erro ao buscar os dados:', error);
             setTotalPayments([]);

@@ -260,12 +260,20 @@
     background-color: transparent;
     display: flex;
     height: 35px;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 0;
 }
 
 .user-info {
     font-size: 15px;
     color: white;
     text-transform: uppercase;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 0;
 }
 
 .user-info:hover {
@@ -288,6 +296,10 @@
 
 .dropdown-icon {
     color: white;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 0;
 }
 
 .dropdown-icon img {
@@ -350,6 +362,11 @@
     display: block;
 }
 
+#dropdown-navbar .dropdown-menu {
+    margin-right: 10px !important;
+    transform: translate(0px, 40px) !important;
+}
+
 #dropdown-basic-4::after {
     display: none;
 }
@@ -357,6 +374,13 @@
 #dropdown-basic-2::after,
 #dropdown-basic-3::after {
     color: white;
+}
+
+#dropdown-basic-3 {
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 0;
 }
 
 .nav-item,

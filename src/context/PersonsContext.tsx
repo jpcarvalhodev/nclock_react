@@ -327,35 +327,11 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todos os dados ao carregar o componente
     useEffect(() => {
-        const fetchOnTokenChange = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    await fetchAllData();
-                    await fetchAllEmployees();
-                    await fetchAllDepartments();
-                    await fetchAllGroups();
-                    await fetchAllRegisteredUsers();
-                    await fetchAllCardData();
-                }
-            } catch (error) {
-                console.error('Erro ao atualizar dados após mudança de token:', error);
-            }
-        };
-
-        fetchOnTokenChange();
-
-        const handleStorageChange = (event: StorageEvent) => {
-            if (event.key === 'token' && event.newValue) {
-                fetchOnTokenChange();
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
+        fetchAllEmployees();
+        fetchAllDepartments();
+        fetchAllGroups();
+        fetchAllRegisteredUsers();
+        fetchAllCardData();
     }, []);
 
     // Define o valor do contexto

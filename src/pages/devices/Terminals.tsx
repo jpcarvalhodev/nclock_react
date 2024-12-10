@@ -28,6 +28,7 @@ import * as apiService from "../../helpers/apiService";
 import { DoorModal } from "../../modals/DoorModal";
 import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
+import { id } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {
@@ -188,7 +189,7 @@ export const Terminals = () => {
         );
 
         setEmployees(mergedData);
-        
+
         const employeeBio = filteredEmployeesBio.slice().sort((a, b) => {
             const aNum = parseInt(a.enrollNumber || '0', 10);
             const bNum = parseInt(b.enrollNumber || '0', 10);
@@ -345,11 +346,7 @@ export const Terminals = () => {
     // Filtra os utilizadores no terminal
     const filteredUsersInTerminal = useMemo(() => {
         if (selectedTerminal) {
-            return employeesOnDevice.slice().sort((a, b) => {
-                const aNum = parseInt(a.pin || '0', 10);
-                const bNum = parseInt(b.pin || '0', 10);
-                return aNum - bNum;
-            });
+            return employeesOnDevice;
         } else {
             return [];
         }
@@ -358,11 +355,7 @@ export const Terminals = () => {
     // Define as colunas de funcionário no dispositivo
     const filteredUsersInSoftware = useMemo(() => {
         if (employees) {
-            return employees.slice().sort((a, b) => {
-                const aNum = parseInt(a.enrollNumber || '0', 10);
-                const bNum = parseInt(b.enrollNumber || '0', 10);
-                return aNum - bNum;
-            });
+            return employees;
         } else {
             return [];
         }
@@ -373,6 +366,8 @@ export const Terminals = () => {
         .map(field => {
             const formatField = (row: EmployeesOnDevice) => {
                 switch (field.key) {
+                    case 'enrollNumber':
+                        return Number(row.enrollNumber) || 'Número inválido';
                     default:
                         return row[field.key];
                 }
@@ -561,6 +556,8 @@ export const Terminals = () => {
                 switch (field.key) {
                     case 'cardNumber':
                         return row.cardNumber === "0" ? "" : row.cardNumber;
+                    case 'enrollNumber':
+                        return Number(row.enrollNumber) || 'Número inválido';
                     default:
                         return row[field.key] || '';
                 }
@@ -605,6 +602,14 @@ export const Terminals = () => {
         .filter(field => selectedBioColums.includes(field.key))
         .filter(field => !excludedBioColumns.includes(field.key))
         .map(field => {
+            const formatField = (row: EmployeeAndCard) => {
+                switch (field.key) {
+                    case 'enrollNumber':
+                        return Number(row.enrollNumber) || 'Número inválido';
+                    default:
+                        return row[field.key] || '';
+                }
+            };
             return {
                 name: (
                     <>
@@ -612,7 +617,7 @@ export const Terminals = () => {
                         <SelectFilter column={field.key} setFilters={setFilters} data={filteredBioDataTable} />
                     </>
                 ),
-                selector: (row: EmployeeAndCard) => row[field.key] || '',
+                selector: (row: EmployeeAndCard) => formatField(row),
                 sortable: true,
             };
         })
@@ -638,6 +643,8 @@ export const Terminals = () => {
         )
     );
 
+    console.log(filteredCardDataTable);
+
     // Define as colunas de utilizadores
     const cardColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
         .filter(field => selectedCardColums.includes(field.key))
@@ -647,11 +654,14 @@ export const Terminals = () => {
                 switch (field.key) {
                     case 'cardNumber':
                         return row.cardNumber === "0" ? "" : row.cardNumber;
+                    case 'enrollNumber':
+                        return Number(row.enrollNumber) || 'Número inválido';
                     default:
                         return row[field.key] || '';
                 }
             };
             return {
+                id: field.key,
                 name: (
                     <>
                         {field.label}
@@ -664,6 +674,7 @@ export const Terminals = () => {
         })
         .concat([
             {
+                id: 'verificationMode',
                 name: (
                     <>
                         Modo de Verificação
@@ -1399,7 +1410,7 @@ export const Terminals = () => {
                                             customStyles={customStyles}
                                             striped
                                             defaultSortAsc={true}
-                                            defaultSortFieldId='cardNumber'
+                                            defaultSortFieldId='enrollNumber'
                                         />
                                     </Tab>
                                 </Tabs>

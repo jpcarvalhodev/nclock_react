@@ -24,7 +24,7 @@ export const customStyles: TableStyles = {
     },
     headCells: {
         style: {
-            height: '30px',
+            minHeight: '30px',
             backgroundColor: '#ccc',
             color: '#333',
             fontWeight: 'bold',

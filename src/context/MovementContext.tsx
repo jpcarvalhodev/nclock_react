@@ -146,30 +146,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todas as assiduidades ao carregar o componente
     useEffect(() => {
-        const fetchOnTokenChange = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    await fetchAllAttendances();
-                }
-            } catch (error) {
-                console.error('Erro ao buscar presenças:', error);
-            }
-        };
-
-        fetchOnTokenChange();
-
-        const handleStorageChange = (event: StorageEvent) => {
-            if (event.key === 'token' && event.newValue) {
-                fetchOnTokenChange();
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
+        fetchAllAttendances();
     }, []);
 
     // Definindo o valor do contexto

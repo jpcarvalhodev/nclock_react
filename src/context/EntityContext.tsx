@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { createContext, useState, useContext, ReactNode, useEffect, useMemo } from 'react';
 import * as apiService from '../helpers/apiService';
 import { toast } from 'react-toastify';
 import { Entity } from '../helpers/Types';
@@ -73,30 +73,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todas as entidades ao carregar o componente
     useEffect(() => {
-        const fetchOnTokenChange = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    await fetchAllEntity();
-                }
-            } catch (error) {
-                console.error('Erro ao buscar entidades:', error);
-            }
-        };
-
-        fetchOnTokenChange();
-
-        const handleStorageChange = (event: StorageEvent) => {
-            if (event.key === 'token' && event.newValue) {
-                fetchOnTokenChange();
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
+        fetchAllEntity();
     }, []);
 
     return (

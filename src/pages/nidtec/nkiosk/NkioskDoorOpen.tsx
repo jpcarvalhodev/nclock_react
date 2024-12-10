@@ -19,6 +19,7 @@ import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsC
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
+import { TextFieldProps, TextField } from "@mui/material";
 
 // Define a interface para os filtros
 interface Filters {
@@ -33,6 +34,23 @@ const formatDateToStartOfDay = (date: Date): string => {
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
 }
 
 // Define o componente de terminais
@@ -251,12 +269,13 @@ export const NkioskDoorOpen = () => {
                         </div>
                         <div className="datatable-header">
                             <div className="buttons-container-others-mb">
-                                <input
-                                    className='search-input'
-                                    type="text"
-                                    placeholder="Pesquisa"
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5}}
                                 />
                                 <div className="custom-buttons">
                                     <OverlayTrigger

@@ -5,7 +5,7 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Key, useEffect, useState } from "react";
+import { Key, SetStateAction, useEffect, useState } from "react";
 import * as apiService from "../../helpers/apiService";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { AccessControl, Doors } from "../../helpers/Types";
@@ -20,6 +20,24 @@ import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
 import { DeleteACModal } from "../../modals/DeleteACModal";
 import { PrintButton } from "../../components/PrintButton";
 import { ExportButton } from "../../components/ExportButton";
+import { TextField, TextFieldProps } from "@mui/material";
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
+}
 
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useColor();
@@ -97,7 +115,7 @@ export const AccessControls = () => {
     // Atualiza os nomes filtrados da treeview
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = accessControl.filter(ac => selectedDevicesIds.includes(ac.employeesId));
+            const filtered = accessControl.filter(ac => ac.acc.some((accItem: AccessControl) => selectedDevicesIds.includes(accItem.acId)));
             setFilteredAccessControl(filtered);
         } else {
             setFilteredAccessControl(accessControl);
@@ -226,17 +244,25 @@ export const AccessControls = () => {
             const formatField = (row: AccessControl) => {
                 switch (field.key) {
                     case 'doorName':
-                        if (row.doorName.endsWith('door3')) {
-                            return 'Torniquete';
-                        } else if (row.doorName.endsWith('door4')) {
-                            return 'Video Porteiro';
-                        } else {
-                            return row.doorName;
+                        if (row.acc && row.acc.length > 0) {
+                            const doorNames = row.acc.map((accItem: AccessControl) => {
+                                if (accItem.doorName.endsWith('door3')) {
+                                    return 'Torniquete';
+                                } else if (accItem.doorName.endsWith('door4')) {
+                                    return 'Video Porteiro';
+                                } else {
+                                    return accItem.doorName || 'Não disponível';
+                                }
+                            });
+                            return doorNames.join(', ');
                         }
+                        return 'Sem portas definidas';
                     case 'createDate':
                         return new Date(row.createDate).toLocaleString() || '';
                     case 'updateDate':
                         return new Date(row.updateDate).toLocaleString() || '';
+                    case 'enrollNumber':
+                        return Number(row.enrollNumber) || 'Número inválido';
                     default:
                         return row[field.key] || '';
                 }
@@ -299,12 +325,13 @@ export const AccessControls = () => {
                         </div>
                         <div className="datatable-header">
                             <div>
-                                <input
-                                    className='search-input'
-                                    type="text"
-                                    placeholder="Pesquisa"
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
                             <div className="buttons-container-others">

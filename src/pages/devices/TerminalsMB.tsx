@@ -18,13 +18,30 @@ import Split from "react-split";
 import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
 import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
 import { DeleteModal } from "../../modals/DeleteModal";
-import { set } from "date-fns";
 import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
+import { TextField, TextFieldProps } from "@mui/material";
 
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
+}
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
 }
 
 // Define o componente de terminais
@@ -312,12 +329,13 @@ export const TerminalsMB = () => {
                             </div>
                             <div className="datatable-header">
                                 <div className="buttons-container-others-mb">
-                                    <input
-                                        className='search-input'
-                                        type="text"
-                                        placeholder="Pesquisa"
+                                    <CustomSearchBox
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
                                         value={filterText}
                                         onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
                                     />
                                     <div className="custom-buttons">
                                         <OverlayTrigger

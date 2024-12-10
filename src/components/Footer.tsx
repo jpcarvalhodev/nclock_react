@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { ColorProvider, useColor } from "../context/ColorContext";
 import { useEntity } from "../context/EntityContext";
+import * as apiService from "../helpers/apiService";
 
 interface FooterProps {
   style?: React.CSSProperties;
@@ -9,22 +11,24 @@ export const Footer = ({ style }: FooterProps) => {
   const { footerColor } = useColor();
   const { entity } = useEntity();
   const currentYear = new Date().getFullYear();
+  const [entityName, setEntityName] = useState<string>("");
 
   // Função para truncar texto
   const truncateText = (text: string, limit: number) => {
     return text.length > limit ? text.substring(0, limit) + '...' : text;
   };
 
-  // Obtém o NIF armazenado no localStorage
-  const storedNif = localStorage.getItem("nif");
+  // Atualiza o nome da entidade no footer
+  useEffect(() => {
+    const storedNif = localStorage.getItem("nif");
 
-  // Busca o nome da entidade correspondente ao NIF
-  const loggedEntity = Array.isArray(entity)
-  ? entity.find((item) => item.nif === Number(storedNif))
-  : null;
+    const loggedEntity = Array.isArray(entity)
+      ? entity.find((item) => item.nif === Number(storedNif))
+      : null;
 
-  // Busca o nome da entidade
-  const entityName = loggedEntity?.nome || "Sem Entidade";
+    const entityNameData = loggedEntity?.nome || "Sem Entidade";
+    setEntityName(entityNameData);
+  }, [entity]);
 
   return (
     <ColorProvider>
@@ -36,7 +40,7 @@ export const Footer = ({ style }: FooterProps) => {
           <p>{currentYear} ®NIDGROUP por SISNID - Todos os direitos reservados</p>
         </div>
         <div className="footer-right">
-          <p>Versão: 1.0.0.0</p>
+          <p>{apiService.version}</p>
         </div>
       </footer>
     </ColorProvider>

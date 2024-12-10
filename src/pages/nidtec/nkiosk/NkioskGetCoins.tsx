@@ -16,9 +16,11 @@ import { RecolhaMoedeiroEContador, ResetCoin } from "../../../helpers/Types";
 import { recolhaMoedeiroEContadorFields, resetFields } from "../../../helpers/Fields";
 import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
-import { set } from "date-fns";
+import Split from "react-split";
 import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { ResetCoinModal } from "../../../modals/ResetCoinModal";
+import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
+import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -28,6 +30,23 @@ const formatDateToStartOfDay = (date: Date): string => {
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}`;
+}
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
 }
 
 export const NkioskGetCoins = () => {
@@ -52,6 +71,8 @@ export const NkioskGetCoins = () => {
     const [currentGetCoinIndex, setCurrentGetCoinIndex] = useState(0);
     const [loadingReset, setLoadingReset] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<RecolhaMoedeiroEContador[]>([]);
 
     // Função para buscar as recolhas do moedeiro
     const fetchAllCoin = async () => {
@@ -112,6 +133,16 @@ export const NkioskGetCoins = () => {
         fetchAllCoin();
     }, []);
 
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = getCoins.filter(moveCards => selectedDevicesIds.includes(moveCards.deviceSN));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(getCoins);
+        }
+    }, [selectedDevicesIds, getCoins]);
+
     // Função para atualizar as recolhas do moedeiro
     const refreshRecolhaMoedeiro = () => {
         fetchAllCoin();
@@ -159,6 +190,11 @@ export const NkioskGetCoins = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Seleciona a entidade anterior
     const handleNextGetCoin = () => {
         if (currentGetCoinIndex < getCoins.length - 1) {
@@ -176,7 +212,7 @@ export const NkioskGetCoins = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = getCoins.filter(getCoin =>
+    const filteredDataTable = filteredDevices.filter(getCoin =>
         new Date(getCoin.dataRecolha) >= new Date(startDate) && new Date(getCoin.dataRecolha) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
@@ -191,7 +227,7 @@ export const NkioskGetCoins = () => {
             }
         })
     )
-    .sort((a, b) => new Date(b.dataRecolha).getTime() - new Date(a.dataRecolha).getTime());
+        .sort((a, b) => new Date(b.dataRecolha).getTime() - new Date(a.dataRecolha).getTime());
 
     // Define a função de duplicar funcionários
     const handleDuplicate = (data: Partial<RecolhaMoedeiroEContador>) => {
@@ -301,103 +337,111 @@ export const NkioskGetCoins = () => {
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="datatable-container">
-                <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Recolhas do Moedeiro</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <input
-                            className='search-input'
-                            type="text"
-                            placeholder="Pesquisa"
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkioskDisp onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
-                        </OverlayTrigger>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        </OverlayTrigger>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        </OverlayTrigger>
-                        <ExportButton allData={getCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
-                        <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <OverlayTrigger
-                                placement="top"
-                                overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}
-                            >
-                                <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
-                            </OverlayTrigger>
-                            {loadingReset && (
-                                <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
-                            )}
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Recolhas do Moedeiro</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5}}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshRecolhaMoedeiro} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={getCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    {loadingReset && (
+                                        <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchCoinsBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
+                            </div>
+                        </div>
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                onRowDoubleClicked={handleEditRecolhas}
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="dataRecolha"
+                            />
+                        </div>
+                        <div style={{ display: "flex" }}>
+                            <div style={{ marginLeft: 10, marginRight: 10 }}>
+                                <strong>Valor Total das Recolhas: </strong>{totalAmount.toFixed(2)}€
+                            </div>
+                            <p>|</p>
+                            <div style={{ marginLeft: 10 }}>
+                                <strong>Valor Total de Diferença de Recolhas: </strong>{totalAmountDifference.toFixed(2)}€
+                            </div>
                         </div>
                     </div>
-                    <div className="date-range-search">
-                        <input
-                            type="date"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <span> até </span>
-                        <input
-                            type="date"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-search" onClick={fetchCoinsBetweenDates} iconSize='1.1em' />
-                        </OverlayTrigger>
-                    </div>
-                </div>
-                <div className='table-css'>
-                    <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        onRowDoubleClicked={handleEditRecolhas}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId="dataRecolha"
-                    />
-                </div>
-                <div style={{ display: "flex" }}>
-                    <div style={{ marginLeft: 10, marginRight: 10 }}>
-                        <strong>Valor Total das Recolhas: </strong>{totalAmount.toFixed(2)}€
-                    </div>
-                    <p>|</p>
-                    <div style={{ marginLeft: 10 }}>
-                        <strong>Valor Total de Diferença de Recolhas: </strong>{totalAmountDifference.toFixed(2)}€
-                    </div>
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (

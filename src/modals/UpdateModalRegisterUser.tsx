@@ -50,6 +50,8 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [showPassword, setShowPassword] = useState(false);
+    const [passwordPlaceholder, setPasswordPlaceholder] = useState('●●●●●●●●');
+    const [password, setPassword] = useState('');
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
@@ -125,6 +127,13 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         const { name, value, type } = target;
         let parsedValue: string | number | boolean;
 
+        if (name === 'password') {
+            setPassword(value);
+            if (!value) {
+                setPasswordPlaceholder('●●●●●●●●');
+            }
+        }
+
         if (type === 'checkbox') {
             parsedValue = target.checked;
         } else if (type === 'number') {
@@ -136,6 +145,20 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             ...prevState,
             [name]: parsedValue
         }));
+    };
+
+    // Função para lidar com o foco no campo de senha
+    const handleFocus = () => {
+        if (!password) {
+            setPasswordPlaceholder('');
+        }
+    };
+
+    // Função para lidar com o desfoque no campo de senha
+    const handleBlur = () => {
+        if (!password) {
+            setPasswordPlaceholder('●●●●●●●●');
+        }
     };
 
     // Define a função para acionar o popup de seleção de arquivo
@@ -259,8 +282,10 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                         className="custom-input-height custom-select-font-size"
                                         type={showPassword ? "text" : "password"}
                                         name="password"
-                                        value={formData.password || ''}
+                                        value={formData.password || passwordPlaceholder}
                                         onChange={handleChange}
+                                        onFocus={handleFocus}
+                                        onBlur={handleBlur}
                                         autoComplete='off'
                                         minLength={8}
                                         style={{ paddingRight: '40px', flex: 1 }}

@@ -17,6 +17,7 @@ import { PrintButton } from "../../../components/PrintButton";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { useLocation } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -28,16 +29,21 @@ const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}`;
 }
 
-// Define a interface ChartData
-interface ChartData {
-    labels: string[];
-    datasets: {
-        label: string;
-        data: number[];
-        fill: boolean;
-        borderColor: string;
-        tension: number;
-    }[];
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+            InputLabelProps={{
+                className: "SearchBox-label"
+            }}
+            InputProps={{
+                className: "SearchBox-input",
+                ...props.InputProps,
+            }}
+        />
+    );
 }
 
 export const NkioskListPayments = () => {
@@ -382,13 +388,14 @@ export const NkioskListPayments = () => {
                             </div>
                             <div className="datatable-header">
                                 <div>
-                                    <input
-                                        className='search-input'
-                                        type="text"
-                                        placeholder="Pesquisa"
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                    />
+                                    <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5}}
+                                />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger

@@ -332,6 +332,11 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     }
   }
 
+  // Função para truncar texto
+  const truncateText = (text: string, limit: number) => {
+    return text.length > limit ? text.substring(0, limit) + '...' : text;
+  };
+
   return (
     <div>
       <Modal show={isCheckVisible} onHide={onClose} backdrop="static">
@@ -404,11 +409,10 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             {entities.map((entity) => (
               <Tab
                 eventKey={entity.nif?.toString()}
-                title={entity.name || `Entidade ${entity.entidadeNumber}`}
+                title={truncateText(entity.name, 20) || `Entidade ${entity.entidadeNumber}`}
                 key={entity.nif}
               >
                 <div className="p-3">
-                  <h5>Configurações para {entity.name}</h5>
                   <Row style={{ marginBottom: 20 }}>
                     <Col md={3}>
                       <Form.Group controlId="formEntidadeNumber">
