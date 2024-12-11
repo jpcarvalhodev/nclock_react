@@ -90,29 +90,35 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
         fetchAllData();
     }, []);
 
-    // Busca os dados dos dispositivos e mapeia para os itens da árvore
+    // Atualiza a árvore de itens ao receber os dados dos dispositivos
     useEffect(() => {
-        const buildDeviceTree = accessControl.flatMap(ac =>
-            ac.acc.map((accItem: AccessControl) => ({
-                id: accItem.acId,
-                label: accItem.doorName,
-                children: []
-            }))
-        );
 
-        const treeItems = [
-            {
-                id: 'nidgroup',
-                label: 'NIDGROUP',
-                children: [
-                    {
-                        id: 'accessControlDoorName',
-                        label: 'PORTAS',
-                        children: buildDeviceTree
-                    },
-                ],
-            },
-        ];
+        const buildDoorTree = (doors: AccessControl) => {
+            return doors.map((door: AccessControl) => ({
+                id: door.acId,
+                label: door.doorName,
+                children: []
+            }));
+        };
+
+        const buildNameTree = accessControl.map(ac => ({
+            id: ac.employeesId,
+            label: ac.shortName,
+            children: buildDoorTree(ac.acc)
+        }));
+
+        const treeItems = [{
+            id: 'nidgroup',
+            label: 'NIDGROUP',
+            children: [
+                {
+                    id: 'name',
+                    label: 'NOME',
+                    children: buildNameTree
+                },
+            ]
+        }];
+
         setItems(treeItems);
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);

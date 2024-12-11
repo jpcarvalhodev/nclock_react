@@ -142,6 +142,9 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         const parsedValue = type === 'checkbox' ? checked : value;
         setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
     };
@@ -163,11 +166,11 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size='lg' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 315 }}>
+            <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
                         <Col md={3}>

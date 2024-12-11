@@ -15,15 +15,17 @@ import { mbDeviceStatusFields } from "../../../helpers/Fields";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import Split from "react-split";
+import { TreeViewDataMBTerminals } from "../../../components/TreeViewMBTerminals";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -58,6 +60,8 @@ export const NkioskAlerts = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredDevices, setFilteredDevices] = useState<MBDeviceStatus[]>([]);
 
     // Função para buscar as limpezas
     const fetchAllTasks = async () => {
@@ -98,6 +102,16 @@ export const NkioskAlerts = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
+    // Atualiza os dispositivos filtrados da treeview
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filtered = alerts.filter(mbDevices => selectedDevicesIds.includes(mbDevices.tpId));
+            setFilteredDevices(filtered);
+        } else {
+            setFilteredDevices(alerts);
+        }
+    }, [selectedDevicesIds, alerts]);
+
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -115,6 +129,11 @@ export const NkioskAlerts = () => {
     // Função para selecionar todas as colunas
     const onSelectAllColumns = (allColumnKeys: string[]) => {
         setSelectedColumns(allColumnKeys);
+    };
+
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
     };
 
     // Define a função de seleção de linhas
@@ -184,77 +203,84 @@ export const NkioskAlerts = () => {
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="datatable-container">
-                <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Alertas</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <CustomSearchBox
-                            label="Pesquisa"
-                            variant="outlined"
-                            size='small'
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                            style={{ marginTop: -5 }}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataMBTerminals onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshTasks} />
-                        </OverlayTrigger>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
-                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Alertas</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshTasks} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchAlertsBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
+                            </div>
+                        </div>
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="timespam"
+                            />
+                        </div>
                     </div>
-                    <div className="date-range-search">
-                        <input
-                            type="date"
-                            value={startDate}
-                            onChange={e => setStartDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <span> até </span>
-                        <input
-                            type="date"
-                            value={endDate}
-                            onChange={e => setEndDate(e.target.value)}
-                            className='search-input'
-                        />
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-search" onClick={fetchAlertsBetweenDates} iconSize='1.1em' />
-                        </OverlayTrigger>
-                    </div>
-                </div>
-                <div className='table-css'>
-                    <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId="timespam"
-                    />
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (

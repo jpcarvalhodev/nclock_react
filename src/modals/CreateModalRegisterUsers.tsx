@@ -95,14 +95,15 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             const fieldValue = formData[field.key];
             if (field.required && !fieldValue) {
                 isValid = false;
-                newErrors[field.key] = { hasError: true, message: 'Este campo é obrigatório.' };
             } else if (field.validate && !field.validate(fieldValue)) {
                 isValid = false;
-                newErrors[field.key] = { hasError: true, message: field.errorMessage || 'Erro de validação.' };
-            } else {
-                newErrors[field.key] = { hasError: false, message: '' };
             }
         });
+
+        if (formData.password && !validatePassword(formData.password as string)) {
+            isValid = false;
+            newErrors['password'] = { hasError: true, message: 'A password deve ter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial.' };
+        }
 
         if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
             isValid = false;
@@ -118,6 +119,10 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         const target = e.target as HTMLInputElement;
         const { name, value, type } = target;
         let parsedValue: string | number | boolean;
+
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
 
         if (type === 'number') {
             parsedValue = Number(value);
@@ -220,7 +225,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

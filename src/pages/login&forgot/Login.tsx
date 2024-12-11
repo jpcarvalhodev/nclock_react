@@ -72,10 +72,15 @@ export const Login = () => {
     }
   };
 
-  // Obtém os dados da licença
+  // Obtém os dados da licença ao montar o componente
   useEffect(() => {
     fetchLicenseData();
   }, []);
+
+  // Obtém a imagem da entidade selecionada ao montar o componente
+  useEffect(() => {
+    fetchLogo(selectedNif);
+  }, [selectedNif]);
 
   // Verifica se o usuário já está logado
   useEffect(() => {
@@ -125,6 +130,11 @@ export const Login = () => {
   // Função para fazer login
   const handleLoginFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (selectedNif === 0) {
+      toast.warn("Selecione uma entidade primeiro!");
+      return;
+    }
 
     const user: User = {
       username,
@@ -239,7 +249,6 @@ export const Login = () => {
                     value={companyName}
                     onChange={handleCompanyChange}
                   >
-                    <option value="">Selecione...</option>
                     {company.map((license, index) => (
                       <option key={index} value={license.name}>
                         {truncateText(license.name, 30)}

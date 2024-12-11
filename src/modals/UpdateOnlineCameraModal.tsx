@@ -124,6 +124,9 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                 setShowIpValidationErrors(true);
             }
         }
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData(prev => ({
             ...prev,
             [name]: parsedValue
@@ -147,7 +150,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static">
+        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

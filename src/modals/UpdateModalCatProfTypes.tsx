@@ -141,6 +141,9 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     const handleInputChange = (key: string, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { value, type } = e.target;
         const parsedValue = type === 'number' ? Number(value) : value;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData(prevFormData => ({
             ...prevFormData,
             [key]: parsedValue
@@ -170,7 +173,7 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" style={{ marginTop: 115 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

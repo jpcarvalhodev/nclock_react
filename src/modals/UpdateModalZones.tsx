@@ -166,6 +166,9 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, on
     // Atualiza o estado do componente com a mudança de campo
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData(prevState => ({
             ...prevState,
             [name]: value
@@ -195,7 +198,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, on
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 115 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

@@ -43,13 +43,13 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
-    const [showValidationErrors, setShowValidationErrors] = useState(false);    
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
-            setFormData({ ...initialValuesData, ...initialValues });
+            setFormData({ ...initialValues, ...initialValuesData });
         } else {
             setFormData({});
         }
@@ -140,6 +140,11 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value, type } = e.target;
+
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
+
         const formattedValue = type === 'number' ? parseFloat(value) || 0 : value;
         setFormData(prevState => ({
             ...prevState,
@@ -163,7 +168,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

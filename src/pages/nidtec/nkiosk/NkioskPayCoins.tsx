@@ -7,14 +7,13 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionMB, MBDevice } from "../../../helpers/Types";
+import { KioskTransactionMB } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
-import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
@@ -22,12 +21,12 @@ import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -49,12 +48,11 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
-    const [terminalData, setTerminalData] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'statusMessage', 'deviceSN']);
@@ -65,7 +63,6 @@ export const NkioskPayCoins = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
-    const location = useLocation();
     const eventDoorId = '2';
 
     // Função para buscar os pagamentos no moedeiro
@@ -118,20 +115,6 @@ export const NkioskPayCoins = () => {
         }
     }
 
-    // Função para buscar os dados dos terminais
-    const fetchTerminalData = async () => {
-        try {
-            const data = await fetchAllMBDevices();
-            if (Array.isArray(data)) {
-                setTerminalData(data);
-            } else {
-                setTerminalData([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos terminais:', error);
-        }
-    }
-
     // Função para buscar os dados da última recolha
     const fetchAllDataFromLastRecolha = async () => {
         if (selectedDevicesIds.length === 0) {
@@ -161,20 +144,12 @@ export const NkioskPayCoins = () => {
 
     // Busca os pagamentos no moedeiro ao carregar a página
     useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllPayCoins();
-                fetchTerminalData();
-            }
-        }
-        fetchDevices();
-    }, [location]);
+        fetchAllPayCoins();
+    }, []);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {
         fetchAllPayCoins();
-        fetchTerminalData();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -255,7 +230,7 @@ export const NkioskPayCoins = () => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
                     case 'tpId':
-                        const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
+                        const terminalMatch = mbDevices.find(terminal => terminal.tpId === row.tpId)
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
@@ -289,7 +264,7 @@ export const NkioskPayCoins = () => {
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {
-        const terminalMatch = terminalData.find(terminal => terminal.id === transaction.tpId);
+        const terminalMatch = mbDevices.find(terminal => terminal.id === transaction.tpId);
         const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
     
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
@@ -357,14 +332,14 @@ export const NkioskPayCoins = () => {
                                         <CustomOutlineButton icon="bi bi-cash-coin" onClick={fetchAllDataFromLastRecolha} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={startDate}
                                         onChange={e => setStartDate(e.target.value)}
                                         className='search-input'
                                     />
                                     <span> até </span>
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={endDate}
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
@@ -395,7 +370,7 @@ export const NkioskPayCoins = () => {
                                     defaultSortFieldId="timestamp"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10 }}>
+                            <div style={{ marginLeft: 10, marginTop: -5 }}>
                                 <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                             </div>
                         </div>

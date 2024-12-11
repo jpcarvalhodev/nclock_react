@@ -126,6 +126,10 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
         const { name, value, type } = target;
         let parsedValue: string | number | boolean;
 
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
+
         if (type === 'checkbox') {
             parsedValue = target.checked;
         } else if (type === 'number') {
@@ -210,7 +214,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

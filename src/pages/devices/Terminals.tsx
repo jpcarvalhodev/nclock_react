@@ -643,8 +643,6 @@ export const Terminals = () => {
         )
     );
 
-    console.log(filteredCardDataTable);
-
     // Define as colunas de utilizadores
     const cardColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
         .filter(field => selectedCardColums.includes(field.key))
@@ -1013,8 +1011,6 @@ export const Terminals = () => {
                 await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
             }
             setLoadingSendSelectedUsers(false);
-            setSelectedDeviceRows([]);
-            setSelectedUserRows([]);
         }
     }
 
@@ -1029,8 +1025,6 @@ export const Terminals = () => {
                 await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userId);
             }
             setLoadingDeleteSelectedUsers(false);
-            setSelectedDeviceRows([]);
-            setSelectedUserRows([]);
         }
     }
 
@@ -1045,8 +1039,6 @@ export const Terminals = () => {
                 await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
             }
             setLoadingFetchSelectedUsers(false);
-            setSelectedDeviceRows([]);
-            setSelectedUserRows([]);
         }
     }
 
@@ -1067,7 +1059,6 @@ export const Terminals = () => {
             setLoadingAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingAllUser(false);
-            setSelectedDeviceRows([]);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1079,7 +1070,6 @@ export const Terminals = () => {
             setLoadingSyncAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingSyncAllUser(false);
-            setSelectedDeviceRows([]);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1091,7 +1081,6 @@ export const Terminals = () => {
             setLoadingMovements(true);
             await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingMovements(false);
-            setSelectedDeviceRows([]);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1103,7 +1092,6 @@ export const Terminals = () => {
             setLoadingDeleteAllUsers(true);
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingDeleteAllUsers(false);
-            setSelectedDeviceRows([]);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1115,7 +1103,6 @@ export const Terminals = () => {
             setLoadingRestartDevice(true);
             await restartDevice(selectedTerminal.zktecoDeviceID);
             setLoadingRestartDevice(false);
-            setSelectedDeviceRows([]);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1130,7 +1117,6 @@ export const Terminals = () => {
                 await sendClockToDevice(selectedTerminal.serialNumber, period.id);
             }
             setLoadingSendClock(false);
-            setSelectedDeviceRows([]);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1148,7 +1134,6 @@ export const Terminals = () => {
             setLoadingSyncTime(true);
             await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
             setLoadingSyncTime(false);
-            setSelectedDeviceRows([]);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1192,7 +1177,7 @@ export const Terminals = () => {
 
     return (
         <TerminalsProvider>
-            <div className="main-container">
+            <div className="main-container" style={{ overflow: 'auto' }}>
                 <NavBar style={{ backgroundColor: navbarColor }} />
                 <div className='filter-refresh-add-edit-upper-class'>
                     <div className="datatable-title-text" style={{ color: '#000000' }}>
@@ -1272,6 +1257,7 @@ export const Terminals = () => {
                                                     paginationPerPage={5}
                                                     paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                                     paginationComponentOptions={paginationOptions}
+                                                    selectableRows
                                                     noDataComponent="Não há actividades disponíveis para exibir."
                                                     customStyles={customStyles}
                                                     striped

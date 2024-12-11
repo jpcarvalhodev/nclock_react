@@ -25,12 +25,12 @@ import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -361,14 +361,14 @@ export const NkioskCleaning = () => {
                             </div>
                             <div className="date-range-search">
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className='search-input'
                                 />
                                 <span> até </span>
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={endDate}
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'

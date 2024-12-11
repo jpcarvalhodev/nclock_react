@@ -161,6 +161,9 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prevState => ({
             ...prevState,
@@ -179,7 +182,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" style={{ marginTop: 115 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

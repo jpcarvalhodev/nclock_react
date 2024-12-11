@@ -172,6 +172,11 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     // Função para lidar com a mudança de valor
     const handleChange = (e: ChangeEvent<FormControlElement>) => {
         const { name, value } = e.target;
+
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
+
         setFormData(prevState => ({
             ...prevState,
             [name]: value
@@ -210,7 +215,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" style={{ marginTop: 115 }}>
             <Modal.Header closeButton>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>

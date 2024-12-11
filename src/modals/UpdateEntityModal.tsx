@@ -125,6 +125,9 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
     // Função para lidar com a mudança dos campos do formulário
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target as HTMLInputElement;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
         const newValue = type === 'checkbox' ? checked : value;
         setFormData(prev => ({ ...prev, [name]: newValue }));
@@ -191,7 +194,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" style={{ marginTop: 50 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

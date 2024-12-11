@@ -22,7 +22,7 @@ import profacex from "../assets/img/terminais/profacex.webp";
 import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { UpdateModalAux } from "./UpdateModaAux";
+import { UpdateModalAux } from "./UpdateModalAux";
 import { set } from "date-fns";
 
 // Define a interface Entity
@@ -75,11 +75,13 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [currentDoorIndex, setCurrentDoorIndex] = useState(0);
     const [auxiliaries, setAuxiliaries] = useState<Auxiliaries[]>([]);
     const [showAuxUpdateModal, setShowAuxUpdateModal] = useState(false);
-    const [selectedAux, setSelectedAux] = useState<Auxiliaries | null>(null);
+    const [selectedAuxIn, setSelectedAuxIn] = useState<Auxiliaries | null>(null);
+    const [selectedAuxOut, setSelectedAuxOut] = useState<Auxiliaries | null>(null);
     const [period, setPeriod] = useState<TimePeriod[]>([]);
     const [auxIn, setAuxIn] = useState<Auxiliaries[]>([]);
     const [auxOut, setAuxOut] = useState<Auxiliaries[]>([]);
-    const [currentAuxIndex, setCurrentAuxIndex] = useState(0);
+    const [currentAuxInIndex, setCurrentAuxInIndex] = useState(0);
+    const [currentAuxOutIndex, setCurrentAuxOutIndex] = useState(0);
     const [loadingDoorData, setLoadingDoorData] = useState(false);
     const [loadingAuxInData, setLoadingAuxInData] = useState(false);
     const [loadingAuxOutData, setLoadingAuxOutData] = useState(false);
@@ -160,7 +162,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const fetchDoors = async () => {
         const dataDoors = await fetchAllDoorData();
         const filteredDoors = dataDoors.filter((door) => door.devId === entity.zktecoDeviceID);
-        setDoors(filteredDoors);
+        const filteredDoorsOrdered = filteredDoors.sort((a, b) => a.doorNo - b.doorNo);
+        setDoors(filteredDoorsOrdered);
     }
 
     // Função para buscar as auxiliares
@@ -172,10 +175,12 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // UseEffect para filtrar as auxiliares de entrada e saída
     useEffect(() => {
-        const auxInData = auxiliaries.filter(aux => aux.auxInOut === 0);
-        const auxOutData = auxiliaries.filter(aux => aux.auxInOut === 1);
-        setAuxIn(auxInData);
-        setAuxOut(auxOutData);
+        const auxInData = auxiliaries.filter(aux => aux.auxInOut === 0).map(aux => ({ ...aux, type: 'in' }));
+        const auxOutData = auxiliaries.filter(aux => aux.auxInOut === 1).map(aux => ({ ...aux, type: 'out' }));
+        const auxInOrdered = auxInData.sort((a, b) => a.auxNo - b.auxNo);
+        const auxOutOrdered = auxOutData.sort((a, b) => a.auxNo - b.auxNo);
+        setAuxIn(auxInOrdered);
+        setAuxOut(auxOutOrdered);
     }, [auxiliaries]);
 
     // Função para lidar com a atualização das portas
@@ -234,17 +239,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         setSelectedDoor(row);
         setShowUpdateModal(true);
         setLoadingDoorData(true);
-    }
-
-    // Função para lidar com a edição das auxiliares
-    const handleEditAux = (row: Auxiliaries) => {
-        setSelectedAux(row);
-        setShowAuxUpdateModal(true);
-        if (row.auxInOut === 0) {
-            setLoadingAuxInData(true);
-        } else {
-            setLoadingAuxOutData(true);
-        }
     }
 
     // Função para lidar com a mudança da imagem
@@ -318,6 +312,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             } else {
                 setShowIpValidationErrors(true);
             }
+        }
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
         }
         setFormData(prev => ({
             ...prev,
@@ -406,19 +403,40 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         )
     );
 
-    // Seleciona a entidade anterior
-    const handleNextAux = () => {
-        if (currentAuxIndex < auxiliaries.length - 1) {
-            setCurrentAuxIndex(currentAuxIndex + 1);
-            setSelectedAux(auxiliaries[currentAuxIndex + 1]);
+    // Função para lidar com a edição das auxiliares
+    const handleEditAux = (row: Auxiliaries, type: 'in' | 'out') => {
+        if (type === 'in') {
+            setSelectedAuxIn(row);
+            setCurrentAuxInIndex(auxIn.findIndex(aux => aux.id === row.id));
+            setLoadingAuxInData(true);
+            setShowAuxUpdateModal(true);
+        } else {
+            setSelectedAuxOut(row);
+            setCurrentAuxOutIndex(auxOut.findIndex(aux => aux.id === row.id));
+            setLoadingAuxOutData(true);
+            setShowAuxUpdateModal(true);
         }
     };
 
-    // Seleciona a entidade seguinte
-    const handlePrevAux = () => {
-        if (currentAuxIndex > 0) {
-            setCurrentAuxIndex(currentAuxIndex - 1);
-            setSelectedAux(auxiliaries[currentAuxIndex - 1]);
+    // Função para selecionar a auxiliar seguinte
+    const handleNextAux = (type: 'in' | 'out') => {
+        if (type === 'in' && currentAuxInIndex < auxIn.length - 1) {
+            setCurrentAuxInIndex(currentAuxInIndex + 1);
+            setSelectedAuxIn(auxIn[currentAuxInIndex + 1]);
+        } else if (type === 'out' && currentAuxOutIndex < auxOut.length - 1) {
+            setCurrentAuxOutIndex(currentAuxOutIndex + 1);
+            setSelectedAuxOut(auxOut[currentAuxOutIndex + 1]);
+        }
+    };
+
+    // Função para selecionar a auxiliar anterior
+    const handlePrevAux = (type: 'in' | 'out') => {
+        if (type === 'in' && currentAuxInIndex > 0) {
+            setCurrentAuxInIndex(currentAuxInIndex - 1);
+            setSelectedAuxIn(auxIn[currentAuxInIndex - 1]);
+        } else if (type === 'out' && currentAuxOutIndex > 0) {
+            setCurrentAuxOutIndex(currentAuxOutIndex - 1);
+            setSelectedAuxOut(auxOut[currentAuxOutIndex - 1]);
         }
     };
 
@@ -506,7 +524,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" centered>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -640,20 +658,15 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                 <Row>
                                                     <Col md={3}>
                                                         <Form.Group controlId="formIpAddress">
-                                                            <Form.Label>IP<span style={{ color: 'red' }}> *</span></Form.Label>
-                                                            <OverlayTrigger
-                                                                placement="right"
-                                                                overlay={<Tooltip id="tooltip-ipAddress">Campo obrigatório</Tooltip>}
-                                                            >
-                                                                <Form.Control
-                                                                    type="string"
-                                                                    name="ipAddress"
-                                                                    value={formData['ipAddress'] || ''}
-                                                                    onChange={handleChange}
-                                                                    isInvalid={showIpValidationErrors && !validateIPAddress(formData['ipAddress'] || '')}
-                                                                    className="custom-input-height custom-select-font-size"
-                                                                />
-                                                            </OverlayTrigger>
+                                                            <Form.Label>IP</Form.Label>
+                                                            <Form.Control
+                                                                type="string"
+                                                                name="ipAddress"
+                                                                value={formData['ipAddress'] || ''}
+                                                                onChange={handleChange}
+                                                                isInvalid={showIpValidationErrors && !validateIPAddress(formData['ipAddress'] || '')}
+                                                                className="custom-input-height custom-select-font-size"
+                                                            />
                                                         </Form.Group>
                                                     </Col>
                                                     <Col md={3}>
@@ -835,7 +848,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         paginationPerPage={5}
                                                         paginationRowsPerPageOptions={[5, 10]}
                                                         selectableRows
-                                                        onRowDoubleClicked={handleEditAux}
+                                                        onRowDoubleClicked={(row, event) => handleEditAux(row, 'in')}
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
                                                         striped
@@ -858,7 +871,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         paginationPerPage={5}
                                                         paginationRowsPerPageOptions={[5, 10]}
                                                         selectableRows
-                                                        onRowDoubleClicked={handleEditAux}
+                                                        onRowDoubleClicked={(row, event) => handleEditAux(row, 'out')}
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
                                                         striped
@@ -892,22 +905,38 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     onPrev={handlePrevDoor}
                 />
             )}
-            {selectedAux && (
+            {selectedAuxIn && (
                 <UpdateModalAux
                     open={showAuxUpdateModal}
                     onClose={() => {
                         setShowAuxUpdateModal(false);
                         setLoadingAuxInData(false);
+                    }}
+                    onUpdate={handleUpdateAux}
+                    entity={selectedAuxIn}
+                    fields={auxiliariesFields}
+                    title="Atualizar Auxiliar IN"
+                    canMoveNext={currentAuxInIndex < auxIn.length - 1}
+                    canMovePrev={currentAuxInIndex > 0}
+                    onNext={() => handleNextAux('in')}
+                    onPrev={() => handlePrevAux('in')}
+                />
+            )}
+            {selectedAuxOut && (
+                <UpdateModalAux
+                    open={showAuxUpdateModal}
+                    onClose={() => {
+                        setShowAuxUpdateModal(false);
                         setLoadingAuxOutData(false);
                     }}
                     onUpdate={handleUpdateAux}
-                    entity={selectedAux}
+                    entity={selectedAuxOut}
                     fields={auxiliariesFields}
-                    title="Atualizar Auxiliar"
-                    canMoveNext={currentAuxIndex < auxiliaries.length - 1}
-                    canMovePrev={currentAuxIndex > 0}
-                    onNext={handleNextAux}
-                    onPrev={handlePrevAux}
+                    title="Atualizar Auxiliar OUT"
+                    canMoveNext={currentAuxOutIndex < auxOut.length - 1}
+                    canMovePrev={currentAuxOutIndex > 0}
+                    onNext={() => handleNextAux('out')}
+                    onPrev={() => handlePrevAux('out')}
                 />
             )}
             <Modal.Footer>

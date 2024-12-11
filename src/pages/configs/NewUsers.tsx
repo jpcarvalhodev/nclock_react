@@ -18,6 +18,8 @@ import { usePersons } from "../../context/PersonsContext";
 import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
+import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
+import Split from "react-split";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -51,6 +53,8 @@ export const NewUsers = () => {
     const [initialData, setInitialData] = useState<Partial<Register> | null>(null);
     const [currentUserIndex, setCurrentUserIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Register[]>([]);
+    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [filteredData, setFilteredData] = useState<Register[]>([]);
 
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
@@ -61,6 +65,16 @@ export const NewUsers = () => {
     const refreshUsers = () => {
         fetchAllRegisteredUsers();
     };
+
+    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+    useEffect(() => {
+        if (selectedDevicesIds.length > 0) {
+            const filteredData = registeredUsers.filter(user => selectedDevicesIds.includes(user.name));
+            setFilteredData(filteredData);
+        } else {
+            setFilteredData(registeredUsers);
+        }
+    }, [selectedDevicesIds, registeredUsers]);
 
     // Função para editar um utilizador
     const handleEditUsers = (User: Register) => {
@@ -122,6 +136,11 @@ export const NewUsers = () => {
         setSelectedRows(state.selectedRows);
     };
 
+    // Define a seleção da árvore
+    const handleSelectFromTreeView = (selectedIds: string[]) => {
+        setSelectedDevicesIds(selectedIds);
+    };
+
     // Seleciona a entidade anterior
     const handleNextUser = () => {
         if (currentUserIndex < registeredUsers.length - 1) {
@@ -144,7 +163,7 @@ export const NewUsers = () => {
     );
 
     // Filtra os dados da tabela
-    const filteredDataTable = registeredUsers.filter(user =>
+    const filteredDataTable = filteredData.filter(user =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(user[key]) === String(filters[key])
         )
@@ -214,65 +233,72 @@ export const NewUsers = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='filter-refresh-add-edit-upper-class'>
-                <div className="datatable-title-text">
-                    <span style={{ color: '#000000' }}>Utilizadores</span>
-                </div>
-                <div className="datatable-header">
-                    <div>
-                        <CustomSearchBox
-                            label="Pesquisa"
-                            variant="outlined"
-                            size='small'
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                            style={{ marginTop: -5 }}
-                        />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataUsers onSelectDevices={handleSelectFromTreeView} />
                     </div>
-                    <div className="buttons-container-others">
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshUsers} />
-                        </OverlayTrigger>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                        </OverlayTrigger>
-                        <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                        >
-                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                        </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={registerFields} />
-                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={registerFields} />
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#000000' }}>Utilizadores</span>
+                        </div>
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
+                                />
+                            </div>
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshUsers} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={registerFields} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={registerFields} />
+                            </div>
+                        </div>
+                        <div className='content-wrapper'>
+                            <div className='table-css'>
+                                <DataTable
+                                    columns={[...columns, actionColumn]}
+                                    data={filteredDataTable}
+                                    onRowDoubleClicked={handleEditUsers}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={20}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    expandableRows
+                                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId='name'
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div className='content-wrapper'>
-                <div className='table-css'>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredDataTable}
-                        onRowDoubleClicked={handleEditUsers}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        expandableRows
-                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId='name'
-                    />
-                </div>
+                </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             <CreateModalRegisterUsers

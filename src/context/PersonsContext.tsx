@@ -325,6 +325,19 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Busca todos os dados ao recarregar o componente
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllData();
+            fetchAllEmployees();
+            fetchAllDepartments();
+            fetchAllGroups();
+            fetchAllRegisteredUsers();
+            fetchAllCardData();
+        }
+    }, [localStorage.getItem('token')]);
+
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,

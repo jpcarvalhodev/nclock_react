@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import { Doors } from "../helpers/Types";
 import { toast } from "react-toastify";
+import warning from "../assets/img/modals/warning.png";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -88,12 +89,12 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
     // Função para apagar a entidade
     const handleDelete = () => {
         onDelete([entity.employeesId], selectedDoor?.doorId);
-        onClose();
+        handleCloseAllModals();
     };
 
     return (
         <div>
-            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static">
+            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
                 <Modal.Header closeButton>
                     <Modal.Title>Selecione uma Porta para Eliminar</Modal.Title>
                 </Modal.Header>
@@ -113,12 +114,15 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
                     <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} backdrop="static">
+            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirmar Eliminação</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Tem certeza que deseja apagar os dados da linha selecionada?
+                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+                        <img style={{ width: 80, marginBottom: 20 }} src={warning} alt="alerta" />
+                        {"Tem certeza que deseja apagar os dados da linha selecionada?"}
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-secondary" onClick={handleCloseAllModals}>

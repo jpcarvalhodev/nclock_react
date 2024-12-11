@@ -110,6 +110,10 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         const { name, value, type, dataset } = target;
         let parsedValue: string | number | boolean | string[];
 
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
+
         if (type === 'checkbox') {
             parsedValue = target.checked;
         } else if (type === 'number') {
@@ -157,7 +161,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
     }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg'>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

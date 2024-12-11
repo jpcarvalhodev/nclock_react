@@ -301,6 +301,10 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       [name]: parsedValue
     }));
 
+    if (showValidationErrors) {
+      setShowValidationErrors(false);
+    }
+
     if (name === 'name') {
       const names = value.split(' ');
       let shortName = '';
@@ -367,74 +371,12 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   // Define as opções de tipo
   const typeOptions = [
     { value: 'Funcionário', label: 'Funcionário' },
-    { value: 'Funcionário Externo', label: 'Funcionário Externo' },
+    { value: 'Subcontratados', label: 'Subcontratados' },
     { value: 'Utente', label: 'Utente' },
     { value: 'Visitante', label: 'Visitante' },
     { value: 'Contacto', label: 'Contacto' },
     { value: 'Provisório', label: 'Provisório' }
   ];
-
-  // Opções do módulo
-  const moduleOptions = [
-    { value: 'nclock', label: 'Nclock' },
-    { value: 'naccess', label: 'Naccess' },
-    { value: 'nvisitor', label: 'Nvisitor' },
-    { value: 'npark', label: 'Npark' },
-    { value: 'ndoor', label: 'Ndoor' },
-    { value: 'npatrol', label: 'Npatrol' },
-    { value: 'ncard', label: 'Ncard' },
-    { value: 'nview', label: 'Nview' },
-    { value: 'nsecur', label: 'Nsecur' },
-    { value: 'nsmart', label: 'Nsmart' },
-    { value: 'nreality', label: 'Nreality' },
-    { value: 'nhologram', label: 'Nhologram' },
-    { value: 'npower', label: 'Npower' },
-    { value: 'ncharge', label: 'Ncharge' },
-    { value: 'ncity', label: 'Ncity' },
-    { value: 'nkiosk', label: 'Nkiosk' },
-    { value: 'nled', label: 'Nled' },
-    { value: 'nfire', label: 'Nfire' },
-    { value: 'nfurniture', label: 'Nfurniture' },
-    { value: 'npartition', label: 'Npartition' },
-    { value: 'ndecor', label: 'Ndecor' },
-    { value: 'nping', label: 'Nping' },
-    { value: 'nconnect', label: 'Nconnect' },
-    { value: 'nlight', label: 'Nlight' },
-    { value: 'ncomfort', label: 'Ncomfort' },
-    { value: 'nsound', label: 'Nsound' },
-    { value: 'nhome', label: 'Nhome' },
-    { value: 'nsoftware', label: 'Nsoftware' },
-    { value: 'nsystem', label: 'Nsystem' },
-    { value: 'napp', label: 'Napp' },
-    { value: 'nciber', label: 'Nciber' },
-    { value: 'ndigital', label: 'Ndigital' },
-    { value: 'nserver', label: 'Nserver' },
-    { value: 'naut', label: 'Naut' },
-    { value: 'nequip', label: 'Nequip' },
-    { value: 'nproject', label: 'Nproject' },
-    { value: 'ncount', label: 'Ncount' },
-    { value: 'nconstruction', label: 'Nconstruction' },
-    { value: 'ncaravans', label: 'Ncaravans' },
-    { value: 'nwork', label: 'Nwork' },
-    { value: 'nevents', label: 'Nevents' },
-    { value: 'nservice', label: 'Nservice' },
-    { value: 'ntask', label: 'Ntask' },
-    { value: 'nproductions', label: 'Nproductions' },
-    { value: 'nticket', label: 'Nticket' },
-    { value: 'nsales', label: 'Nsales' },
-    { value: 'ninvoice', label: 'Ninvoice' },
-    { value: 'ndoc', label: 'Ndoc' },
-    { value: 'nsports', label: 'Nsports' },
-    { value: 'nacademy', label: 'Nacademy' },
-    { value: 'nshcool', label: 'Nshcool' },
-    { value: 'nclinics', label: 'Nclinics' },
-    { value: 'noptics', label: 'Noptics' },
-    { value: 'ngold', label: 'Ngold' }
-  ];
-
-  // Filtra as opções de módulo com base no status do software
-  const softwareEnabledStatus = getSoftwareEnabledStatus(license);
-  const filteredModuleOptions = moduleOptions.filter(option => softwareEnabledStatus[option.label]);
 
   // Opções de género
   const genderOptions = [
@@ -448,7 +390,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   };
 
   return (
-    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
+    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 100 }}>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

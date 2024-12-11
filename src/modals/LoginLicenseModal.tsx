@@ -32,7 +32,7 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static">
+        <Modal show={open} onHide={onClose} backdrop="static" centered>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

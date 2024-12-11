@@ -35,12 +35,12 @@ interface FetchOptions {
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Criando o contexto
@@ -143,6 +143,14 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             fetchAllAttendances();
         }
     };
+
+    // Busca todas as assiduidades ao recarregar o componente
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllAttendances();
+        }
+    }, [localStorage.getItem('token')]);
 
     // Definindo o valor do contexto
     const contextValue = {

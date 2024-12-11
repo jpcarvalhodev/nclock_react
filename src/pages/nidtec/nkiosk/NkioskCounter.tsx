@@ -14,18 +14,18 @@ import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsC
 import { Counter } from "../../../helpers/Types";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { counterFields } from "../../../helpers/Fields";
-import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import Split from "react-split";
 import { TextFieldProps, TextField } from "@mui/material";
+import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Função para converter string em data
@@ -269,14 +269,14 @@ export const NkioskCounter = () => {
                             </div>
                             <div className="date-range-search">
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className='search-input'
                                 />
                                 <span> até </span>
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={endDate}
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'
@@ -307,13 +307,13 @@ export const NkioskCounter = () => {
                                 defaultSortFieldId="eventTime"
                             />
                         </div>
-                        <div style={{ display: "flex" }}>
+                        <div style={{ display: "flex", marginTop: -20 }}>
                             <div style={{ marginLeft: 10, marginRight: 10 }}>
-                                <strong>Total de Movimentos Torniquete: </strong>{totalCardAmount}
+                                <strong>Total de Movimentos: Torniquete </strong>{totalCardAmount} - <strong>Quiosque </strong>{totalKioskAmount}
                             </div>
                             <p>|</p>
                             <div style={{ marginLeft: 10 }}>
-                                <strong>Total de Movimentos Quiosque: </strong>{totalKioskAmount}
+                                <strong>Total: </strong>{totalCardAmount + totalKioskAmount}
                             </div>
                         </div>
                     </div>

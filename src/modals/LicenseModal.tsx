@@ -91,7 +91,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       if (isKeyValid && Array.isArray(isKeyValid) && isKeyValid.length > 0) {
         setEntities(isKeyValid);
         const defaultNif = isKeyValid[0]?.nif?.toString() || "";
-        setActiveTab(defaultNif);
+        setActiveTab(isKeyValid[0]?.entidadeNumber);
         setActiveEntityNif(defaultNif);
         setFormData(isKeyValid[0]);
         setIsCheckVisible(false);
@@ -133,13 +133,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   // Função para atualizar o estado do formulário
   const handleChange = (event: React.ChangeEvent<FormControlElement>) => {
     const { name, value, type, checked } = event.target as HTMLInputElement;
-
-    const parsedValue =
-      type === "checkbox"
-        ? checked
-        : type === "number"
-          ? Number(value)
-          : value;
 
     if (name.includes(".")) {
       const [productName, productProperty] = name.split('.');
@@ -337,9 +330,16 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     return text.length > limit ? text.substring(0, limit) + '...' : text;
   };
 
+  // Função para reagir ao pressionar a tecla Enter
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      verifyKey();
+    }
+  };
+
   return (
     <div>
-      <Modal show={isCheckVisible} onHide={onClose} backdrop="static">
+      <Modal show={isCheckVisible} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
         <Modal.Header closeButton>
           <Modal.Title>Inserir Password</Modal.Title>
         </Modal.Header>
@@ -348,6 +348,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             placeholder="Insira a password de licenciamento"
             value={key}
             onChange={handleKeyChange}
+            onKeyDown={handleKeyDown}
             type={showPassword ? "text" : "password"}
             style={{ paddingRight: "40px" }}
           />
@@ -389,6 +390,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         onHide={handleClose}
         backdrop="static"
         size="xl"
+        centered
       >
         <Modal.Header closeButton>
           <Modal.Title>Licenciamento</Modal.Title>
@@ -408,9 +410,9 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
           >
             {entities.map((entity) => (
               <Tab
-                eventKey={entity.nif?.toString()}
+                eventKey={entity.entidadeNumber?.toString()}
                 title={truncateText(entity.name, 20) || `Entidade ${entity.entidadeNumber}`}
-                key={entity.nif}
+                key={entity.entidadeNumber}
               >
                 <div className="p-3">
                   <Row style={{ marginBottom: 20 }}>
@@ -423,6 +425,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                           value={entity.entidadeNumber || ""}
                           onChange={handleChange}
                           name="entidadeNumber"
+                          readOnly
                         />
                       </Form.Group>
                     </Col>
@@ -447,6 +450,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                           value={entity.nif || ""}
                           onChange={handleChange}
                           name="nif"
+                          readOnly
                         />
                       </Form.Group>
                     </Col>
@@ -480,7 +484,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         <OverlayTrigger
                           placement="right"
                           overlay={
-                            <Tooltip id="tooltip-name">
+                            <Tooltip id="tooltip-sn">
                               Separe os números por vírgula
                             </Tooltip>
                           }
@@ -496,48 +500,31 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Tabs
-                    activeKey={Object.keys(formData).find(
-                      (key) =>
-                        typeof formData[key] === "object" &&
-                        formData[key] !== null &&
-                        "enable" in formData[key]
-                    )}
-                    id="product-tabs"
-                    className="nav-modal"
-                  >
+                  <Tabs defaultActiveKey={Object.keys(formData).find(key => typeof formData[key] === 'object' && formData[key] !== null)} id="product-tabs" className='nav-modal'>
                     {Object.keys(formData)
-                      .filter(
-                        (key) =>
-                          typeof formData[key] === "object" &&
-                          formData[key] !== null &&
-                          "enable" in formData[key]
-                      )
-                      .map((product) => (
+                      .filter(key => typeof formData[key] === 'object' && formData[key] !== null)
+                      .map(product => (
                         <Tab
                           eventKey={product}
                           title={product.toUpperCase()}
                           key={product}
-                          tabClassName={`nav-item ${formData[product]?.enable ? "enabled-tab" : ""
-                            } tab-${product.toUpperCase()}`}
+                          tabClassName={`nav-item ${formData[product].enable ? 'enabled-tab' : ''} tab-${product.toUpperCase()}`}
                         >
                           <Row>
-                            {Object.entries(formData[product] || {})
-                              .filter(([propKey]) => propKey !== "createDate")
-                              .map(([prop, value]) => (
-                                <Col
-                                  md={3}
-                                  key={`${product}-${prop}`}
-                                  className="mt-3"
-                                >
+                            {Object.entries(formData[product])
+                              .filter(([propKey]) => propKey !== 'createDate')
+                              .map(([prop, value], index) => (
+                                <Col md={3} key={`${product}-${prop}`} className='mt-3'>
                                   <Form.Group controlId={`form${product}${prop}`}>
                                     {renderFormControl(product, prop)}
                                   </Form.Group>
                                 </Col>
-                              ))}
+                              ))
+                            }
                           </Row>
                         </Tab>
-                      ))}
+                      ))
+                    }
                   </Tabs>
                 </div>
               </Tab>

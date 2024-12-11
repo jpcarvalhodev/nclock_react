@@ -7,7 +7,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionMB, MBDevice } from "../../../helpers/Types";
+import { KioskTransactionMB } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
@@ -20,12 +20,12 @@ import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -47,12 +47,11 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskPayTerminal = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
-    const [terminalData, setTerminalData] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
@@ -92,31 +91,21 @@ export const NkioskPayTerminal = () => {
         }
     }
 
-    // Função para buscar os dados dos terminais
-    const fetchTerminalData = async () => {
-        try {
-            const data = await fetchAllMBDevices();
-            if (Array.isArray(data)) {
-                setTerminalData(data);
-            } else {
-                setTerminalData([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos terminais:', error);
-        }
-    }
+    // Busca os pagamentos dos terminais e os dados dos terminais ao carregar a página
+    useEffect(() => {
+        fetchAllPayTerminal();
+    }, []);
 
     // Função para atualizar os pagamentos dos terminais
     const refreshPayTerminal = () => {
         fetchAllPayTerminal();
-        fetchTerminalData();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = payTerminal.filter(payTerminals => selectedDevicesIds.includes(payTerminals.deviceSN) || selectedDevicesIds.includes(payTerminals.tpId));
+            const filtered = payTerminal.filter(payTerminals => selectedDevicesIds.includes(payTerminals.deviceSN));
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(payTerminal);
@@ -176,7 +165,7 @@ export const NkioskPayTerminal = () => {
                 return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
             } else {
                 return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            } 
+            }
         })
     )
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -189,7 +178,7 @@ export const NkioskPayTerminal = () => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
                     case 'tpId':
-                        const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId);
+                        const terminalMatch = mbDevices.find(terminal => terminal.id === row.tpId);
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Sem Dados';
                     case 'deviceSN':
@@ -239,12 +228,12 @@ export const NkioskPayTerminal = () => {
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {
-        const terminalMatch = terminalData.find(terminal => terminal.id === transaction.tpId);
+        const terminalMatch = mbDevices.find(terminal => terminal.id === transaction.tpId);
         const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
-    
+
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
         const deviceName = deviceMatch?.deviceName || 'Sem Dados';
-    
+
         return {
             ...transaction,
             tpId: terminalName,
@@ -275,13 +264,13 @@ export const NkioskPayTerminal = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
-                                />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
@@ -301,14 +290,14 @@ export const NkioskPayTerminal = () => {
                                 </div>
                                 <div className="date-range-search">
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={startDate}
                                         onChange={e => setStartDate(e.target.value)}
                                         className='search-input'
                                     />
                                     <span> até </span>
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={endDate}
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
@@ -339,7 +328,7 @@ export const NkioskPayTerminal = () => {
                                     defaultSortFieldId="timestamp"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10 }}>
+                            <div style={{ marginLeft: 10, marginTop: -5 }}>
                                 <strong>Valor Total: </strong>{totalAmount.toFixed(2)}€
                             </div>
                         </div>

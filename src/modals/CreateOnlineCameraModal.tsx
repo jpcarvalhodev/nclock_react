@@ -7,7 +7,6 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { Cameras } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
-import { set } from 'date-fns';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
@@ -137,6 +136,9 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
                 setShowIpValidationErrors(true);
             }
         }
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData(prev => ({
             ...prev,
             [name]: parsedValue
@@ -166,7 +168,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static">
+        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

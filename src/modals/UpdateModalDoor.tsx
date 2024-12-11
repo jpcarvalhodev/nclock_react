@@ -147,6 +147,9 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
         const parsedValue = type === 'checkbox' ? checked : value;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
     };
 
@@ -176,11 +179,11 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 130 }}>
+            <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
                         <Col md={3}>

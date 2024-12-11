@@ -93,6 +93,9 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: ChangeEvent<any>) => {
         const { name, value } = e.target;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData(prevState => ({
             ...prevState,
             [name]: value
@@ -126,7 +129,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
     ]
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

@@ -196,6 +196,10 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
         }
         const formattedValue = type === 'number' ? parseFloat(value) || 0 : value;
 
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
+
         setFormData(prevState => {
             const updatedState = {
                 ...prevState,
@@ -231,7 +235,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

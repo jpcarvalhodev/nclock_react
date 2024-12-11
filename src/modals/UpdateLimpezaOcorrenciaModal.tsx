@@ -153,6 +153,9 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value, type } = e.target;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         const formattedValue = type === 'number' ? parseFloat(value) || 0 : value;
         setFormData(prevState => ({
             ...prevState,
@@ -176,7 +179,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

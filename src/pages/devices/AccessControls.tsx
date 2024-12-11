@@ -85,7 +85,7 @@ export const AccessControls = () => {
     const handleUpdateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         try {
             const data = await apiService.updateAccessControl(newAccessControl);
-            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.acId === data.acId ? { ...item, acc: [data.acc[0]] } : item));
+            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.acId === data.acId ? { ...item, acc: [data.acc] } : item));
             toast.success(data.message || 'Controle de acesso atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao editar o controle de acesso:', error);

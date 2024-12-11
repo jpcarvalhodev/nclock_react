@@ -4,7 +4,7 @@ import { NavBar } from "../../../components/NavBar";
 import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
 import { useColor } from "../../../context/ColorContext";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay, set } from 'date-fns';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
 import { useContext, useEffect, useState } from "react";
@@ -12,7 +12,6 @@ import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { Line } from "react-chartjs-2";
-import { useLocation } from "react-router-dom";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -64,16 +63,13 @@ const messages = {
 
 export const NkioskDashboardLicensed = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [lineChartData, setLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
     const [totalPayments, setTotalPayments] = useState<KioskTransactionMB[]>([]);
-    const location = useLocation();
     const eventDoorId2 = '2';
     const eventDoorId3 = '3';
     const eventDoorId4 = '4';
-
-    console.log('devices:', devices);
 
     // Função para buscar os dados para os gráficos
     const fetchAllData = async () => {
@@ -142,16 +138,10 @@ export const NkioskDashboardLicensed = () => {
         }
     };
 
-    // UseEffect para buscar os dados
+    // Busca os dados ao carregar a página
     useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllData();
-            }
-        }
-        fetchDevices();
-    }, [location]);
+        fetchAllData();
+    }, []);
 
     // Função para renderizar os eventos no calendário
     const MyEvent = ({ event }: MyEventProps) => {

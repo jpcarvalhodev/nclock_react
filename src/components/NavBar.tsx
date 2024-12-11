@@ -2652,7 +2652,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nview') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Dropdown
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={print} alt="botão listagens" />
+													</span>
+													<span className="text">Listagens</span>
+												</Button>
+												{/* <Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2670,7 +2676,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown>
+												</Dropdown> */}
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nview/nviewgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nview/nviewgraph' ? 'current-active' : ''}`}>
@@ -3324,9 +3330,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 												<Link to='/persons/ExternalEmployees' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão funcionários externos" />
+														<img src={person} alt="botão subcontratados" />
 													</span>
-													<span className="text">Funcionários Externos</span>
+													<span className="text">Subcontratados</span>
 												</Link>
 												<Link to='/persons/Contacts' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`}>
 													<span className="icon">

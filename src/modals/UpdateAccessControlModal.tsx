@@ -198,6 +198,9 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: ChangeEvent<any>) => {
         const { name, value } = e.target;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData(prevState => ({
             ...prevState,
             [name]: value
@@ -272,7 +275,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
 
     return (
         <div>
-            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static">
+            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
                 <Modal.Header closeButton>
                     <Modal.Title>Selecione uma Porta</Modal.Title>
                 </Modal.Header>
@@ -292,7 +295,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                     <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} size="xl" backdrop="static">
+            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} size="xl" backdrop="static" style={{ marginTop: 100 }}>
                 <Modal.Header closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>

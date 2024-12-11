@@ -24,12 +24,12 @@ import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -354,7 +354,7 @@ export const NkioskGetCoins = () => {
                                     size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
                             <div className="buttons-container-others">
@@ -378,28 +378,26 @@ export const NkioskGetCoins = () => {
                                 </OverlayTrigger>
                                 <ExportButton allData={getCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
                                 <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    {loadingReset && (
-                                        <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
-                                    )}
-                                </div>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                {loadingReset && (
+                                    <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
+                                )}
                             </div>
                             <div className="date-range-search">
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className='search-input'
                                 />
                                 <span> até </span>
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={endDate}
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'

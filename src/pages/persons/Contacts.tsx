@@ -93,22 +93,15 @@ export const Contacts = () => {
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
         await handleAddEmployee(employee as Employee);
         const employees = await fetchAllEmployees();
-        const employeeCards = await fetchAllCardData();
         const lastEmployee = employees.sort((a, b) => Number(b.enrollNumber) - Number(a.enrollNumber))[0];
 
-        const cardExists = employeeCards.some((employeeCard: EmployeeCard) => employeeCard.employeeID === lastEmployee.employeeID);
-        const cardDataProvided = card && Object.keys(card).length > 0;
+        const newEmployeeCard = {
+            ...card,
+            employeeID: lastEmployee.employeeID
+        };
+        await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
+        setData({ ...data, employees: employees });
 
-        if (!cardExists && !cardDataProvided) {
-            toast.warn('Cartão não adicionado porque os dados não foram fornecidos');
-        } else {
-            const newEmployeeCard = {
-                ...card,
-                employeeID: lastEmployee.employeeID
-            };
-            await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
-            setData({ ...data, employees: employees });
-        }
         refreshEmployees();
     };
 
@@ -123,11 +116,13 @@ export const Contacts = () => {
         refreshEmployees();
     };
 
-    // Função para deletar um funcionário
-    const deleteEmployee = async (employeeId: string) => {
-        await handleDeleteEmployee(employeeId);
-        refreshEmployees();
-    }
+    // Função para deletar funcionários sequencialmente
+    const deleteSelectedEmployees = async (employeeIds: string[]) => {
+        for (let id of employeeIds) {
+            await handleDeleteEmployee(id);
+            refreshEmployees();
+        }
+    };
 
     // Busca todos os dados
     useEffect(() => {
@@ -212,6 +207,20 @@ export const Contacts = () => {
     }) => {
         const sortedSelectedRows = state.selectedRows.sort((a, b) => parseInt(a.enrollNumber) - parseInt(b.enrollNumber));
         setSelectedRows(sortedSelectedRows);
+    };
+
+    // Função para deletar vários funcionários
+    const handleSelectedEmployeesToDelete = () => {
+        const employeeIds = Array.from(new Set(selectedRows.map(employee => employee.employeeID)));
+        setSelectedEmployeeToDelete(employeeIds.length ? employeeIds[0] : null);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        const employeeIds = Array.from(new Set(selectedRows.map(employee => employee.employeeID)));
+        setShowDeleteModal(false);
+        deleteSelectedEmployees(employeeIds);
     };
 
     // Define a função de duplicar contactos
@@ -374,13 +383,13 @@ export const Contacts = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                            label="Pesquisa"
-                            variant="outlined"
-                            size='small'
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                            style={{ marginTop: -5 }}
-                        />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
@@ -400,6 +409,12 @@ export const Contacts = () => {
                                         overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedEmployeesToDelete} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeFields} />
                                     <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeFields} />
@@ -454,7 +469,7 @@ export const Contacts = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteEmployee}
+                    onDelete={startDeletionProcess}
                     entityId={selectedEmployeeToDelete}
                 />
                 {openColumnSelector && (

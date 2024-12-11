@@ -421,14 +421,14 @@ export const NclockMovement = () => {
                                 </div>
                                 <div className="date-range-search">
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={startDate}
                                         onChange={e => setStartDate(e.target.value)}
                                         className='search-input'
                                     />
                                     <span> até </span>
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={endDate}
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'

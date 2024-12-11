@@ -8,7 +8,6 @@ import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { KioskConfig, RecolhaMoedeiroEContador } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
 import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
-import { set } from 'date-fns';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -187,6 +186,10 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
         const { name, value } = e.target;
         let formattedValue = value;
 
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
+
         setFormData(prevState => {
             const updatedState = {
                 ...prevState,
@@ -228,7 +231,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

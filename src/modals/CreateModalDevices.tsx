@@ -207,6 +207,9 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const parsedValue = (name === 'deviceType' || name === 'deviceProtocol') ? Number(value) : (type === 'number' ? Number(value) : value);
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         if (name === "ipAddress") {
             if (validateIPAddress(value)) {
                 validateForm();
@@ -291,7 +294,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

@@ -78,22 +78,15 @@ export const Persons = () => {
 
         const employees = await fetchAllEmployees();
         setData({ ...data, employees: employees });
-        const employeeCards = await fetchAllCardData();
         const lastEmployee = employees.sort((a, b) => Number(b.enrollNumber) - Number(a.enrollNumber))[0];
 
-        const cardExists = employeeCards.some((employeeCard: EmployeeCard) => employeeCard.employeeID === lastEmployee.employeeID);
-        const cardDataProvided = card && Object.keys(card).length > 0;
-
-        if (!cardExists && !cardDataProvided) {
-            toast.warn('Cartão não adicionado porque os dados não foram fornecidos');
-        } else {
-            const newEmployeeCard = {
-                ...card,
-                employeeID: lastEmployee.employeeID
-            };
-            await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
-            setData({ ...data, employees: employees });
-        }
+        const newEmployeeCard = {
+            ...card,
+            employeeID: lastEmployee.employeeID
+        };
+        await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
+        setData({ ...data, employees: employees });
+        
         refreshEmployees();
     };
 

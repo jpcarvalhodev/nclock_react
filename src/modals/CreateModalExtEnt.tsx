@@ -172,6 +172,9 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value, type } = e.target;
         const parsedValue = type === 'number' ? Number(value) : value;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData(prevState => ({
             ...prevState,
             [name]: parsedValue
@@ -226,7 +229,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 115 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

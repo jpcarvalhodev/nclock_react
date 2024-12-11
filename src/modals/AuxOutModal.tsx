@@ -156,6 +156,11 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
     // Função para lidar com a mudança de valores nos campos
     const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
+        
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
+
         setFormData(prevState => ({
             ...prevState,
             [name]: value
@@ -185,7 +190,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static">
+        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

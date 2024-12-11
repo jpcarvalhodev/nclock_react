@@ -242,6 +242,10 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
       [name]: parsedValue,
     }));
 
+    if (showValidationErrors) {
+      setShowValidationErrors(false);
+    }
+
     if (name === "name") {
       const names = value.split(" ");
       let shortName = "";
@@ -332,7 +336,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   // Opções do tipo
   const typeOptions = [
     { value: 'Funcionário', label: 'Funcionário' },
-    { value: 'Funcionário Externo', label: 'Funcionário Externo' },
+    { value: 'Subcontratados', label: 'Subcontratados' },
     { value: 'Utente', label: 'Utente' },
     { value: 'Visitante', label: 'Visitante' },
     { value: 'Contacto', label: 'Contacto' },
@@ -351,7 +355,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   };
 
   return (
-    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl">
+    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 100 }}>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

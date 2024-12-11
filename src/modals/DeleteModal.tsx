@@ -18,12 +18,13 @@ export const DeleteModal = ({ open, onClose, onDelete, entityId, message }: Dele
     const handleDelete = () => {
         if (entityId) {
             onDelete(entityId);
+            onClose();
         }
         onClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static">
+        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>Confirmar Eliminação</Modal.Title>
             </Modal.Header>

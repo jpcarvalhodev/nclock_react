@@ -153,7 +153,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             toast.success(data.message || 'Utilizadores enviados com sucesso!');
         } catch (error) {
             console.error('Erro ao enviar os utilizadores:', error);
-            toast.error('Erro ao conectar ao servidor');
         }
     };
 
@@ -187,7 +186,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao sincronizar a hora:', error);
-            toast.error('Erro ao conectar ao servidor');
         }
     };
 
@@ -199,7 +197,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao abrir a porta:', error);
-            toast.error('Erro ao conectar ao servidor');
         }
     }
 
@@ -211,7 +208,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao abrir a porta:', error);
-            toast.error('Erro ao conectar ao servidor');
         }
     };
 
@@ -223,7 +219,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao apagar os utilizadores:', error);
-            toast.error('Erro ao conectar ao servidor');
         }
     };
 
@@ -235,7 +230,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao reiniciar o dispositivo:', error);
-            toast.error('Erro ao conectar ao servidor');
         }
     };
 
@@ -247,7 +241,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao reiniciar o dispositivo:', error);
-            toast.error('Erro ao conectar ao servidor');
         }
     }
 
@@ -259,7 +252,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao enviar a hora:', error);
-            toast.error('Erro ao conectar ao servidor');
         }
     };
 
@@ -287,7 +279,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Erro ao conectar ao servidor');
         } finally {
             fetchAllDevices();
         }
@@ -329,7 +320,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
 
         } catch (error) {
             console.error('Erro ao atualizar funcionário:', error);
-            toast.error('Erro ao conectar ao servidor');
         } finally {
             fetchAllMBDevices();
         }
@@ -347,6 +337,15 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllMBDevices();
         }
     }
+
+    // Busca todos os dispositivos ao recarregar o componente
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllDevices();
+            fetchAllMBDevices();
+        }
+    }, [localStorage.getItem('token')]);
 
     // Define o valor do contexto
     const contextValue: DeviceContextType = {

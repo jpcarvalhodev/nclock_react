@@ -111,7 +111,7 @@ export const TerminalsMB = () => {
     // Atualiza os dispositivos filtrados da treeview
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = mbDevices.filter(mbDevices => selectedDevicesIds.includes(mbDevices.id));
+            const filtered = mbDevices.filter(mbDevices => selectedDevicesIds.includes(mbDevices.tpId));
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(mbDevices);

@@ -11,12 +11,12 @@ interface ContactProps {
 export const ContactModal = ({ open, onClose }: ContactProps) => {
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>Dados para Contacto</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <div className="container-fluid">
+                <div className="container-fluid" style={{ display: "flex", justifyContent: "center" }}>
                     <img src={banner_contact} alt="banner de contacto" className="img-contact-modal" />
                 </div>
             </Modal.Body>

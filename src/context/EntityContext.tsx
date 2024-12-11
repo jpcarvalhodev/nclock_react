@@ -71,6 +71,14 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Busca todas as entidades ao recarregar o componente
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllEntity();
+        }
+    }, [localStorage.getItem('token')]);
+
     return (
         <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity }}>
             {children}

@@ -14,7 +14,6 @@ import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
-import { useLocation } from "react-router-dom";
 import { AuxOutModal } from "../../../modals/AuxOutModal";
 import { toast } from "react-toastify";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -31,12 +30,12 @@ interface SaveData {
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -59,7 +58,7 @@ function CustomSearchBox(props: TextFieldProps) {
 export const NkioskMoveCard = () => {
     const { navbarColor, footerColor } = useColor();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
-    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -78,7 +77,6 @@ export const NkioskMoveCard = () => {
     const [loadingAuxOut, setLoadingAuxOut] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
-    const location = useLocation();
     const eventDoorId = '3';
 
     // Função para buscar os movimentos dos cartões
@@ -144,14 +142,8 @@ export const NkioskMoveCard = () => {
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllMoveCard();
-            }
-        }
-        fetchDevices();
-    }, [location]);
+        fetchAllMoveCard();
+    }, []);
 
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
@@ -370,14 +362,14 @@ export const NkioskMoveCard = () => {
                                 </div>
                                 <div className="date-range-search">
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={startDate}
                                         onChange={e => setStartDate(e.target.value)}
                                         className='search-input'
                                     />
                                     <span> até </span>
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={endDate}
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
@@ -408,7 +400,7 @@ export const NkioskMoveCard = () => {
                                     defaultSortFieldId="eventTime"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10 }}>
+                            <div style={{ marginLeft: 10, marginTop: -5 }}>
                                 <strong>Movimentos do Torniquete: </strong>{totalAmount}
                             </div>
                         </div>

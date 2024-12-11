@@ -28,12 +28,12 @@ interface Filters {
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -240,9 +240,9 @@ export const NkioskDoorOpen = () => {
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { deviceName: string; }) => {
-    
+
         const deviceMatch = devices.find(device => device.deviceName === transaction.deviceName);
-    
+
         return {
             ...transaction,
             deviceSN: deviceMatch,
@@ -275,7 +275,7 @@ export const NkioskDoorOpen = () => {
                                     size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
+                                    style={{ marginTop: -5 }}
                                 />
                                 <div className="custom-buttons">
                                     <OverlayTrigger
@@ -292,28 +292,26 @@ export const NkioskDoorOpen = () => {
                                     </OverlayTrigger>
                                     <ExportButton allData={manualOpenWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : manualOpenWithNames} fields={manualOpenDoorFields} />
                                     <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : manualOpenWithNames} fields={manualOpenDoorFields} />
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip className="custom-tooltip">Abrir</Tooltip>}
-                                        >
-                                            <CustomOutlineButton icon="bi bi-power" onClick={handleOpenManualDoor} iconSize='1.1em' />
-                                        </OverlayTrigger>
-                                        {loadingManualOpen && (
-                                            <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
-                                        )}
-                                    </div>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Abrir</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-power" onClick={handleOpenManualDoor} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    {loadingManualOpen && (
+                                        <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
+                                    )}
                                 </div>
                                 <div className="date-range-search">
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={startDate}
                                         onChange={e => setStartDate(e.target.value)}
                                         className='search-input'
                                     />
                                     <span> até </span>
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={endDate}
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'

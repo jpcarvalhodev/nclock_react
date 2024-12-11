@@ -240,6 +240,9 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prev => ({
             ...prev,
@@ -368,7 +371,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 115 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{entityType === 'department' ? 'Criar Departamento' : 'Criar Grupo'}</Modal.Title>
             </Modal.Header>

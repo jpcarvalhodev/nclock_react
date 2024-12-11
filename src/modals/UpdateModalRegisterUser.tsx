@@ -108,18 +108,14 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             const fieldValue = formData[field.key];
             if (field.required && !fieldValue) {
                 isValid = false;
-                newErrors[field.key] = { hasError: true, message: 'Este campo é obrigatório.' };
             } else if (field.validate && !field.validate(fieldValue)) {
                 isValid = false;
-                newErrors[field.key] = { hasError: true, message: field.errorMessage || 'Erro de validação.' };
-            } else {
-                newErrors[field.key] = { hasError: false, message: '' };
             }
         });
 
-        if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+        if (formData.password && !validatePassword(formData.password as string)) {
             isValid = false;
-            newErrors['confirmPassword'] = { hasError: true, message: 'A senha e a confirmação não coincidem.' };
+            newErrors['password'] = { hasError: true, message: 'A password deve ter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial.' };
         }
 
         setErrors(newErrors);
@@ -167,6 +163,10 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             if (!value) {
                 setPasswordPlaceholder('●●●●●●●●');
             }
+        }
+
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
         }
 
         if (type === 'checkbox') {
@@ -250,7 +250,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl'>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -346,6 +346,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                         />
                                     </Button>
                                 </div>
+                                {errors['password'] && errors['password'].hasError && <Form.Text className="text-danger">{errors['password'].message}</Form.Text>}
                             </Form.Group>
                         </Col>
                         <Col md={3}>

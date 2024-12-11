@@ -14,7 +14,6 @@ import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
-import { useLocation } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
@@ -23,12 +22,12 @@ import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -51,7 +50,7 @@ function CustomSearchBox(props: TextFieldProps) {
 export const NkioskMoveKiosk = () => {
     const { navbarColor, footerColor } = useColor();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
-    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -68,7 +67,6 @@ export const NkioskMoveKiosk = () => {
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
-    const location = useLocation();
     const eventDoorId = '4';
 
     // Função para buscar os movimentos do quiosque
@@ -132,14 +130,8 @@ export const NkioskMoveKiosk = () => {
 
     // Busca os movimentos de quiosque ao carregar a página
     useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllMoveKiosk();
-            }
-        }
-        fetchDevices();
-    }, [location]);
+        fetchAllMoveKiosk();
+    }, []);
 
     // Função para atualizar os movimentos de quiosque
     const refreshMoveKiosk = () => {
@@ -332,14 +324,14 @@ export const NkioskMoveKiosk = () => {
                             </div>
                             <div className="date-range-search">
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
                                     className='search-input'
                                 />
                                 <span> até </span>
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     value={endDate}
                                     onChange={e => setEndDate(e.target.value)}
                                     className='search-input'
@@ -370,7 +362,7 @@ export const NkioskMoveKiosk = () => {
                                 defaultSortFieldId="eventTime"
                             />
                         </div>
-                        <div style={{ marginLeft: 10 }}>
+                        <div style={{ marginLeft: 10, marginTop: -5 }}>
                             <strong>Movimentos do Quiosque: </strong>{totalAmount}
                         </div>
                     </div>

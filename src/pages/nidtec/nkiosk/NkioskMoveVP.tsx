@@ -14,19 +14,18 @@ import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
-import { useLocation } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T00:00`;
 }
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}`;
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Função para converter string em data
@@ -63,7 +62,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskMoveVP = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -78,7 +77,6 @@ export const NkioskMoveVP = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
-    const location = useLocation();
     const eventDoorId = '3';
 
     // Função para buscar os movimentos de videoporteiro
@@ -131,14 +129,8 @@ export const NkioskMoveVP = () => {
 
     // Busca os movimentos de videoporteiro publicidades ao carregar a página
     useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllMoveVP();
-            }
-        }
-        fetchDevices();
-    }, [location]);
+        fetchAllMoveVP();
+    }, []);
 
     // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {
@@ -315,14 +307,14 @@ export const NkioskMoveVP = () => {
                                 </div>
                                 <div className="date-range-search">
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={startDate}
                                         onChange={e => setStartDate(e.target.value)}
                                         className='search-input'
                                     />
                                     <span> até </span>
                                     <input
-                                        type="date"
+                                        type="datetime-local"
                                         value={endDate}
                                         onChange={e => setEndDate(e.target.value)}
                                         className='search-input'
@@ -353,7 +345,7 @@ export const NkioskMoveVP = () => {
                                     defaultSortFieldId="eventTime"
                                 />
                             </div>
-                            <div style={{ marginLeft: 10 }}>
+                            <div style={{ marginLeft: 10, marginTop: -5 }}>
                                 <strong>Movimentos do Video Porteiro: </strong>{totalAmount}
                             </div>
                         </div>

@@ -1,57 +1,218 @@
-#product-tabs .tab-NCLOCK { color: #0050a0; }
-#product-tabs .tab-NACCESS { color: #0050a0; }
-#product-tabs .tab-NVISITOR { color: #0050a0; }
-#product-tabs .tab-NPARK { color: #0050a0; }
-#product-tabs .tab-NDOOR { color: #0050a0; }
-#product-tabs .tab-NPATROL { color: #0050a0; }
-#product-tabs .tab-NCARD { color: #0050a0; }
-#product-tabs .tab-NVIEW { color: #0050a0; }
-#product-tabs .tab-NSECUR { color: #0050a0; }
-#product-tabs .tab-NSOFTWARE { color: #D01313; }
-#product-tabs .tab-NSYSTEM { color: #D01313; }
-#product-tabs .tab-NAPP { color: #D01313; }
-#product-tabs .tab-NCYBER { color: #D01313; }
-#product-tabs .tab-NDIGITAL { color: #D01313; }
-#product-tabs .tab-NSERVER { color: #D01313; }
-#product-tabs .tab-NAUT { color: #D01313; }
-#product-tabs .tab-NEQUIP { color: #D01313; }
-#product-tabs .tab-NPROJECT { color: #D01313; }
-#product-tabs .tab-NCOUNT { color: #D01313; }
-#product-tabs .tab-NBUILD { color: #D01313; }
-#product-tabs .tab-NCARAVAN { color: #D01313; }
-#product-tabs .tab-NMECHANIC { color: #D01313; }
-#product-tabs .tab-NEVENTS { color: #D01313; }
-#product-tabs .tab-NSERVICE { color: #D01313; }
-#product-tabs .tab-NTASK { color: #D01313; }
-#product-tabs .tab-NPRODUCTION { color: #D01313; }
-#product-tabs .tab-NTICKET { color: #D01313; }
-#product-tabs .tab-NSALES { color: #D01313; }
-#product-tabs .tab-NINVOICE { color: #D01313; }
-#product-tabs .tab-NDOC { color: #D01313; }
-#product-tabs .tab-NSPORTS { color: #D01313; }
-#product-tabs .tab-NGYM { color: #D01313; }
-#product-tabs .tab-NSCHOOL { color: #D01313; }
-#product-tabs .tab-NCLINIC { color: #D01313; }
-#product-tabs .tab-NOPTICS { color: #D01313; }
-#product-tabs .tab-NGOLD { color: #D01313; }
-#product-tabs .tab-NSMART { color: #009739; }
-#product-tabs .tab-NREALITY { color: #009739; }
-#product-tabs .tab-NHOLOGRAM { color: #009739; }
-#product-tabs .tab-NPOWER { color: #009739; }
-#product-tabs .tab-NCHARGE { color: #009739; }
-#product-tabs .tab-NCITY { color: #009739; }
-#product-tabs .tab-NKIOSK { color: #009739; }
-#product-tabs .tab-NLED { color: #009739; }
-#product-tabs .tab-NFIRE { color: #009739; }
-#product-tabs .tab-NFURNITURE { color: #FEC629; }
-#product-tabs .tab-NPARTITION { color: #FEC629; }
-#product-tabs .tab-NDECOR { color: #FEC629; }
-#product-tabs .tab-NPING { color: #FEC629; }
-#product-tabs .tab-NCONNECT { color: #FEC629; }
-#product-tabs .tab-NLIGHT { color: #FEC629; }
-#product-tabs .tab-NCOMFORT { color: #FEC629; }
-#product-tabs .tab-NSOUND { color: #FEC629; }
-#product-tabs .tab-NHOME { color: #FEC629; }
+#product-tabs .tab-NCLOCK {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NACCESS {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NVISITOR {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NPARK {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NDOOR {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NPATROL {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NCARD {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NVIEW {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NSECUR {
+    color: #0050a0;
+}
+
+#product-tabs .tab-NSOFTWARE {
+    color: #D01313;
+}
+
+#product-tabs .tab-NSYSTEM {
+    color: #D01313;
+}
+
+#product-tabs .tab-NAPP {
+    color: #D01313;
+}
+
+#product-tabs .tab-NCYBER {
+    color: #D01313;
+}
+
+#product-tabs .tab-NDIGITAL {
+    color: #D01313;
+}
+
+#product-tabs .tab-NSERVER {
+    color: #D01313;
+}
+
+#product-tabs .tab-NAUT {
+    color: #D01313;
+}
+
+#product-tabs .tab-NEQUIP {
+    color: #D01313;
+}
+
+#product-tabs .tab-NPROJECT {
+    color: #D01313;
+}
+
+#product-tabs .tab-NCOUNT {
+    color: #D01313;
+}
+
+#product-tabs .tab-NBUILD {
+    color: #D01313;
+}
+
+#product-tabs .tab-NCARAVAN {
+    color: #D01313;
+}
+
+#product-tabs .tab-NMECHANIC {
+    color: #D01313;
+}
+
+#product-tabs .tab-NEVENTS {
+    color: #D01313;
+}
+
+#product-tabs .tab-NSERVICE {
+    color: #D01313;
+}
+
+#product-tabs .tab-NTASK {
+    color: #D01313;
+}
+
+#product-tabs .tab-NPRODUCTION {
+    color: #D01313;
+}
+
+#product-tabs .tab-NTICKET {
+    color: #D01313;
+}
+
+#product-tabs .tab-NSALES {
+    color: #D01313;
+}
+
+#product-tabs .tab-NINVOICE {
+    color: #D01313;
+}
+
+#product-tabs .tab-NDOC {
+    color: #D01313;
+}
+
+#product-tabs .tab-NSPORTS {
+    color: #D01313;
+}
+
+#product-tabs .tab-NGYM {
+    color: #D01313;
+}
+
+#product-tabs .tab-NSCHOOL {
+    color: #D01313;
+}
+
+#product-tabs .tab-NCLINIC {
+    color: #D01313;
+}
+
+#product-tabs .tab-NOPTICS {
+    color: #D01313;
+}
+
+#product-tabs .tab-NGOLD {
+    color: #D01313;
+}
+
+#product-tabs .tab-NSMART {
+    color: #009739;
+}
+
+#product-tabs .tab-NREALITY {
+    color: #009739;
+}
+
+#product-tabs .tab-NHOLOGRAM {
+    color: #009739;
+}
+
+#product-tabs .tab-NPOWER {
+    color: #009739;
+}
+
+#product-tabs .tab-NCHARGE {
+    color: #009739;
+}
+
+#product-tabs .tab-NCITY {
+    color: #009739;
+}
+
+#product-tabs .tab-NKIOSK {
+    color: #009739;
+}
+
+#product-tabs .tab-NLED {
+    color: #009739;
+}
+
+#product-tabs .tab-NFIRE {
+    color: #009739;
+}
+
+#product-tabs .tab-NFURNITURE {
+    color: #FEC629;
+}
+
+#product-tabs .tab-NPARTITION {
+    color: #FEC629;
+}
+
+#product-tabs .tab-NDECOR {
+    color: #FEC629;
+}
+
+#product-tabs .tab-NPING {
+    color: #FEC629;
+}
+
+#product-tabs .tab-NCONNECT {
+    color: #FEC629;
+}
+
+#product-tabs .tab-NLIGHT {
+    color: #FEC629;
+}
+
+#product-tabs .tab-NCOMFORT {
+    color: #FEC629;
+}
+
+#product-tabs .tab-NSOUND {
+    color: #FEC629;
+}
+
+#product-tabs .tab-NHOME {
+    color: #FEC629;
+}
 
 body {
     display: flex;
@@ -345,8 +506,6 @@ body {
     font-size: 20px;
     color: #0050a0;
     font-weight: bold;
-    margin-left: 10px;
-    margin-right: 30px;
     border-bottom: 1px solid #ccc;
 }
 
@@ -354,8 +513,7 @@ body {
     font-size: 20px;
     color: black;
     font-weight: bold;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-right: 5px;
     margin-bottom: 5px;
     border-bottom: 1px solid #ccc;
 }
@@ -384,7 +542,6 @@ body {
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: 10px;
-    gap: 10px;
 }
 
 .filter-refresh-add-edit-upper-class {
@@ -422,7 +579,14 @@ body {
 .search-input {
     border-radius: 5px;
     border-width: 1px;
-    border-color: #0050a0;
+    height: 30px;
+    width: 160px;
+    border: solid 1px #0050a0;
+}
+
+.search-input:focus {
+    border: 2px solid #0050a0;
+    outline: none;
 }
 
 .split {
@@ -741,7 +905,7 @@ body {
 }
 
 .img-contact-modal {
-    width: 1080px;
+    width: 900px;
 }
 
 .custom-tooltip {
@@ -1014,7 +1178,7 @@ body {
     .card {
         width: 120px;
     }
-    
+
 }
 
 @media (max-width: 1920px) {

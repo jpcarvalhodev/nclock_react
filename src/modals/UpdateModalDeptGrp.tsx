@@ -235,6 +235,9 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
         const parsedValue = type === 'number' ? Number(value) : value;
+        if (showValidationErrors) {
+            setShowValidationErrors(false);
+        }
         setFormData(prev => ({
             ...prev,
             [name]: parsedValue
@@ -313,21 +316,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         rangeSeparatorText: 'de',
     };
 
-    // Função para aplicar a mudança de departamento/grupo
-    const handleDeptGroupChange = () => {
-        if (selectedRow && selectedEmployee) {
-            let updatedEmployee = { ...selectedEmployee };
-            if (entityType === 'department') {
-                updatedEmployee.departmentId = selectedRow.id;
-            } else if (entityType === 'group') {
-                updatedEmployee.groupId = selectedRow.id;
-            }
-            updateEmployeeAndCard(updatedEmployee, {});
-        } else {
-            toast.warn('Selecione um departamento/grupo e um funcionário para trocar.');
-        }
-    }
-
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
@@ -378,7 +366,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl">
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 115 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{entityType === 'department' ? 'Atualizar Departamento' : 'Atualizar Grupo'}</Modal.Title>
             </Modal.Header>
