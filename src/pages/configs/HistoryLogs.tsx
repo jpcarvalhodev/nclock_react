@@ -16,6 +16,7 @@ import Split from "react-split";
 import { TreeViewDataHistory } from "../../components/TreeViewHistory";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useEntity } from "../../context/EntityContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -49,7 +50,7 @@ export const HistoryLogs = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const [logs, setLogs] = useState<Logs[]>([]);
+    const { historyLogs, setHistoryLogs, fetchAllHistoryLogs } = useEntity();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['userName', 'taskName', 'description', 'createdDate']);
@@ -61,28 +62,14 @@ export const HistoryLogs = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
 
-    // Função para buscar os logs
-    const fetchAllLogs = async () => {
-        try {
-            const data = await apiService.fetchAllHistoryLogs();
-            if (Array.isArray(data)) {
-                setLogs(data);
-            } else {
-                setLogs([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados de logs:', error);
-        }
-    };
-
     // Função para buscar os logs entre datas
     const fetchLogsBetweenDates = async () => {
         try {
             const data = await apiService.fetchAllHistoryLogs(startDate, endDate);
             if (Array.isArray(data)) {
-                setLogs(data);
+                setHistoryLogs(data);
             } else {
-                setLogs([]);
+                setHistoryLogs([]);
             }
         } catch (error) {
             console.error('Erro ao buscar os dados de logs:', error);
@@ -91,24 +78,24 @@ export const HistoryLogs = () => {
 
     // Busca os logs ao carregar a página
     useEffect(() => {
-        fetchAllLogs();
+        fetchAllHistoryLogs();
     }, []);
 
     // Função para atualizar os logs
     const refreshLogs = () => {
-        fetchAllLogs();
+        fetchAllHistoryLogs();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filterLogs = logs.filter(log => selectedDevicesIds.includes(log.taskId));
+            const filterLogs = historyLogs.filter(log => selectedDevicesIds.includes(log.taskId));
             setFilteredDevices(filterLogs);
         } else {
-            setFilteredDevices(logs);
+            setFilteredDevices(historyLogs);
         }
-    }, [selectedDevicesIds, logs]);
+    }, [selectedDevicesIds, historyLogs]);
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {

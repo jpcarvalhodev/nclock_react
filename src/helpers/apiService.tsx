@@ -167,13 +167,13 @@ export const updateEmployee = async (employee: Employee) => {
     return response.json();
 };
 
-export const deleteEmployee = async (employeeID: string) => {
+export const deleteEmployee = async (employeeID: string[]) => {
     const response = await fetchWithAuth(`Employees/DeleteEmployee`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify([employeeID])
+        body: JSON.stringify(employeeID)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -323,9 +323,6 @@ export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employee
 
     const response = await fetchWithAuth(url, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }
     });
 
     if (!response.ok) {
@@ -336,18 +333,17 @@ export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employee
     return response.json();
 };
 
-export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, employeeID?: string[] | null) => {
     let url = `Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`;
-    if (employeeID !== null) {
-        url += `?employeeIds=${employeeID}`;
-    }
 
-    let bodyData: BodyData = { zktecoDeviceID };
     if (employeeID) {
-        bodyData.employeeID = employeeID;
+        const employeeIdParams = employeeID.map(id => `employeeIds=${id}`).join('&');
+        url += `?${employeeIdParams}`;
     }
 
-    const response = await fetchWithAuth(url);
+    const response = await fetchWithAuth(url, {
+        method: 'POST',
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -435,23 +431,16 @@ export const sendClockToDevice = async (serialNumber: string, timeZoneId: string
     return response.json();
 };
 
-export const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+export const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string[] | null) => {
     let url = `Zkteco/DeleteEmployeesToDevice/${zktecoDeviceID}`;
-    if (employeeID !== null) {
-        url += `?employeeIds=${employeeID}`;
-    }
-
-    let bodyData: BodyData = { zktecoDeviceID };
+    
     if (employeeID) {
-        bodyData.employeeID = employeeID;
+        const employeeIdParams = employeeID.map(id => `employeeIds=${id}`).join('&');
+        url += `?${employeeIdParams}`;
     }
 
     const response = await fetchWithAuth(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bodyData)
+        method: 'DELETE',
     });
 
     if (!response.ok) {

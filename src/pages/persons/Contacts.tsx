@@ -118,10 +118,8 @@ export const Contacts = () => {
 
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
-        for (let id of employeeIds) {
-            await handleDeleteEmployee(id);
-            refreshEmployees();
-        }
+        await handleDeleteEmployee(employeeIds);
+        refreshEmployees();
     };
 
     // Busca todos os dados

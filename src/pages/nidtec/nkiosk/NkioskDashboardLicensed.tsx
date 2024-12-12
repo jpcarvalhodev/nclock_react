@@ -141,7 +141,7 @@ export const NkioskDashboardLicensed = () => {
     // Busca os dados ao carregar a página
     useEffect(() => {
         fetchAllData();
-    }, []);
+    }, [devices]);
 
     // Função para renderizar os eventos no calendário
     const MyEvent = ({ event }: MyEventProps) => {

@@ -35,12 +35,12 @@ const formatDateToEndOfDay = (date: Date): string => {
 // Define o componente de terminais
 export const TerminalCloseOpen = () => {
     const {
-        fetchAllMBDevices,
-        fetchAllMBCloseOpen,
+        mbDevices,
+        mbCloseOpen,
+        setMbCloseOpen,
+        fetchAllMBCloseOpen
     } = useContext(TerminalsContext) as DeviceContextType;
     const { navbarColor, footerColor } = useColor();
-    const [mbOpenCloseDevices, setOpenCloseDevices] = useState<MBDeviceCloseOpen[]>([]);
-    const [mbDevices, setMbDevices] = useState<MBDevice[]>([]);
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'tpId', 'fechoImage', 'aberturaImage']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -54,24 +54,11 @@ export const TerminalCloseOpen = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<MBDeviceCloseOpen[]>([]);
 
-    // Função para buscar todos os dispositivos multibanco
-    const fetchAllDevices = async () => {
-        try {
-            const data = await fetchAllMBCloseOpen();
-            setOpenCloseDevices(data);
-
-            const tpData = await fetchAllMBDevices();
-            setMbDevices(tpData);
-        } catch (error) {
-            console.error('Erro ao buscar terminais multibanco:', error);
-        }
-    }
-
     // Função para buscar todos os dispositivos multibanco entre datas
     const fetchAllDevicesBetweenDates = async () => {
         try {
             const data = await apiService.fetchAllTPCloseOpen(startDate, endDate);
-            setOpenCloseDevices(data);
+            setMbCloseOpen(data);
         } catch (error) {
             console.error('Erro ao buscar terminais multibanco:', error);
         }
@@ -79,12 +66,12 @@ export const TerminalCloseOpen = () => {
 
     // Função para atualizar todos os dispositivos
     const refreshOpenCloseDevices = () => {
-        fetchAllDevices();
+        fetchAllMBCloseOpen();
     }
 
     // Atualiza os dados de renderização
     useEffect(() => {
-        fetchAllDevices();
+        fetchAllMBCloseOpen();
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -97,12 +84,12 @@ export const TerminalCloseOpen = () => {
     // Atualiza os dispositivos filtrados da treeview
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = mbOpenCloseDevices.filter(devices => selectedDevicesIds.includes(devices.tpId));
+            const filtered = mbCloseOpen.filter(devices => selectedDevicesIds.includes(devices.tpId));
             setFilteredDevices(filtered);
         } else {
-            setFilteredDevices(mbOpenCloseDevices);
+            setFilteredDevices(mbCloseOpen);
         }
-    }, [selectedDevicesIds, mbOpenCloseDevices]);
+    }, [selectedDevicesIds, mbCloseOpen]);
 
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {

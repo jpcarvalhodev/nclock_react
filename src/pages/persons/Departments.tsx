@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import Button from 'react-bootstrap/Button';
@@ -16,11 +16,11 @@ import '../../css/PagesStyles.css';
 import { ExpandedComponentDept } from '../../components/ExpandedComponentDept';
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
-import * as apiService from "../../helpers/apiService";
 import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextFieldProps, TextField } from '@mui/material';
+import { PersonsContext, PersonsContextType } from '../../context/PersonsContext';
 
 // Define a interface para os filtros
 interface Filters {
@@ -47,7 +47,15 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de departamentos
 export const Departments = () => {
     const { navbarColor, footerColor } = useColor();
-    const [departments, setDepartments] = useState<Department[]>([]);
+    const {
+        departments,
+        setDepartments,
+        fetchAllDepartments,
+        fetchAllSubDepartments,
+        handleAddDepartment,
+        handleUpdateDepartment,
+        handleDeleteDepartment
+    } = useContext(PersonsContext) as PersonsContextType;
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'name', 'description']);
@@ -62,9 +70,9 @@ export const Departments = () => {
     const [selectedRows, setSelectedRows] = useState<Department[]>([]);
 
     // Busca os departamentos
-    const fetchAllDepartments = async () => {
+    const fetchDepartments = async () => {
         try {
-            const allDepartments: Department[] = await apiService.fetchAllDepartments();
+            const allDepartments: Department[] = await fetchAllDepartments();
 
             const departmentMap = new Map<number, Department>(allDepartments.map((dept: Department) => [dept.code, { ...dept, subdepartments: [] }]));
 
@@ -84,66 +92,29 @@ export const Departments = () => {
         }
     };
 
-    // Busca os subdepartamentos
-    const fetchAllSubDepartments = async (parentId: number): Promise<Department[]> => {
-        try {
-            const subdepartments: Department[] = await apiService.fetchAllSubDepartments(parentId);
-            return subdepartments;
-        } catch (error) {
-            console.error('Erro ao buscar dados dos subdepartamentos:', error);
-            return [];
-        }
-    };
-
     // Adiciona um departamento
-    const handleAddDepartment = async (department: Department) => {
-        try {
-            const data = await apiService.addDepartment(department);
-            setDepartments(deps => [...deps, data]);
-            toast.success(data.value || 'Departamento adicionado com sucesso!')
-
-        } catch (error) {
-            console.error('Erro ao adicionar novo departamento:', error);
-        } finally {
-            refreshDepartments();
-        }
+    const addDepartment = async (department: Department) => {
+        await handleAddDepartment(department);
     };
 
     // Atualiza um departamento
-    const handleUpdateDepartment = async (department: Department) => {
-        try {
-            const updatedDepartment = await apiService.updateDepartment(department);
-            setDepartments(deps => deps.map(dep => dep.departmentID === updatedDepartment.departmentID ? updatedDepartment : dep));
-            toast.success(updatedDepartment.value || 'Departamento atualizado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar departamento:', error);
-        } finally {
-            refreshDepartments();
-        }
+    const updateDepartment = async (department: Department) => {
+        await handleUpdateDepartment(department);
     };
 
     // Apaga um departamento
-    const handleDeleteDepartment = async (departmentID: string) => {
-        try {
-            const deleteDept = await apiService.deleteDepartment(departmentID);
-            toast.success(deleteDept.value || 'Departamento apagado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar departamento:', error);
-        } finally {
-            refreshDepartments();
-        }
+    const deleteDepartment = async (departmentID: string) => {
+        await handleDeleteDepartment(departmentID);
     };
 
     // Atualiza os departamentos
     useEffect(() => {
-        fetchAllDepartments();
+        fetchDepartments();
     }, []);
 
     // função de atualizar os departamentos
     const refreshDepartments = () => {
-        fetchAllDepartments();
+        fetchDepartments();
     };
 
     // Função para selecionar as linhas
@@ -360,7 +331,7 @@ export const Departments = () => {
                     title="Adicionar Departamento"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddDepartment}
+                    onSave={addDepartment}
                     fields={departmentFields}
                     initialValues={initialData || {}}
                     entityType='department'
@@ -369,7 +340,7 @@ export const Departments = () => {
                     <UpdateModalDeptGrp
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateDepartment}
+                        onUpdate={updateDepartment}
                         entity={selectedDepartment}
                         entityType='department'
                         title="Atualizar Departamento"
@@ -384,7 +355,7 @@ export const Departments = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteDepartment}
+                    onDelete={deleteDepartment}
                     entityId={selectedDepartmentForDelete}
                 />
             </div>

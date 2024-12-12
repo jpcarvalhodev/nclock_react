@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, ReactNode, useEffect, useMemo } from 'react';
 import * as apiService from '../helpers/apiService';
 import { toast } from 'react-toastify';
-import { Entity } from '../helpers/Types';
+import { Entity, Logs } from '../helpers/Types';
 
 // Define o tipo do contexto
 export interface EntityContextType {
@@ -11,6 +11,12 @@ export interface EntityContextType {
     addEntity: (entity: FormData) => void;
     updateEntity: (entity: FormData) => void;
     deleteEntity: (id: string) => void;
+    loginLogs: Logs[];
+    historyLogs: Logs[];
+    setLoginLogs: React.Dispatch<React.SetStateAction<Logs[]>>;
+    setHistoryLogs: React.Dispatch<React.SetStateAction<Logs[]>>;
+    fetchAllLoginLogs: () => void;
+    fetchAllHistoryLogs: () => void;
 }
 
 // Cria o contexto
@@ -19,6 +25,8 @@ export const EntityContext = createContext<EntityContextType | undefined>(undefi
 // Provider do contexto
 export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const [entity, setEntity] = useState<Entity[]>([]);
+    const [loginLogs, setLoginLogs] = useState<Logs[]>([]);
+    const [historyLogs, setHistoryLogs] = useState<Logs[]>([]);
 
     // Função para buscar todas as entidades
     const fetchAllEntity = async (): Promise<Entity[]> => {
@@ -71,16 +79,46 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para buscar os logs de login
+    const fetchAllLoginLogs = async () => {
+        try {
+            const data = await apiService.fetchAllLoginLogs();
+            if (Array.isArray(data)) {
+                setLoginLogs(data);
+            } else {
+                setLoginLogs([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de logs:', error);
+        }
+    };
+
+    // Função para buscar os logs de histórico
+    const fetchAllHistoryLogs = async () => {
+        try {
+            const data = await apiService.fetchAllHistoryLogs();
+            if (Array.isArray(data)) {
+                setHistoryLogs(data);
+            } else {
+                setHistoryLogs([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de logs:', error);
+        }
+    };
+
     // Busca todas as entidades ao recarregar o componente
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             fetchAllEntity();
+            fetchAllLoginLogs();
+            fetchAllHistoryLogs();
         }
     }, [localStorage.getItem('token')]);
 
     return (
-        <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity }}>
+        <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs }}>
             {children}
         </EntityContext.Provider>
     );

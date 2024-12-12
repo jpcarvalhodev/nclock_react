@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
@@ -7,12 +8,12 @@ import '../css/NavBar.css';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
 import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
 import person from '../assets/img/navbar/pessoas/person.png';
-import categories from '../assets/img/navbar/pessoas/categories.png';
+import category from '../assets/img/navbar/pessoas/categories.png';
 import department from '../assets/img/navbar/pessoas/departments.png';
 import externalEntities from '../assets/img/navbar/pessoas/externalEntities.png';
 import group from '../assets/img/navbar/pessoas/groups.png';
-import professions from '../assets/img/navbar/pessoas/professions.png';
-import zones from '../assets/img/navbar/pessoas/zones.png';
+import profession from '../assets/img/navbar/pessoas/professions.png';
+import zone from '../assets/img/navbar/pessoas/zones.png';
 import fraccoes from '../assets/img/navbar/pessoas/fraccoes.png';
 import types from '../assets/img/navbar/pessoas/types.png';
 import fonts from '../assets/img/navbar/pessoas/fonts.png';
@@ -122,11 +123,11 @@ import card_report from '../assets/img/navbar/nkiosk/card_report.png';
 import coin_report from '../assets/img/navbar/nkiosk/coin_report.png';
 import offline from '../assets/img/navbar/nkiosk/offline.png';
 import maps from '../assets/img/navbar/nkiosk/maps.png';
-import logs from '../assets/img/navbar/nkiosk/logs.png';
+import log from '../assets/img/navbar/nkiosk/logs.png';
 import bell from '../assets/img/navbar/nkiosk/bell.png';
 import registry from '../assets/img/navbar/nkiosk/registry.png';
 import alert from '../assets/img/navbar/nkiosk/alert.png';
-import accessControl from '../assets/img/navbar/nkiosk/accessControl.png';
+import accessControls from '../assets/img/navbar/nkiosk/accessControl.png';
 import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
 import home from '../assets/img/navbar/home.png';
 import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
@@ -138,7 +139,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, departmentFields, emailFields, employeeFields, groupFields, kioskConfigFields, licenseFields } from '../helpers/Fields';
+import { accessControlFields, adsFields, categoryFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, logsFields, mbDeviceCloseOpenFields, professionFields, registerFields, timePeriodFields, zoneFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -177,8 +178,8 @@ import sensor from '../assets/img/navbar/nkiosk/sensor.png';
 import cell from '../assets/img/navbar/nkiosk/cell.png';
 import { fetchWithAuth } from './FetchWithAuth';
 import { PrintButton } from './PrintButton';
-import { createRoot } from 'react-dom/client';
-import { set } from 'date-fns';
+import { useTerminals } from '../context/TerminalsContext';
+import { useEntity } from '../context/EntityContext';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -215,6 +216,25 @@ interface MenuStructure {
 	[key: string]: MenuItem;
 }
 
+// Define a interface para os dados do menu
+interface DataField {
+    label: string;
+    key: string;
+    type?: string;
+    required?: boolean;
+}
+
+// Define a interface para os dados do menu
+interface MenuConfigItem {
+    data: any[];
+    fields: DataField[];
+}
+
+// Define a interface para a estrutura do menu
+interface MenuConfig {
+    [key: string]: MenuConfigItem;
+}
+
 // Define as propriedades do componente
 interface NavBarProps {
 	style?: React.CSSProperties;
@@ -240,8 +260,10 @@ interface TabsInfo {
 export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
 	const { handleAddAds } = useAds();
+	const { loginLogs, historyLogs } = useEntity();
 	const { license, getSoftwareEnabledStatus, fetchAllLicensesWithoutKey, handleUpdateLicense } = useLicense();
-	const { employees, departments, groups, registeredUsers } = usePersons();
+	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
+	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -381,6 +403,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showUserDropdown, setShowUserDropdown] = useState(false);
 	const [showListDropdown, setShowListDropdown] = useState(false);
 	const [userImage, setUserImage] = useState('');
+	const [showPrintButton, setShowPrintButton] = useState(false);
+	const [currentData, setCurrentData] = useState<any>(null);
+	const [currentFields, setCurrentFields] = useState<any>(null);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -1046,19 +1071,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		setMenuStructureNG(newMenuStructure);
 	}, [license]);
 
-	// Função para lidar com a impressão direta
-	const handleDirectPrint = (data: any, fields: any) => {
-		console.log("Print iniciado", data, fields);
-		const element = document.createElement("div");
-		document.body.appendChild(element);
-		const root = createRoot(element);
-		root.render(<PrintButton data={data} fields={fields} />);
-		setTimeout(() => {
-			root.unmount();
-			document.body.removeChild(element);
-		}, 1000);
-	};
-
 	// Estrutura de menu opcional para o nkiosk
 	const KioskOptionalMenuStructure: MenuStructure = {
 		contador: {
@@ -1090,7 +1102,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'pessoas',
 				key: 'pessoas',
 				submenu: [
-					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', image: person, alt: 'pessoas', onClick: () => handleDirectPrint(employees, employeeFields) },
+					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', image: person, alt: 'pessoas' },
 					{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', image: person, alt: 'pessoas' },
 					{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', image: person, alt: 'pessoas' },
 					{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', image: person, alt: 'pessoas' },
@@ -1125,7 +1137,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			}
 		};
 
-		// Estrutura do menu de listagens para o nkiosk
+		/* // Estrutura do menu de listagens para o nkiosk
 		const nkioskSubmenu = {
 			label: 'Listagem Nkiosk',
 			image: nkiosk,
@@ -1145,7 +1157,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				{ label: 'Listagem Registos Contador', key: 'registo_contador', image: nkiosk, alt: 'nkiosk' },
 				{ label: 'Listagem Registos Ocorrências', key: 'registo_ocorrencias', image: nkiosk, alt: 'nkiosk' }
 			],
-		}
+		} */
 
 		// Função para estender o menu de listagens para um software específico
 		function extendMenuForSoftware(softwareKey: string, softwareSpecificItems: MenuItem): MenuStructure {
@@ -1157,11 +1169,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 			return extendedMenu;
 		}
 
-		// Estrutura do menu de listagens para o nkiosk
-		const nkioskMenu = extendMenuForSoftware('nkiosk', nkioskSubmenu);
+		/* // Estrutura do menu de listagens para o nkiosk
+		const nkioskMenu = extendMenuForSoftware('nkiosk', nkioskSubmenu); */
 
 		setMenuStructureListing(ListingMenuStructure);
-		setMenuStructureListingNKiosk(nkioskMenu);
+		/* setMenuStructureListingNKiosk(nkioskMenu); */
 	}, [employees]);
 
 	// Define a estrutura do menu do nidgroup
@@ -1251,21 +1263,45 @@ export const NavBar = ({ style }: NavBarProps) => {
 		</li>
 	);
 
-	// Função para o print ou mudança de aba
-	const handleMenuItemClick = (itemKey: string) => {
-		switch (itemKey) {
-			case 'geral_pessoas':
-				handleDirectPrint(employees, employeeFields);
-				break;
-			case 'geral_departamentos':
-				handleDirectPrint(departments, departmentFields);
-				break;
-			case 'geral_grupos':
-				handleDirectPrint(groups, groupFields);
-				break;
-			default:
-				handleTab(itemKey);
-				break;
+	// Mapeamento de chaves para dados e campos de cada menu
+	const menuConfig: MenuConfig = {
+		geral_pessoas: { data: employees, fields: employeeFields },
+		geral_departamentos: { data: departments, fields: departmentFields },
+		geral_grupos: { data: groups, fields: groupFields },
+		geral_categorias: { data: categories, fields: categoryFields },
+		geral_profissoes: { data: professions, fields: professionFields },
+		geral_zonas: { data: zones, fields: zoneFields },
+		geral_entext: { data: dataEE.externalEntity, fields: externalEntityFields },
+		geral_equipamentos: { data: devices, fields: deviceFields },
+		geral_controlo: { data: accessControl, fields: accessControlFields },
+		geral_periodos: { data: period, fields: timePeriodFields },
+		geral_fecho: { data: mbCloseOpen, fields: mbDeviceCloseOpenFields },
+		geral_utilizadores: { data: registeredUsers, fields: registerFields },
+		geral_logins: { data: loginLogs, fields: logsFields },
+		geral_historico: { data: historyLogs, fields: logsFields },
+		/* recebimento_multibanco: { data: mbReceipt, fields: mbReceiptFields },
+		recebimento_moedeiro: { data: coinReceipt, fields: coinReceiptFields },
+		recebimento_totais: { data: totalReceipt, fields: totalReceiptFields },
+		movimento_torniquete: { data: turnstileMovement, fields: turnstileMovementFields },
+		movimento_quiosque: { data: kioskMovement, fields: kioskMovementFields },
+		movimento_totais: { data: totalMovement, fields: totalMovementFields },
+		remota_vp: { data: remoteVp, fields: remoteVpFields },
+		remota_abertura: { data: remoteOpen, fields: remoteOpenFields },
+		registo_recolhas: { data: coinCollection, fields: coinCollectionFields },
+		registo_limpeza: { data: generalCleaning, fields: generalCleaningFields },
+		registo_contador: { data: counterRecords, fields: counterRecordsFields },
+		registo_ocorrencias: { data: occurrences, fields: occurrencesFields }, */
+	};
+
+	// Função para lidar com o clique do menu
+	const handleMenuItemClick = (item: MenuItem) => {
+		const config = menuConfig[item.key];
+		if (config) {
+			setCurrentData(config.data);
+			setCurrentFields(config.fields);
+			setShowPrintButton(true);
+		} else {
+			handleTab(item.key);
 		}
 	}
 
@@ -1297,7 +1333,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<MenuItem
 								key={item.key}
 								active={activeMenu === item.key}
-								onClick={() => handleMenuItemClick(item.key)}
+								onClick={() => handleMenuItemClick(item)}
 								image={item.image}
 								alt={item.alt}
 								label={item.label}
@@ -1753,6 +1789,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleCloseLicenseModal = () => {
 		setShowLicenseModal(false);
 		fetchAllLicensesWithoutKey();
+	};
+
+	// Função para fechar o modal de impressão
+	const clearData = () => {
+		setCurrentData(null);
+		setCurrentFields(null);
+		setShowPrintButton(false);
 	};
 
 	return (
@@ -3406,7 +3449,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 												<Link to="/persons/Professions" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Professions' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={professions} alt="botão visitantes" />
+														<img src={profession} alt="botão visitantes" />
 													</span>
 													<span className="text">Profissões</span>
 												</Link>
@@ -3418,13 +3461,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 												<Link to="/persons/Zones" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Zones' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={zones} alt="botão contactos" />
+														<img src={zone} alt="botão contactos" />
 													</span>
 													<span className="text">Zonas</span>
 												</Link>
 												<Link to="/persons/Categories" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Categories' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={categories} alt="botão utentes" />
+														<img src={category} alt="botão utentes" />
 													</span>
 													<span className="text">Categorias</span>
 												</Link>
@@ -3551,7 +3594,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="icon-text-pessoas">
 												<Link to="/devices/accesscontrols" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/devices/accesscontrols' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={accessControl} alt="botão controle de acesso " />
+														<img src={accessControls} alt="botão controle de acesso " />
 													</span>
 													<span className="text">Planos de Acessos</span>
 												</Link>
@@ -3750,7 +3793,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="/configs/loginlogs" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/logs/loginlogs' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={logs} alt="botão log de logins" />
+														<img src={log} alt="botão log de logins" />
 													</span>
 													<span className="text">Logins</span>
 												</Link>
@@ -3758,7 +3801,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="/configs/historylogs" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/logs/historylogs' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={logs} alt="botão log de histórico" />
+														<img src={log} alt="botão log de histórico" />
 													</span>
 													<span className="text">Histórico</span>
 												</Link>
@@ -3926,6 +3969,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 						fields={licenseFields}
 					/>
 				)}
+				{showPrintButton &&
+					<div style={{ display: 'none' }}>
+						<PrintButton data={currentData} fields={currentFields} showModalOnInit={true} onClose={clearData} />
+					</div>
+				}
 			</nav>
 		</ColorProvider >
 	);

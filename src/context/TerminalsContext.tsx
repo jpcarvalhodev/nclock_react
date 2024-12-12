@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { ReactNode } from 'react';
-import { Devices, DoorDevice, Doors, Employee, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
+import { AccessControl, Devices, DoorDevice, Doors, Employee, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
 
@@ -8,6 +8,8 @@ import * as apiService from "../helpers/apiService";
 export interface DeviceContextType {
     devices: Devices[];
     mbDevices: MBDevice[];
+    mbCloseOpen: MBDeviceCloseOpen[];
+    setMbCloseOpen: (mbCloseOpen: MBDeviceCloseOpen[]) => void;
     employeeDevices: Employee[];
     employeesOnDevice: EmployeesOnDevice[];
     fetchAllDevices: () => Promise<Devices[]>;
@@ -20,10 +22,10 @@ export interface DeviceContextType {
     fetchAllMBDevices: () => Promise<MBDevice[]>;
     fetchAllMBCloseOpen: () => Promise<MBDeviceCloseOpen[]>;
     sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string[] | null) => Promise<void>;
-    saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
+    saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string[] | null) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     syncTimeManuallyToDevice: (device: Devices) => Promise<void>;
-    deleteAllUsersOnDevice: (device: Devices, employee: string | null) => Promise<void>;
+    deleteAllUsersOnDevice: (device: Devices, employee: string[] | null) => Promise<void>;
     openDeviceIdDoor: (zktecoDeviceID: string, doorData: DoorDevice) => Promise<void>;
     openDeviceDoor: (deviceSN: DoorDevice, doorData: DoorDevice) => Promise<void>;
     restartDevice: (device: Devices) => Promise<void>;
@@ -35,6 +37,16 @@ export interface DeviceContextType {
     handleAddMBDevice: (device: MBDevice) => Promise<void>;
     handleUpdateMBDevice: (device: MBDevice) => Promise<void>;
     handleDeleteMBDevice: (id: string) => Promise<void>;
+    accessControl: AccessControl[];
+    fetchAccessControl: () => Promise<void>;
+    handleAddAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
+    handleUpdateAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
+    handleDeleteAccessControl: (employeesId: string[], doorId: string) => Promise<void>;
+    period: TimePeriod[];
+    fetchTimePeriods: () => Promise<void>;
+    handleAddPeriod: (newPeriod: Partial<TimePeriod>) => Promise<void>;
+    handleUpdatePeriod: (updatedPeriod: TimePeriod) => Promise<void>;
+    handleDeletePeriod: (id: string) => Promise<void>;
 }
 
 // Cria o contexto	
@@ -44,8 +56,11 @@ export const TerminalsContext = createContext<DeviceContextType | undefined>(und
 export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [devices, setDevices] = useState<Devices[]>([]);
     const [mbDevices, setMBDevices] = useState<MBDevice[]>([]);
+    const [mbCloseOpen, setMbCloseOpen] = useState<MBDeviceCloseOpen[]>([]);
     const [employeeDevices, setEmployeeDevices] = useState<Employee[]>([]);
     const [employeesOnDevice, setEmployeesOnDevice] = useState<EmployeesOnDevice[]>([]);
+    const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
+    const [period, setPeriod] = useState<TimePeriod[]>([]);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -129,6 +144,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllMBCloseOpen = async (): Promise<MBDeviceCloseOpen[]> => {
         try {
             const data = await apiService.fetchAllTPCloseOpen();
+            setMbCloseOpen(data);
             return data;
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -157,7 +173,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para salvar todos os funcionários no dispositivo
-    const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+    const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, employeeID?: string[] | null) => {
         try {
             const data = await apiService.saveAllEmployeesOnDeviceToDB(zktecoDeviceID, employeeID);
             toast.success(data.message || 'Utilizadores recolhidos com sucesso!');
@@ -212,7 +228,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para apagar os utilizadores do dispositivo
-    const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+    const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string[] | null) => {
         try {
             const data = await apiService.deleteAllUsersOnDevice(zktecoDeviceID, employeeID);
             toast.success(data.message || 'Utilizadores apagados com sucesso!');
@@ -338,12 +354,113 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para buscar a listagem de controle de acesso
+    const fetchAccessControl = async () => {
+        try {
+            const data = await apiService.fetchAllAccessControl();
+            setAccessControl(data);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de controle de acesso:', error);
+        }
+    };
+
+    // Função para adicionar o controle de acesso
+    const handleAddAccessControl = async (newAccessControl: Partial<AccessControl>) => {
+        try {
+            const data = await apiService.addAccessControl(newAccessControl);
+            setAccessControl(prevAccessControls => [...prevAccessControls, data]);
+            toast.success(data.message || 'Controle de acesso adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar o controle de acesso:', error);
+        } finally {
+            fetchAccessControl();
+        }
+    };
+
+    // Função para editar o controle de acesso
+    const handleUpdateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
+        try {
+            const data = await apiService.updateAccessControl(newAccessControl);
+            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.acId === data.acId ? { ...item, acc: [data.acc] } : item));
+            toast.success(data.message || 'Controle de acesso atualizado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao editar o controle de acesso:', error);
+        } finally {
+            fetchAccessControl();
+        }
+    };
+
+    // Função para deletar o controle de acesso
+    const handleDeleteAccessControl = async (employeesId: string[], doorId: string) => {
+        try {
+            const data = await apiService.deleteAccessControl(employeesId, doorId);
+            setAccessControl(prevAccessControl => [...prevAccessControl, data]);
+            toast.success(data.message || 'Controle de acesso apagado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao deletar o controle de acesso:', error);
+        } finally {
+            fetchAccessControl();
+        }
+    }
+
+    // Função para buscar os dados dos períodos
+    const fetchTimePeriods = async () => {
+        try {
+            const data = await apiService.fetchAllTimePeriods();
+            setPeriod(data);
+        } catch (error) {
+            console.error('Erro ao buscar os dados dos períodos:', error);
+        }
+    };
+
+    // Função para adicionar um período
+    const handleAddPeriod = async (newPeriod: Partial<TimePeriod>) => {
+        try {
+            const data = await apiService.addTimePeriod(newPeriod);
+            setPeriod([...period, data]);
+            toast.success(data.value || 'Período adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar o período:', error);
+        } finally {
+            fetchTimePeriods();
+        }
+    }
+
+    // Função para atualizar um período
+    const handleUpdatePeriod = async (updatedPeriod: TimePeriod) => {
+        try {
+            const data = await apiService.updateTimePeriod(updatedPeriod);
+            const updatedPeriods = period.map(p => p.id === data.id ? data : p);
+            setPeriod(updatedPeriods);
+            toast.success('Período atualizado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar o período:', error);
+        } finally {
+            fetchTimePeriods();
+        }
+    }
+
+    // Função para eliminar um período
+    const handleDeletePeriod = async (id: string) => {
+        try {
+            await apiService.deleteTimePeriod(id);
+            toast.success('Período eliminado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao eliminar o período:', error);
+        } finally {
+            fetchTimePeriods();
+        }
+    }
+
     // Busca todos os dispositivos ao recarregar o componente
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             fetchAllDevices();
             fetchAllMBDevices();
+            fetchAccessControl();
+            fetchAllMBCloseOpen();
+            fetchTimePeriods();
         }
     }, [localStorage.getItem('token')]);
 
@@ -351,6 +468,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const contextValue: DeviceContextType = {
         devices,
         mbDevices,
+        mbCloseOpen,
+        setMbCloseOpen,
         employeeDevices,
         employeesOnDevice,
         fetchAllDevices,
@@ -377,7 +496,17 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleDeleteDevice,
         handleAddMBDevice,
         handleUpdateMBDevice,
-        handleDeleteMBDevice
+        handleDeleteMBDevice,
+        accessControl,
+        fetchAccessControl,
+        handleAddAccessControl,
+        handleUpdateAccessControl,
+        handleDeleteAccessControl,
+        period,
+        fetchTimePeriods,
+        handleAddPeriod,
+        handleUpdatePeriod,
+        handleDeletePeriod,
     };
 
     return (

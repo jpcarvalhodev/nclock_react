@@ -33,11 +33,11 @@ type User = {
 export const Login = () => {
   const navigate = useNavigate();
   const { fetchAds } = useAds();
-  const { fetchAllEntity } = useEntity();
+  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances } = useAttendance();
-  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData } = usePersons();
-  const { fetchAllDevices, fetchAllMBDevices } = useTerminals();
+  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
+  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods } = useTerminals();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [resizedSrc, setResizedSrc] = useState<string>(no_entity);
@@ -210,11 +210,20 @@ export const Login = () => {
             fetchAllGroups(),
             fetchAllRegisteredUsers(),
             fetchAllCardData(),
+            fetchAllCategories(),
+            fetchAllExternalEntitiesData(),
+            fetchAllProfessions(),
+            fetchAllZones(),
             fetchAds(),
             fetchAllEntity(),
+            fetchAllLoginLogs(),
+            fetchAllHistoryLogs(),
             fetchAllAttendances(),
             fetchAllDevices(),
-            fetchAllMBDevices()
+            fetchAllMBDevices(),
+            fetchAccessControl(),
+            fetchAllMBCloseOpen(),
+            fetchTimePeriods()
           ]);
           navigate("/dashboard");
         } catch (error) {

@@ -24,11 +24,13 @@ interface PrintButtonProps {
     iconSize?: string;
     data: DataItem[];
     fields: Field[];
+    showModalOnInit?: boolean;
     renderTimeout?: number;
+    onClose?: () => void;
 }
 
 // Componente para visualizar e imprimir ou salvar o PDF
-export const PrintButton = ({ data, fields, renderTimeout }: PrintButtonProps) => {
+export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onClose }: PrintButtonProps) => {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [calculatedTimeout, setCalculatedTimeout] = useState(renderTimeout || 5000);
@@ -65,6 +67,13 @@ export const PrintButton = ({ data, fields, renderTimeout }: PrintButtonProps) =
         }
     };
 
+    // Exibe o modal ao iniciar pela navbar
+    useEffect(() => {
+        if (showModalOnInit) {
+            setShowModal(true);
+        }
+    }, [showModalOnInit]);
+
     // Função para calcular o renderTimeout com base na quantidade de dados
     const calculateRenderTimeout = (dataLength: number): number => {
         const baseTimeout = 10000;
@@ -94,7 +103,10 @@ export const PrintButton = ({ data, fields, renderTimeout }: PrintButtonProps) =
     }, [showModal, loading, calculatedTimeout]);
 
     const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => setShowModal(false);
+    const handleCloseModal = () => {
+        setShowModal(false);
+        onClose && onClose();
+    };
 
     return (
         <>

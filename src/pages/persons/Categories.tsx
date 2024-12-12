@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavBar } from "../../components/NavBar";
 import { Footer } from "../../components/Footer";
 import '../../css/PagesStyles.css';
@@ -10,17 +10,16 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { categoryFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
-import { toast } from "react-toastify";
 import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -47,7 +46,13 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de categorias
 export const Categories = () => {
     const { navbarColor, footerColor } = useColor();
-    const [categories, setCategories] = useState<Category[]>([]);
+    const {
+        categories,
+        fetchAllCategories,
+        handleAddCategory,
+        handleUpdateCategory,
+        handleDeleteCategory,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'description']);
@@ -61,55 +66,19 @@ export const Categories = () => {
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Category[]>([]);
 
-    // Função para buscar as categorias
-    const fetchAllCategories = async () => {
-        try {
-            const data = await apiService.fetchAllCategories();
-            setCategories(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados das categorias:', error);
-        }
-    };
-
     // Função para adicionar uma categoria
-    const handleAddCategory = async (category: Category) => {
-        try {
-            const data = await apiService.addCategory(category);
-            setCategories([...categories, data]);
-            toast.success(data.value || 'Categoria adicionada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar nova categoria:', error);
-        } finally {
-            refreshCategories();
-        }
+    const addCategory = async (category: Category) => {
+        await handleAddCategory(category);
     };
 
     // Função para atualizar uma categoria
-    const handleUpdateCategory = async (category: Category) => {
-        try {
-            const updatedCategory = await apiService.updateCategory(category);
-            setCategories(categories => categories.map(c => c.categoryID === updatedCategory.categoryID ? updatedCategory : c));
-            toast.success(updatedCategory.value || 'Categoria atualizada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar categoria:', error);
-        } finally {
-            refreshCategories();
-        }
-    };
+    const updateCategory = async (category: Category) => {
+        await handleUpdateCategory(category);
+    } 
 
     // Função para apagar uma categoria
-    const handleDeleteCategory = async (categoryID: string) => {
-        try {
-            const deleteCategory = await apiService.deleteCategory(categoryID);
-            toast.success(deleteCategory.value || 'Categoria apagada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar categoria:', error);
-        } finally {
-            refreshCategories();
-        }
+    const deleteCategory = async (categoryID: string) => {
+        await handleDeleteCategory(categoryID);
     };
 
     // Busca as categorias ao carregar a página
@@ -312,7 +281,7 @@ export const Categories = () => {
                     title="Adicionar Categoria"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddCategory}
+                    onSave={addCategory}
                     fields={categoryFields}
                     initialValues={initialData || {}}
                     entityType="categorias"
@@ -321,7 +290,7 @@ export const Categories = () => {
                     <UpdateModalCatProfTypes
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateCategory}
+                        onUpdate={updateCategory}
                         entity={selectedCategory}
                         fields={categoryFields}
                         onDuplicate={handleDuplicate}
@@ -336,7 +305,7 @@ export const Categories = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteCategory}
+                    onDelete={deleteCategory}
                     entityId={selectedCategoryForDelete}
                 />
             </div>

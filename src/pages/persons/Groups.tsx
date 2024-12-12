@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavBar } from "../../components/NavBar";
 import { Footer } from "../../components/Footer";
 import '../../css/PagesStyles.css';
@@ -10,17 +10,16 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { groupFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
-import { toast } from "react-toastify";
 import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
 import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -47,7 +46,13 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de grupos
 export const Groups = () => {
     const { navbarColor, footerColor } = useColor();
-    const [groups, setGroups] = useState<Group[]>([]);
+    const {
+        groups,
+        fetchAllGroups,
+        handleAddGroup,
+        handleUpdateGroup,
+        handleDeleteGroup,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'description']);
@@ -61,55 +66,19 @@ export const Groups = () => {
     const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Group[]>([]);
 
-    // Função para buscar os grupos
-    const fetchAllGroups = async () => {
-        try {
-            const data = await apiService.fetchAllGroups();
-            setGroups(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos grupos:', error);
-        }
-    };
-
     // Função para adicionar um grupo
-    const handleAddGroup = async (group: Group) => {
-        try {
-            const data = await apiService.addGroup(group);
-            setGroups([...groups, data]);
-            toast.success(data.value || 'Grupo adicionado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar novo grupo:', error);
-        } finally {
-            refreshGroups();
-        }
+    const addGroup = async (group: Group) => {
+        await handleAddGroup(group);
     };
 
     // Função para atualizar um grupo
-    const handleUpdateGroup = async (group: Group) => {
-        try {
-            const updatedGroup = await apiService.updateGroup(group);
-            setGroups(groups => groups.map(g => g.groupID === updatedGroup.groupID ? updatedGroup : g));
-            toast.success(updatedGroup.value || 'Grupo atualizado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar grupo:', error);
-        } finally {
-            refreshGroups();
-        }
+    const updateGroup = async (group: Group) => {
+        await handleUpdateGroup(group);
     };
 
     // Função para apagar um grupo
-    const handleDeleteGroup = async (groupID: string) => {
-        try {
-            const deleteGroup = await apiService.deleteGroup(groupID);
-            toast.success(deleteGroup.value || 'Grupo apagado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar grupo:', error);
-        } finally {
-            refreshGroups();
-        }
+    const deleteGroup = async (groupID: string) => {
+        await handleDeleteGroup(groupID);
     };
 
     // Busca os grupos ao carregar a página
@@ -327,7 +296,7 @@ export const Groups = () => {
                     title="Adicionar Grupo"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddGroup}
+                    onSave={addGroup}
                     fields={groupFields}
                     initialValues={initialData || {}}
                     entityType='group'
@@ -336,7 +305,7 @@ export const Groups = () => {
                     <UpdateModalDeptGrp
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateGroup}
+                        onUpdate={updateGroup}
                         entity={selectedGroup}
                         entityType='group'
                         title="Atualizar Grupo"
@@ -351,7 +320,7 @@ export const Groups = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteGroup}
+                    onDelete={deleteGroup}
                     entityId={selectedGroupForDelete}
                 />
             </div>

@@ -6,18 +6,17 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { categoryFields, externalEntityTypeFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExternalEntityTypes } from "../../helpers/Types";
-import { toast } from "react-toastify";
 import { SelectFilter } from "../../components/SelectFilter";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
-import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -44,7 +43,13 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de tipos de entidades externas
 export const Types = () => {
     const { navbarColor, footerColor } = useColor();
-    const [externalEntityTypes, setexternalEntityTypes] = useState<ExternalEntityTypes[]>([]);
+    const {
+        dataEE,
+        fetchAllExternalEntitiesData,
+        handleAddExternalEntityTypes,
+        handleUpdateExternalEntityTypes,
+        handleDeleteExternalEntityTypes,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['order', 'name']);
@@ -58,71 +63,35 @@ export const Types = () => {
     const [currentExternalEntityTypeIndex, setCurrentExternalEntityTypeIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<ExternalEntityTypes[]>([]);
 
-    // Função para buscar os tipos das entidades externas
-    const fetchAllExternalEntityTypes = async () => {
-        try {
-            const data = await apiService.fetchAllExternalEntityTypes();
-            setexternalEntityTypes(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados das entidades externas:', error);
-        }
-    };
-
     // Função para adicionar um tipo de uma entidade externa
-    const handleAddExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
-        try {
-            const data = await apiService.addExternalEntityTypes(externalEntityType);
-            setexternalEntityTypes([...externalEntityTypes, data]);
-            toast.success(data.value || 'Tipo de entidade externa adicionada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar nova entidade externa:', error);
-        } finally {
-            refreshExternalEntitiesTypes();
-        }
+    const addExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
+        await handleAddExternalEntityTypes(externalEntityType);
     };
 
     // Função para atualizar um tipo de uma entidade externa
-    const handleUpdateExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
-        try {
-            const updatedExternalEntityType = await apiService.updateExternalEntityTypes(externalEntityType);
-            setexternalEntityTypes(externalEntitiesType => externalEntitiesType.map(entity => entity.externalEntityTypeID === updatedExternalEntityType.externalEntityTypeID ? updatedExternalEntityType : entity));
-            toast.success(updatedExternalEntityType.value || 'Tipo de entidade externa atualizado com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar entidade externa:', error);
-        } finally {
-            refreshExternalEntitiesTypes();
-        }
+    const updateExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
+        await handleUpdateExternalEntityTypes(externalEntityType);
     };
 
     // Função para apagar um tipo de uma entidade externa
-    const handleDeleteExternalEntityTypes = async (externalEntityTypeID: string) => {
-        try {
-            const deleteExtEntType = await apiService.deleteExternalEntityTypes(externalEntityTypeID);
-            toast.success(deleteExtEntType.value || 'Tipo de entidade externa apagada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar entidade externa:', error);
-        } finally {
-            refreshExternalEntitiesTypes();
-        }
+    const deleteExternalEntityTypes = async (externalEntityTypeID: string) => {
+        await handleDeleteExternalEntityTypes(externalEntityTypeID);
     };
 
     // Atualiza as entidades externas
     useEffect(() => {
-        fetchAllExternalEntityTypes();
+        fetchAllExternalEntitiesData();
     }, []);
 
     // Função para atualizar as entidades externas
     const refreshExternalEntitiesTypes = () => {
-        fetchAllExternalEntityTypes();
+        fetchAllExternalEntitiesData();
     };
 
     // Função para abrir o modal de editar entidade externa
     const handleEditExternalEntity = (externalEntityType: ExternalEntityTypes) => {
         setSelectedExternalEntityType(externalEntityType);
-        const sortedTypes = externalEntityTypes.sort((a, b) => a.order - b.order);
+        const sortedTypes = dataEE.externalEntityTypes.sort((a, b) => a.order - b.order);
         const typeIndex = sortedTypes.findIndex(type => type.externalEntityTypeID === externalEntityType.externalEntityTypeID);
         setCurrentExternalEntityTypeIndex(typeIndex);
         setShowUpdateModal(true);
@@ -182,7 +151,7 @@ export const Types = () => {
     }, {});
 
     // Filtra os dados da tabela
-    const filteredDataTable = externalEntityTypes.filter(externalEntityType =>
+    const filteredDataTable = dataEE.externalEntityTypes.filter(externalEntityType =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(externalEntityType[key]) === String(filters[key])
         )
@@ -198,7 +167,7 @@ export const Types = () => {
 
     // Seleciona a entidade anterior
     const handleNextType = () => {
-        const sortedTypes = externalEntityTypes.sort((a, b) => a.order - b.order);
+        const sortedTypes = dataEE.externalEntityTypes.sort((a, b) => a.order - b.order);
         if (currentExternalEntityTypeIndex < sortedTypes.length - 1) {
             setCurrentExternalEntityTypeIndex(currentExternalEntityTypeIndex + 1);
             setSelectedExternalEntityType(sortedTypes[currentExternalEntityTypeIndex + 1]);
@@ -207,7 +176,7 @@ export const Types = () => {
 
     // Seleciona a entidade seguinte
     const handlePrevType = () => {
-        const sortedTypes = externalEntityTypes.sort((a, b) => a.order - b.order);
+        const sortedTypes = dataEE.externalEntityTypes.sort((a, b) => a.order - b.order);
         if (currentExternalEntityTypeIndex > 0) {
             setCurrentExternalEntityTypeIndex(currentExternalEntityTypeIndex - 1);
             setSelectedExternalEntityType(sortedTypes[currentExternalEntityTypeIndex - 1]);
@@ -330,7 +299,7 @@ export const Types = () => {
                 title="Adicionar Tipo"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddExternalEntityTypes}
+                onSave={addExternalEntityTypes}
                 fields={externalEntityTypeFields}
                 initialValues={initialData || {}}
                 entityType="tipos"
@@ -339,13 +308,13 @@ export const Types = () => {
                 <UpdateModalCatProfTypes
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
-                    onUpdate={handleUpdateExternalEntityTypes}
+                    onUpdate={updateExternalEntityTypes}
                     entity={selectedExternalEntityType}
                     fields={externalEntityTypeFields}
                     onDuplicate={handleDuplicate}
                     title="Atualizar Tipo"
                     entityType="tipos"
-                    canMoveNext={currentExternalEntityTypeIndex < externalEntityTypes.length - 1}
+                    canMoveNext={currentExternalEntityTypeIndex < dataEE.externalEntityTypes.length - 1}
                     canMovePrev={currentExternalEntityTypeIndex > 0}
                     onNext={handleNextType}
                     onPrev={handlePrevType}
@@ -354,7 +323,7 @@ export const Types = () => {
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteExternalEntityTypes}
+                onDelete={deleteExternalEntityTypes}
                 entityId={selectedExternalEntityTypeForDelete}
             />
             {openColumnSelector && (

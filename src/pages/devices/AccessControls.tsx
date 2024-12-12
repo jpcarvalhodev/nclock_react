@@ -5,15 +5,13 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Key, SetStateAction, useEffect, useState } from "react";
-import * as apiService from "../../helpers/apiService";
+import { Key, useContext, useEffect, useState } from "react";
 import { customStyles } from "../../components/CustomStylesDataTable";
-import { AccessControl, Doors } from "../../helpers/Types";
+import { AccessControl } from "../../helpers/Types";
 import { accessControlFields } from "../../helpers/Fields";
 import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { toast } from "react-toastify";
 import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import Split from "react-split";
 import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
@@ -21,6 +19,7 @@ import { DeleteACModal } from "../../modals/DeleteACModal";
 import { PrintButton } from "../../components/PrintButton";
 import { ExportButton } from "../../components/ExportButton";
 import { TextField, TextFieldProps } from "@mui/material";
+import { TerminalsContext, DeviceContextType } from "../../context/TerminalsContext";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -41,7 +40,13 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useColor();
-    const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
+    const { 
+        accessControl,
+        fetchAccessControl,
+        handleAddAccessControl,
+        handleUpdateAccessControl,
+        handleDeleteAccessControl
+    } = useContext(TerminalsContext) as DeviceContextType;
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
     const [selectedRows, setSelectedRows] = useState<AccessControl[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState<boolean>(false);
@@ -58,53 +63,19 @@ export const AccessControls = () => {
     const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(null);
     const [currentAccessControlIndex, setCurrentAccessControlIndex] = useState(0);
 
-    // Função para buscar a listagem de controle de acesso
-    const fetchAccessControl = async () => {
-        try {
-            const data = await apiService.fetchAllAccessControl();
-            setAccessControl(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de controle de acesso:', error);
-        }
-    };
-
     // Função para adicionar o controle de acesso
-    const handleAddAccessControl = async (newAccessControl: Partial<AccessControl>) => {
-        try {
-            const data = await apiService.addAccessControl(newAccessControl);
-            setAccessControl(prevAccessControls => [...prevAccessControls, data]);
-            toast.success(data.message || 'Controle de acesso adicionado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao adicionar o controle de acesso:', error);
-        } finally {
-            refreshAccessControl();
-        }
+    const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
+        await handleAddAccessControl(newAccessControl);
     };
 
     // Função para editar o controle de acesso
-    const handleUpdateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
-        try {
-            const data = await apiService.updateAccessControl(newAccessControl);
-            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.acId === data.acId ? { ...item, acc: [data.acc] } : item));
-            toast.success(data.message || 'Controle de acesso atualizado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao editar o controle de acesso:', error);
-        } finally {
-            refreshAccessControl();
-        }
+    const updateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
+        await handleUpdateAccessControl(newAccessControl);
     };
 
     // Função para deletar o controle de acesso
-    const handleDeleteAccessControl = async (employeesId: string[], doorId: string) => {
-        try {
-            const data = await apiService.deleteAccessControl(employeesId, doorId);
-            setAccessControl(prevAccessControl => [...prevAccessControl, data]);
-            toast.success(data.message || 'Controle de acesso apagado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao deletar o controle de acesso:', error);
-        } finally {
-            refreshAccessControl();
-        }
+    const deleteAccessControl = async (employeesId: string[], doorId: string) => {
+        await handleDeleteAccessControl(employeesId, doorId);
     }
 
     // Busca as listagens de movimentos ao carregar a página
@@ -418,7 +389,7 @@ export const AccessControls = () => {
                 <DeleteACModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteAccessControl}
+                    onDelete={deleteAccessControl}
                     entity={selectedAccessToDelete}
                 />
             )}
@@ -426,7 +397,7 @@ export const AccessControls = () => {
                 title="Adicionar Acesso"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddAccessControl}
+                onSave={addAccessControl}
                 fields={accessControlFields}
                 initialValues={initialData || {}}
             />
@@ -435,7 +406,7 @@ export const AccessControls = () => {
                     title="Atualizar Acesso"
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
-                    onUpdate={handleUpdateAccessControl}
+                    onUpdate={updateAccessControl}
                     fields={accessControlFields}
                     entity={selectedAccessControl}
                     onDuplicate={handleDuplicate}

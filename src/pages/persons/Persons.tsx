@@ -105,10 +105,8 @@ export const Persons = () => {
 
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
-        for (let id of employeeIds) {
-            await handleDeleteEmployee(id);
-            refreshEmployees();
-        }
+        await handleDeleteEmployee(employeeIds);
+        refreshEmployees();
     };
 
     // Configurando a função onDelete para iniciar o processo de exclusão

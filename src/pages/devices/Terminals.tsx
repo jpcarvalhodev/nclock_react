@@ -1018,10 +1018,8 @@ export const Terminals = () => {
             toast('Selecione um terminal e pelo menos um utilizador!');
         } else {
             setLoadingDeleteSelectedUsers(true);
-            for (const user of selectedUserRows) {
-                const userId = user.employeeID;
-                await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userId);
-            }
+            const userIds = selectedUserRows.map(user => user.employeeID);
+            await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingDeleteSelectedUsers(false);
         }
     }
@@ -1032,10 +1030,8 @@ export const Terminals = () => {
             toast('Selecione um terminal e pelo menos um utilizador!');
         } else {
             setLoadingFetchSelectedUsers(true);
-            for (const user of selectedUserRows) {
-                const userId = user.employeeID;
-                await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userId);
-            }
+            const userIds = selectedUserRows.map(user => user.employeeID);
+            await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingFetchSelectedUsers(false);
         }
     }
@@ -1246,7 +1242,7 @@ export const Terminals = () => {
                         >
                             <Tab eventKey="tasks" title="Actividade">
                                 <div>
-                                    <p className="activityTabContent">Actividades</p>
+                                    <p className="activityTabContent">Tarefas do Terminal</p>
                                     {
                                         selectedTerminal && selectedDeviceRows.length > 0 ? (
                                             loadingActivityData ?
@@ -1271,7 +1267,7 @@ export const Terminals = () => {
                                     }
                                 </div>
                                 <div>
-                                    <p className="activityTabContent">Movimentos</p>
+                                    <p className="activityTabContent">Movimentos do Terminal</p>
                                     {
                                         selectedTerminal && selectedDeviceRows.length > 0 ? (
                                             <DataTable

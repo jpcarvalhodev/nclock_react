@@ -115,13 +115,11 @@ export const Employees = () => {
         }
         refreshEmployees();
     };
-    
+
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
-        for (let id of employeeIds) {
-            await handleDeleteEmployee(id);
-            refreshEmployees();
-        }
+        await handleDeleteEmployee(employeeIds);
+        refreshEmployees();
     };
 
     // Busca todos os dados
@@ -216,8 +214,8 @@ export const Employees = () => {
         setShowDeleteModal(true);
     };
 
-     // Configurando a função onDelete para iniciar o processo de exclusão
-     const startDeletionProcess = () => {
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
         const employeeIds = Array.from(new Set(selectedRows.map(employee => employee.employeeID)));
         setShowDeleteModal(false);
         deleteSelectedEmployees(employeeIds);

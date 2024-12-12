@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavBar } from "../../components/NavBar";
 import { Footer } from "../../components/Footer";
 import '../../css/PagesStyles.css';
@@ -10,17 +10,16 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { professionFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
-import { toast } from "react-toastify";
 import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -47,7 +46,13 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de profissões
 export const Professions = () => {
     const { navbarColor, footerColor } = useColor();
-    const [professions, setProfessions] = useState<Profession[]>([]);
+    const {
+        professions,
+        fetchAllProfessions,
+        handleAddProfession,
+        handleUpdateProfession,
+        handleDeleteProfessions,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -61,55 +66,19 @@ export const Professions = () => {
     const [initialData, setInitialData] = useState<Partial<Profession> | null>(null);
     const [currentProfessionIndex, setCurrentProfessionIndex] = useState(0);
 
-    // Função para buscar as profissões
-    const fetchAllProfessions = async () => {
-        try {
-            const data = await apiService.fetchAllProfessions();
-            setProfessions(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados das profissões:', error);
-        }
-    };
-
     // Função para adicionar uma nova profissão
-    const handleAddProfession = async (profession: Profession) => {
-        try {
-            const data = await apiService.addProfession(profession);
-            setProfessions([...professions, data]);
-            toast.success(data.value || 'Profissão adicionada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar nova profissão:', error);
-        } finally {
-            refreshProfessions();
-        }
+    const addProfession = async (profession: Profession) => {
+        await handleAddProfession(profession);
     };
 
     // Função para atualizar uma profissão
-    const handleUpdateProfession = async (profession: Profession) => {
-        try {
-            const updatedProfession = await apiService.updateProfession(profession);
-            setProfessions(professions => professions.map(p => p.professionID === updatedProfession.professionID ? updatedProfession : p));
-            toast.success(updatedProfession.value || 'Profissão atualizada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar a profissão:', error);
-        } finally {
-            refreshProfessions();
-        }
+    const updateProfession = async (profession: Profession) => {
+        await handleUpdateProfession(profession);
     };
 
     // Função para apagar uma profissão
-    const handleDeleteProfessions = async (professionID: string) => {
-        try {
-            const deleteProfession = await apiService.deleteProfession(professionID);
-            toast.success(deleteProfession.value || 'Profissão apagada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar a profissão:', error);
-        } finally {
-            refreshProfessions();
-        }
+    const deleteProfessions = async (professionID: string) => {
+        await handleDeleteProfessions(professionID);
     };
 
     // Atualiza a lista de profissões ao carregar a página
@@ -312,7 +281,7 @@ export const Professions = () => {
                     title="Adicionar Profissão"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddProfession}
+                    onSave={addProfession}
                     fields={professionFields}
                     initialValues={initialData || {}}
                     entityType="profissões"
@@ -321,7 +290,7 @@ export const Professions = () => {
                     <UpdateModalCatProfTypes
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateProfession}
+                        onUpdate={updateProfession}
                         entity={selectedProfession}
                         fields={professionFields}
                         onDuplicate={handleDuplicate}
@@ -336,7 +305,7 @@ export const Professions = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteProfessions}
+                    onDelete={deleteProfessions}
                     entityId={selectedProfessionForDelete}
                 />
             </div>

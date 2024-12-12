@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavBar } from "../../components/NavBar";
 import { Footer } from "../../components/Footer";
 import '../../css/PagesStyles.css';
@@ -10,18 +10,18 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { externalEntityFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
-import { toast } from "react-toastify";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { CreateModalExtEnt } from "../../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 
+// Define a interface para os dados do estado
 interface DataState {
     externalEntity: ExternalEntity[];
     externalEntityTypes: ExternalEntityTypes[];
@@ -52,7 +52,13 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
     const { navbarColor, footerColor } = useColor();
-    const [externalEntities, setExternalEntities] = useState<ExternalEntity[]>([]);
+    const {
+        dataEE,
+        fetchAllExternalEntitiesData,
+        handleAddExternalEntity,
+        handleUpdateExternalEntity,
+        handleDeleteExternalEntity,
+    } = useContext(PersonsContext) as PersonsContextType;
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'nif']);
@@ -65,62 +71,20 @@ export const ExternalEntities = () => {
     const [initialData, setInitialData] = useState<Partial<ExternalEntity> | null>(null);
     const [currentExtEntIndex, setCurrentExtEntIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<ExternalEntity[]>([]);
-    const [data, setData] = useState<DataState>({
-        externalEntity: [],
-        externalEntityTypes: [],
-    });
-
-    // Busca as entidades externas e os tipos de entidades externas
-    const fetchAllExternalEntitiesData = async () => {
-        try {
-            const { ExternalEntities, ExternalEntityTypes } = await apiService.fetchAllExternalEntitiesData() as { ExternalEntities: ExternalEntity[]; ExternalEntityTypes: ExternalEntityTypes[]; };
-            setData({
-                externalEntity: ExternalEntities,
-                externalEntityTypes: ExternalEntityTypes,
-            });
-        } catch (error) {
-            console.error('Erro ao buscar dados:', error);
-        }
-    };
 
     // Função para adicionar uma nova entidade externa
-    const handleAddExternalEntity = async (externalEntity: ExternalEntity) => {
-        try {
-            const data = await apiService.addExternalEntity(externalEntity);
-            setExternalEntities([...externalEntities, data]);
-            toast.success(data.value || 'Entidade externa adicionada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar nova entidade externa:', error);
-        }
-        refreshExternalEntities();
+    const addExternalEntity = async (externalEntity: ExternalEntity) => {
+        await handleAddExternalEntity(externalEntity);
     };
 
     // Função para atualizar uma entidade externa
-    const handleUpdateExternalEntity = async (externalEntity: ExternalEntity) => {
-        try {
-            const updatedExternalEntity = await apiService.updateExternalEntity(externalEntity);
-            setExternalEntities(externalEntities => externalEntities.map(entity => entity.externalEntityID === updatedExternalEntity.externalEntityID ? updatedExternalEntity : entity));
-            toast.success(updatedExternalEntity.value || 'Entidade Externa atualizada com sucesso');
-
-        } catch (error) {
-            console.error('Erro ao atualizar entidade externa:', error);
-        } finally {
-            refreshExternalEntities();
-        }
+    const updateExternalEntity = async (externalEntity: ExternalEntity) => {
+        await handleUpdateExternalEntity(externalEntity);
     };
 
     // Função para apagar uma entidade externa
-    const handleDeleteExternalEntity = async (externalEntityID: string) => {
-        try {
-            const deleteExtEnt = await apiService.deleteExternalEntity(externalEntityID);
-            toast.success(deleteExtEnt.value || 'Entidade externa apagada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar entidade externa:', error);
-        } finally {
-            refreshExternalEntities();
-        }
+    const deleteExternalEntity = async (externalEntityID: string) => {
+        await handleDeleteExternalEntity(externalEntityID);
     };
 
     // Atualiza as entidades externas
@@ -131,11 +95,11 @@ export const ExternalEntities = () => {
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {
         if (selectedExternalEntity) {
-            const sortedExtEnt = externalEntities.sort((a, b) => a.name.localeCompare(b.name));
+            const sortedExtEnt = dataEE.externalEntity.sort((a, b) => a.name.localeCompare(b.name));
             const extEntIndex = sortedExtEnt.findIndex(extEnt => extEnt.externalEntityID === selectedExternalEntity.externalEntityID);
             setCurrentExtEntIndex(extEntIndex);
         }
-    }, [selectedExternalEntity, externalEntities]);
+    }, [selectedExternalEntity, dataEE.externalEntity]);
 
     // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {
@@ -194,7 +158,7 @@ export const ExternalEntities = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = data.externalEntity.filter(externalEntity =>
+    const filteredDataTable = dataEE.externalEntity.filter(externalEntity =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(externalEntity[key]) === String(filters[key])
         )
@@ -210,9 +174,9 @@ export const ExternalEntities = () => {
 
     // Seleciona a entidade anterior
     const handleNextExtEnt = () => {
-        if (currentExtEntIndex < externalEntities.length - 1) {
+        if (currentExtEntIndex < dataEE.externalEntity.length - 1) {
             setCurrentExtEntIndex(currentExtEntIndex + 1);
-            setSelectedExternalEntity(externalEntities[currentExtEntIndex + 1]);
+            setSelectedExternalEntity(dataEE.externalEntity[currentExtEntIndex + 1]);
         }
     };
 
@@ -220,7 +184,7 @@ export const ExternalEntities = () => {
     const handlePrevExtEnt = () => {
         if (currentExtEntIndex > 0) {
             setCurrentExtEntIndex(currentExtEntIndex - 1);
-            setSelectedExternalEntity(externalEntities[currentExtEntIndex - 1]);
+            setSelectedExternalEntity(dataEE.externalEntity[currentExtEntIndex - 1]);
         }
     };
 
@@ -234,7 +198,7 @@ export const ExternalEntities = () => {
                     case 'dateUpdated':
                         return row[field.key] ? new Date(row[field.key]).toLocaleString() : '';
                     case 'externalEntityTypeId':
-                        const typeName = data.externalEntityTypes.find(type => type.externalEntityTypeID === row.externalEntityTypeId)?.name;
+                        const typeName = dataEE.externalEntityTypes.find(type => type.externalEntityTypeID === row.externalEntityTypeId)?.name;
                         return typeName;
                     case 'photo':
                         return row.photo ? 'Imagem disponível' : 'Sem imagem';
@@ -352,7 +316,7 @@ export const ExternalEntities = () => {
                     title="Adicionar Entidade Externa"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddExternalEntity}
+                    onSave={addExternalEntity}
                     fields={externalEntityFields}
                     initialValues={initialData || {}}
                 />
@@ -360,12 +324,12 @@ export const ExternalEntities = () => {
                     <UpdateModalExtEnt
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateExternalEntity}
+                        onUpdate={updateExternalEntity}
                         entity={selectedExternalEntity}
                         fields={externalEntityFields}
                         onDuplicate={handleDuplicate}
                         title="Atualizar Entidade Externa"
-                        canMoveNext={currentExtEntIndex < externalEntities.length - 1}
+                        canMoveNext={currentExtEntIndex < dataEE.externalEntity.length - 1}
                         canMovePrev={currentExtEntIndex > 0}
                         onNext={handleNextExtEnt}
                         onPrev={handlePrevExtEnt}
@@ -374,7 +338,7 @@ export const ExternalEntities = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteExternalEntity}
+                    onDelete={deleteExternalEntity}
                     entityId={selectedExternalEntityForDelete}
                 />
             </div>

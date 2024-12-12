@@ -118,10 +118,8 @@ export const Visitors = () => {
 
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
-        for (let id of employeeIds) {
-            await handleDeleteEmployee(id);
-            refreshEmployees();
-        }
+        await handleDeleteEmployee(employeeIds);
+        refreshEmployees();
     };
 
     // Busca todos os dados
@@ -216,8 +214,8 @@ export const Visitors = () => {
         setShowDeleteModal(true);
     };
 
-     // Configurando a função onDelete para iniciar o processo de exclusão
-     const startDeletionProcess = () => {
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
         const employeeIds = Array.from(new Set(selectedRows.map(employee => employee.employeeID)));
         setShowDeleteModal(false);
         deleteSelectedEmployees(employeeIds);
@@ -388,13 +386,13 @@ export const Visitors = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                            label="Pesquisa"
-                            variant="outlined"
-                            size='small'
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                            style={{ marginTop: -5 }}
-                        />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger

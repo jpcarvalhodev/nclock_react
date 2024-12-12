@@ -4,7 +4,7 @@ import { NavBar } from "../../components/NavBar";
 import { useColor } from "../../context/ColorContext";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import * as apiService from "../../helpers/apiService";
 import { toast } from "react-toastify";
@@ -20,6 +20,7 @@ import Split from "react-split";
 import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
+import { TerminalsContext, DeviceContextType } from "../../context/TerminalsContext";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -40,7 +41,13 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const TimePeriods = () => {
     const { navbarColor, footerColor } = useColor();
-    const [period, setPeriod] = useState<TimePeriod[]>([]);
+    const {
+        period,
+        fetchTimePeriods,
+        handleAddPeriod,
+        handleUpdatePeriod,
+        handleDeletePeriod,
+    } = useContext(TerminalsContext) as DeviceContextType;
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Feriado']);
     const [filterText, setFilterText] = useState("");
@@ -56,53 +63,19 @@ export const TimePeriods = () => {
     const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
 
-    // Função para buscar os dados dos períodos
-    const fetchTimePeriods = async () => {
-        try {
-            const data = await apiService.fetchAllTimePeriods();
-            setPeriod(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos períodos:', error);
-        }
-    };
-
     // Função para adicionar um período
-    const handleAddPeriod = async (newPeriod: Partial<TimePeriod>) => {
-        try {
-            const data = await apiService.addTimePeriod(newPeriod);
-            setPeriod([...period, data]);
-            toast.success(data.value || 'Período adicionado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao adicionar o período:', error);
-        } finally {
-            refreshPeriods();
-        }
+    const addPeriod = async (newPeriod: Partial<TimePeriod>) => {
+        await handleAddPeriod(newPeriod);
     }
 
     // Função para atualizar um período
-    const handleUpdatePeriod = async (updatedPeriod: TimePeriod) => {
-        try {
-            const data = await apiService.updateTimePeriod(updatedPeriod);
-            const updatedPeriods = period.map(p => p.id === data.id ? data : p);
-            setPeriod(updatedPeriods);
-            toast.success('Período atualizado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar o período:', error);
-        } finally {
-            refreshPeriods();
-        }
+    const updatePeriod = async (updatedPeriod: TimePeriod) => {
+        await handleUpdatePeriod(updatedPeriod);
     }
 
     // Função para eliminar um período
-    const handleDeletePeriod = async (id: string) => {
-        try {
-            await apiService.deleteTimePeriod(id);
-            toast.success('Período eliminado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao eliminar o período:', error);
-        } finally {
-            refreshPeriods();
-        }
+    const deletePeriod = async (id: string) => {
+        await handleDeletePeriod(id);
     }
 
     // Busca os utilizadores ao carregar a página
@@ -380,7 +353,7 @@ export const TimePeriods = () => {
                 title="Adicionar Período"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddPeriod}
+                onSave={addPeriod}
                 fields={timePeriodFields}
                 initialValuesData={initialData || {}}
             />
@@ -388,7 +361,7 @@ export const TimePeriods = () => {
                 <UpdateModalPeriods
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
-                    onUpdate={handleUpdatePeriod}
+                    onUpdate={updatePeriod}
                     entity={selectedPeriod}
                     fields={timePeriodFields}
                     onDuplicate={handleDuplicate}
@@ -402,7 +375,7 @@ export const TimePeriods = () => {
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeletePeriod}
+                onDelete={deletePeriod}
                 entityId={selectedPeriodToDelete}
             />
             {openColumnSelector && (

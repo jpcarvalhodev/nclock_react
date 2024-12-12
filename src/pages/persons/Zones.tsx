@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavBar } from "../../components/NavBar";
 import { Footer } from "../../components/Footer";
 import '../../css/PagesStyles.css';
@@ -10,17 +10,16 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { zoneFields } from "../../helpers/Fields";
 import { ExportButton } from "../../components/ExportButton";
-import { toast } from "react-toastify";
 import { CreateModalZones } from "../../modals/CreateModalZones";
 import { UpdateModalZones } from "../../modals/UpdateModalZones";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import * as apiService from "../../helpers/apiService";
 import { useColor } from "../../context/ColorContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -47,7 +46,13 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de Zonas
 export const Zones = () => {
     const { navbarColor, footerColor } = useColor();
-    const [zones, setZones] = useState<Zone[]>([]);
+    const {
+        zones,
+        fetchAllZones,
+        handleAddZone,
+        handleUpdateZone,
+        handleDeleteZone
+    } = useContext(PersonsContext) as PersonsContextType;
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -61,55 +66,19 @@ export const Zones = () => {
     const [currentZoneIndex, setCurrentZoneIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Zone[]>([]);
 
-    // Função para buscar as zonas
-    const fetchAllZones = async () => {
-        try {
-            const data = await apiService.fetchAllZones();
-            setZones(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados das zonas:', error);
-        }
-    };
-
     // Função para adicionar uma zona
-    const handleAddZone = async (zone: Zone) => {
-        try {
-            const data = await apiService.addZone(zone);
-            setZones([...zones, data]);
-            toast.success(data.value || 'Zona adicionada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao adicionar nova zona:', error);
-        } finally {
-            refreshZones();
-        }
+    const addZone = async (zone: Zone) => {
+        await handleAddZone(zone);
     };
 
     // Função para atualizar uma zona
-    const handleUpdateZone = async (zone: Zone) => {
-        try {
-            const updatedZone = await apiService.updateZone(zone);
-            setZones(zones => zones.map(z => z.zoneID === updatedZone.zoneID ? updatedZone : z));
-            toast.success(updatedZone.value || 'Zona atualizada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao atualizar zona:', error);
-        } finally {
-            refreshZones();
-        }
+    const updateZone = async (zone: Zone) => {
+        await handleUpdateZone(zone);
     };
 
     // Função para apagar uma zona
-    const handleDeleteZone = async (zoneID: string) => {
-        try {
-            const deleteZone = await apiService.deleteZone(zoneID);
-            toast.success(deleteZone.value || 'Zona apagada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao apagar zona:', error);
-        } finally {
-            refreshZones();
-        }
+    const deleteZone = async (zoneID: string) => {
+        await handleDeleteZone(zoneID);
     };
 
     // Atualiza a lista de zonas ao carregar a página
@@ -337,7 +306,7 @@ export const Zones = () => {
                     title="Adicionar Zona"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
-                    onSave={handleAddZone}
+                    onSave={addZone}
                     fields={zoneFields}
                     initialValues={initialData || {}}
                 />
@@ -345,7 +314,7 @@ export const Zones = () => {
                     <UpdateModalZones
                         open={showUpdateModal}
                         onClose={handleCloseUpdateModal}
-                        onUpdate={handleUpdateZone}
+                        onUpdate={updateZone}
                         entity={selectedZone}
                         fields={zoneFields}
                         onDuplicate={handleDuplicate}
@@ -359,7 +328,7 @@ export const Zones = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={handleDeleteZone}
+                    onDelete={deleteZone}
                     entityId={selectedZoneForDelete}
                 />
             </div>
