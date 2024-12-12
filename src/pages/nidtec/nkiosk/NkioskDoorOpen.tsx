@@ -255,6 +255,11 @@ export const NkioskDoorOpen = () => {
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return manualOpenDoorFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -290,8 +295,8 @@ export const NkioskDoorOpen = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={manualOpenWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : manualOpenWithNames} fields={manualOpenDoorFields} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : manualOpenWithNames} fields={manualOpenDoorFields} />
+                                    <ExportButton allData={manualOpenWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : manualOpenWithNames} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : manualOpenWithNames} fields={getSelectedFields()} />
                                     <OverlayTrigger
                                         placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Abrir</Tooltip>}

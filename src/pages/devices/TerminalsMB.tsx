@@ -314,6 +314,11 @@ export const TerminalsMB = () => {
         }
     }
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return mbDeviceFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <TerminalsProvider>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -356,8 +361,8 @@ export const TerminalsMB = () => {
                                         >
                                             <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                         </OverlayTrigger>
-                                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceFields} />
-                                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceFields} />
+                                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                                     </div>
                                 </div>
                             </div>

@@ -102,6 +102,9 @@ body {
     display: flex;
     border-bottom: 1px solid #ccc;
     background-color: white;
+}
+
+#nclock .section {
     overflow-x: auto;
 }
 

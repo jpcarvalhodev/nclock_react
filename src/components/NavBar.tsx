@@ -8,9 +8,9 @@ import { TerminalOptionsModal } from '../modals/TerminalOptions';
 import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
 import person from '../assets/img/navbar/pessoas/person.png';
 import categories from '../assets/img/navbar/pessoas/categories.png';
-import departments from '../assets/img/navbar/pessoas/departments.png';
+import department from '../assets/img/navbar/pessoas/departments.png';
 import externalEntities from '../assets/img/navbar/pessoas/externalEntities.png';
-import groups from '../assets/img/navbar/pessoas/groups.png';
+import group from '../assets/img/navbar/pessoas/groups.png';
 import professions from '../assets/img/navbar/pessoas/professions.png';
 import zones from '../assets/img/navbar/pessoas/zones.png';
 import fraccoes from '../assets/img/navbar/pessoas/fraccoes.png';
@@ -138,7 +138,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { adsFields, emailFields, kioskConfigFields, licenseFields } from '../helpers/Fields';
+import { adsFields, departmentFields, emailFields, employeeFields, groupFields, kioskConfigFields, licenseFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -176,6 +176,9 @@ import counter from '../assets/img/navbar/nkiosk/counter.png';
 import sensor from '../assets/img/navbar/nkiosk/sensor.png';
 import cell from '../assets/img/navbar/nkiosk/cell.png';
 import { fetchWithAuth } from './FetchWithAuth';
+import { PrintButton } from './PrintButton';
+import { createRoot } from 'react-dom/client';
+import { set } from 'date-fns';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -238,7 +241,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
 	const { handleAddAds } = useAds();
 	const { license, getSoftwareEnabledStatus, fetchAllLicensesWithoutKey, handleUpdateLicense } = useLicense();
-	const { registeredUsers } = usePersons();
+	const { employees, departments, groups, registeredUsers } = usePersons();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -370,6 +373,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showSoftwaresDropdown, setShowSoftwaresDropdown] = useState(false);
 	const [menuStructureStart, setMenuStructureStart] = useState<MenuStructure>({});
 	const [menuStructureNG, setMenuStructureNG] = useState<MenuStructure>({});
+	const [menuStructureListing, setMenuStructureListing] = useState<MenuStructure>({});
+	const [menuStructureListingNKiosk, setMenuStructureListingNKiosk] = useState<MenuStructure>({});
 	const [kioskConfig, setKioskConfig] = useState<KioskConfig>();
 	const [showContactModal, setShowContactModal] = useState(false);
 	const [showKioskDropdown, setShowKioskDropdown] = useState(false);
@@ -1041,6 +1046,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 		setMenuStructureNG(newMenuStructure);
 	}, [license]);
 
+	// Função para lidar com a impressão direta
+	const handleDirectPrint = (data: any, fields: any) => {
+		console.log("Print iniciado", data, fields);
+		const element = document.createElement("div");
+		document.body.appendChild(element);
+		const root = createRoot(element);
+		root.render(<PrintButton data={data} fields={fields} />);
+		setTimeout(() => {
+			root.unmount();
+			document.body.removeChild(element);
+		}, 1000);
+	};
+
 	// Estrutura de menu opcional para o nkiosk
 	const KioskOptionalMenuStructure: MenuStructure = {
 		contador: {
@@ -1064,82 +1082,87 @@ export const NavBar = ({ style }: NavBarProps) => {
 	};
 
 	// Estrutura do menu de listagens
-	const ListingMenuStructure = {
-		pessoas: {
-			label: 'Listagem Pessoas',
-			image: person,
-			alt: 'pessoas',
-			key: 'pessoas',
+	useEffect(() => {
+		const ListingMenuStructure = {
+			pessoas: {
+				label: 'Listagem Pessoas',
+				image: person,
+				alt: 'pessoas',
+				key: 'pessoas',
+				submenu: [
+					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', image: person, alt: 'pessoas', onClick: () => handleDirectPrint(employees, employeeFields) },
+					{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', image: person, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', image: person, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', image: person, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Profissões', key: 'geral_profissoes', image: person, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Zonas', key: 'geral_zonas', image: person, alt: 'pessoas' },
+					/* { label: 'Listagem Geral de Fracções', key: 'geral_fraccoes', image: person, alt: 'pessoas' }, */
+					{ label: 'Listagem Geral de Entidades Externas', key: 'geral_entext', image: person, alt: 'pessoas' }
+				],
+			},
+			dispositivos: {
+				label: 'Listagem Dispositivos',
+				image: terminal,
+				alt: 'dispositivos',
+				key: 'dispositivos',
+				submenu: [
+					{ label: 'Listagem Geral de Equipamentos', key: 'geral_equipamentos', image: terminal, alt: 'dispositivos' },
+					{ label: 'Listagem Geral de Controlo de Acessos', key: 'geral_controlo', image: terminal, alt: 'dispositivos' },
+					{ label: 'Listagem Geral de Períodos', key: 'geral_periodos', image: terminal, alt: 'dispositivos' },
+					{ label: 'Listagem Geral de Fecho e Abertura', key: 'geral_fecho', image: terminal, alt: 'dispositivos' }
+				],
+			},
+			configuracao: {
+				label: 'Listagem Configuração',
+				image: settings,
+				alt: 'configuração',
+				key: 'configuracao',
+				submenu: [
+					{ label: 'Listagem Geral de Utilizadores', key: 'geral_utilizadores', image: settings, alt: 'configuração' },
+					{ label: 'Listagem Geral de Logins', key: 'geral_logins', image: settings, alt: 'configuração' },
+					{ label: 'Listagem Geral de Histórico', key: 'geral_historico', image: settings, alt: 'configuração' }
+				],
+			}
+		};
+
+		// Estrutura do menu de listagens para o nkiosk
+		const nkioskSubmenu = {
+			label: 'Listagem Nkiosk',
+			image: nkiosk,
+			alt: 'nkiosk',
+			key: 'nkiosk',
 			submenu: [
-				{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', image: person, alt: 'pessoas' },
-				{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', image: person, alt: 'pessoas' },
-				{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', image: person, alt: 'pessoas' },
-				{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', image: person, alt: 'pessoas' },
-				{ label: 'Listagem Geral de Profissões', key: 'geral_profissoes', image: person, alt: 'pessoas' },
-				{ label: 'Listagem Geral de Zonas', key: 'geral_zonas', image: person, alt: 'pessoas' },
-				{ label: 'Listagem Geral de Fracções', key: 'geral_fraccoes', image: person, alt: 'pessoas' },
-				{ label: 'Listagem Geral de Entidades Externas', key: 'geral_entext', image: person, alt: 'pessoas' }
-			],
-		},
-		dispositivos: {
-			label: 'Listagem Dispositivos',
-			image: terminal,
-			alt: 'dispositivos',
-			key: 'dispositivos',
-			submenu: [
-				{ label: 'Listagem Geral de Equipamentos', key: 'geral_equipamentos', image: terminal, alt: 'dispositivos' },
-				{ label: 'Listagem Geral de Controlo de Acessos', key: 'geral_controlo', image: terminal, alt: 'dispositivos' },
-				{ label: 'Listagem Geral de Períodos', key: 'geral_periodos', image: terminal, alt: 'dispositivos' },
-				{ label: 'Listagem Geral de Fecho e Abertura', key: 'geral_fecho', image: terminal, alt: 'dispositivos' }
-			],
-		},
-		configuracao: {
-			label: 'Listagem Configuração',
-			image: settings,
-			alt: 'configuração',
-			key: 'configuracao',
-			submenu: [
-				{ label: 'Listagem Geral de Utilizadores', key: 'geral_utilizadores', image: settings, alt: 'configuração' },
-				{ label: 'Listagem Geral de Logins', key: 'geral_logins', image: settings, alt: 'configuração' },
-				{ label: 'Listagem Geral de Histórico', key: 'geral_historico', image: settings, alt: 'configuração' }
+				{ label: 'Listagem Recebimento Multibanco', key: 'recebimento_multibanco', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Recebimento Moedeiro', key: 'recebimento_moedeiro', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Recebimentos Totais', key: 'recebimento_totais', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Movimento Torniquete', key: 'movimento_torniquete', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Movimento Quiosque', key: 'movimento_quiosque', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Movimentos Totais', key: 'movimento_totais', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Remota Video Porteiro', key: 'remota_vp', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Remota Abertura Manual', key: 'remota_abertura', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Registos Recolha Moedas', key: 'registo_recolhas', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Registos Limpeza Geral', key: 'registo_limpeza', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Registos Contador', key: 'registo_contador', image: nkiosk, alt: 'nkiosk' },
+				{ label: 'Listagem Registos Ocorrências', key: 'registo_ocorrencias', image: nkiosk, alt: 'nkiosk' }
 			],
 		}
-	};
 
-	// Estrutura do menu de listagens para o nkiosk
-	const nkioskSubmenu = {
-		label: 'Listagem Nkiosk',
-		image: nkiosk,
-		alt: 'nkiosk',
-		key: 'nkiosk',
-		submenu: [
-			{ label: 'Listagem Recebimento Multibanco', key: 'recebimento_multibanco', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Recebimento Moedeiro', key: 'recebimento_moedeiro', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Recebimentos Totais', key: 'recebimento_totais', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Movimento Torniquete', key: 'movimento_torniquete', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Movimento Quiosque', key: 'movimento_quiosque', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Movimentos Totais', key: 'movimento_totais', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Remota Video Porteiro', key: 'remota_vp', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Remota Abertura Manual', key: 'remota_abertura', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Registos Recolha Moedas', key: 'registo_recolhas', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Registos Limpeza Geral', key: 'registo_limpeza', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Registos Contador', key: 'registo_contador', image: nkiosk, alt: 'nkiosk' },
-			{ label: 'Listagem Registos Ocorrências', key: 'registo_ocorrencias', image: nkiosk, alt: 'nkiosk' }
-		],
-	}
+		// Função para estender o menu de listagens para um software específico
+		function extendMenuForSoftware(softwareKey: string, softwareSpecificItems: MenuItem): MenuStructure {
+			// Clone the base structure to avoid mutations
+			const extendedMenu = JSON.parse(JSON.stringify(ListingMenuStructure));
 
-	// Função para estender o menu de listagens para um software específico
-	function extendMenuForSoftware(softwareKey: string, softwareSpecificItems: MenuItem): MenuStructure {
-		// Clone the base structure to avoid mutations
-		const extendedMenu = JSON.parse(JSON.stringify(ListingMenuStructure));
+			// Extend the menu with software-specific sections
+			extendedMenu[softwareKey] = softwareSpecificItems;
+			return extendedMenu;
+		}
 
-		// Extend the menu with software-specific sections
-		extendedMenu[softwareKey] = softwareSpecificItems;
-		return extendedMenu;
-	}
+		// Estrutura do menu de listagens para o nkiosk
+		const nkioskMenu = extendMenuForSoftware('nkiosk', nkioskSubmenu);
 
-	// Estrutura do menu de listagens para o nkiosk
-	const nkioskMenu = extendMenuForSoftware('nkiosk', nkioskSubmenu);
+		setMenuStructureListing(ListingMenuStructure);
+		setMenuStructureListingNKiosk(nkioskMenu);
+	}, [employees]);
 
 	// Define a estrutura do menu do nidgroup
 	useEffect(() => {
@@ -1228,6 +1251,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 		</li>
 	);
 
+	// Função para o print ou mudança de aba
+	const handleMenuItemClick = (itemKey: string) => {
+		switch (itemKey) {
+			case 'geral_pessoas':
+				handleDirectPrint(employees, employeeFields);
+				break;
+			case 'geral_departamentos':
+				handleDirectPrint(departments, departmentFields);
+				break;
+			case 'geral_grupos':
+				handleDirectPrint(groups, groupFields);
+				break;
+			default:
+				handleTab(itemKey);
+				break;
+		}
+	}
+
 	// Função genérica para renderizar o menu
 	const renderMenu = (menuKey: keyof MenuStructure, menuStructure: MenuStructure) => {
 		const menu = menuStructure[String(menuKey)];
@@ -1256,7 +1297,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<MenuItem
 								key={item.key}
 								active={activeMenu === item.key}
-								onClick={() => handleTab(item.key)}
+								onClick={() => handleMenuItemClick(item.key)}
 								image={item.image}
 								alt={item.alt}
 								label={item.label}
@@ -3052,13 +3093,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={print} alt="botão listagens" />
-													</span>
-													<span className="text">Listagens</span>
-												</Button>
-												{/* <Dropdown
+												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -3071,12 +3106,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
 														<div>
-															{Object.keys(nkioskMenu).map((menuKey) => (
-																<div key={menuKey}>{renderMenu(menuKey, nkioskMenu)}</div>
+															{Object.keys(menuStructureListingNKiosk).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListingNKiosk)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown> */}
+												</Dropdown>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nkiosk/nkioskgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkioskgraph' ? 'current-active' : ''}`}>
@@ -3365,7 +3400,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="grid-container">
 												<Link to="/persons/Departments" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Departments' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={departments} alt="botão funcionários" />
+														<img src={department} alt="botão funcionários" />
 													</span>
 													<span className="text">Departamentos</span>
 												</Link>
@@ -3377,7 +3412,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 												<Link to="/persons/Groups" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Groups' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={groups} alt="botão funcionários externos" />
+														<img src={group} alt="botão funcionários externos" />
 													</span>
 													<span className="text">Grupos</span>
 												</Link>
@@ -3599,7 +3634,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="/configs/entities" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/configs/entities' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={departments} alt="botão entidade" />
+														<img src={department} alt="botão entidade" />
 													</span>
 													<span className="text">Entidade</span>
 												</Link>
@@ -3665,7 +3700,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={groups} alt="botão perfis" />
+														<img src={group} alt="botão perfis" />
 													</span>
 													<span className="text">Perfis</span>
 												</Button>

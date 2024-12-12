@@ -366,6 +366,11 @@ export const Employees = () => {
         ignoreRowClick: true,
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return employeeFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <PersonsProvider>
             <div className="main-container">
@@ -415,8 +420,8 @@ export const Employees = () => {
                                     >
                                         <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedEmployeesToDelete} iconSize='1.1em' />
                                     </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeFields} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeFields} />
+                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                                 </div>
                             </div>
                             <DataTable

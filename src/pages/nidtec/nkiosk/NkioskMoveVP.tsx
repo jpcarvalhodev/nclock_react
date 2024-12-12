@@ -265,6 +265,11 @@ export const NkioskMoveVP = () => {
     // Calcula o valor total dos movimentos
     const totalAmount = filteredDataTable.length;
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return transactionCardFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -302,8 +307,8 @@ export const NkioskMoveVP = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={moveVPWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveVPWithNames} fields={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveVPWithNames} fields={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')} />
+                                    <ExportButton allData={moveVPWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveVPWithNames} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveVPWithNames} fields={getSelectedFields()} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

@@ -311,7 +311,12 @@ export const NkioskOccurrences = () => {
             }
         })
     )
-        .sort((a, b) => new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime());
+    .sort((a, b) => new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime());
+
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return limpezasEOcorrenciasFields.filter(field => selectedColumns.includes(field.key));
+    };
 
     return (
         <div className="main-container">
@@ -355,8 +360,8 @@ export const NkioskOccurrences = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')} />
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
                                 <input

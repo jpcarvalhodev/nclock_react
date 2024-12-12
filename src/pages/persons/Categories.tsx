@@ -262,6 +262,11 @@ export const Categories = () => {
         ignoreRowClick: true,
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return categoryFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -299,8 +304,8 @@ export const Categories = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={categoryFields} />
-                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={categoryFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
                 </div>
                 <CreateModalCatProfTypes

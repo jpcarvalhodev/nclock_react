@@ -276,6 +276,11 @@ export const NclockPresence = () => {
         setSelectedRows(state.selectedRows);
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return employeeAttendanceTimesFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <AttendanceProvider>
             <div className="main-container">
@@ -315,8 +320,8 @@ export const NclockPresence = () => {
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
                                         />
                                     </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeAttendanceTimesFields} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={employeeAttendanceTimesFields} />
+                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                                 </div>
                             </div>
                             <DataTable

@@ -228,6 +228,11 @@ export const NkioskCounter = () => {
     // Calcula o total de movimentos Quiosque
     const totalKioskAmount = filteredDataTable.filter(transaction => transaction.eventType === 'Quiosque').length;
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return counterFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -264,8 +269,8 @@ export const NkioskCounter = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={getCounterWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCounterWithNames} fields={counterFields} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCounterWithNames} fields={counterFields} />
+                                <ExportButton allData={getCounterWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCounterWithNames} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCounterWithNames} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
                                 <input

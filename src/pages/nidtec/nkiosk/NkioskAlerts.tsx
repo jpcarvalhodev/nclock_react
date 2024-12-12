@@ -200,6 +200,11 @@ export const NkioskAlerts = () => {
             };
         });
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return mbDeviceStatusFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -236,8 +241,8 @@ export const NkioskAlerts = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')} />
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
                                 <input

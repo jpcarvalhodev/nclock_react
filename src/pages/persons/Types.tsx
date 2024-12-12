@@ -259,6 +259,11 @@ export const Types = () => {
         ignoreRowClick: true,
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return externalEntityTypeFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -296,8 +301,8 @@ export const Types = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={externalEntityTypeFields} />
-                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={externalEntityTypeFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
                 </div>
             </div>

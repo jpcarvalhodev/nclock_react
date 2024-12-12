@@ -209,6 +209,11 @@ export const TerminalCloseOpen = () => {
         rangeSeparatorText: 'de',
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return mbDeviceCloseOpenFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <TerminalsProvider>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -236,8 +241,8 @@ export const TerminalCloseOpen = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={filteredDeviceDataTable} selectedData={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={mbDeviceCloseOpenFields} />
-                                    <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={mbDeviceCloseOpenFields} />
+                                    <ExportButton allData={filteredDeviceDataTable} selectedData={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

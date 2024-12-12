@@ -1006,10 +1006,8 @@ export const Terminals = () => {
             toast('Selecione um terminal e pelo menos um utilizador!');
         } else {
             setLoadingSendSelectedUsers(true);
-            for (const user of selectedUserRows) {
-                const userId = user.employeeID;
-                await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userId);
-            }
+            const userIds = selectedUserRows.map(user => user.employeeID);
+            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingSendSelectedUsers(false);
         }
     }
@@ -1175,6 +1173,11 @@ export const Terminals = () => {
         }
     }
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return deviceFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <TerminalsProvider>
             <div className="main-container" style={{ overflow: 'auto' }}>
@@ -1203,8 +1206,8 @@ export const Terminals = () => {
                             >
                                 <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
                             </OverlayTrigger>
-                            <ExportButton allData={filteredDeviceDataTable} selectedData={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={deviceFields} />
-                            <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={deviceFields} />
+                            <ExportButton allData={filteredDeviceDataTable} selectedData={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
+                            <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
                         </div>
                     </div>
                 </div>

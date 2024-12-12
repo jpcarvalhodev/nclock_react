@@ -314,6 +314,11 @@ export const NkioskCleaning = () => {
         ignoreRowClick: true,
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return limpezasEOcorrenciasFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -356,8 +361,8 @@ export const NkioskCleaning = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={limpezasEOcorrenciasFields} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={limpezasEOcorrenciasFields} />
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
                                 <input

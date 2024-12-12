@@ -314,6 +314,11 @@ export const NkioskMoveCard = () => {
         setLoadingAuxOut(true);
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return transactionCardFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -351,8 +356,8 @@ export const NkioskMoveCard = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={moveCardWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={transactionCardFields} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={transactionCardFields} />
+                                    <ExportButton allData={moveCardWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
                                     <OverlayTrigger
                                         placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Braço</Tooltip>}

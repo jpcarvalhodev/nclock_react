@@ -334,6 +334,11 @@ export const NkioskGetCoins = () => {
         }
     }
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return recolhaMoedeiroEContadorFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -376,8 +381,8 @@ export const NkioskGetCoins = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={getCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={recolhaMoedeiroEContadorFields} />
+                                <ExportButton allData={getCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={getSelectedFields()} />
                                 <OverlayTrigger
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}

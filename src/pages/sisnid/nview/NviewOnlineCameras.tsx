@@ -280,6 +280,11 @@ export const NviewOnlineCameras = () => {
         ignoreRowClick: true,
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return cameraFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -320,8 +325,8 @@ export const NviewOnlineCameras = () => {
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em'
                             />
                         </OverlayTrigger>
-                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={cameraFields} />
-                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={cameraFields} />
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
                 </div>
                 <div className='table-css'>

@@ -86,7 +86,7 @@ export const Persons = () => {
         };
         await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
         setData({ ...data, employees: employees });
-        
+
         refreshEmployees();
     };
 
@@ -167,6 +167,11 @@ export const Persons = () => {
         setSelectedColumns(allColumnKeys);
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return employeeFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <PersonsProvider>
             <div className="main-container">
@@ -183,13 +188,13 @@ export const Persons = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                            label="Pesquisa"
-                            variant="outlined"
-                            size='small'
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                            style={{ marginTop: -5 }}
-                        />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
@@ -216,8 +221,8 @@ export const Persons = () => {
                                     >
                                         <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedEmployeesToDelete} iconSize='1.1em' />
                                     </OverlayTrigger>
-                                    <ExportButton allData={filteredData} selectedData={selectedRows.length > 0 ? selectedRows : filteredData} fields={employeeFields} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredData} fields={employeeFields} />
+                                    <ExportButton allData={filteredData} selectedData={selectedRows.length > 0 ? selectedRows : filteredData} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredData} fields={getSelectedFields()} />
                                 </div>
                             </div>
                             <PersonsDataTable

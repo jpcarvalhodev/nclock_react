@@ -283,6 +283,11 @@ export const NkioskMoveKiosk = () => {
     // Calcula o valor total dos movimentos
     const totalAmount = filteredDataTable.length;
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return transactionCardFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -319,8 +324,8 @@ export const NkioskMoveKiosk = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={moveKioskWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveKioskWithNames} fields={transactionCardFields} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveKioskWithNames} fields={transactionCardFields} />
+                                <ExportButton allData={moveKioskWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveKioskWithNames} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveKioskWithNames} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
                                 <input

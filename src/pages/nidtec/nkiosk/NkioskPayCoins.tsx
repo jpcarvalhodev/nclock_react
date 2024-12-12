@@ -284,6 +284,11 @@ export const NkioskPayCoins = () => {
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return transactionMBFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -321,8 +326,8 @@ export const NkioskPayCoins = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={payCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : payCoinsWithNames} fields={transactionMBFields.filter(field => field.key !== 'clientTicket' && field.key !== 'merchantTicket' && field.key !== 'tpId' && field.key !== 'email')} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : payCoinsWithNames} fields={transactionMBFields.filter(field => field.key !== 'clientTicket' && field.key !== 'merchantTicket' && field.key !== 'tpId' && field.key !== 'email')} />
+                                    <ExportButton allData={payCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : payCoinsWithNames} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : payCoinsWithNames} fields={getSelectedFields()} />
                                 </div>
                                 <div className="date-range-search">
                                     <OverlayTrigger

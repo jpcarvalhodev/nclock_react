@@ -166,7 +166,7 @@ export const HistoryLogs = () => {
             }
         })
     )
-    .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
+        .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<Logs>[] = logsFields
@@ -195,6 +195,11 @@ export const HistoryLogs = () => {
             };
         });
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return logsFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -215,7 +220,7 @@ export const HistoryLogs = () => {
                                     size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
                             <div className="buttons-container-others">
@@ -231,8 +236,8 @@ export const HistoryLogs = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={logsFields} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={logsFields} />
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
                                 <input

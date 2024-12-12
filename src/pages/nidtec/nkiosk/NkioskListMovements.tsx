@@ -375,6 +375,11 @@ export const NkioskListMovements = () => {
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return combinedMovements.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -412,8 +417,8 @@ export const NkioskListMovements = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={listMoveWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={combinedMovements} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={combinedMovements} />
+                                    <ExportButton allData={listMoveWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
                                 </div>
                                 <div className="date-range-search">
                                     <input

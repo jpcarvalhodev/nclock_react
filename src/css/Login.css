@@ -106,6 +106,7 @@
 #login .form-login input[type="password"] {
     height: 40px;
     width: 100%;
+    border: none;
 }
 
 #login .input-username-password {

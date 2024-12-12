@@ -313,23 +313,19 @@ export const fetchAllUsersOnDevice = async (zktecoDeviceID: string) => {
     return response.json();
 }
 
-export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string[] | null) => {
     let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
-    if (employeeID !== null) {
-        url += `?employeeIds=${employeeID}`;
-    }
-
-    let bodyData: BodyData = { zktecoDeviceID };
+    
     if (employeeID) {
-        bodyData.employeeID = employeeID;
+        const employeeIdParams = employeeID.map(id => `employeeIds=${id}`).join('&');
+        url += `?${employeeIdParams}`;
     }
 
     const response = await fetchWithAuth(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bodyData)
+        }
     });
 
     if (!response.ok) {

@@ -277,6 +277,11 @@ export const Groups = () => {
         };
     });
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return groupFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -314,8 +319,8 @@ export const Groups = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
-                        <ExportButton allData={groupWithNames} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={groupFields} />
-                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={groupFields} />
+                        <ExportButton allData={groupWithNames} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
                 </div>
                 <CreateModalDeptGrp

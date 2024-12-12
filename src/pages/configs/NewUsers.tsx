@@ -230,6 +230,11 @@ export const NewUsers = () => {
         ignoreRowClick: true,
     };
 
+    // Função para obter os campos selecionados baseado em selectedColumns
+    const getSelectedFields = () => {
+        return registerFields.filter(field => selectedColumns.includes(field.key));
+    };
+
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -272,8 +277,8 @@ export const NewUsers = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
-                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={registerFields} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={registerFields} />
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                         </div>
                         <div className='content-wrapper'>

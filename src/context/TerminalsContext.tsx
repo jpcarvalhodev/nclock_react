@@ -19,7 +19,7 @@ export interface DeviceContextType {
     fetchAllDoorData: () => Promise<Doors[]>;
     fetchAllMBDevices: () => Promise<MBDevice[]>;
     fetchAllMBCloseOpen: () => Promise<MBDeviceCloseOpen[]>;
-    sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
+    sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string[] | null) => Promise<void>;
     saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string | null) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     syncTimeManuallyToDevice: (device: Devices) => Promise<void>;
@@ -147,7 +147,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para enviar todos os funcionários para o dispositivo
-    const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string | null) => {
+    const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string[] | null) => {
         try {
             const data = await apiService.sendAllEmployeesToDevice(zktecoDeviceID, employeeID);
             toast.success(data.message || 'Utilizadores enviados com sucesso!');
