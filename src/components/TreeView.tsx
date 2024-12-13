@@ -137,7 +137,10 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
       label: dept.name || 'Sem Nome',
       children: [
         ...dept.children.map(buildDepartmentTree),
-        ...allEmployees.filter((emp: Employee) => emp.departmentId === dept.departmentID).map((emp: Employee) => ({
+        ...allEmployees
+        .filter((emp: Employee) => emp.departmentId === dept.departmentID)
+        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+        .map((emp: Employee) => ({
           id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
           label: emp.name,
         })),
@@ -149,7 +152,10 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
     const groupItems = groups.map((group: Group) => ({
       id: `group-${group.groupID}`,
       label: group.name || 'Sem Nome',
-      children: allEmployees.filter(emp => emp.groupId === group.groupID).map((emp: Employee) => ({
+      children: allEmployees
+      .filter(emp => emp.groupId === group.groupID)
+      .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+      .map((emp: Employee) => ({
         id: `group-${group.groupID}-emp-${emp.employeeID}`,
         label: emp.name || 'Sem Nome',
       })),

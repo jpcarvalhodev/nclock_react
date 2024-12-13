@@ -21,6 +21,7 @@ import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { ResetCoinModal } from "../../../modals/ResetCoinModal";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -55,7 +56,7 @@ export const NkioskGetCoins = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const [getCoins, setGetCoins] = useState<RecolhaMoedeiroEContador[]>([]);
+    const { getCoins, setGetCoins, fetchAllCoin, handleAddRecolhaMoedeiro, handleUpdateRecolhaMoedeiro } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotalRecolhido', 'diferencaMoedas', 'deviceID']);
@@ -74,20 +75,6 @@ export const NkioskGetCoins = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<RecolhaMoedeiroEContador[]>([]);
 
-    // Função para buscar as recolhas do moedeiro
-    const fetchAllCoin = async () => {
-        try {
-            const data = await apiService.fetchRecolhasMoedeiro();
-            if (Array.isArray(data)) {
-                setGetCoins(data);
-            } else {
-                setGetCoins([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados de recolha do moedeiro:', error);
-        }
-    };
-
     // Função para buscar as recolhas do moedeiro entre datas
     const fetchCoinsBetweenDates = async () => {
         try {
@@ -103,35 +90,14 @@ export const NkioskGetCoins = () => {
     };
 
     // Função para adicionar recolha do moedeiro
-    const handleAddRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
-        try {
-            const data = await apiService.addRecolhaMoedeiro(recolhaMoedeiro);
-            setGetCoins([...getCoins, data]);
-            toast.success(data.message || 'Recolha do moedeiro adicionada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao criar recolha do moedeiro:', error);
-        } finally {
-            refreshRecolhaMoedeiro();
-        }
+    const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
+        await handleAddRecolhaMoedeiro(recolhaMoedeiro);
     };
 
     // Função para atualizar recolha do moedeiro
-    const handleUpdateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
-        try {
-            const data = await apiService.updateRecolhaMoedeiro(recolhaMoedeiro);
-            setGetCoins(getCoins.map(item => (item.id === data.id ? data : item)));
-            toast.success(data.message || 'Recolha do moedeiro atualizada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar recolha do moedeiro:', error);
-        } finally {
-            refreshRecolhaMoedeiro();
-        }
+    const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
+        await handleUpdateRecolhaMoedeiro(recolhaMoedeiro);
     };
-
-    // Busca os pagamentos dos terminais ao carregar a página
-    useEffect(() => {
-        fetchAllCoin();
-    }, []);
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
@@ -237,6 +203,12 @@ export const NkioskGetCoins = () => {
         setShowUpdateModal(false);
     }
 
+    // Função para abrir o modal de atualização
+    const handleEditRecolha = (entity: RecolhaMoedeiroEContador) => {
+        setSelectedRecolhaMoedeiro(entity);
+        setShowUpdateModal(true);
+    }
+
     // Define as colunas da tabela
     const columns: TableColumn<RecolhaMoedeiroEContador>[] = recolhaMoedeiroEContadorFields
         .filter(field => selectedColumns.includes(field.key))
@@ -278,6 +250,29 @@ export const NkioskGetCoins = () => {
                 sortFunction: (rowA, rowB) => new Date(rowB.dataRecolha).getTime() - new Date(rowA.dataRecolha).getTime()
             };
         });
+
+    // Define a coluna de ações
+    const actionColumn: TableColumn<RecolhaMoedeiroEContador> = {
+        name: 'Ações',
+        cell: (row: RecolhaMoedeiroEContador) => (
+            <div style={{ display: 'flex' }}>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditRecolha(row)} />
+                </OverlayTrigger>
+            </div>
+        ),
+        selector: (row: RecolhaMoedeiroEContador) => row.id,
+        ignoreRowClick: true,
+    };
 
     // Calcula o total do valor das recolhas
     const totalAmount = filteredDataTable.reduce((total, getCoins) => {
@@ -417,7 +412,7 @@ export const NkioskGetCoins = () => {
                         </div>
                         <div className='table-css'>
                             <DataTable
-                                columns={columns}
+                                columns={[...columns, actionColumn]}
                                 data={filteredDataTable}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
@@ -436,11 +431,7 @@ export const NkioskGetCoins = () => {
                         </div>
                         <div style={{ display: "flex" }}>
                             <div style={{ marginLeft: 10, marginRight: 10 }}>
-                                <strong>Valor Total das Recolhas: </strong>{totalAmount.toFixed(2)}€
-                            </div>
-                            <p>|</p>
-                            <div style={{ marginLeft: 10 }}>
-                                <strong>Valor Total de Diferença de Recolhas: </strong>{totalAmountDifference.toFixed(2)}€
+                                <strong>Valor Total: </strong>Recolhas - {totalAmount.toFixed(2)}€ | Diferença - {totalAmountDifference.toFixed(2)}€
                             </div>
                         </div>
                     </div>
@@ -461,7 +452,7 @@ export const NkioskGetCoins = () => {
                 title="Nova Recolha do Moedeiro"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddRecolhaMoedeiro}
+                onSave={addRecolhaMoedeiro}
                 fields={recolhaMoedeiroEContadorFields}
                 initialValuesData={initialData || {}}
             />
@@ -469,7 +460,7 @@ export const NkioskGetCoins = () => {
                 <UpdateRecolhaMoedeiroModal
                     open={showUpdateModal}
                     onClose={() => setShowUpdateModal(false)}
-                    onUpdate={handleUpdateRecolhaMoedeiro}
+                    onUpdate={updateRecolhaMoedeiro}
                     entity={selectedRecolhaMoedeiro}
                     fields={recolhaMoedeiroEContadorFields}
                     onDuplicate={handleDuplicate}

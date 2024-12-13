@@ -10,6 +10,7 @@ import { ColorProvider } from './context/ColorContext';
 import { AdsProvider } from './context/AdsContext';
 import { LicenseProvider } from './context/LicenseContext';
 import { EntityProvider } from './context/EntityContext';
+import { KioskProvider } from './context/KioskContext';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -22,9 +23,10 @@ root.render(
           <PersonsProvider>
             <AttendanceProvider>
               <TerminalsProvider>
-
                 <AdsProvider>
-                  <App />
+                  <KioskProvider>
+                    <App />
+                  </KioskProvider>
                 </AdsProvider>
               </TerminalsProvider>
             </AttendanceProvider>

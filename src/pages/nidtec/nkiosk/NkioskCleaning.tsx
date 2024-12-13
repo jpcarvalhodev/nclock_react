@@ -22,6 +22,7 @@ import { useLocation } from "react-router-dom";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import Split from "react-split";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -55,8 +56,8 @@ export const NkioskCleaning = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
-    const [cleaning, setCleaning] = useState<LimpezasEOcorrencias[]>([]);
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { cleaning, setCleaning, fetchAllLimpezas, handleAddLimpezas, handleUpdateCleaning, handleDeleteCleaning } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
@@ -74,22 +75,7 @@ export const NkioskCleaning = () => {
     const [selectedCleaningForDelete, setSelectedCleaningForDelete] = useState<string | null>(null);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<LimpezasEOcorrencias[]>([]);
-    const location = useLocation();
     const tipo = 1;
-
-    // Função para buscar as limpezas
-    const fetchAllLimpezas = async () => {
-        try {
-            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo);
-            if (Array.isArray(data)) {
-                setCleaning(data);
-            } else {
-                setCleaning([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados de limpezas:', error);
-        }
-    };
 
     // Função para buscar as limpezas entre datas
     const fetchLimpezasBetweenDates = async () => {
@@ -106,54 +92,19 @@ export const NkioskCleaning = () => {
     };
 
     // Função para adicionar limpezas
-    const handleAddLimpezas = async (limpezas: LimpezasEOcorrencias) => {
-        try {
-            const data = await apiService.addCleaning(limpezas);
-            setCleaning([...cleaning, data]);
-            toast.success(data.message || 'Limpeza adicionada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao criar nova limpeza:', error);
-        } finally {
-            refreshLimpezas();
-        }
+    const addLimpezas = async (limpezas: LimpezasEOcorrencias) => {
+        await handleAddLimpezas(limpezas);
     };
 
     // Função para atualizar limpezas
-    const handleUpdateCleaning = async (limpezas: LimpezasEOcorrencias) => {
-        try {
-            const data = await apiService.updateCleaning(limpezas);
-            const updatedCleaning = cleaning.map(cleaning => cleaning.id === data.id ? data : cleaning);
-            setCleaning(updatedCleaning);
-            toast.success(data.message || 'Limpeza atualizada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar a limpeza:', error);
-        } finally {
-            refreshLimpezas();
-        }
+    const updateCleaning = async (limpezas: LimpezasEOcorrencias) => {
+        await handleUpdateCleaning(limpezas);
     }
 
     // Função para apagar limpezas
-    const handleDeleteCleaning = async (id: string) => {
-        try {
-            const data = await apiService.deleteCleaning(id);
-            toast.success(data.message || 'Limpeza apagada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao apagar a limpeza:', error);
-        } finally {
-            refreshLimpezas();
-        }
+    const deleteCleaning = async (id: string) => {
+        await handleDeleteCleaning(id);
     };
-
-    // Busca os pagamentos dos terminais ao carregar a página
-    useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllLimpezas();
-            }
-        }
-        fetchDevices();
-    }, [location]);
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
@@ -304,10 +255,18 @@ export const NkioskCleaning = () => {
                 >
                     <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 </OverlayTrigger>
-                <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditLimpezas(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditLimpezas(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.id)} />
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: LimpezasEOcorrencias) => row.id,
@@ -339,7 +298,7 @@ export const NkioskCleaning = () => {
                                     size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
                             <div className="buttons-container-others">
@@ -423,7 +382,7 @@ export const NkioskCleaning = () => {
                 title="Adicionar Limpeza"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddLimpezas}
+                onSave={addLimpezas}
                 fields={limpezasEOcorrenciasFields}
                 initialValuesData={initialData || {}}
             />
@@ -432,7 +391,7 @@ export const NkioskCleaning = () => {
                     title="Atualizar Limpeza"
                     open={showUpdateModal}
                     onClose={() => setShowUpdateModal(false)}
-                    onUpdate={handleUpdateCleaning}
+                    onUpdate={updateCleaning}
                     fields={limpezasEOcorrenciasFields}
                     onDuplicate={handleDuplicate}
                     entity={selectedCleaning}
@@ -445,7 +404,7 @@ export const NkioskCleaning = () => {
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteCleaning}
+                onDelete={deleteCleaning}
                 entityId={selectedCleaningForDelete}
             />
         </div>

@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, ReactNode, useEffect, useMemo } from 'react';
+import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import * as apiService from '../helpers/apiService';
 import { toast } from 'react-toastify';
 import { Entity, Logs } from '../helpers/Types';

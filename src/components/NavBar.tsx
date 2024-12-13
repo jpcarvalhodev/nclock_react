@@ -139,7 +139,7 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { ColorProvider, useColor } from '../context/ColorContext';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button } from 'react-bootstrap';
-import { accessControlFields, adsFields, categoryFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, logsFields, mbDeviceCloseOpenFields, professionFields, registerFields, timePeriodFields, zoneFields } from '../helpers/Fields';
+import { accessControlFields, adsFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -165,7 +165,7 @@ import noptics from '../assets/img/navbar/navbar/noptics.png';
 import ngold from '../assets/img/navbar/navbar/ngold.png';
 import open_door from '../assets/img/navbar/nkiosk/open_door.png';
 import count from '../assets/img/navbar/nkiosk/count.png';
-import cleaning from '../assets/img/navbar/nkiosk/cleaning.png';
+import cleanings from '../assets/img/navbar/nkiosk/cleaning.png';
 import certificate from '../assets/img/navbar/certificate.png';
 import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
@@ -173,13 +173,14 @@ import { usePersons } from '../context/PersonsContext';
 import { KioskOptionsModal } from '../modals/KioskOptions';
 import contact from '../assets/img/navbar/ajuda/contact.png';
 import { ContactModal } from '../modals/ContactModal';
-import counter from '../assets/img/navbar/nkiosk/counter.png';
 import sensor from '../assets/img/navbar/nkiosk/sensor.png';
 import cell from '../assets/img/navbar/nkiosk/cell.png';
 import { fetchWithAuth } from './FetchWithAuth';
 import { PrintButton } from './PrintButton';
 import { useTerminals } from '../context/TerminalsContext';
 import { useEntity } from '../context/EntityContext';
+import { useKiosk } from '../context/KioskContext';
+import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -218,21 +219,21 @@ interface MenuStructure {
 
 // Define a interface para os dados do menu
 interface DataField {
-    label: string;
-    key: string;
-    type?: string;
-    required?: boolean;
+	label: string;
+	key: string;
+	type?: string;
+	required?: boolean;
 }
 
 // Define a interface para os dados do menu
 interface MenuConfigItem {
-    data: any[];
-    fields: DataField[];
+	data: any[];
+	fields: DataField[];
 }
 
 // Define a interface para a estrutura do menu
 interface MenuConfig {
-    [key: string]: MenuConfigItem;
+	[key: string]: MenuConfigItem;
 }
 
 // Define as propriedades do componente
@@ -264,6 +265,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { license, getSoftwareEnabledStatus, fetchAllLicensesWithoutKey, handleUpdateLicense } = useLicense();
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
+	const { payTerminal, payCoins, listPayments, moveCard, moveKiosk, listMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter } = useKiosk();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -381,6 +383,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showNhomeTab, setShowNhomeTab] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
+	const [submenuTimeout, setSubmenuTimeout] = useState<NodeJS.Timeout | null>(null);
 	const location = useLocation();
 	const [showPhotoAdsModal, setShowPhotoAdsModal] = useState(false);
 	const [showVideoAdsModal, setShowVideoAdsModal] = useState(false);
@@ -966,7 +969,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		// Estrutura de menu original
 		const originalMenuStructure: MenuStructure = {
 			sisnid: {
-				label: 'SISNID',
+				label: 'SISNID - Segurança',
 				image: sisnidlogo,
 				alt: 'SISNID',
 				key: 'sisnid',
@@ -984,7 +987,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				],
 			},
 			nidsof: {
-				label: 'NIDSOF',
+				label: 'NIDSOF - Gestão',
 				image: nidsof,
 				alt: 'NIDSOF',
 				key: 'nidsof',
@@ -1020,7 +1023,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				],
 			},
 			nidtec: {
-				label: 'NIDTEC',
+				label: 'NIDTEC - Tecnologia',
 				image: nidtec,
 				alt: 'NIDTEC',
 				key: 'nidtec',
@@ -1038,7 +1041,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				],
 			},
 			nidplace: {
-				label: 'NIDPLACE',
+				label: 'NIDPLACE - Conforto',
 				image: nidplace,
 				alt: 'NIDPLACE',
 				key: 'nidplace',
@@ -1137,7 +1140,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			}
 		};
 
-		/* // Estrutura do menu de listagens para o nkiosk
+		// Estrutura do menu de listagens para o nkiosk
 		const nkioskSubmenu = {
 			label: 'Listagem Nkiosk',
 			image: nkiosk,
@@ -1157,23 +1160,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 				{ label: 'Listagem Registos Contador', key: 'registo_contador', image: nkiosk, alt: 'nkiosk' },
 				{ label: 'Listagem Registos Ocorrências', key: 'registo_ocorrencias', image: nkiosk, alt: 'nkiosk' }
 			],
-		} */
+		}
 
 		// Função para estender o menu de listagens para um software específico
 		function extendMenuForSoftware(softwareKey: string, softwareSpecificItems: MenuItem): MenuStructure {
-			// Clone the base structure to avoid mutations
 			const extendedMenu = JSON.parse(JSON.stringify(ListingMenuStructure));
 
-			// Extend the menu with software-specific sections
 			extendedMenu[softwareKey] = softwareSpecificItems;
 			return extendedMenu;
 		}
 
-		/* // Estrutura do menu de listagens para o nkiosk
-		const nkioskMenu = extendMenuForSoftware('nkiosk', nkioskSubmenu); */
+		// Estrutura do menu de listagens para o nkiosk
+		const nkioskMenu = extendMenuForSoftware('nkiosk', nkioskSubmenu);
 
 		setMenuStructureListing(ListingMenuStructure);
-		/* setMenuStructureListingNKiosk(nkioskMenu); */
+		setMenuStructureListingNKiosk(nkioskMenu);
 	}, [employees]);
 
 	// Define a estrutura do menu do nidgroup
@@ -1279,18 +1280,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 		geral_utilizadores: { data: registeredUsers, fields: registerFields },
 		geral_logins: { data: loginLogs, fields: logsFields },
 		geral_historico: { data: historyLogs, fields: logsFields },
-		/* recebimento_multibanco: { data: mbReceipt, fields: mbReceiptFields },
-		recebimento_moedeiro: { data: coinReceipt, fields: coinReceiptFields },
-		recebimento_totais: { data: totalReceipt, fields: totalReceiptFields },
-		movimento_torniquete: { data: turnstileMovement, fields: turnstileMovementFields },
-		movimento_quiosque: { data: kioskMovement, fields: kioskMovementFields },
-		movimento_totais: { data: totalMovement, fields: totalMovementFields },
-		remota_vp: { data: remoteVp, fields: remoteVpFields },
-		remota_abertura: { data: remoteOpen, fields: remoteOpenFields },
-		registo_recolhas: { data: coinCollection, fields: coinCollectionFields },
-		registo_limpeza: { data: generalCleaning, fields: generalCleaningFields },
-		registo_contador: { data: counterRecords, fields: counterRecordsFields },
-		registo_ocorrencias: { data: occurrences, fields: occurrencesFields }, */
+		recebimento_multibanco: { data: payTerminal, fields: transactionMBFields },
+		recebimento_moedeiro: { data: payCoins, fields: transactionMBFields },
+		recebimento_totais: { data: listPayments, fields: transactionMBFields },
+		movimento_torniquete: { data: moveCard, fields: transactionCardFields },
+		movimento_quiosque: { data: moveKiosk, fields: transactionCardFields },
+		movimento_totais: { data: listMovements, fields: transactionCardFields },
+		remota_vp: { data: moveVP, fields: transactionCardFields },
+		remota_abertura: { data: manualOpenDoor, fields: manualOpenDoorFields },
+		registo_recolhas: { data: getCoins, fields: recolhaMoedeiroEContadorFields },
+		registo_limpeza: { data: cleaning, fields: limpezasEOcorrenciasFields },
+		registo_contador: { data: counter, fields: counterFields },
+		registo_ocorrencias: { data: occurrences, fields: limpezasEOcorrenciasFields },
 	};
 
 	// Função para lidar com o clique do menu
@@ -1305,15 +1306,45 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	}
 
+	// Iniciar o timeout do submenu
+	const handleMouseEnter = (menuKey: React.SetStateAction<string | null>) => {
+		if (submenuTimeout) {
+			clearTimeout(submenuTimeout);
+		}
+		setActiveMenu(menuKey);
+	};
+
+	// Terminar o timeout do submenu
+	const handleMouseLeave = () => {
+		const timeoutId = setTimeout(() => {
+			setActiveMenu(null);
+		}, 300);
+		setSubmenuTimeout(timeoutId);
+	};
+
+	// Atualiza o timeout do submenu
+	useEffect(() => {
+		return () => {
+			if (submenuTimeout) {
+				clearTimeout(submenuTimeout);
+			}
+		};
+	}, [submenuTimeout]);
+
 	// Função genérica para renderizar o menu
 	const renderMenu = (menuKey: keyof MenuStructure, menuStructure: MenuStructure) => {
 		const menu = menuStructure[String(menuKey)];
 		if (!menu) {
 			return null;
 		}
+		const isWideMenu = menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
 		const isWideSubmenu = menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
 		return (
-			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && setActiveMenu(menuKey as string)} onMouseLeave={() => setActiveMenu(null)}>
+			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
+				style={{
+					minWidth: isWideMenu ? '200px' : 'auto'
+				}}
+			>
 				<MenuItem
 					key={menuKey as string}
 					active={activeMenu === menuKey}
@@ -1777,6 +1808,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 		window.open('https://anydesk.com/pt');
 	}
 
+	// Função para abrir o whatsapp web em uma nova janela
+	const handleWhatsappWindow = () => {
+		window.open('https://web.whatsapp.com/send?phone=351910203919');
+	}
+
 	// Função para alternar a visibilidade da seção quando o título for clicado
 	const toggleGroupVisibility = (groupId: string) => {
 		setVisibleGroup((prev) => (prev === groupId ? null : groupId));
@@ -1847,8 +1883,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
 									<span className="logoNG">NSOFTWARES</span>
 								</Dropdown.Toggle>
-								<Dropdown.Menu>
-									<div style={{ position: 'relative' }}>
+								<Dropdown.Menu className='dropdown-menu-logos'>
+									<div>
 										{Object.keys(menuStructureNG).map((menuKey) => renderMenu(menuKey, menuStructureNG))}
 									</div>
 								</Dropdown.Menu>
@@ -3071,7 +3107,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 												<Link to="/nkiosk/nkioskcleaning" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskcleaning' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={cleaning} alt="botão limpeza wc" />
+														<img src={cleanings} alt="botão limpeza wc" />
 													</span>
 													<span className="text">Limpeza Geral</span>
 												</Link>
@@ -3885,6 +3921,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<img src={anydesk} alt="botão anydesk" />
 													</span>
 													<span className="text">Anydesk</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button onClick={handleWhatsappWindow} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={whatsapp} alt="botão whatsapp" />
+													</span>
+													<span className="text">Whatsapp</span>
 												</Button>
 											</div>
 										</div>

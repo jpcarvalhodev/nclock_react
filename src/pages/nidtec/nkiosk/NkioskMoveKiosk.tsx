@@ -19,6 +19,7 @@ import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -54,7 +55,7 @@ export const NkioskMoveKiosk = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
+    const { moveKiosk, setMoveKiosk, fetchAllMoveKiosk } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
@@ -68,30 +69,6 @@ export const NkioskMoveKiosk = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
     const eventDoorId = '4';
-
-    // Função para buscar os movimentos do quiosque
-    const fetchAllMoveKiosk = async () => {
-        try {
-            if (devices.length === 0) {
-                setMoveKiosk([]);
-                return;
-            }
-            const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
-            });
-
-            const allData = await Promise.all(promises);
-
-            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
-
-            const combinedData = validData.flat();
-
-            setMoveKiosk(combinedData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos no quiosque:', error);
-            setMoveKiosk([]);
-        }
-    };
 
     // Função para buscar os movimentos de quiosque entre datas
     const fetchMovementsKioskBetweenDates = async () => {
@@ -127,11 +104,6 @@ export const NkioskMoveKiosk = () => {
         }
         window.location.reload();
     };
-
-    // Busca os movimentos de quiosque ao carregar a página
-    useEffect(() => {
-        fetchAllMoveKiosk();
-    }, []);
 
     // Função para atualizar os movimentos de quiosque
     const refreshMoveKiosk = () => {

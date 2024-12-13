@@ -66,7 +66,7 @@ import noptics from '../../../assets/img/navbar/navbar/noptics.png';
 import ngold from '../../../assets/img/navbar/navbar/ngold.png';
 
 // Define o tipo TabName
-type TabName = 'SISNID - SEGURANÇA' | 'NIDSOF - GESTÃO' | 'NIDTEC - TECNOLOGIA' | 'NIDPLACE - CONFORTO';
+type TabName = 'SISNID - Segurança' | 'NIDSOF - Gestão' | 'NIDTEC - Tecnologia' | 'NIDPLACE - Conforto';
 
 // Define o tipo CardTitle
 type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
@@ -147,7 +147,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 export const NpingDashboard = () => {
     const { navbarColor, footerColor } = useColor();
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('NIDPLACE - CONFORTO');
+    const [activeKey, setActiveKey] = useState<TabName>('NIDPLACE - Conforto');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -166,7 +166,7 @@ export const NpingDashboard = () => {
     };
 
     const cardData = {
-        'SISNID - SEGURANÇA': [
+        'SISNID - Segurança': [
             { title: 'Assiduidade', img: nclock, tab: 'nclock' },
             { title: 'Acessos', img: naccess, tab: 'naccess' },
             { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
@@ -178,7 +178,7 @@ export const NpingDashboard = () => {
             { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
             { title: 'NSoftwares', img: sisnidlogo }
         ],
-        'NIDSOF - GESTÃO': [
+        'NIDSOF - Gestão': [
             { title: 'Programação', img: nsoftware, tab: 'nsoftware' },
             { title: 'Sistemas', img: nsystem, tab: 'nsystem' },
             { title: 'Aplicativos', img: napp, tab: 'napp' },
@@ -208,7 +208,7 @@ export const NpingDashboard = () => {
             { title: 'Ópticas', img: noptics, tab: 'noptics' },
             { title: 'Ourivesarias', img: ngold, tab: 'ngold' },
         ],
-        'NIDTEC - TECNOLOGIA': [
+        'NIDTEC - Tecnologia': [
             { title: 'Inteligência', img: nsmart, tab: 'nsmart' },
             { title: 'Virtual', img: nreality, tab: 'nreality' },
             { title: 'Hologramas', img: nhologram, tab: 'nhologram' },
@@ -220,7 +220,7 @@ export const NpingDashboard = () => {
             { title: 'Incêndios', img: nfire, tab: 'nfire' },
             { title: 'NSoftwares', img: nidtec, tab: 'nidtec' }
         ],
-        'NIDPLACE - CONFORTO': [
+        'NIDPLACE - Conforto': [
             { title: 'Mobiliário', img: nfurniture, tab: 'nfurniture' },
             { title: 'Divisórias', img: npartition, tab: 'npartition' },
             { title: 'Design', img: ndecor, tab: 'ndecor' },
@@ -256,6 +256,18 @@ export const NpingDashboard = () => {
                 window.removeEventListener('resize', handleResize);
             };
         }, []);
+
+        useEffect(() => {
+            if (cardContainerRef.current) {
+                const cards = cardData[tabKey];
+                const activeCardIndex = cards.findIndex(card => isValidCardTitle(card.title) && location.pathname === tabData[card.title].route);
+                if (activeCardIndex !== -1) {
+                    const cardWidth = cardContainerRef.current.children[activeCardIndex].clientWidth;
+                    const scrollX = cardWidth * activeCardIndex - (cardContainerRef.current.clientWidth / 2) + (cardWidth / 2);
+                    cardContainerRef.current.scrollTo({ left: scrollX, behavior: 'smooth' });
+                }
+            }
+        }, [tabKey, location.pathname, cardData]);
 
         const scrollLeft = () => {
             if (cardContainerRef.current) {

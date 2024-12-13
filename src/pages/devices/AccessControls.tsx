@@ -272,9 +272,7 @@ export const AccessControls = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
                 >
-                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
-                        <i className="bi bi-trash-fill"></i>
-                    </Button>
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row)} />
                 </OverlayTrigger>
             </div>
         ),
@@ -348,10 +346,14 @@ export const AccessControls = () => {
                                 expandableRows
                                 expandableRowsComponent={(props) => {
                                     const accessControlEntries = props.data.acc || [];
-
+                                    const sortedEntries = accessControlEntries.sort((a: { doorName: string; }, b: { doorName: string; }) => {
+                                        const doorNameA = a.doorName?.toUpperCase() ?? "";
+                                        const doorNameB = b.doorName?.toUpperCase() ?? "";
+                                        return doorNameA.localeCompare(doorNameB);
+                                    });
                                     return (
                                         <div>
-                                            {accessControlEntries.map((entry: Record<string, any>, index: Key | null | undefined) => (
+                                            {sortedEntries.map((entry: Record<string, any>, index: Key | null | undefined) => (
                                                 <ExpandedComponentAC
                                                     key={index}
                                                     data={[entry]}

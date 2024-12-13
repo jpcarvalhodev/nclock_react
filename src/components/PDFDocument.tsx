@@ -1,6 +1,7 @@
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import React from 'react';
-import { Entity } from '../helpers/Types';
+import { Devices, Entity, MBDevice } from '../helpers/Types';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Estilos para o documento PDF
 const styles = StyleSheet.create({
@@ -93,6 +94,8 @@ interface PDFDocumentProps {
     fields: { label: string; key: string }[];
     entity: Entity[];
     entityLogo: Blob | null;
+    device: Devices[];
+    mbDevice: MBDevice[];
 }
 
 // Define a interface para os itens de dados
@@ -104,7 +107,7 @@ interface DataItem {
 type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | 'isPresent' | 'urlArquivo' | 'fechoImage' | 'aberturaImage' | string;
 
 // Componente para renderizar o documento PDF
-export const PDFDocument = ({ data, fields, entity, entityLogo }: PDFDocumentProps) => {
+export const PDFDocument = ({ data, fields, entity, entityLogo, device, mbDevice }: PDFDocumentProps) => {
 
     // Obtém o nome e o logotipo da entidade
     const entityName = entity && entity.length > 0 && entity[0].nome ? entity[0].nome : 'Nome da entidade não disponível';
@@ -195,6 +198,10 @@ export const PDFDocument = ({ data, fields, entity, entityLogo }: PDFDocumentPro
                 return item[fieldKey] ? 'Activo' : 'Inactivo';
             case 'isPresent':
                 return item[fieldKey] ? 'Presente' : 'Ausente';
+            case 'deviceSN':
+                return device.find(device => device.serialNumber === item.deviceSN)?.deviceName || '';
+            case 'tpId':
+                return mbDevice.find(mbDevice => mbDevice.id === item.tpId)?.nomeQuiosque || '';
             default:
                 return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
         }

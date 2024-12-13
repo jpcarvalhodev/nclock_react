@@ -17,6 +17,7 @@ import { PrintButton } from "../../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -66,7 +67,7 @@ export const NkioskMoveVP = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
+    const { moveVP, setMoveVP, fetchAllMoveVP } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventDoorId', 'deviceSN', 'eventName', 'eventTime', 'eventNo']);
@@ -78,30 +79,6 @@ export const NkioskMoveVP = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const eventDoorId = '3';
-
-    // Função para buscar os movimentos de videoporteiro
-    const fetchAllMoveVP = async () => {
-        try {
-            if (devices.length === 0) {
-                setMoveVP([]);
-                return;
-            }
-            const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId, device.serialNumber);
-            });
-
-            const allData = await Promise.all(promises);
-
-            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
-
-            const combinedData = validData.flat().map(data => ({ ...data, eventTime: convertStringToDate(data.eventTime) }));
-
-            setMoveVP(combinedData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos do video porteiro:', error);
-            setMoveVP([]);
-        }
-    };
 
     // Função para buscar os movimentos de videoporteiro entre datas
     const fetchMovementVPBetweenDates = async () => {
@@ -126,11 +103,6 @@ export const NkioskMoveVP = () => {
             setMoveVP([]);
         }
     };
-
-    // Busca os movimentos de videoporteiro publicidades ao carregar a página
-    useEffect(() => {
-        fetchAllMoveVP();
-    }, []);
 
     // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {

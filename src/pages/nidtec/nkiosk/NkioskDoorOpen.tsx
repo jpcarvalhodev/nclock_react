@@ -20,6 +20,7 @@ import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -60,7 +61,7 @@ export const NkioskDoorOpen = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const [manualOpenDoor, setManualOpenDoor] = useState<ManualOpenDoor[]>([]);
+    const { manualOpenDoor, setManualOpenDoor, fetchAllManualOpen } = useKiosk();
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nomeResponsavel', 'deviceName', 'doorName', 'observacoes']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -73,20 +74,6 @@ export const NkioskDoorOpen = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<ManualOpenDoor[]>([]);
     const [selectedRows, setSelectedRows] = useState<ManualOpenDoor[]>([]);
-
-    // Função para buscar os dados de aberturas manuais
-    const fetchAllManualOpen = async () => {
-        try {
-            const data = await apiService.fetchAllManualDoorOpen();
-            if (Array.isArray(data)) {
-                setManualOpenDoor(data);
-            } else {
-                setManualOpenDoor([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados de aberturas manuais:', error);
-        }
-    }
 
     // Função para buscar os dados de aberturas manuais entre datas
     const fetchManualOpenBetweenDates = async () => {
@@ -101,11 +88,6 @@ export const NkioskDoorOpen = () => {
             console.error('Erro ao buscar os dados de aberturas manuais:', error);
         }
     }
-
-    // Atualiza os dados de renderização
-    useEffect(() => {
-        fetchAllManualOpen();
-    }, []);
 
     // Função para atualizar os dados de aberura manual
     const refreshAllManualOpen = () => {

@@ -19,7 +19,6 @@ import inbio460 from "../assets/img/terminais/inbio460.webp";
 import profacex from "../assets/img/terminais/profacex.webp";
 import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
-import { set } from "date-fns";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -48,7 +47,6 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
-    const [error, setError] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState('');
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);

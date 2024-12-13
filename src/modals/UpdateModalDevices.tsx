@@ -100,11 +100,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 setSelectedDevice('');
                 setDeviceImage(no_image);
             }
-            if (entity && entity.photo) {
-                setDeviceImage(entity.photo);
-            } else {
-                setDeviceImage(no_image);
-            }
         }
     }, [open, entity]);
 

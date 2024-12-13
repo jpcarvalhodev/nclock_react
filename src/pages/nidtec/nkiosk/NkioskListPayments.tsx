@@ -18,6 +18,7 @@ import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { useLocation } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -48,14 +49,14 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useColor();
-    const { devices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
+    const { payTerminal, fetchAllPayTerminal, payCoins, fetchAllPayCoins } = useKiosk();
     const [listPayments, setListPayments] = useState<KioskTransactionMB[]>([]);
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
-    const [terminalData, setTerminalData] = useState<MBDevice[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
@@ -66,46 +67,12 @@ export const NkioskListPayments = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
-    const location = useLocation();
     const eventDoorId = '2';
 
-    // Função para buscar as listagens de pagamentos em MB
-    const fetchAllListPaymentsMB = async () => {
-        try {
-            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
-            if (Array.isArray(data)) {
-                setListPaymentMB(data);
-            } else {
-                setListPaymentMB([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de pagamentos pelo terminal:', error);
-        }
-    };
-
-    // Função para buscar as listagens de pagamentos em moedas
-    const fetchAllListPaymentsCoins = async () => {
-        try {
-            if (devices.length === 0) {
-                setListPaymentCoin([]);
-                return;
-            }
-
-            const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, startDate, endDate);
-            });
-
-            const allData = await Promise.all(promises);
-
-            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
-
-            const combinedData = validData.flat();
-
-            setListPaymentCoin(combinedData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
-            setListPaymentCoin([]);
-        }
+    // Função para buscar os pagamentos dos terminais
+    const settingVariables = () => {
+        setListPaymentMB(payTerminal);
+        setListPaymentCoin(payCoins);
     }
 
     // Função para buscar as listagens de pagamentos entre datas
@@ -140,20 +107,6 @@ export const NkioskListPayments = () => {
             console.error('Erro ao buscar os dados de listagem de pagamentos:', error);
             setListPaymentMB([]);
             setListPaymentCoin([]);
-        }
-    }
-
-    // Função para buscar os dados dos terminais
-    const fetchTerminalData = async () => {
-        try {
-            const data = await fetchAllMBDevices();
-            if (Array.isArray(data)) {
-                setTerminalData(data);
-            } else {
-                setTerminalData([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos terminais:', error);
         }
     }
 
@@ -193,26 +146,14 @@ export const NkioskListPayments = () => {
 
     // Atualiza a lista de pagamentos ao receber novos dados
     useEffect(() => {
+        settingVariables();
         mergePaymentData();
-    }, [listPaymentMB, listPaymentCoin]);
-
-    // Busca as listagens de pagamentos ao carregar a página
-    useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllListPaymentsMB();
-                fetchAllListPaymentsCoins();
-                fetchTerminalData();
-            }
-        }
-        fetchDevices();
-    }, [location]);
+    }, [payTerminal, payCoins]);
 
     // Função para atualizar as listagens de pagamentos
     const refreshListPayments = () => {
-        fetchAllListPaymentsMB();
-        fetchAllListPaymentsCoins();
+        fetchAllPayTerminal();
+        fetchAllPayCoins();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -296,7 +237,7 @@ export const NkioskListPayments = () => {
             const formatField = (row: KioskTransactionMB) => {
                 switch (field.key) {
                     case 'tpId':
-                        const terminalMatch = terminalData.find(terminal => terminal.id === row.tpId)
+                        const terminalMatch = mbDevices.find(terminal => terminal.id === row.tpId)
                         const terminalName = terminalMatch?.nomeQuiosque || '';
                         return terminalName || 'Clérigos Moedeiro';
                     case 'deviceSN':
@@ -353,7 +294,7 @@ export const NkioskListPayments = () => {
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {
-        const terminalMatch = terminalData.find(terminal => terminal.id === transaction.tpId);
+        const terminalMatch = mbDevices.find(terminal => terminal.id === transaction.tpId);
         const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
     
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);

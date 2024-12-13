@@ -105,7 +105,7 @@ import { useColor } from "../context/ColorContext";
 import { useLicense } from "../context/LicenseContext";
 
 // Define o tipo TabName
-type TabName = 'LICENÇAS SOFTWARES CLIENTE';
+type TabName = 'SOFTWARES LICENCIADOS';
 
 // Define o tipo CardTitle
 type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
@@ -192,9 +192,9 @@ const extractSoftwareNameFromTabKey = (tabKey: string) => {
 // Define a página principal
 export const Dashboard = () => {
     const { navbarColor, footerColor } = useColor();
-    const { license, fetchAllLicensesWithoutKey, getSoftwareEnabledStatus } = useLicense();
+    const { license, getSoftwareEnabledStatus } = useLicense();
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('LICENÇAS SOFTWARES CLIENTE');
+    const [activeKey, setActiveKey] = useState<TabName>('SOFTWARES LICENCIADOS');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -211,7 +211,7 @@ export const Dashboard = () => {
                 return newObj;
             }, {});
 
-            if (activeKey === 'LICENÇAS SOFTWARES CLIENTE' && softwareName && transformedSoftwareEnabled[softwareName]) {
+            if (activeKey === 'SOFTWARES LICENCIADOS' && softwareName && transformedSoftwareEnabled[softwareName]) {
                 route = route.replace('dashboard', 'dashboardlicensed');
             }
 
@@ -226,7 +226,7 @@ export const Dashboard = () => {
     };
 
     const cardData = {
-        'LICENÇAS SOFTWARES CLIENTE': [
+        'SOFTWARES LICENCIADOS': [
             { title: 'Assiduidade', img: nclock, tab: 'nclock' },
             { title: 'Acessos', img: naccess, tab: 'naccess' },
             { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
@@ -308,6 +308,18 @@ export const Dashboard = () => {
             };
         }, []);
 
+        useEffect(() => {
+            if (cardContainerRef.current) {
+                const cards = cardData[tabKey];
+                const activeCardIndex = cards.findIndex(card => isValidCardTitle(card.title) && location.pathname === tabData[card.title].route);
+                if (activeCardIndex !== -1) {
+                    const cardWidth = cardContainerRef.current.children[activeCardIndex].clientWidth;
+                    const scrollX = cardWidth * activeCardIndex - (cardContainerRef.current.clientWidth / 2) + (cardWidth / 2);
+                    cardContainerRef.current.scrollTo({ left: scrollX, behavior: 'smooth' });
+                }
+            }
+        }, [tabKey, location.pathname, cardData]);
+
         const scrollLeft = () => {
             if (cardContainerRef.current) {
                 cardContainerRef.current.scrollBy({ left: -130, behavior: 'smooth' });
@@ -388,7 +400,7 @@ export const Dashboard = () => {
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
                     <h5 className="dashboard-title-text-inside">Soluções</h5>
-                    {activeKey === 'LICENÇAS SOFTWARES CLIENTE' && (
+                    {activeKey === 'SOFTWARES LICENCIADOS' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true} interval={5000}>
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_nidgroup} alt="NIDGROUP" />
@@ -511,7 +523,7 @@ export const Dashboard = () => {
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
                     <h5 className="dashboard-title-text-inside">Notícias</h5>
-                    {activeKey === 'LICENÇAS SOFTWARES CLIENTE' && (
+                    {activeKey === 'SOFTWARES LICENCIADOS' && (
                         <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true} interval={30000}>
                             <div>
                                 <img className="img-carousel-dashboard" src={banner_news} alt="Notícias" />

@@ -440,7 +440,7 @@ export const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID
     }
 
     const response = await fetchWithAuth(url, {
-        method: 'DELETE',
+        method: 'POST',
     });
 
     if (!response.ok) {

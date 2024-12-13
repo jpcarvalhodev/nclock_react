@@ -20,6 +20,8 @@ import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
+import { set } from "date-fns";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -51,10 +53,11 @@ function CustomSearchBox(props: TextFieldProps) {
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useColor();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
-    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
+    const { moveCard, fetchAllMoveCard, moveKiosk, fetchAllMoveKiosk } = useKiosk();
     const [listMovements, setListMovements] = useState<KioskTransactionCard[]>([]);
     const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
     const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
@@ -70,68 +73,14 @@ export const NkioskListMovements = () => {
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
-    const location = useLocation();
     const eventDoorId = '3';
     const eventDoorId2 = '4';
 
-    // Função para buscar as listagens de movimentos de cartão
-    const fetchAllListMovementsCard = async () => {
-        try {
-            if (devices.length === 0) {
-                setListMovementCard([]);
-                return;
-            }
-            const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
-            });
-
-            const allData = await Promise.all(promises);
-
-            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
-
-            const combinedData = validData.flat();
-
-            setListMovementCard(combinedData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
-            setListMovementCard([]);
-        }
-    };
-
-    // Função para buscar as listagens de movimentos do quiosque
-    const fetchAllListMovementsKiosk = async () => {
-        try {
-            if (devices.length === 0) {
-                setListMovementKiosk([]);
-                return;
-            }
-            const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
-            });
-
-            const allData = await Promise.all(promises);
-
-            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
-
-            const combinedData = validData.flat();
-
-            setListMovementKiosk(combinedData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
-            setListMovementKiosk([]);
-        }
-    };
-
-    // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
-        await handleUpdateEmployee(employee);
-        if (card.cardId) {
-            await handleUpdateEmployeeCard(card as EmployeeCard);
-        } else {
-            await handleAddEmployeeCard(card as EmployeeCard);
-        }
-        window.location.reload();
-    };
+    // Função para buscar os pagamentos dos terminais
+    const settingVariables = () => {
+        setListMovementCard(moveCard);
+        setListMovementKiosk(moveKiosk);
+    }
 
     // Função para buscar os movimentos entre datas
     const fetchMovementCardBetweenDates = async () => {
@@ -163,6 +112,17 @@ export const NkioskListMovements = () => {
             setListMovementCard([]);
             setListMovementKiosk([]);
         }
+    };
+
+    // Função para atualizar um funcionário e um cartão
+    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+        await handleUpdateEmployee(employee);
+        if (card.cardId) {
+            await handleUpdateEmployeeCard(card as EmployeeCard);
+        } else {
+            await handleAddEmployeeCard(card as EmployeeCard);
+        }
+        window.location.reload();
     };
 
     // Unifica os dados de movimentos de cartão e porteiro
@@ -201,25 +161,14 @@ export const NkioskListMovements = () => {
 
     // Atualiza a lista de movimentos ao receber novos dados
     useEffect(() => {
+        settingVariables();
         mergeMovementData();
-    }, [listMovementCard, listMovementKiosk]);
-
-    // Busca as listagens de movimentos ao carregar a página
-    useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllListMovementsCard();
-                fetchAllListMovementsKiosk();
-            }
-        }
-        fetchDevices();
-    }, [location]);
+    }, [moveCard, moveKiosk]);
 
     // Função para atualizar as listagens de movimentos
     const refreshListMovements = () => {
-        fetchAllListMovementsCard();
-        fetchAllListMovementsKiosk();
+        fetchAllMoveCard();
+        fetchAllMoveKiosk();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -396,13 +345,13 @@ export const NkioskListMovements = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
-                                />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger

@@ -18,6 +18,7 @@ import { useAttendance } from "../../context/MovementContext";
 import { useLicense } from "../../context/LicenseContext";
 import { usePersons } from "../../context/PersonsContext";
 import { useTerminals } from "../../context/TerminalsContext";
+import { useKiosk } from "../../context/KioskContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -33,11 +34,29 @@ type User = {
 export const Login = () => {
   const navigate = useNavigate();
   const { fetchAds } = useAds();
-  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
+  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } =
+    useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances } = useAttendance();
-  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
-  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods } = useTerminals();
+  const {
+    fetchAllEmployees,
+    fetchAllDepartments,
+    fetchAllGroups,
+    fetchAllRegisteredUsers,
+    fetchAllCardData,
+    fetchAllCategories,
+    fetchAllExternalEntitiesData,
+    fetchAllProfessions,
+    fetchAllZones,
+  } = usePersons();
+  const {
+    fetchAllDevices,
+    fetchAllMBDevices,
+    fetchAccessControl,
+    fetchAllMBCloseOpen,
+    fetchTimePeriods,
+  } = useTerminals();
+  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal } = useKiosk();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [resizedSrc, setResizedSrc] = useState<string>(no_entity);
@@ -79,8 +98,8 @@ export const Login = () => {
     img.src = entityLogo;
 
     img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
       canvas.width = 512;
       canvas.height = 512;
 
@@ -90,9 +109,19 @@ export const Login = () => {
 
       const size = minDimension;
 
-      ctx?.drawImage(img, startX, startY, size, size, 0, 0, canvas.width, canvas.height);
+      ctx?.drawImage(
+        img,
+        startX,
+        startY,
+        size,
+        size,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
-      setResizedSrc(canvas.toDataURL('image/png'));
+      setResizedSrc(canvas.toDataURL("image/png"));
     };
   }, [entityLogo]);
 
@@ -125,8 +154,12 @@ export const Login = () => {
   }, [navigate]);
 
   // Função atualizada para setar o NIF junto com o nome da empresa
-  const handleCompanyChange = (event: React.ChangeEvent<FormControlElement>) => {
-    const selectedLicense = company.find(license => license.name === event.target.value);
+  const handleCompanyChange = (
+    event: React.ChangeEvent<FormControlElement>
+  ) => {
+    const selectedLicense = company.find(
+      (license) => license.name === event.target.value
+    );
     if (selectedLicense) {
       fetchLogo(Number(selectedLicense.nif));
       setSelectedNif(Number(selectedLicense.nif));
@@ -134,7 +167,7 @@ export const Login = () => {
     } else {
       setEntityLogo(no_entity);
       setSelectedNif(0);
-      setCompanyName('');
+      setCompanyName("");
     }
   };
 
@@ -198,10 +231,6 @@ export const Login = () => {
           localStorage.removeItem("rememberMePassword");
         }
 
-        toast.info(
-          `Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`
-        );
-
         try {
           await Promise.all([
             fetchAllLicensesWithoutKey(),
@@ -223,11 +252,22 @@ export const Login = () => {
             fetchAllMBDevices(),
             fetchAccessControl(),
             fetchAllMBCloseOpen(),
-            fetchTimePeriods()
+            fetchTimePeriods(),
+            fetchAllCoin(),
+            fetchAllCounter(),
+            fetchAllLimpezas(),
+            fetchAllManualOpen(),
+            fetchAllMoveCard(),
+            fetchAllMoveKiosk(),
+            fetchAllMoveVP(),
+            fetchAllOcorrencias(),
+            fetchAllPayCoins(),
+            fetchAllPayTerminal(),
           ]);
+          toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");
         } catch (error) {
-          console.error('Erro ao carregar dados após o login:', error);
+          console.error("Erro ao carregar dados após o login:", error);
         }
       }
     } catch (error) {
@@ -242,7 +282,7 @@ export const Login = () => {
 
   // Função para truncar texto
   const truncateText = (text: string, limit: number) => {
-    return text.length > limit ? text.substring(0, limit) + '...' : text;
+    return text.length > limit ? text.substring(0, limit) + "..." : text;
   };
 
   return (
@@ -256,9 +296,7 @@ export const Login = () => {
             <p style={{ fontSize: 18, fontWeight: "bold", color: "white" }}>
               NIDGROUP - Business Solutions
             </p>
-            <p style={{ fontSize: 10, marginTop: 7, color: "white" }}>
-              www.nidgroup.pt
-            </p>
+            <a style={{ fontSize: 10, marginTop: 7, color: 'white' }} href="https://nidgroup.pt/" target="_blank" rel="noopener noreferrer">www.nidgroup.pt</a>
           </div>
           <div className="username-password-labels">
             <Row className="row-username-password">
@@ -266,7 +304,7 @@ export const Login = () => {
                 <div className="image-container">
                   <img
                     className="profile-login-entity"
-                    src={resizedSrc}
+                    src={entityLogo}
                     alt="foto entidade"
                   />
                 </div>
@@ -387,7 +425,7 @@ export const Login = () => {
               Developed by NIDSOF - Smart Solutions
             </p>
             <p style={{ fontSize: 10, margin: 0, color: "white" }}>
-              www.nidsof.pt
+              <a style={{ color: 'white' }} href="https://nidsof.pt/" target="_blank" rel="noopener noreferrer">www.nidsof.pt</a>
             </p>
           </footer>
         </form>

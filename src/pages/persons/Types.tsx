@@ -218,9 +218,7 @@ export const Types = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
                 >
-                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.externalEntityTypeID)} >
-                        <i className="bi bi-trash-fill"></i>
-                    </Button>
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.externalEntityTypeID)} />
                 </OverlayTrigger>
             </div>
         ),

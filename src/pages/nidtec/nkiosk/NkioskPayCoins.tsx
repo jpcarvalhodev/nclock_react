@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -52,7 +53,7 @@ export const NkioskPayCoins = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
+    const { payCoins, setPayCoins, fetchAllPayCoins } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'statusMessage', 'deviceSN']);
@@ -64,31 +65,6 @@ export const NkioskPayCoins = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>([]);
     const eventDoorId = '2';
-
-    // Função para buscar os pagamentos no moedeiro
-    const fetchAllPayCoins = async () => {
-        try {
-            if (devices.length === 0) {
-                setPayCoins([]);
-                return;
-            }
-
-            const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber);
-            });
-
-            const allData = await Promise.all(promises);
-
-            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
-
-            const combinedData = validData.flat();
-
-            setPayCoins(combinedData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
-            setPayCoins([]);
-        }
-    };
 
     // Função para buscar os pagamentos do moedeiro entre datas
     const fetchPaymentsCoinBetweenDates = async () => {
@@ -141,11 +117,6 @@ export const NkioskPayCoins = () => {
             console.error('Erro ao buscar os dados da última recolha:', error);
         }
     }
-
-    // Busca os pagamentos no moedeiro ao carregar a página
-    useEffect(() => {
-        fetchAllPayCoins();
-    }, []);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {

@@ -33,32 +33,13 @@ interface Field {
 
 // Define o componente
 export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...initialValues, doorTimezoneList: [] });
+    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...initialValues, doorTimezoneList: [], currentDoorId: '', currentTimezoneId: '', createrName: localStorage.getItem('username') });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
-    const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, boolean> = {};
-
-        const isValid = fields.every(field => {
-            const fieldValue = formData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
-            }
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
-            }
-
-            return valid;
-        });
-
-        setErrors(newErrors);
-        setIsFormValid(isValid);
         validateForm();
     }, [formData, fields]);
 
@@ -78,8 +59,11 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
             }
         });
 
+        if (formData.doorTimezoneList.length === 0) {
+            isValid = false;
+        }
+
         setErrors(newErrors);
-        setIsFormValid(isValid);
         return isValid;
     };
 
@@ -106,7 +90,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
             setFormData({
                 ...initialValues,
                 doorTimezoneList: [],
-                createrName: localStorage.getItem('username') || '',
+                createrName: localStorage.getItem('username'),
             });
             fetchDropdownOptions();
         } else {
@@ -117,48 +101,32 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         }
     }, [open]);
 
-    // Função para lidar com a mudança de valores nos campos
-    const handleChange = (e: ChangeEvent<any>) => {
-        const { name, value } = e.target;
-
-        if (showValidationErrors) {
-            setShowValidationErrors(false);
-        }
-
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    // Função para lidar com a mudança do dropdown
-    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
-        const { value } = e.target;
-        const selectedOption = dropdownData[key]?.find((option: any) => {
-            switch (key) {
-                case 'employeesId':
-                    return option.employeeID === value;
-                case 'doorId':
-                    return option.id === value;
-                case 'timezoneId':
-                    return option.id === value;
-                default:
-                    return false;
-            }
-        });
-
-        if (selectedOption) {
-            const idKey = key;
+    // Função para adicionar um período e porta
+    const addDoorTimezone = () => {
+        if (formData.currentDoorId && formData.currentTimezoneId) {
+            const newEntry = {
+                doorId: formData.currentDoorId,
+                doorName: dropdownData.doorId.find(door => door.id === formData.currentDoorId)?.name,
+                timezoneId: formData.currentTimezoneId,
+                timezoneName: dropdownData.timezoneId.find(timezone => timezone.id === formData.currentTimezoneId)?.name
+            };
             setFormData(prevState => ({
                 ...prevState,
-                [idKey]: value
+                doorTimezoneList: [...prevState.doorTimezoneList, newEntry],
+                currentDoorId: '',
+                currentTimezoneId: ''
             }));
         } else {
-            setFormData(prevState => ({
-                ...prevState,
-                [key]: value
-            }));
+            toast.warn('Selecione uma porta e um período antes de adicionar.');
         }
+    };
+
+    // Função para remover um período e porta
+    const removeDoorTimezone = (index: number) => {
+        setFormData(prevState => ({
+            ...prevState,
+            doorTimezoneList: prevState.doorTimezoneList.filter((_, idx) => idx !== index)
+        }));
     };
 
     // Função para fechar o modal
@@ -169,7 +137,8 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
-        if (!isFormValid) {
+        const formIsValid = validateForm();
+        if (!formIsValid) {
             setShowValidationErrors(true);
             toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
             return;
@@ -179,112 +148,82 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para salvar os dados
     const handleSave = () => {
-        const doorTimeEntry = {
-            doorId: formData.doorId,
-            timezoneId: formData.timezoneId,
-        };
-
-        const { doorId, timezoneId, ...restFormData } = formData;
-
-        const updatedFormData = {
-            ...restFormData,
-            doorTimezoneList: [...(restFormData.doorTimezoneList || []), doorTimeEntry]
-        };
-
-        onSave(updatedFormData as Partial<T>);
+        const { currentDoorId, currentTimezoneId, ...restFormData } = formData;
+        onSave(restFormData as Partial<T>);
     };
 
-
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size="lg" style={{ marginTop: 100 }}>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
-                        {[
-                            { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
-                            { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
-                            { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
-                        ].map((field) => (
-                            <Col md={3} key={field.key}>
-                                <Form.Group controlId={`form${field.key}`}>
-                                    {field.required ? (
-                                        <OverlayTrigger
-                                            placement="right"
-                                            overlay={<Tooltip id={`tooltip-${field.key}`}>Campo obrigatório</Tooltip>}
-                                        >
-                                            <Form.Label>
-                                                {field.label}
-                                                <span style={{ color: 'red' }}>*</span>
-                                            </Form.Label>
-                                        </OverlayTrigger>
-                                    ) : (
-                                        <Form.Label>{field.label}</Form.Label>
-                                    )}
-                                    {field.type === 'dropdown' ? (
-                                        <Form.Control
-                                            as="select"
-                                            className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                            value={formData[field.key] || ''}
-                                            onChange={(e) => handleDropdownChange(field.key, e)}
-                                            style={{ overflowY: 'auto', maxHeight: '200px' }}
-                                        >
-                                            <option value="">Selecione...</option>
-                                            {dropdownData[field.key]
-                                                ? dropdownData[field.key]
-                                                    .sort((a, b) => {
-                                                        if (field.key === 'employeesId') {
-                                                            return a.enrollNumber - b.enrollNumber;
-                                                        }
-                                                        return 0;
-                                                    })
-                                                    .sort((a, b) => {
-                                                        if (field.key === 'doorId') {
-                                                            return a.doorNo - b.doorNo;
-                                                        }
-                                                        return 0;
-                                                    })
-                                                    .map((option) => {
-                                                        let optionId, optionName;
-                                                        switch (field.key) {
-                                                            case 'employeesId':
-                                                                optionId = option.employeeID;
-                                                                optionName = `${option.enrollNumber} - ${option.shortName}`;
-                                                                break;
-                                                            case 'doorId':
-                                                                optionId = option.id;
-                                                                optionName = `${option.doorNo} - ${option.name}`;
-                                                                break;
-                                                            case 'timezoneId':
-                                                                optionId = option.id;
-                                                                optionName = option.name;
-                                                                break;
-                                                            default:
-                                                                optionId = option.id;
-                                                                optionName = option.name;
-                                                                break;
-                                                        }
-                                                        return (
-                                                            <option key={optionId} value={optionId}>
-                                                                {optionName}
-                                                            </option>
-                                                        );
-                                                    })
-                                                : null}
-                                        </Form.Control>
-                                    ) : (
-                                        <Form.Control
-                                            type={field.type}
-                                            className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                            value={formData[field.key] || ''}
-                                            onChange={handleChange}
-                                            name={field.key}
-                                        />
-                                    )}
-                                    {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
-                                </Form.Group>
+                        <Col md={4}>
+                            <Form.Group controlId="formEmployeesId">
+                                <Form.Label>Funcionário<span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    value={formData.employeesId || ''}
+                                    onChange={e => setFormData({ ...formData, employeesId: e.target.value })}
+                                    className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                >
+                                    <option value="">Selecione...</option>
+                                    {dropdownData.employeesId && dropdownData.employeesId.map(option => (
+                                        <option key={option.employeeID} value={option.employeeID}>
+                                            {`${option.enrollNumber} - ${option.shortName}`}
+                                        </option>
+                                    ))}
+                                </Form.Control>
+                                {errors.employeesId && <Form.Text className="text-danger">{errors.employeesId}</Form.Text>}
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={4}>
+                            <Form.Group>
+                                <Form.Label>Porta <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    value={formData.currentDoorId}
+                                    onChange={e => setFormData({ ...formData, currentDoorId: e.target.value })}
+                                    className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                >
+                                    <option value="">Selecione a Porta...</option>
+                                    {dropdownData.doorId && dropdownData.doorId.map(option => (
+                                        <option key={option.id} value={option.id}>{`${option.doorNo} - ${option.name}`}</option>
+                                    ))}
+                                </Form.Control>
+                            </Form.Group>
+                        </Col>
+                        <Col md={4}>
+                            <Form.Group>
+                                <Form.Label>Período <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    value={formData.currentTimezoneId}
+                                    onChange={e => setFormData({ ...formData, currentTimezoneId: e.target.value })}
+                                    className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                >
+                                    <option value="">Selecione o Período...</option>
+                                    {dropdownData.timezoneId && dropdownData.timezoneId.map(option => (
+                                        <option key={option.id} value={option.id}>{option.name}</option>
+                                    ))}
+                                </Form.Control>
+                            </Form.Group>
+                        </Col>
+                        <Col className="d-flex align-items-end">
+                            <Button style={{ height: 30, display: 'flex', alignItems: 'center' }} variant="outline-primary" onClick={addDoorTimezone}>Adicionar</Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        {formData.doorTimezoneList.map((entry, index) => (
+                            <Col md={8} key={index}>
+                                <div className="d-flex justify-content-between align-items-center p-2 border rounded my-2">
+                                    Porta: {entry.doorName}, Período: {entry.timezoneName}
+                                    <Button variant="danger" size="sm" onClick={() => removeDoorTimezone(index)}>Remover</Button>
+                                </div>
                             </Col>
                         ))}
                     </Row>
@@ -298,6 +237,6 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                     Guardar
                 </Button>
             </Modal.Footer>
-        </Modal >
+        </Modal>
     );
 };

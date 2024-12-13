@@ -772,9 +772,7 @@ export const Terminals = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
                 >
-                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.zktecoDeviceID)}>
-                        <i className="bi bi-trash-fill"></i>
-                    </Button>
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.zktecoDeviceID)} />
                 </OverlayTrigger>
             </div>
         ),

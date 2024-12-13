@@ -17,6 +17,7 @@ import { counterFields } from "../../../helpers/Fields";
 import Split from "react-split";
 import { TextFieldProps, TextField } from "@mui/material";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -66,7 +67,7 @@ export const NkioskCounter = () => {
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const [counter, setCounter] = useState<Counter[]>([]);
+    const { counter, fetchAllCounter } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'pin', 'nameUser', 'eventType', 'deviceSN']);
@@ -77,29 +78,6 @@ export const NkioskCounter = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<Counter[]>([]);
-
-    // Função para buscar os contadores
-    const fetchAllCounter = async (startDate?: string, endDate?: string) => {
-        try {
-            const data = await apiService.fetchAllContador(startDate, endDate);
-            if (Array.isArray(data)) {
-                const convertedData = data.map(item => ({
-                    ...item,
-                    eventTime: convertStringToDate(item.eventTime)
-                }));
-                setCounter(convertedData);
-            } else {
-                setCounter([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados do contador:', error);
-        }
-    };
-
-    // Busca os pagamentos dos terminais ao carregar a página
-    useEffect(() => {
-        fetchAllCounter();
-    }, []);
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
@@ -314,11 +292,7 @@ export const NkioskCounter = () => {
                         </div>
                         <div style={{ display: "flex", marginTop: -20 }}>
                             <div style={{ marginLeft: 10, marginRight: 10 }}>
-                                <strong>Total de Movimentos: Torniquete </strong>{totalCardAmount} - <strong>Quiosque </strong>{totalKioskAmount}
-                            </div>
-                            <p>|</p>
-                            <div style={{ marginLeft: 10 }}>
-                                <strong>Total: </strong>{totalCardAmount + totalKioskAmount}
+                                <strong>Total de Movimentos:</strong> Torniquete - {totalCardAmount} | Quiosque - {totalKioskAmount} | Total - {totalCardAmount + totalKioskAmount}
                             </div>
                         </div>
                     </div>

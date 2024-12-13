@@ -6,8 +6,10 @@ import { CustomOutlineButton } from './CustomOutlineButton';
 import { PDFDocument } from './PDFDocument';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import { Entity } from '../helpers/Types';
+import { Devices, Entity, MBDevice } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
+import { useTerminals } from '../context/TerminalsContext';
+import { de } from 'date-fns/locale';
 
 // Define a interface para os itens de dados
 interface DataItem {
@@ -31,7 +33,7 @@ interface ExportButtonProps {
 type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | 'isPresent' | 'urlArquivo' | 'fechoImage' | 'aberturaImage' | string;
 
 // Formata o campo com base no tipo de campo
-const formatField = (item: DataItem, fieldKey: FieldKey) => {
+const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDevice: MBDevice[]) => {
 
     const currentRoute = window.location.pathname;
     const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
@@ -117,23 +119,17 @@ const formatField = (item: DataItem, fieldKey: FieldKey) => {
             return item[fieldKey] ? 'Activo' : 'Inactivo';
         case 'isPresent':
             return item[fieldKey] ? 'Presente' : 'Ausente';
-        case 'clientTicket':
-        case 'merchantTicket':
-        case 'photo':
-        case 'logotipo':
-        case 'url':
-        case 'passwordCamera':
-        case 'urlArquivo':
-        case 'fechoImage':
-        case 'aberuraImage':
-            return '';
+        case 'deviceSN':
+            return device.find(device => device.serialNumber === item.deviceSN)?.deviceName || '';
+        case 'tpId':
+            return mbDevice.find(mbDevice => mbDevice.id === item.tpId)?.nomeQuiosque || '';
         default:
             return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
     }
 };
 
 // Função para exportar os dados para CSV
-const exportToCSV = (data: DataItem[], fileName: string, fields: Field[]): void => {
+const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device: Devices[], mbDevice: MBDevice[]): void => {
     const fileExtension = '.csv';
     const fileType = 'text/csv;charset=utf-8;';
     const BOM = '\uFEFF';
@@ -154,7 +150,7 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[]): void 
     const csvContent = data.map(item => {
         return fields.map(field => {
             if (!validFields.has(field.key)) return '';
-            const value = formatField(item, field.key);
+            const value = formatField(item, field.key, device, mbDevice);
             if (typeof value === 'string') {
                 return `"${value.replace(/"/g, '""')}"`;
             }
@@ -169,13 +165,13 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[]): void 
 };
 
 // Função para exportar os dados para XLSX
-const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void => {
+const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[], device: Devices[], mbDevice: MBDevice[]): void => {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
 
     const output = data.map(item => {
         return fields.reduce((result: Record<string, any>, field) => {
-            const value = formatField(item, field.key);
+            const value = formatField(item, field.key, device, mbDevice);
             if (value !== undefined && value !== null && value !== '') {
                 result[field.label] = value;
             }
@@ -191,13 +187,13 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[]): void
 };
 
 // Função para exportar os dados para TXT
-const exportToTXT = (data: DataItem[], fileName: string): void => {
+const exportToTXT = (data: DataItem[], fileName: string, device: Devices[], mbDevice: MBDevice[]): void => {
     const fileExtension = '.txt';
 
     const filteredData = data.map(item => {
         const { employeeID, employeeId, departmentID, groupID, categoryID, professionID, zoneID, attendanceTimeId, ...rest } = item;
         return Object.keys(item).reduce((result: Record<string, any>, key) => {
-            const value = formatField(rest, key);
+            const value = formatField(rest, key, device, mbDevice);
             if (value !== undefined && value !== null && value !== '') {
                 result[key] = value;
             }
@@ -211,6 +207,7 @@ const exportToTXT = (data: DataItem[], fileName: string): void => {
 
 // Define o componente
 export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProps) => {
+    const { devices, mbDevices } = useTerminals();
     const fileName = 'dados_exportados';
     const dataToExport = selectedData.length > 0 ? selectedData : allData;
     const [entity, setEntity] = useState<Entity[]>([]);
@@ -262,12 +259,12 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
                 </Dropdown.Toggle>
             </OverlayTrigger>
             <Dropdown.Menu>
-                <Dropdown.Item onClick={() => exportToCSV(dataToExport, fileName, fields)}>Exportar em CSV</Dropdown.Item>
-                <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields)}>Exportar em XLSX</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToCSV(dataToExport, fileName, fields, devices, mbDevices)}>Exportar em CSV</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields, devices, mbDevices)}>Exportar em XLSX</Dropdown.Item>
                 <Dropdown.Item as="button">
                     {isEntityLoading && isEntityLogoLoading && !entityLogo && (
                         <PDFDownloadLink
-                            document={<PDFDocument data={dataToExport} fields={fields} entity={entity} entityLogo={entityLogo} />}
+                            document={<PDFDocument data={dataToExport} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />}
                             fileName={`${fileName}.pdf`}
                             style={{ textDecoration: 'none', color: 'inherit' }}
                         >
@@ -275,7 +272,7 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
                         </PDFDownloadLink>
                     )}
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => exportToTXT(dataToExport, fileName)}>Exportar em TXT</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToTXT(dataToExport, fileName, devices, mbDevices)}>Exportar em TXT</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     );

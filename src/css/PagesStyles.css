@@ -311,7 +311,7 @@ body {
     align-items: center;
     scroll-behavior: smooth;
     overflow: hidden;
-    width: 71vw;
+    width: 76vw;
     height: 20vh;
 }
 
@@ -321,7 +321,7 @@ body {
     align-items: center;
     scroll-behavior: smooth;
     overflow: hidden;
-    width: 71vw;
+    width: 76vw;
     height: 20vh;
 }
 
@@ -368,7 +368,6 @@ body {
     cursor: pointer;
     text-decoration: none;
     color: inherit;
-    max-width: 160px;
 }
 
 .card:hover {
@@ -650,8 +649,8 @@ body {
 }
 
 .action-button {
-    width: 22px !important;
-    height: 22px !important;
+    width: 20px !important;
+    height: 24px !important;
     margin-right: 5px;
 }
 
@@ -730,10 +729,11 @@ body {
     background: white;
     margin: 10px;
     margin-top: 15px;
+    width: 99%;
 }
 
 .nav.nav-pills {
-    width: 71%;
+    width: 75%;
     height: 35px;
     margin: 0 auto;
     border-radius: 10px;
@@ -1188,15 +1188,15 @@ body {
     }
 
     .card-container.cards-center {
-        width: 68.5vw;
+        width: 75.5vw;
     }
 
     .card-container.cards-left {
-        width: 68.5vw;
+        width: 75.5vw;
     }
 
     .nav.nav-pills {
-        width: 68%;
+        width: 74%;
     }
 
 }
@@ -1208,15 +1208,15 @@ body {
     }
 
     .card-container.cards-center {
-        width: 81vw;
+        width: 73vw;
     }
 
     .card-container.cards-left {
-        width: 81vw;
+        width: 73vw;
     }
 
     .nav.nav-pills {
-        width: 81%;
+        width: 72%;
     }
 
     .img-contact-modal {
@@ -1243,7 +1243,7 @@ body {
     }
 
     .nav.nav-pills {
-        width: 86%;
+        width: 85%;
     }
 
     .img-contact-modal {

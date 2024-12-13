@@ -288,21 +288,19 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         placement="top"
                         overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
                     >
-                        <CustomOutlineButton className='action-button' icon='bi bi-copy' onClick={() => handleDuplicateAndClose(row)} />
+                        <CustomOutlineButton className='action-button' icon='bi bi-copy' iconSize='0.8em' onClick={() => handleDuplicateAndClose(row)} />
                     </OverlayTrigger>
                     <OverlayTrigger
                         placement="top"
                         overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                     >
-                        <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditEmployee(row)} />
+                        <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' iconSize='0.8em' onClick={() => handleEditEmployee(row)} />
                     </OverlayTrigger>
                     <OverlayTrigger
                         placement="top"
                         overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
                     >
-                        <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row)} >
-                            <i className="bi bi-trash-fill"></i>
-                        </Button>
+                        <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' iconSize='0.8em' onClick={() => handleOpenDeleteModal(row)} />
                     </OverlayTrigger>
                 </div>
             ) : null

@@ -6,6 +6,7 @@ import { CustomOutlineButton } from './CustomOutlineButton';
 import { CustomSpinner } from './CustomSpinner';
 import { Entity } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
+import { useTerminals } from '../context/TerminalsContext';
 
 // Interfaces para os itens de dados e campos
 interface DataItem {
@@ -31,6 +32,7 @@ interface PrintButtonProps {
 
 // Componente para visualizar e imprimir ou salvar o PDF
 export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onClose }: PrintButtonProps) => {
+    const { devices, mbDevices } = useTerminals();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [calculatedTimeout, setCalculatedTimeout] = useState(renderTimeout || 5000);
@@ -76,9 +78,12 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
 
     // Função para calcular o renderTimeout com base na quantidade de dados
     const calculateRenderTimeout = (dataLength: number): number => {
-        const baseTimeout = 10000;
+        const baseTimeout = 5000;
         const timePerItem = 20;
-        return baseTimeout + (dataLength * timePerItem);
+
+        const totalTimeout = baseTimeout + (dataLength * timePerItem);
+
+        return Math.min(totalTimeout, 30000);
     };
 
     // Atualiza o estado de loading quando o modal é exibido
@@ -121,21 +126,26 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
                     <Modal.Title>Visualizar PDF</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {loading || isEntityLoading || isEntityLogoLoading || !entityLogo ?
+                    {loading || isEntityLoading || isEntityLogoLoading ? (
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
                             <CustomSpinner />
-                        </div> :
+                        </div>
+                    ) : data.length === 0 ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
+                            <h3>Não há dados para exibir.</h3>
+                        </div>
+                    ) : (
                         <PDFViewer width="100%" height="600px">
-                            <PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} />
+                            <PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />
                         </PDFViewer>
-                    }
+                    )}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-info" onClick={handleCloseModal}>
                         Fechar
                     </Button>
                     <PDFDownloadLink
-                        document={<PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} />}
+                        document={<PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />}
                         fileName="dados_impressos.pdf"
                     >
                         <Button variant="outline-secondary">

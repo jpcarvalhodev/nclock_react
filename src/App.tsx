@@ -135,6 +135,7 @@ import { NviewOnlineCameras } from './pages/sisnid/nview/NviewOnlineCameras';
 import { Entities } from './pages/configs/Entities';
 import { CustomSpinner } from './components/CustomSpinner';
 import { EntityProvider } from './context/EntityContext';
+import { KioskProvider } from './context/KioskContext';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -310,10 +311,12 @@ function App() {
             <AttendanceProvider>
               <TerminalsProvider>
                 <AdsProvider>
-                  <Router>
-                    <ToastContainer />
-                    <AnimatedRoutes />
-                  </Router>
+                  <KioskProvider>
+                    <Router>
+                      <ToastContainer />
+                      <AnimatedRoutes />
+                    </Router>
+                  </KioskProvider>
                 </AdsProvider>
               </TerminalsProvider>
             </AttendanceProvider>

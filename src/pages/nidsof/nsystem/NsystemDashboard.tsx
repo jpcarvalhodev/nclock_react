@@ -66,7 +66,7 @@ import noptics from '../../../assets/img/navbar/navbar/noptics.png';
 import ngold from '../../../assets/img/navbar/navbar/ngold.png';
 
 // Define o tipo TabName
-type TabName = 'SISNID - SEGURANÇA' | 'NIDSOF - GESTÃO' | 'NIDTEC - TECNOLOGIA' | 'NIDPLACE - CONFORTO';
+type TabName = 'SISNID - Segurança' | 'NIDSOF - Gestão' | 'NIDTEC - Tecnologia' | 'NIDPLACE - Conforto';
 
 // Define o tipo CardTitle
 type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
@@ -147,7 +147,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 export const NsystemDashboard = () => {
     const { navbarColor, footerColor } = useColor();
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('NIDSOF - GESTÃO');
+    const [activeKey, setActiveKey] = useState<TabName>('NIDSOF - Gestão');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -166,7 +166,7 @@ export const NsystemDashboard = () => {
     };
 
     const cardData = {
-        'SISNID - SEGURANÇA': [
+        'SISNID - Segurança': [
             { title: 'Assiduidade', img: nclock, tab: 'nclock' },
             { title: 'Acessos', img: naccess, tab: 'naccess' },
             { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
@@ -178,7 +178,7 @@ export const NsystemDashboard = () => {
             { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
             { title: 'NSoftwares', img: sisnidlogo }
         ],
-        'NIDSOF - GESTÃO': [
+        'NIDSOF - Gestão': [
             { title: 'Programação', img: nsoftware, tab: 'nsoftware' },
             { title: 'Sistemas', img: nsystem, tab: 'nsystem' },
             { title: 'Aplicativos', img: napp, tab: 'napp' },
@@ -208,7 +208,7 @@ export const NsystemDashboard = () => {
             { title: 'Ópticas', img: noptics, tab: 'noptics' },
             { title: 'Ourivesarias', img: ngold, tab: 'ngold' },
         ],
-        'NIDTEC - TECNOLOGIA': [
+        'NIDTEC - Tecnologia': [
             { title: 'Inteligência', img: nsmart, tab: 'nsmart' },
             { title: 'Virtual', img: nreality, tab: 'nreality' },
             { title: 'Hologramas', img: nhologram, tab: 'nhologram' },
@@ -220,7 +220,7 @@ export const NsystemDashboard = () => {
             { title: 'Incêndios', img: nfire, tab: 'nfire' },
             { title: 'NSoftwares', img: nidtec, tab: 'nidtec' }
         ],
-        'NIDPLACE - CONFORTO': [
+        'NIDPLACE - Conforto': [
             { title: 'Mobiliário', img: nfurniture, tab: 'nfurniture' },
             { title: 'Divisórias', img: npartition, tab: 'npartition' },
             { title: 'Design', img: ndecor, tab: 'ndecor' },
@@ -238,6 +238,7 @@ export const NsystemDashboard = () => {
     const RenderCards = (tabKey: TabName) => {
         const location = useLocation();
         const cardContainerRef = useRef<HTMLDivElement>(null);
+        const scrollPosition = useRef(0);
         const [maxVisibleCards, setMaxVisibleCards] = useState(10);
 
         const handleResize = () => {
@@ -257,6 +258,25 @@ export const NsystemDashboard = () => {
                 window.removeEventListener('resize', handleResize);
             };
         }, []);
+
+        useEffect(() => {
+            if (cardContainerRef.current) {
+                cardContainerRef.current.scrollLeft = scrollPosition.current;
+            }
+        }, [tabKey]);
+        
+        useEffect(() => {
+            if (cardContainerRef.current) {
+                const cards = cardData[tabKey];
+                const activeCardIndex = cards.findIndex(card => isValidCardTitle(card.title) && location.pathname === tabData[card.title].route);
+                if (activeCardIndex !== -1) {
+                    const cardWidth = cardContainerRef.current.children[activeCardIndex].clientWidth;
+                    const scrollX = cardWidth * activeCardIndex - (cardContainerRef.current.clientWidth / 2) + (cardWidth / 2);
+                    cardContainerRef.current.scrollTo({ left: scrollX, behavior: 'smooth' });
+                    scrollPosition.current = scrollX;
+                }
+            }
+        }, [location.pathname]);
 
         const scrollLeft = () => {
             if (cardContainerRef.current) {

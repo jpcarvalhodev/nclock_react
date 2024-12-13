@@ -240,9 +240,7 @@ export const Entities = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Desactivar</Tooltip>}
                 >
-                    <Button className='delete-button' variant="outline-danger" onClick={() => handleDisableEntity(row)} >
-                        <i className="bi bi-slash-circle"></i>
-                    </Button>
+                    <CustomOutlineButton className="action-button" icon='bi bi-slash-circle' onClick={() => handleDisableEntity(row)} />
                 </OverlayTrigger>
             </div>
         ),

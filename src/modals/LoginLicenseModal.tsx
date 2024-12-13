@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import '../css/PagesStyles.css';
+import "../css/Login.css";
 import { Col, Form, Row } from 'react-bootstrap';
 import { LicenseKey } from '../helpers/Types';
 
@@ -32,14 +32,14 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" centered>
+        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 140 }} id="modal-login" >
             <Modal.Header closeButton>
-                <Modal.Title>{title}</Modal.Title>
+                <Modal.Title style={{ color: 'white' }} >{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
-                        <Col md={12}>
+                        <Col md={12} >
                             <Form.Group controlId='formLicenseKey'>
                                 <Form.Control
                                     className="custom-input-height custom-select-font-size"
@@ -55,10 +55,10 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-light" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleSave}>
+                <Button variant="outline-light" onClick={handleSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

@@ -337,9 +337,13 @@ body {
     border-bottom: none !important;
 }
 
+.dropdown-menu-logos {
+    min-width: 200px;
+}
+
 .submenu {
     position: absolute;
-    top: 0;
+    top: 20px;
     background-color: white;
     border: 1px solid #ddd;
     z-index: 1000;

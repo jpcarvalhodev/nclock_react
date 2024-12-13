@@ -22,6 +22,7 @@ import { useLocation } from "react-router-dom";
 import Split from "react-split";
 import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -55,8 +56,8 @@ export const NkioskOccurrences = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
-    const [occurrences, setOccurrences] = useState<LimpezasEOcorrencias[]>([]);
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { occurrences, setOccurrences, fetchAllOcorrencias, handleAddOcorrencia, handleUpdateOcorrencia, handleDeleteOcurrences } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
@@ -74,22 +75,7 @@ export const NkioskOccurrences = () => {
     const [currentOccurrenceIndex, setCurrentOccurrenceIndex] = useState(0);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<LimpezasEOcorrencias[]>([]);
-    const location = useLocation();
     const tipo = 2;
-
-    // Função para buscar as Ocorrências
-    const fetchAllOcorrencias = async () => {
-        try {
-            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo);
-            if (Array.isArray(data)) {
-                setOccurrences(data);
-            } else {
-                setOccurrences([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados de ocorrências:', error);
-        }
-    };
 
     // Função para buscar as Ocorrências entre datas
     const fetchOcorrenciasBetweenDates = async () => {
@@ -106,53 +92,19 @@ export const NkioskOccurrences = () => {
     };
 
     // Função para adicionar Ocorrências
-    const handleAddOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
-        try {
-            const data = await apiService.addOccurrence(occurrence);
-            setOccurrences([...occurrences, data]);
-            toast.success(data.message || 'Ocorrência adicionada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao criar nova ocorrência:', error);
-        } finally {
-            fetchAllOcorrencias();
-        }
+    const addOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
+        await handleAddOcorrencia(occurrence);
     };
 
     // Função para atualizar ocorrências
-    const handleUpdateOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
-        try {
-            const data = await apiService.updateOccurrence(occurrence);
-            setOccurrences(occurrences.map(oc => (oc.id === data.id ? data : oc)));
-            toast.success(data.message || 'Ocorrência atualizada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao atualizar ocorrência:', error);
-        } finally {
-            fetchAllOcorrencias();
-        }
+    const updateOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
+        await handleUpdateOcorrencia(occurrence);
     };
 
     // Função para apagar Ocorrências
-    const handleDeleteOcurrences = async (id: string) => {
-        try {
-            const data = await apiService.deleteOccurrence(id);
-            toast.success(data.message || 'Ocorrência apagada com sucesso!');
-        } catch (error) {
-            console.error('Erro ao apagar ocorrência:', error);
-        } finally {
-            fetchAllOcorrencias();
-        }
+    const deleteOcurrences = async (id: string) => {
+        await handleDeleteOcurrences(id);
     }
-
-    // Busca os pagamentos dos terminais ao carregar a página
-    useEffect(() => {
-        const fetchDevices = async () => {
-            const data = await fetchAllDevices();
-            if (data.length > 0) {
-                fetchAllOcorrencias();
-            }
-        }
-        fetchDevices();
-    }, [location]);
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
@@ -285,10 +237,18 @@ export const NkioskOccurrences = () => {
                 >
                     <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
                 </OverlayTrigger>
-                <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditOcorrencias(row)} />
-                <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.id)} >
-                    <i className="bi bi-trash-fill"></i>
-                </Button>{' '}
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditOcorrencias(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.id)} />
+                </OverlayTrigger>
             </div>
         ),
         selector: (row: LimpezasEOcorrencias) => row.id,
@@ -311,7 +271,7 @@ export const NkioskOccurrences = () => {
             }
         })
     )
-    .sort((a, b) => new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime());
+        .sort((a, b) => new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime());
 
     // Função para obter os campos selecionados baseado em selectedColumns
     const getSelectedFields = () => {
@@ -338,7 +298,7 @@ export const NkioskOccurrences = () => {
                                     size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
                             <div className="buttons-container-others">
@@ -422,7 +382,7 @@ export const NkioskOccurrences = () => {
                 title="Adicionar Ocorrência"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddOcorrencia}
+                onSave={addOcorrencia}
                 fields={limpezasEOcorrenciasFields}
                 initialValuesData={initialData || {}}
             />
@@ -431,7 +391,7 @@ export const NkioskOccurrences = () => {
                     title="Atualizar Ocorrência"
                     open={showUpdateModal}
                     onClose={() => setShowUpdateModal(false)}
-                    onUpdate={handleUpdateOcorrencia}
+                    onUpdate={updateOcorrencia}
                     fields={limpezasEOcorrenciasFields}
                     entity={selectedOccurrence}
                     onDuplicate={handleDuplicate}
@@ -444,7 +404,7 @@ export const NkioskOccurrences = () => {
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={handleDeleteOcurrences}
+                onDelete={deleteOcurrences}
                 entityId={selectedOcurrencesForDelete}
             />
         </div>

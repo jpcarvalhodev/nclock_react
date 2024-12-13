@@ -224,9 +224,7 @@ export const Groups = () => {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
                 >
-                    <Button className='delete-button' variant="outline-danger" onClick={() => handleOpenDeleteModal(row.groupID)} >
-                        <i className="bi bi-trash-fill"></i>
-                    </Button>
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.groupID)} />
                 </OverlayTrigger>
             </div>
         ),

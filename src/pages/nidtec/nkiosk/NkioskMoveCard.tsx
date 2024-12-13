@@ -21,6 +21,7 @@ import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Define a interface SaveData
 interface SaveData {
@@ -62,7 +63,7 @@ export const NkioskMoveCard = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
+    const { moveCard, setMoveCard, fetchAllMoveCard } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
@@ -78,31 +79,6 @@ export const NkioskMoveCard = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
     const eventDoorId = '3';
-
-    // Função para buscar os movimentos dos cartões
-    const fetchAllMoveCard = async () => {
-        try {
-            if (devices.length === 0) {
-                setMoveCard([]);
-                return;
-            }
-
-            const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber);
-            });
-
-            const allData = await Promise.all(promises);
-
-            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
-
-            const combinedData = validData.flat();
-
-            setMoveCard(combinedData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
-            setMoveCard([]);
-        }
-    };
 
     // Função para buscar os movimentos dos cartões entre datas
     const fetchMovementCardBetweenDates = async () => {
@@ -139,11 +115,6 @@ export const NkioskMoveCard = () => {
         }
         window.location.reload();
     };
-
-    // Busca as publicidades ao carregar a página
-    useEffect(() => {
-        fetchAllMoveCard();
-    }, []);
 
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
