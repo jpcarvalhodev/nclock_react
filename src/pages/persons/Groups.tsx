@@ -81,11 +81,6 @@ export const Groups = () => {
         await handleDeleteGroup(groupID);
     };
 
-    // Busca os grupos ao carregar a página
-    useEffect(() => {
-        fetchAllGroups();
-    }, []);
-
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {
         if (selectedGroup) {

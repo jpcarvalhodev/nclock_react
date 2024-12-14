@@ -16,11 +16,11 @@ import { manualOpenDoorFields } from "../../../helpers/Fields";
 import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
-import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
+import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 
 // Define a interface para os filtros
 interface Filters {
@@ -248,7 +248,7 @@ export const NkioskDoorOpen = () => {
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewDataNkioskDisp onSelectDevices={handleSelectFromTreeView} />
+                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text" style={{ color: '#009739' }}>

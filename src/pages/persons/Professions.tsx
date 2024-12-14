@@ -81,11 +81,6 @@ export const Professions = () => {
         await handleDeleteProfessions(professionID);
     };
 
-    // Atualiza a lista de profissões ao carregar a página
-    useEffect(() => {
-        fetchAllProfessions();
-    }, []);
-
     // Função para atualizar a lista de profissões
     const refreshProfessions = () => {
         fetchAllProfessions();

@@ -216,7 +216,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" style={{ marginTop: 115 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -369,7 +369,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                     );
                 })}
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>

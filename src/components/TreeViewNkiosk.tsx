@@ -3,12 +3,11 @@ import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { Devices, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { useLocation } from 'react-router-dom';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -68,34 +67,19 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps) {
+    const { devices, fetchAllDevices } = useTerminals();    
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [deviceData, setDeviceData] = useState<Devices[]>([]);
     const [treeViewTitleColor, setTreeViewTitleColor] = useState('#009739');
     const location = useLocation();
     const selectionChangedRef = { current: false };
 
-    // Função para buscar os dados dos dispositivos
-    const fetchAllData = async () => {
-        try {
-            const deviceData = await apiService.fetchAllDevices();
-            setDeviceData(deviceData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos dispositivos:', error);
-        }
-    };
-
-    // Busca os dados ao carregar o componente
-    useEffect(() => {
-        fetchAllData();
-    }, []);
-
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
-        const buildDeviceTree = deviceData.map(device => ({
+        const buildDeviceTree = devices.map(device => ({
             id: device.serialNumber || `Sem SN ${device.deviceName}`,
             label: device.deviceName || 'Sem Nome',
             children: []
@@ -118,7 +102,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [deviceData]);
+    }, [devices]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
@@ -200,7 +184,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                 >
-                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllDevices()} iconSize='1.1em'></CustomOutlineButton>
                 </OverlayTrigger>
             </div>
             <Box className="treeViewFlexItem">

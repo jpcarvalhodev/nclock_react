@@ -81,11 +81,6 @@ export const Categories = () => {
         await handleDeleteCategory(categoryID);
     };
 
-    // Busca as categorias ao carregar a página
-    useEffect(() => {
-        fetchAllCategories();
-    }, []);
-
     // Função para atualizar as categorias
     const refreshCategories = () => {
         fetchAllCategories();

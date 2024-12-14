@@ -3,11 +3,10 @@ import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { Devices, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -67,32 +66,17 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTerminalsProps) {
+    const { mbDevices, fetchAllMBDevices } = useTerminals();
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [mbData, setMBData] = useState<MBDevice[]>([]);
     const selectionChangedRef = { current: false };
-
-    // Função para buscar os dados dos dispositivos multibanco
-    const fetchAllMBDevices = async () => {
-        try {
-            const deviceData = await apiService.fetchAllMBDevices();
-            setMBData(deviceData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos dispositivos:', error);
-        }
-    }
-
-    // Busca os dados ao carregar o componente
-    useEffect(() => {
-        fetchAllMBDevices();
-    }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
-        const buildTerminalTree = mbData.map(device => ({
+        const buildTerminalTree = mbDevices.map(device => ({
             id: device.id,
             label: device.nomeQuiosque || 'Sem Nome',
             children: []
@@ -115,7 +99,7 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [mbData]);
+    }, [mbDevices]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {

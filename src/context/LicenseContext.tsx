@@ -2,7 +2,6 @@ import { createContext, useState, useContext, ReactNode, useEffect } from 'react
 import * as apiService from '../helpers/apiService';
 import { toast } from 'react-toastify';
 import { License } from '../helpers/Types';
-import { useLocation } from 'react-router-dom';
 
 // Define o tipo do contexto
 interface LicenseContextType {
@@ -20,6 +19,7 @@ const LicenseContext = createContext<LicenseContextType | undefined>(undefined);
 // Provider do contexto
 export const LicenseProvider = ({ children }: { children: ReactNode }) => {
     const [license, setLicense] = useState<Partial<License>>({});
+    const [dataVersion, setDataVersion] = useState(0);
 
     // Função para verificar se o software está habilitado
     const getSoftwareEnabledStatus = (license: Partial<License>) => {
@@ -82,13 +82,18 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Busca todas as licenças ao recarregar o componente
+    // Atualiza a versão do contexto quando o token é alterado
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            fetchAllLicensesWithoutKey();
+            setDataVersion(prevVersion => prevVersion + 1);
         }
     }, [localStorage.getItem('token')]);
+
+    // Busca todas as licenças ao recarregar o componente
+    useEffect(() => {
+            fetchAllLicensesWithoutKey();
+    }, [dataVersion]);
 
     return (
         <LicenseContext.Provider value={{ license, setLicense, getSoftwareEnabledStatus, fetchAllLicenses, fetchAllLicensesWithoutKey, handleUpdateLicense }}>

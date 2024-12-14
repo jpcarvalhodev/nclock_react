@@ -8,14 +8,13 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useMemo, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { KioskTransactionMB, MBDevice, } from "../../../helpers/Types";
+import { KioskTransactionMB } from "../../../helpers/Types";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
-import { useLocation } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
@@ -255,7 +254,7 @@ export const NkioskListPayments = () => {
                             const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
                             const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
                             return (
-                                <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
+                                <a style={{ color: "black", textDecoration: 'none' }} href={fullImageUrl} target="_blank" rel="noopener noreferrer">
                                     Visualizar ticket
                                 </a>
                             );

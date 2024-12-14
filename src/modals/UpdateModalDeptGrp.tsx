@@ -367,7 +367,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 115 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{entityType === 'department' ? 'Atualizar Departamento' : 'Atualizar Grupo'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -522,7 +522,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     </Row>
                 </Form>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <OverlayTrigger
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}

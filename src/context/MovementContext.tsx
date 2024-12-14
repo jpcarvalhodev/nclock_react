@@ -1,20 +1,11 @@
 import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
-import { Department, Employee, EmployeeAttendanceTimes, Group } from "../helpers/Types";
+import { EmployeeAttendanceTimes } from "../helpers/Types";
 import { toast } from "react-toastify";
 import * as apiService from "../helpers/apiService";
-import { set } from 'date-fns';
-
-// Define a interface para o estado de dados
-interface DataState {
-    departments: Department[];
-    groups: Group[];
-    employees: Employee[];
-}
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {
     attendance: EmployeeAttendanceTimes[];
-    data: DataState;
     startDate: string;
     endDate: string;
     setStartDate: (date: string) => void;
@@ -54,11 +45,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-    const [data, setData] = useState<DataState>({
-        departments: [],
-        groups: [],
-        employees: []
-    });
+    const [dataVersion, setDataVersion] = useState(0);
 
     // Função para buscar todas as assiduidades
     const fetchAllAttendances = useCallback(async (options?: FetchOptions): Promise<EmployeeAttendanceTimes[]> => {
@@ -144,18 +131,22 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Busca todas as assiduidades ao recarregar o componente
+    // Atualiza a versão do contexto quando o token é alterado
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            fetchAllAttendances();
+            setDataVersion(prevVersion => prevVersion + 1);
         }
     }, [localStorage.getItem('token')]);
+
+    // Busca todas as assiduidades ao recarregar o componente
+    useEffect(() => {
+        fetchAllAttendances();
+    }, [dataVersion]);
 
     // Definindo o valor do contexto
     const contextValue = {
         attendance,
-        data,
         startDate,
         endDate,
         setStartDate,

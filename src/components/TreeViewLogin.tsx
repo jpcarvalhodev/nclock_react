@@ -7,9 +7,8 @@ import { Devices, Logs, MBDevice } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
-import { useLocation } from 'react-router-dom';
-import { set } from 'date-fns';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { useEntity } from '../context/EntityContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -69,34 +68,19 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
+    const { loginLogs, fetchAllLoginLogs } = useEntity();
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [logData, setLogData] = useState<Logs[]>([]);
     const selectionChangedRef = { current: false };
-
-    // Função para buscar os dados dos logs
-    const fetchAllData = async () => {
-        try {
-            const login = await apiService.fetchAllLoginLogs();
-            setLogData(login);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos logs:', error);
-        }
-    };
-
-    // Busca os dados ao carregar o componente
-    useEffect(() => {
-        fetchAllData();
-    }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const usersMap = new Map();
 
-        logData.forEach(log => {
+        loginLogs.forEach(log => {
             const userName = log.userName || 'Sem Nome';
             if (!usersMap.has(userName)) {
                 usersMap.set(userName, {
@@ -134,7 +118,7 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [logData]);
+    }, [loginLogs]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
@@ -210,7 +194,7 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                 >
-                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllLoginLogs()} iconSize='1.1em'></CustomOutlineButton>
                 </OverlayTrigger>
             </div>
             <Box className="treeViewFlexItem">

@@ -110,6 +110,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         externalEntity: [],
         externalEntityTypes: [],
     });
+    const [dataVersion, setDataVersion] = useState(0);
 
     // Função para buscar todos os dados
     const fetchAllData = useCallback(async (entity: string = 'all') => {
@@ -708,22 +709,27 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    // Busca todos os dados ao recarregar o componente
+    // Atualiza a versão do contexto quando o token é alterado
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            fetchAllData();
-            fetchAllEmployees();
-            fetchAllDepartments();
-            fetchAllGroups();
-            fetchAllRegisteredUsers();
-            fetchAllCardData();
-            fetchAllCategories();
-            fetchAllExternalEntitiesData();
-            fetchAllProfessions();
-            fetchAllZones();
+            setDataVersion(prevVersion => prevVersion + 1);
         }
     }, [localStorage.getItem('token')]);
+
+    // Busca todos os dados ao recarregar o componente
+    useEffect(() => {
+        fetchAllData();
+        fetchAllEmployees();
+        fetchAllDepartments();
+        fetchAllGroups();
+        fetchAllRegisteredUsers();
+        fetchAllCardData();
+        fetchAllCategories();
+        fetchAllExternalEntitiesData();
+        fetchAllProfessions();
+        fetchAllZones()
+    }, [dataVersion]);
 
     // Define o valor do contexto
     const contextValue: PersonsContextType = {

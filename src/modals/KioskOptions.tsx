@@ -160,7 +160,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' style={{ marginTop: 100 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -237,7 +237,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                     </Tab.Container>
                 </div>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleAddOrUpdate}>Guardar</Button>
             </Modal.Footer>

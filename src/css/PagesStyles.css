@@ -311,7 +311,7 @@ body {
     align-items: center;
     scroll-behavior: smooth;
     overflow: hidden;
-    width: 76vw;
+    width: 51vw;
     height: 20vh;
 }
 
@@ -321,7 +321,7 @@ body {
     align-items: center;
     scroll-behavior: smooth;
     overflow: hidden;
-    width: 76vw;
+    width: 51vw;
     height: 20vh;
 }
 
@@ -733,7 +733,7 @@ body {
 }
 
 .nav.nav-pills {
-    width: 75%;
+    width: 51%;
     height: 35px;
     margin: 0 auto;
     border-radius: 10px;
@@ -1184,19 +1184,19 @@ body {
 @media (max-width: 1920px) {
 
     .card {
-        width: 121px;
+        width: 120px;
     }
 
     .card-container.cards-center {
-        width: 75.5vw;
+        width: 68vw;
     }
 
     .card-container.cards-left {
-        width: 75.5vw;
+        width: 68vw;
     }
 
     .nav.nav-pills {
-        width: 74%;
+        width: 68%;
     }
 
 }
@@ -1208,15 +1208,15 @@ body {
     }
 
     .card-container.cards-center {
-        width: 73vw;
+        width: 81vw;
     }
 
     .card-container.cards-left {
-        width: 73vw;
+        width: 81vw;
     }
 
     .nav.nav-pills {
-        width: 72%;
+        width: 82%;
     }
 
     .img-contact-modal {
@@ -1243,7 +1243,7 @@ body {
     }
 
     .nav.nav-pills {
-        width: 85%;
+        width: 86%;
     }
 
     .img-contact-modal {

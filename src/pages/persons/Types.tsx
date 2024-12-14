@@ -78,11 +78,6 @@ export const Types = () => {
         await handleDeleteExternalEntityTypes(externalEntityTypeID);
     };
 
-    // Atualiza as entidades externas
-    useEffect(() => {
-        fetchAllExternalEntitiesData();
-    }, []);
-
     // Função para atualizar as entidades externas
     const refreshExternalEntitiesTypes = () => {
         fetchAllExternalEntitiesData();

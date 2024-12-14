@@ -136,6 +136,7 @@ import { Entities } from './pages/configs/Entities';
 import { CustomSpinner } from './components/CustomSpinner';
 import { EntityProvider } from './context/EntityContext';
 import { KioskProvider } from './context/KioskContext';
+import { CardScrollProvider } from './context/CardScrollContext';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -152,7 +153,7 @@ function AnimatedRoutes() {
     const loadPage = async () => {
       setLoading(true);
       setShowContent(false);
-      await delay(300);
+      await delay(200);
       setLoading(false);
       setShowContent(true);
     };
@@ -306,22 +307,24 @@ function App() {
   return (
     <LicenseProvider>
       <ColorProvider>
-        <EntityProvider>
-          <PersonsProvider>
-            <AttendanceProvider>
-              <TerminalsProvider>
-                <AdsProvider>
-                  <KioskProvider>
-                    <Router>
-                      <ToastContainer />
-                      <AnimatedRoutes />
-                    </Router>
-                  </KioskProvider>
-                </AdsProvider>
-              </TerminalsProvider>
-            </AttendanceProvider>
-          </PersonsProvider>
-        </EntityProvider>
+        <CardScrollProvider>
+          <EntityProvider>
+            <PersonsProvider>
+              <AttendanceProvider>
+                <TerminalsProvider>
+                  <AdsProvider>
+                    <KioskProvider>
+                      <Router>
+                        <ToastContainer />
+                        <AnimatedRoutes />
+                      </Router>
+                    </KioskProvider>
+                  </AdsProvider>
+                </TerminalsProvider>
+              </AttendanceProvider>
+            </PersonsProvider>
+          </EntityProvider>
+        </CardScrollProvider>
       </ColorProvider>
     </LicenseProvider >
   );

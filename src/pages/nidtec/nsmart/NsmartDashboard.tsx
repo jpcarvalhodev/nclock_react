@@ -3,9 +3,9 @@ import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import product_nsmart from "../../../assets/img/carousel/product_nsmart.webp";
 import { useColor } from "../../../context/ColorContext";
-import { Button, Card, Nav, Tab } from "react-bootstrap";
-import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Nav, Tab } from "react-bootstrap";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import nclock from '../../../assets/img/navbar/navbar/nclock.webp';
 import naccess from '../../../assets/img/navbar/navbar/naccess.webp';
 import nvisitor from '../../../assets/img/navbar/navbar/nvisitor.webp';
@@ -64,6 +64,7 @@ import nschool from '../../../assets/img/navbar/navbar/nschool.png';
 import nclinic from '../../../assets/img/navbar/navbar/nclinic.png';
 import noptics from '../../../assets/img/navbar/navbar/noptics.png';
 import ngold from '../../../assets/img/navbar/navbar/ngold.png';
+import { CardContainer } from "../../../components/CardContainer";
 
 // Define o tipo TabName
 type TabName = 'SISNID - Segurança' | 'NIDSOF - Gestão' | 'NIDTEC - Tecnologia' | 'NIDPLACE - Conforto';
@@ -234,86 +235,6 @@ export const NsmartDashboard = () => {
         ]
     };
 
-    // Função para renderizar os cards com base na aba ativa
-    const RenderCards = (tabKey: TabName) => {
-        const location = useLocation();
-        const cardContainerRef = useRef<HTMLDivElement>(null);
-        const [maxVisibleCards, setMaxVisibleCards] = useState(10);
-
-        const handleResize = () => {
-            const screenWidth = window.innerWidth;
-            if (screenWidth <= 1366) {
-                setMaxVisibleCards(9);
-            } else {
-                setMaxVisibleCards(10);
-            }
-        };
-
-        useEffect(() => {
-            window.addEventListener('resize', handleResize);
-            handleResize();
-
-            return () => {
-                window.removeEventListener('resize', handleResize);
-            };
-        }, []);
-
-        useEffect(() => {
-            if (cardContainerRef.current) {
-                const cards = cardData[tabKey];
-                const activeCardIndex = cards.findIndex(card => isValidCardTitle(card.title) && location.pathname === tabData[card.title].route);
-                if (activeCardIndex !== -1) {
-                    const cardWidth = cardContainerRef.current.children[activeCardIndex].clientWidth;
-                    const scrollX = cardWidth * activeCardIndex - (cardContainerRef.current.clientWidth / 2) + (cardWidth / 2);
-                    cardContainerRef.current.scrollTo({ left: scrollX, behavior: 'smooth' });
-                }
-            }
-        }, [tabKey, location.pathname, cardData]);
-
-        const scrollLeft = () => {
-            if (cardContainerRef.current) {
-                cardContainerRef.current.scrollBy({ left: -130, behavior: 'smooth' });
-            }
-        };
-
-        const scrollRight = () => {
-            if (cardContainerRef.current) {
-                cardContainerRef.current.scrollBy({ left: 130, behavior: 'smooth' });
-            }
-        };
-
-        const cards = cardData[tabKey];
-        const numCards = cards.length;
-
-        const alignmentClass = numCards <= maxVisibleCards ? 'cards-center' : 'cards-left';
-
-        return (
-            <div className="dashboard-cards-container">
-                {numCards > maxVisibleCards && (
-                    <Button id="arrow-cards" style={{ backgroundColor: '#D9D9D9', borderColor: '#D9D9D9', color: 'black' }} className="arrows-cards" onClick={scrollLeft}>{"<"}</Button>
-                )}
-                <div id="cardContainer" className={`card-container ${alignmentClass}`} ref={cardContainerRef}>
-                    {cards.map((card, index) => {
-                        const isCurrentPage = isValidCardTitle(card.title) && location.pathname === tabData[card.title].route;
-                        return (
-                            <div onClick={() => handleCardClick(card.title)} className="card-link" key={index}>
-                                <Card className={`card ${isCurrentPage ? 'current-card' : ''}`}>
-                                    <Card.Img variant="top" src={card.img} className="card-img" />
-                                    <Card.Body>
-                                        <Card.Title className="card-title">{card.title}</Card.Title>
-                                    </Card.Body>
-                                </Card>
-                            </div>
-                        );
-                    })}
-                </div>
-                {numCards > maxVisibleCards && (
-                    <Button className="arrows-cards" style={{ backgroundColor: '#D9D9D9', borderColor: '#D9D9D9', color: 'black' }} onClick={scrollRight}>{">"}</Button>
-                )}
-            </div>
-        );
-    };
-
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
@@ -332,7 +253,7 @@ export const NsmartDashboard = () => {
                             <Tab.Pane eventKey={key} key={key}>
                                 <div className='tab-content-wrapper'>
                                     <div className="row d-flex justify-content-center">
-                                        {RenderCards(key as TabName)}
+                                        <CardContainer cards={cardData[key as TabName]} handleCardClick={handleCardClick} />
                                     </div>
                                 </div>
                             </Tab.Pane>

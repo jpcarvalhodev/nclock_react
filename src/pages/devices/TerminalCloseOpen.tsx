@@ -152,7 +152,7 @@ export const TerminalCloseOpen = () => {
                             const uploadPath = imageUrlFecho.substring(imageUrlFecho.indexOf('/Uploads'));
                             const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
                             return (
-                                <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
+                                <a style={{ color: "black", textDecoration: 'none' }} href={fullImageUrl} target="_blank" rel="noopener noreferrer">
                                     Ticket Fecho
                                 </a>
                             );
@@ -165,7 +165,7 @@ export const TerminalCloseOpen = () => {
                             const uploadPath = imageUrlAbertura.substring(imageUrlAbertura.indexOf('/Uploads'));
                             const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
                             return (
-                                <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
+                                <a style={{ color: "black", textDecoration: 'none' }} href={fullImageUrl} target="_blank" rel="noopener noreferrer">
                                     Ticket Abertura
                                 </a>
                             );

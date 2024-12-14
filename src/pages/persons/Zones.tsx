@@ -81,11 +81,6 @@ export const Zones = () => {
         await handleDeleteZone(zoneID);
     };
 
-    // Atualiza a lista de zonas ao carregar a página
-    useEffect(() => {
-        fetchAllZones();
-    }, []);
-
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {
         if (selectedZone) {

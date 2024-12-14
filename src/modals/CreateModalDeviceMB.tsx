@@ -130,7 +130,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -178,7 +178,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
                     </Row>
                 </div>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button variant="outline-secondary" onClick={handleClose}>
                     Fechar
                 </Button>

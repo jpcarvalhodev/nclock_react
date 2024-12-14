@@ -43,7 +43,7 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
 
     return (
         <Modal show={true} onHide={onClose} backdrop="static" centered size='xl' style={{ marginTop: -190 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>Selecionar Colunas</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -66,7 +66,7 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
                     ))}
                 </div>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button variant="outline-secondary" onClick={onResetColumns}>Reset</Button>
                 <Button variant="outline-primary" onClick={onClose}>Fechar</Button>
             </Modal.Footer>

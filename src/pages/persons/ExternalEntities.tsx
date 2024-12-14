@@ -21,12 +21,6 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 
-// Define a interface para os dados do estado
-interface DataState {
-    externalEntity: ExternalEntity[];
-    externalEntityTypes: ExternalEntityTypes[];
-}
-
 // Define a interface para os filtros
 interface Filters {
     [key: string]: string;
@@ -86,11 +80,6 @@ export const ExternalEntities = () => {
     const deleteExternalEntity = async (externalEntityID: string) => {
         await handleDeleteExternalEntity(externalEntityID);
     };
-
-    // Atualiza as entidades externas
-    useEffect(() => {
-        fetchAllExternalEntitiesData();
-    }, []);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {

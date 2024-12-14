@@ -122,7 +122,7 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
                 <CustomOutlineButton onClick={handleShowModal} icon='bi-printer' iconSize='1.1em'></CustomOutlineButton >
             </OverlayTrigger>
             <Modal show={showModal} onHide={handleCloseModal} size="xl" backdrop='static'>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                     <Modal.Title>Visualizar PDF</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -140,7 +140,7 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
                         </PDFViewer>
                     )}
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                     <Button variant="outline-info" onClick={handleCloseModal}>
                         Fechar
                     </Button>

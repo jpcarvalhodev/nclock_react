@@ -6,7 +6,6 @@ import { Footer } from "../../../components/Footer";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
@@ -16,8 +15,8 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { counterFields } from "../../../helpers/Fields";
 import Split from "react-split";
 import { TextFieldProps, TextField } from "@mui/material";
-import { TreeViewDataNkioskDisp } from "../../../components/TreeViewNkioskDisp";
 import { useKiosk } from "../../../context/KioskContext";
+import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -217,7 +216,7 @@ export const NkioskCounter = () => {
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewDataNkioskDisp onSelectDevices={handleSelectFromTreeView} />
+                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">

@@ -199,7 +199,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, on
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 115 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -347,7 +347,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, on
                     </Tab.Content>
                 </Tab.Container>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <OverlayTrigger
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}

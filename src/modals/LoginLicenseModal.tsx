@@ -32,8 +32,8 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 140 }} id="modal-login" >
-            <Modal.Header closeButton>
+        <Modal show={open} onHide={onClose} backdrop="static" id="modal-login" >
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title style={{ color: 'white' }} >{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -54,7 +54,7 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
                     </Row>
                 </div>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button variant="outline-light" onClick={onClose}>
                     Fechar
                 </Button>

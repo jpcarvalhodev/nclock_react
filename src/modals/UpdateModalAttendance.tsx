@@ -186,7 +186,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" style={{ marginTop: 115 }}>
-            <Modal.Header closeButton> 
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}> 
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -339,7 +339,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                     );
                 })}
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <OverlayTrigger
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}

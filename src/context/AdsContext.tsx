@@ -18,6 +18,7 @@ export const AdsContext = createContext<AdsContextType | undefined>(undefined);
 // Provider do contexto
 export const AdsProvider = ({ children }: { children: ReactNode }) => {
   const [ads, setAds] = useState<Ads[]>([]);
+  const [dataVersion, setDataVersion] = useState(0);
 
   // Função para buscar todas as publicidades
   const fetchAds = async (startDate?: string, endDate?: string) => {
@@ -73,13 +74,18 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Busca as publicidades ao recarregar a página
+  // Atualiza a versão do contexto quando o token é alterado
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      fetchAds();
+        setDataVersion(prevVersion => prevVersion + 1);
     }
-  }, [localStorage.getItem('token')]);
+}, [localStorage.getItem('token')]);
+
+  // Busca as publicidades ao recarregar a página
+  useEffect(() => {
+      fetchAds();
+  }, [dataVersion]);
 
   return (
     <AdsContext.Provider value={{ ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds }}>

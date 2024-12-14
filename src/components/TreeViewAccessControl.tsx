@@ -5,9 +5,9 @@ import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { AccessControl } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -67,28 +67,13 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
+    const { accessControl, fetchAccessControl } = useTerminals();
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
     const selectionChangedRef = { current: false };
-
-    // Função para buscar os dados dos dispositivos
-    const fetchAllData = async () => {
-        try {
-            const accessData = await apiService.fetchAllAccessControl();
-            setAccessControl(accessData);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos dispositivos:', error);
-        }
-    };
-
-    // Busca os dados ao carregar o componente
-    useEffect(() => {
-        fetchAllData();
-    }, []);
 
     // Atualiza a árvore de itens ao receber os dados dos dispositivos
     useEffect(() => {
@@ -199,7 +184,7 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                 >
-                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAccessControl()} iconSize='1.1em'></CustomOutlineButton>
                 </OverlayTrigger>
             </div>
             <Box className="treeViewFlexItem">

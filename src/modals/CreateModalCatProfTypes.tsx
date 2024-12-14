@@ -183,7 +183,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" style={{ marginTop: 115 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -212,7 +212,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
                     ))}
                 </form>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick} disabled={!isFormValid}>Guardar</Button>
             </Modal.Footer>

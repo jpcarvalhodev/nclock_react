@@ -181,6 +181,8 @@ import { useTerminals } from '../context/TerminalsContext';
 import { useEntity } from '../context/EntityContext';
 import { useKiosk } from '../context/KioskContext';
 import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
+import { useCardScroll } from '../context/CardScrollContext';
+import { set } from 'date-fns';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -260,6 +262,7 @@ interface TabsInfo {
 // Define as propriedades do componente
 export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor } = useColor();
+	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
 	const { loginLogs, historyLogs } = useEntity();
 	const { license, getSoftwareEnabledStatus, fetchAllLicensesWithoutKey, handleUpdateLicense } = useLicense();
@@ -838,6 +841,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setActiveTab('');
 			localStorage.removeItem('activeTab');
 			navigate('/dashboard');
+			setScrollPosition(0);
 		} else if (tabData[tabName]) {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
 			const softwareName = tabName;
@@ -854,6 +858,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				}
 				setActiveTab('');
 				localStorage.removeItem('activeTab');
+				setScrollPosition(0);
 			} else {
 				setTab(true);
 				setRibbon(isSoftwareCliente);
@@ -863,6 +868,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 				}
 				setActiveTab(tabName);
 				localStorage.setItem('activeTab', tabName);
+				const index = Object.keys(tabData).indexOf(tabName);
+				const newScrollPosition = index * 130;
+				setScrollPosition(newScrollPosition);
 				navigate(finalRoute);
 			}
 		}
@@ -1918,7 +1926,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio nclock') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2323,7 +2331,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="naccess" role="tabpanel" aria-labelledby="naccess-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2558,7 +2566,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nvisitor" role="tabpanel" aria-labelledby="nvisitor-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2709,7 +2717,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nview" role="tabpanel" aria-labelledby="nview-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio nview') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2854,7 +2862,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsecur" role="tabpanel" aria-labelledby="nsecur-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio nsecur') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -2991,7 +2999,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -3267,7 +3275,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nled" role="tabpanel" aria-labelledby="nled-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio nled') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -3418,7 +3426,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="pessoas" role="tabpanel" aria-labelledby="pessoas-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'pessoas pessoas') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -3592,7 +3600,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="dispositivos" role="tabpanel" aria-labelledby="dispositivos-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'terminais terminais') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -3691,7 +3699,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="configuracao" role="tabpanel" aria-labelledby="configuracao-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'base configuracoes') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
@@ -3872,7 +3880,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ajuda" role="tabpanel" aria-labelledby="ajuda-tab">
 							<div className="section" id="section-group">
-								<div className="group">
+								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'suporte ajuda') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>

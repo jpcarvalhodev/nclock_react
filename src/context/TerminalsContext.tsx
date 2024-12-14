@@ -61,6 +61,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [employeesOnDevice, setEmployeesOnDevice] = useState<EmployeesOnDevice[]>([]);
     const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
     const [period, setPeriod] = useState<TimePeriod[]>([]);
+    const [dataVersion, setDataVersion] = useState(0);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -452,17 +453,22 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    // Busca todos os dispositivos ao recarregar o componente
+    // Atualiza a versão do contexto quando o token é alterado
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            fetchAllDevices();
-            fetchAllMBDevices();
-            fetchAccessControl();
-            fetchAllMBCloseOpen();
-            fetchTimePeriods();
+            setDataVersion(prevVersion => prevVersion + 1);
         }
     }, [localStorage.getItem('token')]);
+
+    // Busca todos os dispositivos ao recarregar o componente
+    useEffect(() => {
+        fetchAllDevices();
+        fetchAllMBDevices();
+        fetchAccessControl();
+        fetchAllMBCloseOpen();
+        fetchTimePeriods();
+    }, [dataVersion]);
 
     // Define o valor do contexto
     const contextValue: DeviceContextType = {

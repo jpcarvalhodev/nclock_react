@@ -12,7 +12,7 @@ import { transactionMBFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { PrintButton } from "../../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -178,7 +178,7 @@ export const NkioskPayTerminal = () => {
                             const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
                             const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
                             return (
-                                <a href={fullImageUrl} target="_blank" rel="noopener noreferrer">
+                                <a style={{ color: "black", textDecoration: 'none' }} href={fullImageUrl} target="_blank" rel="noopener noreferrer">
                                     Visualizar ticket
                                 </a>
                             );

@@ -37,11 +37,8 @@
     align-items: center;
     overflow: hidden;
     width: 120px;
-    /* ou o tamanho desejado */
     height: 120px;
-    /* ou o tamanho desejado */
     border-radius: 50%;
-    /* opcional, para bordas arredondadas */
 }
 
 #login .profile-login-entity {
@@ -235,10 +232,7 @@
 
 #modal-login .modal-content {
     background-color: rgba(133, 133, 133, 0.6) !important;
-}
-
-#modal-login .modal-dialog {
-    margin-right: 750px !important;
+    margin-top: 350px !important;
 }
 
 @media (max-width: 500px) {
@@ -298,4 +292,22 @@
         margin-right: 100px;
     }
 
+}
+
+@media (max-width: 1920px) {
+    #modal-login .modal-content {
+        margin-top: 255px !important;
+    }
+}
+
+@media (max-width: 1600px) {
+    #modal-login .modal-content {
+        margin-top: 165px !important;
+    }
+}
+
+@media (max-width: 1366px) {
+    #modal-login .modal-content {
+        margin-top: 100px !important;
+    }
 }

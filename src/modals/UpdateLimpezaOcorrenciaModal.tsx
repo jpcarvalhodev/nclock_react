@@ -180,7 +180,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -276,7 +276,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
                     </Row>
                 </div>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <OverlayTrigger
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}

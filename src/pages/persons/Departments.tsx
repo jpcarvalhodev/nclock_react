@@ -107,11 +107,6 @@ export const Departments = () => {
         await handleDeleteDepartment(departmentID);
     };
 
-    // Atualiza os departamentos
-    useEffect(() => {
-        fetchDepartments();
-    }, []);
-
     // função de atualizar os departamentos
     const refreshDepartments = () => {
         fetchDepartments();

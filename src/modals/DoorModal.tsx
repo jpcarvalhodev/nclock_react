@@ -170,7 +170,7 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -234,7 +234,7 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
                     </Row>
                 </div>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button variant="outline-secondary" onClick={onClose}>
                     Fechar
                 </Button>

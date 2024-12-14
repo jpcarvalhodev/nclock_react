@@ -41,9 +41,7 @@ export const Persons = () => {
     const {
         data,
         setData,
-        setEmployees,
         fetchAllEmployees,
-        fetchAllCardData,
         handleAddEmployee,
         handleAddEmployeeCard,
         handleDeleteEmployee
@@ -62,15 +60,6 @@ export const Persons = () => {
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
-
-    // Define a função de busca dos funcionários
-    const fetchEmployees = () => {
-        fetchAllEmployees({
-            postFetch: filteredData => {
-                setEmployees(filteredData);
-            }
-        });
-    };
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
@@ -116,14 +105,9 @@ export const Persons = () => {
         deleteSelectedEmployees(employeeIds);
     };
 
-    // Busca todos os dados
-    useEffect(() => {
-        fetchEmployees();
-    }, []);
-
     // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
-        fetchEmployees();
+        fetchAllEmployees();
         setSelectedEmployeeIds([]);
     }
 
@@ -177,7 +161,7 @@ export const Persons = () => {
                 <div className="content-container">
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewData onSelectEmployees={handleSelectEmployees} entity='all' />
+                            <TreeViewData onSelectEmployees={handleSelectEmployees} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">

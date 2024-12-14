@@ -27,6 +27,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const [entity, setEntity] = useState<Entity[]>([]);
     const [loginLogs, setLoginLogs] = useState<Logs[]>([]);
     const [historyLogs, setHistoryLogs] = useState<Logs[]>([]);
+    const [dataVersion, setDataVersion] = useState(0);
 
     // Função para buscar todas as entidades
     const fetchAllEntity = async (): Promise<Entity[]> => {
@@ -107,15 +108,20 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Busca todas as entidades ao recarregar o componente
+    // Atualiza a versão do contexto quando o token é alterado
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            fetchAllEntity();
-            fetchAllLoginLogs();
-            fetchAllHistoryLogs();
+            setDataVersion(prevVersion => prevVersion + 1);
         }
     }, [localStorage.getItem('token')]);
+
+    // Busca todas as entidades ao recarregar o componente
+    useEffect(() => {
+        fetchAllEntity();
+        fetchAllLoginLogs();
+        fetchAllHistoryLogs();
+    }, [dataVersion]);
 
     return (
         <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs }}>

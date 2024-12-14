@@ -116,6 +116,11 @@ body {
     border-right: 1px solid #a1a1a1;
 }
 
+.group-start {
+    margin-left: 1px;
+    border-left: 1px solid #a1a1a1;
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

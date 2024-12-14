@@ -340,7 +340,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   return (
     <div>
       <Modal show={isCheckVisible} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
           <Modal.Title>Inserir Password</Modal.Title>
         </Modal.Header>
         <InputGroup className="license-check-modal">
@@ -392,7 +392,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         size="xl"
         centered
       >
-        <Modal.Header closeButton>
+        <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
           <Modal.Title>Licenciamento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -536,7 +536,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             </Tab>
           </Tabs>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
           <Button variant="outline-secondary" onClick={handleClose}>
             Fechar
           </Button>

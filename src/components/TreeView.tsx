@@ -1,11 +1,11 @@
-import { SyntheticEvent, useContext, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
-import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
+import { PersonsProvider, usePersons } from '../context/PersonsContext';
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
@@ -29,7 +29,6 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataProps {
   onSelectEmployees: (employeeIds: string[]) => void;
-  entity: "all" | "employees" | "external employees" | "users" | "visitors" | "contacts" | "temporaries";
 }
 
 // Função para filtrar os itens
@@ -67,24 +66,14 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
-  const { data,
-    fetchAllData,
-  } = useContext(PersonsContext) as PersonsContextType;
+export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
+  const { data, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
   const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
-
-  // Busca os dados ao carregar o componente de acordo com a entidade
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchAllData(entity);
-    };
-    fetchData();
-  }, [entity]);
 
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {
@@ -138,12 +127,12 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
       children: [
         ...dept.children.map(buildDepartmentTree),
         ...allEmployees
-        .filter((emp: Employee) => emp.departmentId === dept.departmentID)
-        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-        .map((emp: Employee) => ({
-          id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
-          label: emp.name,
-        })),
+          .filter((emp: Employee) => emp.departmentId === dept.departmentID)
+          .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+          .map((emp: Employee) => ({
+            id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
+            label: emp.name,
+          })),
       ],
     });
 
@@ -153,12 +142,12 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
       id: `group-${group.groupID}`,
       label: group.name || 'Sem Nome',
       children: allEmployees
-      .filter(emp => emp.groupId === group.groupID)
-      .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-      .map((emp: Employee) => ({
-        id: `group-${group.groupID}-emp-${emp.employeeID}`,
-        label: emp.name || 'Sem Nome',
-      })),
+        .filter(emp => emp.groupId === group.groupID)
+        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+        .map((emp: Employee) => ({
+          id: `group-${group.groupID}-emp-${emp.employeeID}`,
+          label: emp.name || 'Sem Nome',
+        })),
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
@@ -279,36 +268,34 @@ export function TreeViewData({ onSelectEmployees, entity }: TreeViewDataProps) {
   }, [selectedEmployeeIds]);
 
   return (
-    <PersonsProvider>
-      <Box className="TreeViewContainer">
-        <p className='treeview-title-text'>Filtros</p>
-        <div style={{ display: 'flex' }}>
-          <CustomSearchBox
-            label="Pesquisa"
-            variant="outlined"
-            size='small'
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-          >
-            <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
-          </OverlayTrigger>
-        </div>
-        <Box className="treeViewFlexItem">
-          <RichTreeView
-            multiSelect
-            checkboxSelection
-            items={filteredItems}
-            getItemId={(item: TreeViewBaseItem) => item.id}
-            onSelectedItemsChange={handleSelectedItemsChange}
-            selectedItems={selectedEmployeeIds}
-            expandedItems={expandedIds}
-            onExpandedItemsChange={handleToggle}
-          />
-        </Box>
+    <Box className="TreeViewContainer">
+      <p className='treeview-title-text'>Filtros</p>
+      <div style={{ display: 'flex' }}>
+        <CustomSearchBox
+          label="Pesquisa"
+          variant="outlined"
+          size='small'
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+        >
+          <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+        </OverlayTrigger>
+      </div>
+      <Box className="treeViewFlexItem">
+        <RichTreeView
+          multiSelect
+          checkboxSelection
+          items={filteredItems}
+          getItemId={(item: TreeViewBaseItem) => item.id}
+          onSelectedItemsChange={handleSelectedItemsChange}
+          selectedItems={selectedEmployeeIds}
+          expandedItems={expandedIds}
+          onExpandedItemsChange={handleToggle}
+        />
       </Box>
-    </PersonsProvider>
+    </Box>
   );
 }

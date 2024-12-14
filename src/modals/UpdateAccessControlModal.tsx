@@ -276,7 +276,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
     return (
         <div>
             <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                     <Modal.Title>Selecione uma Porta</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -290,13 +290,13 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                         </Form.Control>
                     </Form.Group>
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                     <Button variant="outline-secondary" onClick={handleCloseAllModals}>Fechar</Button>
                     <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
                 </Modal.Footer>
             </Modal>
             <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} size="xl" backdrop="static" style={{ marginTop: 100 }}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="modal-body-scrollable">
@@ -388,7 +388,7 @@ export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClos
                         </Row>
                     </div>
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                     <OverlayTrigger
                         placement="top"
                         overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}

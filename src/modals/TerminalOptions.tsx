@@ -97,7 +97,7 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
     return (
         <>
             <Modal show={show} onHide={handleClose} backdrop="static" size="lg" centered>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                     <Modal.Title>Opções</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="modal-body-scrollable">
@@ -343,7 +343,7 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
                         </Tab>
                     </Tabs>
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                     <Button variant="outline-secondary" onClick={handleClose}>
                         Fechar
                     </Button>

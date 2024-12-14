@@ -95,7 +95,7 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
     return (
         <div>
             <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                     <Modal.Title>Selecione uma Porta para Eliminar</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -109,13 +109,13 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
                         </Form.Control>
                     </Form.Group>
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                     <Button variant="outline-secondary" onClick={handleCloseAllModals}>Fechar</Button>
                     <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
                 </Modal.Footer>
             </Modal>
             <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
-                <Modal.Header closeButton>
+                <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                     <Modal.Title>Confirmar Eliminação</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -124,7 +124,7 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
                         {"Tem certeza que deseja apagar os dados da linha selecionada?"}
                     </div>
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                     <Button variant="outline-secondary" onClick={handleCloseAllModals}>
                         Cancelar
                     </Button>

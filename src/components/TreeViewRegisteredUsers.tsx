@@ -3,13 +3,12 @@ import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { Devices, Logs, MBDevice, Register } from '../helpers/Types';
+import { Register } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
-import { useLocation } from 'react-router-dom';
-import { set } from 'date-fns';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -69,33 +68,18 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
+    const { registeredUsers, fetchAllRegisteredUsers } = usePersons();
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [users, setUsers] = useState<Register[]>([]);
     const selectionChangedRef = { current: false };
-
-    // Função para buscar os dados dos logs
-    const fetchAllData = async () => {
-        try {
-            const data = await apiService.fetchAllRegisteredUsers();
-            setUsers(data);
-        } catch (error) {
-            console.error('Erro ao buscar os dados dos logs:', error);
-        }
-    };
-
-    // Busca os dados ao carregar o componente
-    useEffect(() => {
-        fetchAllData();
-    }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
 
-        const buildDeviceTree = users.map(user => ({
+        const buildDeviceTree = registeredUsers.map(user => ({
             id: user.id,
             label: user.name || 'Sem Nome',
             children: []
@@ -118,7 +102,7 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [users]);
+    }, [registeredUsers]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
@@ -194,7 +178,7 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                 >
-                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllRegisteredUsers()} iconSize='1.1em'></CustomOutlineButton>
                 </OverlayTrigger>
             </div>
             <Box className="treeViewFlexItem">
