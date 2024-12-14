@@ -33,28 +33,27 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" id="modal-login" >
-            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
+            <Modal.Header closeButton>
                 <Modal.Title style={{ color: 'white' }} >{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <div className="container-fluid">
                     <Row>
-                        <Col md={12} >
+                        <Col md={12}>
                             <Form.Group controlId='formLicenseKey'>
                                 <Form.Control
-                                    className="custom-input-height custom-select-font-size"
+                                    className="custom-input-height custom-select-font-size modal-input"
                                     type="string"
                                     name="licenseKey"
                                     value={formData.licenseKey || ''}
                                     onChange={handleChange}
-                                    placeholder="Insira a chave de licença"
                                 />
                             </Form.Group>
                         </Col>
                     </Row>
                 </div>
             </Modal.Body>
-            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
+            <Modal.Footer>
                 <Button variant="outline-light" onClick={onClose}>
                     Fechar
                 </Button>
