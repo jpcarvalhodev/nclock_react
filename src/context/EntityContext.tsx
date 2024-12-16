@@ -114,13 +114,16 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         if (token) {
             setDataVersion(prevVersion => prevVersion + 1);
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     // Busca todas as entidades ao recarregar o componente
     useEffect(() => {
-        fetchAllEntity();
-        fetchAllLoginLogs();
-        fetchAllHistoryLogs();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllEntity();
+            fetchAllLoginLogs();
+            fetchAllHistoryLogs();
+        }
     }, [dataVersion]);
 
     return (

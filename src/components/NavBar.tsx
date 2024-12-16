@@ -182,7 +182,6 @@ import { useEntity } from '../context/EntityContext';
 import { useKiosk } from '../context/KioskContext';
 import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
 import { useCardScroll } from '../context/CardScrollContext';
-import { set } from 'date-fns';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -1345,8 +1344,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 		if (!menu) {
 			return null;
 		}
+
 		const isWideMenu = menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
 		const isWideSubmenu = menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
+
 		return (
 			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
 				style={{
@@ -1892,7 +1893,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									<span className="logoNG">NSOFTWARES</span>
 								</Dropdown.Toggle>
 								<Dropdown.Menu className='dropdown-menu-logos'>
-									<div>
+									<div style={{ position: 'relative' }}>
 										{Object.keys(menuStructureNG).map((menuKey) => renderMenu(menuKey, menuStructureNG))}
 									</div>
 								</Dropdown.Menu>
@@ -1924,7 +1925,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				</div>
 				{showNclockRibbon && softwareEnabled['nclock'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclock')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
-						<div className="tab-pane fade show active" id="nclock" role="tabpanel" aria-labelledby="nclock-tab">
+						<div className="tab-pane fade show active" role="tabpanel" aria-labelledby="nclock-tab">
 							<div className="section" id="section-group">
 								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio nclock') && (
@@ -2249,13 +2250,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nclock') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={print} alt="botão listagens" />
-													</span>
-													<span className="text">Listagens</span>
-												</Button>
-												{/* <Dropdown
+												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2267,13 +2262,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<span className="text">Listagens</span>
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
-														<div>
-															{Object.keys(ListingMenuStructure).map((menuKey) => (
-																<div key={menuKey}>{renderMenu(menuKey, ListingMenuStructure)}</div>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown> */}
+												</Dropdown>
 											</div>
 											<div className='icon-text-informacoes'>
 												<Link to="/nclock/nclockgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockgraph' ? 'current-active' : ''}`}>
@@ -2484,13 +2479,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={print} alt="botão listagens" />
-													</span>
-													<span className="text">Listagens</span>
-												</Button>
-												{/* <Dropdown
+												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2502,13 +2491,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<span className="text">Listagens</span>
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
-														<div>
-															{Object.keys(ListingMenuStructure).map((menuKey) => (
-																<div key={menuKey}>{renderMenu(menuKey, ListingMenuStructure)}</div>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown> */}
+												</Dropdown>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/naccess/naccessgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/naccess/naccessgraph' ? 'current-active' : ''}`}>
@@ -2635,13 +2624,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={print} alt="botão listagens" />
-													</span>
-													<span className="text">Listagens</span>
-												</Button>
-												{/* <Dropdown
+												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2653,13 +2636,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<span className="text">Listagens</span>
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
-														<div>
-															{Object.keys(ListingMenuStructure).map((menuKey) => (
-																<div key={menuKey}>{renderMenu(menuKey, ListingMenuStructure)}</div>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown> */}
+												</Dropdown>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nvisitor/nvisitorgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nvisitor/nvisitorgraph' ? 'current-active' : ''}`}>
@@ -2780,13 +2763,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nview') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={print} alt="botão listagens" />
-													</span>
-													<span className="text">Listagens</span>
-												</Button>
-												{/* <Dropdown
+												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2798,13 +2775,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<span className="text">Listagens</span>
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
-														<div>
-															{Object.keys(ListingMenuStructure).map((menuKey) => (
-																<div key={menuKey}>{renderMenu(menuKey, ListingMenuStructure)}</div>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown> */}
+												</Dropdown>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nview/nviewgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nview/nviewgraph' ? 'current-active' : ''}`}>
@@ -2917,13 +2894,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nsecur') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={print} alt="botão listagens" />
-													</span>
-													<span className="text">Listagens</span>
-												</Button>
-												{/* <Dropdown
+												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -2935,13 +2906,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<span className="text">Listagens</span>
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
-														<div>
-															{Object.keys(ListingMenuStructure).map((menuKey) => (
-																<div key={menuKey}>{renderMenu(menuKey, ListingMenuStructure)}</div>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown> */}
+												</Dropdown>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nsecur/nsecurgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsecur/nsecurgraph' ? 'current-active' : ''}`}>
@@ -3192,7 +3163,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<span className="text">Listagens</span>
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
-														<div>
+														<div style={{ position: 'relative' }}>
 															{Object.keys(menuStructureListingNKiosk).map((menuKey) => (
 																<div key={menuKey}>{renderMenu(menuKey, menuStructureListingNKiosk)}</div>
 															))}
@@ -3344,13 +3315,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'relatorio nled') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={print} alt="botão listagens" />
-													</span>
-													<span className="text">Listagens</span>
-												</Button>
-												{/* <Dropdown
+												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
@@ -3362,13 +3327,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<span className="text">Listagens</span>
 													</Dropdown.Toggle>
 													<Dropdown.Menu>
-														<div>
-															{Object.keys(ListingMenuStructure).map((menuKey) => (
-																<div key={menuKey}>{renderMenu(menuKey, ListingMenuStructure)}</div>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
 															))}
 														</div>
 													</Dropdown.Menu>
-												</Dropdown> */}
+												</Dropdown>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Link to="/nled/nledgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nled/nledgraph' ? 'current-active' : ''}`}>

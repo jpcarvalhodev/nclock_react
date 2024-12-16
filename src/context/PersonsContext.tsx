@@ -715,20 +715,21 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         if (token) {
             setDataVersion(prevVersion => prevVersion + 1);
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     // Busca todos os dados ao recarregar o componente
     useEffect(() => {
-        fetchAllData();
-        fetchAllEmployees();
-        fetchAllDepartments();
-        fetchAllGroups();
-        fetchAllRegisteredUsers();
-        fetchAllCardData();
-        fetchAllCategories();
-        fetchAllExternalEntitiesData();
-        fetchAllProfessions();
-        fetchAllZones()
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllData();
+            fetchAllRegisteredUsers();
+            fetchAllCategories();
+            fetchAllDepartments();
+            fetchAllGroups();
+            fetchAllExternalEntitiesData();
+            fetchAllProfessions();
+            fetchAllZones();
+        }
     }, [dataVersion]);
 
     // Define o valor do contexto

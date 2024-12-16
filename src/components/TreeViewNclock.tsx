@@ -99,8 +99,8 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         const deptCode = deptIdToCodeMap.get(emp.departmentId);
         if (departmentMap.has(deptCode)) {
           departmentMap.get(deptCode).employees.push({
-            id: `emp-${emp.employeeID}`,
-            label: emp.name,
+            id: `emp-${emp.employeeID}` || 'Sem ID',
+            label: emp.name || 'Sem Nome',
           });
         }
       }
@@ -123,13 +123,13 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiId);
 
     const buildDepartmentTree = (dept: Department) => ({
-      id: `department-${dept.departmentID}`,
+      id: `department-${dept.departmentID}` || 'Sem ID',
       label: dept.name || 'Sem Nome',
       children: [
         ...dept.children.map(buildDepartmentTree),
         ...allEmployees.filter((emp: Employee) => emp.departmentId === dept.departmentID).map((emp: Employee) => ({
-          id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
-          label: emp.name,
+          id: `dept-${dept.departmentID}-emp-${emp.employeeID}` || 'Sem ID',
+          label: emp.name || 'Sem Nome',
         })),
       ],
     });
@@ -137,10 +137,10 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     const departmentItems = topDepartments.map(buildDepartmentTree);
 
     const groupItems = groups.map((group: Group) => ({
-      id: `group-${group.groupID}`,
+      id: `group-${group.groupID}` || 'Sem ID',
       label: group.name || 'Sem Nome',
       children: allEmployees.filter((emp: Employee) => emp.groupId === group.groupID).map((emp: Employee) => ({
-        id: `group-${group.groupID}-emp-${emp.employeeID}`,
+        id: `group-${group.groupID}-emp-${emp.employeeID}` || 'Sem ID',
         label: emp.name || 'Sem Nome',
       })),
     }));

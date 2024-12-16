@@ -459,15 +459,18 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         if (token) {
             setDataVersion(prevVersion => prevVersion + 1);
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     // Busca todos os dispositivos ao recarregar o componente
     useEffect(() => {
-        fetchAllDevices();
-        fetchAllMBDevices();
-        fetchAccessControl();
-        fetchAllMBCloseOpen();
-        fetchTimePeriods();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllDevices();
+            fetchAllMBDevices();
+            fetchAccessControl();
+            fetchAllMBCloseOpen();
+            fetchTimePeriods();
+        }
     }, [dataVersion]);
 
     // Define o valor do contexto

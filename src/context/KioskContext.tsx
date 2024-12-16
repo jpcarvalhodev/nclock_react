@@ -384,20 +384,23 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         if (token) {
             setDataVersion(prevVersion => prevVersion + 1);
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     // Busca todas as entidades ao recarregar o componente
     useEffect(() => {
-        fetchAllPayTerminal();
-        fetchAllPayCoins();
-        fetchAllMoveCard();
-        fetchAllMoveKiosk();
-        fetchAllMoveVP();
-        fetchAllManualOpen();
-        fetchAllCoin();
-        fetchAllLimpezas();
-        fetchAllOcorrencias();
-        fetchAllCounter();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllPayTerminal();
+            fetchAllPayCoins();
+            fetchAllMoveCard();
+            fetchAllMoveKiosk();
+            fetchAllMoveVP();
+            fetchAllManualOpen();
+            fetchAllCoin();
+            fetchAllLimpezas();
+            fetchAllOcorrencias();
+            fetchAllCounter();
+        }
     }, [dataVersion]);
 
     // Definindo o valor do contexto

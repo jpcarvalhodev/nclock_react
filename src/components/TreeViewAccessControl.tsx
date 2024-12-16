@@ -77,18 +77,20 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
 
     // Atualiza a árvore de itens ao receber os dados dos dispositivos
     useEffect(() => {
+        if (!accessControl) return;
 
         const buildDoorTree = (doors: AccessControl) => {
+            if (!doors) return [];
             return doors.map((door: AccessControl) => ({
-                id: door.acId,
-                label: door.doorName,
+                id: door.acId || 'Sem ID',
+                label: door.doorName || 'Sem Nome',
                 children: []
             }));
         };
 
         const buildNameTree = accessControl.map(ac => ({
-            id: ac.employeesId,
-            label: ac.shortName,
+            id: ac.employeesId || 'Sem ID',
+            label: ac.shortName || 'Sem Nome',
             children: buildDoorTree(ac.acc)
         }));
 

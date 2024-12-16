@@ -484,6 +484,13 @@ export type MBDeviceCloseOpen = {
     aberturaImage: string;
 };
 
+export type SoftwareProduct = {
+    enable: boolean;
+    validacao: number;
+    createDate: string;
+    pacote: string | null;
+};
+
 export type License = {
     [key: string]: any;
     id?: string;
@@ -493,14 +500,60 @@ export type License = {
     users: number;
     devices: number;
     sn: string;
-    products: {
-        [key: string]: {
-            enable: boolean;
-            validacao: number;
-            createDate: string;
-            pacote: string;
-        }
-    };
+    nclock: SoftwareProduct;
+    naccess: SoftwareProduct;
+    nvisitor: SoftwareProduct;
+    npark: SoftwareProduct;
+    ndoor: SoftwareProduct;
+    npatrol: SoftwareProduct;
+    ncard: SoftwareProduct;
+    nview: SoftwareProduct;
+    nsecur: SoftwareProduct;
+    nsmart: SoftwareProduct;
+    nreality: SoftwareProduct;
+    nhologram: SoftwareProduct;
+    npower: SoftwareProduct;
+    ncharge: SoftwareProduct;
+    ncity: SoftwareProduct;
+    nkiosk: SoftwareProduct;
+    nled: SoftwareProduct;
+    nfire: SoftwareProduct;
+    nfurniture: SoftwareProduct;
+    npartition: SoftwareProduct;
+    ndecor: SoftwareProduct;
+    nping: SoftwareProduct;
+    nconnect: SoftwareProduct;
+    nlight: SoftwareProduct;
+    ncomfort: SoftwareProduct;
+    nsound: SoftwareProduct;
+    nhome: SoftwareProduct;
+    nsoftware: SoftwareProduct;
+    nsystem: SoftwareProduct;
+    napp: SoftwareProduct;
+    ncyber: SoftwareProduct;
+    ndigital: SoftwareProduct;
+    nserver: SoftwareProduct;
+    naut: SoftwareProduct;
+    nequip: SoftwareProduct;
+    nproject: SoftwareProduct;
+    ncount: SoftwareProduct;
+    nbuild: SoftwareProduct;
+    ncaravan: SoftwareProduct;
+    nmechanic: SoftwareProduct;
+    nevents: SoftwareProduct;
+    nservice: SoftwareProduct;
+    ntask: SoftwareProduct;
+    nproduction: SoftwareProduct;
+    nticket: SoftwareProduct;
+    nsales: SoftwareProduct;
+    ninvoice: SoftwareProduct;
+    ndoc: SoftwareProduct;
+    nsports: SoftwareProduct;
+    ngym: SoftwareProduct;
+    nschool: SoftwareProduct;
+    nclinic: SoftwareProduct;
+    noptics: SoftwareProduct;
+    ngold: SoftwareProduct;
 };
 
 export type Entity = {

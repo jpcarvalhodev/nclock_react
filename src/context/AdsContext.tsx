@@ -78,13 +78,16 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-        setDataVersion(prevVersion => prevVersion + 1);
+      setDataVersion(prevVersion => prevVersion + 1);
     }
-}, [localStorage.getItem('token')]);
+  }, []);
 
   // Busca as publicidades ao recarregar a página
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
       fetchAds();
+    }
   }, [dataVersion]);
 
   return (

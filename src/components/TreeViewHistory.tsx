@@ -82,15 +82,15 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
             const userName = log.userName || 'Sem Nome';
             if (!usersMap.has(userName)) {
                 usersMap.set(userName, {
-                    id: `user-${userName}`,
-                    label: userName,
+                    id: `user-${userName}` || 'Sem ID',
+                    label: userName || 'Sem Nome',
                     children: []
                 });
             }
             usersMap.get(userName).children.push({
-                id: log.taskId,
+                id: log.taskId || 'Sem ID',
                 createdDate: log.createdDate,
-                label: new Date(log.createdDate).toLocaleString(),
+                label: new Date(log.createdDate).toLocaleString() || 'Sem Data',
                 children: []
             });
         });

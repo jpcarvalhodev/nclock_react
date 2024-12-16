@@ -70,7 +70,7 @@ export const ResetPassword = () => {
       <div className='forgot-container' id='forgot'>
         <form className='form-login' onSubmit={handleResetPasswordFormSubmit}>
           <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
-          <div className='email-label'>
+          <div className='email-label' style={{ height: '80px' }}>
             <p>Nova Password:</p>
             <input className='input-email' style={{ flex: 1 }} type="password" name="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
           </div>

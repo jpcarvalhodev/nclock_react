@@ -7,6 +7,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
+import { set } from "date-fns";
 
 // Define o tipo FormControlElement
 type FormControlElement =
@@ -109,7 +110,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   useEffect(() => {
     if (activeTab && entities.length > 0) {
       const activeLicense = entities.find(
-        (license) => license.nif?.toString() === activeTab
+        (license) => license.entidadeNumber?.toString() === activeTab
       );
       if (activeLicense) {
         setFormData(activeLicense);
@@ -159,7 +160,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
         setEntities((prevEntities) =>
           prevEntities.map((entity) =>
-            entity.nif?.toString() === activeTab
+            entity.entidadeNumber?.toString() === activeTab
               ? {
                 ...entity,
                 ...updatedFormData,
@@ -191,7 +192,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
         setEntities((prevEntities) =>
           prevEntities.map((entity) =>
-            entity.nif?.toString() === activeEntityNif
+            entity.entidadeNumber?.toString() === activeTab
               ? {
                 ...entity,
                 ...updatedFormData,
@@ -208,32 +209,84 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   // Função para criar uma nova licença
   const handleCreateNewLicense = () => {
     setEntities((prevEntities) => {
-      const baseEntity = prevEntities.length > 0
-        ? { ...prevEntities[prevEntities.length - 1] }
-        : {
-          nif: 0,
-          name: "",
-          entidadeNumber: 0,
-          users: 0,
-          devices: 0,
-          sn: "",
-          products: {},
-        };
 
-      const newLicense = {
-        ...baseEntity,
+      const newLicense: License = {
         nif: 0,
         users: 0,
         devices: 0,
         sn: "",
         name: "",
-        entidadeNumber: baseEntity.entidadeNumber + 1,
+        entidadeNumber: (prevEntities.find(entities => entities.entidadeNumber)?.entidadeNumber || 0) + 1,
+        nclock: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        naccess: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nvisitor: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        npark: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ndoor: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        npatrol: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ncard: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nview: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nsecur: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nsmart: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nreality: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nhologram: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        npower: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ncharge: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ncity: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nkiosk: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nled: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nfire: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nfurniture: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        npartition: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ndecor: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nping: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nconnect: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nlight: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ncomfort: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nsound: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nhome: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nsoftware: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nsystem: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        napp: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ncyber: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ndigital: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nserver: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        naut: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nequip: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nproject: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ncount: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nbuild: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ncaravan: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nmechanic: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nevents: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nservice: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ntask: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nproduction: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nticket: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nsales: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ninvoice: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ndoc: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nsports: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ngym: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nschool: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nclinic: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        noptics: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        ngold: { enable: false, validacao: 0, pacote: "", createDate: "" }
       };
 
+      Object.keys(newLicense.products || {}).forEach(product => {
+        newLicense.products[product] = {
+          enable: false,
+          validacao: 0,
+          createDate: "",
+          pacote: "",
+        };
+      });
+
+      setFormData(newLicense);
       return [...prevEntities, newLicense];
     });
 
-    setActiveTab("0");
+    setActiveTab((prevTab) => (prevTab ? (parseInt(prevTab) + 1).toString() : "1"));
   };
 
   // Função para inserir o valor padrão ao enviar
@@ -242,6 +295,8 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       case "createDate":
       case "pacote":
         return null;
+      case "validacao":
+        return 0;
       default:
         return null;
     }
@@ -253,7 +308,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       toast.warn("Preencha todos os campos obrigatórios antes de guardar.");
       return;
     }
-    onUpdate(key, entities as License[]);
+    onUpdate(key, [formData] as License[]);
     setIsModalVisible(false);
   };
 
@@ -416,69 +471,71 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
               >
                 <div className="p-3">
                   <Row style={{ marginBottom: 20 }}>
-                    <Col md={3}>
+                    <Col md={1}>
                       <Form.Group controlId="formEntidadeNumber">
-                        <Form.Label>Número da Entidade</Form.Label>
+                        <Form.Label>Número</Form.Label>
                         <Form.Control
                           type="number"
                           className="custom-input-height custom-select-font-size"
-                          value={entity.entidadeNumber || ""}
+                          value={formData.entidadeNumber || ""}
                           onChange={handleChange}
                           name="entidadeNumber"
                           readOnly
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={3}>
-                      <Form.Group controlId="formName">
-                        <Form.Label>Nome</Form.Label>
-                        <Form.Control
-                          type="string"
-                          className="custom-input-height custom-select-font-size"
-                          value={entity.name || ""}
-                          onChange={handleChange}
-                          name="name"
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group controlId="formNif">
-                        <Form.Label>NIF</Form.Label>
-                        <Form.Control
-                          type="number"
-                          className="custom-input-height custom-select-font-size"
-                          value={entity.nif || ""}
-                          onChange={handleChange}
-                          name="nif"
-                          readOnly
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
+                    <Col md={1}>
                       <Form.Group controlId="formUsers">
                         <Form.Label>Utilizadores</Form.Label>
                         <Form.Control
                           type="number"
                           className="custom-input-height custom-select-font-size"
-                          value={entity.users || ""}
+                          value={formData.users || ""}
                           onChange={handleChange}
                           name="users"
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={3}>
+                    <Col md={1}>
                       <Form.Group controlId="formDevices">
                         <Form.Label>Dispositivos</Form.Label>
                         <Form.Control
                           type="number"
                           className="custom-input-height custom-select-font-size"
-                          value={entity.devices || ""}
+                          value={formData.devices || ""}
                           onChange={handleChange}
                           name="devices"
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={3}>
+                    <Col md={2}>
+                      <Form.Group controlId="formNif">
+                        <Form.Label>NIF</Form.Label>
+                        <Form.Control
+                          type="text"
+                          maxLength={9}
+                          pattern="[0-9]*"
+                          inputMode="numeric"
+                          className="custom-input-height custom-select-font-size"
+                          value={formData.nif || ""}
+                          onChange={handleChange}
+                          name="nif"
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={7}>
+                      <Form.Group controlId="formName">
+                        <Form.Label>Nome</Form.Label>
+                        <Form.Control
+                          type="string"
+                          className="custom-input-height custom-select-font-size"
+                          value={formData.name || ""}
+                          onChange={handleChange}
+                          name="name"
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={12}>
                       <Form.Group controlId="formSn">
                         <Form.Label>Número de Série</Form.Label>
                         <OverlayTrigger
@@ -492,7 +549,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                           <Form.Control
                             type="string"
                             className="custom-input-height custom-select-font-size"
-                            value={entity.sn || ""}
+                            value={formData.sn || ""}
                             onChange={handleChange}
                             name="sn"
                           />
@@ -500,7 +557,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Tabs defaultActiveKey={Object.keys(formData).find(key => typeof formData[key] === 'object' && formData[key] !== null)} id="product-tabs" className='nav-modal'>
+                  <Tabs defaultActiveKey={Object.keys(formData).find(key => typeof formData[key] === 'object' && formData[key] !== null)} id="product-tabs" className='nav-modal' style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                     {Object.keys(formData)
                       .filter(key => typeof formData[key] === 'object' && formData[key] !== null)
                       .map(product => (
@@ -514,7 +571,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                             {Object.entries(formData[product])
                               .filter(([propKey]) => propKey !== 'createDate')
                               .map(([prop, value], index) => (
-                                <Col md={3} key={`${product}-${prop}`} className='mt-3'>
+                                <Col md={2} key={`${product}-${prop}`} className='mt-5'>
                                   <Form.Group controlId={`form${product}${prop}`}>
                                     {renderFormControl(product, prop)}
                                   </Form.Group>

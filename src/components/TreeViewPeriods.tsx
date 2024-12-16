@@ -77,7 +77,7 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = period.map(time => ({
-            id: time.id,
+            id: time.id || 'Sem ID',
             label: time.name || 'Sem Nome',
             children: []
         }));

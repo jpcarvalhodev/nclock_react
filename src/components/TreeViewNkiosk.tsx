@@ -80,7 +80,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = devices.map(device => ({
-            id: device.serialNumber || `Sem SN ${device.deviceName}`,
+            id: device.serialNumber || 'Sem SN',
             label: device.deviceName || 'Sem Nome',
             children: []
         }));

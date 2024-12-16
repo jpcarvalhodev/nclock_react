@@ -137,11 +137,14 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         if (token) {
             setDataVersion(prevVersion => prevVersion + 1);
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     // Busca todas as assiduidades ao recarregar o componente
     useEffect(() => {
-        fetchAllAttendances();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllAttendances();
+        }
     }, [dataVersion]);
 
     // Definindo o valor do contexto

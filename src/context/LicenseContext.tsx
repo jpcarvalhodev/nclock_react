@@ -88,11 +88,14 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
         if (token) {
             setDataVersion(prevVersion => prevVersion + 1);
         }
-    }, [localStorage.getItem('token')]);
+    }, []);
 
     // Busca todas as licenças ao recarregar o componente
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
             fetchAllLicensesWithoutKey();
+        }
     }, [dataVersion]);
 
     return (

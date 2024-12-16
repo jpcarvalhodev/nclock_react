@@ -58,7 +58,7 @@ export const ForgotPassword = () => {
           <img className='logo-login' src="/logo_login.png" alt="Logo Login" onClick={returnToLogin} style={{ cursor: 'pointer' }} />
           <label className='email-label'>
             Email:
-            <input className='input-email' style={{ marginLeft: '20px', flex: 1 }} type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input className='input-email' style={{ marginTop: '20px', marginBottom: '10px', flex: 1 }} type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </label>
           <Button style={{ marginTop: 20 }} variant='outline-light' type='submit'>Enviar</Button>
         </form>

@@ -3,9 +3,7 @@ import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { Register } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { usePersons } from '../context/PersonsContext';
@@ -80,7 +78,7 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
     useEffect(() => {
 
         const buildDeviceTree = registeredUsers.map(user => ({
-            id: user.id,
+            id: user.id || 'Sem ID',
             label: user.name || 'Sem Nome',
             children: []
         }));

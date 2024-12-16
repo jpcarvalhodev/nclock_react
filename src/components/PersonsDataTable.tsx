@@ -52,9 +52,9 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<Employee | null>(null);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
-    const [resetSelectionInternal, setResetSelectionInternal] = useState(false);
     const [filters, setFilters] = useState<Filters>({});
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -74,12 +74,14 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             await handleAddEmployeeCard(card as EmployeeCard);
         }
         refreshEmployees();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee([employeeId]);
         refreshEmployees();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Busca todos os dados
@@ -112,21 +114,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
         filteredEmployees(sortedFilteredData);
     }, [selectedEmployeeIds, filterText, filters, data.employees]);
-
-    // Reseta a seleção de funcionários
-    useEffect(() => {
-        if (resetSelection) {
-            setResetSelectionInternal(true);
-        }
-    }, [resetSelection]);
-
-    // Reseta a seleção interna de funcionários
-    useEffect(() => {
-        if (resetSelectionInternal) {
-            setResetSelectionInternal(false);
-            setSelectedRows([]);
-        }
-    }, [resetSelectionInternal]);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {
@@ -326,7 +313,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         selectableRowsHighlight
-                        clearSelectedRows={resetSelectionInternal}
+                        clearSelectedRows={clearSelectionToggle}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
