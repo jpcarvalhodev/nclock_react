@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mui/material": "^5.15.20",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.2.0",
+    "@mui/material": "^6.2.0",
     "@mui/x-tree-view": "^7.7.0",
     "@react-pdf/renderer": "^3.4.2",
     "@testing-library/jest-dom": "^5.17.0",

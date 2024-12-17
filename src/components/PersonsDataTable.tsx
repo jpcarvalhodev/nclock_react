@@ -3,7 +3,7 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { employeeFields } from '../helpers/Fields';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { DeleteModal } from '../modals/DeleteModal';
 import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
 import { CustomOutlineButton } from './CustomOutlineButton';
@@ -31,6 +31,7 @@ interface PersonsDataTableProps {
     filteredData: Employee[];
     onDuplicate: (employee: Employee) => void;
     onSelectedRowsChange: (selectedRows: Employee[]) => void;
+    clearSelectedRows: boolean;
 }
 
 // Define a interface para os filtros
@@ -73,14 +74,12 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
-        refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee([employeeId]);
-        refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

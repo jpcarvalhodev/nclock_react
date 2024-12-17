@@ -38,13 +38,6 @@ function CustomSearchBox(props: TextFieldProps) {
         <TextField
             {...props}
             className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
         />
     );
 }
@@ -58,7 +51,7 @@ export const NkioskOccurrences = () => {
     const { occurrences, setOccurrences, fetchAllOcorrencias, handleAddOcorrencia, handleUpdateOcorrencia, handleDeleteOcurrences } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate', 'responsavel', 'observacoes', 'deviceId']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedRows, setSelectedRows] = useState<LimpezasEOcorrencias[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -66,13 +59,13 @@ export const NkioskOccurrences = () => {
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedOcurrencesForDelete, setSelectedOcurrencesForDelete] = useState<string | null>(null);
     const [initialData, setInitialData] = useState<Partial<LimpezasEOcorrencias> | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedOccurrence, setSelectedOccurrence] = useState<LimpezasEOcorrencias | null>(null);
     const [currentOccurrenceIndex, setCurrentOccurrenceIndex] = useState(0);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<LimpezasEOcorrencias[]>([]);
+    const [selectedOccurrencesForDelete, setSelectedOccurrencesForDelete] = useState<any | null>(null);
     const tipo = 2;
 
     // Função para buscar as Ocorrências entre datas
@@ -100,8 +93,9 @@ export const NkioskOccurrences = () => {
     };
 
     // Função para apagar Ocorrências
-    const deleteOcurrences = async (id: string) => {
+    const deleteOcurrences = async (id: string[]) => {
         await handleDeleteOcurrences(id);
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -131,7 +125,7 @@ export const NkioskOccurrences = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
+        setSelectedColumns(['dataCreate', 'responsavel', 'observacoes', 'deviceId']);
     };
 
     // Função para selecionar todas as colunas
@@ -174,6 +168,29 @@ export const NkioskOccurrences = () => {
         setShowUpdateModal(true);
     }
 
+    // Função para apagar ocorrências selecionadas
+    const handleSelectedOccurrencesToDelete = () => {
+        const occurrencesIds = Array.from(new Set(selectedRows.map(occ => occ.id)));
+        setSelectedOccurrencesForDelete(occurrencesIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let occurrencesIds;
+
+        if (Array.isArray(selectedOccurrencesForDelete)) {
+            occurrencesIds = selectedOccurrencesForDelete;
+        } else if (selectedOccurrencesForDelete) {
+            occurrencesIds = [selectedOccurrencesForDelete];
+        } else {
+            occurrencesIds = Array.from(new Set(selectedRows.map(occ => occ.id)));
+        }
+
+        setShowDeleteModal(false);
+        deleteOcurrences(occurrencesIds);
+    };  
+
     // Seleciona a entidade anterior
     const handleNextOccurences = () => {
         if (currentOccurrenceIndex < occurrences.length - 1) {
@@ -192,7 +209,7 @@ export const NkioskOccurrences = () => {
 
     // Função para abrir o modal de apagar limpeza
     const handleOpenDeleteModal = (id: string) => {
-        setSelectedOcurrencesForDelete(id);
+        setSelectedOccurrencesForDelete(id);
         setShowDeleteModal(true);
     };
 
@@ -318,6 +335,12 @@ export const NkioskOccurrences = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedOccurrencesToDelete} iconSize='1.1em' />
+                                </OverlayTrigger>
                                 <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
@@ -402,8 +425,8 @@ export const NkioskOccurrences = () => {
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={deleteOcurrences}
-                entityId={selectedOcurrencesForDelete}
+                onDelete={startDeletionProcess}
+                entityId={selectedOccurrencesForDelete}
             />
         </div>
     );

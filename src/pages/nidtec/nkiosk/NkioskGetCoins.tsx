@@ -22,6 +22,7 @@ import { ResetCoinModal } from "../../../modals/ResetCoinModal";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { DeleteModal } from "../../../modals/DeleteModal";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -39,13 +40,6 @@ function CustomSearchBox(props: TextFieldProps) {
         <TextField
             {...props}
             className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
         />
     );
 }
@@ -56,7 +50,7 @@ export const NkioskGetCoins = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { getCoins, setGetCoins, fetchAllCoin, handleAddRecolhaMoedeiro, handleUpdateRecolhaMoedeiro } = useKiosk();
+    const { getCoins, setGetCoins, fetchAllCoin, handleAddRecolhaMoedeiro, handleUpdateRecolhaMoedeiro, handleDeleteRecolhaMoedeiro } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataRecolha', 'pessoaResponsavel', 'numeroMoedas', 'valorTotalRecolhido', 'diferencaMoedas', 'deviceID']);
@@ -74,6 +68,8 @@ export const NkioskGetCoins = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<RecolhaMoedeiroEContador[]>([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedRecolhasForDelete, setSelectedRecolhasForDelete] = useState<any | null>(null);
 
     // Função para buscar as recolhas do moedeiro entre datas
     const fetchCoinsBetweenDates = async () => {
@@ -97,6 +93,12 @@ export const NkioskGetCoins = () => {
     // Função para atualizar recolha do moedeiro
     const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
         await handleUpdateRecolhaMoedeiro(recolhaMoedeiro);
+    };
+
+    // Função para apagar recolha do moedeiro
+    const deleteRecolhaMoedeiro = async (id: string[]) => {
+        await handleDeleteRecolhaMoedeiro(id);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -209,6 +211,35 @@ export const NkioskGetCoins = () => {
         setShowUpdateModal(true);
     }
 
+    // Função para abrir o modal de apagar recolhas
+    const handleOpenDeleteModal = (id: string) => {
+        setSelectedRecolhasForDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    // Função para apagar recolhas selecionadas
+    const handleSelectedRecolhasToDelete = () => {
+        const coinsIds = Array.from(new Set(selectedRows.map(recolhas => recolhas.id)));
+        setSelectedRecolhasForDelete(coinsIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let coinIds;
+
+        if (Array.isArray(selectedRecolhasForDelete)) {
+            coinIds = selectedRecolhasForDelete;
+        } else if (selectedRecolhasForDelete) {
+            coinIds = [selectedRecolhasForDelete];
+        } else {
+            coinIds = Array.from(new Set(selectedRows.map(coin => coin.id)));
+        }
+
+        setShowDeleteModal(false);
+        deleteRecolhaMoedeiro(coinIds);
+    };
+
     // Define as colunas da tabela
     const columns: TableColumn<RecolhaMoedeiroEContador>[] = recolhaMoedeiroEContadorFields
         .filter(field => selectedColumns.includes(field.key))
@@ -267,6 +298,12 @@ export const NkioskGetCoins = () => {
                     overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
                 >
                     <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditRecolha(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.id)} />
                 </OverlayTrigger>
             </div>
         ),
@@ -376,6 +413,12 @@ export const NkioskGetCoins = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedRecolhasToDelete} iconSize='1.1em' />
+                                </OverlayTrigger>
                                 <ExportButton allData={getCoinsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={getSelectedFields()} />
                                 <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCoinsWithNames} fields={getSelectedFields()} />
                                 <OverlayTrigger
@@ -471,6 +514,12 @@ export const NkioskGetCoins = () => {
                     onPrev={handlePrevGetCoin}
                 />
             )}
+            <DeleteModal
+                open={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={startDeletionProcess}
+                entityId={selectedRecolhasForDelete}
+            />
             {modalOpen && (
                 <ResetCoinModal
                     open={modalOpen}

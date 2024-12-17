@@ -421,6 +421,20 @@ body {
     box-shadow: 0 0 5px rgba(128, 128, 128, 1);
 }
 
+.navbar-ribbon-wrapper {
+    position: relative;
+}
+
+.ribbon_control {
+    position: absolute;
+    right: 120px;
+    cursor: pointer;
+    z-index: 100;
+    width: 15px !important;
+    height: 15px !important;
+    margin-top: -3px;
+}
+
 input::-ms-reveal,
 input::-ms-clear {
     display: none;

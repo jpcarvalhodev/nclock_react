@@ -462,8 +462,7 @@ export const limpezasEOcorrenciasFields = [
     { key: 'dataCreate', label: 'Data de Criação', type: 'date' },
     { key: 'responsavel', label: 'Nome do Utilizador', type: 'string', required: true },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'deviceId', label: 'Equipamento', type: 'string', required: true },
-    { key: 'deviceName', label: 'Nome do Local', type: 'string' },
+    { key: 'deviceId', label: 'Nome do Local', type: 'string', required: true },
 ];
 
 export const logsFields = [

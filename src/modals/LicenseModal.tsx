@@ -328,23 +328,39 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
           switch (prop) {
             case "enable":
               return (
-                <Form.Check
-                  type="switch"
-                  id={`switch-${product}-${prop}`}
-                  checked={!!value}
-                  onChange={handleChange}
-                  name={`${product}.${prop}`}
-                />
+                <Col>
+                  <Form.Check
+                    type="switch"
+                    id={`switch-${product}-${prop}`}
+                    checked={!!value}
+                    onChange={handleChange}
+                    name={`${product}.${prop}`}
+                  />
+                </Col>
               );
             case "validacao":
               return (
-                <Form.Control
-                  type="number"
-                  name={`${product}.${prop}`}
-                  value={value || ""}
-                  onChange={handleChange}
-                  className="custom-input-height custom-select-font-size"
-                />
+                <Col style={{ width: 140 }}>
+                  <Form.Control
+                    type="number"
+                    name={`${product}.${prop}`}
+                    value={value || ""}
+                    onChange={handleChange}
+                    className="custom-input-height custom-select-font-size"
+                  />
+                </Col>
+              );
+            case "pacote":
+              return (
+                <Col style={{ width: 710 }}>
+                  <Form.Control
+                    type="number"
+                    name={`${product}.${prop}`}
+                    value={value || ""}
+                    onChange={handleChange}
+                    className="custom-input-height custom-select-font-size"
+                  />
+                </Col>
               );
             default:
               return (
@@ -375,6 +391,8 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         return "Dispositivos";
       case "sn":
         return "Número de Série";
+      case "pacote":
+        return "Menus";
       default:
         return prop.charAt(0).toUpperCase() + prop.slice(1);
     }
@@ -466,7 +484,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             {entities.map((entity) => (
               <Tab
                 eventKey={entity.entidadeNumber?.toString()}
-                title={truncateText(entity.name, 20) || `Entidade ${entity.entidadeNumber}`}
+                title={truncateText(entity.name || '', 20) || `Entidade ${entity.entidadeNumber}`}
                 key={entity.entidadeNumber}
               >
                 <div className="p-3">
@@ -484,7 +502,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={1}>
+                    <Col style={{ width: 50 }}>
                       <Form.Group controlId="formUsers">
                         <Form.Label>Utilizadores</Form.Label>
                         <Form.Control
@@ -496,7 +514,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={1}>
+                    <Col style={{ width: 50 }}>
                       <Form.Group controlId="formDevices">
                         <Form.Label>Dispositivos</Form.Label>
                         <Form.Control
@@ -508,7 +526,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                         />
                       </Form.Group>
                     </Col>
-                    <Col md={2}>
+                    <Col style={{ width: 50 }}>
                       <Form.Group controlId="formNif">
                         <Form.Label>NIF</Form.Label>
                         <Form.Control

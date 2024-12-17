@@ -31,19 +31,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
-        />
-    );
+  return (
+    <TextField
+      {...props}
+      className="SearchBox"
+    />
+  );
 }
 
 // Define a página de pedidos

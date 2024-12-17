@@ -29,18 +29,19 @@ export interface KioskContextType {
     fetchAllCoin: () => void;
     handleAddRecolhaMoedeiro: (recolhaMoedeiro: RecolhaMoedeiroEContador) => void;
     handleUpdateRecolhaMoedeiro: (recolhaMoedeiro: RecolhaMoedeiroEContador) => void;
+    handleDeleteRecolhaMoedeiro: (id: string[]) => void;
     cleaning: LimpezasEOcorrencias[];
     setCleaning: (cleaning: LimpezasEOcorrencias[]) => void;
     fetchAllLimpezas: () => void;
     handleAddLimpezas: (limpezas: LimpezasEOcorrencias) => void;
     handleUpdateCleaning: (limpezas: LimpezasEOcorrencias) => void;
-    handleDeleteCleaning: (id: string) => void;
+    handleDeleteCleaning: (id: string[]) => void;
     occurrences: LimpezasEOcorrencias[];
     setOccurrences: (occurrences: LimpezasEOcorrencias[]) => void;
     fetchAllOcorrencias: () => void;
     handleAddOcorrencia: (occurrence: LimpezasEOcorrencias) => void;
     handleUpdateOcorrencia: (occurrence: LimpezasEOcorrencias) => void;
-    handleDeleteOcurrences: (id: string) => void;
+    handleDeleteOcurrences: (id: string[]) => void;
     counter: Counter[];
     fetchAllCounter: (startDate?: string, endDate?: string) => void;
     listPayments: (KioskTransactionMB | KioskTransactionCard)[];
@@ -255,6 +256,18 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para apagar recolha do moedeiro
+    const handleDeleteRecolhaMoedeiro = async (id: string[]) => {
+        try {
+            const data = await apiService.deleteRecolhaMoedeiro(id);
+            toast.success(data.message || 'Recolha do moedeiro apagada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao apagar a Recolha do moedeiro:', error);
+        } finally {
+            fetchAllCoin();
+        }
+    };
+
     // Função para buscar as limpezas
     const fetchAllLimpezas = async () => {
         try {
@@ -297,7 +310,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para apagar limpezas
-    const handleDeleteCleaning = async (id: string) => {
+    const handleDeleteCleaning = async (id: string[]) => {
         try {
             const data = await apiService.deleteCleaning(id);
             toast.success(data.message || 'Limpeza apagada com sucesso!');
@@ -349,7 +362,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para apagar Ocorrências
-    const handleDeleteOcurrences = async (id: string) => {
+    const handleDeleteOcurrences = async (id: string[]) => {
         try {
             const data = await apiService.deleteOccurrence(id);
             toast.success(data.message || 'Ocorrência apagada com sucesso!');
@@ -428,6 +441,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         fetchAllCoin,
         handleAddRecolhaMoedeiro,
         handleUpdateRecolhaMoedeiro,
+        handleDeleteRecolhaMoedeiro,
         cleaning,
         setCleaning,
         fetchAllLimpezas,

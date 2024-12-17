@@ -5,7 +5,7 @@ import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { Department, Employee, Group } from '../helpers/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
-import { PersonsProvider, usePersons } from '../context/PersonsContext';
+import { usePersons } from '../context/PersonsContext';
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
@@ -15,13 +15,6 @@ function CustomSearchBox(props: TextFieldProps) {
     <TextField
       {...props}
       className="SearchBox"
-      InputLabelProps={{
-        className: "SearchBox-label"
-      }}
-      InputProps={{
-        className: "SearchBox-input",
-        ...props.InputProps,
-      }}
     />
   );
 }
@@ -100,6 +93,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           departmentMap.get(deptCode).employees.push({
             id: `emp-${emp.employeeID}`,
             label: emp.name,
+            fileType: 'person',
           });
         }
       }
@@ -124,6 +118,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     const buildDepartmentTree = (dept: Department) => ({
       id: `department-${dept.departmentID}`,
       label: dept.name || 'Sem Nome',
+      fileType: 'department',
       children: [
         ...dept.children.map(buildDepartmentTree),
         ...allEmployees
@@ -132,6 +127,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           .map((emp: Employee) => ({
             id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
             label: emp.name,
+            fileType: 'person',
           })),
       ],
     });
@@ -141,23 +137,27 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     const groupItems = groups.map((group: Group) => ({
       id: `group-${group.groupID}`,
       label: group.name || 'Sem Nome',
+      fileType: 'group',
       children: allEmployees
         .filter(emp => emp.groupId === group.groupID)
         .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
         .map((emp: Employee) => ({
           id: `group-${group.groupID}-emp-${emp.employeeID}`,
           label: emp.name || 'Sem Nome',
+          fileType: 'person',
         })),
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
       id: `empd-${emp.employeeID}`,
       label: emp.name || 'Sem Nome',
+      fileType: 'person',
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
       id: `empg-${emp.employeeID}`,
       label: emp.name || 'Sem Nome',
+      fileType: 'person',
     }));
 
     const treeItems = [

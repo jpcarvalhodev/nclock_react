@@ -103,6 +103,10 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para adicionar um período e porta
     const addDoorTimezone = () => {
+        if (formData.doorTimezoneList.some(entry => entry.doorId === formData.currentDoorId && entry.timezoneId === formData.currentTimezoneId)) {
+            toast.warn('Esta porta e período já foram adicionados!');
+            return;
+        }
         if (formData.currentDoorId && formData.currentTimezoneId) {
             const newEntry = {
                 doorId: formData.currentDoorId,
@@ -117,7 +121,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                 currentTimezoneId: ''
             }));
         } else {
-            toast.warn('Selecione uma porta e um período antes de adicionar.');
+            toast.warn('Selecione uma porta e um período antes de adicionar!');
         }
     };
 

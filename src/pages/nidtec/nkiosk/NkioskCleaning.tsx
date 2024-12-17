@@ -38,13 +38,6 @@ function CustomSearchBox(props: TextFieldProps) {
         <TextField
             {...props}
             className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
         />
     );
 }
@@ -58,7 +51,7 @@ export const NkioskCleaning = () => {
     const { cleaning, setCleaning, fetchAllLimpezas, handleAddLimpezas, handleUpdateCleaning, handleDeleteCleaning } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['dataCreate', 'responsavel', 'observacoes', 'deviceId']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedRows, setSelectedRows] = useState<LimpezasEOcorrencias[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -70,7 +63,7 @@ export const NkioskCleaning = () => {
     const [initialData, setInitialData] = useState<Partial<LimpezasEOcorrencias> | null>(null);
     const [currentCleaningIndex, setCurrentCleaningIndex] = useState(0);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedCleaningForDelete, setSelectedCleaningForDelete] = useState<string | null>(null);
+    const [selectedCleaningForDelete, setSelectedCleaningForDelete] = useState<any | null>(null);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<LimpezasEOcorrencias[]>([]);
     const tipo = 1;
@@ -100,8 +93,9 @@ export const NkioskCleaning = () => {
     }
 
     // Função para apagar limpezas
-    const deleteCleaning = async (id: string) => {
+    const deleteCleaning = async (id: string[]) => {
         await handleDeleteCleaning(id);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -131,7 +125,7 @@ export const NkioskCleaning = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['dataCreate', 'responsavel', 'observacoes', 'deviceName']);
+        setSelectedColumns(['dataCreate', 'responsavel', 'observacoes', 'deviceId']);
     };
 
     // Função para selecionar todas as colunas
@@ -173,6 +167,29 @@ export const NkioskCleaning = () => {
         setSelectedCleaning(entity);
         setShowUpdateModal(true);
     }
+
+    // Função para apagar limpezas selecionadas
+    const handleSelectedCleaningToDelete = () => {
+        const cleaningIds = Array.from(new Set(selectedRows.map(limpeza => limpeza.id)));
+        setSelectedCleaningForDelete(cleaningIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let cleaningIds;
+
+        if (Array.isArray(selectedCleaningForDelete)) {
+            cleaningIds = selectedCleaningForDelete;
+        } else if (selectedCleaningForDelete) {
+            cleaningIds = [selectedCleaningForDelete];
+        } else {
+            cleaningIds = Array.from(new Set(selectedRows.map(limpeza => limpeza.id)));
+        }
+
+        setShowDeleteModal(false);
+        deleteCleaning(cleaningIds);
+    };
 
     // Seleciona a entidade anterior
     const handleNextCleaning = () => {
@@ -318,6 +335,12 @@ export const NkioskCleaning = () => {
                                 >
                                     <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                 </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedCleaningToDelete} iconSize='1.1em' />
+                                </OverlayTrigger>
                                 <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
@@ -402,7 +425,7 @@ export const NkioskCleaning = () => {
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={deleteCleaning}
+                onDelete={startDeletionProcess}
                 entityId={selectedCleaningForDelete}
             />
         </div>

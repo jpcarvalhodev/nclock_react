@@ -14,26 +14,18 @@ import { ExportButton } from '../../components/ExportButton';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
 import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
-import { toast } from 'react-toastify';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { DeleteModal } from '../../modals/DeleteModal';
 import { TextFieldProps, TextField } from '@mui/material';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
-        />
-    );
+  return (
+    <TextField
+      {...props}
+      className="SearchBox"
+    />
+  );
 }
 
 // Define a página de pessoas
@@ -60,6 +52,7 @@ export const Persons = () => {
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
@@ -75,8 +68,6 @@ export const Persons = () => {
         };
         await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
         setData({ ...data, employees: employees });
-
-        refreshEmployees();
     };
 
     // Função para selecionar funcionários
@@ -95,7 +86,7 @@ export const Persons = () => {
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
-        refreshEmployees();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Configurando a função onDelete para iniciar o processo de exclusão
@@ -219,6 +210,7 @@ export const Persons = () => {
                                 filteredData={filteredData}
                                 onDuplicate={handleDuplicate}
                                 onSelectedRowsChange={handleSelectedRowsChange}
+                                clearSelectedRows={clearSelectionToggle}
                             />
                         </div>
                     </Split>

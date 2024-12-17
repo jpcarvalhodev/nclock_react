@@ -1710,6 +1710,22 @@ export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroECon
     return response.json();
 }
 
+export const deleteRecolhaMoedeiro = async (id: string[]) => {
+    const response = await fetchWithAuth(`KioskTransaction/DeleteRecolhaMoedasAsync`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(id)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
 export const resetRecolhaMoedeiro = async (resetCoin: ResetCoin) => {
     const response = await fetchWithAuth(`KioskTransaction/ResetRecolhaMoedeiro?deviceId=${resetCoin.deviceId}`, {
         method: 'POST',
@@ -1808,9 +1824,13 @@ export const updateOccurrence = async (occurrence: LimpezasEOcorrencias) => {
     return response.json();
 }
 
-export const deleteCleaning = async (id: string) => {
-    const response = await fetchWithAuth(`KioskTransaction/DeleteLimpezasWCAsync?id=${id}`, {
-        method: 'DELETE'
+export const deleteCleaning = async (id: string[]) => {
+    const response = await fetchWithAuth(`KioskTransaction/DeleteLimpezasWCAsync`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(id)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1820,9 +1840,13 @@ export const deleteCleaning = async (id: string) => {
     return response.json();
 }
 
-export const deleteOccurrence = async (id: string) => {
-    const response = await fetchWithAuth(`KioskTransaction/DeleteKioskOcorrencia?id=${id}`, {
-        method: 'DELETE'
+export const deleteOccurrence = async (id: string[]) => {
+    const response = await fetchWithAuth(`KioskTransaction/DeleteKioskOcorrencia`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(id)
     });
     if (!response.ok) {
         const errorData = await response.json();

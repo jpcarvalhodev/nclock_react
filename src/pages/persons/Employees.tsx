@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from 'react';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import '../../css/PagesStyles.css';
-import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { Employee, EmployeeCard } from '../../helpers/Types';
@@ -20,7 +19,6 @@ import { SelectFilter } from '../../components/SelectFilter';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
 import { useColor } from '../../context/ColorContext';
 import { PrintButton } from '../../components/PrintButton';
-import { toast } from 'react-toastify';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextFieldProps, TextField } from '@mui/material';
 
@@ -31,19 +29,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
-        />
-    );
+  return (
+    <TextField
+      {...props}
+      className="SearchBox"
+    />
+  );
 }
 
 // Define a página funcionários
@@ -101,8 +92,6 @@ export const Employees = () => {
         };
         await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
         setData({ ...data, employees: employees });
-
-        refreshEmployees();
     };
 
     // Função para atualizar um funcionário e um cartão
@@ -113,13 +102,12 @@ export const Employees = () => {
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
-        refreshEmployees();
     };
 
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
-        refreshEmployees();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os funcionários

@@ -296,7 +296,7 @@ export const Login = () => {
             <p style={{ fontSize: 18, fontWeight: "bold", color: "white" }}>
               NIDGROUP - Business Solutions
             </p>
-            <a style={{ fontSize: 10, marginTop: 7, color: 'white' }} href="https://nidgroup.pt/" target="_blank" rel="noopener noreferrer">www.nidgroup.pt</a>
+            <a style={{ fontSize: 10, marginTop: 7, color: 'white', textDecoration: 'none' }} href="https://nidgroup.pt/" target="_blank" rel="noopener noreferrer">www.nidgroup.pt</a>
           </div>
           <div className="username-password-labels">
             <Row className="row-username-password">
@@ -416,7 +416,7 @@ export const Login = () => {
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
             </label>
-            <Link style={{ color: "white" }} to="/login&forgot/forgotpassword">
+            <Link style={{ color: "white", textDecoration: 'none' }} to="/login&forgot/forgotpassword">
               Recuperar password?
             </Link>
           </div>
@@ -425,7 +425,7 @@ export const Login = () => {
               Developed by NIDSOF - Smart Solutions
             </p>
             <p style={{ fontSize: 10, margin: 0, color: "white" }}>
-              <a style={{ color: 'white' }} href="https://nidsof.pt/" target="_blank" rel="noopener noreferrer">www.nidsof.pt</a>
+              <a style={{ color: 'white', textDecoration: 'none' }} href="https://nidsof.pt/" target="_blank" rel="noopener noreferrer">www.nidsof.pt</a>
             </p>
           </footer>
         </form>

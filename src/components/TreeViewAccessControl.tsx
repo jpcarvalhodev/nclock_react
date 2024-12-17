@@ -15,13 +15,6 @@ function CustomSearchBox(props: TextFieldProps) {
         <TextField
             {...props}
             className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
         />
     );
 }
@@ -79,19 +72,22 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
     useEffect(() => {
         if (!accessControl) return;
 
+        let uniqueCounter = 0;
+        const generateUniqueId = (prefix: string) => `${prefix}-${uniqueCounter++}`;
+
         const buildDoorTree = (doors: AccessControl) => {
-            if (!doors) return [];
+            if (!Array.isArray(doors)) return [];
             return doors.map((door: AccessControl) => ({
-                id: door.acId || 'Sem ID',
-                label: door.doorName || 'Sem Nome',
+                id: door?.acId || generateUniqueId('door'),
+                label: door?.doorName || 'Sem Nome',
                 children: []
             }));
         };
 
         const buildNameTree = accessControl.map(ac => ({
-            id: ac.employeesId || 'Sem ID',
+            id: ac.employeesId || generateUniqueId('employee'),
             label: ac.shortName || 'Sem Nome',
-            children: buildDoorTree(ac.acc)
+            children: buildDoorTree(ac.acc || [])
         }));
 
         const treeItems = [{
@@ -109,7 +105,7 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
         setItems(treeItems);
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
-        setExpandedIds(allExpandableIds);
+        setExpandedIds(['nidgroup', 'name']);
     }, [accessControl]);
 
     // Função para lidar com a expansão dos itens
@@ -162,7 +158,7 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
         if (searchTerm.trim()) {
             setExpandedIds([...newExpandedIds]);
         } else {
-            setExpandedIds(collectAllExpandableItemIds(items));
+            setExpandedIds(['nidgroup', 'name']);
         }
     }, [items, searchTerm]);
 

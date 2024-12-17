@@ -6,8 +6,8 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { categoryFields, externalEntityTypeFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useState, useEffect, useContext } from "react";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useState, useContext } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExternalEntityTypes } from "../../helpers/Types";
 import { SelectFilter } from "../../components/SelectFilter";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
@@ -25,19 +25,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
-        />
-    );
+  return (
+    <TextField
+      {...props}
+      className="SearchBox"
+    />
+  );
 }
 
 // Define a página de tipos de entidades externas

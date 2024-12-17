@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
-import Button from 'react-bootstrap/Button';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { Department } from '../../helpers/Types';
@@ -29,19 +28,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
-        />
-    );
+  return (
+    <TextField
+      {...props}
+      className="SearchBox"
+    />
+  );
 }
 
 // Define a página de departamentos

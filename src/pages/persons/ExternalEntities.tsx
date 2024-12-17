@@ -5,7 +5,6 @@ import '../../css/PagesStyles.css';
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { ExternalEntity, ExternalEntityTypes } from "../../helpers/Types";
-import Button from "react-bootstrap/esm/Button";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { externalEntityFields } from "../../helpers/Fields";
@@ -28,19 +27,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-            InputLabelProps={{
-                className: "SearchBox-label"
-            }}
-            InputProps={{
-                className: "SearchBox-input",
-                ...props.InputProps,
-            }}
-        />
-    );
+  return (
+    <TextField
+      {...props}
+      className="SearchBox"
+    />
+  );
 }
 
 // Define a página de Entidades Externas
