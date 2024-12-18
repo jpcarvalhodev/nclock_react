@@ -115,7 +115,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
 
         if (formData.password && !validatePassword(formData.password as string)) {
             isValid = false;
-            newErrors['password'] = { hasError: true, message: 'A password deve ter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial.' };
+            newErrors['password'] = { hasError: true, message: 'A password deve ter pelo menos 6 caracteres, uma letra maiúscula, uma minúscula e um caractere especial.' };
         }
 
         setErrors(newErrors);
@@ -141,7 +141,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
 
     // Função para validar a senha
     const validatePassword = (password: string): boolean => {
-        const regex = /^(?=.*[A-Z])(?=.*[!@#$&*-_])/;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{6,})/;
         return regex.test(password);
     };
 
@@ -203,7 +203,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     const handleSaveClick = () => {
         if (!isFormValid) {
             setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
 

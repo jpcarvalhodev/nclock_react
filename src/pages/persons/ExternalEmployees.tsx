@@ -72,7 +72,7 @@ export const ExternalEmployees = () => {
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
         fetchAllEmployees({
-            filterFunc: data => data.filter(emp => emp.type === 'Funcionário Externo'),
+            filterFunc: data => data.filter(emp => emp.type === 'Subcontratados'),
             postFetch: filteredData => {
                 setEmployees(filteredData);
                 setFilteredEmployees(filteredData);
@@ -92,6 +92,8 @@ export const ExternalEmployees = () => {
         };
         await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
         setData({ ...data, employees: employees });
+        setClearSelectionToggle(!clearSelectionToggle);
+        refreshEmployees();
     };
 
     // Função para atualizar um funcionário e um cartão
@@ -102,6 +104,8 @@ export const ExternalEmployees = () => {
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
+        refreshEmployees();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para deletar funcionários sequencialmente
@@ -110,10 +114,14 @@ export const ExternalEmployees = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
+    // Busca os funcionários
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
+
     // Atualiza os funcionários
     const refreshEmployees = () => {
         fetchEmployees();
-        setSelectedEmployeeIds([]);
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

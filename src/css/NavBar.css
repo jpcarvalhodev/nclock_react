@@ -512,10 +512,18 @@ input::-ms-clear {
         margin-top: 5px;
     }
 
+    .logo {
+        font-size: 10px !important;
+    }
+
     .logoNG {
         font-size: 9px;
         margin: 0;
         padding: 0;
+    }
+
+    .user-info {
+        font-size: 10px !important;
     }
 
     .submenu {
@@ -685,6 +693,10 @@ input::-ms-clear {
         font-size: 12px;
         margin: 0;
         padding: 0;
+    }
+
+    .user-info {
+        font-size: 12px !important;
     }
 
     .title-container {

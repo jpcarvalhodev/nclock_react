@@ -71,11 +71,12 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     const fetchDropdownOptions = async () => {
         try {
             const employee = await apiService.fetchAllEmployees();
+            const sortedEmployee = employee.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
             const door = await apiService.fetchAllDoors();
             const timezone = await apiService.fetchAllTimePeriods();
             const filteredDoors = door.filter((door: Doors) => door.doorNo === 3 || door.doorNo === 4);
             setDropdownData({
-                employeesId: employee,
+                employeesId: sortedEmployee,
                 doorId: filteredDoors,
                 timezoneId: timezone
             });
@@ -144,7 +145,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         const formIsValid = validateForm();
         if (!formIsValid) {
             setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
         handleSave();

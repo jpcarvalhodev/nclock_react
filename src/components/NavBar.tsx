@@ -185,6 +185,7 @@ import { useCardScroll } from '../context/CardScrollContext';
 import counts from '../assets/img/navbar/nkiosk/counter.png';
 import panel from '../assets/img/navbar/nkiosk/panel.png';
 import ribbonControl from '../assets/img/navbar/navbar/ribbonControl.png';
+import ribbonControlLock from '../assets/img/navbar/navbar/ribbonControlLock.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -419,7 +420,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [currentFields, setCurrentFields] = useState<any>(null);
 	const [currentOpenRibbon, setCurrentOpenRibbon] = useState<RibbonToggler | null>(null);
 	const [lastClosedRibbon, setLastClosedRibbon] = useState<RibbonToggler | null>(null);
-
+	const [lockRibbon, setLockRibbon] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -463,16 +464,20 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setActiveTab(savedActiveTab);
 			const { setTab, setRibbon } = tabData[savedActiveTab];
 			setTab(true);
-			setRibbon(true);
-			const capitalizedTab = savedActiveTab.charAt(0).toUpperCase() + savedActiveTab.slice(1);
-			setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
-		}
+			if (!lockRibbon) {
+				setRibbon(true);
+				const capitalizedTab = savedActiveTab.charAt(0).toUpperCase() + savedActiveTab.slice(1);
+				setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+			}
 
-		if (activeTab in ribbons) {
-			const [setRibbon] = ribbons[activeTab as RibbonName];
-			setRibbon(true);
-			const capitalizedTab = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
-			setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+			if (activeTab in ribbons) {
+				const [setRibbon] = ribbons[activeTab as RibbonName];
+				if (!lockRibbon) {
+					setRibbon(true);
+					const capitalizedTab = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
+					setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+				}
+			}
 		}
 	}, []);
 
@@ -755,9 +760,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 				const [setOtherRibbon] = ribbons[key as RibbonName];
 				setOtherRibbon(false);
 			});
-			setRibbon(true);
-			const capitalizedTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
-			setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+			if (!lockRibbon) {
+				setRibbon(true);
+				const capitalizedTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+				setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+			}
 			setActiveTab(ribbonName);
 		}
 	};
@@ -894,11 +901,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 				setScrollPosition(0);
 			} else {
 				setTab(true);
-				setRibbon(isSoftwareCliente);
-				setCurrentOpenRibbon(tabName as RibbonToggler);
-				if (localStorageRibbonKey && tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) {
+				if (!lockRibbon) {
 					setRibbon(isSoftwareCliente);
-					localStorage.setItem(localStorageRibbonKey, 'true')
+					setCurrentOpenRibbon(tabName as RibbonToggler);
+					if (localStorageRibbonKey && tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) {
+						localStorage.setItem(localStorageRibbonKey, 'true')
+					}
 				}
 				setActiveTab(tabName);
 				localStorage.setItem('activeTab', tabName);
@@ -934,6 +942,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Atualiza o estado do ribbon no localStorage
 	useEffect(() => {
+
 		const handleStateChange = () => {
 			localStorage.setItem('showPessoasRibbon', String(showPessoasRibbon));
 			localStorage.setItem('showDispositivosRibbon', String(showDispositivosRibbon));
@@ -1123,35 +1132,35 @@ export const NavBar = ({ style }: NavBarProps) => {
 			image: counts,
 			alt: 'contador',
 			key: 'contador',
-			onClick: () => toast.error('Funcionalidade não disponível. Contacte o suporte.'),
+			onClick: () => toast.error('Módulo de Contagem de Pessoas. Sistema pode ser utilizado em diversos contextos, como: Contagem: Controle de entradas e saída de pessoas.'),
 		},
 		sensor: {
 			label: 'Sensor Movimento',
 			image: sensor,
 			alt: 'sensor',
 			key: 'sensor',
-			onClick: () => toast.error('Funcionalidade não disponível. Contacte o suporte.'),
+			onClick: () => toast.error('Módulo de Sensores de Movimento. Sistema pode ser utilizado em diversos contextos, como: Local: Detetar movimento de uma determinada área.'),
 		},
 		fotocelula: {
 			label: 'Fotocélula Segurança',
 			image: cell,
 			alt: 'fotocélula',
 			key: 'fotocelula',
-			onClick: () => toast.error('Funcionalidade não disponível. Contacte o suporte.'),
+			onClick: () => toast.error('Módulo de Fotocélulas de Segurança. Sistema pode ser utilizado em diversos contextos, como: Zona: Alerta de um movimento indesejado num local.'),
 		},
 		painel: {
 			label: 'Painel de Movimentos',
 			image: panel,
 			alt: 'painel',
 			key: 'painel',
-			onClick: () => toast.error('Funcionalidade não disponível. Contacte o suporte.'),
+			onClick: () => toast.error('Módulo de Painel de Movimentos. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Visualizar Registos Online com Foto'),
 		},
 		revista: {
 			label: 'Revistas Aleatórias',
 			image: search,
 			alt: 'revista',
 			key: 'revista',
-			onClick: () => toast.error('Funcionalidade não disponível. Contacte o suporte.'),
+			onClick: () => toast.error('Módulo de Revistas Aleatórias. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Inspecionar aleatoriamente pessoas.'),
 		},
 	};
 
@@ -1785,9 +1794,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 		} else {
 			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
 			const [setRibbon] = ribbons[tabName as RibbonName];
-			setRibbon(true);
-			const capitalizedTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
-			setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+			if (!lockRibbon) {
+				setRibbon(true);
+				const capitalizedTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+				setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+			}
 			setActiveTab(tabName);
 			localStorage.setItem('activeTab', tabName);
 		}
@@ -1911,19 +1922,30 @@ export const NavBar = ({ style }: NavBarProps) => {
 		if (currentOpenRibbon) {
 			toggleRibbonVisibility(currentOpenRibbon);
 			setCurrentOpenRibbon(null);
+			setLockRibbon(true);
 		} else {
 			if (lastClosedRibbon) {
-				toggleRibbonVisibility(lastClosedRibbon);
-				setCurrentOpenRibbon(lastClosedRibbon);
-			} else {
-				toggleRibbonVisibility('Pessoas');
-				setCurrentOpenRibbon('Pessoas');
+				setLockRibbon(false);
 			}
 		}
 	};
 
+	// Reabre a última ribbon fechada
+	useEffect(() => {
+		if (!lockRibbon && lastClosedRibbon) {
+			toggleRibbonVisibility(lastClosedRibbon);
+			setCurrentOpenRibbon(lastClosedRibbon);
+			setLastClosedRibbon(null);
+		}
+	}, [lockRibbon, lastClosedRibbon]);
+
 	// Função para fechar e reabrir a ribbon
 	const toggleRibbonVisibility = (ribbonName: RibbonToggler) => {
+
+		if (lockRibbon) {
+			return;
+		}
+
 		const localStorageKey = `show${ribbonName}Ribbon`;
 
 		const storedValue = localStorage.getItem(localStorageKey);
@@ -4014,7 +4036,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					)}
 					<img
-						src={ribbonControl}
+						src={lockRibbon ? ribbonControlLock : ribbonControl}
 						alt="botão controle da ribbon"
 						className="ribbon_control"
 						onClick={() => handleGlobalRibbonToggle()}

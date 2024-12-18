@@ -87,7 +87,8 @@ export const NclockAll = () => {
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
-        window.location.reload();
+        refreshAttendance();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza a lista de funcionários ao carregar a página
@@ -98,6 +99,7 @@ export const NclockAll = () => {
     // Função para atualizar os dados da tabela
     const refreshAttendance = () => {
         fetchAll();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para filtrar as presenças com base no texto de pesquisa

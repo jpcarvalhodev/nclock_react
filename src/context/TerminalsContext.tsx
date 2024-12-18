@@ -26,8 +26,7 @@ export interface DeviceContextType {
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     syncTimeManuallyToDevice: (device: Devices) => Promise<void>;
     deleteAllUsersOnDevice: (device: Devices, employee: string[] | null) => Promise<void>;
-    openDeviceIdDoor: (zktecoDeviceID: string, doorData: DoorDevice) => Promise<void>;
-    openDeviceDoor: (deviceSN: DoorDevice, doorData: DoorDevice) => Promise<void>;
+    openDeviceDoor: (deviceSN: string, doorData: DoorDevice) => Promise<void>;
     restartDevice: (device: Devices) => Promise<void>;
     restartMBDevice: (mbDevice: Partial<MBDevice>) => Promise<void>;
     sendClockToDevice: (serialNumber: string, timeZoneId: string) => Promise<void>;
@@ -206,19 +205,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Função para abrir a porta via ID
-    const openDeviceIdDoor = async (zktecoDeviceID: string, doorData: DoorDevice) => {
-        try {
-            const data = await apiService.openDeviceIdDoor(zktecoDeviceID, doorData);
-            toast.success(data.message || 'Porta aberta com sucesso!');
-
-        } catch (error) {
-            console.error('Erro ao abrir a porta:', error);
-        }
-    }
-
     // Função para abrir a porta via dispositivo
-    const openDeviceDoor = async (deviceSN: DoorDevice, doorData: DoorDevice) => {
+    const openDeviceDoor = async (deviceSN: string, doorData: DoorDevice) => {
         try {
             const data = await apiService.openDeviceDoor(deviceSN, doorData);
             toast.success(data.message || 'Porta aberta com sucesso!');
@@ -495,7 +483,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
         deleteAllUsersOnDevice,
-        openDeviceIdDoor,
         openDeviceDoor,
         restartDevice,
         restartMBDevice,

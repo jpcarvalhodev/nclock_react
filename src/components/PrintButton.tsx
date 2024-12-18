@@ -80,10 +80,7 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
     const calculateRenderTimeout = (dataLength: number): number => {
         const baseTimeout = 5000;
         const timePerItem = 20;
-
-        const totalTimeout = baseTimeout + (dataLength * timePerItem);
-
-        return Math.min(totalTimeout, 30000);
+        return baseTimeout + (dataLength * timePerItem);
     };
 
     // Atualiza o estado de loading quando o modal é exibido
@@ -141,20 +138,17 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
                     )}
                 </Modal.Body>
                 <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                    <Button variant="outline-info" onClick={handleCloseModal}>
+                    <Button variant="outline-secondary" onClick={handleCloseModal}>
                         Fechar
                     </Button>
                     <PDFDownloadLink
                         document={<PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />}
                         fileName="dados_impressos.pdf"
                     >
-                        <Button variant="outline-secondary">
+                        <Button variant="outline-primary">
                             Guardar
                         </Button>
                     </PDFDownloadLink>
-                    <Button variant="outline-primary" onClick={window.print}>
-                        Imprimir
-                    </Button>
                 </Modal.Footer>
             </Modal>
         </>

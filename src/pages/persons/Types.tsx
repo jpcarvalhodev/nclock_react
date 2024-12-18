@@ -55,25 +55,30 @@ export const Types = () => {
     const [initialData, setInitialData] = useState<Partial<ExternalEntityTypes> | null>(null);
     const [currentExternalEntityTypeIndex, setCurrentExternalEntityTypeIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<ExternalEntityTypes[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar um tipo de uma entidade externa
     const addExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         await handleAddExternalEntityTypes(externalEntityType);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar um tipo de uma entidade externa
     const updateExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         await handleUpdateExternalEntityTypes(externalEntityType);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para apagar um tipo de uma entidade externa
     const deleteExternalEntityTypes = async (externalEntityTypeID: string) => {
         await handleDeleteExternalEntityTypes(externalEntityTypeID);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar as entidades externas
     const refreshExternalEntitiesTypes = () => {
         fetchAllExternalEntitiesData();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para abrir o modal de editar entidade externa
@@ -272,6 +277,7 @@ export const Types = () => {
                         paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped

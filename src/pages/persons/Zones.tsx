@@ -57,20 +57,24 @@ export const Zones = () => {
     const [initialData, setInitialData] = useState<Partial<Zone>>();
     const [currentZoneIndex, setCurrentZoneIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Zone[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar uma zona
     const addZone = async (zone: Zone) => {
         await handleAddZone(zone);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar uma zona
     const updateZone = async (zone: Zone) => {
         await handleUpdateZone(zone);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para apagar uma zona
     const deleteZone = async (zoneID: string) => {
         await handleDeleteZone(zoneID);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza o índice do funcionário selecionado
@@ -85,6 +89,7 @@ export const Zones = () => {
     // Função para atualizar as zonas
     const refreshZones = () => {
         fetchAllZones();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para abrir o modal de editar zona
@@ -328,6 +333,7 @@ export const Zones = () => {
                         paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."

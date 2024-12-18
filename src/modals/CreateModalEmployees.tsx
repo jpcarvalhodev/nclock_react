@@ -13,6 +13,8 @@ import { departmentFields, groupFields } from "../helpers/Fields";
 import { PersonsContext, PersonsContextType } from "../context/PersonsContext";
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
+import { min } from "date-fns";
+import { is } from "date-fns/locale";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -237,6 +239,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     if (name === "gender") {
       parsedValue = value === "true";
     }
+
     setFormData((prevState) => ({
       ...prevState,
       [name]: parsedValue,
@@ -322,7 +325,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   const handleSaveClick = () => {
     if (!isFormValid) {
       setShowValidationErrors(true);
-      toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+      toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
       return;
     }
     handleSave();
@@ -592,7 +595,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             className="custom-input-height custom-select-font-size"
                             value={formData.gender}
                             onChange={handleChange}
-                            name="gender">
+                            name="gender"
+                          >
                             <option value="">Selecione...</option>
                             {genderOptions.map(option => (
                               <option key={String(option.value)} value={String(option.value)}>
@@ -600,6 +604,19 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                               </option>
                             ))}
                           </Form.Control>
+                        ) : field.key === 'nif' ? (
+                          <OverlayTrigger
+                            placement="right"
+                            overlay={<Tooltip id="tooltip-nif">NIF deve ter pelo menos 9 dígitos</Tooltip>}
+                          >
+                            <Form.Control
+                              type={field.type}
+                              className="custom-input-height custom-select-font-size"
+                              value={formData[field.key] || ''}
+                              onChange={handleChange}
+                              name={field.key}
+                            />
+                          </OverlayTrigger>
                         ) : (
                           <Form.Control
                             type={field.type}

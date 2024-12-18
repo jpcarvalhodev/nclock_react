@@ -88,11 +88,13 @@ export const NkioskGetCoins = () => {
     // Função para adicionar recolha do moedeiro
     const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
         await handleAddRecolhaMoedeiro(recolhaMoedeiro);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar recolha do moedeiro
     const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
         await handleUpdateRecolhaMoedeiro(recolhaMoedeiro);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para apagar recolha do moedeiro

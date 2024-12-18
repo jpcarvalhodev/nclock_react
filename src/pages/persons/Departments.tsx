@@ -60,6 +60,7 @@ export const Departments = () => {
     const [initialData, setInitialData] = useState<Partial<Department> | null>(null);
     const [currentDepartmentIndex, setCurrentDepartmentIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Department[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Busca os departamentos
     const fetchDepartments = async () => {
@@ -87,21 +88,25 @@ export const Departments = () => {
     // Adiciona um departamento
     const addDepartment = async (department: Department) => {
         await handleAddDepartment(department);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza um departamento
     const updateDepartment = async (department: Department) => {
         await handleUpdateDepartment(department);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Apaga um departamento
     const deleteDepartment = async (departmentID: string) => {
         await handleDeleteDepartment(departmentID);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // função de atualizar os departamentos
     const refreshDepartments = () => {
         fetchDepartments();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para selecionar as linhas
@@ -355,6 +360,7 @@ export const Departments = () => {
                         paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         expandableRows
                         expandableRowsComponent={(props) => (
                             <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />

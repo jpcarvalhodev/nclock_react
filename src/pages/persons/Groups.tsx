@@ -57,20 +57,24 @@ export const Groups = () => {
     const [initialData, setInitialData] = useState<Partial<Group> | null>(null);
     const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Group[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar um grupo
     const addGroup = async (group: Group) => {
         await handleAddGroup(group);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar um grupo
     const updateGroup = async (group: Group) => {
         await handleUpdateGroup(group);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para apagar um grupo
     const deleteGroup = async (groupID: string) => {
         await handleDeleteGroup(groupID);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza o índice do funcionário selecionado
@@ -85,6 +89,7 @@ export const Groups = () => {
     // Função para atualizar os grupos
     const refreshGroups = () => {
         fetchAllGroups();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para abrir o modal de atualizar grupo
@@ -320,6 +325,7 @@ export const Groups = () => {
                         paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={groupFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

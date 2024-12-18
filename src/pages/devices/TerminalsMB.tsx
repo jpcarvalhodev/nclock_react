@@ -66,27 +66,32 @@ export const TerminalsMB = () => {
     const [initialData, setInitialData] = useState<Partial<MBDevice> | null>(null);
     const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<MBDevice[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
         fetchAllMBDevices();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: MBDevice) => {
         await handleAddMBDevice(device);
         refreshMBDevices();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para atualizar um dispositivo
     const updateDevice = async (device: MBDevice) => {
         await handleUpdateMBDevice(device);
         refreshMBDevices();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     const deleteDevice = async (id: string) => {
         await handleDeleteMBDevice(id);
         refreshMBDevices();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Atualiza os dados de renderização
@@ -366,6 +371,7 @@ export const TerminalsMB = () => {
                                     paginationPerPage={20}
                                     selectableRows
                                     onSelectedRowsChange={handleDeviceRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
                                     selectableRowsHighlight
                                     onRowDoubleClicked={handleEditDevices}
                                     noDataComponent="Não existem dados disponíveis para exibir."

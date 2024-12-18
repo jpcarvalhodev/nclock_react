@@ -57,25 +57,30 @@ export const Categories = () => {
     const [initialData, setInitialData] = useState<Partial<Category> | null>(null);
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Category[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar uma categoria
     const addCategory = async (category: Category) => {
         await handleAddCategory(category);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar uma categoria
     const updateCategory = async (category: Category) => {
         await handleUpdateCategory(category);
+        setClearSelectionToggle(!clearSelectionToggle);
     } 
 
     // Função para apagar uma categoria
     const deleteCategory = async (categoryID: string) => {
         await handleDeleteCategory(categoryID);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar as categorias
     const refreshCategories = () => {
         fetchAllCategories();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para editar uma categoria
@@ -305,6 +310,7 @@ export const Categories = () => {
                         paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

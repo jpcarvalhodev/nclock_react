@@ -57,20 +57,24 @@ export const ExternalEntities = () => {
     const [initialData, setInitialData] = useState<Partial<ExternalEntity> | null>(null);
     const [currentExtEntIndex, setCurrentExtEntIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<ExternalEntity[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar uma nova entidade externa
     const addExternalEntity = async (externalEntity: ExternalEntity) => {
         await handleAddExternalEntity(externalEntity);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar uma entidade externa
     const updateExternalEntity = async (externalEntity: ExternalEntity) => {
         await handleUpdateExternalEntity(externalEntity);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para apagar uma entidade externa
     const deleteExternalEntity = async (externalEntityID: string) => {
         await handleDeleteExternalEntity(externalEntityID);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza o índice do funcionário selecionado
@@ -85,6 +89,7 @@ export const ExternalEntities = () => {
     // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {
         fetchAllExternalEntitiesData();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para abrir o modal de editar entidade externa
@@ -332,6 +337,7 @@ export const ExternalEntities = () => {
                         paginationComponentOptions={paginationOptions}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."

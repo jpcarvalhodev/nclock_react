@@ -157,7 +157,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     const handleUpdate = () => {
         if (!isFormValid) {
             setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
         onUpdate(formData as T);
@@ -183,7 +183,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="modal-body-scrollable">
+            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 155 }}>
                 <div className="container-fluid">
                     <Row>
                         <Col md={3}>
@@ -443,7 +443,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                     </Row>
                 </div>
             </Modal.Body>
-            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }} >
                 <OverlayTrigger
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}

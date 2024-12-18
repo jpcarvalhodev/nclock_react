@@ -108,7 +108,7 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
         setItems(treeItems);
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
-        setExpandedIds(allExpandableIds);
+        setExpandedIds(['nidgroup', 'utilizadores']);
     }, [historyLogs]);
 
     // Função para lidar com a expansão dos itens
@@ -161,7 +161,7 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
         if (searchTerm.trim()) {
             setExpandedIds([...newExpandedIds]);
         } else {
-            setExpandedIds(collectAllExpandableItemIds(items));
+            setExpandedIds(['nidgroup', 'utilizadores']);
         }
     }, [items, searchTerm]);
 

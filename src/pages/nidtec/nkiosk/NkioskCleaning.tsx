@@ -85,11 +85,13 @@ export const NkioskCleaning = () => {
     // Função para adicionar limpezas
     const addLimpezas = async (limpezas: LimpezasEOcorrencias) => {
         await handleAddLimpezas(limpezas);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar limpezas
     const updateCleaning = async (limpezas: LimpezasEOcorrencias) => {
         await handleUpdateCleaning(limpezas);
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para apagar limpezas

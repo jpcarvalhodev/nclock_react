@@ -123,8 +123,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             };
             if (entity === 'employees') {
                 newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário');
-            } else if (entity === 'external employees') {
-                newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário Externo');
+            } else if (entity === 'subcontratados') {
+                newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Subcontratados');
             } else if (entity === 'users') {
                 newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Utente');
             } else if (entity === 'visitors') {

@@ -45,7 +45,7 @@ export const NledAds = () => {
     const { navbarColor, footerColor } = useColor();
     const currentDate = new Date();
     const pastDate = new Date();
-    pastDate.setDate(currentDate.getDate() - 30);
+    pastDate.setDate(currentDate.getDate() - 365);
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const { ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds } = useContext(AdsContext) as AdsContextType;
     const [showAddModal, setShowAddModal] = useState(false);
@@ -64,6 +64,7 @@ export const NledAds = () => {
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedRows, setSelectedRows] = useState<Ads[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Busca as publicidades ao carregar a página
     useEffect(() => {
@@ -104,6 +105,7 @@ export const NledAds = () => {
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedAds(null);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para abrir o modal de apagar publicidade
@@ -333,6 +335,7 @@ export const NledAds = () => {
                                     onRowDoubleClicked={handleEditAds}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
+                                    clearSelectedRows={clearSelectionToggle}
                                     paginationPerPage={20}
                                     selectableRows
                                     onSelectedRowsChange={handleRowSelected}
@@ -385,7 +388,10 @@ export const NledAds = () => {
             )}
             <DeleteModal
                 open={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
+                onClose={() => {
+                    setShowDeleteModal(false);
+                    setClearSelectionToggle(!clearSelectionToggle);
+                }}
                 onDelete={handleDeleteAds}
                 entityId={selectedAdsForDelete}
             />

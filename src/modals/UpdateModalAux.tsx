@@ -153,7 +153,7 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
     const handleSave = () => {
         if (!isFormValid) {
             setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
         onUpdate(formData as T);
@@ -166,11 +166,11 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='lg' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="modal-body-scrollable">
+            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 365 }}>
                 <div className="container-fluid">
                     <Row>
                         <Col md={3}>

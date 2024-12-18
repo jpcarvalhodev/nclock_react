@@ -168,7 +168,7 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         /* if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         } */
         handleSave();

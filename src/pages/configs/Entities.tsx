@@ -38,10 +38,13 @@ export const Entities = () => {
     const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
     const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Entity[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para atualizar os dados da entidade
     const handleUpdateCompanyData = async (entityData: FormData) => {
         await updateEntity(entityData);
+        setClearSelectionToggle(!clearSelectionToggle);
+        refreshEntity();
     }
 
     // Busca todas as entidades
@@ -52,6 +55,7 @@ export const Entities = () => {
     // Função para atualizar as entidade
     const refreshEntity = () => {
         fetchAllEntity();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para editar uma entidade
@@ -293,6 +297,7 @@ export const Entities = () => {
                         paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         expandableRows
                         expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                         noDataComponent="Não existem dados disponíveis para exibir."

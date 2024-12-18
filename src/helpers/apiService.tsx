@@ -373,24 +373,8 @@ export const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
     return response.json();
 };
 
-export const openDeviceIdDoor = async (zktecoDeviceID: string, doorData: DoorDevice) => {
-    const response = await fetchWithAuth(`Zkteco/OpenDeviceDoor/${zktecoDeviceID}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(doorData)
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        throw new Error();
-    }
-    return response.json();
-}
-
-export const openDeviceDoor = async (deviceSN: DoorDevice, doorData: DoorDevice) => {
-    const response = await fetchWithAuth(`Zkteco/OpenDevice1Door/${deviceSN}`, {
+export const openDeviceDoor = async (deviceSN: string, doorData: DoorDevice) => {
+    const response = await fetchWithAuth(`Zkteco/OpenDoor1Device/${deviceSN}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

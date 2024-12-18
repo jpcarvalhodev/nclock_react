@@ -59,16 +59,22 @@ export const AccessControls = () => {
     // Função para adicionar o controle de acesso
     const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         await handleAddAccessControl(newAccessControl);
+        refreshAccessControl();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para editar o controle de acesso
     const updateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         await handleUpdateAccessControl(newAccessControl);
+        setClearSelectionToggle(!clearSelectionToggle);
+        refreshAccessControl();
     };
 
     // Função para deletar o controle de acesso
     const deleteAccessControl = async (employeesId: string[], doorId: string) => {
         await handleDeleteAccessControl(employeesId, doorId);
+        setClearSelectionToggle(!clearSelectionToggle);
+        refreshAccessControl();
     }
 
     // Busca as listagens de movimentos ao carregar a página

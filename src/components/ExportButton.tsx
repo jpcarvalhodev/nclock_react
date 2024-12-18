@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { Devices, Entity, MBDevice } from '../helpers/Types';
 import * as apiService from "../helpers/apiService";
 import { useTerminals } from '../context/TerminalsContext';
-import { de } from 'date-fns/locale';
 
 // Define a interface para os itens de dados
 interface DataItem {
@@ -128,6 +127,9 @@ const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDe
     }
 };
 
+// Colunas a ignorar na exportação
+const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo', 'url', 'passwordCamera', 'urlArquivo', 'fechoImage', 'aberturaImage', 'paiId'];
+
 // Função para exportar os dados para CSV
 const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device: Devices[], mbDevice: MBDevice[]): void => {
     const fileExtension = '.csv';
@@ -135,8 +137,10 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device
     const BOM = '\uFEFF';
     const delimiter = ';';
 
+    const filteredFields = fields.filter(field => !columnsToIgnore.includes(field.key));
+
     const validFields = data.reduce((acc, item) => {
-        fields.forEach(field => {
+        filteredFields.forEach(field => {
             const value = item[field.key];
             if (value !== undefined && value !== null && value !== '') {
                 acc.add(field.key);
@@ -145,10 +149,10 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device
         return acc;
     }, new Set());
 
-    const headers = fields.filter(field => validFields.has(field.key)).map(field => field.label).join(delimiter);
+    const headers = filteredFields.filter(field => validFields.has(field.key)).map(field => field.label).join(delimiter);
 
     const csvContent = data.map(item => {
-        return fields.map(field => {
+        return filteredFields.map(field => {
             if (!validFields.has(field.key)) return '';
             const value = formatField(item, field.key, device, mbDevice);
             if (typeof value === 'string') {
@@ -169,8 +173,10 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[], devic
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
 
+    const filteredFields = fields.filter(field => !columnsToIgnore.includes(field.key));
+
     const output = data.map(item => {
-        return fields.reduce((result: Record<string, any>, field) => {
+        return filteredFields.reduce((result: Record<string, any>, field) => {
             const value = formatField(item, field.key, device, mbDevice);
             if (value !== undefined && value !== null && value !== '') {
                 result[field.label] = value;
@@ -192,13 +198,18 @@ const exportToTXT = (data: DataItem[], fileName: string, device: Devices[], mbDe
 
     const filteredData = data.map(item => {
         const { employeeID, employeeId, departmentID, groupID, categoryID, professionID, zoneID, attendanceTimeId, ...rest } = item;
-        return Object.keys(item).reduce((result: Record<string, any>, key) => {
-            const value = formatField(rest, key, device, mbDevice);
-            if (value !== undefined && value !== null && value !== '') {
-                result[key] = value;
-            }
-            return result;
-        }, {});
+
+        const filteredItem = Object.keys(rest)
+            .filter(key => !columnsToIgnore.includes(key))
+            .reduce((result: Record<string, any>, key) => {
+                const value = formatField(rest, key, device, mbDevice);
+                if (value !== undefined && value !== null && value !== '') {
+                    result[key] = value;
+                }
+                return result;
+            }, {});
+
+        return filteredItem;
     });
 
     const blob = new Blob([JSON.stringify(filteredData, null, 2)], { type: 'text/plain' });
@@ -262,15 +273,13 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
                 <Dropdown.Item onClick={() => exportToCSV(dataToExport, fileName, fields, devices, mbDevices)}>Exportar em CSV</Dropdown.Item>
                 <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields, devices, mbDevices)}>Exportar em XLSX</Dropdown.Item>
                 <Dropdown.Item as="button">
-                    {isEntityLoading && isEntityLogoLoading && !entityLogo && (
-                        <PDFDownloadLink
-                            document={<PDFDocument data={dataToExport} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />}
-                            fileName={`${fileName}.pdf`}
-                            style={{ textDecoration: 'none', color: 'inherit' }}
-                        >
-                            Exportar em PDF
-                        </PDFDownloadLink>
-                    )}
+                    <PDFDownloadLink
+                        document={<PDFDocument data={dataToExport} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />}
+                        fileName={`${fileName}.pdf`}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                        Exportar em PDF
+                    </PDFDownloadLink>
                 </Dropdown.Item>
                 <Dropdown.Item onClick={() => exportToTXT(dataToExport, fileName, devices, mbDevices)}>Exportar em TXT</Dropdown.Item>
             </Dropdown.Menu>

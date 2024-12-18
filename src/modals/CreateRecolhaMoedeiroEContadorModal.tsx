@@ -219,7 +219,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
     const handleCheckForSave = () => {
         if (!isFormValid) {
             setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
         handleSave();

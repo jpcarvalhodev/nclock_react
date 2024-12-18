@@ -6,8 +6,6 @@ import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { useContext, useEffect, useState } from "react";
 import { customStyles } from "../../components/CustomStylesDataTable";
-import * as apiService from "../../helpers/apiService";
-import { toast } from "react-toastify";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TimePeriod } from "../../helpers/Types";
 import { timePeriodFields } from "../../helpers/Fields";
@@ -55,20 +53,24 @@ export const TimePeriods = () => {
     const [initialData, setInitialData] = useState<Partial<TimePeriod> | null>(null);
     const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar um período
     const addPeriod = async (newPeriod: Partial<TimePeriod>) => {
         await handleAddPeriod(newPeriod);
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para atualizar um período
     const updatePeriod = async (updatedPeriod: TimePeriod) => {
         await handleUpdatePeriod(updatedPeriod);
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para eliminar um período
     const deletePeriod = async (id: string) => {
         await handleDeletePeriod(id);
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Busca os utilizadores ao carregar a página
@@ -89,6 +91,7 @@ export const TimePeriods = () => {
     // Função para atualizar os utilizadores
     const refreshPeriods = () => {
         fetchTimePeriods();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Define a seleção da árvore
@@ -329,6 +332,7 @@ export const TimePeriods = () => {
                                 pagination
                                 paginationComponentOptions={paginationOptions}
                                 paginationPerPage={20}
+                                clearSelectedRows={clearSelectionToggle}
                                 selectableRows
                                 onSelectedRowsChange={handleRowSelected}
                                 noDataComponent="Não existem dados disponíveis para exibir."

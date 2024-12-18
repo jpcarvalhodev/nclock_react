@@ -84,11 +84,13 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
             }));
         };
 
-        const buildNameTree = accessControl.map(ac => ({
-            id: ac.employeesId || generateUniqueId('employee'),
-            label: ac.shortName || 'Sem Nome',
-            children: buildDoorTree(ac.acc || [])
-        }));
+        const buildNameTree = accessControl
+            .sort((a, b) => (Number(a.enrollNumber) || 0) - (Number(b.enrollNumber) || 0))
+            .map(ac => ({
+                id: ac.employeesId || generateUniqueId('employee'),
+                label: ac.shortName || 'Sem Nome',
+                children: buildDoorTree(ac.acc || [])
+            }));
 
         const treeItems = [{
             id: 'nidgroup',

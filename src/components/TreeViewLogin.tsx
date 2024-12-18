@@ -110,7 +110,7 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
         setItems(treeItems);
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
-        setExpandedIds(allExpandableIds);
+        setExpandedIds(['nidgroup', 'utilizadores']);
     }, [loginLogs]);
 
     // Função para lidar com a expansão dos itens
@@ -163,7 +163,7 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
         if (searchTerm.trim()) {
             setExpandedIds([...newExpandedIds]);
         } else {
-            setExpandedIds(collectAllExpandableItemIds(items));
+            setExpandedIds(['nidgroup', 'utilizadores']);
         }
     }, [items, searchTerm]);
 

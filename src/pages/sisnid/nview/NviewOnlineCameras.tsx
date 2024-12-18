@@ -71,6 +71,7 @@ export const NviewOnlineCameras = () => {
             console.error('Erro ao adicionar a câmera:', error);
         } finally {
             refreshCameras();
+            setClearSelectionToggle(!clearSelectionToggle);
         }
     };
 
@@ -84,6 +85,7 @@ export const NviewOnlineCameras = () => {
             console.error('Erro ao atualizar a câmera:', error);
         } finally {
             refreshCameras();
+            setClearSelectionToggle(!clearSelectionToggle);
         }
     };
 
@@ -96,6 +98,7 @@ export const NviewOnlineCameras = () => {
             console.error('Erro ao excluir a câmera:', error);
         } finally {
             refreshCameras();
+            setClearSelectionToggle(!clearSelectionToggle);
         }
     }
 

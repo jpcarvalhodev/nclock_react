@@ -175,7 +175,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
     const handleSaveClick = () => {
         if (!isFormValid) {
             setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
         onSave(formData as T);

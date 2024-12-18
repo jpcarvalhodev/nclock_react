@@ -5,7 +5,7 @@ import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstr
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
 import * as apiService from "../helpers/apiService";
-import { Department, EmployeeCard, Group, KioskTransactionCard } from '../helpers/Types';
+import { Department, EmployeeCard, Group } from '../helpers/Types';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import { useLicense } from '../context/LicenseContext';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
@@ -56,7 +56,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     fetchAllGroups,
     fetchEmployeeCardData,
   } = useContext(PersonsContext) as PersonsContextType;
-  const { license, getSoftwareEnabledStatus } = useLicense();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -356,7 +355,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const handleSaveClick = () => {
     if (!isFormValid) {
       setShowValidationErrors(true);
-      toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+      toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
       return;
     }
     handleSubmit();
@@ -627,7 +626,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                             className="custom-input-height custom-select-font-size"
                             value={formData.gender}
                             onChange={handleChange}
-                            name="gender">
+                            name="gender"
+                          >
                             <option value="">Selecione...</option>
                             {genderOptions.map(option => (
                               <option key={String(option.value)} value={String(option.value)}>
@@ -635,6 +635,19 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                               </option>
                             ))}
                           </Form.Control>
+                        ) : field.key === 'nif' ? (
+                          <OverlayTrigger
+                            placement="right"
+                            overlay={<Tooltip id="tooltip-nif">NIF deve ter pelo menos 9 dígitos</Tooltip>}
+                          >
+                            <Form.Control
+                              type={field.type}
+                              className="custom-input-height custom-select-font-size"
+                              value={formData[field.key] || ''}
+                              onChange={handleChange}
+                              name={field.key}
+                            />
+                          </OverlayTrigger>
                         ) : (
                           <Form.Control
                             type={field.type}

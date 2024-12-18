@@ -210,7 +210,7 @@ export const PDFDocument = ({ data, fields, entity, entityLogo, device, mbDevice
     const maxColsPerPage = 8;
     const maxRowsPerPage = 20;
     const allColumns = ['eventId', 'appId', 'timezoneId', 'doorId', 'id', 'deviceId', 'birthday', 'admissionDate', 'biIssuance', 'biValidity', 'exitDate', 'status', 'statusEmail', 'rgpdAut', 'departmentId', 'professionId', 'categoryId', 'groupId', 'zoneId', 'externalEntityId', 'attendanceTime', 'inOutMode', 'code', 'machineNumber', 'cardNumber', 'productTime', 'createDate', 'updateDate', 'createTime', 'updateTime', 'eventTime', 'timestamp', 'transactionType', 'estadoTerminal', 'timeReboot', 'dataRecolha'];
-    const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo', 'url', 'passwordCamera', 'urlArquivo', 'fechoImage', 'aberturaImage'];
+    const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo', 'url', 'passwordCamera', 'urlArquivo', 'fechoImage', 'aberturaImage', 'paiId'];
 
     const updateColumnsToIgnore = () => {
         const idColumns = allColumns.filter(column => column.toLowerCase().includes('id'));

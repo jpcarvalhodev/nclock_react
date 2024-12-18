@@ -110,6 +110,11 @@ export const Visitors = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
+    // Busca os funcionários
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
+
     // Atualiza os funcionários
     const refreshEmployees = () => {
         fetchEmployees();

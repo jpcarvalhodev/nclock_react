@@ -99,18 +99,21 @@ export const NclockMovement = () => {
     const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
         await handleAddAttendance(attendance);
         refreshAttendance();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para atualizar um movimento
     const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
         await handleUpdateAttendance(attendance);
         refreshAttendance();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para deletar um movimento
     const deleteAttendance = async (attendanceTimeId: string) => {
         await handleDeleteAttendance(attendanceTimeId);
         refreshAttendance();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para atualizar um funcionário e um cartão
@@ -121,7 +124,8 @@ export const NclockMovement = () => {
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
-        window.location.reload();
+        refreshAttendance();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os dados de renderização
@@ -193,6 +197,7 @@ export const NclockMovement = () => {
     // Função para atualizar os funcionários
     const refreshAttendance = () => {
         fetchMovements();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para abrir o modal de adição de assiduidade

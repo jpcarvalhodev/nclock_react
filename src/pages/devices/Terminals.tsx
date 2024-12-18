@@ -83,7 +83,7 @@ export const Terminals = () => {
         saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
         deleteAllUsersOnDevice,
-        openDeviceIdDoor,
+        openDeviceDoor,
         restartDevice,
         sendClockToDevice,
         handleAddDevice,
@@ -250,12 +250,14 @@ export const Terminals = () => {
         await handleAddDevice(device);
         setLoadingTerminals(false);
         refreshAll();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para atualizar um dispositivo
     const updateDevice = async (device: Devices) => {
         await handleUpdateDevice(device);
         refreshAll();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para excluir um dispositivo
@@ -263,6 +265,7 @@ export const Terminals = () => {
         if (selectedDeviceToDelete) {
             await handleDeleteDevice(selectedDeviceToDelete);
             refreshAll();
+            setClearSelectionToggle(!clearSelectionToggle);
         }
     }
 
@@ -284,6 +287,7 @@ export const Terminals = () => {
     const refreshAll = () => {
         fetchAllDevices();
         fetchEmployeesAndCards();
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para resetar as colunas
@@ -478,6 +482,8 @@ export const Terminals = () => {
                             default:
                                 return row[field.key];
                         }
+                    case 'deviceSN':
+                        return devices.find(device => device.serialNumber === row[field.key])?.deviceName || '';
                     default:
                         return row[field.key];
                 }
@@ -1009,8 +1015,6 @@ export const Terminals = () => {
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingSendSelectedUsers(false);
             setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
-            setSelectedUserRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         }
     }
@@ -1025,8 +1029,6 @@ export const Terminals = () => {
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingDeleteSelectedUsers(false);
             setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
-            setSelectedUserRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         }
     }
@@ -1041,8 +1043,6 @@ export const Terminals = () => {
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingFetchSelectedUsers(false);
             setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
-            setSelectedUserRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         }
     }
@@ -1053,8 +1053,6 @@ export const Terminals = () => {
             setLoadingUser(true);
             await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingUser(false);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1067,8 +1065,6 @@ export const Terminals = () => {
             setLoadingAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingAllUser(false);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1081,8 +1077,6 @@ export const Terminals = () => {
             setLoadingSyncAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingSyncAllUser(false);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1095,8 +1089,6 @@ export const Terminals = () => {
             setLoadingMovements(true);
             await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingMovements(false);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1109,8 +1101,6 @@ export const Terminals = () => {
             setLoadingDeleteAllUsers(true);
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingDeleteAllUsers(false);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1123,8 +1113,6 @@ export const Terminals = () => {
             setLoadingRestartDevice(true);
             await restartDevice(selectedTerminal.zktecoDeviceID);
             setLoadingRestartDevice(false);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1140,8 +1128,6 @@ export const Terminals = () => {
                 await sendClockToDevice(selectedTerminal.serialNumber, period.id);
             }
             setLoadingSendClock(false);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1149,11 +1135,9 @@ export const Terminals = () => {
     }
 
     // Função para abrir a porta ligada ao dispositivo
-    const handleOpenDoor = async (id: string, doorData: DoorDevice) => {
-        await openDeviceIdDoor(id, doorData);
+    const handleOpenDoor = async (sn: string, doorData: DoorDevice) => {
+        await openDeviceDoor(sn, doorData);
         setLoadingOpenDoor(false);
-        setSelectedTerminal(null);
-        setSelectedDeviceRows([]);
         setClearSelectionToggle(!clearSelectionToggle);
     }
 
@@ -1163,8 +1147,6 @@ export const Terminals = () => {
             setLoadingSyncTime(true);
             await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
             setLoadingSyncTime(false);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1202,9 +1184,6 @@ export const Terminals = () => {
         if (selectedTerminal) {
             setShowDoorModal(true);
             setLoadingOpenDoor(true);
-            setSelectedTerminal(null);
-            setSelectedDeviceRows([]);
-            setClearSelectionToggle(!clearSelectionToggle);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1712,7 +1691,7 @@ export const Terminals = () => {
                             setSelectedTerminal(null);
                             setSelectedDeviceRows([]);
                         }}
-                        onSave={(data) => handleOpenDoor(data.zktecoDeviceID, data)}
+                        onSave={(data) => handleOpenDoor(data.serialNumber, data)}
                         entity={selectedTerminal}
                         fields={doorFields}
                     />

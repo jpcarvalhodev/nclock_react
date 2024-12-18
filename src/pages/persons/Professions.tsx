@@ -57,25 +57,30 @@ export const Professions = () => {
     const [selectedRows, setSelectedRows] = useState<Profession[]>([]);
     const [initialData, setInitialData] = useState<Partial<Profession> | null>(null);
     const [currentProfessionIndex, setCurrentProfessionIndex] = useState(0);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar uma nova profissão
     const addProfession = async (profession: Profession) => {
         await handleAddProfession(profession);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar uma profissão
     const updateProfession = async (profession: Profession) => {
         await handleUpdateProfession(profession);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para apagar uma profissão
     const deleteProfessions = async (professionID: string) => {
         await handleDeleteProfessions(professionID);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar a lista de profissões
     const refreshProfessions = () => {
         fetchAllProfessions();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para abrir o modal de editar profissão
@@ -305,6 +310,7 @@ export const Professions = () => {
                         paginationPerPage={20}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         expandableRows
                         expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
                         noDataComponent="Não existem dados disponíveis para exibir."

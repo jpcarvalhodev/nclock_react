@@ -48,6 +48,7 @@ export const NewUsers = () => {
     const [selectedRows, setSelectedRows] = useState<Register[]>([]);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredData, setFilteredData] = useState<Register[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
@@ -57,6 +58,7 @@ export const NewUsers = () => {
     // Função para atualizar os utilizadores
     const refreshUsers = () => {
         fetchAllRegisteredUsers();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -79,6 +81,7 @@ export const NewUsers = () => {
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedUser(null);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para selecionar as colunas
@@ -302,7 +305,10 @@ export const NewUsers = () => {
             <CreateModalRegisterUsers
                 title="Adicionar Registo de Utilizador"
                 open={showAddModal}
-                onClose={() => setShowAddModal(false)}
+                onClose={() => {
+                    setShowAddModal(false);
+                    setClearSelectionToggle(!clearSelectionToggle);
+                }}
                 onSave={handleAddUsers}
                 fields={registerFields}
                 initialValues={initialData || {}}
@@ -324,7 +330,10 @@ export const NewUsers = () => {
             )}
             <DeleteModal
                 open={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
+                onClose={() => {
+                    setShowDeleteModal(false);
+                    setClearSelectionToggle(!clearSelectionToggle);
+                }}
                 onDelete={handleDeleteUser}
                 entityId={selectedUserToDelete}
             />

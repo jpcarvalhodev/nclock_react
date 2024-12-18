@@ -85,11 +85,13 @@ export const NkioskOccurrences = () => {
     // Função para adicionar Ocorrências
     const addOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
         await handleAddOcorrencia(occurrence);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para atualizar ocorrências
     const updateOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
         await handleUpdateOcorrencia(occurrence);
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para apagar Ocorrências

@@ -91,6 +91,8 @@ export const Contacts = () => {
         };
         await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
         setData({ ...data, employees: employees });
+        setClearSelectionToggle(!clearSelectionToggle);
+        refreshEmployees();
     };
 
     // Função para atualizar um funcionário e um cartão
@@ -101,17 +103,25 @@ export const Contacts = () => {
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
+        refreshEmployees();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
+        refreshEmployees();
+        setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Busca os funcionários
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
 
     // Atualiza os funcionários
     const refreshEmployees = () => {
         fetchEmployees();
-        setSelectedEmployeeIds([]);
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

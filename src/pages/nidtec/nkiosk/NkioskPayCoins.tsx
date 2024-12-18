@@ -111,6 +111,11 @@ export const NkioskPayCoins = () => {
         }
     }
 
+    // Busca os pagamentos de moedas ao carregar a página
+    useEffect(() => {
+        fetchAllPayCoins();
+    }, []);
+
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {
         fetchAllPayCoins();

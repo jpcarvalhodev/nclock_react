@@ -74,12 +74,14 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         } else {
             await handleAddEmployeeCard(card as EmployeeCard);
         }
+        refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee([employeeId]);
+        refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

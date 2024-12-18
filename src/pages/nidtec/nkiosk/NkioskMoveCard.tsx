@@ -109,6 +109,11 @@ export const NkioskMoveCard = () => {
         window.location.reload();
     };
 
+    // Busca os movimentos dos cartões ao carregar a página
+    useEffect(() => {
+        fetchAllMoveCard();
+    }, []);
+
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
         fetchAllMoveCard();

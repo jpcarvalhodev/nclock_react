@@ -56,6 +56,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -119,6 +120,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             fetchAllGroups();
         }
         setShowEmployeeModal(false);
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para atualizar um funcionário e um cartão
@@ -141,6 +143,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             fetchAllGroups();
         }
         setShowUpdateEmployeeModal(false);
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para lidar com a mudança de valor
@@ -342,7 +345,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     const handleSaveClick = () => {
         if (!isFormValid) {
             setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios antes de guardar.');
+            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
         handleSave();
@@ -479,6 +482,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     paginationRowsPerPageOptions={[5, 10, 15, 20]}
                                     selectableRows
                                     onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
                                     selectableRowsHighlight
                                     selectableRowsNoSelectAll={true}
                                     defaultSortAsc={true}
@@ -501,6 +505,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     paginationPerPage={5}
                                     paginationRowsPerPageOptions={[5, 10, 15, 20]}
                                     onRowDoubleClicked={handleEmployeeClick}
+                                    clearSelectedRows={clearSelectionToggle}
                                     selectableRows
                                     selectableRowsNoSelectAll={true}
                                     defaultSortAsc={true}
@@ -515,12 +520,12 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                 >
                                     <CustomOutlineButton className="action-button" icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
                                 </OverlayTrigger>
-                                <OverlayTrigger
+                                {/* <OverlayTrigger
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Trocar Dept/Grp</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-arrow-left-right" />
-                                </OverlayTrigger>
+                                </OverlayTrigger> */}
                             </div>
                         </Col>
                     </Row>

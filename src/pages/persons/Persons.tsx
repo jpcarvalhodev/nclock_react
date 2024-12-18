@@ -68,6 +68,8 @@ export const Persons = () => {
         };
         await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
         setData({ ...data, employees: employees });
+        setClearSelectionToggle(!clearSelectionToggle);
+        refreshEmployees();
     };
 
     // Função para selecionar funcionários
@@ -86,6 +88,7 @@ export const Persons = () => {
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
+        refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -99,7 +102,7 @@ export const Persons = () => {
     // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
         fetchAllEmployees();
-        setSelectedEmployeeIds([]);
+        setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Define a função de duplicar funcionários
