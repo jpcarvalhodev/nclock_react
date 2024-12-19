@@ -19,6 +19,7 @@ import { useLicense } from "../../context/LicenseContext";
 import { usePersons } from "../../context/PersonsContext";
 import { useTerminals } from "../../context/TerminalsContext";
 import { useKiosk } from "../../context/KioskContext";
+import { useNavbar } from "../../context/NavbarContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -34,29 +35,13 @@ type User = {
 export const Login = () => {
   const navigate = useNavigate();
   const { fetchAds } = useAds();
-  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } =
-    useEntity();
+  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances } = useAttendance();
-  const {
-    fetchAllEmployees,
-    fetchAllDepartments,
-    fetchAllGroups,
-    fetchAllRegisteredUsers,
-    fetchAllCardData,
-    fetchAllCategories,
-    fetchAllExternalEntitiesData,
-    fetchAllProfessions,
-    fetchAllZones,
-  } = usePersons();
-  const {
-    fetchAllDevices,
-    fetchAllMBDevices,
-    fetchAccessControl,
-    fetchAllMBCloseOpen,
-    fetchTimePeriods,
-  } = useTerminals();
+  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
+  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal } = useKiosk();
+  const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [resizedSrc, setResizedSrc] = useState<string>(no_entity);
@@ -263,6 +248,8 @@ export const Login = () => {
             fetchAllOcorrencias(),
             fetchAllPayCoins(),
             fetchAllPayTerminal(),
+            fetchEmailConfig(),
+            fetchKioskConfig(),
           ]);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");

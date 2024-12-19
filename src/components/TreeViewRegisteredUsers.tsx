@@ -67,6 +67,11 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
 
+    // Busca os dados dos usuários registrados
+    useEffect(() => {
+        fetchAllRegisteredUsers();
+    }, []);
+
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
 

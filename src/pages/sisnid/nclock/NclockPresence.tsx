@@ -12,7 +12,7 @@ import Split from 'react-split';
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../../context/MovementContext";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
@@ -50,7 +50,7 @@ export const NclockPresence = () => {
     const {
         fetchAllAttendances,
     } = useContext(AttendanceContext) as AttendanceContextType;
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
     const [attendancePresence, setAttendancePresence] = useState<EmployeeAttendanceWithPresence[]>([]);
     const [filterText, setFilterText] = useState('');

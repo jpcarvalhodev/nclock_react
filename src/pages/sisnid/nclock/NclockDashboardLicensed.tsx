@@ -8,7 +8,7 @@ import { Employee, Department, Group } from "../../../helpers/Types";
 import * as apiService from "../../../helpers/apiService";
 import { Carousel } from "react-responsive-carousel";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController } from 'chart.js';
 
 // Registra os elementos do ChartJS
@@ -56,7 +56,7 @@ const messages = {
 
 // Define a página principal
 export const NclockDashboardLicensed = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [totalDepartments, setTotalDepartments] = useState<number>(0);

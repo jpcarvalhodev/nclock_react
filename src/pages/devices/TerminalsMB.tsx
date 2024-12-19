@@ -12,7 +12,7 @@ import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { toast } from "react-toastify";
 import { Spinner } from 'react-bootstrap';
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
 import Split from "react-split";
 import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
@@ -47,7 +47,7 @@ export const TerminalsMB = () => {
         handleUpdateMBDevice,
         handleDeleteMBDevice,
     } = useContext(TerminalsContext) as DeviceContextType;
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [showAddModal, setShowAddModal] = useState(false);
     const [userTabKey, setUserTabKey] = useState('onOff');
     const [filters, setFilters] = useState<Filters>({});

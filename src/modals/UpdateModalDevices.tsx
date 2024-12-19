@@ -23,7 +23,6 @@ import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { UpdateModalAux } from "./UpdateModalAux";
-import { set } from "date-fns";
 
 // Define a interface Entity
 export interface Entity {
@@ -182,9 +181,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const handleUpdateDoor = async (door: Doors) => {
         try {
             const data = await apiService.updateDoor(door);
-            const updatedData = { ...door, ...data };
-            const updatedDoors = doors.map(d => d.id === door.id ? { ...d, ...updatedData } : d);
-            setDoors(updatedDoors);
             toast.success(data.message || 'Porta atualizada com sucesso!');
             setLoadingDoorData(false);
         } catch (error) {
@@ -192,6 +188,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         } finally {
             setShowUpdateModal(false);
             setLoadingDoorData(false);
+            fetchDoors();
         }
     }
 
@@ -199,9 +196,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const handleUpdateAux = async (aux: Auxiliaries) => {
         try {
             const data = await apiService.updateAllAux(aux);
-            const updatedData = { ...aux, ...data };
-            const updatedAux = auxiliaries.map(a => a.id === aux.id ? { ...a, ...updatedData } : a);
-            setAuxiliaries(updatedAux);
             toast.success(data.message || 'Auxiliar atualizada com sucesso!');
             setLoadingAuxInData(false);
             setLoadingAuxOutData(false);
@@ -211,6 +205,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             setShowAuxUpdateModal(false);
             setLoadingAuxInData(false);
             setLoadingAuxOutData(false);
+            fetchAuxiliaries();
         }
     }
 
@@ -830,7 +825,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                     <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                         <Row style={{ display: "flex", flexDirection: "column" }}>
                                             <Col>
-                                                <h6>IN</h6>
+                                                <h6>Entradas</h6>
                                                 {loadingAuxInData ?
                                                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
                                                         <Spinner style={{ width: 50, height: 50 }} animation="border" />
@@ -853,7 +848,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                 }
                                             </Col>
                                             <Col>
-                                                <h6>OUT</h6>
+                                                <h6>Saídas</h6>
                                                 {loadingAuxOutData ?
                                                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
                                                         <Spinner style={{ width: 50, height: 50 }} animation="border" />

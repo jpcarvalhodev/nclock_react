@@ -4,7 +4,7 @@ import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { adsFields } from "../../../helpers/Fields";
 import { Ads } from "../../../helpers/Types";
@@ -42,7 +42,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NledAds = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 365);

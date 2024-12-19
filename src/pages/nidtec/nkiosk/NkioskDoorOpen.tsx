@@ -10,7 +10,7 @@ import { ManualOpenDoor } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { toast } from "react-toastify";
 import { Spinner } from 'react-bootstrap';
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import * as apiService from "../../../helpers/apiService";
 import { manualOpenDoorFields } from "../../../helpers/Fields";
 import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
@@ -39,17 +39,17 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define o componente de terminais
 export const NkioskDoorOpen = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
@@ -81,6 +81,11 @@ export const NkioskDoorOpen = () => {
             console.error('Erro ao buscar os dados de aberturas manuais:', error);
         }
     }
+
+    // Busca os dados de aberturas manuais ao carregar a página
+    useEffect(() => {
+        fetchAllManualOpen();
+    }, []);
 
     // Função para atualizar os dados de aberura manual
     const refreshAllManualOpen = () => {

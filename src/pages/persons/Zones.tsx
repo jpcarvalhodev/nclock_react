@@ -14,7 +14,7 @@ import { UpdateModalZones } from "../../modals/UpdateModalZones";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
@@ -37,7 +37,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de Zonas
 export const Zones = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const {
         zones,
         fetchAllZones,
@@ -76,6 +76,11 @@ export const Zones = () => {
         await handleDeleteZone(zoneID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Busca as zonas ao carregar a página
+    useEffect(() => {
+        fetchAllZones();
+    }, []);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {

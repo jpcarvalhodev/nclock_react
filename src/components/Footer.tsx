@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { ColorProvider, useColor } from "../context/ColorContext";
 import * as apiService from "../helpers/apiService";
 import { useLicense } from "../context/LicenseContext";
+import { useNavbar } from "../context/NavbarContext";
 
 interface FooterProps {
   style?: React.CSSProperties;
 }
 
 export const Footer = ({ style }: FooterProps) => {
-  const { footerColor } = useColor();
+  const { footerColor } = useNavbar();
   const { license } = useLicense();
   const currentYear = new Date().getFullYear();
   const [entityName, setEntityName] = useState<string>("");
@@ -29,18 +29,16 @@ export const Footer = ({ style }: FooterProps) => {
   }, [license]);
 
   return (
-    <ColorProvider>
-      <footer className="footer" style={{ backgroundColor: footerColor }}>
-        <div>
-          <p>{truncateText(entityName, 20)}</p>
-        </div>
-        <div className="footer-center">
-          <p>{currentYear} ®NIDGROUP por SISNID - Todos os direitos reservados</p>
-        </div>
-        <div className="footer-right">
-          <p>{apiService.version}</p>
-        </div>
-      </footer>
-    </ColorProvider>
+    <footer className="footer" style={{ backgroundColor: footerColor }}>
+      <div>
+        <p>{truncateText(entityName, 20)}</p>
+      </div>
+      <div className="footer-center">
+        <p>{currentYear} ®NIDGROUP por SISNID - Todos os direitos reservados</p>
+      </div>
+      <div className="footer-right">
+        <p>{apiService.version}</p>
+      </div>
+    </footer>
   );
 };

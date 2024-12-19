@@ -1,5 +1,5 @@
 import DataTable, { TableColumn } from "react-data-table-component";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { NavBar } from "../../../components/NavBar";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
@@ -40,7 +40,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskPayTerminal = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();

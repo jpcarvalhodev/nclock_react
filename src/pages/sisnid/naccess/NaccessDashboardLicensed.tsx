@@ -6,7 +6,7 @@ import '../../../css/PagesStyles.css';
 import * as apiService from "../../../helpers/apiService";
 import { Carousel } from "react-responsive-carousel";
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -53,7 +53,7 @@ const messages = {
 
 // Define a página principal
 export const NaccessDashboardLicensed = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
 

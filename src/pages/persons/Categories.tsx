@@ -14,7 +14,7 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
@@ -37,7 +37,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de categorias
 export const Categories = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const {
         categories,
         fetchAllCategories,
@@ -76,6 +76,11 @@ export const Categories = () => {
         await handleDeleteCategory(categoryID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Busca as categorias ao carregar a página
+    useEffect(() => {
+        fetchAllCategories();
+    }, []);
 
     // Função para atualizar as categorias
     const refreshCategories = () => {

@@ -2,7 +2,7 @@ import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import banner_nsecur from "../../../assets/img/carousel/banner_nsecur.jpg";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -59,7 +59,7 @@ const messages = {
 };
 
 export const NsecurDashboardLicensed = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
 
     const barData = {

@@ -101,8 +101,8 @@ import banner_ncomfort from '../assets/img/carousel/banner_ncomfort.jpg';
 import banner_nsound from '../assets/img/carousel/banner_nsound.jpg';
 import banner_nhome from '../assets/img/carousel/banner_nhome.jpg';
 import banner_news from '../assets/img/carousel/banner_news.jpg';
-import { useColor } from "../context/ColorContext";
 import { useLicense } from "../context/LicenseContext";
+import { useNavbar } from "../context/NavbarContext";
 
 // Define o tipo TabName
 type TabName = 'SOFTWARES LICENCIADOS';
@@ -191,7 +191,7 @@ const extractSoftwareNameFromTabKey = (tabKey: string) => {
 
 // Define a página principal
 export const Dashboard = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const { license, getSoftwareEnabledStatus } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('SOFTWARES LICENCIADOS');

@@ -67,6 +67,11 @@ export function TreeViewDataHistory({ onSelectDevices }: TreeViewDataHistoryProp
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
 
+    // Busca os logs de histórico
+    useEffect(() => {
+        fetchAllHistoryLogs();
+    }, []);
+
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const usersMap = new Map();

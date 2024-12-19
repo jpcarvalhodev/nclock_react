@@ -14,7 +14,7 @@ import { CreateModalExtEnt } from "../../modals/CreateModalExtEnt";
 import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
@@ -37,7 +37,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const {
         dataEE,
         fetchAllExternalEntitiesData,
@@ -76,6 +76,11 @@ export const ExternalEntities = () => {
         await handleDeleteExternalEntity(externalEntityID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Busca as entidades externas ao carregar a página
+    useEffect(() => {
+        fetchAllExternalEntitiesData();
+    }, []);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {

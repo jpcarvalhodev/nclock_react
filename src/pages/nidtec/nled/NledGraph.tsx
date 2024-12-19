@@ -1,6 +1,6 @@
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { PolarArea } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -11,7 +11,7 @@ import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NledGraph = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);

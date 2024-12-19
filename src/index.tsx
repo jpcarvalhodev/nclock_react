@@ -6,12 +6,12 @@ import reportWebVitals from './reportWebVitals';
 import { TerminalsProvider } from './context/TerminalsContext';
 import { AttendanceProvider } from './context/MovementContext';
 import { PersonsProvider } from './context/PersonsContext';
-import { ColorProvider } from './context/ColorContext';
 import { AdsProvider } from './context/AdsContext';
 import { LicenseProvider } from './context/LicenseContext';
 import { EntityProvider } from './context/EntityContext';
 import { KioskProvider } from './context/KioskContext';
 import { CardScrollProvider } from './context/CardScrollContext';
+import { NavbarProvider } from './context/NavbarContext';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -19,7 +19,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <LicenseProvider>
-      <ColorProvider>
+      <NavbarProvider>
         <CardScrollProvider>
           <EntityProvider>
             <PersonsProvider>
@@ -35,7 +35,7 @@ root.render(
             </PersonsProvider>
           </EntityProvider>
         </CardScrollProvider>
-      </ColorProvider>
+      </NavbarProvider>
     </LicenseProvider>
   </React.StrictMode>
 );

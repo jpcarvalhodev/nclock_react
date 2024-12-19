@@ -1,7 +1,7 @@
 import DataTable, { TableColumn } from "react-data-table-component";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { NavBar } from "../../components/NavBar";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { useEffect, useState } from "react";
@@ -32,7 +32,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NewUsers = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const { registeredUsers, fetchAllRegisteredUsers, handleAddUsers, handleUpdateUser, handleDeleteUser } = usePersons();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'userName', 'emailAddress', 'roles']);

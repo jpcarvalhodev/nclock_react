@@ -69,6 +69,11 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
 
+    // Busca os dados dos logs de login
+    useEffect(() => {
+        fetchAllLoginLogs();
+    }, []);
+
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const usersMap = new Map();

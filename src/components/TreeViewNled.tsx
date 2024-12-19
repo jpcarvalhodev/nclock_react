@@ -69,6 +69,11 @@ export function TreeViewDataNled({ onSelectDevices }: TreeViewDataNledProps) {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
 
+    // Busca os dados dos dispositivos
+    useEffect(() => {
+        fetchAllDevices();
+    }, []);
+
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = devices.map(device => ({

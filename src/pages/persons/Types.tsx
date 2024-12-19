@@ -6,14 +6,14 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { categoryFields, externalEntityTypeFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExternalEntityTypes } from "../../helpers/Types";
 import { SelectFilter } from "../../components/SelectFilter";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from "../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
@@ -35,7 +35,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de tipos de entidades externas
 export const Types = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const {
         dataEE,
         fetchAllExternalEntitiesData,
@@ -74,6 +74,11 @@ export const Types = () => {
         await handleDeleteExternalEntityTypes(externalEntityTypeID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Busca os tipos de entidades externas ao carregar a página
+    useEffect(() => {
+        fetchAllExternalEntitiesData();
+    }, []);
 
     // Função para atualizar as entidades externas
     const refreshExternalEntitiesTypes = () => {

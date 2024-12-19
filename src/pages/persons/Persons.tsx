@@ -12,7 +12,7 @@ import { Employee, EmployeeCard } from '../../helpers/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { ExportButton } from '../../components/ExportButton';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
-import { useColor } from '../../context/ColorContext';
+import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from '../../components/PrintButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { DeleteModal } from '../../modals/DeleteModal';
@@ -38,7 +38,7 @@ export const Persons = () => {
         handleAddEmployeeCard,
         handleDeleteEmployee
     } = useContext(PersonsContext) as PersonsContextType;
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName']);

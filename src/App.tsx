@@ -67,7 +67,7 @@ import { NlightDashboard } from './pages/nidplace/nlight/NlightDashboard';
 import { NpartitionDashboard } from './pages/nidplace/npartition/NpartitionDashboard';
 import { NpingDashboard } from './pages/nidplace/nping/NpingDashboard';
 import { NsoundDashboard } from './pages/nidplace/nsound/NsoundDashboard';
-import { ColorProvider } from './context/ColorContext';
+import { NavbarProvider } from './context/NavbarContext';
 import { NkioskMap } from './pages/nidtec/nkiosk/NkioskMap';
 import { NkioskPayTerminal } from './pages/nidtec/nkiosk/NkioskPayTerminal';
 import { NkioskPayCoins } from './pages/nidtec/nkiosk/NkioskPayCoins';
@@ -306,7 +306,7 @@ function AnimatedRoutes() {
 function App() {
   return (
     <LicenseProvider>
-      <ColorProvider>
+      <NavbarProvider>
         <CardScrollProvider>
           <EntityProvider>
             <PersonsProvider>
@@ -325,7 +325,7 @@ function App() {
             </PersonsProvider>
           </EntityProvider>
         </CardScrollProvider>
-      </ColorProvider>
+      </NavbarProvider>
     </LicenseProvider >
   );
 }

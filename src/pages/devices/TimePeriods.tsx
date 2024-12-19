@@ -1,7 +1,7 @@
 import DataTable, { TableColumn } from "react-data-table-component";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { NavBar } from "../../components/NavBar";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { useContext, useEffect, useState } from "react";
@@ -31,7 +31,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const TimePeriods = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const {
         period,
         fetchTimePeriods,

@@ -70,6 +70,11 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
     const location = useLocation();
     const selectionChangedRef = { current: false };
 
+    // Busca os dispositivos
+    useEffect(() => {
+        fetchAllDevices();
+    }, []);
+
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = devices.map(device => ({

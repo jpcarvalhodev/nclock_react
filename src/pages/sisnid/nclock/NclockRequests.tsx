@@ -18,7 +18,7 @@ import "../../../css/PagesStyles.css";
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { SelectFilter } from '../../../components/SelectFilter';
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../../context/MovementContext';
-import { useColor } from '../../../context/ColorContext';
+import { useNavbar } from "../../../context/NavbarContext";
 import { PrintButton } from '../../../components/PrintButton';
 import { PersonsContext, PersonsContextType } from '../../../context/PersonsContext';
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
@@ -52,7 +52,7 @@ export const NclockRequests = () => {
         handleUpdateAttendance,
         handleDeleteAttendance,
     } = useContext(AttendanceContext) as AttendanceContextType;
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
     const [attendanceRequests, setAttendanceRequests] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);

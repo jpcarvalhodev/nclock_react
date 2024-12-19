@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { NavBar } from "../../../components/NavBar";
 import { Footer } from "../../../components/Footer";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import marker from '../../../assets/img/map/marker.png';
 import { MapCenterButton } from '../../../components/MapCenterButton';
 import { useEffect } from 'react';
@@ -29,7 +29,7 @@ const MapInitialization = ({ position }: { position: [number, number] }) => {
   };
 
 export const NkioskMap = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const position: [number, number] = [41.145882, -8.614464];
 
     return (

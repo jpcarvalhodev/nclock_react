@@ -2,7 +2,7 @@ import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import product_nsales from "../../../assets/img/carousel/product_nsales.png";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { Nav, Tab } from "react-bootstrap";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -146,7 +146,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 };
 
 export const NsalesDashboard = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDSOF - Gestão');
 

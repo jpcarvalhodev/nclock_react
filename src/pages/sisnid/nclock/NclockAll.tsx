@@ -13,7 +13,7 @@ import Split from 'react-split';
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../../context/MovementContext";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { PrintButton } from "../../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
@@ -46,7 +46,7 @@ export const NclockAll = () => {
         fetchAllAttendancesBetweenDates,
     } = useContext(AttendanceContext) as AttendanceContextType;
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [attendanceAll, setAttendanceAll] = useState<EmployeeAttendanceTimes[]>([]);
     const [filterText, setFilterText] = useState('');
     const [showColumnSelector, setShowColumnSelector] = useState(false);

@@ -1,5 +1,5 @@
 import DataTable, { TableColumn } from "react-data-table-component";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { NavBar } from "../../../components/NavBar";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
@@ -23,7 +23,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NledAdsLogs = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [logs, setlogs] = useState<Ads[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [filters, setFilters] = useState<Record<string, string>>({});

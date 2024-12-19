@@ -115,6 +115,9 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
 
         if (type === 'checkbox') {
             parsedValue = (e.target as HTMLInputElement).checked;
+        } else if (name === 'amount') {
+            const formattedValue = value.replace(/,/g, '.');
+            parsedValue = formattedValue;
         } else if (type === 'number') {
             parsedValue = value === '' ? '' : Number(value);
         } else if (name === 'emails' && type === 'textarea') {
@@ -145,7 +148,11 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
-        onSave(kioskFormData as T);
+        const formattedData = {
+            ...kioskFormData,
+            amount: parseFloat(kioskFormData.amount).toFixed(2)
+        };
+        onSave(formattedData as T);
     };
 
     // Função para lidar com o clique em atualizar
@@ -155,8 +162,12 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
             return;
         }
-        onUpdate(kioskFormData as T);
-    }
+        const formattedData = {
+            ...kioskFormData,
+            amount: parseFloat(kioskFormData.amount).toFixed(2)
+        };
+        onUpdate(formattedData as T);
+    };
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' style={{ marginTop: 100 }}>
@@ -184,9 +195,9 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                 >
                                                     <Form.Control
                                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                                        type="number"
+                                                        type="string"
                                                         name="amount"
-                                                        value={kioskFormData.amount || 0}
+                                                        value={kioskFormData.amount || ''}
                                                         onChange={handleChange}
                                                     />
                                                 </OverlayTrigger>

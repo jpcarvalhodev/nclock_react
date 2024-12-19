@@ -2,7 +2,7 @@ import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import banner_nvisitor from "../../../assets/img/carousel/banner_nvisitor.jpg";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -61,7 +61,7 @@ const messages = {
 };
 
 export const NvisitorDashboardLicensed = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const deviceSN = 'AGB7234900595';

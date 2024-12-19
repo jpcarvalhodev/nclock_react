@@ -79,7 +79,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     const [cleaning, setCleaning] = useState<LimpezasEOcorrencias[]>([]);
     const [occurrences, setOccurrences] = useState<LimpezasEOcorrencias[]>([]);
     const [counter, setCounter] = useState<Counter[]>([]);
-    const [dataVersion, setDataVersion] = useState(0);
     const eventDoorId2 = '2'
     const eventDoorId3 = '3'
     const eventDoorId4 = '4'
@@ -390,31 +389,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
             console.error('Erro ao buscar os dados do contador:', error);
         }
     };
-
-    // Atualiza a versão do contexto quando o token é alterado
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            setDataVersion(prevVersion => prevVersion + 1);
-        }
-    }, []);
-
-    // Busca todas as entidades ao recarregar o componente
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetchAllPayTerminal();
-            fetchAllPayCoins();
-            fetchAllMoveCard();
-            fetchAllMoveKiosk();
-            fetchAllMoveVP();
-            fetchAllManualOpen();
-            fetchAllCoin();
-            fetchAllLimpezas();
-            fetchAllOcorrencias();
-            fetchAllCounter();
-        }
-    }, [dataVersion]);
 
     // Definindo o valor do contexto
     const contextValue = {

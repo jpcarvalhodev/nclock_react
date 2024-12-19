@@ -17,7 +17,7 @@ import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedCompone
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
 import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
-import { useColor } from '../../context/ColorContext';
+import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from '../../components/PrintButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextFieldProps, TextField } from '@mui/material';
@@ -52,7 +52,7 @@ export const Employees = () => {
         handleAddEmployeeCard,
         handleUpdateEmployeeCard
     } = useContext(PersonsContext) as PersonsContextType;
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);

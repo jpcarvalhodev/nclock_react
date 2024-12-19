@@ -14,7 +14,7 @@ import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
 import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from "../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
@@ -37,7 +37,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de grupos
 export const Groups = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const {
         groups,
         fetchAllGroups,
@@ -76,6 +76,11 @@ export const Groups = () => {
         await handleDeleteGroup(groupID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Busca os grupos ao carregar a página
+    useEffect(() => {
+        fetchAllGroups();
+    }, []);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {

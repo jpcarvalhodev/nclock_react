@@ -15,7 +15,7 @@ import '../../css/PagesStyles.css';
 import { ExpandedComponentDept } from '../../components/ExpandedComponentDept';
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { SelectFilter } from '../../components/SelectFilter';
-import { useColor } from '../../context/ColorContext';
+import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from '../../components/PrintButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextFieldProps, TextField } from '@mui/material';
@@ -38,7 +38,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de departamentos
 export const Departments = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const {
         departments,
         setDepartments,
@@ -102,6 +102,11 @@ export const Departments = () => {
         await handleDeleteDepartment(departmentID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
+
+    // Busca os departamentos ao carregar a página
+    useEffect(() => {
+        fetchDepartments();
+    }, []);
 
     // função de atualizar os departamentos
     const refreshDepartments = () => {

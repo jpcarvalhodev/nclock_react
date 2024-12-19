@@ -23,7 +23,7 @@ import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../co
 import React from "react";
 import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import * as apiService from "../../helpers/apiService";
 import { DoorModal } from "../../modals/DoorModal";
 import { ExportButton } from "../../components/ExportButton";
@@ -100,7 +100,7 @@ export const Terminals = () => {
         handleImportEmployeeFP,
         handleImportEmployeeFace
     } = useContext(PersonsContext) as PersonsContextType;
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [employees, setEmployees] = useState<EmployeeAndCard[]>([]);
     const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
@@ -273,7 +273,8 @@ export const Terminals = () => {
     useEffect(() => {
         fetchAllDevices();
         fetchEmployeesAndCards();
-
+        fetchAllEmployeeDevices();
+        fetchAllCardData();
     }, []);
 
     // Atualiza a seleção ao resetar

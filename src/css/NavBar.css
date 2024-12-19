@@ -427,6 +427,7 @@ body {
 
 .ribbon_control {
     position: absolute;
+    top: 0;
     right: 120px;
     cursor: pointer;
     z-index: 100;
@@ -438,6 +439,36 @@ body {
 input::-ms-reveal,
 input::-ms-clear {
     display: none;
+}
+
+@keyframes slideDownFadeIn {
+    from {
+        transform: translateY(-25%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpFadeOut {
+    from {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-25%);
+        opacity: 0;
+    }
+}
+
+.section.visible {
+    animation: slideDownFadeIn 0.2s forwards;
+}
+
+.section.hidden {
+    animation: slideUpFadeOut 0.2s forwards;
 }
 
 @media (max-width: 500px) {

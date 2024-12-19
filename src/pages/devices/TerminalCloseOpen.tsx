@@ -9,7 +9,7 @@ import { MBDevice, MBDeviceCloseOpen } from "../../helpers/Types";
 import { mbDeviceCloseOpenFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import * as apiService from "../../helpers/apiService";
 import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
 import Split from "react-split";
@@ -40,7 +40,7 @@ export const TerminalCloseOpen = () => {
         setMbCloseOpen,
         fetchAllMBCloseOpen
     } = useContext(TerminalsContext) as DeviceContextType;
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'tpId', 'fechoImage', 'aberturaImage']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);

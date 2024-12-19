@@ -1,6 +1,6 @@
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useColor } from "../../../context/ColorContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import { Department, Employee, Group } from "../../../helpers/Types";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NclockGraph = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [totalDepartments, setTotalDepartments] = useState<number>(0);
     const [totalGroups, setTotalGroups] = useState<number>(0);

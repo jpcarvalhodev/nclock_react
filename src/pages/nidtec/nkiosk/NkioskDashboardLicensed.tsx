@@ -2,7 +2,6 @@ import { Carousel } from "react-responsive-carousel";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
-import { useColor } from "../../../context/ColorContext";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -12,6 +11,7 @@ import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { Line } from "react-chartjs-2";
+import { useNavbar } from "../../../context/NavbarContext";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -62,8 +62,8 @@ const messages = {
 };
 
 export const NkioskDashboardLicensed = () => {
-    const { navbarColor, footerColor } = useColor();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { navbarColor, footerColor } = useNavbar();
+    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [lineChartData, setLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
     const [totalPayments, setTotalPayments] = useState<KioskTransactionMB[]>([]);
@@ -137,6 +137,11 @@ export const NkioskDashboardLicensed = () => {
             setTotalPayments([]);
         }
     };
+
+    // Busca os dispositivos ao carregar a página
+    useEffect(() => {
+        fetchAllDevices();
+    }, []);
 
     // Busca os dados ao carregar a página
     useEffect(() => {

@@ -45,7 +45,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-    const [dataVersion, setDataVersion] = useState(0);
 
     // Função para buscar todas as assiduidades
     const fetchAllAttendances = useCallback(async (options?: FetchOptions): Promise<EmployeeAttendanceTimes[]> => {
@@ -130,22 +129,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             fetchAllAttendances();
         }
     };
-
-    // Atualiza a versão do contexto quando o token é alterado
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            setDataVersion(prevVersion => prevVersion + 1);
-        }
-    }, []);
-
-    // Busca todas as assiduidades ao recarregar o componente
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetchAllAttendances();
-        }
-    }, [dataVersion]);
 
     // Definindo o valor do contexto
     const contextValue = {

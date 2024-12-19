@@ -1,14 +1,14 @@
 import DataTable, { TableColumn } from "react-data-table-component";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { NavBar } from "../../components/NavBar";
-import { useColor } from "../../context/ColorContext";
+import { useNavbar } from "../../context/NavbarContext";
 import { Footer } from "../../components/Footer";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { useContext, useEffect, useState } from "react";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { Entity } from "../../helpers/Types";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { entityFields } from "../../helpers/Fields";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
@@ -28,7 +28,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const Entities = () => {
-    const { navbarColor, footerColor } = useColor();
+    const { navbarColor, footerColor } = useNavbar();
     const { entity, fetchAllEntity, updateEntity } = useContext(EntityContext) as EntityContextType;
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nome', 'nif', 'email', 'enabled']);
