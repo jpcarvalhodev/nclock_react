@@ -273,11 +273,11 @@ interface TabsInfo {
 
 // Define as propriedades do componente
 export const NavBar = ({ style }: NavBarProps) => {
-	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
+	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
 	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
 	const { loginLogs, historyLogs } = useEntity();
-	const { license, getSoftwareEnabledStatus, fetchAllLicensesWithoutKey, handleUpdateLicense } = useLicense();
+	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
 	const { payTerminal, payCoins, listPayments, moveCard, moveKiosk, listMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter } = useKiosk();
@@ -422,7 +422,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showPrintButton, setShowPrintButton] = useState(false);
 	const [currentData, setCurrentData] = useState<any>(null);
 	const [currentFields, setCurrentFields] = useState<any>(null);
-	const [currentOpenRibbon, setCurrentOpenRibbon] = useState<RibbonToggler | null>(null);
+	const [isMouseOver, setIsMouseOver] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -466,16 +466,24 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setActiveTab(savedActiveTab);
 			const { setTab, setRibbon } = tabData[savedActiveTab];
 			setTab(true);
-			setRibbon(true);
+			if (!lockRibbon) {
+				setRibbon(true);
+			} else {
+				setRibbon(true);
+			}
 			const capitalizedTab = savedActiveTab.charAt(0).toUpperCase() + savedActiveTab.slice(1);
 			setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
 
 			if (activeTab in ribbons) {
 				const [setRibbon] = ribbons[activeTab as RibbonName];
-				setRibbon(true);
+				if (!lockRibbon) {
+					setRibbon(true);
+				} else {
+					setRibbon(true);
+				}
 				const capitalizedTab = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
 				setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
-			}
+			}	
 		}
 	}, []);
 
@@ -510,7 +518,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		};
 
 		fetchAndSetUserImage();
-	}, [registeredUsers]);
+	}, [license, registeredUsers]);
 
 	// Função para adicionar emails de utilizadores
 	const addEmailConfig = async (email: Partial<EmailUser>) => {
@@ -533,7 +541,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para buscar os dados de email e kiosk
 	useEffect(() => {
-		fetchAllLicensesWithoutKey();
 		fetchEmailConfig();
 		fetchKioskConfig();
 	}, []);
@@ -828,7 +835,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 			if (activeTab === tabName) {
 				setTab(false);
-				setRibbon(false);
 				localStorage.removeItem(localStorageTabKey);
 				if (localStorageRibbonKey) {
 					localStorage.removeItem(localStorageRibbonKey);
@@ -1058,7 +1064,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		});
 
 		setMenuStructureNG(newMenuStructure);
-	}, []);
+	}, [license]);
 
 	// Estrutura de menu opcional para o nkiosk
 	const KioskOptionalMenuStructure: MenuStructure = {
@@ -1253,7 +1259,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		};
 
 		setMenuStructureStart(dynamicMenuStructure);
-	}, []);
+	}, [license]);
 
 	// Define o componente do item de menu
 	const MenuItem = ({ active, onClick, image, alt, label }: MenuItem) => (
@@ -1347,7 +1353,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 		return (
 			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
 				style={{
-					minWidth: isWideMenu ? '200px' : 'auto'
+					minWidth: isWideMenu ? '200px' : 'auto',
+					zIndex: 1000
 				}}
 			>
 				<MenuItem
@@ -1372,7 +1379,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className="submenu" style={{
 						width: isWideSubmenu ? '300px' : 'auto',
 						right: isWideSubmenu ? '100%' : undefined,
-						left: isWideSubmenu ? undefined : '100%'
+						left: isWideSubmenu ? undefined : '100%',
+						zIndex: 1000
 					}}>
 						{menu.submenu.map((item: MenuItem) => (
 							<MenuItem
@@ -1723,8 +1731,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleTabClick = (tabName: string) => {
 		if (activeTab === tabName) {
 			setActiveTab('');
-			const [setRibbon] = ribbons[tabName as RibbonName];
-			setRibbon(false);
 			localStorage.removeItem('activeTab');
 		} else {
 			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
@@ -1846,16 +1852,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para fechar e reabrir a ribbon global
 	const handleGlobalRibbonToggle = () => {
-		if (currentOpenRibbon) {
+		if (!lockRibbon && currentOpenRibbon) {
 			toggleRibbonVisibility(currentOpenRibbon);
 			setLockRibbon(true);
 			setLastClosedRibbon(currentOpenRibbon);
 			localStorage.setItem('lockRibbon', 'true');
 			localStorage.setItem('lastClosedRibbon', currentOpenRibbon);
 		} else {
-			if (lastClosedRibbon) {
+			if (lockRibbon && lastClosedRibbon) {
+				if (currentOpenRibbon) {
+					toggleRibbonVisibility(currentOpenRibbon, true);
+				}
 				toggleRibbonVisibility(lastClosedRibbon, true);
-				setCurrentOpenRibbon(lastClosedRibbon || 'Pessoas');
+				setCurrentOpenRibbon(lastClosedRibbon);
 				setLockRibbon(false);
 				setLastClosedRibbon(null);
 				localStorage.setItem('lockRibbon', 'false');
@@ -2032,7 +2041,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 		let timeoutId: ReturnType<typeof setTimeout>;
 
-		if (lockRibbon && checkAnyRibbonOpenUpdated()) {
+		if (lockRibbon && checkAnyRibbonOpenUpdated() && !isMouseOver && !isMobile) {
 			timeoutId = setTimeout(() => {
 				Object.keys(ribbonSetters).forEach((ribbonKey) => {
 					const setter = ribbonSetters[ribbonKey as RibbonToggler];
@@ -2040,7 +2049,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 					setter(false);
 				});
 				setCurrentOpenRibbon(null);
-			}, 5000);
+			}, 1000);
+		} else {
+			if (lockRibbon && checkAnyRibbonOpenUpdated()&& !isMouseOver && isMobile) {
+				timeoutId = setTimeout(() => {
+					Object.keys(ribbonSetters).forEach((ribbonKey) => {
+						const setter = ribbonSetters[ribbonKey as RibbonToggler];
+						localStorage.setItem(`show${ribbonKey}Ribbon`, 'false');
+						setter(false);
+					});
+					setCurrentOpenRibbon(null);
+				}, 5000);
+			}
 		}
 
 		return () => {
@@ -2048,7 +2068,17 @@ export const NavBar = ({ style }: NavBarProps) => {
 				clearTimeout(timeoutId);
 			}
 		};
-	}, [lockRibbon, currentOpenRibbon, lastClosedRibbon, showPessoasRibbon, showDispositivosRibbon, showConfiguracaoRibbon, showAjudaRibbon, showNclockRibbon, showNaccessRibbon, showNvisitorRibbon, showNparkRibbon, showNdoorRibbon, showNpatrolRibbon, showNcardRibbon, showNviewRibbon, showNsecurRibbon, showNsoftwareRibbon, showNsystemRibbon, showNappRibbon, showNcyberRibbon, showNdigitalRibbon, showNserverRibbon, showNautRibbon, showNequipRibbon, showNprojectRibbon, showNcountRibbon, showNbuildRibbon, showNcaravanRibbon, showNmechanicRibbon, showNeventsRibbon, showNserviceRibbon, showNtaskRibbon, showNproductionRibbon, showNticketRibbon, showNsalesRibbon, showNinvoiceRibbon, showNdocRibbon, showNsportsRibbon, showNgymRibbon, showNschoolRibbon, showNclinicRibbon, showNopticsRibbon, showNgoldRibbon, showNsmartRibbon, showNrealityRibbon, showNhologramRibbon, showNpowerRibbon, showNchargeRibbon, showNcityRibbon, showNkioskRibbon, showNledRibbon, showNfireRibbon, showNfurnitureRibbon, showNpartitionRibbon, showNdecorRibbon, showNpingRibbon, showNconnectRibbon, showNlightRibbon, showNcomfortRibbon, showNsoundRibbon, showNhomeRibbon]);
+	}, [lockRibbon, isMouseOver, currentOpenRibbon, lastClosedRibbon, showPessoasRibbon, showDispositivosRibbon, showConfiguracaoRibbon, showAjudaRibbon, showNclockRibbon, showNaccessRibbon, showNvisitorRibbon, showNparkRibbon, showNdoorRibbon, showNpatrolRibbon, showNcardRibbon, showNviewRibbon, showNsecurRibbon, showNsoftwareRibbon, showNsystemRibbon, showNappRibbon, showNcyberRibbon, showNdigitalRibbon, showNserverRibbon, showNautRibbon, showNequipRibbon, showNprojectRibbon, showNcountRibbon, showNbuildRibbon, showNcaravanRibbon, showNmechanicRibbon, showNeventsRibbon, showNserviceRibbon, showNtaskRibbon, showNproductionRibbon, showNticketRibbon, showNsalesRibbon, showNinvoiceRibbon, showNdocRibbon, showNsportsRibbon, showNgymRibbon, showNschoolRibbon, showNclinicRibbon, showNopticsRibbon, showNgoldRibbon, showNsmartRibbon, showNrealityRibbon, showNhologramRibbon, showNpowerRibbon, showNchargeRibbon, showNcityRibbon, showNkioskRibbon, showNledRibbon, showNfireRibbon, showNfurnitureRibbon, showNpartitionRibbon, showNdecorRibbon, showNpingRibbon, showNconnectRibbon, showNlightRibbon, showNcomfortRibbon, showNsoundRibbon, showNhomeRibbon]);
+
+	// Função para verificar se o cursor está sobre a ribbon
+	const handleRibbonMouseEnter = () => {
+		setIsMouseOver(true);
+	};
+	
+	// Função para verificar se o cursor saiu da ribbon
+	const handleRibbonMouseLeave = () => {
+		setIsMouseOver(false);
+	};	
 
 	return (
 		<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
@@ -2129,7 +2159,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					</Dropdown>
 				</div>
 			</div>
-			<div className="navbar-ribbon-wrapper">
+			<div className="navbar-ribbon-wrapper" onMouseEnter={handleRibbonMouseEnter} onMouseLeave={handleRibbonMouseLeave} onTouchStart={handleRibbonMouseEnter} onTouchEnd={handleRibbonMouseLeave}>
 				{showNclockRibbon && softwareEnabled['nclock'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclock')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" role="tabpanel" aria-labelledby="nclock-tab">
@@ -3176,7 +3206,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				{showNkioskRibbon && softwareEnabled['nkiosk'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nkiosk')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
-							<div className={`section ${showNkioskRibbon ? 'visible' : 'hidden'}`} id="section-group">
+							<div className={`section ${showNkioskRibbon ? 'visible' : 'hidden'}`} id="section-group" >
 								<div className="group group-start">
 									{(!isMobile || visibleGroup === 'inicio nkiosk') && (
 										<div className="btn-group" role="group">

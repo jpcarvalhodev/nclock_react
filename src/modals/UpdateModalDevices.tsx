@@ -23,6 +23,7 @@ import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { UpdateModalAux } from "./UpdateModalAux";
+import { set } from "date-fns";
 
 // Define a interface Entity
 export interface Entity {
@@ -429,6 +430,20 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             setSelectedAuxOut(auxOut[currentAuxOutIndex - 1]);
         }
     };
+    
+    // Função para fechar o modal de atualização das auxiliares
+    const handleCloseAuxModal = (type: 'in' | 'out') => {
+        if (type === 'in') {
+            setSelectedAuxIn(null);
+            setCurrentAuxInIndex(0);
+            setLoadingAuxInData(false);
+        } else {
+            setSelectedAuxOut(null);
+            setCurrentAuxOutIndex(0);
+            setLoadingAuxOutData(false);
+        }
+        setShowAuxUpdateModal(false);
+    };    
 
     // Define as colunas
     const auxColumns: TableColumn<Auxiliaries>[] = auxiliariesFields
@@ -579,7 +594,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                         <Tab.Container defaultActiveKey="terminal">
                             <Nav variant="tabs" className="nav-modal">
                                 <Nav.Item>
-                                    <Nav.Link eventKey="terminal">Terminal</Nav.Link>
+                                    <Nav.Link eventKey="terminal">Equipamentos</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                             <Tab.Content>
@@ -838,7 +853,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         paginationPerPage={5}
                                                         paginationRowsPerPageOptions={[5, 10]}
                                                         selectableRows
-                                                        onRowDoubleClicked={(row, event) => handleEditAux(row, 'in')}
+                                                        onRowDoubleClicked={(row) => handleEditAux(row, 'in')}
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
                                                         striped
@@ -861,7 +876,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         paginationPerPage={5}
                                                         paginationRowsPerPageOptions={[5, 10]}
                                                         selectableRows
-                                                        onRowDoubleClicked={(row, event) => handleEditAux(row, 'out')}
+                                                        onRowDoubleClicked={(row) => handleEditAux(row, 'out')}
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
                                                         striped
@@ -898,10 +913,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             {selectedAuxIn && (
                 <UpdateModalAux
                     open={showAuxUpdateModal}
-                    onClose={() => {
-                        setShowAuxUpdateModal(false);
-                        setLoadingAuxInData(false);
-                    }}
+                    onClose={() => handleCloseAuxModal('in')}
                     onUpdate={handleUpdateAux}
                     entity={selectedAuxIn}
                     fields={auxiliariesFields}
@@ -915,10 +927,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             {selectedAuxOut && (
                 <UpdateModalAux
                     open={showAuxUpdateModal}
-                    onClose={() => {
-                        setShowAuxUpdateModal(false);
-                        setLoadingAuxOutData(false);
-                    }}
+                    onClose={() => handleCloseAuxModal('out')}
                     onUpdate={handleUpdateAux}
                     entity={selectedAuxOut}
                     fields={auxiliariesFields}

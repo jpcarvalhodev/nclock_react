@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
 import { set } from "date-fns";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
 
 // Define o tipo FormControlElement
 type FormControlElement =
@@ -209,6 +210,9 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   // Função para criar uma nova licença
   const handleCreateNewLicense = () => {
     setEntities((prevEntities) => {
+      const highestEntidadeNumber = prevEntities.reduce((max, entity) => {
+        return Math.max(max, entity.entidadeNumber || 0);
+      }, 0);
 
       const newLicense: License = {
         nif: 0,
@@ -216,7 +220,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         devices: 0,
         sn: "",
         name: "",
-        entidadeNumber: (prevEntities.find(entities => entities.entidadeNumber)?.entidadeNumber || 0) + 1,
+        entidadeNumber: highestEntidadeNumber + 1,
         nclock: { enable: false, validacao: 0, pacote: "", createDate: "" },
         naccess: { enable: false, validacao: 0, pacote: "", createDate: "" },
         nvisitor: { enable: false, validacao: 0, pacote: "", createDate: "" },
@@ -283,10 +287,9 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       });
 
       setFormData(newLicense);
+      setActiveTab(`${highestEntidadeNumber + 1}`);
       return [...prevEntities, newLicense];
     });
-
-    setActiveTab((prevTab) => (prevTab ? (parseInt(prevTab) + 1).toString() : "1"));
   };
 
   // Função para inserir o valor padrão ao enviar
@@ -308,7 +311,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       toast.warn("Preencha todos os campos obrigatórios antes de guardar.");
       return;
     }
-    onUpdate(key, [formData] as License[]);
+    onUpdate(key, entities);
     setIsModalVisible(false);
   };
 
@@ -469,15 +472,15 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
           <Modal.Title>Licenciamento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip className="custom-tooltip">Adicionar Licença</Tooltip>}
+          >
+            <CustomOutlineButton className="action-button" icon='bi-plus' onClick={handleCreateNewLicense} />
+          </OverlayTrigger>
           <Tabs
             activeKey={activeTab}
-            onSelect={(key) => {
-              if (key === "new-license") {
-                handleCreateNewLicense();
-              } else {
-                setActiveTab(key || undefined);
-              }
-            }}
+            onSelect={(key) => setActiveTab(key || undefined)}
             id="entity-tabs"
             className="nav-modal"
           >
@@ -604,11 +607,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                 </div>
               </Tab>
             ))}
-            <Tab eventKey="new-license" title="Nova Licença">
-              <div className="p-3">
-                <h5>Clique para criar uma nova licença.</h5>
-              </div>
-            </Tab>
           </Tabs>
         </Modal.Body>
         <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>

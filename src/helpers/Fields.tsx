@@ -230,9 +230,9 @@ export const registerFields = [
     { key: 'name', label: 'Nome', type: 'string', required: true },
     { key: 'userName', label: 'Nome do Utilizador', type: 'string', required: true },
     { key: 'emailAddress', label: 'E-Mail', type: 'string', required: true },
-    { key: 'password', label: 'Password', type: 'string', required: true },
+    { key: 'password', label: 'Password', type: 'string' },
     { key: 'confirmPassword', label: 'Confirmar Password', type: 'string' },
-    { key: 'roles', label: 'Tipo de Conta', type: 'string' },
+    { key: 'roles', label: 'Tipo de Conta', type: 'string', required: true },
     { key: 'profileImage', label: 'Foto', type: 'string' },
 ];
 

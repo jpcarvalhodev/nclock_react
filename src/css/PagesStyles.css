@@ -692,11 +692,11 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 5px;
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
-    max-height: 37rem;
+    max-height: 29rem;
     margin: 10px;
     max-width: 50%;
 }
@@ -709,7 +709,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    max-width: 54rem;
+    max-width: 44rem;
 }
 
 .img-carousel-licensed {

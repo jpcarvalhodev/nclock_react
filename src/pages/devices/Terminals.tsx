@@ -1643,7 +1643,7 @@ export const Terminals = () => {
                     )
                 }
                 <CreateModalDevices
-                    title="Adicionar Terminal"
+                    title="Adicionar Equipamentos"
                     open={showAddModal}
                     onClose={() => setShowAddModal(false)}
                     onSave={addDevice}
@@ -1659,7 +1659,7 @@ export const Terminals = () => {
                             onUpdate={updateDevice}
                             entity={selectedTerminal}
                             fields={deviceFields}
-                            title="Atualizar Terminal"
+                            title="Atualizar Equipamentos"
                             onPrev={handlePrevDevice}
                             onNext={handleNextDevice}
                             canMovePrev={currentDeviceIndex > 0}

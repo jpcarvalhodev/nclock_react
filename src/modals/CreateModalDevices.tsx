@@ -357,7 +357,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                         <Tab.Container defaultActiveKey="terminal">
                             <Nav variant="tabs" className="nav-modal">
                                 <Nav.Item>
-                                    <Nav.Link eventKey="terminal">Terminal</Nav.Link>
+                                    <Nav.Link eventKey="terminal">Equipamentos</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                             <Tab.Content>

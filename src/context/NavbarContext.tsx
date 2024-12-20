@@ -11,6 +11,8 @@ export interface NavbarContextType {
   setFooterColor: (color: string) => void;
   lockRibbon: boolean;
   setLockRibbon: (lock: boolean) => void;
+  currentOpenRibbon: RibbonToggler | null;
+  setCurrentOpenRibbon: (ribbon: RibbonToggler | null) => void;
   lastClosedRibbon: RibbonToggler | null;
   setLastClosedRibbon: (ribbon: RibbonToggler | null) => void;
   emailCompanyConfig: EmailUser[];
@@ -34,6 +36,7 @@ export const NavbarProvider = ({ children }: { children: ReactNode }) => {
   const [navbarColor, setNavbarColor] = useState('#000000');
   const [footerColor, setFooterColor] = useState('#000000');
   const [lockRibbon, setLockRibbon] = useState(false);
+  const [currentOpenRibbon, setCurrentOpenRibbon] = useState<RibbonToggler | null>(null);
   const [lastClosedRibbon, setLastClosedRibbon] = useState<RibbonToggler | null>(null);
   const [emailCompanyConfig, setEmailCompanyConfig] = useState<EmailUser[]>([]);
   const [kioskConfig, setKioskConfig] = useState<Partial<KioskConfig>>({});
@@ -118,7 +121,7 @@ export const NavbarProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <NavbarContext.Provider value={{ navbarColor, footerColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, kioskConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig }}>
+    <NavbarContext.Provider value={{ navbarColor, footerColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, kioskConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig }}>
       {children}
     </NavbarContext.Provider>
   );

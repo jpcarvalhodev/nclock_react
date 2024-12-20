@@ -24,6 +24,16 @@ export const customStyles: TableStyles = {
     },
     headCells: {
         style: {
+            position: 'relative',
+            '&:after': {
+                content: '""',
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                width: '10px',
+                height: '100%',
+                background: '#ccc',
+            },
             minHeight: '30px',
             backgroundColor: '#ccc',
             color: '#333',

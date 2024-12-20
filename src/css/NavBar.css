@@ -94,6 +94,146 @@ body {
     height: 34px;
 }
 
+.nav-container .pessoas-tab:hover,
+.nav-item.active .nav-link.pessoas-tab,
+.nav-container .dispositivos-tab:hover,
+.nav-item.active .nav-link.dispositivos-tab,
+.nav-container .configuracao-tab:hover,
+.nav-item.active .nav-link.configuracao-tab,
+.nav-container .ajuda-tab:hover,
+.nav-item.active .nav-link.ajuda-tab {
+    border: none;
+    background-color: white;
+    color: black;
+}
+
+.nav-container .nclock-tab:hover,
+.nav-item.active .nav-link.nclock-tab,
+.nav-container .naccess-tab:hover,
+.nav-item.active .nav-link.naccess-tab,
+.nav-container .nvisitor-tab:hover,
+.nav-item.active .nav-link.nvisitor-tab,
+.nav-container .npark-tab:hover,
+.nav-item.active .nav-link.npark-tab,
+.nav-container .ndoor-tab:hover,
+.nav-item.active .nav-link.ndoor-tab,
+.nav-container .npatrol-tab:hover,
+.nav-item.active .nav-link.npatrol-tab,
+.nav-container .ncard-tab:hover,
+.nav-item.active .nav-link.ncard-tab,
+.nav-container .nview-tab:hover,
+.nav-item.active .nav-link.nview-tab,
+.nav-container .nsecur-tab:hover,
+.nav-item.active .nav-link.nsecur-tab {
+    border: none;
+    background-color: white;
+    color: #0050a0;
+}
+
+.nav-container .nsoftware-tab:hover,
+.nav-item.active .nav-link.nsoftware-tab,
+.nav-container .nsystem-tab:hover,
+.nav-item.active .nav-link.nsystem-tab,
+.nav-container .napp-tab:hover,
+.nav-item.active .nav-link.napp-tab,
+.nav-container .ncyber-tab:hover,
+.nav-item.active .nav-link.ncyber-tab,
+.nav-container .ndigital-tab:hover,
+.nav-item.active .nav-link.ndigital-tab,
+.nav-container .nserver-tab:hover,
+.nav-item.active .nav-link.nserver-tab,
+.nav-container .naut-tab:hover,
+.nav-item.active .nav-link.naut-tab,
+.nav-container .nequip-tab:hover,
+.nav-item.active .nav-link.nequip-tab,
+.nav-container .nproject-tab:hover,
+.nav-item.active .nav-link.nproject-tab,
+.nav-container .ncount-tab:hover,
+.nav-item.active .nav-link.ncount-tab,
+.nav-container .nbuild-tab:hover,
+.nav-item.active .nav-link.nbuild-tab,
+.nav-container .ncaravan-tab:hover,
+.nav-item.active .nav-link.ncaravan-tab,
+.nav-container .nmechanic-tab:hover,
+.nav-item.active .nav-link.nmechanic-tab,
+.nav-container .nevents-tab:hover,
+.nav-item.active .nav-link.nevents-tab,
+.nav-container .nservice-tab:hover,
+.nav-item.active .nav-link.nservice-tab,
+.nav-container .ntask-tab:hover,
+.nav-item.active .nav-link.ntask-tab,
+.nav-container .nproduction-tab:hover .nav-item.active .nav-link.nproduction-tab,
+.nav-container .nticket-tab:hover,
+.nav-item.active .nav-link.nticket-tab,
+.nav-container .nsales-tab:hover,
+.nav-item.active .nav-link.nsales-tab,
+.nav-container .ninvoice-tab:hover,
+.nav-item.active .nav-link.ninvoice-tab,
+.nav-container .ndoc-tab:hover,
+.nav-item.active .nav-link.ndoc-tab,
+.nav-container .nsports-tab:hover,
+.nav-item.active .nav-link.nsports-tab,
+.nav-container .ngym-tab:hover,
+.nav-item.active .nav-link.ngym-tab,
+.nav-container .nschool-tab:hover,
+.nav-item.active .nav-link.nschool-tab,
+.nav-container .nclinic-tab:hover,
+.nav-item.active .nav-link.nclinic-tab,
+.nav-container .noptics-tab:hover,
+.nav-item.active .nav-link.noptics-tab,
+.nav-container .ngold-tab:hover,
+.nav-item.active .nav-link.ngold-tab {
+    border: none;
+    background-color: white;
+    color: #D01313;
+}
+
+.nav-container .nsmart-tab:hover,
+.nav-item.active .nav-link.nsmart-tab,
+.nav-container .nreality-tab:hover,
+.nav-item.active .nav-link.nreality-tab,
+.nav-container .nhologram-tab:hover,
+.nav-item.active .nav-link.nhologram-tab,
+.nav-container .npower-tab:hover,
+.nav-item.active .nav-link.npower-tab,
+.nav-container .ncharge-tab:hover,
+.nav-item.active .nav-link.ncharge-tab,
+.nav-container .ncity-tab:hover,
+.nav-item.active .nav-link.ncity-tab,
+.nav-container .nkiosk-tab:hover,
+.nav-item.active .nav-link.nkiosk-tab,
+.nav-container .nled-tab:hover,
+.nav-item.active .nav-link.nled-tab,
+.nav-container .nfire-tab:hover,
+.nav-item.active .nav-link.nfire-tab {
+    border: none;
+    background-color: white;
+    color: #009739;
+}
+
+.nav-container .nfurniture-tab:hover,
+.nav-item.active .nav-link.nfurniture-tab,
+.nav-container .npartition-tab:hover,
+.nav-item.active .nav-link.npartition-tab,
+.nav-container .ndecor-tab:hover,
+.nav-item.active .nav-link.ndecor-tab,
+.nav-container .nping-tab:hover,
+.nav-item.active .nav-link.nping-tab,
+.nav-container .nconnect-tab:hover,
+.nav-item.active .nav-link.nconnect-tab,
+.nav-container .nlight-tab:hover,
+.nav-item.active .nav-link.nlight-tab,
+.nav-container .ncomfort-tab:hover,
+.nav-item.active .nav-link.ncomfort-tab,
+.nav-container .nsound-tab:hover,
+.nav-item.active .nav-link.nsound-tab,
+.nav-container .nhome-tab:hover,
+.nav-item.active .nav-link.nhome-tab {
+    border: none;
+    background-color: white;
+    color: #FEC629;
+}
+
 .tab-content-navbar {
     background-color: white;
 }
@@ -349,7 +489,6 @@ body {
     top: 20px;
     background-color: white;
     border: 1px solid #ddd;
-    z-index: 1000;
     border-radius: 5px;
 }
 
@@ -389,7 +528,7 @@ body {
 
 #dropdown-basic-2::after,
 #dropdown-basic-3::after {
-    color: white;
+    color: #ccc;
 }
 
 #dropdown-basic-3 {
@@ -404,6 +543,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 2px;
 }
 
 .nav-item:hover,
@@ -411,10 +551,6 @@ body {
     color: white;
     cursor: pointer;
     border-radius: 5px;
-}
-
-.nav-item.active .nav-link {
-    border-color: white;
 }
 
 .current-active {
@@ -431,9 +567,9 @@ body {
     right: 120px;
     cursor: pointer;
     z-index: 100;
-    width: 15px !important;
-    height: 15px !important;
-    margin-top: -3px;
+    width: 20px;
+    height: 20px;
+    margin-top: -4px;
 }
 
 input::-ms-reveal,
@@ -441,11 +577,12 @@ input::-ms-clear {
     display: none;
 }
 
-@keyframes slideDownFadeIn {
+/* @keyframes slideDownFadeIn {
     from {
         transform: translateY(-25%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0%);
         opacity: 1;
@@ -457,6 +594,7 @@ input::-ms-clear {
         transform: translateY(0%);
         opacity: 1;
     }
+
     to {
         transform: translateY(-25%);
         opacity: 0;
@@ -469,7 +607,7 @@ input::-ms-clear {
 
 .section.hidden {
     animation: slideUpFadeOut 0.2s forwards;
-}
+} */
 
 @media (max-width: 500px) {
 

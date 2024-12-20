@@ -98,7 +98,6 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           departmentMap.get(deptCode).employees.push({
             id: `emp-${emp.employeeID}`,
             label: emp.name,
-            fileType: 'person',
           });
         }
       }
@@ -123,7 +122,6 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     const buildDepartmentTree = (dept: Department) => ({
       id: `department-${dept.departmentID}`,
       label: dept.name || 'Sem Nome',
-      fileType: 'department',
       children: [
         ...dept.children.map(buildDepartmentTree),
         ...allEmployees
@@ -132,7 +130,6 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           .map((emp: Employee) => ({
             id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
             label: emp.name,
-            fileType: 'person',
           })),
       ],
     });
@@ -142,27 +139,23 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     const groupItems = groups.map((group: Group) => ({
       id: `group-${group.groupID}`,
       label: group.name || 'Sem Nome',
-      fileType: 'group',
       children: allEmployees
         .filter(emp => emp.groupId === group.groupID)
         .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
         .map((emp: Employee) => ({
           id: `group-${group.groupID}-emp-${emp.employeeID}`,
           label: emp.name || 'Sem Nome',
-          fileType: 'person',
         })),
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
       id: `empd-${emp.employeeID}`,
       label: emp.name || 'Sem Nome',
-      fileType: 'person',
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
       id: `empg-${emp.employeeID}`,
       label: emp.name || 'Sem Nome',
-      fileType: 'person',
     }));
 
     const treeItems = [

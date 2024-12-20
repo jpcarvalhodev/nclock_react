@@ -6,6 +6,7 @@ import * as apiService from "../helpers/apiService";
 
 // Define a interface para o estado de dados
 interface DataState {
+    [x: string]: any;
     departments: Department[];
     groups: Group[];
     employees: Employee[];
