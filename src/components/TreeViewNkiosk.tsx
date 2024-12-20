@@ -166,6 +166,8 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
     useEffect(() => {
         const newColor = location.pathname.endsWith('terminalcloseopen') ? '#000000' : '#009739';
         setTreeViewTitleColor(newColor);
+        const newVisitorColor = location.pathname.includes('nvisitor') ? '#0050a0' : '#009739';
+        setTreeViewTitleColor(newVisitorColor);
     }, [location.pathname]);
 
     return (

@@ -7,28 +7,19 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { auxOutFields, employeeFields, transactionCardFields } from "../../../helpers/Fields";
+import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
-import { AuxOutModal } from "../../../modals/AuxOutModal";
-import { toast } from "react-toastify";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
-import { useLocation } from "react-router-dom";
-
-// Define a interface SaveData
-interface SaveData {
-    deviceSN: string;
-    auxData: FormData;
-}
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -50,14 +41,17 @@ function CustomSearchBox(props: TextFieldProps) {
   );
 }
 
-export const NkioskMoveCard = () => {
+export const NvisitorListMovements = () => {
     const { navbarColor, footerColor } = useNavbar();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { moveCard, setMoveCard, fetchAllMoveCard } = useKiosk();
+    const { moveCard, fetchAllMoveCard, moveKiosk, fetchAllMoveKiosk } = useKiosk();
+    const [listMovements, setListMovements] = useState<KioskTransactionCard[]>([]);
+    const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
+    const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
@@ -68,34 +62,46 @@ export const NkioskMoveCard = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
-    const [showAuxOutModal, setShowAuxOutModal] = useState(false);
-    const [loadingAuxOut, setLoadingAuxOut] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
     const eventDoorId = '3';
+    const eventDoorId2 = '4';
 
-    // Função para buscar os movimentos dos cartões entre datas
+    // Função para buscar os pagamentos dos terminais
+    const settingVariables = () => {
+        setListMovementCard(moveCard);
+        setListMovementKiosk(moveKiosk);
+    }
+
+    // Função para buscar os movimentos entre datas
     const fetchMovementCardBetweenDates = async () => {
         try {
             if (devices.length === 0) {
-                setMoveCard([]);
+                setListMovementCard([]);
+                setListMovementKiosk([]);
                 return;
             }
 
-            const promises = devices.map((device, i) => {
-                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate);
-            });
+            const promisesMovementCard = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.deviceSN, startDate, endDate)
+            );
 
-            const allData = await Promise.all(promises);
+            const promisesMovementKiosk = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.deviceSN, startDate, endDate)
+            );
 
-            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+            const resultsMovementCard = await Promise.all(promisesMovementCard);
+            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
 
-            const combinedData = validData.flat();
+            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
 
-            setMoveCard(combinedData);
+            setListMovementCard(validDataCard);
+            setListMovementKiosk(validDataKiosk);
         } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
-            setMoveCard([]);
+            console.error('Erro ao buscar os dados de listagem de movimentos', error);
+            setListMovementCard([]);
+            setListMovementKiosk([]);
         }
     };
 
@@ -110,39 +116,68 @@ export const NkioskMoveCard = () => {
         window.location.reload();
     };
 
-    // Busca os movimentos dos cartões ao carregar a página
-    useEffect(() => {
-        fetchAllMoveCard();
-    }, []);
+    // Unifica os dados de movimentos de cartão e porteiro
+    const mergeMovementData = () => {
+        const unifiedData: KioskTransactionCard[] = [
+            ...listMovementCard.map((movement) => ({
+                id: movement.id,
+                cardNo: movement.cardNo,
+                nameUser: movement.nameUser,
+                deviceSN: movement.deviceSN,
+                eventNo: movement.eventNo,
+                eventName: movement.eventName,
+                eventDoorId: movement.eventDoorId,
+                eventDoorName: movement.eventDoorName,
+                eventTime: movement.eventTime,
+                pin: movement.pin,
+                verifyModeNo: movement.verifyModeNo,
+            })),
+            ...listMovementKiosk.map((movement) => ({
+                id: movement.id,
+                cardNo: movement.cardNo,
+                nameUser: movement.nameUser,
+                deviceSN: movement.deviceSN,
+                eventNo: movement.eventNo,
+                eventName: movement.eventName,
+                eventDoorId: movement.eventDoorId,
+                eventDoorName: movement.eventDoorName,
+                eventTime: movement.eventTime,
+                pin: movement.pin,
+                verifyModeNo: movement.verifyModeNo,
+            }))
+        ];
 
-    // Função para atualizar as publicidades
-    const refreshMoveCard = () => {
-        fetchAllMoveCard();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setListMovements(unifiedData);
     };
 
-    // Função para abrir a auxiliar
-    const handleOpenAuxOut = async (SaveData: SaveData) => {
-        const { deviceSN, auxData } = SaveData;
-        try {
-            const data = await apiService.openAuxDoor({ deviceSN, auxData });
-            toast.success(data.message || 'Torniquete aberto com sucesso!');
-        } catch (error) {
-            console.error('Erro ao abrir a auxiliar:', error);
-        }
-        setShowAuxOutModal(false);
-        setLoadingAuxOut(false);
-    }
+    // Busca todos os movimentos de cartão
+    useEffect(() => {
+        fetchAllMoveCard();
+        fetchAllMoveKiosk();
+    }, []);
+
+    // Atualiza a lista de movimentos ao receber novos dados
+    useEffect(() => {
+        settingVariables();
+        mergeMovementData();
+    }, [moveCard, moveKiosk]);
+
+    // Função para atualizar as listagens de movimentos
+    const refreshListMovements = () => {
+        fetchAllMoveCard();
+        fetchAllMoveKiosk();
+        setClearSelectionToggle(!clearSelectionToggle);
+    };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = moveCard.filter(moveCards => selectedDevicesIds.includes(moveCards.deviceSN));
+            const filtered = listMovements.filter(listMovement => selectedDevicesIds.includes(listMovement.deviceSN));
             setFilteredDevices(filtered);
         } else {
-            setFilteredDevices(moveCard);
+            setFilteredDevices(listMovements);
         }
-    }, [selectedDevicesIds, moveCard]);
+    }, [selectedDevicesIds, listMovements]);
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -184,23 +219,32 @@ export const NkioskMoveCard = () => {
         rangeSeparatorText: 'de',
     };
 
-    // Filtra os dados da tabela
-    const filteredDataTable = filteredDevices.filter(moveCards =>
-        new Date(moveCards.eventTime) >= new Date(startDate) && new Date(moveCards.eventTime) <= new Date(endDate) &&
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(moveCards).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
-            }
-        })
-    )
-        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
+    // Filtra os dados da tabela com base no filtro de 'eventName'
+    const filteredDataTable = filteredDevices
+        .filter(listMovement =>
+            new Date(listMovement.eventTime) >= new Date(startDate) && new Date(listMovement.eventTime) <= new Date(endDate) &&
+            Object.keys(filters).every(key =>
+                filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            ) &&
+            Object.values(listMovement).some(value => {
+                if (value == null) {
+                    return false;
+                } else if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            })
+        )
+        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.dataRecolha).getTime());
+
+    // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
+    const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {
+        if (!acc.some(field => field.key === current.key)) {
+            acc.push(current);
+        }
+        return acc;
+    }, [] as typeof transactionCardFields);
 
     // Função para abrir o modal de edição
     const handleOpenEditModal = (person: KioskTransactionCard) => {
@@ -213,8 +257,7 @@ export const NkioskMoveCard = () => {
         }
     };
 
-    // Define as colunas da tabela
-    const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
+    const columns: TableColumn<KioskTransactionCard>[] = combinedMovements
         .filter(field => selectedColumns.includes(field.key))
         .sort((a, b) => (a.key === 'eventTime' ? -1 : b.key === 'eventTime' ? 1 : 0))
         .map(field => {
@@ -233,9 +276,9 @@ export const NkioskMoveCard = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return devices.find(device => device.serialNumber === value)?.deviceName ?? '';
+                        return devices[0].deviceName || 'Sem Dados';
                     case 'eventDoorId':
-                        return 'Torniquete';
+                        return row.eventDoorId === 4 ? 'Quiosque' : 'Torniquete';
                     case 'eventTime':
                         return new Date(row.eventTime).toLocaleString() || '';
                     default:
@@ -257,6 +300,9 @@ export const NkioskMoveCard = () => {
             };
         });
 
+    // Calcula o valor total dos movimentos
+    const totalAmount = filteredDataTable.length;
+
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { deviceSN: string; }) => {
 
@@ -270,25 +316,16 @@ export const NkioskMoveCard = () => {
     };
 
     // Dados com nomes substituídos para o export/print
-    const moveCardWithNames = moveCard.map(transformTransactionWithNames);
+    const listMoveWithNames = listMovements.map(transformTransactionWithNames);
 
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
-    // Calcula o valor total dos movimentos
-    const totalAmount = filteredDataTable.length;
-
-    // Função para abrir o modal para escolher porta
-    const openAuxOutModal = () => {
-        setShowAuxOutModal(true);
-        setLoadingAuxOut(true);
-    };
-
     // Função para obter os campos selecionados baseado em selectedColumns
     const getSelectedFields = () => {
-        return transactionCardFields.filter(field => selectedColumns.includes(field.key));
+        return combinedMovements.filter(field => selectedColumns.includes(field.key));
     };
-    
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -300,25 +337,25 @@ export const NkioskMoveCard = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Movimentos do Torniquete</span>
+                                <span style={{ color: '#0050a0' }}>Listagem de Movimentos</span>
                             </div>
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
-                                />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
                                         placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
                                     </OverlayTrigger>
                                     <OverlayTrigger
                                         placement="top"
@@ -326,14 +363,8 @@ export const NkioskMoveCard = () => {
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                                     </OverlayTrigger>
-                                    <ExportButton allData={moveCardWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Braço</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-arrow-bar-down" onClick={openAuxOutModal} />
-                                    </OverlayTrigger>
+                                    <ExportButton allData={listMoveWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
                                 </div>
                                 <div className="date-range-search">
                                     <input
@@ -374,9 +405,9 @@ export const NkioskMoveCard = () => {
                                     defaultSortAsc={true}
                                     defaultSortFieldId="eventTime"
                                 />
-                            </div>
-                            <div style={{ marginLeft: 10, marginTop: -5 }}>
-                                <strong>Movimentos do Torniquete: </strong>{totalAmount}
+                                <div style={{ marginLeft: 10, marginTop: -5 }}>
+                                    <strong>Movimentos Totais: </strong>{totalAmount}
+                                </div>
                             </div>
                         </div>
                     </Split>
@@ -384,24 +415,12 @@ export const NkioskMoveCard = () => {
                 <Footer style={{ backgroundColor: footerColor }} />
                 {openColumnSelector && (
                     <ColumnSelectorModal
-                        columns={transactionCardFields}
+                        columns={combinedMovements}
                         selectedColumns={selectedColumns}
                         onClose={() => setOpenColumnSelector(false)}
                         onColumnToggle={toggleColumn}
                         onResetColumns={resetColumns}
                         onSelectAllColumns={onSelectAllColumns}
-                    />
-                )}
-                {loadingAuxOut && (
-                    <AuxOutModal
-                        title="Escolha a Auxiliar para Abrir"
-                        open={showAuxOutModal}
-                        onClose={() => {
-                            setShowAuxOutModal(false);
-                            setLoadingAuxOut(false);
-                        }}
-                        onSave={handleOpenAuxOut}
-                        fields={auxOutFields}
                     />
                 )}
                 {selectedEmployee && (

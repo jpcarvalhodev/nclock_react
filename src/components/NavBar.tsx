@@ -2813,13 +2813,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
-												<Link to='/nkiosk/nkioskmovecard' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovecard' ? 'current-active' : ''}`}>
+												<Link to='/nvisitor/nvisitormovecard' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nvisitor/nvisitormovecard' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={barrier} alt="botão movimentos cartão" />
 													</span>
 													<span className="text">Torniquete</span>
 												</Link>
-												<Link to='/nkiosk/nkioskmovekiosk' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovekiosk' ? 'current-active' : ''}`}>
+												<Link to='/nvisitor/nvisitormovekiosk' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nvisitor/nvisitormovekiosk' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={kiosk} alt="botão movimentos porteiro" />
 													</span>
@@ -2827,7 +2827,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
-												<Link to="/nkiosk/nkiosklistmovements" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistmovements' ? 'current-active' : ''}`}>
+												<Link to="/nvisitor/nvisitorlistmovements" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nvisitor/nvisitorlistmovements' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={coin_report} alt="botão movimentos totais" />
 													</span>

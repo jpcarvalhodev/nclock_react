@@ -8,27 +8,18 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { auxOutFields, employeeFields, transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
-import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
-import { AuxOutModal } from "../../../modals/AuxOutModal";
-import { toast } from "react-toastify";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
 import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
-import { useLocation } from "react-router-dom";
-
-// Define a interface SaveData
-interface SaveData {
-    deviceSN: string;
-    auxData: FormData;
-}
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -50,14 +41,14 @@ function CustomSearchBox(props: TextFieldProps) {
   );
 }
 
-export const NkioskMoveCard = () => {
+export const NvisitorMoveKiosk = () => {
     const { navbarColor, footerColor } = useNavbar();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { moveCard, setMoveCard, fetchAllMoveCard } = useKiosk();
+    const { moveKiosk, setMoveKiosk, fetchAllMoveKiosk } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
@@ -68,20 +59,17 @@ export const NkioskMoveCard = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
-    const [showAuxOutModal, setShowAuxOutModal] = useState(false);
-    const [loadingAuxOut, setLoadingAuxOut] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
-    const eventDoorId = '3';
+    const eventDoorId = '4';
 
-    // Função para buscar os movimentos dos cartões entre datas
-    const fetchMovementCardBetweenDates = async () => {
+    // Função para buscar os movimentos de quiosque entre datas
+    const fetchMovementsKioskBetweenDates = async () => {
         try {
             if (devices.length === 0) {
-                setMoveCard([]);
+                setMoveKiosk([]);
                 return;
             }
-
             const promises = devices.map((device, i) => {
                 return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate);
             });
@@ -92,10 +80,10 @@ export const NkioskMoveCard = () => {
 
             const combinedData = validData.flat();
 
-            setMoveCard(combinedData);
+            setMoveKiosk(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
-            setMoveCard([]);
+            console.error('Erro ao buscar os dados de movimentos no quiosque:', error);
+            setMoveKiosk([]);
         }
     };
 
@@ -110,39 +98,26 @@ export const NkioskMoveCard = () => {
         window.location.reload();
     };
 
-    // Busca os movimentos dos cartões ao carregar a página
+    // Busca os movimentos de quiosque ao carregar a página
     useEffect(() => {
-        fetchAllMoveCard();
+        fetchAllMoveKiosk();
     }, []);
 
-    // Função para atualizar as publicidades
-    const refreshMoveCard = () => {
-        fetchAllMoveCard();
+    // Função para atualizar os movimentos de quiosque
+    const refreshMoveKiosk = () => {
+        fetchAllMoveKiosk();
         setClearSelectionToggle(!clearSelectionToggle);
     };
-
-    // Função para abrir a auxiliar
-    const handleOpenAuxOut = async (SaveData: SaveData) => {
-        const { deviceSN, auxData } = SaveData;
-        try {
-            const data = await apiService.openAuxDoor({ deviceSN, auxData });
-            toast.success(data.message || 'Torniquete aberto com sucesso!');
-        } catch (error) {
-            console.error('Erro ao abrir a auxiliar:', error);
-        }
-        setShowAuxOutModal(false);
-        setLoadingAuxOut(false);
-    }
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = moveCard.filter(moveCards => selectedDevicesIds.includes(moveCards.deviceSN));
+            const filtered = moveKiosk.filter(moveKiosks => selectedDevicesIds.includes(moveKiosks.deviceSN));
             setFilteredDevices(filtered);
         } else {
-            setFilteredDevices(moveCard);
+            setFilteredDevices(moveKiosk);
         }
-    }, [selectedDevicesIds, moveCard]);
+    }, [selectedDevicesIds, moveKiosk]);
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -185,12 +160,12 @@ export const NkioskMoveCard = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredDevices.filter(moveCards =>
-        new Date(moveCards.eventTime) >= new Date(startDate) && new Date(moveCards.eventTime) <= new Date(endDate) &&
+    const filteredDataTable = filteredDevices.filter(moveKiosks =>
+        new Date(moveKiosks.eventTime) >= new Date(startDate) && new Date(moveKiosks.eventTime) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
-            filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            filters[key] === "" || (moveKiosks[key] != null && String(moveKiosks[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(moveCards).some(value => {
+        Object.values(moveKiosks).some(value => {
             if (value == null) {
                 return false;
             } else if (value instanceof Date) {
@@ -235,7 +210,7 @@ export const NkioskMoveCard = () => {
                     case 'deviceSN':
                         return devices.find(device => device.serialNumber === value)?.deviceName ?? '';
                     case 'eventDoorId':
-                        return 'Torniquete';
+                        return 'Quiosque';
                     case 'eventTime':
                         return new Date(row.eventTime).toLocaleString() || '';
                     default:
@@ -270,7 +245,7 @@ export const NkioskMoveCard = () => {
     };
 
     // Dados com nomes substituídos para o export/print
-    const moveCardWithNames = moveCard.map(transformTransactionWithNames);
+    const moveKioskWithNames = moveKiosk.map(transformTransactionWithNames);
 
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
@@ -278,33 +253,26 @@ export const NkioskMoveCard = () => {
     // Calcula o valor total dos movimentos
     const totalAmount = filteredDataTable.length;
 
-    // Função para abrir o modal para escolher porta
-    const openAuxOutModal = () => {
-        setShowAuxOutModal(true);
-        setLoadingAuxOut(true);
-    };
-
     // Função para obter os campos selecionados baseado em selectedColumns
     const getSelectedFields = () => {
         return transactionCardFields.filter(field => selectedColumns.includes(field.key));
     };
-    
+
     return (
-        <TerminalsProvider>
-            <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='content-container'>
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+        <div className="main-container">
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#0050a0' }}>Movimentos do Quiosque</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Movimentos do Torniquete</span>
-                            </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
                                     label="Pesquisa"
                                     variant="outlined"
                                     size='small'
@@ -312,109 +280,90 @@ export const NkioskMoveCard = () => {
                                     onChange={e => setFilterText(e.target.value)}
                                     style={{ marginTop: -5}}
                                 />
-                                </div>
-                                <div className="buttons-container-others">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={moveCardWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Braço</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-arrow-bar-down" onClick={openAuxOutModal} />
-                                    </OverlayTrigger>
-                                </div>
-                                <div className="date-range-search">
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
                             </div>
-                            <div className='table-css'>
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="eventTime"
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveKiosk} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={moveKioskWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveKioskWithNames} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveKioskWithNames} fields={getSelectedFields()} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
                                 />
-                            </div>
-                            <div style={{ marginLeft: 10, marginTop: -5 }}>
-                                <strong>Movimentos do Torniquete: </strong>{totalAmount}
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchMovementsKioskBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
                             </div>
                         </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {openColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={transactionCardFields}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setOpenColumnSelector(false)}
-                        onColumnToggle={toggleColumn}
-                        onResetColumns={resetColumns}
-                        onSelectAllColumns={onSelectAllColumns}
-                    />
-                )}
-                {loadingAuxOut && (
-                    <AuxOutModal
-                        title="Escolha a Auxiliar para Abrir"
-                        open={showAuxOutModal}
-                        onClose={() => {
-                            setShowAuxOutModal(false);
-                            setLoadingAuxOut(false);
-                        }}
-                        onSave={handleOpenAuxOut}
-                        fields={auxOutFields}
-                    />
-                )}
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showEditModal}
-                        onClose={() => setShowEditModal(false)}
-                        onUpdate={updateEmployeeAndCard}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Funcionário"
-                    />
-                )}
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="eventTime"
+                            />
+                        </div>
+                        <div style={{ marginLeft: 10, marginTop: -5 }}>
+                            <strong>Movimentos do Quiosque: </strong>{totalAmount}
+                        </div>
+                    </div>
+                </Split>
             </div>
-        </TerminalsProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {openColumnSelector && (
+                <ColumnSelectorModal
+                    columns={transactionCardFields}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setOpenColumnSelector(false)}
+                    onColumnToggle={toggleColumn}
+                    onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
+                />
+            )}
+            {selectedEmployee && (
+                <UpdateModalEmployees
+                    open={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={updateEmployeeAndCard}
+                    entity={selectedEmployee}
+                    fields={employeeFields}
+                    title="Atualizar Funcionário"
+                />
+            )}
+        </div>
     );
 }

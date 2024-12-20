@@ -137,6 +137,9 @@ import { CustomSpinner } from './components/CustomSpinner';
 import { EntityProvider } from './context/EntityContext';
 import { KioskProvider } from './context/KioskContext';
 import { CardScrollProvider } from './context/CardScrollContext';
+import { NvisitorMoveCard } from './pages/sisnid/nvisitor/NvisitorMoveCard';
+import { NvisitorMoveKiosk } from './pages/sisnid/nvisitor/NvisitorMoveKiosk';
+import { NvisitorListMovements } from './pages/sisnid/nvisitor/NvisitorListMovements';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -218,6 +221,9 @@ function AnimatedRoutes() {
               <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
               <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />
               <Route path="/nvisitor/nvisitorgraph" element={<PageProtection><NvisitorGraph /></PageProtection>} />
+              <Route path="/nvisitor/nvisitorMoveCard" element={<PageProtection><NvisitorMoveCard /></PageProtection>} />
+              <Route path="/nvisitor/nvisitorMoveKiosk" element={<PageProtection><NvisitorMoveKiosk /></PageProtection>} />
+              <Route path="/nvisitor/nvisitorListMovements" element={<PageProtection><NvisitorListMovements /></PageProtection>} />
               <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
               <Route path="/nview/nviewdashboardlicensed" element={<PageProtection><NviewDashboardLicensed /></PageProtection>} />
               <Route path="/nview/nviewgraph" element={<PageProtection><NviewGraph /></PageProtection>} />

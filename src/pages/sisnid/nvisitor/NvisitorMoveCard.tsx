@@ -50,7 +50,7 @@ function CustomSearchBox(props: TextFieldProps) {
   );
 }
 
-export const NkioskMoveCard = () => {
+export const NvisitorMoveCard = () => {
     const { navbarColor, footerColor } = useNavbar();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
@@ -72,6 +72,7 @@ export const NkioskMoveCard = () => {
     const [loadingAuxOut, setLoadingAuxOut] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+    const location = useLocation();
     const eventDoorId = '3';
 
     // Função para buscar os movimentos dos cartões entre datas
@@ -300,7 +301,7 @@ export const NkioskMoveCard = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Movimentos do Torniquete</span>
+                                <span style={{ color: '#0050a0' }}>Movimentos do Torniquete</span>
                             </div>
                             <div className="datatable-header">
                                 <div>
