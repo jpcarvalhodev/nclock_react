@@ -54,7 +54,7 @@ export const NvisitorListMovements = () => {
     const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'eventName', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -197,7 +197,7 @@ export const NvisitorListMovements = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'eventName', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas

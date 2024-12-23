@@ -217,13 +217,13 @@ export const transactionMBFields = [
 ];
 
 export const transactionCardFields = [
+    { key: 'eventDoorId', label: 'Tipo de Transação', type: 'number' },
     { key: 'pin', label: 'Número do Utilizador', type: 'number' },
     { key: 'nameUser', label: 'Nome do Utilizador', type: 'string' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
-    { key: 'eventDoorId', label: 'Nome', type: 'number' },
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
     { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
-    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
 ];
 
 export const registerFields = [

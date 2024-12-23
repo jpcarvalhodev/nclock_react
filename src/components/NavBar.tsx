@@ -1861,6 +1861,15 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	};
 
+	// Reabre a última ribbon fechada
+	useEffect(() => {
+		if (!lockRibbon && lastClosedRibbon) {
+			toggleRibbonVisibility(lastClosedRibbon);
+			setCurrentOpenRibbon(lastClosedRibbon);
+			setLastClosedRibbon(null);
+		}
+	}, [lockRibbon, lastClosedRibbon]);
+
 	// Função para fechar e reabrir a ribbon
 	const toggleRibbonVisibility = (ribbonName: RibbonToggler, forceToggle: boolean = false) => {
 

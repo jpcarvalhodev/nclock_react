@@ -236,10 +236,10 @@ export const NkioskPayCoins = () => {
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {
         const terminalMatch = mbDevices.find(terminal => terminal.id === transaction.tpId);
-        const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
+        const terminalName = terminalMatch?.nomeQuiosque || '';
     
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
-        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+        const deviceName = deviceMatch?.deviceName || '';
     
         return {
             ...transaction,

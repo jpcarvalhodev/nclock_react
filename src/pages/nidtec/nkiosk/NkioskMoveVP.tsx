@@ -218,7 +218,7 @@ export const NkioskMoveVP = () => {
     const transformTransactionWithNames = (transaction: { deviceSN: string; }) => {
 
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
-        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+        const deviceName = deviceMatch?.deviceName || '';
 
         return {
             ...transaction,

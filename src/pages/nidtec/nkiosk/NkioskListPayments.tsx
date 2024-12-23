@@ -51,7 +51,7 @@ export const NkioskListPayments = () => {
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'transactionType', 'amount', 'statusMessage', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -183,7 +183,7 @@ export const NkioskListPayments = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'tpId', 'deviceSN']);
+        setSelectedColumns(['timestamp', 'transactionType', 'amount', 'statusMessage', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas
@@ -299,10 +299,10 @@ export const NkioskListPayments = () => {
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {
         const terminalMatch = mbDevices.find(terminal => terminal.id === transaction.tpId);
-        const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
+        const terminalName = terminalMatch?.nomeQuiosque || '';
 
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
-        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+        const deviceName = deviceMatch?.deviceName || '';
 
         return {
             ...transaction,

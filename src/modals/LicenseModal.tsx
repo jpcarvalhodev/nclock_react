@@ -53,7 +53,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   const [showPassword, setShowPassword] = useState(false);
   const [entities, setEntities] = useState<Array<License>>([]);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
-  const [activeEntityNif, setActiveEntityNif] = useState<string | undefined>(undefined);
 
   // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
   useEffect(() => {
@@ -94,7 +93,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         setEntities(isKeyValid);
         const defaultNif = isKeyValid[0]?.nif?.toString() || "";
         setActiveTab(isKeyValid[0]?.entidadeNumber);
-        setActiveEntityNif(defaultNif);
         setFormData(isKeyValid[0]);
         setIsCheckVisible(false);
         showModal();
@@ -311,7 +309,14 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       toast.warn("Preencha todos os campos obrigatórios antes de guardar.");
       return;
     }
-    onUpdate(key, entities);
+    const updatedEntities = entities.map((entity) => {
+      if (entity.entidadeNumber === formData.entidadeNumber) {
+        return { ...entity, ...formData };
+      }
+      return entity;
+    });
+    console.log(updatedEntities);
+    onUpdate(key, updatedEntities as License[]);
     setIsModalVisible(false);
   };
 

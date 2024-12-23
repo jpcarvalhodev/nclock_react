@@ -279,6 +279,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // Opções de dispositivos
     const deviceOptions = [
+        { value: '', label: '------------Acessos/Assiduidade------------' },
         { value: 'Nface-204_SISNID-1', label: 'Nface-204_SISNID-1', img: nface },
         { value: 'SISNID-C3-100', label: 'SISNID-C3-100', img: c3_100 },
         { value: 'SISNID-C3-200', label: 'SISNID-C3-200', img: c3_200 },
@@ -324,11 +325,11 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                 name="model"
                                 value={selectedDevice}
                                 onChange={handleDeviceChange}
-                                className="custom-input-height custom-select-font-size"
+                                className="custom-input-height custom-select-font-size select-dropdown"
                             >
                                 <option value="">Selecione</option>
                                 {deviceOptions.map(option => (
-                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                    <option key={option.value} value={option.value} disabled={option.value === ''}>{option.label}</option>
                                 ))}
                             </Form.Select>
                         </Form.Group>

@@ -91,7 +91,7 @@ export function TreeViewDataDevice({ onSelectDevices }: TreeViewDataDeviceProps)
                 children: [
                     {
                         id: 'dispositivos',
-                        label: 'NOME DO LOCAL',
+                        label: 'DISPOSITIVOS',
                         children: buildDeviceTree
                     }
                 ],
