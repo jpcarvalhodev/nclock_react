@@ -20,7 +20,7 @@ import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsC
 import Split from "react-split";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -306,7 +306,7 @@ export const NkioskOccurrences = () => {
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                        <TreeViewDataDevice onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">

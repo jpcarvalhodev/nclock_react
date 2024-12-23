@@ -5,17 +5,17 @@ import { NavBar } from "../../components/NavBar";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { SelectFilter } from "../../components/SelectFilter";
-import { MBDevice, MBDeviceCloseOpen } from "../../helpers/Types";
+import { MBDeviceCloseOpen } from "../../helpers/Types";
 import { mbDeviceCloseOpenFields } from "../../helpers/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
 import { useNavbar } from "../../context/NavbarContext";
 import * as apiService from "../../helpers/apiService";
-import { TreeViewDataNkiosk } from "../../components/TreeViewNkiosk";
 import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
+import { TreeViewDataDevice } from "../../components/TreeViewDevice";
 
 // Define a interface para os filtros
 interface Filters {
@@ -208,7 +208,7 @@ export const TerminalCloseOpen = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataDevice onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text" style={{ color: '#000000' }}>

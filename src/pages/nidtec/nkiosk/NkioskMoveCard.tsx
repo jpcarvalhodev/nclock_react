@@ -21,8 +21,7 @@ import { PersonsContext, PersonsContextType } from "../../../context/PersonsCont
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
-import { useLocation } from "react-router-dom";
+import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 
 // Define a interface SaveData
 interface SaveData {
@@ -42,12 +41,12 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NkioskMoveCard = () => {
@@ -137,7 +136,14 @@ export const NkioskMoveCard = () => {
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = moveCard.filter(moveCards => selectedDevicesIds.includes(moveCards.deviceSN));
+            const employeeShortNames = selectedDevicesIds.map(employeeId => {
+                const employee = employees.find(emp => emp.employeeID === employeeId);
+                return employee ? employee.shortName : null;
+            }).filter(name => name !== null);
+
+            const filtered = moveCard.filter(listMovement =>
+                employeeShortNames.includes(listMovement.nameUser)
+            );
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(moveCard);
@@ -288,7 +294,7 @@ export const NkioskMoveCard = () => {
     const getSelectedFields = () => {
         return transactionCardFields.filter(field => selectedColumns.includes(field.key));
     };
-    
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -296,7 +302,7 @@ export const NkioskMoveCard = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
@@ -305,13 +311,13 @@ export const NkioskMoveCard = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
-                                />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger

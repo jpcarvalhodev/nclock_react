@@ -466,24 +466,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 			setActiveTab(savedActiveTab);
 			const { setTab, setRibbon } = tabData[savedActiveTab];
 			setTab(true);
-			if (!lockRibbon) {
-				setRibbon(true);
-			} else {
-				setRibbon(true);
-			}
-			const capitalizedTab = savedActiveTab.charAt(0).toUpperCase() + savedActiveTab.slice(1);
-			setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+			setRibbon(true);
 
 			if (activeTab in ribbons) {
 				const [setRibbon] = ribbons[activeTab as RibbonName];
-				if (!lockRibbon) {
-					setRibbon(true);
-				} else {
-					setRibbon(true);
-				}
-				const capitalizedTab = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
-				setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
-			}	
+				setRibbon(true);
+			}
 		}
 	}, []);
 
@@ -1873,15 +1861,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	};
 
-	// Reabre a última ribbon fechada
-	useEffect(() => {
-		if (!lockRibbon && lastClosedRibbon) {
-			toggleRibbonVisibility(lastClosedRibbon);
-			setCurrentOpenRibbon(lastClosedRibbon);
-			setLastClosedRibbon(null);
-		}
-	}, [lockRibbon, lastClosedRibbon]);
-
 	// Função para fechar e reabrir a ribbon
 	const toggleRibbonVisibility = (ribbonName: RibbonToggler, forceToggle: boolean = false) => {
 
@@ -2051,7 +2030,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				setCurrentOpenRibbon(null);
 			}, 1000);
 		} else {
-			if (lockRibbon && checkAnyRibbonOpenUpdated()&& !isMouseOver && isMobile) {
+			if (lockRibbon && checkAnyRibbonOpenUpdated() && !isMouseOver && isMobile) {
 				timeoutId = setTimeout(() => {
 					Object.keys(ribbonSetters).forEach((ribbonKey) => {
 						const setter = ribbonSetters[ribbonKey as RibbonToggler];
@@ -2074,11 +2053,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleRibbonMouseEnter = () => {
 		setIsMouseOver(true);
 	};
-	
+
 	// Função para verificar se o cursor saiu da ribbon
 	const handleRibbonMouseLeave = () => {
 		setIsMouseOver(false);
-	};	
+	};
 
 	return (
 		<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>

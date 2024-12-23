@@ -13,11 +13,11 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { PrintButton } from "../../../components/PrintButton";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
+import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -41,7 +41,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskPayTerminal = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -74,6 +74,8 @@ export const NkioskPayTerminal = () => {
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
         fetchAllPayTerminal();
+        fetchAllDevices();
+        fetchAllMBDevices();
     }, []);
 
     // Função para atualizar os pagamentos dos terminais
@@ -160,7 +162,7 @@ export const NkioskPayTerminal = () => {
                     case 'tpId':
                         const terminalMatch = mbDevices.find(terminal => terminal.id === row.tpId);
                         const terminalName = terminalMatch?.nomeQuiosque || '';
-                        return terminalName || 'Sem Dados';
+                        return terminalName || '';
                     case 'deviceSN':
                         return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || 'Sem Dados';
                     case 'timestamp':
@@ -239,7 +241,7 @@ export const NkioskPayTerminal = () => {
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                        <TreeViewDataNkioskPay onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">

@@ -14,10 +14,10 @@ import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import { PrintButton } from "../../../components/PrintButton";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
+import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -31,17 +31,17 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -140,10 +140,12 @@ export const NkioskListPayments = () => {
     useEffect(() => {
         fetchAllPayTerminal();
         fetchAllPayCoins();
+        fetchAllDevices();
+        fetchAllMBDevices();
     }, []);
 
     // Atualiza a lista de pagamentos ao receber novos dados
-    useEffect(() => {  
+    useEffect(() => {
         settingVariables();
         mergePaymentData();
     }, [payTerminal, payCoins]);
@@ -212,7 +214,11 @@ export const NkioskListPayments = () => {
             Object.keys(filters).every(key =>
                 filters[key] === "" || (listPayment[key] != null && String(listPayment[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&
-            Object.values(listPayment).some(value => {
+            (filterText === '' || Object.entries(listPayment).some(([key, value]) => {
+                if (key === 'transactionType') {
+                    const typeText = value === 1 ? 'Multibanco' : 'Moedeiro';
+                    return typeText.toLowerCase().includes(filterText.toLowerCase());
+                }
                 if (value == null) {
                     return false;
                 } else if (typeof value === 'number') {
@@ -224,7 +230,7 @@ export const NkioskListPayments = () => {
                 }
                 return false;
             }))
-            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     }, [listPayments, filters, filterText, filteredDevices, startDate, endDate]);
 
     // Define as colunas da tabela
@@ -237,9 +243,9 @@ export const NkioskListPayments = () => {
                     case 'tpId':
                         const terminalMatch = mbDevices.find(terminal => terminal.id === row.tpId)
                         const terminalName = terminalMatch?.nomeQuiosque || '';
-                        return terminalName || 'Clérigos Moedeiro';
+                        return terminalName || '';
                     case 'deviceSN':
-                        return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || '';
                     case 'transactionType':
                         return row.transactionType === 1 ? 'Multibanco' : 'Moedeiro';
                     case 'timestamp':
@@ -294,10 +300,10 @@ export const NkioskListPayments = () => {
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {
         const terminalMatch = mbDevices.find(terminal => terminal.id === transaction.tpId);
         const terminalName = terminalMatch?.nomeQuiosque || 'Sem Dados';
-    
+
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
         const deviceName = deviceMatch?.deviceName || 'Sem Dados';
-    
+
         return {
             ...transaction,
             tpId: terminalName,
@@ -324,22 +330,22 @@ export const NkioskListPayments = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkioskPay onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Listagem de Pagamentos</span>
+                                <span style={{ color: '#009739' }}>Recebimentos Totais</span>
                             </div>
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
-                                />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger

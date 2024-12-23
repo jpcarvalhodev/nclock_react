@@ -68,7 +68,7 @@ const convertStringToDate = (dateStr: string) => {
 
 // Provider do contexto
 export const KioskProvider = ({ children }: { children: ReactNode }) => {
-    const { devices } = useTerminals();
+    const { devices, fetchAllDevices } = useTerminals();
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
@@ -106,6 +106,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os pagamentos no moedeiro
     const fetchAllPayCoins = async () => {
         try {
+            fetchAllDevices();
             if (devices.length === 0) {
                 setPayCoins([]);
                 return;
@@ -131,6 +132,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os movimentos dos cartões
     const fetchAllMoveCard = async () => {
         try {
+            fetchAllDevices();
             if (devices.length === 0) {
                 setMoveCard([]);
                 return;
@@ -156,6 +158,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os movimentos do quiosque
     const fetchAllMoveKiosk = async () => {
         try {
+            fetchAllDevices();
             if (devices.length === 0) {
                 setMoveKiosk([]);
                 return;
@@ -180,6 +183,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os movimentos de videoporteiro
     const fetchAllMoveVP = async () => {
         try {
+            fetchAllDevices();
             if (devices.length === 0) {
                 setMoveVP([]);
                 return;

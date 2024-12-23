@@ -8,6 +8,7 @@ import { CustomOutlineButton } from './CustomOutlineButton';
 import { useLocation } from 'react-router-dom';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useTerminals } from '../context/TerminalsContext';
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -59,8 +60,9 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps) {
-    const { devices, fetchAllDevices } = useTerminals();    
+export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskProps) {
+    const { devices, fetchAllDevices } = useTerminals();
+    const { employees, fetchAllEmployees } = usePersons();
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -73,6 +75,7 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
     // Busca os dispositivos
     useEffect(() => {
         fetchAllDevices();
+        fetchAllEmployees();
     }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
@@ -83,6 +86,12 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
             children: []
         }));
 
+        const buildUserTree = employees.map(employee => ({
+            id: employee.employeeID || 'Sem ID',
+            label: employee.shortName || 'Sem Nome',
+            children: []
+        }));
+
         const treeItems = [
             {
                 id: 'nidgroup',
@@ -90,8 +99,13 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
                 children: [
                     {
                         id: 'dispositivos',
-                        label: 'DISPOSITIVOS',
+                        label: 'NOME DO LOCAL',
                         children: buildDeviceTree
+                    },
+                    {
+                        id: 'utilizadores',
+                        label: 'UTILIZADORES',
+                        children: buildUserTree
                     }
                 ],
             },
@@ -164,8 +178,6 @@ export function TreeViewDataNkiosk({ onSelectDevices }: TreeViewDataNkioskProps)
 
     // Atualiza a cor do título da árvore de acordo com a rota
     useEffect(() => {
-        const newColor = location.pathname.endsWith('terminalcloseopen') ? '#000000' : '#009739';
-        setTreeViewTitleColor(newColor);
         const newVisitorColor = location.pathname.includes('nvisitor') ? '#0050a0' : '#009739';
         setTreeViewTitleColor(newVisitorColor);
     }, [location.pathname]);

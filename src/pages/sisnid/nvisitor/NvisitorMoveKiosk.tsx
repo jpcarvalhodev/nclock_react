@@ -19,7 +19,7 @@ import { PersonsContext, PersonsContextType } from "../../../context/PersonsCont
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -112,7 +112,14 @@ export const NvisitorMoveKiosk = () => {
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = moveKiosk.filter(moveKiosks => selectedDevicesIds.includes(moveKiosks.deviceSN));
+            const employeeShortNames = selectedDevicesIds.map(employeeId => {
+                const employee = employees.find(emp => emp.employeeID === employeeId);
+                return employee ? employee.shortName : null;
+            }).filter(name => name !== null);
+
+            const filtered = moveKiosk.filter(listMovement =>
+                employeeShortNames.includes(listMovement.nameUser)
+            );
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(moveKiosk);
@@ -264,7 +271,7 @@ export const NvisitorMoveKiosk = () => {
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
-                        <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                        <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">

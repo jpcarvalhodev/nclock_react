@@ -5,7 +5,7 @@ import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
@@ -19,7 +19,7 @@ import { PersonsContext, PersonsContextType } from "../../../context/PersonsCont
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -33,18 +33,18 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useNavbar();
     const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -83,11 +83,11 @@ export const NkioskListMovements = () => {
             }
 
             const promisesMovementCard = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.deviceSN, startDate, endDate)
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, startDate, endDate)
             );
 
             const promisesMovementKiosk = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.deviceSN, startDate, endDate)
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, startDate, endDate)
             );
 
             const resultsMovementCard = await Promise.all(promisesMovementCard);
@@ -118,40 +118,13 @@ export const NkioskListMovements = () => {
 
     // Unifica os dados de movimentos de cartão e porteiro
     const mergeMovementData = () => {
-        const unifiedData: KioskTransactionCard[] = [
-            ...listMovementCard.map((movement) => ({
-                id: movement.id,
-                cardNo: movement.cardNo,
-                nameUser: movement.nameUser,
-                deviceSN: movement.deviceSN,
-                eventNo: movement.eventNo,
-                eventName: movement.eventName,
-                eventDoorId: movement.eventDoorId,
-                eventDoorName: movement.eventDoorName,
-                eventTime: movement.eventTime,
-                pin: movement.pin,
-                verifyModeNo: movement.verifyModeNo,
-            })),
-            ...listMovementKiosk.map((movement) => ({
-                id: movement.id,
-                cardNo: movement.cardNo,
-                nameUser: movement.nameUser,
-                deviceSN: movement.deviceSN,
-                eventNo: movement.eventNo,
-                eventName: movement.eventName,
-                eventDoorId: movement.eventDoorId,
-                eventDoorName: movement.eventDoorName,
-                eventTime: movement.eventTime,
-                pin: movement.pin,
-                verifyModeNo: movement.verifyModeNo,
-            }))
-        ];
-
+        const unifiedData = [...listMovementCard, ...listMovementKiosk];
         setListMovements(unifiedData);
     };
 
     // Busca todos os movimentos de cartão
     useEffect(() => {
+        fetchAllDevices();
         fetchAllMoveCard();
         fetchAllMoveKiosk();
     }, []);
@@ -172,7 +145,14 @@ export const NkioskListMovements = () => {
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = listMovements.filter(listMovement => selectedDevicesIds.includes(listMovement.deviceSN));
+            const employeeShortNames = selectedDevicesIds.map(employeeId => {
+                const employee = employees.find(emp => emp.employeeID === employeeId);
+                return employee ? employee.shortName : null;
+            }).filter(name => name !== null);
+
+            const filtered = listMovements.filter(listMovement =>
+                employeeShortNames.includes(listMovement.nameUser)
+            );
             setFilteredDevices(filtered);
         } else {
             setFilteredDevices(listMovements);
@@ -220,23 +200,30 @@ export const NkioskListMovements = () => {
     };
 
     // Filtra os dados da tabela com base no filtro de 'eventName'
-    const filteredDataTable = filteredDevices
-        .filter(listMovement =>
+    const filteredDataTable = useMemo(() => {
+        return filteredDevices.filter(listMovement =>
             new Date(listMovement.eventTime) >= new Date(startDate) && new Date(listMovement.eventTime) <= new Date(endDate) &&
             Object.keys(filters).every(key =>
                 filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&
-            Object.values(listMovement).some(value => {
+            (filterText === '' || Object.entries(listMovement).some(([key, value]) => {
+                if (key === 'eventDoorId') {
+                    const typeText = value === 4 ? 'Quiosque' : 'Torniquete';
+                    return typeText.toLowerCase().includes(filterText.toLowerCase());
+                }
                 if (value == null) {
                     return false;
+                } else if (typeof value === 'number') {
+                    return value.toString().includes(filterText);
                 } else if (value instanceof Date) {
                     return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-                } else {
-                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                } else if (typeof value === 'string') {
+                    return value.toLowerCase().includes(filterText.toLowerCase());
                 }
-            })
-        )
-        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.dataRecolha).getTime());
+                return false;
+            }))
+        ).sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
+    }, [filteredDevices, filterText, filters, startDate, endDate]);       
 
     // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
     const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {
@@ -257,6 +244,7 @@ export const NkioskListMovements = () => {
         }
     };
 
+    // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = combinedMovements
         .filter(field => selectedColumns.includes(field.key))
         .sort((a, b) => (a.key === 'eventTime' ? -1 : b.key === 'eventTime' ? 1 : 0))
@@ -276,7 +264,7 @@ export const NkioskListMovements = () => {
                 const value = row[field.key as keyof KioskTransactionCard];
                 switch (field.key) {
                     case 'deviceSN':
-                        return devices[0].deviceName || 'Sem Dados';
+                        return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || '';
                     case 'eventDoorId':
                         return row.eventDoorId === 4 ? 'Quiosque' : 'Torniquete';
                     case 'eventTime':
@@ -333,11 +321,11 @@ export const NkioskListMovements = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Listagem de Movimentos</span>
+                                <span style={{ color: '#009739' }}>Movimentos Totais</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataNkiosk } from "../../../components/TreeViewNkiosk";
+import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -42,7 +42,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -114,6 +114,8 @@ export const NkioskPayCoins = () => {
     // Busca os pagamentos de moedas ao carregar a página
     useEffect(() => {
         fetchAllPayCoins();
+        fetchAllDevices();
+        fetchAllMBDevices();
     }, []);
 
     // Função para atualizar os pagamentos no moedeiro
@@ -201,7 +203,7 @@ export const NkioskPayCoins = () => {
                     case 'tpId':
                         const terminalMatch = mbDevices.find(terminal => terminal.tpId === row.tpId)
                         const terminalName = terminalMatch?.nomeQuiosque || '';
-                        return terminalName || 'Sem Dados';
+                        return terminalName || '';
                     case 'deviceSN':
                         return devices.find(device => device.serialNumber === row.deviceSN)?.deviceName || 'Sem Dados';
                     case 'timestamp':
@@ -265,7 +267,7 @@ export const NkioskPayCoins = () => {
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
-                            <TreeViewDataNkiosk onSelectDevices={handleSelectFromTreeView} />
+                            <TreeViewDataNkioskPay onSelectDevices={handleSelectFromTreeView} />
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
