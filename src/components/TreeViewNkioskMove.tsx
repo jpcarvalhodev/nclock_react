@@ -12,12 +12,12 @@ import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a interface para as propriedades do componente TreeViewData
@@ -86,11 +86,13 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
             children: []
         }));
 
-        const buildUserTree = employees.map(employee => ({
-            id: employee.employeeID || 'Sem ID',
-            label: employee.shortName || 'Sem Nome',
-            children: []
-        }));
+        const buildUserTree = employees
+            .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+            .map(employee => ({
+                id: employee.employeeID || 'Sem ID',
+                label: employee.shortName || 'Sem Nome',
+                children: []
+            }));
 
         const treeItems = [
             {
