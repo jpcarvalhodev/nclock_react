@@ -235,7 +235,7 @@ export const NkioskListMovements = () => {
 
     // Função para abrir o modal de edição
     const handleOpenEditModal = (person: KioskTransactionCard) => {
-        const employeeDetails = employees.find(emp => emp.name === person.nameUser);
+        const employeeDetails = employees.find(emp => emp.shortName === person.nameUser);
         if (employeeDetails) {
             setSelectedEmployee(employeeDetails);
             setShowEditModal(true);
