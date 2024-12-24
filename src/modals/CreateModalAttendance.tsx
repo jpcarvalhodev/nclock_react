@@ -125,7 +125,8 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             setFormData(prevState => ({
                 ...prevState,
                 initialValues,
-                attendanceTime: getCurrentDateTimeLocal()
+                attendanceTime: getCurrentDateTimeLocal(),
+                inOutMode: '0'
             }));
         } else {
             setFormData({});
@@ -142,7 +143,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
         } else {
             setFormData(prevFormData => ({
                 ...prevFormData,
-                inOutMode: prevFormData.inOutMode || ''
+                inOutMode: prevFormData.inOutMode || '0'
             }));
         }
     }, [open, entityType]);
@@ -201,7 +202,8 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
 
     // Função para lidar com o salvamento
     const handleSave = () => {
-        onSave(formData as T);
+        const { initialValues, selectedEmployeeIds, ...cleanedData } = formData;
+        onSave(cleanedData as T);
     };
 
     // Opções do tipo

@@ -248,12 +248,12 @@ export const NclockRequests = () => {
 
     // Função para abrir o modal de edição
     const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
-        const employeeDetails = employees.find(emp => emp.name === person.nameUser);
+        const employeeDetails = employees.find(emp => emp.employeeID === person.employeeId);
         if (employeeDetails) {
             setSelectedEmployee(employeeDetails);
             setShowEditModal(true);
         } else {
-            console.error("Funcionário não encontrado:", person.nameUser);
+            console.error("Funcionário não encontrado:", person.employeeName);
         }
     };
 

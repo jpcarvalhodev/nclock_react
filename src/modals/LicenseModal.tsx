@@ -315,7 +315,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       }
       return entity;
     });
-    console.log(updatedEntities);
     onUpdate(key, updatedEntities as License[]);
     setIsModalVisible(false);
   };
