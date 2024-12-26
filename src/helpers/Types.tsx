@@ -699,3 +699,13 @@ export type LicenseKey = {
     id: string;
     licenseKey: string;
 }
+
+export type NewTransactionCard = {
+    [key: string]: any;
+    id: string;
+    eventTime: Date;
+    pin: number;
+    cardNo: number;
+    deviceSN: string;
+    eventDoorId: number;
+}

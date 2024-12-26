@@ -27,12 +27,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página de Zonas
@@ -52,7 +52,7 @@ export const Zones = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<string | null>(null);
+    const [selectedZoneForDelete, setSelectedZoneForDelete] = useState<any | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Zone>>();
     const [currentZoneIndex, setCurrentZoneIndex] = useState(0);
@@ -72,7 +72,7 @@ export const Zones = () => {
     };
 
     // Função para apagar uma zona
-    const deleteZone = async (zoneID: string) => {
+    const deleteZone = async (zoneID: string[]) => {
         await handleDeleteZone(zoneID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
@@ -113,6 +113,29 @@ export const Zones = () => {
     const handleOpenDeleteModal = (zoneID: string) => {
         setSelectedZoneForDelete(zoneID);
         setShowDeleteModal(true);
+    };
+
+    // Função para deletar várias zonas
+    const handleSelectedZonesToDelete = () => {
+        const zoneIds = Array.from(new Set(selectedRows.map(zone => zone.zoneID)));
+        setSelectedZoneForDelete(zoneIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let zoneIds;
+
+        if (Array.isArray(selectedZoneForDelete)) {
+            zoneIds = selectedZoneForDelete;
+        } else if (selectedZoneForDelete) {
+            zoneIds = [selectedZoneForDelete];
+        } else {
+            zoneIds = Array.from(new Set(selectedRows.map(zone => zone.zoneID)));
+        }
+
+        setShowDeleteModal(false);
+        deleteZone(zoneIds);
     };
 
     // Função para alternar a visibilidade das colunas
@@ -293,6 +316,12 @@ export const Zones = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedZonesToDelete} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                         <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
@@ -323,7 +352,7 @@ export const Zones = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteZone}
+                    onDelete={startDeletionProcess}
                     entityId={selectedZoneForDelete}
                 />
             </div>

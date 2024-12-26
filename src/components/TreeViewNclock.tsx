@@ -132,7 +132,10 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
       label: dept.name || 'Sem Nome',
       children: [
         ...dept.children.map(buildDepartmentTree),
-        ...allEmployees.filter((emp: Employee) => emp.departmentId === dept.departmentID).map((emp: Employee) => ({
+        ...allEmployees
+        .filter((emp: Employee) => emp.departmentId === dept.departmentID)
+        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+        .map((emp: Employee) => ({
           id: `dept-${dept.departmentID}-emp-${emp.employeeID}` || 'Sem ID',
           label: emp.name || 'Sem Nome',
         })),
@@ -144,7 +147,10 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     const groupItems = groups.map((group: Group) => ({
       id: `group-${group.groupID}` || 'Sem ID',
       label: group.name || 'Sem Nome',
-      children: allEmployees.filter((emp: Employee) => emp.groupId === group.groupID).map((emp: Employee) => ({
+      children: allEmployees
+      .filter((emp: Employee) => emp.groupId === group.groupID)
+      .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+      .map((emp: Employee) => ({
         id: `group-${group.groupID}-emp-${emp.employeeID}` || 'Sem ID',
         label: emp.name || 'Sem Nome',
       })),

@@ -83,7 +83,9 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
 
         const buildDoorTree = (doors: AccessControl) => {
             if (!Array.isArray(doors)) return [];
-            return doors.map((door: AccessControl) => ({
+            return doors
+            .sort((a, b) => a.doorName.localeCompare(b.doorName))
+            .map((door: AccessControl) => ({
                 id: door?.acId || generateUniqueId('door'),
                 label: door?.doorName || 'Sem Nome',
                 children: []

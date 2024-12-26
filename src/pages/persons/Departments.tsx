@@ -28,12 +28,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página de departamentos
@@ -55,7 +55,7 @@ export const Departments = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedDepartmentForDelete, setSelectedDepartmentForDelete] = useState<string | null>(null);
+    const [selectedDepartmentForDelete, setSelectedDepartmentForDelete] = useState<any | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Department> | null>(null);
     const [currentDepartmentIndex, setCurrentDepartmentIndex] = useState(0);
@@ -98,7 +98,7 @@ export const Departments = () => {
     };
 
     // Apaga um departamento
-    const deleteDepartment = async (departmentID: string) => {
+    const deleteDepartment = async (departmentID: string[]) => {
         await handleDeleteDepartment(departmentID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
@@ -229,6 +229,29 @@ export const Departments = () => {
         }
     };
 
+    // Função para deletar vários departamentos
+    const handleSelectedDeptsToDelete = () => {
+        const deptIds = Array.from(new Set(selectedRows.map(dept => dept.departmentID)));
+        setSelectedDepartmentForDelete(deptIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let deptIds;
+
+        if (Array.isArray(selectedDepartmentForDelete)) {
+            deptIds = selectedDepartmentForDelete;
+        } else if (selectedDepartmentForDelete) {
+            deptIds = [selectedDepartmentForDelete];
+        } else {
+            deptIds = Array.from(new Set(selectedRows.map(dept => dept.departmentID)));
+        }
+
+        setShowDeleteModal(false);
+        deleteDepartment(deptIds);
+    };
+
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
@@ -318,6 +341,12 @@ export const Departments = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedDeptsToDelete} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={departmentWithNames} selectedData={selectedRows.length > 0 ? selectedRows : departmentWithNames} fields={getSelectedFields()} />
                         <PrintButton data={selectedRows.length > 0 ? selectedRows : departmentWithNames} fields={getSelectedFields()} />
                     </div>
@@ -350,7 +379,7 @@ export const Departments = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteDepartment}
+                    onDelete={startDeletionProcess}
                     entityId={selectedDepartmentForDelete}
                 />
             </div>

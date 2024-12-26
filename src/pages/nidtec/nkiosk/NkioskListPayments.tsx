@@ -142,7 +142,7 @@ export const NkioskListPayments = () => {
         fetchAllPayCoins();
         fetchAllDevices();
         fetchAllMBDevices();
-    }, []);
+    }, [devices]);
 
     // Atualiza a lista de pagamentos ao receber novos dados
     useEffect(() => {

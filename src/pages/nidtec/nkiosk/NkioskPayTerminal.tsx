@@ -76,7 +76,7 @@ export const NkioskPayTerminal = () => {
         fetchAllPayTerminal();
         fetchAllDevices();
         fetchAllMBDevices();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar os pagamentos dos terminais
     const refreshPayTerminal = () => {

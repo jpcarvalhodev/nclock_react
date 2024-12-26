@@ -127,7 +127,7 @@ export const NkioskListMovements = () => {
         fetchAllDevices();
         fetchAllMoveCard();
         fetchAllMoveKiosk();
-    }, []);
+    }, [devices]);
 
     // Atualiza a lista de movimentos ao receber novos dados
     useEffect(() => {

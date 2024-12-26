@@ -12,12 +12,12 @@ import { useEntity } from '../context/EntityContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a interface para as propriedades do componente TreeViewData
@@ -95,9 +95,12 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
             });
         });
 
-        usersMap.forEach((user) => {
-            user.children.sort((a: { createdDate: string | number | Date; }, b: { createdDate: string | number | Date; }) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
-        });
+        const sortedUsers = Array.from(usersMap.values())
+            .sort((a, b) => a.label.localeCompare(b.label))
+            .map(user => ({
+                ...user,
+                children: user.children.sort((a: { createdDate: string | number | Date; }, b: { createdDate: string | number | Date; }) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+            }));
 
         const treeItems = [
             {
@@ -107,7 +110,7 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
                     {
                         id: 'utilizadores',
                         label: 'UTILIZADORES',
-                        children: Array.from(usersMap.values())
+                        children: sortedUsers
                     },
                 ],
             },

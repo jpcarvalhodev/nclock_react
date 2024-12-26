@@ -52,7 +52,7 @@ export const ExternalEntities = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedExternalEntity, setSelectedExternalEntity] = useState<ExternalEntity | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<string | null>(null);
+    const [selectedExternalEntityForDelete, setSelectedExternalEntityForDelete] = useState<any | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<ExternalEntity> | null>(null);
     const [currentExtEntIndex, setCurrentExtEntIndex] = useState(0);
@@ -72,7 +72,7 @@ export const ExternalEntities = () => {
     };
 
     // Função para apagar uma entidade externa
-    const deleteExternalEntity = async (externalEntityID: string) => {
+    const deleteExternalEntity = async (externalEntityID: string[]) => {
         await handleDeleteExternalEntity(externalEntityID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
@@ -113,6 +113,29 @@ export const ExternalEntities = () => {
     const handleOpenDeleteModal = (externalEntityID: string) => {
         setSelectedExternalEntityForDelete(externalEntityID);
         setShowDeleteModal(true);
+    };
+
+    // Função para deletar vários departamentos
+    const handleSelectedEntExtToDelete = () => {
+        const entExtIds = Array.from(new Set(selectedRows.map(ee => ee.externalEntityID)));
+        setSelectedExternalEntityForDelete(entExtIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let entExtIds;
+
+        if (Array.isArray(selectedExternalEntityForDelete)) {
+            entExtIds = selectedExternalEntityForDelete;
+        } else if (selectedExternalEntityForDelete) {
+            entExtIds = [selectedExternalEntityForDelete];
+        } else {
+            entExtIds = Array.from(new Set(selectedRows.map(ee => ee.externalEntityID)));
+        }
+
+        setShowDeleteModal(false);
+        deleteExternalEntity(entExtIds);
     };
 
     // Função para selecionar as linhas
@@ -297,6 +320,12 @@ export const ExternalEntities = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedEntExtToDelete} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                         <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
@@ -327,7 +356,7 @@ export const ExternalEntities = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteExternalEntity}
+                    onDelete={startDeletionProcess}
                     entityId={selectedExternalEntityForDelete}
                 />
             </div>

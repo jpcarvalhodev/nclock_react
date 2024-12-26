@@ -75,7 +75,9 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
 
-        const buildDeviceTree = registeredUsers.map(user => ({
+        const buildDeviceTree = registeredUsers
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(user => ({
             id: user.id || 'Sem ID',
             label: user.name || 'Sem Nome',
             children: []

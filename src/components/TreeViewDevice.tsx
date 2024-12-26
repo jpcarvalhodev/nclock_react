@@ -8,7 +8,6 @@ import { CustomOutlineButton } from './CustomOutlineButton';
 import { useLocation } from 'react-router-dom';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useTerminals } from '../context/TerminalsContext';
-import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -78,7 +77,9 @@ export function TreeViewDataDevice({ onSelectDevices }: TreeViewDataDeviceProps)
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
-        const buildDeviceTree = devices.map(device => ({
+        const buildDeviceTree = devices
+        .sort((a, b) => a.deviceNumber - b.deviceNumber)
+        .map(device => ({
             id: device.serialNumber || 'Sem SN',
             label: device.deviceName || 'Sem Nome',
             children: []

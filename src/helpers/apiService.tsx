@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Auxiliaries, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Auxiliaries, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -601,9 +601,13 @@ export const updateCategory = async (category: Category) => {
     return response.json();
 };
 
-export const deleteCategory = async (categoryID: string) => {
-    const response = await fetchWithAuth(`Categories/${categoryID}`, {
-        method: 'DELETE'
+export const deleteCategory = async (categoryID: string[]) => {
+    const response = await fetchWithAuth(`Categories/DeleteCategories`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(categoryID)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -677,9 +681,13 @@ export const updateDepartment = async (department: Department) => {
     return response.json();
 };
 
-export const deleteDepartment = async (departmentID: string) => {
-    const response = await fetchWithAuth(`Departaments/${departmentID}`, {
-        method: 'DELETE'
+export const deleteDepartment = async (departmentID: string[]) => {
+    const response = await fetchWithAuth(`Departaments/DeleteDepartments`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(departmentID)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -753,9 +761,13 @@ export const updateExternalEntity = async (entity: ExternalEntity) => {
     return response.json();
 };
 
-export const deleteExternalEntity = async (externalEntityID: string) => {
-    const response = await fetchWithAuth(`ExternalEntities/${externalEntityID}`, {
-        method: 'DELETE'
+export const deleteExternalEntity = async (externalEntityID: string[]) => {
+    const response = await fetchWithAuth(`ExternalEntities/DeleteExternalEntity`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(externalEntityID)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -821,9 +833,13 @@ export const updateGroup = async (group: Group) => {
     return response.json();
 };
 
-export const deleteGroup = async (groupID: string) => {
-    const response = await fetchWithAuth(`Groups/${groupID}`, {
-        method: 'DELETE'
+export const deleteGroup = async (groupID: string[]) => {
+    const response = await fetchWithAuth(`Groups/DeleteGroup`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(groupID)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -879,9 +895,13 @@ export const updateProfession = async (profession: Profession) => {
     return response.json();
 };
 
-export const deleteProfession = async (profession: string) => {
-    const response = await fetchWithAuth(`Professions/${profession}`, {
-        method: 'DELETE'
+export const deleteProfession = async (profession: string[]) => {
+    const response = await fetchWithAuth(`Professions/DeleteProfession`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profession)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -937,9 +957,13 @@ export const updateExternalEntityTypes = async (externalEntityType: ExternalEnti
     return response.json();
 };
 
-export const deleteExternalEntityTypes = async (externalEntityID: string) => {
-    const response = await fetchWithAuth(`ExternalEntityTypes/${externalEntityID}`, {
-        method: 'DELETE'
+export const deleteExternalEntityTypes = async (externalEntityID: string[]) => {
+    const response = await fetchWithAuth(`ExternalEntityTypes/DeleteType`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(externalEntityID)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -995,9 +1019,13 @@ export const updateZone = async (zone: Zone) => {
     return response.json();
 };
 
-export const deleteZone = async (zoneID: string) => {
-    const response = await fetchWithAuth(`Zones/${zoneID}`, {
-        method: 'DELETE'
+export const deleteZone = async (zoneID: string[]) => {
+    const response = await fetchWithAuth(`Zones/DeleteZone`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(zoneID)
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1258,6 +1286,22 @@ export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, d
 
 export const fetchDataFimRecolha = async (deviceSN: string) => {
     const response = await fetchWithAuth(`KioskTransaction/GetLastDataFimRecolha?sn=${deviceSN}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
+export const addKioskTransaction = async (kioskTransaction: NewTransactionCard) => {
+    const response = await fetchWithAuth(`KioskTransaction/AddTransaction`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(kioskTransaction)
+    });
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);

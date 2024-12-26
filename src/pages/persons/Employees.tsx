@@ -61,7 +61,7 @@ export const Employees = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<string | null>(null);
+    const [selectedEmployeeToDelete, setSelectedEmployeeToDelete] = useState<any | null>(null);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [initialData, setInitialData] = useState<Employee | null>(null);
@@ -111,7 +111,6 @@ export const Employees = () => {
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
-        refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -202,13 +201,22 @@ export const Employees = () => {
     // Função para deletar vários funcionários
     const handleSelectedEmployeesToDelete = () => {
         const employeeIds = Array.from(new Set(selectedRows.map(employee => employee.employeeID)));
-        setSelectedEmployeeToDelete(employeeIds.length ? employeeIds[0] : null);
+        setSelectedEmployeeToDelete(employeeIds);
         setShowDeleteModal(true);
     };
 
     // Configurando a função onDelete para iniciar o processo de exclusão
     const startDeletionProcess = () => {
-        const employeeIds = Array.from(new Set(selectedRows.map(employee => employee.employeeID)));
+        let employeeIds;
+
+        if (Array.isArray(selectedEmployeeToDelete)) {
+            employeeIds = selectedEmployeeToDelete;
+        } else if (selectedEmployeeToDelete) {
+            employeeIds = [selectedEmployeeToDelete];
+        } else {
+            employeeIds = Array.from(new Set(selectedRows.map(emp => emp.employeeID)));
+        }
+
         setShowDeleteModal(false);
         deleteSelectedEmployees(employeeIds);
     };

@@ -27,12 +27,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página de categorias
@@ -52,7 +52,7 @@ export const Categories = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<string | null>(null);
+    const [selectedCategoryForDelete, setSelectedCategoryForDelete] = useState<any | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Category> | null>(null);
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
@@ -69,10 +69,10 @@ export const Categories = () => {
     const updateCategory = async (category: Category) => {
         await handleUpdateCategory(category);
         setClearSelectionToggle(!clearSelectionToggle);
-    } 
+    }
 
     // Função para apagar uma categoria
-    const deleteCategory = async (categoryID: string) => {
+    const deleteCategory = async (categoryID: string[]) => {
         await handleDeleteCategory(categoryID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
@@ -107,6 +107,29 @@ export const Categories = () => {
     const handleOpenDeleteModal = (categoryID: string) => {
         setSelectedCategoryForDelete(categoryID);
         setShowDeleteModal(true);
+    };
+
+    // Função para deletar vários departamentos
+    const handleSelectedCatToDelete = () => {
+        const catIds = Array.from(new Set(selectedRows.map(cat => cat.categoryID)));
+        setSelectedCategoryForDelete(catIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let catIds;
+
+        if (Array.isArray(selectedCategoryForDelete)) {
+            catIds = selectedCategoryForDelete;
+        } else if (selectedCategoryForDelete) {
+            catIds = [selectedCategoryForDelete];
+        } else {
+            catIds = Array.from(new Set(selectedRows.map(cat => cat.categoryID)));
+        }
+
+        setShowDeleteModal(false);
+        deleteCategory(catIds);
     };
 
     // Define a função selecionar uma linha
@@ -268,6 +291,12 @@ export const Categories = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedCatToDelete} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                         <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
@@ -300,7 +329,7 @@ export const Categories = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteCategory}
+                    onDelete={startDeletionProcess}
                     entityId={selectedCategoryForDelete}
                 />
             </div>

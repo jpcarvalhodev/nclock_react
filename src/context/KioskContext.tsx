@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import * as apiService from '../helpers/apiService';
-import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, ManualOpenDoor, RecolhaMoedeiroEContador } from '../helpers/Types';
+import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../helpers/Types';
 import { useTerminals } from './TerminalsContext';
 import { toast } from 'react-toastify';
 
@@ -15,6 +15,7 @@ export interface KioskContextType {
     moveCard: KioskTransactionCard[];
     setMoveCard: (moveCard: KioskTransactionCard[]) => void;
     fetchAllMoveCard: () => void;
+    handleAddNewMoveCard: (card: NewTransactionCard) => void;
     moveKiosk: KioskTransactionCard[];
     setMoveKiosk: (moveKiosk: KioskTransactionCard[]) => void;
     fetchAllMoveKiosk: () => void;
@@ -150,10 +151,22 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
 
             setMoveCard(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            console.error('Erro ao buscar os dados de movimentos de torniquete:', error);
             setMoveCard([]);
         }
     };
+
+    // Função para adicionar movimento
+    const handleAddNewMoveCard = async (card: NewTransactionCard) => {
+        try {
+            const data = await apiService.addKioskTransaction(card);
+            toast.success(data.message || 'Movimento de torniquete adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar novo movimento de torniquete:', error);
+        } finally {
+            fetchAllMoveCard();
+        }
+    }
 
     // Função para buscar os movimentos do quiosque
     const fetchAllMoveKiosk = async () => {
@@ -405,6 +418,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         moveCard,
         setMoveCard,
         fetchAllMoveCard,
+        handleAddNewMoveCard,
         moveKiosk,
         setMoveKiosk,
         fetchAllMoveKiosk,

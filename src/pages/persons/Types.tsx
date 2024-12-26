@@ -50,7 +50,7 @@ export const Types = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedExternalEntityType, setSelectedExternalEntityType] = useState<ExternalEntityTypes | null>(null);
-    const [selectedExternalEntityTypeForDelete, setSelectedExternalEntityTypeForDelete] = useState<string | null>(null);
+    const [selectedExternalEntityTypeForDelete, setSelectedExternalEntityTypeForDelete] = useState<any | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<ExternalEntityTypes> | null>(null);
     const [currentExternalEntityTypeIndex, setCurrentExternalEntityTypeIndex] = useState(0);
@@ -70,7 +70,7 @@ export const Types = () => {
     };
 
     // Função para apagar um tipo de uma entidade externa
-    const deleteExternalEntityTypes = async (externalEntityTypeID: string) => {
+    const deleteExternalEntityTypes = async (externalEntityTypeID: string[]) => {
         await handleDeleteExternalEntityTypes(externalEntityTypeID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
@@ -105,6 +105,29 @@ export const Types = () => {
     const handleOpenDeleteModal = (externalEntityTypeID: string) => {
         setSelectedExternalEntityTypeForDelete(externalEntityTypeID);
         setShowDeleteModal(true);
+    };
+
+    // Função para deletar vários tipos de entidades externas
+    const handleSelectedTypeToDelete = () => {
+        const typeIds = Array.from(new Set(selectedRows.map(type => type.externalEntityTypeID)));
+        setSelectedExternalEntityTypeForDelete(typeIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let typeIds;
+
+        if (Array.isArray(selectedExternalEntityTypeForDelete)) {
+            typeIds = selectedExternalEntityTypeForDelete;
+        } else if (selectedExternalEntityTypeForDelete) {
+            typeIds = [selectedExternalEntityTypeForDelete];
+        } else {
+            typeIds = Array.from(new Set(selectedRows.map(type => type.externalEntityTypeID)));
+        }
+
+        setShowDeleteModal(false);
+        deleteExternalEntityTypes(typeIds);
     };
 
     // Função para selecionar as linhas
@@ -266,6 +289,12 @@ export const Types = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedTypeToDelete} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                         <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
@@ -320,7 +349,7 @@ export const Types = () => {
             <DeleteModal
                 open={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                onDelete={deleteExternalEntityTypes}
+                onDelete={startDeletionProcess}
                 entityId={selectedExternalEntityTypeForDelete}
             />
             {openColumnSelector && (

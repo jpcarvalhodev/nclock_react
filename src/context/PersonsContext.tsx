@@ -49,34 +49,34 @@ export interface PersonsContextType {
     fetchAllCategories: () => Promise<void>;
     handleAddCategory: (category: Category) => Promise<void>;
     handleUpdateCategory: (category: Category) => Promise<void>;
-    handleDeleteCategory: (categoryID: string) => Promise<void>;
+    handleDeleteCategory: (categoryID: string[]) => Promise<void>;
     fetchAllDepartments: () => Promise<Department[]>;
     fetchAllSubDepartments: (parentId: number) => Promise<Department[]>;
     handleAddDepartment: (department: Department) => Promise<void>;
     handleUpdateDepartment: (department: Department) => Promise<void>;
-    handleDeleteDepartment: (departmentID: string) => Promise<void>;
+    handleDeleteDepartment: (departmentID: string[]) => Promise<void>;
     fetchAllGroups: () => Promise<Group[]>;
     handleAddGroup: (group: Group) => Promise<void>;
     handleUpdateGroup: (group: Group) => Promise<void>;
-    handleDeleteGroup: (groupID: string) => Promise<void>;
+    handleDeleteGroup: (groupID: string[]) => Promise<void>;
     dataEE: DataStateExternalEntities;
     fetchAllExternalEntitiesData: () => Promise<void>;
     handleAddExternalEntity: (externalEntity: ExternalEntity) => Promise<void>;
     handleUpdateExternalEntity: (externalEntity: ExternalEntity) => Promise<void>;
-    handleDeleteExternalEntity: (externalEntityID: string) => Promise<void>;
+    handleDeleteExternalEntity: (externalEntityID: string[]) => Promise<void>;
     handleAddExternalEntityTypes: (externalEntityType: ExternalEntityTypes) => Promise<void>;
     handleUpdateExternalEntityTypes: (externalEntityType: ExternalEntityTypes) => Promise<void>;
-    handleDeleteExternalEntityTypes: (externalEntityTypeID: string) => Promise<void>;
+    handleDeleteExternalEntityTypes: (externalEntityTypeID: string[]) => Promise<void>;
     professions: Profession[];
     fetchAllProfessions: () => Promise<void>;
     handleAddProfession: (profession: Profession) => Promise<void>;
     handleUpdateProfession: (profession: Profession) => Promise<void>;
-    handleDeleteProfessions: (professionID: string) => Promise<void>;
+    handleDeleteProfessions: (professionID: string[]) => Promise<void>;
     zones: Zone[];
     fetchAllZones: () => Promise<void>;
     handleAddZone: (zone: Zone) => Promise<void>;
     handleUpdateZone: (zone: Zone) => Promise<void>;
-    handleDeleteZone: (zoneID: string) => Promise<void>;
+    handleDeleteZone: (zoneID: string[]) => Promise<void>;
 }
 
 // Expandindo as opções de busca
@@ -154,7 +154,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             setEmployees(data);
             return data;
         } catch (error) {
-            console.error('Erro ao buscar assiduidades:', error);
+            console.error('Erro ao buscar dados:', error);
             return [];
         }
     }, []);
@@ -211,7 +211,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Apaga um departamento
-    const handleDeleteDepartment = async (departmentID: string) => {
+    const handleDeleteDepartment = async (departmentID: string[]) => {
         try {
             const deleteDept = await apiService.deleteDepartment(departmentID);
             toast.success(deleteDept.value || 'Departamento apagado com sucesso!');
@@ -264,7 +264,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para apagar um grupo
-    const handleDeleteGroup = async (groupID: string) => {
+    const handleDeleteGroup = async (groupID: string[]) => {
         try {
             const deleteGroup = await apiService.deleteGroup(groupID);
             toast.success(deleteGroup.value || 'Grupo apagado com sucesso!');
@@ -355,7 +355,6 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
 
     // Define a função de apagar funcionários
     const handleDeleteEmployee = async (employeeID: string[]) => {
-
         try {
             const deleteEmployee = await apiService.deleteEmployee(employeeID);
             toast.success(deleteEmployee.message || 'Funcionário apagado com sucesso!')
@@ -406,7 +405,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para apagar uma categoria
-    const handleDeleteCategory = async (categoryID: string) => {
+    const handleDeleteCategory = async (categoryID: string[]) => {
         try {
             const deleteCategory = await apiService.deleteCategory(categoryID);
             toast.success(deleteCategory.value || 'Categoria apagada com sucesso!');
@@ -457,7 +456,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para apagar uma entidade externa
-    const handleDeleteExternalEntity = async (externalEntityID: string) => {
+    const handleDeleteExternalEntity = async (externalEntityID: string[]) => {
         try {
             const deleteExtEnt = await apiService.deleteExternalEntity(externalEntityID);
             toast.success(deleteExtEnt.value || 'Entidade externa apagada com sucesso!');
@@ -497,7 +496,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para apagar um tipo de uma entidade externa
-    const handleDeleteExternalEntityTypes = async (externalEntityTypeID: string) => {
+    const handleDeleteExternalEntityTypes = async (externalEntityTypeID: string[]) => {
         try {
             const deleteExtEntType = await apiService.deleteExternalEntityTypes(externalEntityTypeID);
             toast.success(deleteExtEntType.value || 'Tipo de entidade externa apagada com sucesso!');
@@ -548,7 +547,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para apagar uma profissão
-    const handleDeleteProfessions = async (professionID: string) => {
+    const handleDeleteProfessions = async (professionID: string[]) => {
         try {
             const deleteProfession = await apiService.deleteProfession(professionID);
             toast.success(deleteProfession.value || 'Profissão apagada com sucesso!');
@@ -599,7 +598,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para apagar uma zona
-    const handleDeleteZone = async (zoneID: string) => {
+    const handleDeleteZone = async (zoneID: string[]) => {
         try {
             const deleteZone = await apiService.deleteZone(zoneID);
             toast.success(deleteZone.value || 'Zona apagada com sucesso!');

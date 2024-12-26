@@ -52,7 +52,7 @@ export const Professions = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<string | null>(null);
+    const [selectedProfessionForDelete, setSelectedProfessionForDelete] = useState<any | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [selectedRows, setSelectedRows] = useState<Profession[]>([]);
     const [initialData, setInitialData] = useState<Partial<Profession> | null>(null);
@@ -72,7 +72,7 @@ export const Professions = () => {
     };
 
     // Função para apagar uma profissão
-    const deleteProfessions = async (professionID: string) => {
+    const deleteProfessions = async (professionID: string[]) => {
         await handleDeleteProfessions(professionID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
@@ -107,6 +107,29 @@ export const Professions = () => {
     const handleOpenDeleteModal = (professionID: string) => {
         setSelectedProfessionForDelete(professionID);
         setShowDeleteModal(true);
+    };
+
+    // Função para deletar várias profissões
+    const handleSelectedProfessionToDelete = () => {
+        const profIds = Array.from(new Set(selectedRows.map(prof => prof.professionID)));
+        setSelectedProfessionForDelete(profIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let profIds;
+
+        if (Array.isArray(selectedProfessionForDelete)) {
+            profIds = selectedProfessionForDelete;
+        } else if (selectedProfessionForDelete) {
+            profIds = [selectedProfessionForDelete];
+        } else {
+            profIds = Array.from(new Set(selectedRows.map(prof => prof.professionID)));
+        }
+
+        setShowDeleteModal(false);
+        deleteProfessions(profIds);
     };
 
     // Função para alternar a visibilidade das colunas
@@ -268,6 +291,12 @@ export const Professions = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedProfessionToDelete} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                         <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
@@ -300,7 +329,7 @@ export const Professions = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteProfessions}
+                    onDelete={startDeletionProcess}
                     entityId={selectedProfessionForDelete}
                 />
             </div>

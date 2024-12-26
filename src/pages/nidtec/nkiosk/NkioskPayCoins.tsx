@@ -116,7 +116,7 @@ export const NkioskPayCoins = () => {
         fetchAllPayCoins();
         fetchAllDevices();
         fetchAllMBDevices();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {

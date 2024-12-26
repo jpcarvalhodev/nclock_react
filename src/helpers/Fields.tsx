@@ -526,3 +526,11 @@ export const counterFields = [
 export const licenseKey = [
     { key: 'licenseKey', label: 'Chave', type: 'string' },
 ];
+
+export const newTransactionCardFields = [
+    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'pin', label: 'Número do Utilizador', type: 'number' },
+    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
+    { key: 'eventDoorId', label: 'Torniquete', type: 'number' },
+];

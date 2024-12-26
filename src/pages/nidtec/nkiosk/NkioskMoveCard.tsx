@@ -7,9 +7,9 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useContext, useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { Employee, EmployeeCard, KioskTransactionCard, NewTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { auxOutFields, employeeFields, transactionCardFields } from "../../../helpers/Fields";
+import { auxOutFields, employeeFields, newTransactionCardFields, transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
 import Split from "react-split";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
@@ -22,6 +22,8 @@ import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
+import { CreateModalNewCard } from "../../../modals/CreateModalNewCard";
+import { add } from "date-fns";
 
 // Define a interface SaveData
 interface SaveData {
@@ -56,7 +58,7 @@ export const NkioskMoveCard = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { moveCard, setMoveCard, fetchAllMoveCard } = useKiosk();
+    const { moveCard, setMoveCard, fetchAllMoveCard, handleAddNewMoveCard } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'eventName', 'deviceSN']);
@@ -71,7 +73,13 @@ export const NkioskMoveCard = () => {
     const [loadingAuxOut, setLoadingAuxOut] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+    const [showAddModal, setShowAddModal] = useState(false);
     const eventDoorId = '3';
+
+    // Função para adicionar um novo cartão
+    const addNewCard = async (newCard: NewTransactionCard) => {
+        await handleAddNewMoveCard(newCard);
+    };
 
     // Função para buscar os movimentos dos cartões entre datas
     const fetchMovementCardBetweenDates = async () => {
@@ -112,7 +120,7 @@ export const NkioskMoveCard = () => {
     // Busca os movimentos dos cartões ao carregar a página
     useEffect(() => {
         fetchAllMoveCard();
-    }, []);
+    }, [devices]);
 
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
@@ -328,6 +336,12 @@ export const NkioskMoveCard = () => {
                                     </OverlayTrigger>
                                     <OverlayTrigger
                                         placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
@@ -398,6 +412,13 @@ export const NkioskMoveCard = () => {
                         onSelectAllColumns={onSelectAllColumns}
                     />
                 )}
+                <CreateModalNewCard
+                    open={showAddModal}
+                    onClose={() => setShowAddModal(false)}
+                    onSave={addNewCard}
+                    fields={newTransactionCardFields}
+                    title="Adicionar Picagem Manual"
+                />
                 {loadingAuxOut && (
                     <AuxOutModal
                         title="Escolha a Auxiliar para Abrir"

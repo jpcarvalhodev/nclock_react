@@ -74,7 +74,9 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
-        const buildTerminalTree = mbDevices.map(device => ({
+        const buildTerminalTree = mbDevices
+        .sort((a, b) => a.nomeQuiosque.localeCompare(b.nomeQuiosque))
+        .map(device => ({
             id: device.id || 'Sem ID',
             label: device.nomeQuiosque || 'Sem Nome',
             children: []

@@ -134,9 +134,13 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
       ],
     });
 
-    const departmentItems = topDepartments.map(buildDepartmentTree);
+    const departmentItems = topDepartments
+    .sort((a, b) => Number(a.code) - Number(b.code))
+    .map(buildDepartmentTree);
 
-    const groupItems = groups.map((group: Group) => ({
+    const groupItems = groups
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((group: Group) => ({
       id: `group-${group.groupID}`,
       label: group.name || 'Sem Nome',
       children: allEmployees

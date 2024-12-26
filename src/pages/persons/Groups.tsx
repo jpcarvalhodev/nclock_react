@@ -27,12 +27,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página de grupos
@@ -52,7 +52,7 @@ export const Groups = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<string | null>(null);
+    const [selectedGroupForDelete, setSelectedGroupForDelete] = useState<any | null>(null);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<Group> | null>(null);
     const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
@@ -72,7 +72,7 @@ export const Groups = () => {
     };
 
     // Função para apagar um grupo
-    const deleteGroup = async (groupID: string) => {
+    const deleteGroup = async (groupID: string[]) => {
         await handleDeleteGroup(groupID);
         setClearSelectionToggle(!clearSelectionToggle);
     };
@@ -113,6 +113,29 @@ export const Groups = () => {
     const handleOpenDeleteModal = (groupID: string) => {
         setSelectedGroupForDelete(groupID);
         setShowDeleteModal(true);
+    };
+
+    // Função para apagar os grupos selecionados
+    const handleSelectedGroupsToDelete = () => {
+        const groupIds = Array.from(new Set(selectedRows.map(grp => grp.groupID)));
+        setSelectedGroupForDelete(groupIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let groupIds;
+
+        if (Array.isArray(selectedGroupForDelete)) {
+            groupIds = selectedGroupForDelete;
+        } else if (selectedGroupForDelete) {
+            groupIds = [selectedGroupForDelete];
+        } else {
+            groupIds = Array.from(new Set(selectedRows.map(grp => grp.groupID)));
+        }
+
+        setShowDeleteModal(false);
+        deleteGroup(groupIds);
     };
 
     // Função para selecionar as linhas
@@ -283,6 +306,12 @@ export const Groups = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
                         </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedGroupsToDelete} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={groupWithNames} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                         <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
@@ -315,7 +344,7 @@ export const Groups = () => {
                 <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteGroup}
+                    onDelete={startDeletionProcess}
                     entityId={selectedGroupForDelete}
                 />
             </div>

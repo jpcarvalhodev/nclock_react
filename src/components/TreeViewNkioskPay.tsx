@@ -77,7 +77,9 @@ export function TreeViewDataNkioskPay({ onSelectDevices }: TreeViewDataNkioskPro
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
-        const buildDeviceTree = devices.map(device => ({
+        const buildDeviceTree = devices
+        .sort((a, b) => a.deviceNumber - b.deviceNumber)
+        .map(device => ({
             id: device.serialNumber || 'Sem SN',
             label: device.deviceName || 'Sem Nome',
             children: []
