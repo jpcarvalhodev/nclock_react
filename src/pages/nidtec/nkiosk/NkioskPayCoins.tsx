@@ -42,7 +42,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { devices, mbDevices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -114,9 +114,8 @@ export const NkioskPayCoins = () => {
     // Busca os pagamentos de moedas ao carregar a página
     useEffect(() => {
         fetchAllPayCoins();
-        fetchAllDevices();
         fetchAllMBDevices();
-    }, [devices]);
+    }, []);
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {

@@ -101,7 +101,7 @@ export const NkioskMoveKiosk = () => {
     // Busca os movimentos de quiosque ao carregar a página
     useEffect(() => {
         fetchAllMoveKiosk();
-    }, [devices]);
+    }, []);
 
     // Função para atualizar os movimentos de quiosque
     const refreshMoveKiosk = () => {

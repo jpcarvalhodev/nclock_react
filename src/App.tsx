@@ -140,6 +140,10 @@ import { CardScrollProvider } from './context/CardScrollContext';
 import { NvisitorMoveCard } from './pages/sisnid/nvisitor/NvisitorMoveCard';
 import { NvisitorMoveKiosk } from './pages/sisnid/nvisitor/NvisitorMoveKiosk';
 import { NvisitorListMovements } from './pages/sisnid/nvisitor/NvisitorListMovements';
+import { NparkDashboardLicensed } from './pages/sisnid/npark/NparkDashboardLicensed';
+import { NdoorDashboardLicensed } from './pages/sisnid/ndoor/NdoorDashboardLicensed';
+import { NcardDashboardLicensed } from './pages/sisnid/ncard/NcardDashboardLicensed';
+import { NpatrolDashboardLicensed } from './pages/sisnid/npatrol/NpatrolDashboardLicensed';
 
 // Define o tempo de delay
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
@@ -229,9 +233,13 @@ function AnimatedRoutes() {
               <Route path="/nview/nviewgraph" element={<PageProtection><NviewGraph /></PageProtection>} />
               <Route path="/nview/nviewonlinecameras" element={<PageProtection><NviewOnlineCameras /></PageProtection>} />
               <Route path="/ncard/ncarddashboard" element={<PageProtection><NcardDashboard /></PageProtection>} />
+              <Route path="/ncard/ncarddashboardlicensed" element={<PageProtection><NcardDashboardLicensed /></PageProtection>} />
               <Route path="/ndoor/ndoordashboard" element={<PageProtection><NdoorDashboard /></PageProtection>} />
+              <Route path="/ndoor/ndoordashboardlicensed" element={<PageProtection><NdoorDashboardLicensed /></PageProtection>} />
               <Route path="/npark/nparkdashboard" element={<PageProtection><NparkDashboard /></PageProtection>} />
+              <Route path="/npark/nparkdashboardlicensed" element={<PageProtection><NparkDashboardLicensed /></PageProtection>} />
               <Route path="/npatrol/npatroldashboard" element={<PageProtection><NpatrolDashboard /></PageProtection>} />
+              <Route path="/npatrol/npatroldashboardlicensed" element={<PageProtection><NpatrolDashboardLicensed /></PageProtection>} />
               <Route path="/nsecur/nsecurdashboard" element={<PageProtection><NsecurDashboard /></PageProtection>} />
               <Route path="/nsecur/nsecurdashboardlicensed" element={<PageProtection><NsecurDashboardLicensed /></PageProtection>} />
               <Route path="/nsecur/nsecurgraph" element={<PageProtection><NsecurGraph /></PageProtection>} />

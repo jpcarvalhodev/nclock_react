@@ -76,7 +76,7 @@ export const NkioskMoveCard = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const eventDoorId = '3';
 
-    // Função para adicionar um novo cartão
+    // Função para adicionar um novo movimento de cartão
     const addNewCard = async (newCard: NewTransactionCard) => {
         await handleAddNewMoveCard(newCard);
     };
@@ -120,7 +120,7 @@ export const NkioskMoveCard = () => {
     // Busca os movimentos dos cartões ao carregar a página
     useEffect(() => {
         fetchAllMoveCard();
-    }, [devices]);
+    }, []);
 
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
