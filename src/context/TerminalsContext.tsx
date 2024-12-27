@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext } from 'react';
 import { ReactNode } from 'react';
 import { AccessControl, Devices, DoorDevice, Doors, Employee, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
 import { toast } from 'react-toastify';
@@ -10,19 +10,16 @@ export interface DeviceContextType {
     mbDevices: MBDevice[];
     mbCloseOpen: MBDeviceCloseOpen[];
     setMbCloseOpen: (mbCloseOpen: MBDeviceCloseOpen[]) => void;
-    employeeDevices: Employee[];
-    employeesOnDevice: EmployeesOnDevice[];
+    employeeDevices: EmployeesOnDevice[];
     fetchAllDevices: () => Promise<Devices[]>;
-    fetchAllEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
-    fetchAllEmployeeDevices: () => Promise<void>;
-    fetchUsersOnDevice: (zktecoDeviceID: string) => Promise<void>;
+    fetchAllEmployeeDevices: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllKioskTransactionOnDevice: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllDoorData: () => Promise<Doors[]>;
     fetchAllMBDevices: () => Promise<MBDevice[]>;
     fetchAllMBCloseOpen: () => Promise<MBDeviceCloseOpen[]>;
     sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string[] | null) => Promise<void>;
-    saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee: string[] | null) => Promise<void>;
+    saveAllEmployeesOnDeviceToDB: (zktecoDeviceID: Devices, employee?: string[] | null) => Promise<void>;
     saveAllAttendancesEmployeesOnDevice: (zktecoDeviceID: Devices) => Promise<void>;
     syncTimeManuallyToDevice: (device: Devices) => Promise<void>;
     deleteAllUsersOnDevice: (device: Devices, employee: string[] | null) => Promise<void>;
@@ -56,8 +53,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [devices, setDevices] = useState<Devices[]>([]);
     const [mbDevices, setMBDevices] = useState<MBDevice[]>([]);
     const [mbCloseOpen, setMbCloseOpen] = useState<MBDeviceCloseOpen[]>([]);
-    const [employeeDevices, setEmployeeDevices] = useState<Employee[]>([]);
-    const [employeesOnDevice, setEmployeesOnDevice] = useState<EmployeesOnDevice[]>([]);
+    const [employeeDevices, setEmployeeDevices] = useState<EmployeesOnDevice[]>([]);
     const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
     const [period, setPeriod] = useState<TimePeriod[]>([]);
 
@@ -73,21 +69,10 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         return [];
     };
 
-    // Função para buscar todos os funcionários no dispositivo e salvar no DB
-    const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
-        try {
-            const data = await apiService.fetchAllEmployeesOnDevice(zktecoDeviceID);
-            setEmployeesOnDevice(data);
-            toast.success(data.message || 'Funcionários recolhidos com sucesso!');
-        } catch (error) {
-            console.error('Erro ao buscar dispositivos:', error);
-        }
-    };
-
     // Função para buscar todos os funcionários por dispositivos standalone
-    const fetchAllEmployeeDevices = async () => {
+    const fetchAllEmployeeDevices = async (zktecoDeviceID: Devices) => {
         try {
-            const employeesData = await apiService.fetchAllEmployeeDevices();
+            const employeesData = await apiService.fetchAllEmployeeDevices(zktecoDeviceID);
             setEmployeeDevices(employeesData);
         } catch (error) {
             console.error('Erro ao apagar dispositivos:', error);
@@ -149,16 +134,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             console.error('Erro ao buscar dispositivos:', error);
         }
         return [];
-    }
-
-    // Função para buscar todos os funcionários no dispositivo push
-    const fetchUsersOnDevice = async (zktecoDeviceID: string) => {
-        try {
-            const data = await apiService.fetchAllUsersOnDevice(zktecoDeviceID);
-            setEmployeesOnDevice(data);
-        } catch (error) {
-            console.error('Erro ao buscar utilizadores:', error);
-        }
     }
 
     // Função para enviar todos os funcionários para o dispositivo
@@ -447,11 +422,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         mbCloseOpen,
         setMbCloseOpen,
         employeeDevices,
-        employeesOnDevice,
         fetchAllDevices,
-        fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
-        fetchUsersOnDevice,
         fetchAllKioskTransaction,
         fetchAllKioskTransactionOnDevice,
         fetchAllDoorData,

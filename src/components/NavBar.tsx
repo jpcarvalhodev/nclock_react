@@ -138,7 +138,7 @@ import version from '../assets/img/navbar/ajuda/version.png';
 import module from '../assets/img/navbar/nkiosk/module.png';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button, Navbar } from 'react-bootstrap';
-import { accessControlFields, adsFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../helpers/Fields';
+import { accessControlFields, adsFields, backupDBFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../helpers/Fields';
 import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
@@ -203,6 +203,7 @@ import arm from '../assets/img/navbar/nsecur/arm.png';
 import disarm from '../assets/img/navbar/nsecur/disarm.png';
 import panic from '../assets/img/navbar/nsecur/panic.png';
 import night from '../assets/img/navbar/nsecur/night.png';
+import { BackupDBModal } from '../modals/BackupDBModal';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -292,7 +293,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
 	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
-	const { loginLogs, historyLogs } = useEntity();
+	const { loginLogs, historyLogs, exportBackupDB, importBackupDB } = useEntity();
 	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
@@ -440,6 +441,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [currentFields, setCurrentFields] = useState<any>(null);
 	const [isMouseOver, setIsMouseOver] = useState(false);
 	const [showCardDropdown, setShowCardDropdown] = useState(false);
+	const [showBackupDBModal, setShowBackupDBModal] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -889,7 +891,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				localStorage.clear();
 				navigate('/');
 			} else {
-				console.error('Erro ao fazer logout:', response);
+				console.error("Erro ao fazer logout");
 			}
 		} catch (error) {
 			console.error('Erro ao fazer logout:', error);
@@ -1839,6 +1841,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para abrir o modal de licença
 	const toggleLicenseModal = () => setShowLicenseModal(!showLicenseModal);
+
+	// Função para abrir o modal de backup da base de dados
+	const toggleBackupDBModal = () => setShowBackupDBModal(!showBackupDBModal);
 
 	// Função para abrir o anydesk em uma nova janela
 	const handleAnydeskWindow = () => {
@@ -4854,7 +4859,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+												<Button onClick={toggleBackupDBModal} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={imports} alt="botão backup bd" />
 													</span>
@@ -5176,6 +5181,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<PrintButton data={currentData} fields={currentFields} showModalOnInit={true} onClose={clearData} />
 				</div>
 			}
+			<BackupDBModal
+				open={showBackupDBModal}
+				onClose={() => setShowBackupDBModal(false)}
+				onSave={(formData) => Promise.resolve(exportBackupDB(formData))}
+				onUpdate={(formData: FormData) => Promise.resolve(importBackupDB(formData))}
+				fields={backupDBFields}
+				title='Backup BD'
+			/>
 		</nav>
 	);
 };

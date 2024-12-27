@@ -44,6 +44,7 @@ interface Props<T> {
 export const CreateModalDevices = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const {
         devices,
+        fetchAllDevices,
     } = useContext(TerminalsContext) as DeviceContextType;
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -113,6 +114,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // UseEffect para atualizar lista de todos os dispositivos
     useEffect(() => {
+        fetchAllDevices();
         const fetchDevicesAndSetNextNumber = async () => {
             try {
                 if (devices && devices.length > 0) {
@@ -138,7 +140,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         if (open) {
             fetchDevicesAndSetNextNumber();
         }
-    }, [open, initialValues, devices]);
+    }, [open, initialValues]);
 
     // Função para lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

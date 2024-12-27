@@ -709,3 +709,9 @@ export type NewTransactionCard = {
     deviceSN: string;
     eventDoorId: number;
 }
+
+export type BackupDB = {
+    [key: string]: any;
+    id: string;
+    backupName: string;
+}

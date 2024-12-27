@@ -71,11 +71,9 @@ const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
 export const Terminals = () => {
     const {
         devices,
-        employeesOnDevice,
+        employeeDevices,
         fetchAllDevices,
-        fetchAllEmployeesOnDevice,
         fetchAllEmployeeDevices,
-        fetchUsersOnDevice,
         fetchAllKioskTransaction,
         fetchAllKioskTransactionOnDevice,
         sendAllEmployeesToDevice,
@@ -232,7 +230,7 @@ export const Terminals = () => {
             if (selectedTerminal && selectedTerminal.status) {
                 setLoadingUsersInTerminalData(true);
                 try {
-                    await fetchUsersOnDevice(selectedTerminal.zktecoDeviceID);
+                    await fetchAllEmployeeDevices(selectedTerminal.zktecoDeviceID);
                     setLoadingUsersInTerminalData(false);
                 } catch (error) {
                     console.error("Erro ao buscar utilizadores no terminal:", error);
@@ -273,7 +271,6 @@ export const Terminals = () => {
     useEffect(() => {
         fetchAllDevices();
         fetchEmployeesAndCards();
-        fetchAllEmployeeDevices();
         fetchAllCardData();
     }, []);
 
@@ -352,11 +349,11 @@ export const Terminals = () => {
     // Filtra os utilizadores no terminal
     const filteredUsersInTerminal = useMemo(() => {
         if (selectedTerminal) {
-            return employeesOnDevice;
+            return employeeDevices;
         } else {
             return [];
         }
-    }, [employeesOnDevice, selectedTerminal]);
+    }, [employeeDevices, selectedTerminal]);
 
     // Define as colunas de funcionário no dispositivo
     const filteredUsersInSoftware = useMemo(() => {
@@ -1052,7 +1049,7 @@ export const Terminals = () => {
     const handleUsers = async () => {
         if (selectedTerminal) {
             setLoadingUser(true);
-            await fetchAllEmployeesOnDevice(selectedTerminal.zktecoDeviceID);
+            await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID);
             setLoadingUser(false);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {

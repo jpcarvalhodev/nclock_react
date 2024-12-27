@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Auxiliaries, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
 
 // Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
 interface BodyData {
@@ -245,18 +245,8 @@ export const fetchAllDevices = async () => {
     return response.json();
 };
 
-export const fetchAllEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
-    const response = await fetchWithAuth(`Zkteco/SaveAllEmployeesOnDeviceToDB/${zktecoDeviceID}`);
-    if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        throw new Error();
-    }
-    return response.json();
-};
-
-export const fetchAllEmployeeDevices = async () => {
-    const response = await fetchWithAuth(`Employees/GetAllEmployeesDevice`);
+export const fetchAllEmployeeDevices = async (zktecoDeviceID: Devices) => {
+    const response = await fetchWithAuth(`Employees/GetAllUserInfoOnDevice?deviceId=${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
@@ -295,16 +285,6 @@ export const fetchAllManualDoorOpen = async (startDate?: string, endDate?: strin
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
-    if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        throw new Error();
-    }
-    return response.json();
-}
-
-export const fetchAllUsersOnDevice = async (zktecoDeviceID: string) => {
-    const response = await fetchWithAuth(`Zkteco/GetAllUserInfoOnDevice?deviceId=${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
@@ -2136,6 +2116,39 @@ export const updateAllAux = async (aux: Auxiliaries) => {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
         throw new Error();
+    }
+    return response.json();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE AUXILIARES///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const backupDatabase = async (backup: BackupDB) => {
+    const response = await fetchWithAuth(`Configuration/BackupDatabase`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(backup)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        return errorData;
+    }
+    return response.json();
+}
+
+export const importBackupDatabase = async (backup: FormData) => {
+    const response = await fetchWithAuth(`Configuration/ImportBackup`, {
+        method: 'POST',
+        body: backup
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        return errorData;
     }
     return response.json();
 }

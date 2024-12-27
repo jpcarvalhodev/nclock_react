@@ -534,3 +534,7 @@ export const newTransactionCardFields = [
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'eventDoorId', label: 'Torniquete', type: 'number' },
 ];
+
+export const backupDBFields = [
+    { key: 'backupName', label: 'Nome do Backup', type: 'string' }
+];

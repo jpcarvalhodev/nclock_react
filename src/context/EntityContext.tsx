@@ -1,7 +1,18 @@
-import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { createContext, useState, useContext, ReactNode } from 'react';
 import * as apiService from '../helpers/apiService';
 import { toast } from 'react-toastify';
-import { Entity, Logs } from '../helpers/Types';
+import { BackupDB, Entity, Logs } from '../helpers/Types';
+
+// Função para baixar o arquivo usando um URL fornecido
+const downloadFile = async (url: string) => {
+    const fileName = url.split('/').pop();
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName || 'backup');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+};
 
 // Define o tipo do contexto
 export interface EntityContextType {
@@ -17,6 +28,8 @@ export interface EntityContextType {
     setHistoryLogs: React.Dispatch<React.SetStateAction<Logs[]>>;
     fetchAllLoginLogs: () => void;
     fetchAllHistoryLogs: () => void;
+    exportBackupDB: (backup: BackupDB) => void;
+    importBackupDB: (backup: FormData) => void;
 }
 
 // Cria o contexto
@@ -107,8 +120,31 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para exportar o backup do banco de dados
+    const exportBackupDB = async (backup: BackupDB) => {
+        try {
+            const data = await apiService.backupDatabase(backup);
+            if (data.downloadUrl) {
+                downloadFile(data.downloadUrl);
+                toast.success(data.message || 'Backup realizado com sucesso!');
+            }
+        } catch (error) {
+            console.error('Erro ao realizar o backup:', error);
+        }
+    }
+
+    // Função para importar o backup do banco de dados
+    const importBackupDB = async (backup: FormData) => {
+        try {
+            const data = await apiService.importBackupDatabase(backup);
+            toast.success(data.message || 'Backup restaurado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao restaurar o backup:', error);
+        }
+    }
+
     return (
-        <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs }}>
+        <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB }}>
             {children}
         </EntityContext.Provider>
     );
