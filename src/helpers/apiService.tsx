@@ -246,7 +246,7 @@ export const fetchAllDevices = async () => {
 };
 
 export const fetchAllEmployeeDevices = async (zktecoDeviceID: Devices) => {
-    const response = await fetchWithAuth(`Employees/GetAllUserInfoOnDevice?deviceId=${zktecoDeviceID}`);
+    const response = await fetchWithAuth(`Zkteco/GetAllUserInfoOnDevice?deviceId=${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
