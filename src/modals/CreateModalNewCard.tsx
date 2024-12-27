@@ -32,7 +32,6 @@ interface Field {
 
 // Valores iniciais
 const initialValues: Partial<NewTransactionCard> = {
-    eventTime: new Date().toISOString().slice(0, 16) as unknown as Date,
     eventDoorId: 3,
 };
 
@@ -193,7 +192,6 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
                                         name="eventTime"
                                         value={formData.eventTime ? new Date(formData.eventTime).toISOString().slice(0, 16) : ''}
                                         onChange={handleChange}
-                                        readOnly
                                     />
                                 </OverlayTrigger>
                                 {errors['eventTime'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['eventTime']}</div>}
