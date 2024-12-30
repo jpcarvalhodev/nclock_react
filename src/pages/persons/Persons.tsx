@@ -1,21 +1,26 @@
 import { useContext, useEffect, useState } from 'react';
+import Split from 'react-split';
+
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { ExportButton } from '../../components/ExportButton';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { PersonsDataTable } from "../../components/PersonsDataTable";
-import { TreeViewData } from "../../components/TreeView";
-import { CustomOutlineButton } from '../../components/CustomOutlineButton';
-import Split from 'react-split';
-import '../../css/PagesStyles.css';
-import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
-import { employeeFields } from '../../helpers/Fields';
-import { Employee, EmployeeCard } from '../../helpers/Types';
-import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
-import { ExportButton } from '../../components/ExportButton';
-import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
-import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from '../../components/PrintButton';
+import { TreeViewData } from "../../components/TreeView";
+
+import '../../css/PagesStyles.css';
+import { useNavbar } from "../../context/NavbarContext";
+import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
+import { employeeFields } from '../../helpers/Fields';
+import { Employee } from '../../helpers/Types';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+
 import { DeleteModal } from '../../modals/DeleteModal';
+
 import { TextFieldProps, TextField } from '@mui/material';
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -35,7 +40,6 @@ export const Persons = () => {
         setData,
         fetchAllEmployees,
         handleAddEmployee,
-        handleAddEmployeeCard,
         handleDeleteEmployee
     } = useContext(PersonsContext) as PersonsContextType;
     const { navbarColor, footerColor } = useNavbar();
@@ -55,19 +59,8 @@ export const Persons = () => {
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para adicionar um funcionário e um cartão
-    const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
+    const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
-
-        const employees = await fetchAllEmployees();
-        setData({ ...data, employees: employees });
-        const lastEmployee = employees.sort((a, b) => Number(b.enrollNumber) - Number(a.enrollNumber))[0];
-
-        const newEmployeeCard = {
-            ...card,
-            employeeID: lastEmployee.employeeID
-        };
-        await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
-        setData({ ...data, employees: employees });
         setClearSelectionToggle(!clearSelectionToggle);
         refreshEmployees();
     };

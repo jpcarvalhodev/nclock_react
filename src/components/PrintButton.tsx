@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import { useEffect, useState } from 'react';
 import { Modal, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { PDFDocument } from './PDFDocument';
+
+import { useTerminals } from '../context/TerminalsContext';
+import * as apiService from "../helpers/apiService";
+import { Entity } from '../helpers/Types';
+
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { CustomSpinner } from './CustomSpinner';
-import { Entity } from '../helpers/Types';
-import * as apiService from "../helpers/apiService";
-import { useTerminals } from '../context/TerminalsContext';
+import { PDFDocument } from './PDFDocument';
+
 
 // Interfaces para os itens de dados e campos
 interface DataItem {

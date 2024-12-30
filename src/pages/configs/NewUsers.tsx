@@ -1,25 +1,27 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { NavBar } from "../../components/NavBar";
-import { useNavbar } from "../../context/NavbarContext";
-import { Footer } from "../../components/Footer";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useEffect, useState } from "react";
-import { registerFields } from "../../helpers/Fields";
-import { customStyles } from "../../components/CustomStylesDataTable";
-import { Register } from "../../helpers/Types";
-import { SelectFilter } from "../../components/SelectFilter";
-import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
-import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
-import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { DeleteModal } from "../../modals/DeleteModal";
-import { usePersons } from "../../context/PersonsContext";
-import { ExportButton } from "../../components/ExportButton";
-import { PrintButton } from "../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
-import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
+import { useEffect, useState } from "react";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
+
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
+import { ExportButton } from "../../components/ExportButton";
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import { PrintButton } from "../../components/PrintButton";
+import { SelectFilter } from "../../components/SelectFilter";
+import { useNavbar } from "../../context/NavbarContext";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { registerFields } from "../../helpers/Fields";
+import { Register } from "../../helpers/Types";
+import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
+import { usePersons } from "../../context/PersonsContext";
+import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
+
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

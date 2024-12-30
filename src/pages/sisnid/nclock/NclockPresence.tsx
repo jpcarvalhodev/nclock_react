@@ -1,23 +1,29 @@
 import DataTable, { TableColumn } from "react-data-table-component";
+
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import "../../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
+
 import { useContext, useEffect, useState } from "react";
-import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
-import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import Split from 'react-split';
-import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
+
+import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
+import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../../context/MovementContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { ExportButton } from "../../../components/ExportButton";
-import { PrintButton } from "../../../components/PrintButton";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
+import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
+import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+
+import Split from 'react-split';
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+
 import { TextFieldProps, TextField } from "@mui/material";
 
 // Define a interface para os filtros
@@ -100,13 +106,8 @@ export const NclockPresence = () => {
     };
 
     // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+    const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        if (card.cardId) {
-            await handleUpdateEmployeeCard(card as EmployeeCard);
-        } else {
-            await handleAddEmployeeCard(card as EmployeeCard);
-        }
         refreshAttendance();
         setClearSelectionToggle(!clearSelectionToggle);
     };

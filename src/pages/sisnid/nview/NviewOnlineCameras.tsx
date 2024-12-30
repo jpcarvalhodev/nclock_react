@@ -1,23 +1,27 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../../context/NavbarContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
-import { useEffect, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
-import { customStyles } from "../../../components/CustomStylesDataTable";
-import { Cameras } from "../../../helpers/Types";
-import { cameraFields } from "../../../helpers/Fields";
-import { toast } from "react-toastify";
-import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal";
-import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { DeleteModal } from "../../../modals/DeleteModal";
-import { ExportButton } from "../../../components/ExportButton";
-import { PrintButton } from "../../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import { toast } from "react-toastify";
+
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
+import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { useNavbar } from "../../../context/NavbarContext";
+import * as apiService from "../../../helpers/apiService";
+import { cameraFields } from "../../../helpers/Fields";
+import { Cameras } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+
+
+import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal";
+import { DeleteModal } from "../../../modals/DeleteModal";
+import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
+import { PrintButton } from "../../../components/PrintButton";
+
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

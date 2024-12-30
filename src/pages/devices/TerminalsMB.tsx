@@ -1,26 +1,26 @@
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
+import { Button, OverlayTrigger, Tab, Tabs, Tooltip , Spinner } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+import { toast } from "react-toastify";
+
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExportButton } from "../../components/ExportButton";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
-import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles } from "../../components/CustomStylesDataTable";
-import { Button, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
-import { SelectFilter } from "../../components/SelectFilter";
-import { MBDevice } from "../../helpers/Types";
-import { mbDeviceFields } from "../../helpers/Fields";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { toast } from "react-toastify";
-import { Spinner } from 'react-bootstrap';
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import { useNavbar } from "../../context/NavbarContext";
-import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
-import Split from "react-split";
-import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
-import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
-import { DeleteModal } from "../../modals/DeleteModal";
-import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
-import { TextField, TextFieldProps } from "@mui/material";
+import { SelectFilter } from "../../components/SelectFilter";
+import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
+import { useNavbar } from "../../context/NavbarContext";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
+import { mbDeviceFields } from "../../helpers/Fields";
+import { MBDevice } from "../../helpers/Types";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
 
 // Define a interface para os filtros
 interface Filters {

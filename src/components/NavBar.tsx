@@ -1,19 +1,9 @@
-import React, { Dispatch, SetStateAction } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { EmailUser, KioskConfig } from '../helpers/Types';
+import React, { useEffect, useState , Dispatch, SetStateAction } from 'react';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
-import { TerminalOptionsModal } from '../modals/TerminalOptions';
-import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
-import person from '../assets/img/navbar/pessoas/person.png';
-import category from '../assets/img/navbar/pessoas/categories.png';
-import department from '../assets/img/navbar/pessoas/departments.png';
-import externalEntities from '../assets/img/navbar/pessoas/externalEntities.png';
-import group from '../assets/img/navbar/pessoas/groups.png';
-import profession from '../assets/img/navbar/pessoas/professions.png';
-import zone from '../assets/img/navbar/pessoas/zones.png';
 import fraccoes from '../assets/img/navbar/pessoas/fraccoes.png';
 import types from '../assets/img/navbar/pessoas/types.png';
 import fonts from '../assets/img/navbar/pessoas/fonts.png';
@@ -180,8 +170,8 @@ import { useTerminals } from '../context/TerminalsContext';
 import { useEntity } from '../context/EntityContext';
 import { useKiosk } from '../context/KioskContext';
 import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
+import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
 import { useCardScroll } from '../context/CardScrollContext';
-import counts from '../assets/img/navbar/nkiosk/counter.png';
 import panel from '../assets/img/navbar/nkiosk/panel.png';
 import ribbonControl from '../assets/img/navbar/navbar/ribbonControl.png';
 import ribbonControlLock from '../assets/img/navbar/navbar/ribbonControlLock.png';
@@ -196,14 +186,24 @@ import patrols from '../assets/img/navbar/npatrol/patrols.png';
 import analysis from '../assets/img/navbar/npatrol/analysis.png';
 import routes from '../assets/img/navbar/npatrol/routes.png';
 import points from '../assets/img/navbar/ncard/points.png';
+import counts from '../assets/img/navbar/nkiosk/counter.png';
 import programming from '../assets/img/navbar/nvisitor/programming.png';
-import division from '../assets/img/navbar/nsecur/division.png';
 import securityDevice from '../assets/img/navbar/nsecur/securityDevice.png';
 import arm from '../assets/img/navbar/nsecur/arm.png';
 import disarm from '../assets/img/navbar/nsecur/disarm.png';
+import division from '../assets/img/navbar/nsecur/division.png';
 import panic from '../assets/img/navbar/nsecur/panic.png';
 import night from '../assets/img/navbar/nsecur/night.png';
+import category from '../assets/img/navbar/pessoas/categories.png';
+import department from '../assets/img/navbar/pessoas/departments.png';
+import externalEntities from '../assets/img/navbar/pessoas/externalEntities.png';
+import group from '../assets/img/navbar/pessoas/groups.png';
+import person from '../assets/img/navbar/pessoas/person.png';
+import profession from '../assets/img/navbar/pessoas/professions.png';
+import zone from '../assets/img/navbar/pessoas/zones.png';
+import { EmailUser, KioskConfig } from '../helpers/Types';
 import { BackupDBModal } from '../modals/BackupDBModal';
+import { TerminalOptionsModal } from '../modals/TerminalOptions';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -2116,7 +2116,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								id='dropdown-navbar'
 							>
 								<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
-									<span className="logo">NIDGROUP</span>
+									<span className="logo">NSOFTWARES</span>
 								</Dropdown.Toggle>
 								<Dropdown.Menu>
 									<div style={{ position: 'relative' }}>
@@ -2151,7 +2151,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									id='dropdown-navbar'
 								>
 									<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
-										<span className="logoNG">NSOFTWARES</span>
+										<span className="logoNG">NIDGROUP</span>
 									</Dropdown.Toggle>
 									<Dropdown.Menu className='dropdown-menu-logos'>
 										<div style={{ position: 'relative' }}>
@@ -2193,7 +2193,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						id='dropdown-navbar'
 					>
 						<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
-							<span className="logo">NIDGROUP</span>
+							<span className="logo">NSOFTWARES</span>
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
 							<div style={{ position: 'relative' }}>
@@ -2228,7 +2228,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							id='dropdown-navbar'
 						>
 							<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
-								<span className="logoNG">NSOFTWARES</span>
+								<span className="logoNG">NIDGROUP</span>
 							</Dropdown.Toggle>
 							<Dropdown.Menu className='dropdown-menu-logos'>
 								<div style={{ position: 'relative' }}>

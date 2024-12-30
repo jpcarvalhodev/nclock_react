@@ -1,33 +1,35 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import DataTable, { TableColumn } from "react-data-table-component";
+import { toast } from "react-toastify";
+
+import card from "../../assets/img/terminais/card.png";
+import faceScan from "../../assets/img/terminais/faceScan.png";
+import fprintScan from "../../assets/img/terminais/fprintScan.png";
+import palmScan from "../../assets/img/terminais/palmScan.png";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExportButton } from "../../components/ExportButton";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
-import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles } from "../../components/CustomStylesDataTable";
+
 import "../../css/Terminals.css";
-import { Button, Form, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
+import { Button, Form, OverlayTrigger, Tab, Tabs, Tooltip, Spinner } from "react-bootstrap";
+
+import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../helpers/Types";
 import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../helpers/Fields";
+import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { DeleteModal } from "../../modals/DeleteModal";
-import { toast } from "react-toastify";
 import { CreateModalDevices } from "../../modals/CreateModalDevices";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { DoorModal } from "../../modals/DoorModal";
 import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
-import { Spinner } from 'react-bootstrap';
-import fprintScan from "../../assets/img/terminais/fprintScan.png";
-import faceScan from "../../assets/img/terminais/faceScan.png";
-import palmScan from "../../assets/img/terminais/palmScan.png";
-import card from "../../assets/img/terminais/card.png";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import React from "react";
 import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 import { useNavbar } from "../../context/NavbarContext";
 import * as apiService from "../../helpers/apiService";
-import { DoorModal } from "../../modals/DoorModal";
-import { ExportButton } from "../../components/ExportButton";
-import { PrintButton } from "../../components/PrintButton";
+
 import { id } from "date-fns/locale";
 
 // Define a interface para os filtros
@@ -62,7 +64,9 @@ interface Movement {
 }
 
 // Define a interface para os dados de utilizadores e cartões
-interface MergedEmployeeAndCard extends Employee, Partial<Omit<EmployeeCard, 'id'>> { }
+interface MergedEmployeeAndCard extends Omit<Employee, 'enrollNumber'>, Partial<Omit<EmployeeCard, 'id'>> {
+    enrollNumber: string;
+}
 
 // Junta os campos de utilizadores e cartões
 const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
@@ -153,55 +157,36 @@ export const Terminals = () => {
     const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
-    // Função para mesclar os dados de utilizadores e cartões
-    const mergeEmployeeAndCardData = (
-        employees: Employee[],
-        employeeCards: EmployeeCard[]
-    ): MergedEmployeeAndCard[] => {
-        const mergedEmployeesData = employees.map(employee => {
-            const card = employeeCards.filter(card => card.employeeId === employee.employeeID)[0];
-            if (card) {
-                return {
-                    ...employee,
-                    ...card,
-                } as MergedEmployeeAndCard;
-            }
-            return employee as MergedEmployeeAndCard;
-        })
-        return mergedEmployeesData;
-    };
-
     // Função para buscar todos os utilizadores e cartões
     const fetchEmployeesAndCards = async () => {
         const employeesData: Employee[] = await fetchAllEmployees();
+        setEmployees(employeesData);
 
-        const cardData: EmployeeCard[] = await fetchAllCardData();
-
-        const mergedData = mergeEmployeeAndCardData(employeesData, cardData);
-
-        const filteredEmployeesBio = mergedData.filter(employee =>
-            employee.statusFprint === true || employee.statusFace === true
+        const filteredEmployeesBio = employeesData.filter(
+            (employee) => employee.statusFprint === true || employee.statusFace === true
         );
-
-        const filteredEmployeesCard = mergedData.filter(employee =>
-            employee.cardNumber !== "0"
-        );
-
-        setEmployees(mergedData);
-
-        const employeeBio = filteredEmployeesBio.slice().sort((a, b) => {
-            const aNum = parseInt(a.enrollNumber || '0', 10);
-            const bNum = parseInt(b.enrollNumber || '0', 10);
+        const sortedEmployeesBio = filteredEmployeesBio.slice().sort((a, b) => {
+            const aNum = parseInt(a.enrollNumber || "0", 10);
+            const bNum = parseInt(b.enrollNumber || "0", 10);
             return aNum - bNum;
         });
-        setEmployeesBio(employeeBio);
+        setEmployeesBio(sortedEmployeesBio);
 
-        const employeeCard = filteredEmployeesCard.slice().sort((a, b) => {
-            const aNum = parseInt(a.cardNumber || '0', 10);
-            const bNum = parseInt(b.cardNumber || '0', 10);
+        const allEmployeeCards = employeesData.flatMap(
+            (employee) => employee.employeeCards || []
+        );
+
+        const filteredCards = allEmployeeCards.filter(
+            (card) => card.cardNumber !== "0"
+        );
+
+        const sortedCards = filteredCards.slice().sort((a, b) => {
+            const aNum = parseInt(a.cardNumber || "0", 10);
+            const bNum = parseInt(b.cardNumber || "0", 10);
             return aNum - bNum;
         });
-        setEmployeeCards(employeeCard);
+
+        setEmployeeCards(sortedCards);
     };
 
     // Função para buscar todas as transações de quiosques
@@ -523,9 +508,12 @@ export const Terminals = () => {
 
     // Formata as colunas especiais na tabela de utilizadores, biometria e cartões
     const formatUserStatus = (row: EmployeeAndCard) => {
+        const hasValidCardNumber = row.employeeCards?.some(
+            (card) => card.cardNumber && card.cardNumber !== "0"
+        );
         return (
             <>
-                {row.cardNumber && row.cardNumber !== "0" && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
+                {hasValidCardNumber && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusFprint && <img src={fprintScan} alt="Fingerprint" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusFace && <img src={faceScan} alt="Face" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusPalm && <img src={palmScan} alt="Palm" style={{ width: 20, marginRight: 5 }} />}
@@ -542,9 +530,12 @@ export const Terminals = () => {
         );
     };
     const formatCardStatus = (row: EmployeeAndCard) => {
+        const hasCard = row.employeeCards?.some(
+            (card) => card.cardNumber && card.cardNumber !== "0"
+        );
         return (
             <>
-                {row.cardNumber && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
+                {hasCard && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
             </>
         );
     };
@@ -562,7 +553,7 @@ export const Terminals = () => {
                     case 'cardNumber':
                         return row.cardNumber === "0" ? "" : row.cardNumber;
                     case 'enrollNumber':
-                        return Number(row.enrollNumber) || 'Número inválido';
+                        return Number(row.enrollNumber) || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -610,7 +601,7 @@ export const Terminals = () => {
             const formatField = (row: EmployeeAndCard) => {
                 switch (field.key) {
                     case 'enrollNumber':
-                        return Number(row.enrollNumber) || 'Número inválido';
+                        return Number(row.enrollNumber) || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -642,7 +633,7 @@ export const Terminals = () => {
     const excludedCardColumns = ['statusFprint', 'statusFace', 'statusPalm'];
 
     // Filtra os dados da tabela de cartões
-    const filteredCardDataTable = employeeCards.filter(employee =>
+    const filteredCardDataTable = employees.filter(employee =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(employee[key]) === String(filters[key])
         )
@@ -655,10 +646,14 @@ export const Terminals = () => {
         .map(field => {
             const formatField = (row: EmployeeAndCard) => {
                 switch (field.key) {
-                    case 'cardNumber':
-                        return row.cardNumber === "0" ? "" : row.cardNumber;
+                    case 'cardNumber': {
+                        const firstCard = row.employeeCards?.find(
+                            (card) => card.cardNumber && card.cardNumber !== "0"
+                        );
+                        return firstCard?.cardNumber || "";
+                    }
                     case 'enrollNumber':
-                        return Number(row.enrollNumber) || 'Número inválido';
+                        return Number(row.enrollNumber) || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -839,7 +834,9 @@ export const Terminals = () => {
             reader.onload = async (e) => {
                 const buffer = e.target?.result as ArrayBuffer;
                 const data = parseUserData(buffer);
-                await handleImportEmployeeCard(data);
+                for (const item of data) {
+                    await handleImportEmployeeCard(item);
+                }
             };
             setLoadingImportUsers(false);
             reader.readAsArrayBuffer(file);

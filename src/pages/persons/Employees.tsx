@@ -1,24 +1,30 @@
 import { useState, useEffect, useContext } from 'react';
+
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
+
 import '../../css/PagesStyles.css';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
-import { Employee, EmployeeCard } from '../../helpers/Types';
-import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
-import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
-import { DeleteModal } from '../../modals/DeleteModal';
-import { CustomOutlineButton } from '../../components/CustomOutlineButton';
-import { employeeFields } from '../../helpers/Fields';
-import { ExportButton } from '../../components/ExportButton';
-import Split from 'react-split';
+
+import { PrintButton } from '../../components/PrintButton';
+import { SelectFilter } from '../../components/SelectFilter';
 import { TreeViewData } from '../../components/TreeView';
+import { useNavbar } from "../../context/NavbarContext";
+import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
+import { employeeFields } from '../../helpers/Fields';
+import { Employee, EmployeeCard } from '../../helpers/Types';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { ExportButton } from '../../components/ExportButton';
+
+import Split from 'react-split';
+
 import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../../components/CustomStylesDataTable';
-import { SelectFilter } from '../../components/SelectFilter';
-import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
-import { useNavbar } from "../../context/NavbarContext";
-import { PrintButton } from '../../components/PrintButton';
+
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextFieldProps, TextField } from '@mui/material';
 
@@ -42,15 +48,11 @@ export const Employees = () => {
     const {
         employees,
         data,
-        setData,
         setEmployees,
         fetchAllEmployees,
-        fetchAllCardData,
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,
-        handleAddEmployeeCard,
-        handleUpdateEmployeeCard
     } = useContext(PersonsContext) as PersonsContextType;
     const { navbarColor, footerColor } = useNavbar();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -81,29 +83,15 @@ export const Employees = () => {
     };
 
     // Função para adicionar um funcionário e um cartão
-    const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
+    const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
-        const employees = await fetchAllEmployees();
-        const lastEmployee = employees.sort((a, b) => Number(b.enrollNumber) - Number(a.enrollNumber))[0];
-
-        const newEmployeeCard = {
-            ...card,
-            employeeID: lastEmployee.employeeID
-        };
-        await handleAddEmployeeCard(newEmployeeCard as EmployeeCard);
-        setData({ ...data, employees: employees });
         setClearSelectionToggle(!clearSelectionToggle);
         refreshEmployees();
     };
 
     // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+    const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        if (card.cardId) {
-            await handleUpdateEmployeeCard(card as EmployeeCard);
-        } else {
-            await handleAddEmployeeCard(card as EmployeeCard);
-        }
         setClearSelectionToggle(!clearSelectionToggle);
         refreshEmployees();
     };

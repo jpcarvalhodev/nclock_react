@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController } from 'chart.js';
 import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useEffect, useState } from "react";
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Carousel } from "react-responsive-carousel";
+
+import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { Employee, Department, Group } from "../../../helpers/Types";
-import * as apiService from "../../../helpers/apiService";
-import { Carousel } from "react-responsive-carousel";
-import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { useNavbar } from "../../../context/NavbarContext";
-import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController } from 'chart.js';
+import * as apiService from "../../../helpers/apiService";
+import { Employee, Department, Group } from "../../../helpers/Types";
+
 
 // Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);

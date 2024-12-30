@@ -33,6 +33,7 @@ export type Employee = {
     statusFace: boolean;
     statusPalm: boolean;
     type: string;
+    employeeCards: EmployeeCard[];
     entidadeId: string;
     entidadeName: string;
     departmentId: string;
@@ -192,10 +193,13 @@ export type EmployeeDevices = {
 };
 
 export type EmployeeCard = {
-    [key: string]: any;
-    id: string;
+    cardId: string;
+    employeeId: string;
+    enrollNumber: string;
+    employeeName: string;
     devicePassword: string;
     devicePrivelage: number;
+    deviceEnabled: boolean;
     cardNumber: string;
 };
 

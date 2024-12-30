@@ -1,12 +1,8 @@
 import { toast } from "react-toastify";
-import { fetchWithAuth } from "../components/FetchWithAuth";
-import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
 
-// Define a interface para os dados do corpo da requisição deleteAllUsersOnDevice 
-interface BodyData {
-    zktecoDeviceID: Devices;
-    employeeID?: string;
-}
+import { fetchWithAuth } from "../components/FetchWithAuth";
+
+import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
 
 // URL base para as APIs
 export const BASE_URL = process.env.REACT_APP_API_BASE;
@@ -152,7 +148,7 @@ export const addEmployee = async (employee: Employee) => {
 };
 
 export const updateEmployee = async (employee: Employee) => {
-    const response = await fetchWithAuth(`Employees/UpdateEmployee/${employee.employeeID}`, {
+    const response = await fetchWithAuth(`Employees/UpdateEmployee`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

@@ -1,12 +1,16 @@
+import { useEffect, useState } from "react";
+
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useEffect, useState } from "react";
 import { EmployeeAttendanceTimes } from "../../../helpers/Types";
 import '../../../css/PagesStyles.css';
 import * as apiService from "../../../helpers/apiService";
+
 import { Carousel } from "react-responsive-carousel";
+
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
 import { useNavbar } from "../../../context/NavbarContext";
+
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';

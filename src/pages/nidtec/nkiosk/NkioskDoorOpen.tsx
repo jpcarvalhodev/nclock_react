@@ -1,26 +1,27 @@
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
+import { Button, OverlayTrigger, Tab, Tabs, Tooltip , Spinner } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+import { toast } from "react-toastify";
+
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
+import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles } from "../../../components/CustomStylesDataTable";
-import { Button, OverlayTrigger, Tab, Tabs, Tooltip } from "react-bootstrap";
+import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { ManualOpenDoor } from "../../../helpers/Types";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { toast } from "react-toastify";
-import { Spinner } from 'react-bootstrap';
+import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
+import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import * as apiService from "../../../helpers/apiService";
+import { ManualOpenDoor } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+
 import { manualOpenDoorFields } from "../../../helpers/Fields";
 import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
-import Split from "react-split";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
-import { ExportButton } from "../../../components/ExportButton";
-import { PrintButton } from "../../../components/PrintButton";
-import { TextFieldProps, TextField } from "@mui/material";
-import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 
 // Define a interface para os filtros
 interface Filters {

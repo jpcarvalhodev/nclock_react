@@ -1,17 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import { Row, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { CreateModalEmployees } from './CreateModalEmployees';
-import { employeeFields } from '../helpers/Fields';
-import { toast } from 'react-toastify';
-import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
-import { UpdateModalEmployees } from './UpdateModalEmployees';
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
-import DataTable from 'react-data-table-component';
-import { customStyles } from '../components/CustomStylesDataTable';
 import { set } from 'date-fns';
+import React, { useContext, useEffect, useState } from 'react';
+import { Row, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import DataTable from 'react-data-table-component';
+import { toast } from 'react-toastify';
+
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { customStyles } from '../components/CustomStylesDataTable';
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { employeeFields } from '../helpers/Fields';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
+
+import { CreateModalEmployees } from './CreateModalEmployees';
+import { UpdateModalEmployees } from './UpdateModalEmployees';
+
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -55,9 +58,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         fetchAllDepartments,
         fetchAllGroups,
         handleAddEmployee,
-        handleAddEmployeeCard,
         handleUpdateEmployee,
-        handleUpdateEmployeeCard,
     } = useContext(PersonsContext) as PersonsContextType;
     const [formData, setFormData] = useState<T>({ ...entity });
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -67,10 +68,11 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
-    const [selectedRow, setSelectedRow] = useState<Department | Group | Employee | null>(null);
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [selectedDeptOrGroup, setSelectedDeptOrGroup] = useState<Department | Group | null>(null);
+    const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -131,13 +133,8 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     };
 
     // Função para adicionar um funcionário e um cartão
-    const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
+    const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
-        const employeeCard = {
-            ...card,
-            employeeId: employee.employeeID
-        };
-        await handleAddEmployeeCard(employeeCard as EmployeeCard);
         if (entityType === 'department') {
             fetchAllDepartments();
         } else {
@@ -148,19 +145,8 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     }
 
     // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+    const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        const employeeCard = {
-            ...card,
-            employeeId: employee.employeeID
-        };
-        if (employeeCard && Object.keys(employeeCard).length > 0) {
-            if (card.cardID) {
-                await handleUpdateEmployeeCard(employeeCard as EmployeeCard);
-            } else {
-                await handleAddEmployeeCard(employeeCard as EmployeeCard);
-            }
-        }
         if (entityType === 'department') {
             fetchAllDepartments();
         } else {
@@ -176,36 +162,14 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         setShowUpdateEmployeeModal(true);
     };
 
-    // Função para lidar com a seleção de um departamento
-    const handleDepartmentClick = (departmentID: string) => {
-        const selectedDept = dropdownData.departments.find(dept => dept.departmentID === departmentID);
-        if (selectedDept) {
-            const deptEmployees = employees.filter(emp => emp.departmentId === departmentID);
-            setEmployeeData(deptEmployees);
-        } else {
-            setEmployeeData([]);
-        }
-    };
-
-    // Função para lidar com a seleção de um grupo
-    const handleGroupClick = (groupID: string) => {
-        const selectedGroup = dropdownData.groups.find(grp => grp.groupID === groupID);
-        if (selectedGroup) {
-            const grpEmployees = employees.filter(emp => emp.groupId === groupID);
-            setEmployeeData(grpEmployees);
-        } else {
-            setEmployeeData([]);
-        }
-    };
-
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
             const departments = await fetchAllDepartments();
             const groups = await fetchAllGroups();
             const employee = await fetchAllEmployees();
-
-            setEmployees(employee);
+            const sortedEmployee = employee.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+            setEmployees(sortedEmployee);
             setDropdownData({
                 departments: departments,
                 groups: groups
@@ -284,6 +248,11 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             name: 'Número',
             selector: (row: Partial<Employee>) => row.enrollNumber || '',
             sortable: true,
+            sortFunction: (rowA: Employee, rowB: Employee) => {
+                const a = Number(rowA.enrollNumber);
+                const b = Number(rowB.enrollNumber);
+                return a - b;
+            }
         },
         {
             name: 'Nome',
@@ -292,25 +261,168 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         }
     ];
 
-    // Funipara lidar com a linha selecionada
-    const handleRowSelected = (state: { selectedRows: string | any[] }) => {
-        if (state.selectedRows.length > 0) {
-            const lastSelectedRow = state.selectedRows[state.selectedRows.length - 1];
-            setSelectedRow(lastSelectedRow);
-            if (entityType === 'department') {
-                handleDepartmentClick(lastSelectedRow?.departmentID);
-            } else {
-                setSelectedRow(null);
-            }
-            if (entityType === 'group') {
-                handleGroupClick(lastSelectedRow?.groupID);
-            } else {
-                setSelectedRow(null);
-            }
+    // Função para lidar com a seleção de um departamento
+    const handleDepartmentClick = (departmentID: string) => {
+        const selectedDept = dropdownData.departments.find(dept => dept.departmentID === departmentID);
+        if (selectedDept) {
+            const deptEmployees = employees.filter(emp => emp.departmentId === departmentID);
+            setEmployeeData(deptEmployees);
         } else {
-            setSelectedRow(null);
             setEmployeeData([]);
         }
+    };
+
+    // Função para lidar com a seleção de um grupo
+    const handleGroupClick = (groupID: string) => {
+        const selectedGroup = dropdownData.groups.find(grp => grp.groupID === groupID);
+        if (selectedGroup) {
+            const grpEmployees = employees.filter(emp => emp.groupId === groupID);
+            setEmployeeData(grpEmployees);
+        } else {
+            setEmployeeData([]);
+        }
+    };
+
+    // Função para lidar com a seleção no DataTable de Departamentos/Grupos
+    const handleRowSelectedDeptGrp = (state: { selectedRows: (Department | Group)[] }) => {
+        if (state.selectedRows.length > 0) {
+            const lastSelected = state.selectedRows[state.selectedRows.length - 1];
+            setSelectedDeptOrGroup(lastSelected);
+            if (entityType === 'department') {
+                handleDepartmentClick(lastSelected.departmentID);
+            } else {
+                handleGroupClick(lastSelected.groupID);
+            }
+        } else {
+            setSelectedDeptOrGroup(null);
+            setEmployeeData([]);
+        }
+    };
+
+    // Função para lidar com a seleção no DataTable de Funcionários
+    const handleRowSelectedEmployees = (state: { selectedRows: Employee[] }) => {
+        setSelectedEmployees(state.selectedRows);
+    };
+
+    // Função para remover campos vazios
+    function removeEmptyFields<T>(value: T): T | Partial<T> {
+        if (Array.isArray(value)) {
+            const cleanedArray = value
+                .map((item) => removeEmptyFields(item))
+                .filter((item) => {
+                    if (typeof item === 'object' && item !== null && Object.keys(item).length === 0) {
+                        return false;
+                    }
+                    return true;
+                });
+            return cleanedArray as T;
+        }
+        if (typeof value === 'object' && value !== null) {
+            const obj = { ...value } as Record<string, unknown>;
+            for (const [key, val] of Object.entries(obj)) {
+                const cleanedVal = removeEmptyFields(val);
+                if (
+                    cleanedVal === null ||
+                    cleanedVal === undefined ||
+                    (typeof cleanedVal === 'string' && cleanedVal.trim() === '') ||
+                    (typeof cleanedVal === 'object' && Object.keys(cleanedVal).length === 0)
+                ) {
+                    delete obj[key];
+                } else {
+                    obj[key] = cleanedVal;
+                }
+            }
+            return obj as T;
+        }
+        return value;
+    }
+
+    // Função que atualiza o funcionário selecionado com o novo departamento/grupo selecionado
+    const handleSwitchDeptOrGrp = () => {
+        if (!selectedDeptOrGroup) {
+            toast.warn('Selecione um Departamento ou Grupo para trocar.');
+            return;
+        }
+        if (selectedEmployees.length === 0) {
+            toast.warn('Selecione ao menos um funcionário para trocar');
+            return;
+        }
+
+        selectedEmployees.forEach((emp) => {
+            const updatedEmployee: Employee = { ...emp };
+
+            if (entityType === 'department' && 'departmentID' in selectedDeptOrGroup) {
+                updatedEmployee.departmentId = selectedDeptOrGroup.departmentID;
+                updatedEmployee.departmentName = selectedDeptOrGroup.name;
+            } else if (entityType === 'group' && 'groupID' in selectedDeptOrGroup) {
+                updatedEmployee.groupId = selectedDeptOrGroup.groupID;
+                updatedEmployee.groupName = selectedDeptOrGroup.name;
+            }
+
+            const dataToSend = {
+                employee: {
+                    employeeID: updatedEmployee.employeeID,
+                    enrollNumber: updatedEmployee.enrollNumber,
+                    name: updatedEmployee.name,
+                    shortName: updatedEmployee.shortName,
+                    nameAcronym: updatedEmployee.nameAcronym,
+                    comments: updatedEmployee.comments,
+                    photo: updatedEmployee.photo,
+                    address: updatedEmployee.address,
+                    ziPcode: updatedEmployee.ziPcode,
+                    locality: updatedEmployee.locality,
+                    village: updatedEmployee.village,
+                    district: updatedEmployee.district,
+                    phone: updatedEmployee.phone,
+                    mobile: updatedEmployee.mobile,
+                    email: updatedEmployee.email,
+                    birthday: updatedEmployee.birthday,
+                    nationality: updatedEmployee.nationality,
+                    gender: updatedEmployee.gender,
+                    bInumber: updatedEmployee.bInumber,
+                    bIissuance: updatedEmployee.bIissuance,
+                    biValidity: updatedEmployee.biValidity,
+                    nif: updatedEmployee.nif,
+                    admissionDate: updatedEmployee.admissionDate,
+                    exitDate: updatedEmployee.exitDate,
+                    rgpdAut: updatedEmployee.rgpdAut,
+                    status: updatedEmployee.status,
+                    statusEmail: updatedEmployee.statusEmail,
+                    statusFprint: updatedEmployee.statusFprint,
+                    statusFace: updatedEmployee.statusFace,
+                    statusPalm: updatedEmployee.statusPalm,
+                    type: updatedEmployee.type,
+                    employeeDisabled: updatedEmployee.employeeDisabled,
+                    entidadeId: updatedEmployee.entidadeId,
+                    entidadeName: updatedEmployee.entidadeName,
+                    departmentId: updatedEmployee.departmentId,
+                    departmentName: updatedEmployee.departmentName,
+                    professionId: updatedEmployee.professionId,
+                    professionName: updatedEmployee.professionName,
+                    categoryId: updatedEmployee.categoryId,
+                    categoryName: updatedEmployee.categoryName,
+                    groupId: updatedEmployee.groupId,
+                    groupName: updatedEmployee.groupName,
+                    zoneId: updatedEmployee.zoneId,
+                    zoneName: updatedEmployee.zoneName,
+                    externalEntityId: updatedEmployee.externalEntityId,
+                    externalEntityName: updatedEmployee.externalEntityName,
+                },
+                employeeCards: updatedEmployee.employeeCards?.map((card) => ({
+                    cardId: card.cardId,
+                    employeeId: updatedEmployee.employeeID,
+                    enrollNumber: updatedEmployee.enrollNumber,
+                    employeeName: updatedEmployee.name,
+                    devicePassword: card.devicePassword,
+                    devicePrivelage: card.devicePrivelage,
+                    deviceEnabled: card.deviceEnabled,
+                    cardNumber: card.cardNumber
+                })) || []
+            };
+
+            const cleanedData = removeEmptyFields(dataToSend);
+            updateEmployeeAndCard(cleanedData as Employee);
+        });
     };
 
     // Opções de paginação da tabela com troca de EN para PT
@@ -328,9 +440,9 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     // Seleciona o funcionário anterior
     const handleNextEmployee = () => {
-        if (currentEmployeeIndex < employeeData.length - 1) {
+        if (currentEmployeeIndex < employees.length - 1) {
             setCurrentEmployeeIndex(currentEmployeeIndex + 1);
-            setSelectedEmployee(employeeData[currentEmployeeIndex + 1]);
+            setSelectedEmployee(employees[currentEmployeeIndex + 1]);
         }
     };
 
@@ -338,7 +450,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const handlePrevEmployee = () => {
         if (currentEmployeeIndex > 0) {
             setCurrentEmployeeIndex(currentEmployeeIndex - 1);
-            setSelectedEmployee(employeeData[currentEmployeeIndex - 1]);
+            setSelectedEmployee(employees[currentEmployeeIndex - 1]);
         }
     };
 
@@ -476,7 +588,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     paginationPerPage={5}
                                     paginationRowsPerPageOptions={[5, 10, 15, 20]}
                                     selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
+                                    onSelectedRowsChange={handleRowSelectedDeptGrp}
                                     clearSelectedRows={clearSelectionToggle}
                                     selectableRowsHighlight
                                     selectableRowsNoSelectAll={true}
@@ -491,18 +603,18 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
                                 <DataTable
                                     columns={employeeColumns}
-                                    data={employeeData}
+                                    data={employeeData.length > 0 ? employeeData : employees}
                                     customStyles={customStyles}
                                     striped
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={5}
+                                    paginationPerPage={10}
                                     paginationRowsPerPageOptions={[5, 10, 15, 20]}
                                     onRowDoubleClicked={handleEmployeeClick}
                                     clearSelectedRows={clearSelectionToggle}
                                     selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
+                                    onSelectedRowsChange={handleRowSelectedEmployees}
                                     selectableRowsNoSelectAll={true}
                                     defaultSortAsc={true}
                                     defaultSortFieldId='enrollNumber'
@@ -516,12 +628,12 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                 >
                                     <CustomOutlineButton className="action-button" icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
                                 </OverlayTrigger>
-                                {/* <OverlayTrigger
+                                <OverlayTrigger
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Trocar Dept/Grp</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-right" />
-                                </OverlayTrigger> */}
+                                    <CustomOutlineButton className="action-button" icon="bi bi-arrow-left-right" onClick={handleSwitchDeptOrGrp} />
+                                </OverlayTrigger>
                             </div>
                         </Col>
                     </Row>
@@ -562,7 +674,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     onUpdate={updateEmployeeAndCard}
                     entity={selectedEmployee}
                     fields={employeeFields}
-                    canMoveNext={currentEmployeeIndex < employeeData.length - 1}
+                    canMoveNext={currentEmployeeIndex < employees.length - 1}
                     canMovePrev={currentEmployeeIndex > 0}
                     onNext={handleNextEmployee}
                     onPrev={handlePrevEmployee}

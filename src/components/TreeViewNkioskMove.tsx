@@ -4,11 +4,13 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { CustomOutlineButton } from './CustomOutlineButton';
-import { useLocation } from 'react-router-dom';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { useTerminals } from '../context/TerminalsContext';
+import { useLocation } from 'react-router-dom';
+
 import { usePersons } from '../context/PersonsContext';
+import { useTerminals } from '../context/TerminalsContext';
+
+import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

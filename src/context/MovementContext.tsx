@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
-import { EmployeeAttendanceTimes } from "../helpers/Types";
 import { toast } from "react-toastify";
+
 import * as apiService from "../helpers/apiService";
+import { EmployeeAttendanceTimes } from "../helpers/Types";
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {

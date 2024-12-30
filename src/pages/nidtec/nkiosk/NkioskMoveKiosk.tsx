@@ -1,23 +1,24 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../../context/NavbarContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
-import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import Split from "react-split";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { useNavbar } from "../../../context/NavbarContext";
 import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import * as apiService from "../../../helpers/apiService";
+import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
 import { PrintButton } from "../../../components/PrintButton";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
-import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 
@@ -88,13 +89,8 @@ export const NkioskMoveKiosk = () => {
     };
 
     // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+    const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        if (card.cardId) {
-            await handleUpdateEmployeeCard(card as EmployeeCard);
-        } else {
-            await handleAddEmployeeCard(card as EmployeeCard);
-        }
         window.location.reload();
     };
 

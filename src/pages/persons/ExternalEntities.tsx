@@ -1,24 +1,29 @@
 import { useContext, useEffect, useState } from "react";
-import { NavBar } from "../../components/NavBar";
+
 import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
 import '../../css/PagesStyles.css';
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import DataTable, { TableColumn } from 'react-data-table-component';
-import { ExternalEntity, ExternalEntityTypes } from "../../helpers/Types";
-import { DeleteModal } from "../../modals/DeleteModal";
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { externalEntityFields } from "../../helpers/Fields";
-import { ExportButton } from "../../components/ExportButton";
-import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
-import { CreateModalExtEnt } from "../../modals/CreateModalExtEnt";
-import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
-import { customStyles } from "../../components/CustomStylesDataTable";
+import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PrintButton } from "../../components/PrintButton";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+import { externalEntityFields } from "../../helpers/Fields";
+import { ExternalEntity, ExternalEntityTypes } from "../../helpers/Types";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+
+import DataTable, { TableColumn } from 'react-data-table-component';
+
+import { CreateModalExtEnt } from "../../modals/CreateModalExtEnt";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { ExportButton } from "../../components/ExportButton";
+import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
+import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
+import { customStyles } from "../../components/CustomStylesDataTable";
+
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+
 
 // Define a interface para os filtros
 interface Filters {

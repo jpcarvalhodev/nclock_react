@@ -1,10 +1,11 @@
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

@@ -1,13 +1,13 @@
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useContext, useEffect, useState } from "react";
+import { PolarArea , Bar } from "react-chartjs-2";
+
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import { PolarArea } from "react-chartjs-2";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
-import { useContext, useEffect, useState } from "react";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
-import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 

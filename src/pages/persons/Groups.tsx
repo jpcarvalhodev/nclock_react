@@ -1,24 +1,29 @@
 import { useContext, useEffect, useState } from "react";
-import { NavBar } from "../../components/NavBar";
+
 import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
 import '../../css/PagesStyles.css';
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import DataTable, { TableColumn } from 'react-data-table-component';
-import { Group } from "../../helpers/Types";
-import { DeleteModal } from "../../modals/DeleteModal";
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { groupFields } from "../../helpers/Fields";
-import { ExportButton } from "../../components/ExportButton";
-import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
-import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
-import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
-import { customStyles } from "../../components/CustomStylesDataTable";
+import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PrintButton } from "../../components/PrintButton";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+import { groupFields } from "../../helpers/Fields";
+import { Group } from "../../helpers/Types";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+
+import DataTable, { TableColumn } from 'react-data-table-component';
+
+import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { ExportButton } from "../../components/ExportButton";
+import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
+import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
+import { customStyles } from "../../components/CustomStylesDataTable";
+
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+
 
 // Define a interface para os filtros
 interface Filters {

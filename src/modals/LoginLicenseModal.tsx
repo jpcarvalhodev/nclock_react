@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import "../css/Login.css";
 import { Col, Form, Row } from 'react-bootstrap';
+
 import { LicenseKey } from '../helpers/Types';
 
 // Interface para as propriedades do modal

@@ -1,20 +1,21 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../../context/NavbarContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { PrintButton } from "../../../components/PrintButton";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { useNavbar } from "../../../context/NavbarContext";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import { Counter } from "../../../helpers/Types";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { counterFields } from "../../../helpers/Fields";
-import Split from "react-split";
-import { TextFieldProps, TextField } from "@mui/material";
+import { Counter } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { PrintButton } from "../../../components/PrintButton";
 import { useKiosk } from "../../../context/KioskContext";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 

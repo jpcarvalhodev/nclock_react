@@ -1,24 +1,25 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../../context/NavbarContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
-import { LimpezasEOcorrencias } from "../../../helpers/Types";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { useNavbar } from "../../../context/NavbarContext";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import * as apiService from "../../../helpers/apiService";
+import { LimpezasEOcorrencias } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { PrintButton } from "../../../components/PrintButton";
 import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
 import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateLimpezaOcorrenciaModal } from "../../../modals/UpdateLimpezaOcorrenciaModal";
-import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
-import Split from "react-split";
-import { TextFieldProps, TextField } from "@mui/material";
 import { useKiosk } from "../../../context/KioskContext";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 

@@ -1,12 +1,12 @@
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
+import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
+import { useEffect, useState } from "react";
+import { Bar , Pie } from "react-chartjs-2";
+
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
-import { useEffect, useState } from "react";
 import * as apiService from "../../../helpers/apiService";
-import { Pie } from "react-chartjs-2";
-import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
 import { Department, Employee, Group } from "../../../helpers/Types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);

@@ -1,11 +1,13 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { NavBar } from "../../../components/NavBar";
-import { Footer } from "../../../components/Footer";
-import { useNavbar } from "../../../context/NavbarContext";
+
 import marker from '../../../assets/img/map/marker.png';
+import { Footer } from "../../../components/Footer";
 import { MapCenterButton } from '../../../components/MapCenterButton';
+import { NavBar } from "../../../components/NavBar";
+import { useNavbar } from "../../../context/NavbarContext";
+
 import { useEffect } from 'react';
 import '../../../css/PagesStyles.css';
 

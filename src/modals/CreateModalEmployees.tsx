@@ -1,20 +1,20 @@
 import React, { useState, useEffect, ChangeEvent, useContext } from "react";
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from "react-bootstrap";
-import modalAvatar from "../assets/img/navbar/navbar/modalAvatar.png";
 import { toast } from "react-toastify";
-import { Department, Employee, EmployeeCard, Group } from "../helpers/Types";
-import * as apiService from "../helpers/apiService";
-import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
-import { departmentFields, groupFields } from "../helpers/Fields";
-import { PersonsContext, PersonsContextType } from "../context/PersonsContext";
+
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
-import { min } from "date-fns";
-import { is } from "date-fns/locale";
+import modalAvatar from "../assets/img/navbar/navbar/modalAvatar.png";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { PersonsContext, PersonsContextType } from "../context/PersonsContext";
+import * as apiService from "../helpers/apiService";
+import { departmentFields, groupFields } from "../helpers/Fields";
+import { Department, Employee, EmployeeCard, Group } from "../helpers/Types";
+
+import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -35,7 +35,7 @@ interface Props<T> {
   title: string;
   open: boolean;
   onClose: () => void;
-  onSave: (data: Partial<T>, cardData: Partial<EmployeeCard>) => void;
+  onSave: (data: Partial<T>) => void;
   fields: FieldConfig[];
   initialValues: Partial<T>;
 }
@@ -321,6 +321,40 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     }
   };
 
+  // Função para remover campos vazios
+  function removeEmptyFields<T extends Record<string, unknown>>(obj: T): Partial<T> {
+    const result: Partial<T> = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (Array.isArray(value)) {
+        const cleanedArray = value.map((item) => {
+          if (item && typeof item === "object") {
+            return removeEmptyFields(item as Record<string, unknown>);
+          }
+          return item;
+        });
+        (result as Record<string, unknown>)[key] = cleanedArray;
+      }
+      else if (
+        value === null ||
+        value === undefined ||
+        (typeof value === "string" && value.trim() === "")
+      ) {
+        continue;
+      }
+      else if (typeof value === "object") {
+        (result as Record<string, unknown>)[key] = removeEmptyFields(
+          value as Record<string, unknown>
+        );
+      }
+      else {
+        result[key as keyof T] = value as T[keyof T];
+      }
+    }
+
+    return result;
+  }
+
   // Função para lidar com o clique no botão de salvar
   const handleSaveClick = () => {
     if (!isFormValid) {
@@ -333,7 +367,99 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
   // Função para lidar com o salvamento
   const handleSave = () => {
-    onSave(formData as T, cardFormData as EmployeeCard);
+    const employeeData = {
+      employeeID: formData.employeeID,
+
+      enrollNumber: formData.enrollNumber,
+      name: formData.name,
+      shortName: formData.shortName,
+      nameAcronym: formData.nameAcronym,
+      comments: formData.comments,
+      photo: formData.photo,
+
+      address: formData.address,
+      ziPcode: formData.ziPcode,
+      locality: formData.locality,
+      village: formData.village,
+      district: formData.district,
+
+      phone: formData.phone,
+      mobile: formData.mobile,
+
+      email: formData.email,
+
+      birthday: formData.birthday,
+
+      nationality: formData.nationality,
+      gender: formData.gender,
+
+      bInumber: formData.bInumber,
+      bIissuance: formData.bIissuance,
+      biValidity: formData.biValidity,
+
+      nif: formData.nif,
+
+      admissionDate: formData.admissionDate,
+      exitDate: formData.exitDate,
+
+      rgpdAut: formData.rgpdAut,
+      status: formData.status,
+      statusEmail: formData.statusEmail,
+      statusFprint: formData.statusFprint,
+      statusFace: formData.statusFace,
+      statusPalm: formData.statusPalm,
+
+      type: formData.type,
+      employeeDisabled: formData.employeeDisabled,
+
+      entidadeId: formData.entidadeId,
+      entidadeName: formData.entidadeName,
+
+      departmentId: formData.departmentId,
+      departmentName: formData.departmentName,
+
+      professionId: formData.professionId,
+      professionName: formData.professionName,
+
+      categoryId: formData.categoryId,
+      categoryName: formData.categoryName,
+
+      groupId: formData.groupId,
+      groupName: formData.groupName,
+
+      zoneId: formData.zoneId,
+      zoneName: formData.zoneName,
+
+      externalEntityId: formData.externalEntityId,
+      externalEntityName: formData.externalEntityName
+    } as any;
+
+    let employeeCardsData: any[] = [];
+
+    if (cardFormData.cardNumber && cardFormData.cardNumber.trim() !== "") {
+      employeeCardsData = [
+        {
+          devicePassword: cardFormData.devicePassword,
+          devicePrivelage: cardFormData.devicePrivelage,
+          deviceEnabled: true,
+          cardNumber: cardFormData.cardNumber
+        }
+      ];
+    }
+
+    let dataToSend: { employee: any; employeeCards?: any[] } = {
+      employee: employeeData
+    };
+
+    if (employeeCardsData.length > 0) {
+      dataToSend = {
+        ...dataToSend,
+        employeeCards: employeeCardsData
+      };
+    }
+
+    dataToSend = removeEmptyFields(dataToSend) as typeof dataToSend;
+    onSave(dataToSend as unknown as Partial<T>);
   };
 
   // Opções do tipo

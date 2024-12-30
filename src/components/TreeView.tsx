@@ -1,13 +1,17 @@
-import { SyntheticEvent, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { Department, Employee, Group } from '../helpers/Types';
-import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
-import { usePersons } from '../context/PersonsContext';
-import { CustomOutlineButton } from './CustomOutlineButton';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+import { usePersons } from '../context/PersonsContext';
+import { Department, Employee, Group } from '../helpers/Types';
+
+import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
+
+import { CustomOutlineButton } from './CustomOutlineButton';
+
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

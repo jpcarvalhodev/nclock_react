@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import * as apiService from "../helpers/apiService";
+
 import { useLicense } from "../context/LicenseContext";
 import { useNavbar } from "../context/NavbarContext";
+import * as apiService from "../helpers/apiService";
 
 interface FooterProps {
   style?: React.CSSProperties;
@@ -50,7 +51,7 @@ export const Footer = ({ style }: FooterProps) => {
         <p>{truncateText(entityName, 20)}</p>
       </div>
       <div className={`footer-center ${isMobile ? "footer-center-mobile" : ""}`}>
-        <p>{currentYear} ®NIDGROUP por SISNID<span className="mobile-hide"> -</span><br className="mobile-only" /> Todos os direitos reservados</p>
+        <p>{currentYear} ®NSOFTWARES por SISNID<span className="mobile-hide"> -</span><br className="mobile-only" /> Todos os direitos reservados</p>
       </div>
       <div className="footer-right">
         <p>{apiService.version}</p>

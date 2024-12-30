@@ -1,22 +1,23 @@
+import { TextFieldProps, TextField } from "@mui/material";
+import { useState, useContext, useEffect } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
+
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
-import { categoryFields, externalEntityTypeFields } from "../../helpers/Fields";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useState, useContext, useEffect } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { ExternalEntityTypes } from "../../helpers/Types";
-import { SelectFilter } from "../../components/SelectFilter";
-import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
-import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
-import { DeleteModal } from "../../modals/DeleteModal";
-import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from "../../components/PrintButton";
-import { TextFieldProps, TextField } from "@mui/material";
+import { SelectFilter } from "../../components/SelectFilter";
+import { useNavbar } from "../../context/NavbarContext";
 import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+import { categoryFields, externalEntityTypeFields } from "../../helpers/Fields";
+import { ExternalEntityTypes } from "../../helpers/Types";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 
 // Define a interface para os filtros
 interface Filters {

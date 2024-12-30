@@ -1,4 +1,5 @@
 import { useMap } from 'react-leaflet';
+
 import center from '../assets/img/map/center.png';
 import '../css/PagesStyles.css';
 

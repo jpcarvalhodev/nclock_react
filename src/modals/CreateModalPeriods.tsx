@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import { TimePeriod } from '../helpers/Types';
+
 import * as apiService from "../helpers/apiService";
+import { TimePeriod } from '../helpers/Types';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {

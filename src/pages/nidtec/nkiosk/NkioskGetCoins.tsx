@@ -1,27 +1,28 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../../context/NavbarContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+import { toast } from "react-toastify";
+
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { PrintButton } from "../../../components/PrintButton";
-import { toast } from "react-toastify";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { useNavbar } from "../../../context/NavbarContext";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
+import * as apiService from "../../../helpers/apiService";
 import { RecolhaMoedeiroEContador, ResetCoin } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { PrintButton } from "../../../components/PrintButton";
 import { recolhaMoedeiroEContadorFields, resetFields } from "../../../helpers/Fields";
 import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecolhaMoedeiroEContadorModal";
-import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
-import Split from "react-split";
-import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
-import { ResetCoinModal } from "../../../modals/ResetCoinModal";
-import { TextFieldProps, TextField } from "@mui/material";
-import { useKiosk } from "../../../context/KioskContext";
 import { DeleteModal } from "../../../modals/DeleteModal";
+import { ResetCoinModal } from "../../../modals/ResetCoinModal";
+import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
+import { useKiosk } from "../../../context/KioskContext";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 
 // Formata a data para o início do dia às 00:00

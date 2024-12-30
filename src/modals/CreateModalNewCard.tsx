@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+
 import * as apiService from "../helpers/apiService";
 import { LimpezasEOcorrencias, NewTransactionCard } from '../helpers/Types';
 
@@ -102,7 +103,6 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
         try {
             const devices = await apiService.fetchAllDevices();
             const employeeCard = await apiService.fetchAllEmployeeCards();
-            console.log(employeeCard);
             setDropdownData({
                 deviceSN: devices,
                 pin: employeeCard

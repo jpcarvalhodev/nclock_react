@@ -1,10 +1,10 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+
 import no_entity from '../assets/img/navbar/no_entity.png';
-import * as apiService from "../helpers/apiService";
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface Entity
 export interface Entity {

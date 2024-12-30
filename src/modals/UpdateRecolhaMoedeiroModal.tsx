@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import * as apiService from "../helpers/apiService";
-import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
-import { KioskConfig, RecolhaMoedeiroEContador } from '../helpers/Types';
+
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
+import * as apiService from "../helpers/apiService";
+import { KioskConfig, RecolhaMoedeiroEContador } from '../helpers/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

@@ -1,8 +1,8 @@
-import { createContext, useState, useContext } from 'react';
-import { ReactNode } from 'react';
-import { AccessControl, Devices, DoorDevice, Doors, Employee, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
+import { createContext, useState, useContext , ReactNode } from 'react';
 import { toast } from 'react-toastify';
+
 import * as apiService from "../helpers/apiService";
+import { AccessControl, Devices, DoorDevice, Doors, Employee, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {

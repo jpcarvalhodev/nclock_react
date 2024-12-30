@@ -1,5 +1,6 @@
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+
 import warning from "../assets/img/modals/warning.png";
 
 // Define a propriedade da interface

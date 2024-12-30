@@ -1,21 +1,22 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../../context/NavbarContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { PrintButton } from "../../../components/PrintButton";
-import { MBDeviceStatus } from "../../../helpers/Types";
-import { mbDeviceStatusFields } from "../../../helpers/Fields";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { useNavbar } from "../../../context/NavbarContext";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { TextFieldProps, TextField } from "@mui/material";
-import Split from "react-split";
+import * as apiService from "../../../helpers/apiService";
+import { MBDeviceStatus } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { PrintButton } from "../../../components/PrintButton";
+import { mbDeviceStatusFields } from "../../../helpers/Fields";
 import { TreeViewDataMBTerminals } from "../../../components/TreeViewMBTerminals";
 
 // Formata a data para o início do dia às 00:00

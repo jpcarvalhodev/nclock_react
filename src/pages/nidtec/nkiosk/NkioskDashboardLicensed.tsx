@@ -1,17 +1,20 @@
-import { Carousel } from "react-responsive-carousel";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
-import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend, ChartData } from 'chart.js';
 import { useContext, useEffect, useState } from "react";
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Line } from "react-chartjs-2";
+import { Carousel } from "react-responsive-carousel";
+
+import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { useNavbar } from "../../../context/NavbarContext";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
-import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
-import { Line } from "react-chartjs-2";
-import { useNavbar } from "../../../context/NavbarContext";
+
+
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 

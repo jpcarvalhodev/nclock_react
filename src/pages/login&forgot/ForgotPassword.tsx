@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../css/ForgotPassword.css';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+
 import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 
 // Define a página de recuperação de password
@@ -34,7 +35,7 @@ export const ForgotPassword = () => {
 
         if (!response.ok) {
           toast.error('Falha ao enviar e-mail de recuperação de password. Tente novamente.');
-          throw new Error;
+          throw new Error();
         }
 
         toast.success('E-mail de redefinição de password enviado!');

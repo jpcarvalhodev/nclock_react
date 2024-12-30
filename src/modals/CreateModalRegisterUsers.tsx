@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import React, { useState, useEffect } from 'react';
 import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import React from 'react';
-import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
-import * as apiService from "../helpers/apiService";
+
 import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
+import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {

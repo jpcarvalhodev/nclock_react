@@ -1,15 +1,18 @@
 import { useContext, useEffect, useState } from 'react';
-import DataTable, { TableColumn } from 'react-data-table-component';
-import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
-import { employeeFields } from '../helpers/Fields';
-import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import DataTable, { TableColumn } from 'react-data-table-component';
+
+import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
+import { employeeFields } from '../helpers/Fields';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
 import { DeleteModal } from '../modals/DeleteModal';
-import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
+import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
+
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { customStyles } from './CustomStylesDataTable';
+import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
 import { SelectFilter } from './SelectFilter';
-import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
+
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -45,8 +48,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         fetchAllEmployees,
         handleUpdateEmployee,
         handleDeleteEmployee,
-        handleUpdateEmployeeCard,
-        handleAddEmployeeCard,
     } = useContext(PersonsContext) as PersonsContextType;
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -67,13 +68,8 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     };
 
     // Função para atualizar um funcionário
-    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+    const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        if (card.cardId) {
-            await handleUpdateEmployeeCard(card as EmployeeCard);
-        } else {
-            await handleAddEmployeeCard(card as EmployeeCard);
-        }
         refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
@@ -81,6 +77,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee([employeeId]);
+        refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

@@ -1,24 +1,29 @@
 import { useState, useEffect, useContext } from 'react';
+import DataTable, { TableColumn } from 'react-data-table-component';
+import { toast } from 'react-toastify';
+
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { ExpandedComponentDept } from '../../components/ExpandedComponentDept';
+import { ExportButton } from '../../components/ExportButton';
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
-import DataTable, { TableColumn } from 'react-data-table-component';
-import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
-import { Department } from '../../helpers/Types';
-import { CreateModalDeptGrp } from '../../modals/CreateModalDeptGrp';
-import { UpdateModalDeptGrp } from '../../modals/UpdateModalDeptGrp';
-import { DeleteModal } from '../../modals/DeleteModal';
-import { CustomOutlineButton } from '../../components/CustomOutlineButton';
-import { departmentFields } from '../../helpers/Fields';
-import { ExportButton } from '../../components/ExportButton';
-import { toast } from 'react-toastify';
-import '../../css/PagesStyles.css';
-import { ExpandedComponentDept } from '../../components/ExpandedComponentDept';
-import { customStyles } from '../../components/CustomStylesDataTable';
-import { SelectFilter } from '../../components/SelectFilter';
-import { useNavbar } from "../../context/NavbarContext";
 import { PrintButton } from '../../components/PrintButton';
+import { SelectFilter } from '../../components/SelectFilter';
+import { departmentFields } from '../../helpers/Fields';
+import { Department } from '../../helpers/Types';
+import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
+import { CreateModalDeptGrp } from '../../modals/CreateModalDeptGrp';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { UpdateModalDeptGrp } from '../../modals/UpdateModalDeptGrp';
+
+
+import '../../css/PagesStyles.css';
+import { useNavbar } from "../../context/NavbarContext";
+
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextFieldProps, TextField } from '@mui/material';
+
 import { PersonsContext, PersonsContextType } from '../../context/PersonsContext';
 
 // Define a interface para os filtros

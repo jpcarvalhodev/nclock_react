@@ -1,24 +1,25 @@
+import { TextField, TextFieldProps } from "@mui/material";
+import { Key, useContext, useEffect, useState } from "react";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../context/NavbarContext";
-import { NavBar } from "../../components/NavBar";
+import Split from "react-split";
+
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
+import { ExportButton } from "../../components/ExportButton";
 import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import { useNavbar } from "../../context/NavbarContext";
+import { accessControlFields } from "../../helpers/Fields";
+import { AccessControl } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { SelectFilter } from "../../components/SelectFilter";
-import { Key, useContext, useEffect, useState } from "react";
-import { customStyles } from "../../components/CustomStylesDataTable";
-import { AccessControl } from "../../helpers/Types";
-import { accessControlFields } from "../../helpers/Fields";
 import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
-import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
-import Split from "react-split";
-import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
 import { DeleteACModal } from "../../modals/DeleteACModal";
+import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
+import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import { PrintButton } from "../../components/PrintButton";
-import { ExportButton } from "../../components/ExportButton";
-import { TextField, TextFieldProps } from "@mui/material";
 import { TerminalsContext, DeviceContextType } from "../../context/TerminalsContext";
 
 // Define a interface para as propriedades do componente CustomSearchBox

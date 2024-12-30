@@ -1,5 +1,6 @@
-import Modal from "react-bootstrap/Modal";
 import { Form, Nav, Tab } from "react-bootstrap";
+import Modal from "react-bootstrap/Modal";
+
 import nidgrouplogo from '../assets/img/ajuda/nidgrouplogo.png';
 
 // Define a propriedade da interface

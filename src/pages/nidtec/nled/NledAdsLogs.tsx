@@ -1,16 +1,17 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../../context/NavbarContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { SelectFilter } from "../../../components/SelectFilter";
-import { useEffect, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
-import { Ads } from "../../../helpers/Types";
-import { customStyles } from "../../../components/CustomStylesDataTable";
-import { adsFields } from "../../../helpers/Fields";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
+import { customStyles } from "../../../components/CustomStylesDataTable";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { useNavbar } from "../../../context/NavbarContext";
+import * as apiService from "../../../helpers/apiService";
+import { adsFields } from "../../../helpers/Fields";
+import { Ads } from "../../../helpers/Types";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

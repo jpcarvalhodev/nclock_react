@@ -1,21 +1,23 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { NavBar } from "../../components/NavBar";
-import { useNavbar } from "../../context/NavbarContext";
-import { Footer } from "../../components/Footer";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { useContext, useEffect, useState } from "react";
-import { customStyles } from "../../components/CustomStylesDataTable";
-import { Entity } from "../../helpers/Types";
-import { SelectFilter } from "../../components/SelectFilter";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { entityFields } from "../../helpers/Fields";
-import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
-import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
-import { EntityContext, EntityContextType } from "../../context/EntityContext";
-import { ExportButton } from "../../components/ExportButton";
-import { PrintButton } from "../../components/PrintButton";
 import { TextFieldProps, TextField } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
+import { ExportButton } from "../../components/ExportButton";
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import { PrintButton } from "../../components/PrintButton";
+import { SelectFilter } from "../../components/SelectFilter";
+import { EntityContext, EntityContextType } from "../../context/EntityContext";
+import { useNavbar } from "../../context/NavbarContext";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { Entity } from "../../helpers/Types";
+import { entityFields } from "../../helpers/Fields";
+import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
+
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

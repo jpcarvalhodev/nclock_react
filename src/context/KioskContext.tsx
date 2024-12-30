@@ -1,8 +1,10 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { toast } from 'react-toastify';
+
 import * as apiService from '../helpers/apiService';
 import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../helpers/Types';
+
 import { useTerminals } from './TerminalsContext';
-import { toast } from 'react-toastify';
 
 // Define o tipo do contexto
 export interface KioskContextType {

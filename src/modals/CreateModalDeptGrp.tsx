@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form, Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { employeeFields } from '../helpers/Fields';
-import { UpdateModalEmployees } from './UpdateModalEmployees';
-import { CreateModalEmployees } from './CreateModalEmployees';
-import { toast } from 'react-toastify';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import DataTable from 'react-data-table-component';
+import { toast } from 'react-toastify';
+
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { customStyles } from '../components/CustomStylesDataTable';
+import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { employeeFields } from '../helpers/Fields';
+import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
+
+import { CreateModalEmployees } from './CreateModalEmployees';
+import { UpdateModalEmployees } from './UpdateModalEmployees';
+
+
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -107,36 +111,15 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     };
 
     // Função para adicionar um funcionário e um cartão
-    const addEmployeeAndCard = async (employee: Partial<Employee>, card: Partial<EmployeeCard>) => {
+    const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
-        const employeeCard = {
-            ...card,
-            employeeId: employee.employeeID
-        };
-        await handleAddEmployeeCard(employeeCard as EmployeeCard);
-        if (entityType === 'department') {
-            fetchAllDepartments();
-        } else {
-            fetchAllGroups();
-        }
         setShowEmployeeModal(false);
         setClearSelectionToggle(!clearSelectionToggle);
     }
 
     // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+    const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        const employeeCard = {
-            ...card,
-            employeeId: employee.employeeID
-        };
-        if (employeeCard && Object.keys(employeeCard).length > 0) {
-            if (card.cardID) {
-                await handleUpdateEmployeeCard(employeeCard as EmployeeCard);
-            } else {
-                await handleAddEmployeeCard(employeeCard as EmployeeCard);
-            }
-        }
         if (entityType === 'department') {
             fetchAllDepartments();
         } else {
@@ -502,7 +485,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={5}
+                                    paginationPerPage={10}
                                     paginationRowsPerPageOptions={[5, 10, 15, 20]}
                                     onRowDoubleClicked={handleEmployeeClick}
                                     clearSelectedRows={clearSelectionToggle}
@@ -520,12 +503,6 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                 >
                                     <CustomOutlineButton className="action-button" icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
                                 </OverlayTrigger>
-                                {/* <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Trocar Dept/Grp</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-right" />
-                                </OverlayTrigger> */}
                             </div>
                         </Col>
                     </Row>

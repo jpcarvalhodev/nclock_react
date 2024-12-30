@@ -1,14 +1,17 @@
-import Dropdown from 'react-bootstrap/Dropdown';
-import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import { useEffect, useState } from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
+import * as XLSX from 'xlsx';
+
+import { useTerminals } from '../context/TerminalsContext';
+import * as apiService from "../helpers/apiService";
+import { Devices, Entity, MBDevice } from '../helpers/Types';
+
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { PDFDocument } from './PDFDocument';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
-import { Devices, Entity, MBDevice } from '../helpers/Types';
-import * as apiService from "../helpers/apiService";
-import { useTerminals } from '../context/TerminalsContext';
+
 
 // Define a interface para os itens de dados
 interface DataItem {

@@ -53,10 +53,43 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
+    "settings": {
+      "import/resolver": {
+        "typescript": {}
+      }
+    },
+    "plugins": [
+      "import"
+    ],
     "extends": [
       "react-app",
-      "react-app/jest"
-    ]
+      "react-app/jest",
+      "plugin:import/errors",
+      "plugin:import/warnings"
+    ],
+    "rules": {
+      "import/no-unresolved": "error",
+      "import/named": "error",
+      "import/no-duplicates": "error",
+      "import/order": [
+        "warn",
+        {
+          "groups": [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index"
+          ],
+          "newlines-between": "always",
+          "alphabetize": {
+            "order": "asc",
+            "caseInsensitive": true
+          }
+        }
+      ]
+    }
   },
   "browserslist": {
     "production": [
@@ -71,6 +104,8 @@
     ]
   },
   "devDependencies": {
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-import": "^2.31.0",
     "react-app-rewired": "^2.2.1",
     "webpack-obfuscator": "^3.5.1"
   }

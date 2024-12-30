@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
+
 import { useCardScroll } from "../context/CardScrollContext";
 
 interface CardContainerProps {

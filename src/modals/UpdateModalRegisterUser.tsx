@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import React, { useState, useEffect } from 'react';
 import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
-import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
-import React from 'react';
-import * as apiService from "../helpers/apiService";
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
+
 import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
+import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import * as apiService from "../helpers/apiService";
 
 // Define a interface Entity
 export interface Entity {

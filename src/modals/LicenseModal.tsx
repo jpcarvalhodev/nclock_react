@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { set } from "date-fns";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, InputGroup, FormControl, Col, OverlayTrigger, Tooltip, Row, Tabs, Tab } from "react-bootstrap";
-import { useLicense } from "../context/LicenseContext";
-import { License } from "../helpers/Types";
-import { toast } from "react-toastify";
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
-import { set } from "date-fns";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { useLicense } from "../context/LicenseContext";
+import { License } from "../helpers/Types";
 
 // Define o tipo FormControlElement
 type FormControlElement =

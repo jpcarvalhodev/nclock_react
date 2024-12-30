@@ -1,23 +1,24 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { NavBar } from "../../components/NavBar";
-import { useNavbar } from "../../context/NavbarContext";
-import { Footer } from "../../components/Footer";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExportButton } from "../../components/ExportButton";
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
+import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
+import { useNavbar } from "../../context/NavbarContext";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { TimePeriod } from "../../helpers/Types";
 import { timePeriodFields } from "../../helpers/Fields";
-import { DeleteModal } from "../../modals/DeleteModal";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { CreateModalPeriods } from "../../modals/CreateModalPeriods";
+import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
-import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
-import Split from "react-split";
-import { ExportButton } from "../../components/ExportButton";
-import { PrintButton } from "../../components/PrintButton";
-import { TextFieldProps, TextField } from "@mui/material";
 import { TerminalsContext, DeviceContextType } from "../../context/TerminalsContext";
 
 // Define a interface para as propriedades do componente CustomSearchBox

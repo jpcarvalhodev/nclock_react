@@ -1,23 +1,25 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../../context/NavbarContext";
-import { NavBar } from "../../../components/NavBar";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { Footer } from "../../../components/Footer";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useMemo, useState } from "react";
-import * as apiService from "../../../helpers/apiService";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+
 import { KioskTransactionCard } from "../../../helpers/Types";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { transactionCardFields } from "../../../helpers/Fields";
 import { ExportButton } from "../../../components/ExportButton";
+
 import Split from "react-split";
-import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
 import { PrintButton } from "../../../components/PrintButton";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { TextFieldProps, TextField } from "@mui/material";
-import { useKiosk } from "../../../context/KioskContext";
+import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
+import { useKiosk } from "../../../context/KioskContext";
+import { useNavbar } from "../../../context/NavbarContext";
+import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
+import * as apiService from "../../../helpers/apiService";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { Tab, Row, Col, Nav, Form, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { toast } from 'react-toastify';
+
+import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
+
 import { set } from 'date-fns';
 
 // Define a interface para as propriedades do componente FieldConfig

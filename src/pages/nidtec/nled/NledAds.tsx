@@ -1,25 +1,26 @@
+import { TextFieldProps, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
-import { DeleteModal } from "../../../modals/DeleteModal";
-import { adsFields } from "../../../helpers/Fields";
-import { Ads } from "../../../helpers/Types";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
+import { TreeViewDataNled } from "../../../components/TreeViewNled";
+import { AdsContext, AdsContextType } from "../../../context/AdsContext";
+import { useNavbar } from "../../../context/NavbarContext";
+import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import { adsFields } from "../../../helpers/Fields";
+import { DeleteModal } from "../../../modals/DeleteModal";
+import { Ads } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
 import { UpdateModalAds } from "../../../modals/UpdateModalAds";
-import { AdsContext, AdsContextType } from "../../../context/AdsContext";
-import Split from "react-split";
-import { TreeViewDataNled } from "../../../components/TreeViewNled";
-import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
-import { ExportButton } from "../../../components/ExportButton";
-import { PrintButton } from "../../../components/PrintButton";
-import { TextFieldProps, TextField } from "@mui/material";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

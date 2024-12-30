@@ -1,25 +1,25 @@
 import { useNavigate, Link } from "react-router-dom";
 import "../../css/Login.css";
-import { useEffect, useState } from "react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
-import profileAvatar from "../../assets/img/navbar/navbar/profileAvatar.png";
-import no_entity from "../../assets/img/navbar/no_entity.png";
+
 import hidepass from "../../assets/img/login/hidepass.png";
 import showpass from "../../assets/img/login/showpass.png";
+import profileAvatar from "../../assets/img/navbar/navbar/profileAvatar.png";
+import no_entity from "../../assets/img/navbar/no_entity.png";
+import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
+import { useAds } from "../../context/AdsContext";
+import { useEntity } from "../../context/EntityContext";
+import { useKiosk } from "../../context/KioskContext";
+import { useLicense } from "../../context/LicenseContext";
+import { useAttendance } from "../../context/MovementContext";
+import { useNavbar } from "../../context/NavbarContext";
+import { usePersons } from "../../context/PersonsContext";
+import { useTerminals } from "../../context/TerminalsContext";
 import * as apiService from "../../helpers/apiService";
 import { License, LicenseKey } from "../../helpers/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
-import { useAds } from "../../context/AdsContext";
-import { useEntity } from "../../context/EntityContext";
-import { useAttendance } from "../../context/MovementContext";
-import { useLicense } from "../../context/LicenseContext";
-import { usePersons } from "../../context/PersonsContext";
-import { useTerminals } from "../../context/TerminalsContext";
-import { useKiosk } from "../../context/KioskContext";
-import { useNavbar } from "../../context/NavbarContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -409,10 +409,10 @@ export const Login = () => {
           </div>
           <footer className="footer-login">
             <p style={{ fontSize: 10, margin: 0, color: "white" }}>
-              Developed by NIDSOF - Smart Solutions
+              Developed by NSOFTWARES - Innovative Applications
             </p>
             <p style={{ fontSize: 10, margin: 0, color: "white" }}>
-              <a style={{ color: 'white', textDecoration: 'none' }} href="https://nidsof.pt/" target="_blank" rel="noopener noreferrer">www.nidsof.pt</a>
+              <a style={{ color: 'white', textDecoration: 'none' }} href="https://nsoftwares.pt/" target="_blank" rel="noopener noreferrer">www.nsoftwares.pt</a>
             </p>
           </footer>
         </form>

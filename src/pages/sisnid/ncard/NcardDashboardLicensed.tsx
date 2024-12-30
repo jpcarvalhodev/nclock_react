@@ -1,14 +1,15 @@
-import { Carousel } from "react-responsive-carousel";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
-import banner_ncard from "../../../assets/img/carousel/banner_ncard.jpg";
-import { useNavbar } from "../../../context/NavbarContext";
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
 import { useState } from "react";
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Bar } from "react-chartjs-2";
+import { Carousel } from "react-responsive-carousel";
+
+import banner_ncard from "../../../assets/img/carousel/banner_ncard.jpg";
+import { Footer } from "../../../components/Footer";
+import { NavBar } from "../../../components/NavBar";
+import { useNavbar } from "../../../context/NavbarContext";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 

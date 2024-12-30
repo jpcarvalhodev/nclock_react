@@ -1,7 +1,9 @@
 import { Button } from 'react-bootstrap';
+
 import '../../css/ErrorPages.css';
-import { fetchWithAuth } from '../../components/FetchWithAuth';
 import { useNavigate } from 'react-router-dom';
+
+import { fetchWithAuth } from '../../components/FetchWithAuth';
 
 // Define a página de erro 404
 export const NotFound = () => {

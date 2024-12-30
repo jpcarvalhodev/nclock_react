@@ -1,21 +1,22 @@
 import { useContext, useEffect, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExportButton } from "../../components/ExportButton";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
-import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles } from "../../components/CustomStylesDataTable";
-import { SelectFilter } from "../../components/SelectFilter";
-import { MBDeviceCloseOpen } from "../../helpers/Types";
-import { mbDeviceCloseOpenFields } from "../../helpers/Fields";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import { useNavbar } from "../../context/NavbarContext";
-import * as apiService from "../../helpers/apiService";
-import Split from "react-split";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
+import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../components/TreeViewDevice";
+import { useNavbar } from "../../context/NavbarContext";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
+import * as apiService from "../../helpers/apiService";
+import { mbDeviceCloseOpenFields } from "../../helpers/Fields";
+import { MBDeviceCloseOpen } from "../../helpers/Types";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 // Define a interface para os filtros
 interface Filters {

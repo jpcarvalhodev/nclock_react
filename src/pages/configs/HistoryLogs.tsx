@@ -1,22 +1,24 @@
-import DataTable, { TableColumn } from "react-data-table-component";
-import { useNavbar } from "../../context/NavbarContext";
-import { NavBar } from "../../components/NavBar";
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { Footer } from "../../components/Footer";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../components/SelectFilter";
+import { TextFieldProps, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import * as apiService from "../../helpers/apiService";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
 import { PrintButton } from "../../components/PrintButton";
 import { Logs } from "../../helpers/Types";
 import { logsFields } from "../../helpers/Fields";
+
 import Split from "react-split";
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { Footer } from "../../components/Footer";
+import { NavBar } from "../../components/NavBar";
+import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataHistory } from "../../components/TreeViewHistory";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { TextFieldProps, TextField } from "@mui/material";
 import { useEntity } from "../../context/EntityContext";
+import { useNavbar } from "../../context/NavbarContext";
+import * as apiService from "../../helpers/apiService";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

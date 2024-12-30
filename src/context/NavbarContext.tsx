@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { EmailUser, KioskConfig } from '../helpers/Types';
+
 import * as apiService from "../helpers/apiService";
+import { EmailUser, KioskConfig } from '../helpers/Types';
 
 // Defina a interface para o contexto
 export interface NavbarContextType {

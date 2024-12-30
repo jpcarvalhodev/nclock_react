@@ -1,27 +1,31 @@
+import { useContext, useEffect, useState } from "react";
+import DataTable, { TableColumn } from 'react-data-table-component';
 import Split from 'react-split';
+import { toast } from "react-toastify";
+
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
+import { customStyles } from '../../../components/CustomStylesDataTable';
+import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar"
-import { useContext, useEffect, useState } from "react";
-import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
-import { ExportButton } from "../../../components/ExportButton";
-import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
-import { toast } from "react-toastify";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { DeleteModal } from "../../../modals/DeleteModal";
-import DataTable, { TableColumn } from 'react-data-table-component';
-import { customStyles } from '../../../components/CustomStylesDataTable';
-import { CreateModalAttendance } from '../../../modals/CreateModalAttendance';
-import { UpdateModalAttendance } from '../../../modals/UpdateModalAttendance';
+import { PrintButton } from '../../../components/PrintButton';
+import { SelectFilter } from '../../../components/SelectFilter';
 import { TreeViewDataNclock } from '../../../components/TreeViewNclock';
+import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
+import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { CreateModalAttendance } from '../../../modals/CreateModalAttendance';
+import { DeleteModal } from "../../../modals/DeleteModal";
+import { UpdateModalAttendance } from '../../../modals/UpdateModalAttendance';
+
 import "../../../css/PagesStyles.css";
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { SelectFilter } from '../../../components/SelectFilter';
+
 import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../../context/MovementContext';
 import { useNavbar } from "../../../context/NavbarContext";
-import { PrintButton } from '../../../components/PrintButton';
 import { PersonsContext, PersonsContextType } from '../../../context/PersonsContext';
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
+
 import { TextFieldProps, TextField } from '@mui/material';
 
 // Define a interface para os filtros
@@ -117,13 +121,8 @@ export const NclockRequests = () => {
     }
 
     // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee, card: Partial<EmployeeCard>) => {
+    const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        if (card.cardId) {
-            await handleUpdateEmployeeCard(card as EmployeeCard);
-        } else {
-            await handleAddEmployeeCard(card as EmployeeCard);
-        }
         refreshAttendance();
         setClearSelectionToggle(!clearSelectionToggle);
     };

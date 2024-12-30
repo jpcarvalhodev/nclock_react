@@ -1,29 +1,30 @@
-import { useContext, useEffect, useState } from "react";
+import { set } from "date-fns";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
-import { Auxiliaries, Doors, TimePeriod } from "../helpers/Types";
-import React from "react";
-import no_image from "../assets/img/terminais/no_image.png";
-import { toast } from "react-toastify";
-import { TerminalsContext, DeviceContextType } from "../context/TerminalsContext";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles } from "../components/CustomStylesDataTable";
-import { auxiliariesFields, doorsFields } from "../helpers/Fields";
-import { SelectFilter } from "../components/SelectFilter";
-import * as apiService from "../helpers/apiService";
-import { UpdateModalDoor } from "./UpdateModalDoor";
-import nface from "../assets/img/terminais/nface.webp";
+import { toast } from "react-toastify";
+
 import c3_100 from "../assets/img/terminais/c3_100.webp";
 import c3_200 from "../assets/img/terminais/c3_200.webp";
 import c3_400 from "../assets/img/terminais/c3_400.webp";
 import inbio160 from "../assets/img/terminais/inbio160.webp";
 import inbio260 from "../assets/img/terminais/inbio260.webp";
 import inbio460 from "../assets/img/terminais/inbio460.webp";
+import nface from "../assets/img/terminais/nface.webp";
+import no_image from "../assets/img/terminais/no_image.png";
 import profacex from "../assets/img/terminais/profacex.webp";
 import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { customStyles } from "../components/CustomStylesDataTable";
+import { SelectFilter } from "../components/SelectFilter";
+import { TerminalsContext, DeviceContextType } from "../context/TerminalsContext";
+import * as apiService from "../helpers/apiService";
+import { auxiliariesFields, doorsFields } from "../helpers/Fields";
+import { Auxiliaries, Doors, TimePeriod } from "../helpers/Types";
+
 import { UpdateModalAux } from "./UpdateModalAux";
-import { set } from "date-fns";
+import { UpdateModalDoor } from "./UpdateModalDoor";
 
 // Define a interface Entity
 export interface Entity {

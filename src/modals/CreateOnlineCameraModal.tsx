@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { Cameras } from '../helpers/Types';
+
 import * as apiService from "../helpers/apiService";
+import { Cameras } from '../helpers/Types';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
