@@ -485,7 +485,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{entityType === 'department' ? 'Atualizar Departamento' : 'Atualizar Grupo'}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body style={{ marginBottom: 40 }}>
                 <Form>
                     <Row>
                         <Col md={5}>

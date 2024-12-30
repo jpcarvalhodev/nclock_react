@@ -501,7 +501,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   };
 
   return (
-    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 100 }}>
+    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 110 }}>
       <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

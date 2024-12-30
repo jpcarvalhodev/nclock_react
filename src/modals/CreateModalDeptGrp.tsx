@@ -361,7 +361,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{entityType === 'department' ? 'Criar Departamento' : 'Criar Grupo'}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body style={{ marginBottom: 40 }}>
                 <Form>
                     <Row>
                         <Col md={5}>
