@@ -101,11 +101,6 @@ export const NkioskOccurrences = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     }
 
-    // Busca todas as ocorrências ao carregar a página
-    useEffect(() => {
-        fetchAllOcorrencias();
-    }, []);
-
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {

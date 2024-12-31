@@ -44,7 +44,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NvisitorMoveKiosk = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();

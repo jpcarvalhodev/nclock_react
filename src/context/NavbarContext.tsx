@@ -121,6 +121,12 @@ export const NavbarProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  // Busca os dados ao carregar a página
+  useEffect(() => {
+    fetchEmailConfig();
+    fetchKioskConfig();
+  }, []);
+
   return (
     <NavbarContext.Provider value={{ navbarColor, footerColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, kioskConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig }}>
       {children}

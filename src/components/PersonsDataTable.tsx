@@ -70,14 +70,14 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     // Função para atualizar um funcionário
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        refreshEmployees();
+        fetchEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee([employeeId]);
-        refreshEmployees();
+        fetchEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -85,11 +85,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     useEffect(() => {
         fetchEmployees();
     }, []);
-
-    // Atualiza a lista de funcionários
-    const refreshEmployees = () => {
-        fetchEmployees();
-    }
 
     // Gerencia a aplicação de filtros e atualizar o estado no componente pai
     useEffect(() => {

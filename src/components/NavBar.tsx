@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import React, { useEffect, useState , Dispatch, SetStateAction } from 'react';
+import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
@@ -270,11 +270,6 @@ type RibbonKey = 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatro
 // Define a interface para o toggler da ribbon
 type RibbonToggler = 'Pessoas' | 'Dispositivos' | 'Configuracao' | 'Ajuda' | 'Nclock' | 'Naccess' | 'Nvisitor' | 'Npark' | 'Ndoor' | 'Npatrol' | 'Ncard' | 'Nview' | 'Nsecur' | 'Nsoftware' | 'Nsystem' | 'Napp' | 'Ncyber' | 'Ndigital' | 'Nserver' | 'Naut' | 'Nequip' | 'Nproject' | 'Ncount' | 'Nbuild' | 'Ncaravan' | 'Nmechanic' | 'Nevents' | 'Nservice' | 'Ntask' | 'Nproduction' | 'Nticket' | 'Nsales' | 'Ninvoice' | 'Ndoc' | 'Nsports' | 'Ngym' | 'Nschool' | 'Nclinic' | 'Noptics' | 'Ngold' | 'Nsmart' | 'Nreality' | 'Nhologram' | 'Npower' | 'Ncharge' | 'Ncity' | 'Nkiosk' | 'Nled' | 'Nfire' | 'Nfurniture' | 'Npartition' | 'Ndecor' | 'Nping' | 'Nconnect' | 'Nlight' | 'Ncomfort' | 'Nsound' | 'Nhome';
 
-// Define a interface para os setters das ribbons
-type RibbonSetters = {
-	[key: string]: [boolean, Dispatch<SetStateAction<boolean>>];
-};
-
 // Interface para os setters das ribbons e das tabs
 interface Setters {
 	setShowRibbon: React.Dispatch<React.SetStateAction<boolean>>;
@@ -290,7 +285,7 @@ interface TabsInfo {
 
 // Define as propriedades do componente
 export const NavBar = ({ style }: NavBarProps) => {
-	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
+	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
 	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
 	const { loginLogs, historyLogs, exportBackupDB, importBackupDB } = useEntity();
@@ -535,7 +530,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		};
 
 		fetchAndSetUserImage();
-	}, [license, registeredUsers]);
+	}, [registeredUsers]);
 
 	// Função para adicionar emails de utilizadores
 	const addEmailConfig = async (email: Partial<EmailUser>) => {
@@ -555,12 +550,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const updateKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
 		await handleUpdateKioskConfig(kioskConfig);
 	}
-
-	// Função para buscar os dados de email e kiosk
-	useEffect(() => {
-		fetchEmailConfig();
-		fetchKioskConfig();
-	}, []);
 
 	// Verificar se a tela é mobile
 	const checkIfMobile = () => {
@@ -862,7 +851,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 			} else {
 				setTab(true);
 				setRibbon(isSoftwareCliente);
-				setCurrentOpenRibbon(tabName as RibbonToggler);
+				const capitalizedTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+				setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
 				if (localStorageRibbonKey && tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) {
 					localStorage.setItem(localStorageRibbonKey, 'true')
 				}
@@ -1893,15 +1883,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		}
 	};
 
-	// Reabre a última ribbon fechada
-	useEffect(() => {
-		if (!lockRibbon && lastClosedRibbon) {
-			toggleRibbonVisibility(lastClosedRibbon);
-			setCurrentOpenRibbon(lastClosedRibbon);
-			setLastClosedRibbon(null);
-		}
-	}, [lockRibbon, lastClosedRibbon]);
-
 	// Função para fechar e reabrir a ribbon
 	const toggleRibbonVisibility = (ribbonName: RibbonToggler, forceToggle: boolean = false) => {
 
@@ -2104,7 +2085,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
 			<div className="nav-container">
 				<Navbar expand="lg" className="mobile-navbar">
-					<Navbar.Toggle aria-controls="basic-navbar-nav" className="mobile-only">
+					<Navbar.Toggle aria-controls="basic-navbar-nav" className="mobile-only custom-toggler">
 						<span className="navbar-toggler-icon"></span>
 					</Navbar.Toggle>
 					<Navbar.Collapse id="basic-navbar-nav" className='navbar-collapse-items'>

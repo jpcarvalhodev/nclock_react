@@ -46,13 +46,7 @@ export const Entities = () => {
     const handleUpdateCompanyData = async (entityData: FormData) => {
         await updateEntity(entityData);
         setClearSelectionToggle(!clearSelectionToggle);
-        refreshEntity();
     }
-
-    // Busca todas as entidades
-    useEffect(() => {
-        fetchAllEntity();
-    }, []);
 
     // Função para atualizar as entidade
     const refreshEntity = () => {

@@ -83,11 +83,6 @@ export const NkioskDoorOpen = () => {
         }
     }
 
-    // Busca os dados de aberturas manuais ao carregar a página
-    useEffect(() => {
-        fetchAllManualOpen();
-    }, []);
-
     // Função para atualizar os dados de aberura manual
     const refreshAllManualOpen = () => {
         fetchAllManualOpen();

@@ -74,12 +74,6 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
     const location = useLocation();
     const selectionChangedRef = { current: false };
 
-    // Busca os dispositivos
-    useEffect(() => {
-        fetchAllDevices();
-        fetchAllEmployees();
-    }, []);
-
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = devices

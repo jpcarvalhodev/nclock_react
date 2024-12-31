@@ -54,7 +54,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NvisitorMoveCard = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
@@ -74,7 +74,6 @@ export const NvisitorMoveCard = () => {
     const [loadingAuxOut, setLoadingAuxOut] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
-    const location = useLocation();
     const eventDoorId = '3';
 
     // Função para buscar os movimentos dos cartões entre datas

@@ -44,8 +44,8 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
-    const { devices, fetchAllDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
+    const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -117,13 +117,6 @@ export const NkioskListMovements = () => {
         const unifiedData = [...listMovementCard, ...listMovementKiosk];
         setListMovements(unifiedData);
     };
-
-    // Busca todos os movimentos de cartão
-    useEffect(() => {
-        fetchAllDevices();
-        fetchAllMoveCard();
-        fetchAllMoveKiosk();
-    }, [devices]);
 
     // Atualiza a lista de movimentos ao receber novos dados
     useEffect(() => {

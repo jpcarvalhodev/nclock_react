@@ -62,7 +62,6 @@ export const Persons = () => {
     const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
         setClearSelectionToggle(!clearSelectionToggle);
-        refreshEmployees();
     };
 
     // Função para selecionar funcionários
@@ -81,7 +80,6 @@ export const Persons = () => {
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
-        refreshEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

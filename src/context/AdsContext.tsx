@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 import * as apiService from '../helpers/apiService';
@@ -73,6 +73,11 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
       fetchAds();
     }
   };
+
+  // Busca todas as publicidades ao carregar a página
+  useEffect(() => {
+    fetchAds();
+  }, []);
 
   return (
     <AdsContext.Provider value={{ ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds }}>

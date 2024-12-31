@@ -82,11 +82,6 @@ export const NkioskCounter = () => {
         }
     }, [selectedDevicesIds, counter]);
 
-    // Atualiza os dados do contador
-    useEffect(() => {
-        fetchAllCounter();
-    }, []);
-
     // Função para atualizar as recolhas do moedeiro
     const refreshCounter = () => {
         fetchAllCounter();

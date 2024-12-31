@@ -67,10 +67,15 @@ export const NledAds = () => {
     const [selectedRows, setSelectedRows] = useState<Ads[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
-    // Busca as publicidades ao carregar a página
-    useEffect(() => {
-        fetchAds();
-    }, []);
+    // Função para adicionar uma publicidade
+    const addAds = async (ads: FormData) => {
+        await handleAddAds(ads);
+    }
+
+    // Função para atualizar uma publicidade
+    const updateAds = async (ads: Ads, ad: FormData) => {
+        await handleUpdateAds(ads, ad);
+    }
 
     // Função para atualizar as publicidades
     const refreshAds = () => {
@@ -366,7 +371,7 @@ export const NledAds = () => {
                 title="Publicidades"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={handleAddAds}
+                onSave={addAds}
                 fields={adsFields}
                 initialValues={initialData || {}}
                 entities="all"
@@ -375,7 +380,7 @@ export const NledAds = () => {
                 <UpdateModalAds
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
-                    onUpdate={(entity) => handleUpdateAds(selectedAds, entity as FormData)}
+                    onUpdate={(entity) => updateAds(selectedAds, entity as FormData)}
                     entity={selectedAds}
                     fields={adsFields}
                     onDuplicate={handleDuplicate}

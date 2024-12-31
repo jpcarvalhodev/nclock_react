@@ -70,12 +70,6 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
 
-
-    // Busca os dados dos dispositivos ao montar o componente
-    useEffect(() => {
-        fetchAccessControl();
-    }, []);
-
     // Atualiza a árvore de itens ao receber os dados dos dispositivos
     useEffect(() => {
         if (!accessControl) return;

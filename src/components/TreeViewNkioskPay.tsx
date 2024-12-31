@@ -5,10 +5,7 @@ import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
 
-import { useKiosk } from '../context/KioskContext';
-import { usePersons } from '../context/PersonsContext';
 import { useTerminals } from '../context/TerminalsContext';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
@@ -71,11 +68,6 @@ export function TreeViewDataNkioskPay({ onSelectDevices }: TreeViewDataNkioskPro
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
-
-    // Busca os dispositivos
-    useEffect(() => {
-        fetchAllDevices();
-    }, []);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {

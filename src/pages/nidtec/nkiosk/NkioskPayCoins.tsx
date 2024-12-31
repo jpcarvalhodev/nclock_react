@@ -113,13 +113,7 @@ export const NkioskPayCoins = () => {
         } catch (error) {
             console.error('Erro ao buscar os dados da última recolha:', error);
         }
-    }
-
-    // Busca os pagamentos de moedas ao carregar a página
-    useEffect(() => {
-        fetchAllPayCoins();
-        fetchAllMBDevices();
-    }, []);
+    };
 
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {

@@ -99,11 +99,6 @@ export const NkioskMoveVP = () => {
         }
     };
 
-    // Função para buscar todos os movimentos de videoporteiro
-    useEffect(() => {
-        fetchAllMoveVP();
-    }, []);
-
     // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {
         fetchAllMoveVP();

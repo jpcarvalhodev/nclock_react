@@ -2,7 +2,7 @@ import { createContext, useState, useContext, ReactNode, useEffect } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from '../helpers/apiService';
-import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../helpers/Types';
+import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, ManualOpenDoor, MBDeviceStatus, NewTransactionCard, RecolhaMoedeiroEContador } from '../helpers/Types';
 
 import { useTerminals } from './TerminalsContext';
 
@@ -49,6 +49,9 @@ export interface KioskContextType {
     fetchAllCounter: (startDate?: string, endDate?: string) => void;
     listPayments: (KioskTransactionMB | KioskTransactionCard)[];
     listMovements: (KioskTransactionCard | KioskTransactionMB)[];
+    alerts: MBDeviceStatus[];
+    setAlerts: (alerts: MBDeviceStatus[]) => void;
+    fetchAllTasks: () => void;
 }
 
 // Cria o contexto
@@ -81,6 +84,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     const [getCoins, setGetCoins] = useState<RecolhaMoedeiroEContador[]>([]);
     const [cleaning, setCleaning] = useState<LimpezasEOcorrencias[]>([]);
     const [occurrences, setOccurrences] = useState<LimpezasEOcorrencias[]>([]);
+    const [alerts, setAlerts] = useState<MBDeviceStatus[]>([]);
     const [counter, setCounter] = useState<Counter[]>([]);
     const eventDoorId2 = '2'
     const eventDoorId3 = '3'
@@ -95,7 +99,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os pagamentos dos terminais
     const fetchAllPayTerminal = async () => {
         try {
-            await fetchAllDevices();
             const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
             if (Array.isArray(data)) {
                 setPayTerminal(data);
@@ -110,7 +113,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os pagamentos no moedeiro
     const fetchAllPayCoins = async () => {
         try {
-            await fetchAllDevices();
             if (devices.length === 0) {
                 setPayCoins([]);
                 return;
@@ -136,7 +138,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os movimentos dos cartões
     const fetchAllMoveCard = async () => {
         try {
-            await fetchAllDevices();
             if (devices.length === 0) {
                 setMoveCard([]);
                 return;
@@ -174,7 +175,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os movimentos do quiosque
     const fetchAllMoveKiosk = async () => {
         try {
-            await fetchAllDevices();
             if (devices.length === 0) {
                 setMoveKiosk([]);
                 return;
@@ -199,7 +199,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     // Função para buscar os movimentos de videoporteiro
     const fetchAllMoveVP = async () => {
         try {
-            await fetchAllDevices();
             if (devices.length === 0) {
                 setMoveVP([]);
                 return;
@@ -410,6 +409,42 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para buscar os alertas
+    const fetchAllTasks = async () => {
+        try {
+            const data = await apiService.fetchAllAlerts();
+            if (Array.isArray(data)) {
+                setAlerts(data);
+            } else {
+                setAlerts([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de alertas:', error);
+        }
+    };
+
+    // Busca os dados ao carregar a página
+    useEffect(() => {
+        fetchAllDevices();
+        fetchAllManualOpen();
+        fetchAllCoin();
+        fetchAllLimpezas();
+        fetchAllOcorrencias();
+        fetchAllCounter();
+        fetchAllTasks();
+    }, []);
+
+    // Atualiza os dados ao mudar a lista de terminais
+    useEffect(() => {
+        if (devices.length > 0) {
+            fetchAllPayTerminal();
+            fetchAllPayCoins();
+            fetchAllMoveCard();
+            fetchAllMoveKiosk();
+            fetchAllMoveVP();
+        }
+    }, [devices]);
+
     // Definindo o valor do contexto
     const contextValue = {
         payTerminal,
@@ -452,7 +487,10 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         counter,
         fetchAllCounter,
         listPayments,
-        listMovements
+        listMovements,
+        alerts,
+        setAlerts,
+        fetchAllTasks
     };
 
     return (

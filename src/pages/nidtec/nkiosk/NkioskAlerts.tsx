@@ -18,6 +18,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { PrintButton } from "../../../components/PrintButton";
 import { mbDeviceStatusFields } from "../../../helpers/Fields";
 import { TreeViewDataMBTerminals } from "../../../components/TreeViewMBTerminals";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -45,7 +46,7 @@ export const NkioskAlerts = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const [alerts, setAlerts] = useState<MBDeviceStatus[]>([]);
+    const { alerts, setAlerts, fetchAllTasks } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['tpId', 'tipoStatus', 'nomeStatus', 'timespam']);
@@ -56,20 +57,6 @@ export const NkioskAlerts = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<MBDeviceStatus[]>([]);
-
-    // Função para buscar as limpezas
-    const fetchAllTasks = async () => {
-        try {
-            const data = await apiService.fetchAllAlerts();
-            if (Array.isArray(data)) {
-                setAlerts(data);
-            } else {
-                setAlerts([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar os dados de alertas:', error);
-        }
-    };
 
     // Função para buscar os alertas entre datas
     const fetchAlertsBetweenDates = async () => {
@@ -84,11 +71,6 @@ export const NkioskAlerts = () => {
             console.error('Erro ao buscar os dados de alertas:', error);
         }
     }
-
-    // Busca os pagamentos dos terminais ao carregar a página
-    useEffect(() => {
-        fetchAllTasks();
-    }, []);
 
     // Função para atualizar as recolhas do moedeiro
     const refreshTasks = () => {
@@ -147,7 +129,7 @@ export const NkioskAlerts = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = alerts.filter(getCoin =>
+    const filteredDataTable = filteredDevices.filter(getCoin =>
         new Date(getCoin.timespam) >= new Date(startDate) && new Date(getCoin.timespam) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))

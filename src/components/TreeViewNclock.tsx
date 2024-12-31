@@ -80,11 +80,6 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
 
-  // Atualiza os dados ao montar o componente
-  useEffect(() => {
-    fetchAllData();
-  }, []);
-
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   useEffect(() => {
     const departments = data.departments;

@@ -43,7 +43,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { devices, mbDevices, fetchAllDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -137,14 +137,6 @@ export const NkioskListPayments = () => {
 
         setListPayments(unifiedData);
     };
-
-    // Busca os pagamentos dos terminais
-    useEffect(() => {
-        fetchAllPayTerminal();
-        fetchAllPayCoins();
-        fetchAllDevices();
-        fetchAllMBDevices();
-    }, [devices]);
 
     // Atualiza a lista de pagamentos ao receber novos dados
     useEffect(() => {

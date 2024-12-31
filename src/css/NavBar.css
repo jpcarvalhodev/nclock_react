@@ -590,6 +590,15 @@ input::-ms-clear {
     align-items: center;
 }
 
+.custom-toggler {
+    border: none !important;
+}
+
+.custom-toggler:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
 /* @keyframes slideDownFadeIn {
     from {
         transform: translateY(-25%);

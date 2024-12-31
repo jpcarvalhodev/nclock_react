@@ -44,7 +44,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskMoveKiosk = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
@@ -93,11 +93,6 @@ export const NkioskMoveKiosk = () => {
         await handleUpdateEmployee(employee);
         window.location.reload();
     };
-
-    // Busca os movimentos de quiosque ao carregar a página
-    useEffect(() => {
-        fetchAllMoveKiosk();
-    }, []);
 
     // Função para atualizar os movimentos de quiosque
     const refreshMoveKiosk = () => {

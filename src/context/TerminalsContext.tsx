@@ -1,4 +1,4 @@
-import { createContext, useState, useContext , ReactNode } from 'react';
+import { createContext, useState, useContext , ReactNode, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 import * as apiService from "../helpers/apiService";
@@ -414,6 +414,15 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchTimePeriods();
         }
     }
+
+    // Busca todos os dispositivos ao carregar a página
+    useEffect(() => {
+        fetchAllDevices();
+        fetchAllMBDevices();
+        fetchAllMBCloseOpen();
+        fetchAccessControl();
+        fetchTimePeriods();
+    }, []);
 
     // Define o valor do contexto
     const contextValue: DeviceContextType = {

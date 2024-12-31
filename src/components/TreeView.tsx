@@ -72,11 +72,6 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
 
-  // Atualiza os dados ao montar o componente
-  useEffect(() => {
-    fetchAllData();
-  }, []);
-
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {
     const departments = data.departments;

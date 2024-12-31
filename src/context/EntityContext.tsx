@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 import * as apiService from '../helpers/apiService';
@@ -143,6 +143,13 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
             console.error('Erro ao restaurar o backup:', error);
         }
     }
+
+    // Busca todas as entidades ao carregar a página
+    useEffect(() => {
+        fetchAllEntity();
+        fetchAllLoginLogs();
+        fetchAllHistoryLogs();
+    }, []);
 
     return (
         <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB }}>

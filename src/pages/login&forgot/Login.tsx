@@ -34,17 +34,9 @@ type User = {
 // Define a página de login
 export const Login = () => {
   const navigate = useNavigate();
-  const { fetchAds } = useAds();
-  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllAttendances } = useAttendance();
-  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
-  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods } = useTerminals();
-  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal } = useKiosk();
-  const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
-  const [resizedSrc, setResizedSrc] = useState<string>(no_entity);
   const [companyName, setCompanyName] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -76,39 +68,6 @@ export const Login = () => {
       console.error("Erro:", error);
     }
   };
-
-  // Redimensiona a imagem da entidade
-  useEffect(() => {
-    const img = new Image();
-    img.src = entityLogo;
-
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = 512;
-      canvas.height = 512;
-
-      const minDimension = Math.min(img.width, img.height);
-      const startX = (img.width - minDimension) / 2;
-      const startY = (img.height - minDimension) / 2;
-
-      const size = minDimension;
-
-      ctx?.drawImage(
-        img,
-        startX,
-        startY,
-        size,
-        size,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-      setResizedSrc(canvas.toDataURL("image/png"));
-    };
-  }, [entityLogo]);
 
   // Obtém os dados da licença ao montar o componente
   useEffect(() => {
@@ -218,38 +177,7 @@ export const Login = () => {
 
         try {
           await Promise.all([
-            fetchAllLicensesWithoutKey(),
-            fetchAllEmployees(),
-            fetchAllDepartments(),
-            fetchAllGroups(),
-            fetchAllRegisteredUsers(),
-            fetchAllCardData(),
-            fetchAllCategories(),
-            fetchAllExternalEntitiesData(),
-            fetchAllProfessions(),
-            fetchAllZones(),
-            fetchAds(),
-            fetchAllEntity(),
-            fetchAllLoginLogs(),
-            fetchAllHistoryLogs(),
-            fetchAllAttendances(),
-            fetchAllDevices(),
-            fetchAllMBDevices(),
-            fetchAccessControl(),
-            fetchAllMBCloseOpen(),
-            fetchTimePeriods(),
-            fetchAllCoin(),
-            fetchAllCounter(),
-            fetchAllLimpezas(),
-            fetchAllManualOpen(),
-            fetchAllMoveCard(),
-            fetchAllMoveKiosk(),
-            fetchAllMoveVP(),
-            fetchAllOcorrencias(),
-            fetchAllPayCoins(),
-            fetchAllPayTerminal(),
-            fetchEmailConfig(),
-            fetchKioskConfig(),
+            fetchAllLicensesWithoutKey()
           ]);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");

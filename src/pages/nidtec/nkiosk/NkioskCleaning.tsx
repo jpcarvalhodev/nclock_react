@@ -101,11 +101,6 @@ export const NkioskCleaning = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
-    // Busca todas as limpezas
-    useEffect(() => {
-        fetchAllLimpezas();
-    }, []);
-
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {

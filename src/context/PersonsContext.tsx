@@ -708,6 +708,20 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Executa a função de busca de dados inicial
+    useEffect(() => {
+        fetchAllData();
+        fetchAllEmployees();
+        fetchAllCardData();
+        fetchAllRegisteredUsers();
+        fetchAllDepartments();
+        fetchAllGroups();
+        fetchAllCategories();
+        fetchAllExternalEntitiesData();
+        fetchAllProfessions();
+        fetchAllZones();
+    }, []);
+
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,

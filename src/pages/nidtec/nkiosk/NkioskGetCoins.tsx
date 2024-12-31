@@ -104,11 +104,6 @@ export const NkioskGetCoins = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
-    // Busca as recolhas do moedeiro ao carregar a página
-    useEffect(() => {
-        fetchAllCoin();
-    }, []);
-
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {

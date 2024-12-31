@@ -69,11 +69,6 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
 
-    // Busca os dispositivos MB
-    useEffect(() => {
-        fetchAllMBDevices();
-    }, []);
-
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildTerminalTree = mbDevices
