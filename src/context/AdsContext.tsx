@@ -76,7 +76,10 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
 
   // Busca todas as publicidades ao carregar a página
   useEffect(() => {
-    fetchAds();
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchAds();
+    }
   }, []);
 
   return (

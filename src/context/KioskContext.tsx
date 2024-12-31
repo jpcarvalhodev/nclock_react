@@ -425,13 +425,16 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca os dados ao carregar a página
     useEffect(() => {
-        fetchAllDevices();
-        fetchAllManualOpen();
-        fetchAllCoin();
-        fetchAllLimpezas();
-        fetchAllOcorrencias();
-        fetchAllCounter();
-        fetchAllTasks();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllDevices();
+            fetchAllManualOpen();
+            fetchAllCoin();
+            fetchAllLimpezas();
+            fetchAllOcorrencias();
+            fetchAllCounter();
+            fetchAllTasks();
+        }
     }, []);
 
     // Atualiza os dados ao mudar a lista de terminais

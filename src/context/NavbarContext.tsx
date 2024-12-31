@@ -123,8 +123,11 @@ export const NavbarProvider = ({ children }: { children: ReactNode }) => {
 
   // Busca os dados ao carregar a página
   useEffect(() => {
-    fetchEmailConfig();
-    fetchKioskConfig();
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchEmailConfig();
+      fetchKioskConfig();
+    }
   }, []);
 
   return (
@@ -136,9 +139,9 @@ export const NavbarProvider = ({ children }: { children: ReactNode }) => {
 
 // Hook para facilitar o acesso ao contexto
 export const useNavbar = () => {
-    const context = useContext(NavbarContext);
-    if (context === undefined) {
-        throw new Error('useNavbar must be used within a NavbarProvider');
-    }
-    return context;
+  const context = useContext(NavbarContext);
+  if (context === undefined) {
+    throw new Error('useNavbar must be used within a NavbarProvider');
+  }
+  return context;
 }

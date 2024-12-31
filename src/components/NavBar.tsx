@@ -515,20 +515,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para buscar o user logado e a imagem do perfil
 	useEffect(() => {
-		const preloadImage = (src: string) => {
-			const img = new Image();
-			img.src = src;
-		};
-
 		const fetchAndSetUserImage = () => {
 			const username = localStorage.getItem('username');
 			const findUser = registeredUsers.find(user => user.userName === username);
 			const imageUrl = findUser?.profileImage ? `${apiService.baseURL?.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
 
 			setUserImage(imageUrl);
-			preloadImage(imageUrl);
 		};
-
 		fetchAndSetUserImage();
 	}, [registeredUsers]);
 

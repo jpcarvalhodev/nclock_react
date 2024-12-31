@@ -9,17 +9,10 @@ import showpass from "../../assets/img/login/showpass.png";
 import profileAvatar from "../../assets/img/navbar/navbar/profileAvatar.png";
 import no_entity from "../../assets/img/navbar/no_entity.png";
 import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
-import { useAds } from "../../context/AdsContext";
-import { useEntity } from "../../context/EntityContext";
-import { useKiosk } from "../../context/KioskContext";
-import { useLicense } from "../../context/LicenseContext";
-import { useAttendance } from "../../context/MovementContext";
-import { useNavbar } from "../../context/NavbarContext";
-import { usePersons } from "../../context/PersonsContext";
-import { useTerminals } from "../../context/TerminalsContext";
 import * as apiService from "../../helpers/apiService";
 import { License, LicenseKey } from "../../helpers/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
+import { useLicense } from "../../context/LicenseContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -45,19 +38,16 @@ export const Login = () => {
   const [selectedNif, setSelectedNif] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
 
-  // Função para obter os dados da licença
+  // Função para buscar as licenças
   const fetchLicenseData = async () => {
     try {
       const data = await apiService.fetchLicensesWithoutKey();
       setCompany(data);
       setSelectedNif(Number(data[0].nif));
-      if (!data.ok) {
-        console.error("Falha ao obter os dados da licença.");
-      }
     } catch (error) {
-      console.error("Erro:", error);
+      console.error("Erro ao buscar licenças:", error);
     }
-  };
+  }
 
   // Função para obter a imagem da entidade
   const fetchLogo = async (selectedNif: number) => {
@@ -66,15 +56,16 @@ export const Login = () => {
       setEntityLogo(URL.createObjectURL(data));
     } catch (error) {
       console.error("Erro:", error);
+      setEntityLogo(no_entity);
     }
   };
 
-  // Obtém os dados da licença ao montar o componente
+  // Obtém os dados da entidade selecionada ao montar o componente
   useEffect(() => {
     fetchLicenseData();
   }, []);
 
-  // Obtém a imagem da entidade selecionada ao montar o componente
+  // Obtém o logo da entidade selecionada ao montar o componente
   useEffect(() => {
     fetchLogo(selectedNif);
   }, [selectedNif]);
@@ -102,7 +93,7 @@ export const Login = () => {
     event: React.ChangeEvent<FormControlElement>
   ) => {
     const selectedLicense = company.find(
-      (license) => license.name === event.target.value
+      (license: License) => license.name === event.target.value
     );
     if (selectedLicense) {
       fetchLogo(Number(selectedLicense.nif));
@@ -235,7 +226,7 @@ export const Login = () => {
                     value={companyName}
                     onChange={handleCompanyChange}
                   >
-                    {company.map((license, index) => (
+                    {company.map((license: License, index: number) => (
                       <option key={index} value={license.name}>
                         {truncateText(license.name, 30)}
                       </option>

@@ -77,7 +77,6 @@ export const NkioskDashboardLicensed = () => {
     // Função para buscar os dados para os gráficos
     const fetchAllData = async () => {
         try {
-            await fetchAllDevices();
             if (devices.length === 0) {
                 console.error('Não há dispositivos para buscar dados');
                 return;
@@ -120,7 +119,7 @@ export const NkioskDashboardLicensed = () => {
                 const eventDate = new Date(item.eventTime);
                 const dateKey = eventDate.toISOString().split('T')[0];
                 const eventKey = dateKey + '|' + item.eventName + '|' + item.eventDoorId;
-    
+
                 if (!eventSet.has(eventKey)) {
                     eventSet.add(eventKey);
                     acc.push({
@@ -144,8 +143,14 @@ export const NkioskDashboardLicensed = () => {
 
     // Busca os dados ao carregar a página
     useEffect(() => {
-        fetchAllData();
+        fetchAllDevices();
     }, []);
+
+    useEffect(() => {
+        if (devices.length > 0) {
+            fetchAllData();
+        }
+    }, [devices]);
 
     // Função para renderizar os eventos no calendário
     const MyEvent = ({ event }: MyEventProps) => {

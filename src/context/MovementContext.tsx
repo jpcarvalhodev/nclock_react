@@ -133,7 +133,10 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todas as assiduidades ao carregar a página
     useEffect(() => {
-        fetchAllAttendances();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllAttendances();
+        }
     }, []);
 
     // Definindo o valor do contexto

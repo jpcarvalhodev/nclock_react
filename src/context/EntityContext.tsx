@@ -146,9 +146,12 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
 
     // Busca todas as entidades ao carregar a página
     useEffect(() => {
-        fetchAllEntity();
-        fetchAllLoginLogs();
-        fetchAllHistoryLogs();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchAllEntity();
+            fetchAllLoginLogs();
+            fetchAllHistoryLogs();
+        }
     }, []);
 
     return (
