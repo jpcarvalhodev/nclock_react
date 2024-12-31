@@ -292,7 +292,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
-	const { payTerminal, payCoins, listPayments, moveCard, moveKiosk, listMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter } = useKiosk();
+	const { payTerminal, payCoins, totalPayments, moveCard, moveKiosk, totalMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter } = useKiosk();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -1291,10 +1291,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 		geral_historico: { data: historyLogs, fields: logsFields },
 		recebimento_multibanco: { data: payTerminal, fields: transactionMBFields },
 		recebimento_moedeiro: { data: payCoins, fields: transactionMBFields },
-		recebimento_totais: { data: listPayments, fields: transactionMBFields },
+		recebimento_totais: { data: totalPayments, fields: transactionMBFields },
 		movimento_torniquete: { data: moveCard, fields: transactionCardFields },
 		movimento_quiosque: { data: moveKiosk, fields: transactionCardFields },
-		movimento_totais: { data: listMovements, fields: transactionCardFields },
+		movimento_totais: { data: totalMovements, fields: transactionCardFields },
 		remota_vp: { data: moveVP, fields: transactionCardFields },
 		remota_abertura: { data: manualOpenDoor, fields: manualOpenDoorFields },
 		registo_recolhas: { data: getCoins, fields: recolhaMoedeiroEContadorFields },

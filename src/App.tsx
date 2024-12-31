@@ -163,7 +163,7 @@ function AnimatedRoutes() {
     const loadPage = async () => {
       setLoading(true);
       setShowContent(false);
-      await delay(250);
+      await delay(300);
       setLoading(false);
       setShowContent(true);
     };

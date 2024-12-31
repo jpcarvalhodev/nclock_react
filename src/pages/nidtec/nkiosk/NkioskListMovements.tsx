@@ -49,8 +49,7 @@ export const NkioskListMovements = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { moveCard, fetchAllMoveCard, moveKiosk, fetchAllMoveKiosk } = useKiosk();
-    const [listMovements, setListMovements] = useState<KioskTransactionCard[]>([]);
+    const { moveCard, fetchAllMoveCard, moveKiosk, fetchAllMoveKiosk, totalMovements, setTotalMovements } = useKiosk();
     const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
     const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
@@ -109,20 +108,19 @@ export const NkioskListMovements = () => {
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        window.location.reload();
     };
 
     // Unifica os dados de movimentos de cartão e porteiro
     const mergeMovementData = () => {
         const unifiedData = [...listMovementCard, ...listMovementKiosk];
-        setListMovements(unifiedData);
+        setTotalMovements(unifiedData);
     };
 
     // Atualiza a lista de movimentos ao receber novos dados
     useEffect(() => {
         settingVariables();
         mergeMovementData();
-    }, [moveCard, moveKiosk]);
+    }, [totalMovements]);
 
     // Função para atualizar as listagens de movimentos
     const refreshListMovements = () => {
@@ -139,14 +137,14 @@ export const NkioskListMovements = () => {
                 return employee ? employee.shortName : null;
             }).filter(name => name !== null);
 
-            const filtered = listMovements.filter(listMovement =>
+            const filtered = totalMovements.filter(listMovement =>
                 employeeShortNames.includes(listMovement.nameUser)
             );
             setFilteredDevices(filtered);
         } else {
-            setFilteredDevices(listMovements);
+            setFilteredDevices(totalMovements);
         }
-    }, [selectedDevicesIds, listMovements]);
+    }, [selectedDevicesIds, totalMovements]);
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -212,7 +210,7 @@ export const NkioskListMovements = () => {
                 return false;
             }))
         ).sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
-    }, [filteredDevices, filterText, filters, startDate, endDate]);       
+    }, [totalMovements, filteredDevices, filterText, filters, startDate, endDate]);
 
     // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
     const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {
@@ -293,7 +291,7 @@ export const NkioskListMovements = () => {
     };
 
     // Dados com nomes substituídos para o export/print
-    const listMoveWithNames = listMovements.map(transformTransactionWithNames);
+    const listMoveWithNames = totalMovements.map(transformTransactionWithNames);
 
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);

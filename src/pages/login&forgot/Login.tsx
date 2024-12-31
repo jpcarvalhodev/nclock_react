@@ -13,6 +13,8 @@ import * as apiService from "../../helpers/apiService";
 import { License, LicenseKey } from "../../helpers/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { useLicense } from "../../context/LicenseContext";
+import { usePersons } from "../../context/PersonsContext";
+import { useTerminals } from "../../context/TerminalsContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -28,6 +30,7 @@ type User = {
 export const Login = () => {
   const navigate = useNavigate();
   const { fetchAllLicensesWithoutKey } = useLicense();
+  const { fetchAllRegisteredUsers } = usePersons();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [companyName, setCompanyName] = useState("");
@@ -168,7 +171,8 @@ export const Login = () => {
 
         try {
           await Promise.all([
-            fetchAllLicensesWithoutKey()
+            fetchAllLicensesWithoutKey(),
+            fetchAllRegisteredUsers(),
           ]);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");

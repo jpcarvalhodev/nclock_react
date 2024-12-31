@@ -47,8 +47,10 @@ export interface KioskContextType {
     handleDeleteOcurrences: (id: string[]) => void;
     counter: Counter[];
     fetchAllCounter: (startDate?: string, endDate?: string) => void;
-    listPayments: (KioskTransactionMB | KioskTransactionCard)[];
-    listMovements: (KioskTransactionCard | KioskTransactionMB)[];
+    totalPayments: KioskTransactionMB[];
+    setTotalPayments: (totalPayments: KioskTransactionMB[]) => void;
+    totalMovements: KioskTransactionCard[];
+    setTotalMovements: (totalMovements: KioskTransactionCard[]) => void;
     alerts: MBDeviceStatus[];
     setAlerts: (alerts: MBDeviceStatus[]) => void;
     fetchAllTasks: () => void;
@@ -86,15 +88,25 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     const [occurrences, setOccurrences] = useState<LimpezasEOcorrencias[]>([]);
     const [alerts, setAlerts] = useState<MBDeviceStatus[]>([]);
     const [counter, setCounter] = useState<Counter[]>([]);
+    const [totalPayments, setTotalPayments] = useState<KioskTransactionMB[]>([]);
+    const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
     const eventDoorId2 = '2'
     const eventDoorId3 = '3'
     const eventDoorId4 = '4'
     const tipo = 1;
     const tipo2 = 2;
 
-    // Listas de pagamentos e movimentos totais
-    const listPayments = payTerminal.concat(payCoins);
-    const listMovements = moveCard.concat(moveKiosk);
+    // Função para unificar os pagamentos
+    const unifyTotalPayments = () => {
+        const combinedData = payTerminal.concat(payCoins);
+        setTotalPayments(combinedData);
+    }
+
+    // Função para unificar os movimentos
+    const unifyTotalMovements = () => {
+        const combinedData = moveCard.concat(moveKiosk).concat(moveVP);
+        setTotalMovements(combinedData);
+    }
 
     // Função para buscar os pagamentos dos terminais
     const fetchAllPayTerminal = async () => {
@@ -445,6 +457,8 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
             fetchAllMoveCard();
             fetchAllMoveKiosk();
             fetchAllMoveVP();
+            unifyTotalPayments();
+            unifyTotalMovements();
         }
     }, [devices]);
 
@@ -489,8 +503,10 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         handleDeleteOcurrences,
         counter,
         fetchAllCounter,
-        listPayments,
-        listMovements,
+        totalPayments,
+        setTotalPayments,
+        totalMovements,
+        setTotalMovements,
         alerts,
         setAlerts,
         fetchAllTasks

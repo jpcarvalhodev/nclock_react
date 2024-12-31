@@ -20,6 +20,7 @@ import { useNavbar } from "../../../context/NavbarContext";
 import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { set } from "date-fns";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -47,8 +48,7 @@ export const NkioskListPayments = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { payTerminal, fetchAllPayTerminal, payCoins, fetchAllPayCoins } = useKiosk();
-    const [listPayments, setListPayments] = useState<KioskTransactionMB[]>([]);
+    const { payTerminal, fetchAllPayTerminal, payCoins, fetchAllPayCoins, totalPayments, setTotalPayments } = useKiosk();
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
@@ -102,47 +102,19 @@ export const NkioskListPayments = () => {
             setListPaymentMB([]);
             setListPaymentCoin([]);
         }
-    }
+    };
 
     // Unifica os dados de transações MB e moedas
     const mergePaymentData = () => {
-        const unifiedData: KioskTransactionMB[] = [
-            ...listPaymentMB.map((payment) => ({
-                id: payment.id,
-                transactionType: payment.transactionType,
-                amount: payment.amount,
-                statusCode: payment.statusCode,
-                statusMessage: payment.statusMessage,
-                clientTicket: payment.clientTicket,
-                merchantTicket: payment.merchantTicket,
-                email: payment.email,
-                timestamp: payment.timestamp,
-                tpId: payment.tpId,
-                deviceSN: payment.deviceSN,
-            })),
-            ...listPaymentCoin.map((payment) => ({
-                id: payment.id,
-                transactionType: payment.transactionType,
-                amount: payment.amount,
-                statusCode: payment.statusCode,
-                statusMessage: payment.statusMessage,
-                clientTicket: payment.clientTicket,
-                merchantTicket: payment.merchantTicket,
-                email: payment.email,
-                timestamp: payment.timestamp,
-                tpId: payment.tpId,
-                deviceSN: payment.deviceSN,
-            }))
-        ];
-
-        setListPayments(unifiedData);
+        const unifiedData = [...listPaymentMB, ...listPaymentCoin];
+        setTotalPayments(unifiedData);
     };
 
     // Atualiza a lista de pagamentos ao receber novos dados
     useEffect(() => {
         settingVariables();
         mergePaymentData();
-    }, [payTerminal, payCoins]);
+    }, [totalPayments]);
 
     // Função para atualizar as listagens de pagamentos
     const refreshListPayments = () => {
@@ -154,12 +126,12 @@ export const NkioskListPayments = () => {
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = listPayments.filter(payTerminals => selectedDevicesIds.includes(payTerminals.deviceSN) || selectedDevicesIds.includes(payTerminals.tpId));
+            const filtered = totalPayments.filter(payTerminals => selectedDevicesIds.includes(payTerminals.deviceSN) || selectedDevicesIds.includes(payTerminals.tpId));
             setFilteredDevices(filtered);
         } else {
-            setFilteredDevices(listPayments);
+            setFilteredDevices(totalPayments);
         }
-    }, [selectedDevicesIds, listPayments]);
+    }, [selectedDevicesIds, totalPayments]);
 
     // Define a seleção da árvore
     const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -225,7 +197,7 @@ export const NkioskListPayments = () => {
                 return false;
             }))
         ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    }, [listPayments, filters, filterText, filteredDevices, startDate, endDate]);
+    }, [totalPayments, filters, filterText, filteredDevices, startDate, endDate]);
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -307,7 +279,7 @@ export const NkioskListPayments = () => {
     };
 
     // Transforma os dados dos pagamentos com nomes substituídos
-    const listTerminalsWithNames = listPayments.map(transformTransactionWithNames);
+    const listTerminalsWithNames = totalPayments.map(transformTransactionWithNames);
 
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
