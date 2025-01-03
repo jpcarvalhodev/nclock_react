@@ -134,12 +134,12 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     // Função para buscar os subdepartamentos
     useEffect(() => {
-        const fetchSubdepartments = async () => {
+        const fetchSubdepartments = () => {
             const subDept = dropdownData.departments.filter(dept => dept.paiId === formData.code);
             setSubDepartments(subDept);
         };
         fetchSubdepartments();
-    }, [formData]);
+    }, [open, entity, dropdownData.departments]);
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>) => {
