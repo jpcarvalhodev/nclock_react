@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../../css/ForgotPassword.css';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';

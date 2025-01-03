@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -26,7 +26,7 @@ import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedCompone
 import { customStyles } from '../../components/CustomStylesDataTable';
 
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { TextFieldProps, TextField } from '@mui/material';
+import { TextField, TextFieldProps } from '@mui/material';
 
 // Define a interface para os filtros
 interface Filters {
@@ -46,10 +46,10 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de visitantes
 export const Visitors = () => {
     const {
-        employees,
+        disabledEmployees,
         data,
-        setEmployees,
-        fetchAllEmployees,
+        setDisabledEmployees,
+        fetchAllDisabledEmployees,
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,
@@ -73,10 +73,10 @@ export const Visitors = () => {
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
-        fetchAllEmployees({
+        fetchAllDisabledEmployees({
             filterFunc: data => data.filter(emp => emp.type === 'Visitante'),
             postFetch: filteredData => {
-                setEmployees(filteredData);
+                setDisabledEmployees(filteredData);
                 setFilteredEmployees(filteredData);
             }
         });
@@ -115,21 +115,21 @@ export const Visitors = () => {
     // Função para filtrar as presenças com base no texto de pesquisa
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
-        const filteredData = employees.filter(emp => {
+        const filteredData = disabledEmployees.filter(emp => {
             return emp.name ? emp.name.toLowerCase().includes(lowercasedFilter) : false;
         });
         setFilteredEmployees(filteredData);
-    }, [filterText, employees]);
+    }, [filterText, disabledEmployees]);
 
     // Atualiza os funcionários filtrados com base nos funcionários selecionados
     useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
-            const filtered = employees.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
+            const filtered = disabledEmployees.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
             setFilteredEmployees(filtered);
         } else {
-            setFilteredEmployees(employees);
+            setFilteredEmployees(disabledEmployees);
         }
-    }, [selectedEmployeeIds, employees]);
+    }, [selectedEmployeeIds, disabledEmployees]);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {
@@ -147,8 +147,8 @@ export const Visitors = () => {
 
     // Atualiza a lista de visitantes filtrados ao mudar a lista de visitantes
     useEffect(() => {
-        setFilteredEmployees(employees);
-    }, [employees]);
+        setFilteredEmployees(disabledEmployees);
+    }, [disabledEmployees]);
 
     // Função para abrir o modal de deletar visitante
     const handleOpenDeleteModal = (employeeID: string) => {

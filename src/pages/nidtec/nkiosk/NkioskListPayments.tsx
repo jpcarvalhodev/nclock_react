@@ -1,15 +1,13 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
+import { set } from "date-fns";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
-
-import { customStyles } from "../../../components/CustomStylesDataTable";
-import { KioskTransactionMB } from "../../../helpers/Types";
-import { transactionMBFields } from "../../../helpers/Fields";
-import { ExportButton } from "../../../components/ExportButton";
-
 import Split from "react-split";
+
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
+import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { PrintButton } from "../../../components/PrintButton";
@@ -17,10 +15,11 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
+import { transactionMBFields } from "../../../helpers/Fields";
+import { KioskTransactionMB } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { set } from "date-fns";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

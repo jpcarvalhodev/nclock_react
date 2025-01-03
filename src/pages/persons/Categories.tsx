@@ -22,7 +22,7 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 
 
 // Define a interface para os filtros

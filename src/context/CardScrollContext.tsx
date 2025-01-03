@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 // Defina a interface para o contexto
 interface CardScrollContextProps {

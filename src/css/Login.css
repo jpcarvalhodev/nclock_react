@@ -113,7 +113,6 @@
 #login .form-login input[type="text"],
 #login .form-login-entity input[type="text"],
 #login .form-login input[type="password"] {
-    height: 40px;
     width: 100%;
     border: none;
 }

@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -13,9 +13,9 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { EntityContext, EntityContextType } from "../../context/EntityContext";
 import { useNavbar } from "../../context/NavbarContext";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { Entity } from "../../helpers/Types";
 import { entityFields } from "../../helpers/Fields";
+import { Entity } from "../../helpers/Types";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
 
 

@@ -241,8 +241,6 @@ body {
     display: flex;
     border-bottom: 1px solid #ccc;
     background-color: white;
-    overflow: auto;
-    overflow: visible;
 }
 
 .group {
@@ -275,6 +273,7 @@ body {
     align-items: center;
     width: 100%;
     height: 20px;
+    padding: 5px;
     background-color: #ccc;
 }
 
@@ -527,7 +526,7 @@ body {
 
 #dropdown-basic-2::after,
 #dropdown-basic-3::after {
-    color: #ccc;
+    color: #ffffff;
 }
 
 #dropdown-basic-3 {

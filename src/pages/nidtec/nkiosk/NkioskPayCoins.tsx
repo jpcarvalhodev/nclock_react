@@ -1,27 +1,24 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
+import Split from "react-split";
+import { toast } from "react-toastify";
 
-import { KioskTransactionMB } from "../../../helpers/Types";
-import { transactionMBFields } from "../../../helpers/Fields";
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-
-import Split from "react-split";
-
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
-import { PrintButton } from "../../../components/PrintButton";
-
-import { toast } from "react-toastify";
-import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
+import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
+import { transactionMBFields } from "../../../helpers/Fields";
+import { KioskTransactionMB } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
 // Formata a data para o início do dia às 00:00
@@ -46,7 +43,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { devices, mbDevices, fetchAllMBDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);

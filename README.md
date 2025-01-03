@@ -1,6 +1,6 @@
-# NIDGROUP Software
+# NSOFTWARES Software
 
-NIDGROUP software project using React and typescript for SISNID
+NSOFTWARES software project using React and typescript for SISNID
 
 ## Prerequisites
 

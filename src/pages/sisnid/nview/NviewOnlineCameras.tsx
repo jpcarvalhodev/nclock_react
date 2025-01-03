@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -9,18 +9,16 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
+import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useNavbar } from "../../../context/NavbarContext";
 import * as apiService from "../../../helpers/apiService";
 import { cameraFields } from "../../../helpers/Fields";
 import { Cameras } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-
-
 import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
-import { PrintButton } from "../../../components/PrintButton";
 
 
 // Define a interface para as propriedades do componente CustomSearchBox

@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { add } from "date-fns";
 import { useContext, useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -8,23 +8,23 @@ import { toast } from "react-toastify";
 
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
-import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { Employee, EmployeeCard, KioskTransactionCard, NewTransactionCard } from "../../../helpers/Types";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
-import { auxOutFields, employeeFields, newTransactionCardFields, transactionCardFields } from "../../../helpers/Fields";
-import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
-import { AuxOutModal } from "../../../modals/AuxOutModal";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
+import { useKiosk } from "../../../context/KioskContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
+import * as apiService from "../../../helpers/apiService";
+import { auxOutFields, employeeFields, newTransactionCardFields, transactionCardFields } from "../../../helpers/Fields";
+import { Employee, EmployeeCard, KioskTransactionCard, NewTransactionCard } from "../../../helpers/Types";
+import { AuxOutModal } from "../../../modals/AuxOutModal";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalNewCard } from "../../../modals/CreateModalNewCard";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
-import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 
 
 // Define a interface SaveData
@@ -63,7 +63,7 @@ export const NkioskMoveCard = () => {
     const { moveCard, setMoveCard, fetchAllMoveCard, handleAddNewMoveCard } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'eventName', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'cardNo', 'eventDoorId', 'eventName', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -161,7 +161,7 @@ export const NkioskMoveCard = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'eventName', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'cardNo', 'eventDoorId', 'eventName', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas

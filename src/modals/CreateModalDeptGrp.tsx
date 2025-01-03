@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Modal, Button, Form, Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { toast } from 'react-toastify';
 
@@ -365,19 +365,15 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 <Form>
                     <Row>
                         <Col md={5}>
-                            <Row>
-                                {entityType === 'department' && (
-                                    <>
+                            {entityType === 'department' ? (
+                                <>
+                                    <Row>
                                         <Col md={6}>
                                             <Form.Group controlId="formCode">
                                                 <Form.Label>Código<span style={{ color: 'red' }}> *</span></Form.Label>
                                                 <OverlayTrigger
                                                     placement="right"
-                                                    overlay={
-                                                        <Tooltip id="tooltip-code">
-                                                            {deptFieldRequirements['code']}
-                                                        </Tooltip>
-                                                    }
+                                                    overlay={<Tooltip id="tooltip-code">{deptFieldRequirements['code']}</Tooltip>}
                                                 >
                                                     <Form.Control
                                                         type="number"
@@ -391,66 +387,93 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                 {errors['code'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['code']}</div>}
                                             </Form.Group>
                                         </Col>
-                                    </>
-                                )}
-                                <Col md={6}>
-                                    <Form.Group controlId="formName">
-                                        <Form.Label>Nome<span style={{ color: 'red' }}> *</span></Form.Label>
-                                        <OverlayTrigger
-                                            placement="right"
-                                            overlay={
-                                                <Tooltip id="tooltip-name">
-                                                    {entityType === 'department' ? deptFieldRequirements['name'] : groupFieldRequirements['name']}
-                                                </Tooltip>
-                                            }
-                                        >
-                                            <Form.Control
-                                                type="string"
-                                                name="name"
-                                                value={formData['name'] || ''}
-                                                onChange={handleChange}
-                                                className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                                required
-                                            />
-                                        </OverlayTrigger>
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <Form.Group controlId="formDescription">
-                                        <Form.Label>Descrição</Form.Label>
-                                        <Form.Control
-                                            type="string"
-                                            name="description"
-                                            value={formData['description'] || ''}
-                                            onChange={handleChange}
-                                            className="custom-input-height custom-select-font-size"
-                                        />
-                                    </Form.Group>
-                                </Col>
-                                {entityType === 'department' && (
-                                    <Col md={6}>
-                                        <Form.Group controlId="formPaiId">
-                                            <Form.Label>Departamento Pai</Form.Label>
-                                            <Form.Control
-                                                as="select"
-                                                name="paiId"
-                                                value={formData['paiId'] || ''}
-                                                onChange={handleDropdownChange}
-                                                className="custom-input-height custom-select-font-size"
-                                            >
-                                                <option value="0">Selecione...</option>
-                                                {dropdownData.departments.map(option => (
-                                                    <option key={option.code} value={option.code}>
-                                                        {option.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                )}
-                            </Row>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formName">
+                                                <Form.Label>Nome<span style={{ color: 'red' }}> *</span></Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id="tooltip-name">{deptFieldRequirements['name']}</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        type="string"
+                                                        name="name"
+                                                        value={formData['name'] || ''}
+                                                        onChange={handleChange}
+                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                                        required
+                                                    />
+                                                </OverlayTrigger>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formDescription">
+                                                <Form.Label>Descrição</Form.Label>
+                                                <Form.Control
+                                                    type="string"
+                                                    name="description"
+                                                    value={formData['description'] || ''}
+                                                    onChange={handleChange}
+                                                    className="custom-input-height custom-select-font-size"
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formPaiId">
+                                                <Form.Label>Departamento Pai</Form.Label>
+                                                <Form.Control
+                                                    as="select"
+                                                    name="paiId"
+                                                    value={formData['paiId'] || ''}
+                                                    onChange={handleDropdownChange}
+                                                    className="custom-input-height custom-select-font-size"
+                                                >
+                                                    <option value="0">Selecione...</option>
+                                                    {dropdownData.departments.map(option => (
+                                                        <option key={option.code} value={option.code}>{option.name}</option>
+                                                    ))}
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                </>
+                            ) : (
+                                <>
+                                    <Row>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formName">
+                                                <Form.Label>Nome<span style={{ color: 'red' }}> *</span></Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id="tooltip-name">{groupFieldRequirements['name']}</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        type="string"
+                                                        name="name"
+                                                        value={formData['name'] || ''}
+                                                        onChange={handleChange}
+                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                                        required
+                                                    />
+                                                </OverlayTrigger>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formDescription">
+                                                <Form.Label>Descrição</Form.Label>
+                                                <Form.Control
+                                                    type="string"
+                                                    name="description"
+                                                    value={formData['description'] || ''}
+                                                    onChange={handleChange}
+                                                    className="custom-input-height custom-select-font-size"
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                </>
+                            )}
                             <h5 style={{ marginTop: 20 }}>{entityType === 'department' ? 'Departamentos' : 'Grupos'}</h5>
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
                                 <DataTable
@@ -479,7 +502,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
                                 <DataTable
                                     columns={employeeColumns}
-                                    data={employeeData.length > 0 ? employeeData : employees}
+                                    data={employeeData.length > 0 ? employeeData : []}
                                     customStyles={customStyles}
                                     striped
                                     noHeader
@@ -509,7 +532,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 </Form>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
             {showEmployeeModal && (

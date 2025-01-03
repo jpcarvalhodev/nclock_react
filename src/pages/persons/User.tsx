@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -26,7 +26,7 @@ import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedCompone
 import { customStyles } from '../../components/CustomStylesDataTable';
 
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { TextFieldProps, TextField } from '@mui/material';
+import { TextField, TextFieldProps } from '@mui/material';
 
 // Define a interface para os filtros
 interface Filters {
@@ -46,10 +46,10 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de utentes
 export const User = () => {
     const {
-        employees,
+        disabledEmployees,
         data,
-        setEmployees,
-        fetchAllEmployees,
+        setDisabledEmployees,
+        fetchAllDisabledEmployees,
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,
@@ -73,10 +73,10 @@ export const User = () => {
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
-        fetchAllEmployees({
+        fetchAllDisabledEmployees({
             filterFunc: data => data.filter(emp => emp.type === 'Utente'),
             postFetch: filteredData => {
-                setEmployees(filteredData);
+                setDisabledEmployees(filteredData);
                 setFilteredEmployees(filteredData);
             }
         });
@@ -114,21 +114,21 @@ export const User = () => {
     // Função para filtrar as presenças com base no texto de pesquisa
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
-        const filteredData = employees.filter(emp => {
+        const filteredData = disabledEmployees.filter(emp => {
             return emp.name ? emp.name.toLowerCase().includes(lowercasedFilter) : false;
         });
         setFilteredEmployees(filteredData);
-    }, [filterText, employees]);
+    }, [filterText, disabledEmployees]);
 
     // Atualiza os funcionários filtrados com base nos funcionários selecionados
     useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
-            const filtered = employees.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
+            const filtered = disabledEmployees.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
             setFilteredEmployees(filtered);
         } else {
-            setFilteredEmployees(employees);
+            setFilteredEmployees(disabledEmployees);
         }
-    }, [selectedEmployeeIds, employees]);
+    }, [selectedEmployeeIds, disabledEmployees]);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {
@@ -146,8 +146,8 @@ export const User = () => {
 
     // Atualiza a lista de utentes ao mudar a lista de utentes
     useEffect(() => {
-        setFilteredEmployees(employees);
-    }, [employees]);
+        setFilteredEmployees(disabledEmployees);
+    }, [disabledEmployees]);
 
     // Abre o modal de deletar utente
     const handleOpenDeleteModal = (employeeID: string) => {

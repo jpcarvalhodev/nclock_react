@@ -1,10 +1,10 @@
-import { Employee, Department, Category, Group, Profession, Zone, ExternalEntity, EmployeeAttendanceTimes, ExternalEntityTypes, Devices, EmployeeDevices, EmployeeAndCard, Ads, EmployeeFace, EmployeeFP, KioskTransaction, KioskTransactionCard, KioskTransactionMB, Register, Doors, MBDevice, RecolhaMoedeiroEContador, ManualOpenDoor, LimpezasEOcorrencias, Logs } from "../helpers/Types";
+import { Ads, Category, Department, Devices, Doors, Employee, EmployeeAndCard, EmployeeAttendanceTimes, EmployeeDevices, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskTransaction, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, Logs, MBDevice, ManualOpenDoor, Profession, RecolhaMoedeiroEContador, Register, Zone } from "../helpers/Types";
 
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
 import ReactDOM from "react-dom";
 
-import * as apiService from "../helpers/apiService";
+import { useTerminals } from "../context/TerminalsContext";
 
 // Tipos de dados
 type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionCard | KioskTransactionMB | Register | Doors | MBDevice | RecolhaMoedeiroEContador | ManualOpenDoor | LimpezasEOcorrencias | Logs;
@@ -17,7 +17,11 @@ interface SelectFilterProps {
 }
 
 // Função de formatação de item de dados
-const formatDataItem = (item: DataItem, column: string) => {
+const formatDataItem = (item: DataItem, column: string, device: Devices[], mbDevice: MBDevice[]) => {
+    const currentRoute = window.location.pathname;
+    const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
+    const videoporteiro = currentRoute.endsWith('movevp') ? 'Video Porteiro' : '';
+
     const validDate = (dateString: string | Date) => {
         const date = new Date(dateString);
         return date.getTime() ? date.toLocaleString() : '';
@@ -40,23 +44,25 @@ const formatDataItem = (item: DataItem, column: string) => {
         case 'eventTime':
         case 'timestamp':
         case 'dataRecolha':
+        case 'dataFimRecolha':
         case 'createdTime':
         case 'dataCreate':
+        case 'createdDate':
             return validDate(item[column]);
         case 'status':
         case 'statusEmail':
             return item[column] ? 'Activo' : 'Inactivo';
         case 'rgpdAut':
             return item[column] ? 'Autorizado' : 'Não Autorizado';
+        case 'employeeId':
+            return item.employeeName;
         case 'departmentId':
         case 'professionId':
         case 'categoryId':
         case 'groupId':
         case 'zoneId':
         case 'externalEntityId':
-            return item[column + 'Name'] || '';
-        case 'employeeId':
-            return item.employeeName;
+            return item[column] || '';
         case 'inOutMode':
             if (item.inOutModeDescription) {
                 return item.inOutModeDescription || '';
@@ -77,10 +83,11 @@ const formatDataItem = (item: DataItem, column: string) => {
             return item[column] === 0 ? "" : item[column];
         case 'eventDoorId':
             switch (item.eventDoorId) {
-                case 1: return 'Terminal';
-                case 2: return 'Moedeiro';
-                case 3: return 'Cartão';
-                case 4: return 'Video Porteiro';
+                case 1: return currentRoute.endsWith('payterminal') ? 'Terminal' : '';
+                case 2: return currentRoute.endsWith('paycoins') ? 'Moedeiro' : '';
+                case 3: return cartao;
+                case 4: return currentRoute.endsWith('movekiosk') ? 'Quiosque' : '';
+                case null: return videoporteiro;
                 default: return '';
             }
         case 'transactionType':
@@ -89,25 +96,27 @@ const formatDataItem = (item: DataItem, column: string) => {
             return item[column] ? 'Ligado' : 'Desligado';
         case 'timeReboot':
             return item[column] === '00:00:00' ? 'Sem tempo de reinício' : item[column];
-        case 'clientTicket':
-        case 'merchantTicket':
-            const imageUrl = item[column];
-            if (imageUrl) {
-                const uploadPath = imageUrl.substring(imageUrl.indexOf('/Uploads'));
-                const fullImageUrl = `${apiService.baseURL}${uploadPath}`;
-                return fullImageUrl;
-            } else {
-                return 'Sem Ticket';
-            }
+        case 'statusFprint':
+        case 'statusPalm':
+        case 'statusFace':
+            return item[column] ? 'Activo' : 'Inactivo';
+        case 'isPresent':
+            return item[column] ? 'Presente' : 'Ausente';
+        case 'deviceSN':
+            return device.find(device => device.serialNumber === item.deviceSN)?.deviceName || '';
+        case 'tpId':
+            return mbDevice.find(mbDevice => mbDevice.id === item.tpId)?.nomeQuiosque || '';
         default:
-            return item[column] ? item[column].toString() : ' ';
+            return item[column] !== undefined && item[column] !== null && item[column] !== '' ? item[column] : ' ';
     }
 };
 
 // Componente de filtro de seleção
 export const SelectFilter = ({ column, setFilters, data }: SelectFilterProps) => {
+    const { devices, mbDevices } = useTerminals();
+
     // Formata os dados
-    const options = Array.from(new Set(data.map(item => formatDataItem(item, column))));
+    const options = Array.from(new Set(data.map(item => formatDataItem(item, column, devices, mbDevices))));
 
     // Obter o elemento do portal
     const portalElement = document.getElementById('portal-root');

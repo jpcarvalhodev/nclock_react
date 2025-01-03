@@ -64,7 +64,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 // Define o componente
 export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskProps) {
     const { devices, fetchAllDevices } = useTerminals();
-    const { employees, fetchAllEmployees } = usePersons();
+    const { employees } = usePersons();
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -88,7 +88,7 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
             .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
             .map(employee => ({
                 id: employee.employeeID || 'Sem ID',
-                label: employee.shortName || 'Sem Nome',
+                label: `${employee.enrollNumber} - ${employee.shortName}`,
                 children: []
             }));
 
@@ -114,7 +114,7 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [devices]);
+    }, [devices, employees]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {

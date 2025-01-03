@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 
 import { fetchWithAuth } from "../components/FetchWithAuth";
 
-import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, ManualOpenDoor, MBDevice, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
 
 // URL base para as APIs
 export const BASE_URL = process.env.REACT_APP_API_BASE;
@@ -104,7 +104,7 @@ export const deleteAttendance = async (attendanceTimeId: string) => {
 export const fetchAllData = async () => {
     const deptResponse = await fetchWithAuth(`Departaments/Employees`);
     const groupResponse = await fetchWithAuth(`Groups/Employees`);
-    const employeesResponse = await fetchWithAuth(`Employees/GetAllEmployees`);
+    const employeesResponse = await fetchWithAuth(`Employees/GetDisabledEmployees`);
 
     if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
         const errorData = await deptResponse.json() || await groupResponse.json() || await employeesResponse.json();
@@ -130,6 +130,16 @@ export const fetchAllEmployees = async () => {
     }
     return response.json();
 };
+
+export const fetchAllEmployeesWithDisabled = async () => {
+    const response = await fetchWithAuth(`Employees/GetDisabledEmployees`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
 
 export const addEmployee = async (employee: Employee) => {
     const response = await fetchWithAuth(`Employees/CreateEmployee`, {

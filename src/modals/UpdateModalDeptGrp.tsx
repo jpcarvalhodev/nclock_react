@@ -1,6 +1,5 @@
-import { set } from 'date-fns';
 import React, { useContext, useEffect, useState } from 'react';
-import { Row, Col, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import DataTable from 'react-data-table-component';
@@ -10,7 +9,7 @@ import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
 import { employeeFields } from '../helpers/Fields';
-import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
+import { Department, Employee, Group } from '../helpers/Types';
 
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
@@ -63,6 +62,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [formData, setFormData] = useState<T>({ ...entity });
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [employeeData, setEmployeeData] = useState<Employee[]>([]);
+    const [subdepartments, setSubDepartments] = useState<Department[]>([]);
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showUpdateEmployeeModal, setShowUpdateEmployeeModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -131,6 +131,15 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         setIsFormValid(isValid);
         return isValid;
     };
+
+    // Função para buscar os subdepartamentos
+    useEffect(() => {
+        const fetchSubdepartments = async () => {
+            const subDept = dropdownData.departments.filter(dept => dept.paiId === formData.code);
+            setSubDepartments(subDept);
+        };
+        fetchSubdepartments();
+    }, [formData]);
 
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>) => {
@@ -339,22 +348,32 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
 
     // Função que atualiza o funcionário selecionado com o novo departamento/grupo selecionado
     const handleSwitchDeptOrGrp = () => {
-        if (!selectedDeptOrGroup) {
-            toast.warn('Selecione um Departamento ou Grupo para trocar.');
+        if (!selectedDeptOrGroup && entityType === 'department' && selectedEmployees.length === 0) {
+            toast.warn('Selecione primeiro um funcionário e depois um departamento para trocar.');
+            return;
+        } else if (!selectedDeptOrGroup && entityType === 'group' && selectedEmployees.length === 0) {
+            toast.warn('Selecione primeiro um funcionário e depois um grupo para trocar.');
+            return;
+        }
+        if (!selectedDeptOrGroup && entityType === 'department') {
+            toast.warn('Selecione um departamento para trocar.');
+            return;
+        } else if (!selectedDeptOrGroup && entityType === 'group') {
+            toast.warn('Selecione um grupo para trocar.');
             return;
         }
         if (selectedEmployees.length === 0) {
-            toast.warn('Selecione ao menos um funcionário para trocar');
+            toast.warn('Selecione um funcionário para trocar');
             return;
         }
 
         selectedEmployees.forEach((emp) => {
             const updatedEmployee: Employee = { ...emp };
 
-            if (entityType === 'department' && 'departmentID' in selectedDeptOrGroup) {
+            if (selectedDeptOrGroup && entityType === 'department' && 'departmentID' in selectedDeptOrGroup) {
                 updatedEmployee.departmentId = selectedDeptOrGroup.departmentID;
                 updatedEmployee.departmentName = selectedDeptOrGroup.name;
-            } else if (entityType === 'group' && 'groupID' in selectedDeptOrGroup) {
+            } else if (selectedDeptOrGroup && entityType === 'group' && 'groupID' in selectedDeptOrGroup) {
                 updatedEmployee.groupId = selectedDeptOrGroup.groupID;
                 updatedEmployee.groupName = selectedDeptOrGroup.name;
             }
@@ -480,21 +499,28 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         name: "Campo obrigatório",
     }
 
+    // Define o texto do tooltip
+    const tooltipText = entityType === 'department' ? 'Trocar Departamento' : 'Trocar Grupo';
+
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 115 }}>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
-                <Modal.Title>{entityType === 'department' ? 'Atualizar Departamento' : 'Atualizar Grupo'}</Modal.Title>
+                <Modal.Title>
+                    {entityType === 'department' ? 'Atualizar Departamento' : 'Atualizar Grupo'}
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body style={{ marginBottom: 40 }}>
                 <Form>
                     <Row>
                         <Col md={5}>
-                            <Row>
-                                {entityType === 'department' && (
-                                    <>
+                            {entityType === 'department' ? (
+                                <>
+                                    <Row>
                                         <Col md={6}>
                                             <Form.Group controlId="formCode">
-                                                <Form.Label>Código<span style={{ color: 'red' }}> *</span></Form.Label>
+                                                <Form.Label>
+                                                    Código<span style={{ color: 'red' }}> *</span>
+                                                </Form.Label>
                                                 <OverlayTrigger
                                                     placement="right"
                                                     overlay={
@@ -512,98 +538,155 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                         required
                                                     />
                                                 </OverlayTrigger>
-                                                {errors['code'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['code']}</div>}
+                                                {errors['code'] && (
+                                                    <div style={{ color: 'red', fontSize: 'small' }}>
+                                                        {errors['code']}
+                                                    </div>
+                                                )}
                                             </Form.Group>
                                         </Col>
-                                    </>
-                                )}
-                                <Col md={6}>
-                                    <Form.Group controlId="formName">
-                                        <Form.Label>Nome<span style={{ color: 'red' }}> *</span></Form.Label>
-                                        <OverlayTrigger
-                                            placement="right"
-                                            overlay={
-                                                <Tooltip id="tooltip-name">
-                                                    {entityType === 'department' ? deptFieldRequirements['name'] : groupFieldRequirements['name']}
-                                                </Tooltip>
-                                            }
-                                        >
-                                            <Form.Control
-                                                type="string"
-                                                name="name"
-                                                value={formData['name'] || ''}
-                                                onChange={handleChange}
-                                                className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                                required
-                                            />
-                                        </OverlayTrigger>
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <Form.Group controlId="formDescription">
-                                        <Form.Label>Descrição</Form.Label>
-                                        <Form.Control
-                                            type="string"
-                                            name="description"
-                                            value={formData['description'] || ''}
-                                            onChange={handleChange}
-                                            className="custom-input-height custom-select-font-size"
+                                        <Col md={6}>
+                                            <Form.Group controlId="formName">
+                                                <Form.Label>
+                                                    Nome<span style={{ color: 'red' }}> *</span>
+                                                </Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={
+                                                        <Tooltip id="tooltip-name">
+                                                            {deptFieldRequirements['name']}
+                                                        </Tooltip>
+                                                    }
+                                                >
+                                                    <Form.Control
+                                                        type="string"
+                                                        name="name"
+                                                        value={formData['name'] || ''}
+                                                        onChange={handleChange}
+                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''
+                                                            }`}
+                                                        required
+                                                    />
+                                                </OverlayTrigger>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formDescription">
+                                                <Form.Label>Descrição</Form.Label>
+                                                <Form.Control
+                                                    type="string"
+                                                    name="description"
+                                                    value={formData['description'] || ''}
+                                                    onChange={handleChange}
+                                                    className="custom-input-height custom-select-font-size"
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formPaiId">
+                                                <Form.Label>Departamento Pai</Form.Label>
+                                                <Form.Control
+                                                    as="select"
+                                                    name="paiId"
+                                                    value={formData['paiId'] || ''}
+                                                    onChange={handleDropdownChange}
+                                                    className="custom-input-height custom-select-font-size"
+                                                >
+                                                    <option value="0">Selecione...</option>
+                                                    {dropdownData.departments.map(option => (
+                                                        <option key={option.code} value={option.code}>
+                                                            {option.name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <h5 style={{ marginTop: 20 }}>Subdepartamentos</h5>
+                                    <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
+                                        <DataTable
+                                            columns={departmentColumns}
+                                            data={subdepartments}
+                                            customStyles={customStyles}
+                                            striped
+                                            noHeader
+                                            pagination
+                                            paginationComponentOptions={paginationOptions}
+                                            paginationPerPage={5}
+                                            paginationRowsPerPageOptions={[5, 10, 15, 20]}
+                                            selectableRows
+                                            onSelectedRowsChange={handleRowSelectedDeptGrp}
+                                            clearSelectedRows={clearSelectionToggle}
+                                            selectableRowsHighlight
+                                            selectableRowsNoSelectAll
+                                            defaultSortAsc
+                                            defaultSortFieldId="code"
+                                            noDataComponent="Não existem dados disponíveis para exibir."
                                         />
-                                    </Form.Group>
-                                </Col>
-                                {entityType === 'department' && (
-                                    <Col md={6}>
-                                        <Form.Group controlId="formPaiId">
-                                            <Form.Label>Departamento Pai</Form.Label>
-                                            <Form.Control
-                                                as="select"
-                                                name="paiId"
-                                                value={formData['paiId'] || ''}
-                                                onChange={handleDropdownChange}
-                                                className="custom-input-height custom-select-font-size"
-                                            >
-                                                <option value="0">Selecione...</option>
-                                                {dropdownData.departments.map(option => (
-                                                    <option key={option.code} value={option.code}>
-                                                        {option.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                )}
-                            </Row>
-                            <h5 style={{ marginTop: 20 }}>{entityType === 'department' ? 'Departamentos' : 'Grupos'}</h5>
-                            <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
-                                <DataTable
-                                    columns={entityType === 'department' ? departmentColumns : groupColumns}
-                                    data={entityType === 'department' ? dropdownData.departments : dropdownData.groups}
-                                    customStyles={customStyles}
-                                    striped
-                                    noHeader
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={5}
-                                    paginationRowsPerPageOptions={[5, 10, 15, 20]}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelectedDeptGrp}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    selectableRowsNoSelectAll={true}
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId={entityType === 'department' ? 'code' : 'name'}
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                />
-                            </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <Row>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formName">
+                                                <Form.Label>
+                                                    Nome<span style={{ color: 'red' }}> *</span>
+                                                </Form.Label>
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={
+                                                        <Tooltip id="tooltip-name">
+                                                            {groupFieldRequirements['name']}
+                                                        </Tooltip>
+                                                    }
+                                                >
+                                                    <Form.Control
+                                                        type="string"
+                                                        name="name"
+                                                        value={formData['name'] || ''}
+                                                        onChange={handleChange}
+                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''
+                                                            }`}
+                                                        required
+                                                    />
+                                                </OverlayTrigger>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group controlId="formDescription">
+                                                <Form.Label>Descrição</Form.Label>
+                                                <Form.Control
+                                                    type="string"
+                                                    name="description"
+                                                    value={formData['description'] || ''}
+                                                    onChange={handleChange}
+                                                    className="custom-input-height custom-select-font-size"
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                </>
+                            )}
                         </Col>
                         <Col md={7}>
                             <h5>Funcionários</h5>
                             <div style={{ overflowX: 'auto', overflowY: 'auto' }}>
                                 <DataTable
                                     columns={employeeColumns}
-                                    data={employeeData.length > 0 ? employeeData : employees}
+                                    data={
+                                        entityType === 'department' && employeeData.length === 0
+                                            ? employees.filter(
+                                                emp => emp.departmentId === formData.departmentID
+                                            )
+                                            : entityType === 'group' && employeeData.length === 0
+                                                ? employees.filter(
+                                                    emp => emp.groupId === formData.groupID
+                                                )
+                                                : employeeData
+                                    }
                                     customStyles={customStyles}
                                     striped
                                     noHeader
@@ -617,7 +700,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     onSelectedRowsChange={handleRowSelectedEmployees}
                                     selectableRowsNoSelectAll={true}
                                     defaultSortAsc={true}
-                                    defaultSortFieldId='enrollNumber'
+                                    defaultSortFieldId="enrollNumber"
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                 />
                             </div>
@@ -626,14 +709,18 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                 >
-                                    <CustomOutlineButton className="action-button" icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
+                                    <CustomOutlineButton
+                                        className="action-button"
+                                        icon="bi-plus"
+                                        onClick={() => setShowEmployeeModal(true)}
+                                    />
                                 </OverlayTrigger>
-                                <OverlayTrigger
+                                {/* <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Trocar Dept/Grp</Tooltip>}
+                                    overlay={<Tooltip className="custom-tooltip">{tooltipText}</Tooltip>}
                                 >
                                     <CustomOutlineButton className="action-button" icon="bi bi-arrow-left-right" onClick={handleSwitchDeptOrGrp} />
-                                </OverlayTrigger>
+                                </OverlayTrigger> */}
                             </div>
                         </Col>
                     </Row>
@@ -650,15 +737,26 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     placement="top"
                     overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
                 >
-                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                    <CustomOutlineButton
+                        className="arrows-modal"
+                        icon="bi-arrow-right"
+                        onClick={onNext}
+                        disabled={!canMoveNext}
+                    />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                    Duplicar
+                </Button>
+                <Button variant="outline-secondary" onClick={onClose}>
+                    Fechar
+                </Button>
+                <Button variant="outline-primary" onClick={handleSaveClick}>
+                    Guardar
+                </Button>
             </Modal.Footer>
             {showEmployeeModal && (
                 <CreateModalEmployees
-                    title='Adicionar Funcionário'
+                    title="Adicionar Funcionário"
                     open={showEmployeeModal}
                     onClose={() => setShowEmployeeModal(false)}
                     onSave={addEmployeeAndCard}
@@ -668,7 +766,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             )}
             {selectedEmployee && (
                 <UpdateModalEmployees
-                    title='Atualizar Funcionário'
+                    title="Atualizar Funcionário"
                     open={showUpdateEmployeeModal}
                     onClose={() => setShowUpdateEmployeeModal(false)}
                     onUpdate={updateEmployeeAndCard}

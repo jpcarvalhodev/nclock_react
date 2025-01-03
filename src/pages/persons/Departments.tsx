@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { toast } from 'react-toastify';
 
@@ -22,7 +22,7 @@ import '../../css/PagesStyles.css';
 import { useNavbar } from "../../context/NavbarContext";
 
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { TextFieldProps, TextField } from '@mui/material';
+import { TextField, TextFieldProps } from '@mui/material';
 
 import { PersonsContext, PersonsContextType } from '../../context/PersonsContext';
 

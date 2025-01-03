@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import { TerminalsContext, DeviceContextType } from '../context/TerminalsContext';
+import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
 import * as apiService from "../helpers/apiService";
 import { AuxOut } from '../helpers/Types';
 

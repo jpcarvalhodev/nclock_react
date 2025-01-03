@@ -1,6 +1,6 @@
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
+import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
 import { useEffect, useState } from "react";
-import { PolarArea , Bar } from "react-chartjs-2";
+import { Bar , PolarArea } from "react-chartjs-2";
 
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";

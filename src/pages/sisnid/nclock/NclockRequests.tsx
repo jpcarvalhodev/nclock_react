@@ -26,7 +26,7 @@ import { useNavbar } from "../../../context/NavbarContext";
 import { PersonsContext, PersonsContextType } from '../../../context/PersonsContext';
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
 
-import { TextFieldProps, TextField } from '@mui/material';
+import { TextField, TextFieldProps } from '@mui/material';
 
 // Define a interface para os filtros
 interface Filters {

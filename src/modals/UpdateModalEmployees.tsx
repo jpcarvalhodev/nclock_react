@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
-import { Row, Col, Tab, Nav, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Col, Form, InputGroup, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
@@ -896,27 +896,28 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   <Col md={3}>
                     <Form.Group controlId="formDevicePassword">
                       <Form.Label>Password do Dispositivo</Form.Label>
-                      <Form.Control
-                        type={showPassword ? 'text' : 'password'}
-                        className="custom-input-height custom-select-font-size"
-                        value={cardFormData.devicePassword || ''}
-                        onChange={handleCardChange}
-                        name="devicePassword"
-                        maxLength={6}
-                        style={{ paddingRight: '40px' }}
-                      />
-                      <Button variant="outline-secondary" onClick={togglePasswordVisibility} style={{
-                        position: 'absolute',
-                        top: '73%',
-                        right: '310px',
-                        transform: 'translateY(-50%)',
-                        border: 'none',
-                        backgroundColor: 'transparent',
-                        padding: 0,
-                        zIndex: 5
-                      }}>
-                        <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
-                      </Button>
+                      <InputGroup>
+                        <Form.Control
+                          type={showPassword ? 'text' : 'password'}
+                          className="custom-input-height custom-select-font-size"
+                          value={cardFormData.devicePassword || ''}
+                          onChange={handleCardChange}
+                          name="devicePassword"
+                          maxLength={6}
+                          style={{ borderRight: 'none' }}
+                        />
+                        <InputGroup.Text
+                          style={{
+                            cursor: 'pointer',
+                            background: 'transparent',
+                            borderLeft: 'none',
+                            height: '30px',
+                          }}
+                          onClick={togglePasswordVisibility}
+                        >
+                          <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
+                        </InputGroup.Text>
+                      </InputGroup>
                     </Form.Group>
                   </Col>
                 </Row>

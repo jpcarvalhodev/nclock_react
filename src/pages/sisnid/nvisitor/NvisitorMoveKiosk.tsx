@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -9,18 +9,18 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
+import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
+import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
+import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
+import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
+import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
 import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
-import { PrintButton } from "../../../components/PrintButton";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
-import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

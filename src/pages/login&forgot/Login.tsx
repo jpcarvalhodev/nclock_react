@@ -1,7 +1,7 @@
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../css/Login.css";
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 import hidepass from "../../assets/img/login/hidepass.png";
@@ -9,12 +9,12 @@ import showpass from "../../assets/img/login/showpass.png";
 import profileAvatar from "../../assets/img/navbar/navbar/profileAvatar.png";
 import no_entity from "../../assets/img/navbar/no_entity.png";
 import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
-import * as apiService from "../../helpers/apiService";
-import { License, LicenseKey } from "../../helpers/Types";
-import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { useLicense } from "../../context/LicenseContext";
 import { usePersons } from "../../context/PersonsContext";
 import { useTerminals } from "../../context/TerminalsContext";
+import * as apiService from "../../helpers/apiService";
+import { License, LicenseKey } from "../../helpers/Types";
+import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -267,39 +267,41 @@ export const Login = () => {
           <div className="username-password-labels">
             <Row className="row-username-password">
               <Col className="col-username-password">
-                <label className="username-label">
-                  <p>Nome de Utilizador:</p>
-                  <input
-                    className="input-username-password"
+                <Form.Group>
+                  <Form.Label className="username-label">Nome de Utilizador:</Form.Label>
+                  <Form.Control
                     type="text"
                     name="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    className="input-username-password"
                   />
-                </label>
-                <label className="password-label">
-                  <p>Password:</p>
-                  <div className="password-input-container">
-                    <input
-                      className="input-username-password"
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label className="password-label">Password:</Form.Label>
+                  <InputGroup>
+                    <Form.Control
                       type={showPassword ? "text" : "password"}
                       name="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      className="input-username-password"
                     />
-                    <button
-                      type="button"
-                      className="toggle-password"
+                    <InputGroup.Text
+                      style={{
+                        cursor: 'pointer',
+                        background: 'transparent',
+                        border: 'none',
+                        marginLeft: '-45px',
+                        height: '38px',
+                        zIndex: 10
+                      }}
                       onClick={togglePasswordVisibility}
                     >
-                      {showPassword ? (
-                        <img src={hidepass} alt="esconde password" />
-                      ) : (
-                        <img src={showpass} alt="mostra password" />
-                      )}
-                    </button>
-                  </div>
-                </label>
+                      <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
+                    </InputGroup.Text>
+                  </InputGroup>
+                </Form.Group>
               </Col>
               <Col className="col-profile-img-2">
                 <div className="image-container">

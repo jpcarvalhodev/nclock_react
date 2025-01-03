@@ -10,17 +10,17 @@ import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
 import { ExportButton } from "../../components/ExportButton";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
+import { PrintButton } from "../../components/PrintButton";
+import { SelectFilter } from "../../components/SelectFilter";
+import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import { useNavbar } from "../../context/NavbarContext";
+import { DeviceContextType, TerminalsContext } from "../../context/TerminalsContext";
 import { accessControlFields } from "../../helpers/Fields";
 import { AccessControl } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../components/SelectFilter";
 import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 import { DeleteACModal } from "../../modals/DeleteACModal";
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
-import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
-import { PrintButton } from "../../components/PrintButton";
-import { TerminalsContext, DeviceContextType } from "../../context/TerminalsContext";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -9,16 +9,16 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
+import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
+import { TreeViewDataMBTerminals } from "../../../components/TreeViewMBTerminals";
+import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
+import { mbDeviceStatusFields } from "../../../helpers/Fields";
 import { MBDeviceStatus } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { PrintButton } from "../../../components/PrintButton";
-import { mbDeviceStatusFields } from "../../../helpers/Fields";
-import { TreeViewDataMBTerminals } from "../../../components/TreeViewMBTerminals";
-import { useKiosk } from "../../../context/KioskContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

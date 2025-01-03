@@ -12,7 +12,7 @@ import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
 import { useNavbar } from "../../../context/NavbarContext";
 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
+import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 // Define a linguagem do calendário

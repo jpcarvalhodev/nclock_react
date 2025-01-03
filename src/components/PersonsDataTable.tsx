@@ -45,7 +45,7 @@ interface Filters {
 // Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate, onSelectedRowsChange }: PersonsDataTableProps) => {
     const {
-        fetchAllEmployees,
+        fetchAllDisabledEmployees,
         handleUpdateEmployee,
         handleDeleteEmployee,
     } = useContext(PersonsContext) as PersonsContextType;
@@ -60,7 +60,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
-        fetchAllEmployees({
+        fetchAllDisabledEmployees({
             postFetch: filteredData => {
                 onRefreshData({ ...data, employees: filteredData });
             }

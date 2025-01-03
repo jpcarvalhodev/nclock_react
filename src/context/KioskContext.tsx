@@ -1,8 +1,8 @@
-import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import * as apiService from '../helpers/apiService';
-import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, ManualOpenDoor, MBDeviceStatus, NewTransactionCard, RecolhaMoedeiroEContador } from '../helpers/Types';
+import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, MBDeviceStatus, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../helpers/Types';
 
 import { useTerminals } from './TerminalsContext';
 
@@ -440,12 +440,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         const token = localStorage.getItem('token');
         if (token) {
             fetchAllDevices();
-            fetchAllManualOpen();
-            fetchAllCoin();
-            fetchAllLimpezas();
-            fetchAllOcorrencias();
-            fetchAllCounter();
-            fetchAllTasks();
         }
     }, []);
 
@@ -459,6 +453,12 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
             fetchAllMoveVP();
             unifyTotalPayments();
             unifyTotalMovements();
+            fetchAllManualOpen();
+            fetchAllCoin();
+            fetchAllLimpezas();
+            fetchAllOcorrencias();
+            fetchAllCounter();
+            fetchAllTasks();
         }
     }, [devices]);
 

@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -9,15 +9,15 @@ import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
+import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
+import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
+import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import { counterFields } from "../../../helpers/Fields";
 import { Counter } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { PrintButton } from "../../../components/PrintButton";
-import { useKiosk } from "../../../context/KioskContext";
-import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -28,21 +28,6 @@ const formatDateToStartOfDay = (date: Date): string => {
 const formatDateToEndOfDay = (date: Date): string => {
     return `${date.toISOString().substring(0, 10)}T23:59`;
 }
-
-// Função para converter string em data
-const convertStringToDate = (dateStr: string) => {
-    const parts = dateStr.split(' ');
-    const dateParts = parts[0].split('/');
-    const timeParts = parts[1].split(':');
-    return new Date(
-        parseInt(dateParts[2], 10),
-        parseInt(dateParts[1], 10) - 1,
-        parseInt(dateParts[0], 10),
-        parseInt(timeParts[0], 10),
-        parseInt(timeParts[1], 10),
-        parseInt(timeParts[2], 10)
-    );
-};
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

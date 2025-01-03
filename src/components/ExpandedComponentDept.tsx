@@ -34,7 +34,7 @@ export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: Exp
                     const validSubdepartments = fetchedSubdepartments.filter(sub => sub.paiId === data.code);
                     setSubdepartments(validSubdepartments);
                 })
-                .catch(error => console.error("Failed to fetch subdepartments:", error));
+                .catch(error => console.error("Falha ao buscar subdepartamentos:", error));
         }
     }, [data, fetchSubdepartments]);
 

@@ -1,5 +1,5 @@
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
-import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
+import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
+import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
 import { useEffect, useState } from "react";
 import { Bar , Pie } from "react-chartjs-2";
 

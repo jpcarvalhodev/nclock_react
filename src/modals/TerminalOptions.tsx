@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Modal, Button, Form, Col, Tabs, Tab } from 'react-bootstrap';
+import { Button, Col, Form, Modal, Tab, Tabs } from 'react-bootstrap';
 import "../css/TerminalOptionsModal.css";
 
 interface TerminalOptionsModalProps<T> {

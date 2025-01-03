@@ -1,39 +1,9 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
-import fraccoes from '../assets/img/navbar/pessoas/fraccoes.png';
-import types from '../assets/img/navbar/pessoas/types.png';
-import fonts from '../assets/img/navbar/pessoas/fonts.png';
-import interventionAreas from '../assets/img/navbar/pessoas/interventionAreas.png';
-import businessAreas from '../assets/img/navbar/pessoas/businessAreas.png';
-import internalContacts from '../assets/img/navbar/pessoas/internalContacts.png';
-import Dropdown from 'react-bootstrap/Dropdown';
-import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.webp';
-import nclock from '../assets/img/navbar/navbar/nclock.webp';
-import naccess from '../assets/img/navbar/navbar/naccess.webp';
-import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
-import npark from '../assets/img/navbar/navbar/npark.webp';
-import ndoor from '../assets/img/navbar/navbar/ndoor.webp';
-import npatrol from '../assets/img/navbar/navbar/npatrol.webp';
-import ncard from '../assets/img/navbar/navbar/ncard.webp';
-import nview from '../assets/img/navbar/navbar/nview.webp';
-import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
-import movement from '../assets/img/navbar/nclock/movement.png';
-import presence from '../assets/img/navbar/nclock/presence.png';
-import request from '../assets/img/navbar/nclock/request.png';
-import all from '../assets/img/navbar/nclock/all.png';
-import clipboard from '../assets/img/navbar/nclock/clipboard.png';
-import processing from '../assets/img/navbar/nclock/processing.png';
-import plusMinus from '../assets/img/navbar/nclock/plusMinus.png';
-import hourDatabase from '../assets/img/navbar/nclock/hourDatabase.png';
-import segmentation from '../assets/img/navbar/nclock/segmentation.png';
-import battery from '../assets/img/navbar/nclock/battery.png';
-import clock from '../assets/img/navbar/nclock/clock.png';
-import time from '../assets/img/navbar/nclock/time.png';
-import workPlan from '../assets/img/navbar/nclock/workPlan.png';
 import absent from '../assets/img/navbar/nclock/absent.png';
 import unknown from '../assets/img/navbar/nclock/unknown.png';
 import work from '../assets/img/navbar/nclock/work.png';
@@ -105,9 +75,9 @@ import coin from '../assets/img/navbar/nkiosk/coin.png';
 import intercom from '../assets/img/navbar/nkiosk/intercom.png';
 import kiosk from '../assets/img/navbar/nkiosk/kiosk.png';
 import barrier from '../assets/img/navbar/nkiosk/barrier.png';
-import ads from '../assets/img/navbar/nkiosk/ads.png';
-import video from '../assets/img/navbar/nkiosk/video.png';
-import image from '../assets/img/navbar/nkiosk/image.png';
+import ads from '../assets/img/navbar/nled/ads.png';
+import video from '../assets/img/navbar/nled/video.png';
+import image from '../assets/img/navbar/nled/image.png';
 import online from '../assets/img/navbar/nkiosk/online.png';
 import card_report from '../assets/img/navbar/nkiosk/card_report.png';
 import coin_report from '../assets/img/navbar/nkiosk/coin_report.png';
@@ -128,8 +98,8 @@ import version from '../assets/img/navbar/ajuda/version.png';
 import module from '../assets/img/navbar/nkiosk/module.png';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button, Navbar } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { accessControlFields, adsFields, backupDBFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../helpers/Fields';
-import { useAds } from '../context/AdsContext';
 import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../helpers/apiService";
 import { toast } from 'react-toastify';
@@ -170,19 +140,19 @@ import { useTerminals } from '../context/TerminalsContext';
 import { useEntity } from '../context/EntityContext';
 import { useKiosk } from '../context/KioskContext';
 import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
+import naccess from '../assets/img/navbar/navbar/naccess.webp';
+import ncard from '../assets/img/navbar/navbar/ncard.webp';
+import nclock from '../assets/img/navbar/navbar/nclock.webp';
+import ndoor from '../assets/img/navbar/navbar/ndoor.webp';
+import npark from '../assets/img/navbar/navbar/npark.webp';
+import npatrol from '../assets/img/navbar/navbar/npatrol.webp';
+import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
+import nview from '../assets/img/navbar/navbar/nview.webp';
+import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
 import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
-import { useCardScroll } from '../context/CardScrollContext';
-import panel from '../assets/img/navbar/nkiosk/panel.png';
 import ribbonControl from '../assets/img/navbar/navbar/ribbonControl.png';
 import ribbonControlLock from '../assets/img/navbar/navbar/ribbonControlLock.png';
-import { useNavbar } from '../context/NavbarContext';
-import cars from '../assets/img/navbar/npark/cars.png';
-import payBooth from '../assets/img/navbar/npark/payBooth.png';
-import doorIn from '../assets/img/navbar/ndoor/doorIn.png';
-import doorRoom from '../assets/img/navbar/ndoor/doorRoom.png';
-import inOut from '../assets/img/navbar/ndoor/inOut.png';
-import reservation from '../assets/img/navbar/ndoor/reservation.png';
-import patrols from '../assets/img/navbar/npatrol/patrols.png';
+import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.webp';
 import analysis from '../assets/img/navbar/npatrol/analysis.png';
 import routes from '../assets/img/navbar/npatrol/routes.png';
 import points from '../assets/img/navbar/ncard/points.png';
@@ -204,6 +174,103 @@ import zone from '../assets/img/navbar/pessoas/zones.png';
 import { EmailUser, KioskConfig } from '../helpers/Types';
 import { BackupDBModal } from '../modals/BackupDBModal';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
+import realTime from '../assets/img/navbar/nsmart/realTime.png';
+import monitoring from '../assets/img/navbar/nsmart/monitoring.png';
+import simulation from '../assets/img/navbar/nreality/simulation.png';
+import power from '../assets/img/navbar/npower/power.png';
+import eolic from '../assets/img/navbar/npower/eolic.png';
+import solar from '../assets/img/navbar/npower/solar.png';
+import fisical from '../assets/img/navbar/npower/fisical.png';
+import hourglass from '../assets/img/navbar/npower/hourglass.png';
+import year from '../assets/img/navbar/npower/year.png';
+import energy from '../assets/img/navbar/npower/energy.png';
+import renewable from '../assets/img/navbar/npower/renewable.png';
+import monophase from '../assets/img/navbar/npower/monophase.png';
+import biphase from '../assets/img/navbar/npower/biphase.png';
+import triphase from '../assets/img/navbar/npower/triphase.png';
+import firePrevention from '../assets/img/navbar/nfire/firePrevention.png';
+import extinguish from '../assets/img/navbar/nfire/extinguish.png';
+import interactive from '../assets/img/navbar/ncity/interactive.png';
+import rent from '../assets/img/navbar/ncity/rent.png';
+import article from '../assets/img/navbar/ncity/article.png';
+import newsSearch from '../assets/img/navbar/ncity/newsSearch.png';
+import sugestion from '../assets/img/navbar/ncity/sugestion.png';
+import museum from '../assets/img/navbar/ncity/museum.png';
+import transportation from '../assets/img/navbar/ncity/transportation.png';
+import all from '../assets/img/navbar/nclock/all.png';
+import battery from '../assets/img/navbar/nclock/battery.png';
+import clipboard from '../assets/img/navbar/nclock/clipboard.png';
+import clock from '../assets/img/navbar/nclock/clock.png';
+import hourDatabase from '../assets/img/navbar/nclock/hourDatabase.png';
+import movement from '../assets/img/navbar/nclock/movement.png';
+import plusMinus from '../assets/img/navbar/nclock/plusMinus.png';
+import presence from '../assets/img/navbar/nclock/presence.png';
+import processing from '../assets/img/navbar/nclock/processing.png';
+import request from '../assets/img/navbar/nclock/request.png';
+import segmentation from '../assets/img/navbar/nclock/segmentation.png';
+import time from '../assets/img/navbar/nclock/time.png';
+import workPlan from '../assets/img/navbar/nclock/workPlan.png';
+import price from '../assets/img/navbar/nconnect/price.png';
+import library from '../assets/img/navbar/ndecor/library.png';
+import threeDimension from '../assets/img/navbar/ndecor/threeDimension.png';
+import doorIn from '../assets/img/navbar/ndoor/doorIn.png';
+import doorRoom from '../assets/img/navbar/ndoor/doorRoom.png';
+import inOut from '../assets/img/navbar/ndoor/inOut.png';
+import reservation from '../assets/img/navbar/ndoor/reservation.png';
+import down from '../assets/img/navbar/nfurniture/down.png';
+import up from '../assets/img/navbar/nfurniture/up.png';
+import panel from '../assets/img/navbar/nkiosk/panel.png';
+import ledMonitor from '../assets/img/navbar/nled/ledMonitor.png';
+import cars from '../assets/img/navbar/npark/cars.png';
+import payBooth from '../assets/img/navbar/npark/payBooth.png';
+import close from '../assets/img/navbar/npartition/close.png';
+import tick from '../assets/img/navbar/npartition/tick.png';
+import patrols from '../assets/img/navbar/npatrol/patrols.png';
+import bandwidth from '../assets/img/navbar/nping/bandwidth.png';
+import network from '../assets/img/navbar/nping/network.png';
+import test from '../assets/img/navbar/nping/test.webp';
+import businessAreas from '../assets/img/navbar/pessoas/businessAreas.png';
+import fonts from '../assets/img/navbar/pessoas/fonts.png';
+import fraccoes from '../assets/img/navbar/pessoas/fraccoes.png';
+import internalContacts from '../assets/img/navbar/pessoas/internalContacts.png';
+import interventionAreas from '../assets/img/navbar/pessoas/interventionAreas.png';
+import types from '../assets/img/navbar/pessoas/types.png';
+import { useAds } from '../context/AdsContext';
+import { useCardScroll } from '../context/CardScrollContext';
+import { useNavbar } from '../context/NavbarContext';
+import create from '../assets/img/navbar/nsoftware/create.png';
+import optimization from '../assets/img/navbar/nsoftware/optimization.png';
+import cost from '../assets/img/navbar/nsoftware/cost.png';
+import management from '../assets/img/navbar/nsystem/management.png';
+import flow from '../assets/img/navbar/nsystem/flow.png';
+import integration from '../assets/img/navbar/nsystem/integration.png';
+import shield from '../assets/img/navbar/ncyber/shield.png';
+import recovery from '../assets/img/navbar/ncyber/recovery.png';
+import efficiency from '../assets/img/navbar/ndigital/efficiency.png';
+import bonus from '../assets/img/navbar/ndigital/bonus.png';
+import simple from '../assets/img/navbar/ndigital/simple.png';
+import automation from '../assets/img/navbar/nserver/automation.png';
+import feedback from '../assets/img/navbar/nserver/feedback.png';
+import hardware from '../assets/img/navbar/naut/hardware.png';
+import software from '../assets/img/navbar/naut/software.png';
+import broken from '../assets/img/navbar/nequip/broken.png';
+import production from '../assets/img/navbar/nproject/production.png';
+import making from '../assets/img/navbar/nproject/making.png';
+import summary from '../assets/img/navbar/ncount/summary.png';
+import invoice from '../assets/img/navbar/ninvoice/invoice.png';
+import credit from '../assets/img/navbar/ninvoice/credit.png';
+import deal from '../assets/img/navbar/ninvoice/deal.png';
+import receipt from '../assets/img/navbar/ninvoice/receipt.png';
+import eBill from '../assets/img/navbar/ninvoice/eBill.png';
+import account from '../assets/img/navbar/ninvoice/account.png';
+import point from '../assets/img/navbar/ninvoice/point.png';
+import folder from '../assets/img/navbar/ndoc/folder.png';
+import file from '../assets/img/navbar/ndoc/file.png';
+import deadFiles from '../assets/img/navbar/ndoc/deadFiles.png';
+import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
+import workflow from '../assets/img/navbar/ndoc/workflow.png';
+import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
+import ticket from '../assets/img/navbar/nticket/ticket.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -437,6 +504,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [isMouseOver, setIsMouseOver] = useState(false);
 	const [showCardDropdown, setShowCardDropdown] = useState(false);
 	const [showBackupDBModal, setShowBackupDBModal] = useState(false);
+	const [showTaskDropdown, setShowTaskDropdown] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -1073,35 +1141,60 @@ export const NavBar = ({ style }: NavBarProps) => {
 			image: counts,
 			alt: 'contador',
 			key: 'contador',
-			onClick: () => toast.error('Módulo de Contagem de Pessoas. Sistema pode ser utilizado em diversos contextos, como: Contagem: Controle de entradas e saída de pessoas.'),
+			onClick: () => toast.info('Módulo de Contagem de Pessoas. Sistema pode ser utilizado em diversos contextos, como: Contagem: Controle de entradas e saída de pessoas.'),
 		},
 		sensor: {
 			label: 'Sensor Movimento',
 			image: sensor,
 			alt: 'sensor',
 			key: 'sensor',
-			onClick: () => toast.error('Módulo de Sensores de Movimento. Sistema pode ser utilizado em diversos contextos, como: Local: Detetar movimento de uma determinada área.'),
+			onClick: () => toast.info('Módulo de Sensores de Movimento. Sistema pode ser utilizado em diversos contextos, como: Local: Detetar movimento de uma determinada área.'),
 		},
 		fotocelula: {
 			label: 'Fotocélula Segurança',
 			image: cell,
 			alt: 'fotocélula',
 			key: 'fotocelula',
-			onClick: () => toast.error('Módulo de Fotocélulas de Segurança. Sistema pode ser utilizado em diversos contextos, como: Zona: Alerta de um movimento indesejado num local.'),
+			onClick: () => toast.info('Módulo de Fotocélulas de Segurança. Sistema pode ser utilizado em diversos contextos, como: Zona: Alerta de um movimento indesejado num local.'),
 		},
 		painel: {
 			label: 'Painel de Movimentos',
 			image: panel,
 			alt: 'painel',
 			key: 'painel',
-			onClick: () => toast.error('Módulo de Painel de Movimentos. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Visualizar Registos Online com Foto'),
+			onClick: () => toast.info('Módulo de Painel de Movimentos. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Visualizar Registos Online com Foto'),
 		},
 		revista: {
 			label: 'Revistas Aleatórias',
 			image: search,
 			alt: 'revista',
 			key: 'revista',
-			onClick: () => toast.error('Módulo de Revistas Aleatórias. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Inspecionar aleatoriamente pessoas.'),
+			onClick: () => toast.info('Módulo de Revistas Aleatórias. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Inspecionar aleatoriamente pessoas.'),
+		},
+	};
+
+	// Estrutura de menu opcional para o nkiosk
+	const TaskOptionalMenuStructure: MenuStructure = {
+		contador: {
+			label: 'Contador Passagem',
+			image: counts,
+			alt: 'contador',
+			key: 'contador',
+			onClick: () => toast.info('Módulo de Contagem de Pessoas. Sistema pode ser utilizado em diversos contextos, como: Contagem: Controle de entradas e saída de pessoas.'),
+		},
+		sensor: {
+			label: 'Sensor Movimento',
+			image: sensor,
+			alt: 'sensor',
+			key: 'sensor',
+			onClick: () => toast.info('Módulo de Sensores de Movimento. Sistema pode ser utilizado em diversos contextos, como: Local: Detetar movimento de uma determinada área.'),
+		},
+		fotocelula: {
+			label: 'Fotocélula Segurança',
+			image: cell,
+			alt: 'fotocélula',
+			key: 'fotocelula',
+			onClick: () => toast.info('Módulo de Fotocélulas de Segurança. Sistema pode ser utilizado em diversos contextos, como: Zona: Alerta de um movimento indesejado num local.'),
 		},
 	};
 
@@ -2568,7 +2661,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
 													show={showListDropdown}
 												>
-													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4" style={{ position: 'relative' }}>
 														<span className="icon">
 															<img src={print} alt="botão listagens" />
 														</span>
@@ -4129,6 +4222,5464 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
+				{showNsoftwareRibbon && softwareEnabled['nsoftware'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsoftware')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nsoftware" role="tabpanel" aria-labelledby="nsoftware-tab">
+							<div className={`section ${showNsoftwareRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nsoftware') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nsoftware/nsoftwaredashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsoftware/nsoftwaredashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nsoftware')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'desenvolvimento nsoftware') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={create} alt="botão criação" />
+													</span>
+													<span className="text">Criação</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={optimization} alt="botão optimização" />
+													</span>
+													<span className="text">Optimização</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={cost} alt="botão rentabilização" />
+													</span>
+													<span className="text">Rentabilização</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('desenvolvimento nsoftware')}>
+										<span className="title">Desenvolvimento</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nsoftware') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nsoftware')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nsoftware') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nsoftware/nsoftwaregraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsoftware/nsoftwaregraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nsoftware')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nsoftware') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nsoftware')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nsoftware') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nsoftware')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNsystemRibbon && softwareEnabled['nsystem'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsystem')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nsystem" role="tabpanel" aria-labelledby="nsystem-tab">
+							<div className={`section ${showNsystemRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nsystem') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nsystem/nsystemdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsystem/nsystemdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nsystem')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'sistemas nsystem') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={barrier} alt="botão parquemanto" />
+													</span>
+													<span className="text">Parqueamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('sistemas nsystem')}>
+										<span className="title">Sistemas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'informacao nsystem') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={integration} alt="botão integração" />
+													</span>
+													<span className="text">Integração</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={flow} alt="botão fluxo" />
+													</span>
+													<span className="text">Fluxo</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={controlPanel} alt="botão controlo" />
+													</span>
+													<span className="text">Controlo</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('informacao nsystem')}>
+										<span className="title">Informação</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nsystem') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nsystem')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nsystem') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nsystem/nsystemgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsystem/nsystemgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nsystem')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nsystem') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nsystem')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nsystem') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nsystem')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNappRibbon && softwareEnabled['napp'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'napp')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="napp" role="tabpanel" aria-labelledby="napp-tab">
+							<div className={`section ${showNappRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio napp') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/napp/nappdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/napp/nappdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio napp')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'aplicativos napp') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={movement} alt="botão acessos" />
+													</span>
+													<span className="text">Acessos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('aplicativos napp')}>
+										<span className="title">Aplicativos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas napp') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas napp')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio napp') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/napp/nappgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/napp/nappgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio napp')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos napp') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos napp')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes napp') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes napp')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNcyberRibbon && softwareEnabled['ncyber'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncyber')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ncyber" role="tabpanel" aria-labelledby="ncyber-tab">
+							<div className={`section ${showNcyberRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ncyber') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ncyber/ncyberdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncyber/ncyberdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ncyber')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'cibernetica ncyber') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={securityDevice} alt="botão segurança" />
+													</span>
+													<span className="text">Segurança</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={shield} alt="botão proteção dados" />
+													</span>
+													<span className="text">Proteção Dados</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={network} alt="botão dados redes" />
+													</span>
+													<span className="text">Dados Redes</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={recovery} alt="botão recuperação" />
+													</span>
+													<span className="text">Recuperação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('cibernetica ncyber')}>
+										<span className="title">Cibernética</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ncyber') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ncyber')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ncyber') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ncyber/ncybergraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncyber/ncybergraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ncyber')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ncyber') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ncyber')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ncyber') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ncyber')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNdigitalRibbon && softwareEnabled['ndigital'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndigital')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ndigital" role="tabpanel" aria-labelledby="ndigital-tab">
+							<div className={`section ${showNdigitalRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ndigital') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ndigital/ndigitaldashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ndigital/ndigitaldashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ndigital')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'transformacao ndigital') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={efficiency} alt="botão eficiência" />
+													</span>
+													<span className="text">Eficiência</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={controlPanel} alt="botão controlo" />
+													</span>
+													<span className="text">Controlo</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bonus} alt="botão vantagens" />
+													</span>
+													<span className="text">Vantagens</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={simple} alt="botão simplificar" />
+													</span>
+													<span className="text">Simplificar</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('transformacao ndigital')}>
+										<span className="title">Transformação</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ndigital') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ndigital')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ndigital') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ndigital/ndigitalgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ndigital/ndigitalgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ndigital')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ndigital') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ndigital')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ndigital') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ndigital')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNserverRibbon && softwareEnabled['nserver'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nserver')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nserver" role="tabpanel" aria-labelledby="nserver-tab">
+							<div className={`section ${showNserverRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nserver') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nserver/nserverdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nserver/nserverdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nserver')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'integracao nserver') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={registry} alt="botão conversão" />
+													</span>
+													<span className="text">Conversão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={automation} alt="botão automatização" />
+													</span>
+													<span className="text">Automatização</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={feedback} alt="botão monotorização" />
+													</span>
+													<span className="text">Monotorização</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('integracao nserver')}>
+										<span className="title">Integração</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nserver') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nserver')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nserver') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nserver/nservergraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nserver/nservergraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nserver')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nserver') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nserver')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nserver') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nserver')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNautRibbon && softwareEnabled['naut'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'naut')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="naut" role="tabpanel" aria-labelledby="naut-tab">
+							<div className={`section ${showNautRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio naut') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/naut/nautdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/naut/nautdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio naut')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'integracao naut') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={hardware} alt="botão hardware" />
+													</span>
+													<span className="text">Hardware</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={software} alt="botão firmware" />
+													</span>
+													<span className="text">Firmware</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('integracao naut')}>
+										<span className="title">Integração</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas naut') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas naut')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio naut') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/naut/nautgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/naut/nautgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio naut')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos naut') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos naut')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes naut') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes naut')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNequipRibbon && softwareEnabled['nequip'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nequip')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nequip" role="tabpanel" aria-labelledby="nequip-tab">
+							<div className={`section ${showNequipRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nequip') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nequip/nequipdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nequip/nequipdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nequip')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'equipamentos nequip') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão manutenção" />
+													</span>
+													<span className="text">Manutenção</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={person} alt="botão visitas" />
+													</span>
+													<span className="text">Visitas</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={document} alt="botão contratos" />
+													</span>
+													<span className="text">Contratos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('equipamentos nequip')}>
+										<span className="title">Equipamentos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'gestao nequip') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={broken} alt="botão avarias" />
+													</span>
+													<span className="text">Avarias</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={registry} alt="botão substituições" />
+													</span>
+													<span className="text">Substituições</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={analysis} alt="botão análises" />
+													</span>
+													<span className="text">Análises</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={monitoring} alt="botão monitorizar" />
+													</span>
+													<span className="text">Monitorizar</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('gestao nequip')}>
+										<span className="title">Gestão</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'planeamento nequip') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={monthly} alt="botão mensal" />
+													</span>
+													<span className="text">Mensal</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={year} alt="botão anual" />
+													</span>
+													<span className="text">Anual</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('planeamento nequip')}>
+										<span className="title">Planeamento</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nequip') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nequip')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nequip') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nequip/nequipgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nequip/nequipgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nequip')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nequip') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nequip')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nequip') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nequip')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNprojectRibbon && softwareEnabled['nproject'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nproject')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nproject" role="tabpanel" aria-labelledby="nproject-tab">
+							<div className={`section ${showNprojectRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nproject') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nproject/nprojectdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nproject/nprojectdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nproject')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'projetos nproject') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={production} alt="botão produção" />
+													</span>
+													<span className="text">Produção</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={processing} alt="botão processos" />
+													</span>
+													<span className="text">Processos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={making} alt="botão realização" />
+													</span>
+													<span className="text">Realização</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={clock} alt="botão estimativa" />
+													</span>
+													<span className="text">Estimativa</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('projetos nproject')}>
+										<span className="title">Projetos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nproject') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nproject')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nproject') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nproject/nprojectgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nproject/nprojectgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nproject')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nproject') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nproject')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nproject') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nproject')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNcountRibbon && softwareEnabled['ncount'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncount')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ncount" role="tabpanel" aria-labelledby="ncount-tab">
+							<div className={`section ${showNcountRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ncount') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ncount/ncountdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncount/ncountdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ncount')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'contador ncount') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={person} alt="botão contador pessoas" />
+													</span>
+													<span className="text">Contador Pessoas</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={summary} alt="botão resumo diário" />
+													</span>
+													<span className="text">Resumo Diário</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={realTime} alt="botão tempo real" />
+													</span>
+													<span className="text">Tempo Real</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={clock} alt="botão horas de pico" />
+													</span>
+													<span className="text">Hora de Pico</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('contador ncount')}>
+										<span className="title">Contador</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'optimizacao ncount') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={group} alt="botão equipas trabalho" />
+													</span>
+													<span className="text">Equipas Trabalho</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={processing} alt="botão ajuste de equipas" />
+													</span>
+													<span className="text">Ajuste Equipas</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('optimizacao ncount')}>
+										<span className="title">Optimização</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'conversao ncount') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={price} alt="botão vendas" />
+													</span>
+													<span className="text">Vendas</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('conversao ncount')}>
+										<span className="title">Conversão</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ncount') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ncount')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ncount') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ncount/ncountgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncount/ncountgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ncount')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ncount') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ncount')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ncount') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ncount')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNbuildRibbon && softwareEnabled['nbuild'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nbuild')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nbuild" role="tabpanel" aria-labelledby="nbuild-tab">
+							<div className={`section ${showNbuildRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nbuild') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nbuild/nbuilddashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nbuild/nbuilddashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nbuild')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'obras nbuild') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={registry} alt="botão registar" />
+													</span>
+													<span className="text">Registar</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={controlPanel} alt="botão controlar" />
+													</span>
+													<span className="text">Controlar</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={production} alt="botão produzir" />
+													</span>
+													<span className="text">Produzir</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gerir" />
+													</span>
+													<span className="text">Gerir</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('obras nbuild')}>
+										<span className="title">Obras</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nbuild') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nbuild')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nbuild') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nbuild/nbuildgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nbuild/nbuildgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nbuild')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nbuild') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nbuild')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nbuild') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nbuild')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNcaravanRibbon && softwareEnabled['ncaravan'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncaravan')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ncaravan" role="tabpanel" aria-labelledby="ncaravan-tab">
+							<div className={`section ${showNcaravanRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ncaravan') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ncaravan/ncaravandashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncaravan/ncaravandashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ncaravan')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'autocaravanas ncaravan') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={barrier} alt="botão parqueamento" />
+													</span>
+													<span className="text">Parqueamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('autocaravanas ncaravan')}>
+										<span className="title">Autocaravanas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ncaravan') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ncaravan')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ncaravan') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ncaravan/ncaravangraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncaravan/ncaravangraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ncaravan')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ncaravan') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ncaravan')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ncaravan') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ncaravan')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNmechanicRibbon && softwareEnabled['nmechanic'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nmechanic')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nmechanic" role="tabpanel" aria-labelledby="nmechanic-tab">
+							<div className={`section ${showNmechanicRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nmechanic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nmechanic/nmechanicdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nmechanic/nmechanicdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nmechanic')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'oficinas nmechanic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('oficinas nmechanic')}>
+										<span className="title">Oficinas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nmechanic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nmechanic')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nmechanic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nmechanic/nmechanicgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nmechanic/nmechanicgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nmechanic')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nmechanic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nmechanic')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nmechanic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nmechanic')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNeventsRibbon && softwareEnabled['nevents'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nevents')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nevents" role="tabpanel" aria-labelledby="nevents-tab">
+							<div className={`section ${showNeventsRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nevents') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nevents/neventsdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nevents/neventsdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nevents')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'eventos nevents') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('eventos nevents')}>
+										<span className="title">Eventos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nevents') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nevents')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nevents') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nevents/neventsgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nevents/neventsgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nevents')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nevents') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nevents')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nevents') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nevents')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNserviceRibbon && softwareEnabled['nservice'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nservice')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nservice" role="tabpanel" aria-labelledby="nservice-tab">
+							<div className={`section ${showNserviceRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nservice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nservice/nservicedashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nservice/nservicedashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nservice')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'servicos nservice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('servicos nservice')}>
+										<span className="title">Serviços</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nservice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nservice')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nservice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nservice/nservicegraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nservice/nservicegraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nservice')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nservice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nservice')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nservice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nservice')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNtaskRibbon && softwareEnabled['ntask'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ntask')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ntask" role="tabpanel" aria-labelledby="ntask-tab">
+							<div className={`section ${showNtaskRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ntask') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ntask/ntaskdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ntask/ntaskdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ntask')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'tarefas ntask') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('tarefas ntask')}>
+										<span className="title">Tarefas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ntask') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ntask')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ntask') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ntask/ntaskgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ntask/ntaskgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ntask')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ntask') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowTaskDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowTaskDropdown(false); }, 300)}
+													show={showTaskDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={module} alt="botão opcionais" />
+														</span>
+														<span className="text">Opcionais</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div>
+															{Object.keys(TaskOptionalMenuStructure).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, TaskOptionalMenuStructure)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ntask')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ntask') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ntask')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNproductionRibbon && softwareEnabled['nproduction'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nproduction')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nproduction" role="tabpanel" aria-labelledby="nproduction-tab">
+							<div className={`section ${showNproductionRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nproduction') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nproduction/nproductiondashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nproduction/nproductiondashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nproduction')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'proeducao nproduction') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('producao nproduction')}>
+										<span className="title">Produção</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nproduction') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nproduction')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nproduction') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nproduction/nproductiongraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nproduction/nproductiongraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nproduction')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nproduction') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nproduction')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nproduction') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nproduction')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNticketRibbon && softwareEnabled['nticket'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nticket')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nticket" role="tabpanel" aria-labelledby="nticket-tab">
+							<div className={`section ${showNticketRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nticket') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nticket/nticketdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nticket/nticketdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nticket')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'bilhetes nticket') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={ticket} alt="botão emitir" />
+													</span>
+													<span className="text">Emitir</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={print} alt="botão imprimir" />
+													</span>
+													<span className="text">Imprimir</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('bilhetes nticket')}>
+										<span className="title">Bilhetes</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nticket') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nticket')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nticket') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nticket/nticketgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nticket/nticketgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nticket')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nticket') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nticket')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nticket') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nticket')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNsalesRibbon && softwareEnabled['nsales'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsales')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nsales" role="tabpanel" aria-labelledby="nsales-tab">
+							<div className={`section ${showNsalesRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nsales') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nsales/nsalesdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsales/nsalesdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nsales')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'comercial nsales') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('comercial nsales')}>
+										<span className="title">Comercial</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nsales') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nsales')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nsales') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nsales/nsalesgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsales/nsalesgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nsales')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nsales') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nsales')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nsales') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nsales')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNinvoiceRibbon && softwareEnabled['ninvoice'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ninvoice')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ninvoice" role="tabpanel" aria-labelledby="ninvoice-tab">
+							<div className={`section ${showNinvoiceRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ninvoice/ninvoicedashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '/ninvoice/ninvoicedashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ninvoice')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'empresa ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={person} alt="botão clientes" />
+													</span>
+													<span className="text">Clientes</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={department} alt="botão fornecedores" />
+													</span>
+													<span className="text">Fornecedores</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={externalEntities} alt="botão entidades" />
+													</span>
+													<span className="text">Entidades</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={price} alt="botão Produtos" />
+													</span>
+													<span className="text">Produtos</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/User' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={exchange} alt="botão exportações" />
+													</span>
+													<span className="text">Exportações</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('empresa ninvoice')}>
+										<span className="title">Empresa</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'vendas ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={invoice} alt="botão faturas" />
+													</span>
+													<span className="text">Faturas</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={credit} alt="botão notas crédito" />
+													</span>
+													<span className="text">Notas Crédito</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={receipt} alt="botão recibos" />
+													</span>
+													<span className="text">Recibos</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={deal} alt="botão avenças" />
+													</span>
+													<span className="text">Avenças</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/User' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={maps} alt="botão guia transporte" />
+													</span>
+													<span className="text">Guia Transporte</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('vendas ninvoice')}>
+										<span className="title">Vendas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'compras ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={invoice} alt="botão faturas" />
+													</span>
+													<span className="text">Faturas</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={credit} alt="botão notas crédito" />
+													</span>
+													<span className="text">Notas Crédito</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={coin} alt="botão pagamentos" />
+													</span>
+													<span className="text">Pagamentos</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={eBill} alt="botão e-fatura" />
+													</span>
+													<span className="text">E-fatura</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/User' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={maps} alt="botão guia transporte" />
+													</span>
+													<span className="text">Guia Transporte</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('compras ninvoice')}>
+										<span className="title">Compras</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'bancos ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={account} alt="botão contas" />
+													</span>
+													<span className="text">Contas</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={count} alt="botão contabilidade" />
+													</span>
+													<span className="text">Contabilidade</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={invoice} alt="botão extratos" />
+													</span>
+													<span className="text">Extratos</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={deal} alt="botão reconciliações" />
+													</span>
+													<span className="text">Reconciliações</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/User' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={point} alt="botão posição" />
+													</span>
+													<span className="text">Posição</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('bancos ninvoice')}>
+										<span className="title">Bancos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'salarios ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={person} alt="botão pessoal" />
+													</span>
+													<span className="text">Pessoal</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={vacation} alt="botão mapa férias" />
+													</span>
+													<span className="text">Mapa Férias</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={coin} alt="botão vencimentos" />
+													</span>
+													<span className="text">Vencimentos</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={group} alt="botão organigrama" />
+													</span>
+													<span className="text">Organigrama</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/User' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={autorization} alt="botão abonos" />
+													</span>
+													<span className="text">Abonos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('salarios ninvoice')}>
+										<span className="title">Salários</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ninvoice')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas mt-2" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ninvoice/ninvoicegraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '/ninvoice/ninvoicegraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ninvoice')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ninvoice')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ninvoice') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ninvoice')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNdocRibbon && softwareEnabled['ndoc'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndoc')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ndoc" role="tabpanel" aria-labelledby="ndoc-tab">
+							<div className={`section ${showNdocRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ndoc') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ndoc/ndocdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ndoc/ndocdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ndoc')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'gestao ndoc') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={folder} alt="botão pastas subpastas" />
+													</span>
+													<span className="text">Pastas/Subpastas</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={processing} alt="botão processos" />
+													</span>
+													<span className="text">Processos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={file} alt="botão arquivo geral" />
+													</span>
+													<span className="text">Arquivo Geral</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={deadFiles} alt="botão arquivo morto" />
+													</span>
+													<span className="text">Arquivo Morto</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('gestao ndoc')}>
+										<span className="title">Gestão</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'documentos ndoc') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={digitalFile} alt="botão arquivo digital" />
+													</span>
+													<span className="text">Arquivo Digital</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={workflow} alt="botão workflow" />
+													</span>
+													<span className="text">Workflow</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={exchange} alt="botão trânsito" />
+													</span>
+													<span className="text">Trânsito</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('documentos ndoc')}>
+										<span className="title">Documentos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'consulta ndoc') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={onlineConsulting} alt="botão consulta online" />
+													</span>
+													<span className="text">Consulta Online</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={monitoring} alt="botão visualização rápida" />
+													</span>
+													<span className="text">Visualização Rápida</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={externalEntities} alt="botão entidades" />
+													</span>
+													<span className="text">Entidades</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('consulta ndoc')}>
+										<span className="title">Consulta</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ndoc') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ndoc')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ndoc') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ndoc/ndocgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ndoc/ndocgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ndoc')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ndoc') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ndoc')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ndoc') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ndoc')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNsportsRibbon && softwareEnabled['nsports'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsports')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nsports" role="tabpanel" aria-labelledby="nsports-tab">
+							<div className={`section ${showNsportsRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nsports') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nsports/nsportsdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsports/nsportsdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nsports')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'desporto nsports') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('desporto nsports')}>
+										<span className="title">Desporto</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nsports') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nsports')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nsports') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nsports/nsportsgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsports/nsportsgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nsports')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nsports') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nsports')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nsports') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nsports')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNgymRibbon && softwareEnabled['ngym'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ngym')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ngym" role="tabpanel" aria-labelledby="ngym-tab">
+							<div className={`section ${showNgymRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ngym') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ngym/ngymdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ngym/ngymdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ngym')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'ginasio ngym') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('ginasio ngym')}>
+										<span className="title">Ginásio</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ngym') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ngym')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ngym') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ngym/ngymgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ngym/ngymgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ngym')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ngym') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ngym')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ngym') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ngym')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNschoolRibbon && softwareEnabled['nschool'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nschool')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nschool" role="tabpanel" aria-labelledby="nschool-tab">
+							<div className={`section ${showNschoolRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nschool') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nschool/nschooldashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nschool/nschooldashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nschool')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'escolar nschool') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('escolar nschool')}>
+										<span className="title">Escolar</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nschool') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nschool')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nschool') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nschool/nschoolgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nschool/nschoolgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nschool')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nschool') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nschool')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nschool') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nschool')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNclinicRibbon && softwareEnabled['nclinic'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclinic')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nclinic" role="tabpanel" aria-labelledby="nclinic-tab">
+							<div className={`section ${showNclinicRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nclinic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nclinic/nclinicdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclinic/nclinicdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nclinic')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'clinicas nclinic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('clinicas nclinic')}>
+										<span className="title">Clínicas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nclinic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nclinic')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nclinic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nclinic/nclinicgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclinic/nclinicgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nclinic')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nclinic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nclinic')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nclinic') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nclinic')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNopticsRibbon && softwareEnabled['noptics'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'noptics')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="noptics" role="tabpanel" aria-labelledby="noptics-tab">
+							<div className={`section ${showNopticsRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio noptics') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/noptics/nopticsdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/noptics/nopticsdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio noptics')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'opticas noptics') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('opticas noptics')}>
+										<span className="title">Ópticas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas noptics') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas noptics')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio noptics') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/noptics/nopticsgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/noptics/nopticsgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio noptics')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos noptics') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos noptics')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes noptics') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes noptics')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNgoldRibbon && softwareEnabled['ngold'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ngold')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ngold" role="tabpanel" aria-labelledby="ngold-tab">
+							<div className={`section ${showNgoldRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ngold') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ngold/ngolddashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ngold/ngolddashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ngold')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'ourivesaria ngold') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={management} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={plans} alt="botão planeamento" />
+													</span>
+													<span className="text">Planeamento</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('ourivesaria ngold')}>
+										<span className="title">Ourivesaria</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ngold') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ngold')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ngold') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ngold/ngoldgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ngold/ngoldgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ngold')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ngold') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ngold')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ngold') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ngold')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNsmartRibbon && softwareEnabled['nsmart'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsmart')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nsmart" role="tabpanel" aria-labelledby="nsmart-tab">
+							<div className={`section ${showNsmartRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nsmart') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nsmart/nsmartdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsmart/nsmartdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nsmart')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'inteligencia nsmart') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={realTime} alt="botão tempo real" />
+													</span>
+													<span className="text">Tempo Real</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={maps} alt="botão localização" />
+													</span>
+													<span className="text">Localização</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={monitoring} alt="botão monitorização" />
+													</span>
+													<span className="text">Monitorização</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inteligencia nsmart')}>
+										<span className="title">Inteligência</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nsmart') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nsmart')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nsmart') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nsmart/nsmartgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsmart/nsmartgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nsmart')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nsmart') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nsmart')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nsmart') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nsmart')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNrealityRibbon && softwareEnabled['nreality'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nreality')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nreality" role="tabpanel" aria-labelledby="nreality-tab">
+							<div className={`section ${showNrealityRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nreality') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nreality/nrealitydashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nreality/nrealitydashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nreality')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'virtual nreality') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={simulation} alt="botão simulação" />
+													</span>
+													<span className="text">Simulação</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('virtual nreality')}>
+										<span className="title">Virtual</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nreality') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nreality')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nreality') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nreality/nrealitygraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nreality/nrealitygraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nreality')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nreality') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nreality')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nreality') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nreality')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNhologramRibbon && softwareEnabled['nhologram'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nhologram')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nhologram" role="tabpanel" aria-labelledby="nhologram-tab">
+							<div className={`section ${showNhologramRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nhologram') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nhologram/nhologramdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nhologram/nhologramdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nhologram')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'hologramas nhologram') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={image} alt="botão imagens" />
+													</span>
+													<span className="text">Imagens</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={video} alt="botão vídeos" />
+													</span>
+													<span className="text">Vídeos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('hologramas nhologram')}>
+										<span className="title">Hologramas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nhologram') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nhologram')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nhologram') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nhologram/nhologramgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nhologram/nhologramgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nhologram')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nhologram') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nhologram')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nhologram') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nhologram')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNpowerRibbon && softwareEnabled['npower'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npower')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="npower" role="tabpanel" aria-labelledby="npower-tab">
+							<div className={`section ${showNpowerRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/npower/npowerdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/npower/npowerdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio npower')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'energia npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={power} alt="botão consumos" />
+													</span>
+													<span className="text">Consumos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('energia npower')}>
+										<span className="title">Energia</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'sistemas npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={eolic} alt="botão eólicos" />
+													</span>
+													<span className="text">Eólicos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={solar} alt="botão solares" />
+													</span>
+													<span className="text">Solares</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={fisical} alt="botão fisica" />
+													</span>
+													<span className="text">Fisica</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('sistemas npower')}>
+										<span className="title">Sistemas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'custos npower') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={hourglass} alt="botão hora" />
+													</span>
+													<span className="text">Hora</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={clock} alt="botão dia" />
+													</span>
+													<span className="text">Dia</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={calendar} alt="botão meses" />
+													</span>
+													<span className="text">Meses</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={year} alt="botão ano" />
+													</span>
+													<span className="text">Ano</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('custos npower')}>
+										<span className="title">Custos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'poupança npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={energy} alt="botão energia" />
+													</span>
+													<span className="text">Energia</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={renewable} alt="botão renovável" />
+													</span>
+													<span className="text">Renovável</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={time} alt="botão horários" />
+													</span>
+													<span className="text">Horários</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('poupança npower')}>
+										<span className="title">Poupança</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'equipamentos npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={monophase} alt="botão monofásicos" />
+													</span>
+													<span className="text">Monofásicos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={biphase} alt="botão bifásicos" />
+													</span>
+													<span className="text">Bifásicos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={triphase} alt="botão trifásicos" />
+													</span>
+													<span className="text">Trifásicos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('equipamentos npower')}>
+										<span className="title">Equipamentos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas npower')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/npower/npowergraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/npower/npowergraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio npower')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos npower')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes npower') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes npower')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNchargeRibbon && softwareEnabled['ncharge'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncharge')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ncharge" role="tabpanel" aria-labelledby="ncharge-tab">
+							<div className={`section ${showNchargeRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ncharge') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ncharge/nchargedashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncharge/nchargedashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ncharge')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'carregamentos ncharge') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={movement} alt="botão movimentos" />
+													</span>
+													<span className="text">Movimentos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('carregamentos ncharge')}>
+										<span className="title">Carregamentos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'custos ncharge') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={registry} alt="botão registos" />
+													</span>
+													<span className="text">Registos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={analysis} alt="botão análises" />
+													</span>
+													<span className="text">Análises</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('custos ncharge')}>
+										<span className="title">Custos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ncharge') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ncharge')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ncharge') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ncharge/nchargegraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncharge/nchargegraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ncharge')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ncharge') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ncharge')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ncharge') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ncharge')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNcityRibbon && softwareEnabled['ncity'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncity')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ncity" role="tabpanel" aria-labelledby="ncity-tab">
+							<div className={`section ${showNcityRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ncity/ncitydashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncity/ncitydashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ncity')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'mobilidade ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={cars} alt="botão veículo" />
+													</span>
+													<span className="text">Veículo</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={time} alt="botão horário" />
+													</span>
+													<span className="text">Horário</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={calendar} alt="botão calendário" />
+													</span>
+													<span className="text">Calendário</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('mobilidade ncity')}>
+										<span className="title">Mobilidade</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'gestão ncity') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={online} alt="botão remota" />
+													</span>
+													<span className="text">Remota</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={clipboard} alt="botão conteúdos" />
+													</span>
+													<span className="text">Conteúdos</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={interactive} alt="botão interativa" />
+													</span>
+													<span className="text">Interativa</span>
+												</Button>
+												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={rent} alt="botão aluguer" />
+													</span>
+													<span className="text">Aluguer</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('gestão ncity')}>
+										<span className="title">Gestão</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'noticias ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={article} alt="botão artigos" />
+													</span>
+													<span className="text">Artigos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={newsSearch} alt="botão pesquisas" />
+													</span>
+													<span className="text">Pesquisas</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={sugestion} alt="botão sugestões" />
+													</span>
+													<span className="text">Sugestões</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('noticias ncity')}>
+										<span className="title">Notícias</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'pontos ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={museum} alt="botão museus" />
+													</span>
+													<span className="text">Museus</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={externalEntities} alt="botão comércio" />
+													</span>
+													<span className="text">Comércio</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão serviços" />
+													</span>
+													<span className="text">Serviços</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('pontos ncity')}>
+										<span className="title">Pontos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'informacoes ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={maps} alt="botão mapas" />
+													</span>
+													<span className="text">Mapas</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={transportation} alt="botão transportes" />
+													</span>
+													<span className="text">Transportes</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={routes} alt="botão rotas" />
+													</span>
+													<span className="text">Rotas</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('informacoes ncity')}>
+										<span className="title">Informações</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ncity')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ncity/ncitygraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncity/ncitygraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ncity')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ncity')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ncity')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
 				{showNkioskRibbon && softwareEnabled['nkiosk'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nkiosk')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
@@ -4421,6 +9972,31 @@ export const NavBar = ({ style }: NavBarProps) => {
 									</div>
 								</div>
 								<div className="group">
+									{(!isMobile || visibleGroup === 'paineis ncity') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={ledMonitor} alt="botão leds" />
+													</span>
+													<span className="text">Leds</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('paineis ncity')}>
+										<span className="title">Painéis</span>
+									</div>
+								</div>
+								<div className="group">
 									{(!isMobile || visibleGroup === 'anuncios nled') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
@@ -4444,6 +10020,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Publicidade</span>
 												</Link>
+											</div>
+											<div>
+												<Button /* to="" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
 											</div>
 										</div>
 									)}
@@ -4537,6 +10121,1477 @@ export const NavBar = ({ style }: NavBarProps) => {
 										</div>
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nled')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNfireRibbon && softwareEnabled['nfire'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nfire')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nfire" role="tabpanel" aria-labelledby="nfire-tab">
+							<div className={`section ${showNfireRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nfire') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nfire/nfiredashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nfire/nfiredashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nfire')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'incêndio nfire') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={firePrevention} alt="botão prevenção" />
+													</span>
+													<span className="text">Prevenção</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={extinguish} alt="botão extinção" />
+													</span>
+													<span className="text">Extinção</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('incêndio nfire')}>
+										<span className="title">Incêndio</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nfire') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nfire')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nfire') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nfire/nfiregraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nfire/nfiregraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nfire')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nfire') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nfire')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nfire') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nfire')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNfurnitureRibbon && softwareEnabled['nfurniture'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nfurniture')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nfurniture" role="tabpanel" aria-labelledby="nfurniture-tab">
+							<div className={`section ${showNfurnitureRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nfurniture') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nfurniture/nfurnituredashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nfurniture/nfurnituredashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nfurniture')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'mobiliario nfurniture') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={up} alt="botão subir" />
+													</span>
+													<span className="text">Subir</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={down} alt="botão descer" />
+													</span>
+													<span className="text">Descer</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('mobiliario nfurniture')}>
+										<span className="title">Mobiliário</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nfurniture') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nfurniture')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nfurniture') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nfurniture/nfurnituregraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nfurniture/nfurnituregraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nfurniture')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nfurniture') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nfurniture')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nfurniture') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nfurniture')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNpartitionRibbon && softwareEnabled['npartition'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npartition')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="npartition" role="tabpanel" aria-labelledby="npartition-tab">
+							<div className={`section ${showNpartitionRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio npartition') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/npartition/npartitiondashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/npartition/npartitiondashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio npartition')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'divisorias npartition') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={tick} alt="botão abrir" />
+													</span>
+													<span className="text">Abrir</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={close} alt="botão fechar" />
+													</span>
+													<span className="text">Fechar</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('divisorias npartition')}>
+										<span className="title">Divisórias</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'estores npartition') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={up} alt="botão subir" />
+													</span>
+													<span className="text">Subir</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={down} alt="botão descer" />
+													</span>
+													<span className="text">Descer</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('estores npartition')}>
+										<span className="title">Estores</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas npartition') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas npartition')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio npartition') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/npartition/npartitiongraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/npartition/npartitiongraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio npartition')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos npartition') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos npartition')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes npartition') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes npartition')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNdecorRibbon && softwareEnabled['ndecor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndecor')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ndecor" role="tabpanel" aria-labelledby="ndecor-tab">
+							<div className={`section ${showNdecorRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ndecor') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ndecor/ndecordashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ndecor/ndecordashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ndecor')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'design ndecor') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={simulation} alt="botão realidade virtual" />
+													</span>
+													<span className="text">Realidade Virtual</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={threeDimension} alt="botão imagens 3d" />
+													</span>
+													<span className="text">Imagens 3D</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={library} alt="botão biblioteca virtual" />
+													</span>
+													<span className="text">Biblioteca Virtual</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('design ndecor')}>
+										<span className="title">Design</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ndecor') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ndecor')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ndecor') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ndecor/ndecorgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ndecor/ndecorgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ndecor')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ndecor') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ndecor')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ndecor') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ndecor')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNpingRibbon && softwareEnabled['nping'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nping')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nping" role="tabpanel" aria-labelledby="nping-tab">
+							<div className={`section ${showNpingRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nping') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nping/npingdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nping/npingdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nping')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'redes nping') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={network} alt="botão rede informática" />
+													</span>
+													<span className="text">Rede Informática</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bandwidth} alt="botão largura de banda" />
+													</span>
+													<span className="text">Largura de Banda</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={test} alt="botão teste de rede" />
+													</span>
+													<span className="text">Teste de Rede</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('redes nping')}>
+										<span className="title">Redes</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nping') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nping')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nping') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nping/npinggraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nping/npinggraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nping')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nping') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nping')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nping') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nping')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNconnectRibbon && softwareEnabled['nconnect'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nconnect')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nconnect" role="tabpanel" aria-labelledby="nconnect-tab">
+							<div className={`section ${showNconnectRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nconnect') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nconnect/nconnectdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nconnect/nconnectdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nconnect')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'electricidade nconnect') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={power} alt="botão testes consumos" />
+													</span>
+													<span className="text">Testes Consumos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={price} alt="botão valores consumos" />
+													</span>
+													<span className="text">Valores Consumos</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('electricidade nconnect')}>
+										<span className="title">Electricidade</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nconnect') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nconnect')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nconnect') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nconnect/nconnectgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nconnect/nconnectgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nconnect')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nconnect') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nconnect')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nconnect') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nconnect')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNlightRibbon && softwareEnabled['nlight'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nlight')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nlight" role="tabpanel" aria-labelledby="nlight-tab">
+							<div className={`section ${showNlightRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nlight') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nlight/nlightdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nlight/nlightdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nlight')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'iluminacao nlight') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={controlPanel} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão Programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('iluminacao nlight')}>
+										<span className="title">Iluminação</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nlight') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nlight')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nlight') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nlight/nlightgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nlight/nlightgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nlight')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nlight') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nlight')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nlight') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nlight')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNcomfortRibbon && softwareEnabled['ncomfort'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncomfort')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="ncomfort" role="tabpanel" aria-labelledby="ncomfort-tab">
+							<div className={`section ${showNcomfortRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio ncomfort') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/ncomfort/ncomfortdashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncomfort/ncomfortdashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio ncomfort')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'climatizacao ncomfort') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={controlPanel} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão Programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('climatizacao ncomfort')}>
+										<span className="title">Climatização</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas ncomfort') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas ncomfort')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio ncomfort') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="comfort" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/ncomfort/ncomfortgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/ncomfort/ncomfortgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio ncomfort')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos ncomfort') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos ncomfort')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes ncomfort') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes ncomfort')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNsoundRibbon && softwareEnabled['nsound'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsound')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nsound" role="tabpanel" aria-labelledby="nsound-tab">
+							<div className={`section ${showNsoundRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nsound') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nsound/nsounddashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsound/nsounddashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nsound')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'audio nsound') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={controlPanel} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão Programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('audio nsound')}>
+										<span className="title">Áudio</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nsound') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nsound')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nsound') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="sound" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nsound/nsoundgraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nsound/nsoundgraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nsound')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nsound') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nsound')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nsound') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nsound')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+				{showNhomeRibbon && softwareEnabled['nhome'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nhome')?.label && !currentRoute.endsWith('dashboard') && (
+					<div className="tab-content-navbar" id="myTabContent">
+						<div className="tab-pane fade show active" id="nhome" role="tabpanel" aria-labelledby="nhome-tab">
+							<div className={`section ${showNhomeRibbon ? 'visible' : 'hidden'}`} id="section-group">
+								<div className="group group-start">
+									{(!isMobile || visibleGroup === 'inicio nhome') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Link to="/nhome/nhomedashboardlicensed" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nhome/nhomedashboardlicensed' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={home} alt="botão início" />
+													</span>
+													<span className="text">Destaques</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('inicio nhome')}>
+										<span className="title">Início</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'domotica nhome') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={controlPanel} alt="botão gestão" />
+													</span>
+													<span className="text">Gestão</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={programming} alt="botão Programação" />
+													</span>
+													<span className="text">Programação</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('domotica nhome')}>
+										<span className="title">Domótica</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'alertas nhome') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={bell} alt="botão avisos" />
+													</span>
+													<span className="text">Avisos</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('alertas nhome')}>
+										<span className="title">Alertas</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'relatorio nhome') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Dropdown
+													onMouseOver={() => setShowListDropdown(true)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													show={showListDropdown}
+												>
+													<Dropdown.Toggle as={Button} variant="home" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
+														<span className="icon">
+															<img src={print} alt="botão listagens" />
+														</span>
+														<span className="text">Listagens</span>
+													</Dropdown.Toggle>
+													<Dropdown.Menu>
+														<div style={{ position: 'relative' }}>
+															{Object.keys(menuStructureListing).map((menuKey) => (
+																<div key={menuKey}>{renderMenu(menuKey, menuStructureListing)}</div>
+															))}
+														</div>
+													</Dropdown.Menu>
+												</Dropdown>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Link to="/nhome/nhomegraph" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nhome/nhomegraph' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={graphs} alt="botão gráficos" />
+													</span>
+													<span className="text">Gráficos</span>
+												</Link>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('relatorio nhome')}>
+										<span className="title">Relatórios</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'modulos nhome') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={module} alt="botão opcionais" />
+													</span>
+													<span className="text">Opcionais</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('modulos nhome')}>
+										<span className="title">Módulos</span>
+									</div>
+								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes nhome') && (
+										<div className="btn-group" role="group">
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={settings} alt="botão opções" />
+													</span>
+													<span className="text">Opções</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes nhome')}>
 										<span className="title">Configurações</span>
 									</div>
 								</div>

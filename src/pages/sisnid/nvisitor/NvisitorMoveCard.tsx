@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -8,22 +8,22 @@ import { toast } from "react-toastify";
 
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
-import { TerminalsContext, DeviceContextType, TerminalsProvider } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
-import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { SelectFilter } from "../../../components/SelectFilter";
-import { auxOutFields, employeeFields, transactionCardFields } from "../../../helpers/Fields";
-import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
-import { AuxOutModal } from "../../../modals/AuxOutModal";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
-import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
-import { useKiosk } from "../../../context/KioskContext";
+import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
+import { useKiosk } from "../../../context/KioskContext";
+import { useNavbar } from "../../../context/NavbarContext";
+import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
+import * as apiService from "../../../helpers/apiService";
+import { auxOutFields, employeeFields, transactionCardFields } from "../../../helpers/Fields";
+import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { AuxOutModal } from "../../../modals/AuxOutModal";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
 
 // Define a interface SaveData

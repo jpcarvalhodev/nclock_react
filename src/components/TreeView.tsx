@@ -64,7 +64,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
-  const { data, fetchAllData } = usePersons();
+  const { data, disabledEmployees, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -96,7 +96,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         if (departmentMap.has(deptCode)) {
           departmentMap.get(deptCode).employees.push({
             id: `emp-${emp.employeeID}`,
-            label: emp.name,
+            label: `${emp.enrollNumber} - ${emp.name}`
           });
         }
       }
@@ -128,7 +128,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
           .map((emp: Employee) => ({
             id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
-            label: emp.name,
+            label: `${emp.enrollNumber} - ${emp.name}`
           })),
       ],
     });
@@ -147,18 +147,18 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
         .map((emp: Employee) => ({
           id: `group-${group.groupID}-emp-${emp.employeeID}`,
-          label: emp.name || 'Sem Nome',
+          label: `${emp.enrollNumber} - ${emp.name}`
         })),
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
       id: `empd-${emp.employeeID}`,
-      label: emp.name || 'Sem Nome',
+      label: `${emp.enrollNumber} - ${emp.name}`
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
       id: `empg-${emp.employeeID}`,
-      label: emp.name || 'Sem Nome',
+      label: `${emp.enrollNumber} - ${emp.name}`
     }));
 
     const treeItems = [

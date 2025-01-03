@@ -1,8 +1,8 @@
-import { createContext, useState, useContext, useCallback, useEffect, ReactNode } from 'react';
+import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import * as apiService from "../helpers/apiService";
-import { Category, Department, Employee, EmployeeCard, EmployeeFace, EmployeeFP, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, Zone } from '../helpers/Types';
+import { Category, Department, Employee, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, Zone } from '../helpers/Types';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -21,6 +21,7 @@ interface DataStateExternalEntities {
 // Define o tipo de contexto
 export interface PersonsContextType {
     employees: Employee[];
+    disabledEmployees: Employee[];
     departments: Department[];
     setDepartments: (departments: Department[]) => void;
     groups: Group[];
@@ -29,8 +30,10 @@ export interface PersonsContextType {
     data: DataState;
     setData: (data: DataState) => void;
     setEmployees: (employees: Employee[]) => void;
+    setDisabledEmployees: (employees: Employee[]) => void;
     fetchAllData: (entity?: string) => Promise<void>;
     fetchAllEmployees: (options?: FetchOptions) => Promise<Employee[]>;
+    fetchAllDisabledEmployees: (options?: FetchOptions) => Promise<Employee[]>;
     fetchAllCardData: () => Promise<EmployeeCard[]>;
     fetchAllRegisteredUsers: () => Promise<void>;
     handleAddUsers: (user: FormData) => Promise<void>;
@@ -91,6 +94,7 @@ export const PersonsContext = createContext<PersonsContextType | undefined>(unde
 // Provedor do contexto
 export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [disabledEmployees, setDisabledEmployees] = useState<Employee[]>([]);
     const [employeesFP, setEmployeesFP] = useState<EmployeeFP[]>([]);
     const [employeesFace, setEmployeesFace] = useState<EmployeeFace[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeCard[]>([]);
@@ -152,6 +156,25 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
                 options.postFetch(data);
             }
             setEmployees(data);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+            return [];
+        }
+    }, []);
+
+    // Função para buscar todos os funcionários incluindo desativados
+    const fetchAllDisabledEmployees = useCallback(async (options?: FetchOptions): Promise<Employee[]> => {
+        try {
+            let data = await apiService.fetchAllEmployeesWithDisabled();
+
+            if (options?.filterFunc) {
+                data = options.filterFunc(data);
+            }
+            if (options?.postFetch) {
+                options.postFetch(data);
+            }
+            setDisabledEmployees(data);
             return data;
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
@@ -728,6 +751,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,
+        disabledEmployees,
         departments,
         setDepartments,
         groups,
@@ -736,8 +760,10 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         data,
         setData,
         setEmployees,
+        setDisabledEmployees,
         fetchAllData,
         fetchAllEmployees,
+        fetchAllDisabledEmployees,
         fetchAllCardData,
         fetchAllRegisteredUsers,
         handleAddUsers,

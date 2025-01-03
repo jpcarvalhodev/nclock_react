@@ -1,6 +1,6 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { Button, OverlayTrigger, Tab, Tabs, Tooltip , Spinner } from "react-bootstrap";
+import { Button, OverlayTrigger, Spinner, Tab, Tabs , Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 import { toast } from "react-toastify";
@@ -15,13 +15,12 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
+import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
+import { manualOpenDoorFields } from "../../../helpers/Fields";
 import { ManualOpenDoor } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-
-import { manualOpenDoorFields } from "../../../helpers/Fields";
 import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
-import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
 
 // Define a interface para os filtros
 interface Filters {

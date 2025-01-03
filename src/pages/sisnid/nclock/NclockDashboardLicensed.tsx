@@ -1,5 +1,5 @@
-import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, PieController, BarController } from 'chart.js';
-import { format, parse, startOfWeek, getDay, setYear } from 'date-fns';
+import { ArcElement, BarController, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, PieController, Tooltip } from 'chart.js';
+import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
@@ -10,7 +10,7 @@ import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
 import * as apiService from "../../../helpers/apiService";
-import { Employee, Department, Group } from "../../../helpers/Types";
+import { Department, Employee, Group } from "../../../helpers/Types";
 
 
 // Registra os elementos do ChartJS

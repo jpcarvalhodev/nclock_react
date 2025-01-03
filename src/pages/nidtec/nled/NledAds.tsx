@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -14,12 +14,12 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNled } from "../../../components/TreeViewNled";
 import { AdsContext, AdsContextType } from "../../../context/AdsContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { TerminalsContext, DeviceContextType } from "../../../context/TerminalsContext";
+import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import { adsFields } from "../../../helpers/Fields";
-import { DeleteModal } from "../../../modals/DeleteModal";
 import { Ads } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
+import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateModalAds } from "../../../modals/UpdateModalAds";
 
 // Formata a data para o início do dia às 00:00

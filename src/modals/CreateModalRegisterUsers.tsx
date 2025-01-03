@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Col, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
@@ -286,30 +286,26 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 </OverlayTrigger>
                                 {errors['emailAddress'] && errors['emailAddress'].hasError && <Form.Text className="text-danger">{errors['emailAddress'].message}</Form.Text>}
                             </Form.Group>
-                            <Form.Group controlId="formPassword" style={{ position: 'relative', marginBottom: '30px' }}>
+                            <Form.Group controlId="formPassword" style={{ marginBottom: '30px' }}>
                                 <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <InputGroup className="mb-3">
                                     <Form.Control
-                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type={showPassword ? "text" : "password"}
                                         name="password"
                                         value={formData.password || ''}
                                         onChange={handleChange}
-                                        autoComplete='off'
+                                        autoComplete="off"
                                         minLength={8}
-                                        style={{ paddingRight: '40px', flex: 1 }}
+                                        className={`custom-input-height custom-select-font-size ${showValidationErrors && errors['password'] && errors['password'].hasError ? 'error-border' : ''}`}
+                                        style={{ paddingRight: '40px', borderRight: 'none' }}
                                     />
-                                    <Button
-                                        variant="outline-secondary"
+                                    <InputGroup.Text
                                         onClick={togglePasswordVisibility}
                                         style={{
-                                            position: 'absolute',
-                                            top: '5%',
-                                            right: '10px',
-                                            border: 'none',
-                                            backgroundColor: 'transparent',
-                                            padding: 0,
-                                            zIndex: 5
+                                            cursor: 'pointer',
+                                            background: 'transparent',
+                                            borderLeft: 'none',
+                                            height: '30px',
                                         }}
                                     >
                                         <img
@@ -317,11 +313,11 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                             alt={showPassword ? "Esconder password" : "Mostrar password"}
                                             style={{ width: 20, height: 20 }}
                                         />
-                                    </Button>
-                                </div>
-                                <div style={{ minHeight: '20px', marginTop: '5px' }}>
-                                    {errors['password'] && errors['password'].hasError && <Form.Text className="text-danger">{errors['password'].message}</Form.Text>}
-                                </div>
+                                    </InputGroup.Text>
+                                </InputGroup>
+                                <Form.Text className="text-danger" style={{ minHeight: '20px', marginTop: '5px' }}>
+                                    {showValidationErrors && errors['password'] && errors['password'].hasError && errors['password'].message}
+                                </Form.Text>
                             </Form.Group>
                         </Col>
                         <Col md={3}>
@@ -362,30 +358,26 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 </OverlayTrigger>
                                 {errors['roles'] && errors['roles'].hasError && <Form.Text className="text-danger">{errors['roles'].message}</Form.Text>}
                             </Form.Group>
-                            <Form.Group controlId="formConfirmPassword" style={{ position: 'relative', marginBottom: '30px' }}>
+                            <Form.Group controlId="formConfirmPassword" style={{ marginBottom: '30px' }}>
                                 <Form.Label>Confirmar Password <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <InputGroup className="mb-3">
                                     <Form.Control
-                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type={showConfirmPassword ? "text" : "password"}
                                         name="confirmPassword"
                                         value={formData.confirmPassword || ''}
                                         onChange={handleChange}
-                                        autoComplete='off'
+                                        autoComplete="off"
                                         minLength={8}
-                                        style={{ paddingRight: '40px', flex: 1 }}
+                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors && errors['confirmPassword'] && errors['confirmPassword'].hasError ? 'error-border' : ''}`}
+                                        style={{ paddingRight: '40px', borderRight: 'none' }}
                                     />
-                                    <Button
-                                        variant="outline-secondary"
+                                    <InputGroup.Text
                                         onClick={toggleConfirmPasswordVisibility}
                                         style={{
-                                            position: 'absolute',
-                                            top: '5%',
-                                            right: '10px',
-                                            border: 'none',
-                                            backgroundColor: 'transparent',
-                                            padding: 0,
-                                            zIndex: 5
+                                            cursor: 'pointer',
+                                            background: 'transparent',
+                                            borderLeft: 'none',
+                                            height: '30px',
                                         }}
                                     >
                                         <img
@@ -393,11 +385,11 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                             alt={showConfirmPassword ? "Esconder password" : "Mostrar password"}
                                             style={{ width: 20, height: 20 }}
                                         />
-                                    </Button>
-                                </div>
-                                <div style={{ minHeight: '20px', marginTop: '5px' }}>
-                                    {errors['confirmPassword'] && errors['confirmPassword'].hasError && <Form.Text className="text-danger">{errors['confirmPassword'].message}</Form.Text>}
-                                </div>
+                                    </InputGroup.Text>
+                                </InputGroup>
+                                <Form.Text className="text-danger" style={{ minHeight: '20px', marginTop: '5px' }}>
+                                    {showValidationErrors && errors['confirmPassword'] && errors['confirmPassword'].hasError && errors['confirmPassword'].message}
+                                </Form.Text>
                             </Form.Group>
                         </Col>
                     </Row>

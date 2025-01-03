@@ -18,7 +18,7 @@ import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
-import { TerminalsContext, DeviceContextType } from "../context/TerminalsContext";
+import { DeviceContextType, TerminalsContext } from "../context/TerminalsContext";
 import * as apiService from "../helpers/apiService";
 import { auxiliariesFields, doorsFields } from "../helpers/Fields";
 import { Auxiliaries, Doors, TimePeriod } from "../helpers/Types";

@@ -281,11 +281,10 @@ body {
     justify-content: center;
     align-items: center;
     flex: 1;
-    padding: 20px;
+    padding: 10px;
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
-    margin: 10px;
     max-height: 550px;
     max-width: 50%;
 }
@@ -680,7 +679,6 @@ body {
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
-    margin: 10px;
     max-height: 34.4rem;
     margin-top: 70px;
     max-width: 50%;

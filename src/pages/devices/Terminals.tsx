@@ -13,10 +13,15 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 
 import "../../css/Terminals.css";
-import { Button, Form, OverlayTrigger, Tab, Tabs, Tooltip, Spinner } from "react-bootstrap";
+import { Button, Form, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react-bootstrap";
 
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
+import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
+import { useNavbar } from "../../context/NavbarContext";
+import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
+import * as apiService from "../../helpers/apiService";
 import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../helpers/Fields";
 import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -24,11 +29,6 @@ import { CreateModalDevices } from "../../modals/CreateModalDevices";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { DoorModal } from "../../modals/DoorModal";
 import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { useNavbar } from "../../context/NavbarContext";
-import * as apiService from "../../helpers/apiService";
 
 import { id } from "date-fns/locale";
 

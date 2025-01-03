@@ -1,6 +1,6 @@
 import { set } from "date-fns";
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, InputGroup, FormControl, Col, OverlayTrigger, Tooltip, Row, Tabs, Tab } from "react-bootstrap";
+import { Button, Col, Form, FormControl, InputGroup, Modal, OverlayTrigger, Row, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -423,27 +423,22 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
           <Modal.Title>Inserir Password</Modal.Title>
         </Modal.Header>
-        <InputGroup className="license-check-modal">
+        <InputGroup className="mb-3 license-check-modal">
           <FormControl
             placeholder="Insira a password de licenciamento"
             value={key}
             onChange={handleKeyChange}
             onKeyDown={handleKeyDown}
             type={showPassword ? "text" : "password"}
-            style={{ paddingRight: "40px" }}
+            style={{ borderRight: 'none' }}
           />
-          <Button
-            variant="outline-secondary"
+          <InputGroup.Text
             onClick={togglePasswordVisibility}
             style={{
-              position: "absolute",
-              top: "50%",
-              right: "35px",
-              transform: "translateY(-50%)",
-              border: "none",
-              backgroundColor: "transparent",
-              padding: 0,
-              zIndex: 5,
+              cursor: 'pointer',
+              background: 'transparent',
+              borderLeft: 'none',
+              height: '38px',
             }}
           >
             <img
@@ -451,11 +446,9 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
               alt={showPassword ? "Esconder password" : "Mostrar password"}
               style={{ width: 20, height: 20 }}
             />
-          </Button>
+          </InputGroup.Text>
         </InputGroup>
-        <div
-          style={{ display: "flex", justifyContent: "center", padding: "20px" }}
-        >
+        <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
           <Button
             style={{ width: "40%" }}
             variant="outline-primary"

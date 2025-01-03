@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -13,13 +13,13 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
 import { useNavbar } from "../../context/NavbarContext";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { TimePeriod } from "../../helpers/Types";
+import { DeviceContextType, TerminalsContext } from "../../context/TerminalsContext";
 import { timePeriodFields } from "../../helpers/Fields";
+import { TimePeriod } from "../../helpers/Types";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalPeriods } from "../../modals/CreateModalPeriods";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
-import { TerminalsContext, DeviceContextType } from "../../context/TerminalsContext";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

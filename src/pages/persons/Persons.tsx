@@ -21,7 +21,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { DeleteModal } from '../../modals/DeleteModal';
 
-import { TextFieldProps, TextField } from '@mui/material';
+import { TextField, TextFieldProps } from '@mui/material';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -38,7 +38,7 @@ export const Persons = () => {
     const {
         data,
         setData,
-        fetchAllEmployees,
+        fetchAllDisabledEmployees,
         handleAddEmployee,
         handleDeleteEmployee
     } = useContext(PersonsContext) as PersonsContextType;
@@ -92,7 +92,7 @@ export const Persons = () => {
 
     // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
-        fetchAllEmployees();
+        fetchAllDisabledEmployees();
         setClearSelectionToggle(!clearSelectionToggle);
     }
 

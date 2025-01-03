@@ -1,4 +1,4 @@
-import { TextFieldProps, TextField } from "@mui/material";
+import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -12,15 +12,15 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
+import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
 import { useNavbar } from "../../context/NavbarContext";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { usePersons } from "../../context/PersonsContext";
 import { registerFields } from "../../helpers/Fields";
 import { Register } from "../../helpers/Types";
+import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
-import { usePersons } from "../../context/PersonsContext";
-import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
 
 
 // Define a interface para as propriedades do componente CustomSearchBox
