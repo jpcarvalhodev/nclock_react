@@ -1118,10 +1118,7 @@ export const Terminals = () => {
     const handleSendClock = async () => {
         if (selectedTerminal) {
             setLoadingSendClock(true);
-            const timePeriods = await apiService.fetchAllTimePeriods();
-            for (const period of timePeriods) {
-                await sendClockToDevice(selectedTerminal.serialNumber, period.id);
-            }
+            await sendClockToDevice(selectedTerminal.serialNumber);
             setLoadingSendClock(false);
             setClearSelectionToggle(!clearSelectionToggle);
         } else {

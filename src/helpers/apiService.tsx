@@ -385,13 +385,13 @@ export const restartDevice = async (zktecoDeviceID: Devices) => {
     return response.json();
 };
 
-export const sendClockToDevice = async (serialNumber: string, timeZoneId: string) => {
+export const sendClockToDevice = async (serialNumber: string, timeZoneId?: string) => {
     const response = await fetchWithAuth(`Zkteco/SendTimezoneResponse?SN=${serialNumber}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify([ timeZoneId ])
+        body: JSON.stringify([])
     });
     if (!response.ok) {
         const errorData = await response.json();

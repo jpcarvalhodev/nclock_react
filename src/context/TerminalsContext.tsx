@@ -26,7 +26,7 @@ export interface DeviceContextType {
     openDeviceDoor: (deviceSN: string, doorData: DoorDevice) => Promise<void>;
     restartDevice: (device: Devices) => Promise<void>;
     restartMBDevice: (mbDevice: Partial<MBDevice>) => Promise<void>;
-    sendClockToDevice: (serialNumber: string, timeZoneId: string) => Promise<void>;
+    sendClockToDevice: (serialNumber: string, timeZoneId?: string) => Promise<void>;
     handleAddDevice: (device: Devices) => Promise<void>;
     handleUpdateDevice: (device: Devices) => Promise<void>;
     handleDeleteDevice: (zktecoDeviceID: string) => Promise<void>;
@@ -224,7 +224,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para enviar o horário para o dispositivo
-    const sendClockToDevice = async (serialNumber: string, timeZoneId: string) => {
+    const sendClockToDevice = async (serialNumber: string, timeZoneId?: string) => {
         try {
             const data = await apiService.sendClockToDevice(serialNumber, timeZoneId);
             toast.success(data.message || 'Hora enviada com sucesso!');
