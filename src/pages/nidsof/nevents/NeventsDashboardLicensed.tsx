@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Carousel } from "react-responsive-carousel";
 
-import banner_nevents from "../../../assets/img/carousel/banner_nevents.webp";
+import banner_nsoftware from "../../../assets/img/carousel/banner_nsoftware.webp";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
@@ -107,7 +107,7 @@ export const NeventsDashboardLicensed = () => {
                 <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 108 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                           <img className="img-carousel-licensed" src={banner_nevents} alt="nevents" />
+                           <img className="img-carousel-licensed" src={banner_nsoftware} alt="nsoftware" />
                         </div>
                     </Carousel>
                 </div>

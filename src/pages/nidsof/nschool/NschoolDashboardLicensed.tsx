@@ -108,7 +108,8 @@ export const NschoolDashboardLicensed = () => {
                 <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 108 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel-licensed" src={banner_nsoftware} alt="nsoftware" />                        </div>
+                            <img className="img-carousel-licensed" src={banner_nsoftware} alt="nsoftware" />
+                        </div>
                     </Carousel>
                 </div>
                 <div className="calendar-container" style={{ marginTop: 70 }}>
