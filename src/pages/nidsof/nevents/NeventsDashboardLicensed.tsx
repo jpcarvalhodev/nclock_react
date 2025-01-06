@@ -3,7 +3,6 @@ import { format, getDay, parse, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { Bar } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
 import banner_nevents from "../../../assets/img/carousel/banner_nevents.webp";
@@ -108,7 +107,7 @@ export const NeventsDashboardLicensed = () => {
                 <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 108 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                           {/*  <img className="img-carousel-licensed" src={banner_nevents} alt="nevents" /> */}
+                           <img className="img-carousel-licensed" src={banner_nevents} alt="nevents" />
                         </div>
                     </Carousel>
                 </div>

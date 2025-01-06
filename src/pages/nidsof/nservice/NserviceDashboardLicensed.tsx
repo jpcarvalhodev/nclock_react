@@ -3,7 +3,6 @@ import { format, getDay, parse, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { Bar } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
 import banner_nservice from "../../../assets/img/carousel/banner_nservice.jpg";
@@ -108,7 +107,7 @@ export const NserviceDashboardLicensed = () => {
                 <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 108 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                           {/*  <img className="img-carousel-licensed" src={banner_nservice} alt="nservice" /> */}
+                           <img className="img-carousel-licensed" src={banner_nservice} alt="nservice" />
                         </div>
                     </Carousel>
                 </div>
