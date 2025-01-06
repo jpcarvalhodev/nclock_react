@@ -361,7 +361,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{entityType === 'department' ? 'Criar Departamento' : 'Criar Grupo'}</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ marginBottom: 40 }}>
+            <Modal.Body style={{ marginBottom: 90 }}>
                 <Form>
                     <Row>
                         <Col md={5}>
@@ -522,7 +522,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                             <div style={{ display: 'flex' }}>
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                    overlay={<Tooltip className="custom-tooltip">Novo Funcionário</Tooltip>}
                                 >
                                     <CustomOutlineButton className="action-button" icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
                                 </OverlayTrigger>

@@ -76,6 +76,7 @@ export const AccessControls = () => {
         await handleDeleteAccessControl(employeesId, doorId);
         setClearSelectionToggle(!clearSelectionToggle);
         refreshAccessControl();
+        window.location.reload();
     }
 
     // Busca as listagens de movimentos ao carregar a página
@@ -86,7 +87,7 @@ export const AccessControls = () => {
     // Atualiza os nomes filtrados da treeview
     useEffect(() => {
         if (selectedDevicesIds.length > 0) {
-            const filtered = accessControl.filter(ac => ac.acc.some((accItem: AccessControl) => selectedDevicesIds.includes(accItem.acId)));
+            const filtered = accessControl.filter(ac => ac.acc && ac.acc.some((accItem: AccessControl) => accItem && accItem.acId && selectedDevicesIds.includes(accItem.acId)));
             setFilteredAccessControl(filtered);
         } else {
             setFilteredAccessControl(accessControl);
@@ -288,7 +289,7 @@ export const AccessControls = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='content-container'>
+            <div className='content-container' >
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
                         <TreeViewDataAC onSelectDevices={handleSelectFromTreeView} />

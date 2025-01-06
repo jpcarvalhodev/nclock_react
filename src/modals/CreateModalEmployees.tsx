@@ -141,6 +141,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     try {
       const departments = await fetchAllDepartments();
       const groups = await fetchAllGroups();
+      const categories = await apiService.fetchAllCategories();
       const professions = await apiService.fetchAllProfessions();
       const zones = await apiService.fetchAllZones();
       const externalEntities = await apiService.fetchAllExternalEntities();
@@ -148,6 +149,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
       setDropdownData({
         departmentId: departments,
         groupId: groups,
+        categoryId: categories,
         professionId: professions,
         zoneId: zones,
         externalEntityId: externalEntities,
@@ -275,6 +277,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
           return option.departmentID === value;
         case 'groupId':
           return option.groupID === value;
+        case 'categoryId':
+          return option.categoryID === value;
         case 'professionId':
           return option.professionID === value;
         case 'zoneId':
@@ -771,6 +775,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                     { key: 'departmentId', label: 'Departamento', type: 'dropdown', required: true },
                     { key: 'professionId', label: 'Profissão', type: 'dropdown' },
                     { key: 'groupId', label: 'Grupo', type: 'dropdown', required: true },
+                    { key: 'categoryId', label: 'Categoria', type: 'dropdown' },
                     { key: 'zoneId', label: 'Zona', type: 'dropdown' },
                     { key: 'externalEntityId', label: 'Entidade Externa', type: 'dropdown' }
                   ].map((field) => (

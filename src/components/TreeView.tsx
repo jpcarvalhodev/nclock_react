@@ -64,7 +64,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
-  const { data, disabledEmployees, fetchAllData } = usePersons();
+  const { data, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -114,6 +114,10 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
 
     const unassignedGroup = allEmployees.filter((emp: Employee) =>
       emp.groupId === null
+    );
+
+    const deactivatedEmployees = allEmployees.filter((emp: Employee) =>
+      emp.status === false
     );
 
     const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiId);
@@ -177,6 +181,14 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
             id: 'unassignedGroup',
             label: 'SEM GRUPO',
             children: unassignedGroupItems,
+          }] : []),
+          ...(deactivatedEmployees.length > 0 ? [{
+            id: 'deactivatedEmployees',
+            label: 'INACTIVOS',
+            children: deactivatedEmployees.map((emp: Employee) => ({
+              id: `empoff-${emp.employeeID}`,
+              label: `${emp.enrollNumber} - ${emp.name}`
+            })),
           }] : []),
         ],
       },

@@ -225,14 +225,15 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    overflow: auto;
 }
 
 .datatable-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    overflow: auto;
+    max-height: 100%;
     margin-left: 8px;
+    overflow: auto;
 }
 
 .map-container {
@@ -256,7 +257,12 @@ body {
 .dashboard-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
+}
+
+.table-css {
+    overflow: auto;
+    max-height: calc(100vh - 150px);
 }
 
 .chart-container,
@@ -285,7 +291,7 @@ body {
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
-    max-height: 550px;
+    max-height: 32rem;
     max-width: 50%;
 }
 
@@ -497,6 +503,7 @@ body {
 .treeview-container {
     overflow: auto;
     min-width: 250px;
+    max-height: calc(100vh - 150px);
 }
 
 .datatable-title-text {
@@ -679,8 +686,7 @@ body {
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
-    max-height: 34.4rem;
-    margin-top: 70px;
+    max-height: 32rem;
     max-width: 50%;
 }
 
@@ -711,7 +717,7 @@ body {
 
 .img-carousel-licensed {
     padding: 10px;
-    max-width: 56rem;
+    max-width: 50rem;
 }
 
 .dashboard-tabs-container {

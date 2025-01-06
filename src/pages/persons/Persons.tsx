@@ -45,13 +45,13 @@ export const Persons = () => {
     const { navbarColor, footerColor } = useNavbar();
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName']);
+    const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName', 'status']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [showAllEmployees, setShowAllEmployees] = useState(true);
     const [filteredData, setFilteredData] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
-    const defaultColumns = ['enrollNumber', 'name', 'shortName'];
+    const defaultColumns = ['enrollNumber', 'name', 'shortName', 'status'];
     const [initialData, setInitialData] = useState<Employee | null>(null);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);

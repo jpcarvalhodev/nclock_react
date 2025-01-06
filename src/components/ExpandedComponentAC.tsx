@@ -22,7 +22,7 @@ export const ExpandedComponentAC = ({ data, fields }: ExpandedComponentProps) =>
                 data.map((item, index) => (
                     <div key={index} className="entity-details-grid" style={{ marginBottom: '20px' }}>
                         {fields.map(({ key, label }) => {
-                            const value = item[key];
+                            const value = item ? item[key] : '';
                             const displayValue = formatDisplayValue(value);
                             return (
                                 <div key={key} className="entity-detail">
@@ -33,7 +33,7 @@ export const ExpandedComponentAC = ({ data, fields }: ExpandedComponentProps) =>
                         })}
                     </div>
                 ))
-            ) : <div></div>}
+            ) : <div>Nenhuma porta encontrada</div>}
         </div>
     );
 };

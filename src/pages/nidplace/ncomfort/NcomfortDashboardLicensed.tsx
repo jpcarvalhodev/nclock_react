@@ -105,7 +105,7 @@ export const NcomfortDashboardLicensed = () => {
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-content">
-                <div className="dashboard-carousel-container-pages-no-title">
+                <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 70 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
                             <img className="img-carousel-licensed" src={banner_ncomfort} alt="ncomfort" />

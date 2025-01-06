@@ -386,12 +386,12 @@ export const restartDevice = async (zktecoDeviceID: Devices) => {
 };
 
 export const sendClockToDevice = async (serialNumber: string, timeZoneId: string) => {
-    const response = await fetchWithAuth(`Zkteco/SendTimezoneResponse?SN=${serialNumber}&Id=${timeZoneId}`, {
+    const response = await fetchWithAuth(`Zkteco/SendTimezoneResponse?SN=${serialNumber}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ serialNumber, timeZoneId })
+        body: JSON.stringify([ timeZoneId ])
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -1440,6 +1440,22 @@ export const updateCompanyConfig = async (companyData: FormData) => {
 export const deleteCompanyConfig = async (id: string) => {
     const response = await fetchWithAuth(`Configuration/DeleteCompany?id=${id}`, {
         method: 'DELETE'
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
+export const testEmail = async (email: string) => {
+    const response = await fetchWithAuth(`Configuration/SendTestEmail`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(email)
     });
     if (!response.ok) {
         const errorData = await response.json();

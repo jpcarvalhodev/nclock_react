@@ -2166,7 +2166,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleRibbonMouseLeave = () => {
 		setIsMouseOver(false);
 	};
-
+	
 	return (
 		<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
 			<div className="nav-container">
@@ -2320,7 +2320,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<span className='user-info'><i className="bi bi-door-open" style={{ marginRight: 10 }}></i>{user.name}</span>
 						</Dropdown.Toggle>
 						<Dropdown.Menu>
-							<div className='dropdown-content'>
+							<div className='dropdown-content' style={{ position: 'relative' }}>
 								<img src={userImage} style={{ width: '40px', height: '40px', borderRadius: 50 }} />
 								<Dropdown.Item className='dropdown-button' onClick={logout}>Sair</Dropdown.Item>
 							</div>

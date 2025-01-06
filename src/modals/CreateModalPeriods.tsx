@@ -31,6 +31,7 @@ interface Props<T> {
 // Define os valores iniciais do formulário para envio de forma padrão
 const initialValues: Partial<TimePeriod> = {
     createrName: localStorage.getItem('username') || '',
+    initFlag: true,
 };
 
 export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open, onClose, onSave, fields, initialValuesData }: Props<T>) => {

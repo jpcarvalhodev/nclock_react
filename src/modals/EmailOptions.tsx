@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
+import { Col, Form, InputGroup, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
+import hidepass from '../assets/img/login/hidepass.png';
+import showpass from '../assets/img/login/showpass.png';
 
 import { EmailUser } from '../helpers/Types';
+import { TestEmailModal } from './TestEmailModal';
+import { useNavbar } from '../context/NavbarContext';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -29,10 +33,18 @@ interface Props<T> {
 }
 
 export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
+    const { testEmail } = useNavbar();
     const [emailFormData, setEmailFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showTestEmailModal, setShowTestEmailModal] = useState(false);
+
+    // Função para enviar um email de teste
+    const sendTestEmail = async (email: string) => {
+        await testEmail(email);
+    }
 
     // Atualiza o formData com os dados da entity
     useEffect(() => {
@@ -132,6 +144,11 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         }
     };
 
+    // Alterna a visibilidade da password
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     // Função para lidar com o clique em adicionar ou atualizar
     const handleAddOrUpdate = () => {
         if (entity.usernameEmail !== '' && entity.passwordEmail !== '' && entity.hostSMTP !== '' && entity.portSMTP !== '') {
@@ -216,14 +233,32 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     placement="right"
                                                     overlay={<Tooltip id="tooltip-passwordEmail">Campo obrigatório</Tooltip>}
                                                 >
-                                                    <Form.Control
-                                                        className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                                        type="password"
-                                                        name="passwordEmail"
-                                                        value={emailFormData.passwordEmail || ''}
-                                                        onChange={handleChange}
-                                                        data-form-type="email"
-                                                    />
+                                                    <InputGroup>
+                                                        <Form.Control
+                                                            type={showPassword ? "text" : "password"}
+                                                            name="passwordEmail"
+                                                            value={emailFormData.passwordEmail || ''}
+                                                            onChange={handleChange}
+                                                            data-form-type="email"
+                                                            className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                                            style={{ paddingRight: '40px', borderRight: 'none' }}
+                                                        />
+                                                        <InputGroup.Text
+                                                            onClick={togglePasswordVisibility}
+                                                            style={{
+                                                                cursor: 'pointer',
+                                                                background: 'transparent',
+                                                                borderLeft: 'none',
+                                                                height: '30px',
+                                                            }}
+                                                        >
+                                                            <img
+                                                                src={showPassword ? showpass : hidepass}
+                                                                alt={showPassword ? "Mostrar password" : "Esconder password"}
+                                                                style={{ width: 20, height: 20 }}
+                                                            />
+                                                        </InputGroup.Text>
+                                                    </InputGroup>
                                                 </OverlayTrigger>
                                                 {errors.passwordEmail && <Form.Text className="text-danger">{errors.passwordEmail}</Form.Text>}
                                             </Form.Group>
@@ -275,9 +310,16 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
+                <Button variant="outline-info" onClick={() => setShowTestEmailModal(true)}>Teste E-Mail</Button>
                 <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleAddOrUpdate}>Guardar</Button>
             </Modal.Footer>
+            <TestEmailModal
+                open={showTestEmailModal}
+                onClose={() => setShowTestEmailModal(false)}
+                onSave={sendTestEmail}
+                title="Teste de E-Mail"
+            />
         </Modal >
     );
 };

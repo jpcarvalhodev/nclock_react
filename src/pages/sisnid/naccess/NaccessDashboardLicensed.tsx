@@ -101,7 +101,7 @@ export const NaccessDashboardLicensed = () => {
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-content">
-                <div className="dashboard-carousel-container-pages-no-title">
+                <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 108 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
                             <img className="img-carousel-licensed" src={banner_naccess} alt="NAccess" />

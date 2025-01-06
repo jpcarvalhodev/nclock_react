@@ -103,6 +103,9 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                         case 'rgpdAut':
                             displayValue = value ? 'Autorizado' : 'Não Autorizado';
                             break;
+                        case 'entidadeId':
+                            displayValue = (data as Employee)['entidadeName'] || '';
+                            break;
                         case 'departmentId':
                             displayValue = (data as Employee)['departmentName'] || '';
                             break;

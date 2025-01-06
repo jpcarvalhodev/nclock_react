@@ -11,10 +11,11 @@ import no_entity from "../../assets/img/navbar/no_entity.png";
 import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
 import { useLicense } from "../../context/LicenseContext";
 import { usePersons } from "../../context/PersonsContext";
-import { useTerminals } from "../../context/TerminalsContext";
 import * as apiService from "../../helpers/apiService";
 import { License, LicenseKey } from "../../helpers/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
+import { useNavbar } from "../../context/NavbarContext";
+import { useKiosk } from "../../context/KioskContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -30,7 +31,9 @@ type User = {
 export const Login = () => {
   const navigate = useNavigate();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllRegisteredUsers } = usePersons();
+  const { fetchAllData, fetchAllRegisteredUsers } = usePersons();
+  const { fetchKioskConfig } = useNavbar();
+  const { fetchAllPayTerminal, fetchAllCoin, fetchAllMoveCard, fetchAllMoveKiosk } = useKiosk();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [companyName, setCompanyName] = useState("");
@@ -113,7 +116,9 @@ export const Login = () => {
   const insertLicenseKey = async (licenseKey: Partial<LicenseKey>) => {
     try {
       const data = await apiService.importLicense(licenseKey);
-      toast.success(data.message || "Chave inserida com sucesso!");
+      if (data.success) {
+        toast.success(data.message || "Chave inserida com sucesso!");
+      }
     } catch (error) {
       console.error("Erro ao inserir chave:", error);
     } finally {
@@ -173,6 +178,12 @@ export const Login = () => {
           await Promise.all([
             fetchAllLicensesWithoutKey(),
             fetchAllRegisteredUsers(),
+            fetchKioskConfig(),
+            fetchAllPayTerminal(),
+            fetchAllCoin(),
+            fetchAllMoveCard(),
+            fetchAllMoveKiosk(),
+            fetchAllData(),
           ]);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");

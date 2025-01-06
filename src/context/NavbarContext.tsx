@@ -24,6 +24,7 @@ export interface NavbarContextType {
   handleAddKioskConfig: (kioskConfig: Partial<KioskConfig>) => void;
   handleUpdateEmailConfig: (email: Partial<EmailUser>) => void;
   handleUpdateKioskConfig: (kioskConfig: Partial<KioskConfig>) => void;
+  testEmail: (email: string) => void;
 }
 
 // Crie o contexto com valores padrões
@@ -121,6 +122,16 @@ export const NavbarProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  // Função para testar o envio de email
+  const testEmail = async (email: string) => {
+    try {
+      const data = await apiService.testEmail(email);
+      toast.success(data.message || 'Email enviado com sucesso! Verifique a sua caixa de entrada.');
+    } catch (error) {
+      console.error('Erro ao enviar o email de teste:', error);
+    }
+  }
+
   // Busca os dados ao carregar a página
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -131,7 +142,7 @@ export const NavbarProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <NavbarContext.Provider value={{ navbarColor, footerColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, kioskConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig }}>
+    <NavbarContext.Provider value={{ navbarColor, footerColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, kioskConfig, fetchEmailConfig, fetchKioskConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, testEmail }}>
       {children}
     </NavbarContext.Provider>
   );
