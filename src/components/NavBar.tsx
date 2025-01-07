@@ -49,6 +49,7 @@ import naut from '../assets/img/navbar/navbar/naut.webp';
 import nequip from '../assets/img/navbar/navbar/nequip.webp';
 import nproject from '../assets/img/navbar/navbar/nproject.webp';
 import nidgroup from '../assets/img/navbar/navbar/nidgroup.png';
+import nsoftwares from '../assets/img/navbar/navbar/nsoftwares.png';
 import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
 import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
 import nidtec from '../assets/img/navbar/navbar/nidtec.png';
@@ -1345,7 +1346,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		].filter(item => enabledSoftware[item.label.toLowerCase()]);
 
 		const dynamicMenuStructure = {
-			dashboard: { label: 'INÍCIO', image: nidgroup, alt: 'INÍCIO', key: 'dashboard' },
+			dashboard: { label: 'INÍCIO', image: nsoftwares, alt: 'INÍCIO', key: 'dashboard' },
 			cliente: {
 				label: 'LICENÇAS',
 				image: certificate,
