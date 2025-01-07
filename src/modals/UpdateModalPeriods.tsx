@@ -137,7 +137,7 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
 
             endKeys.forEach(endKey => {
                 if (!updatedData[endKey]) {
-                    updatedData[endKey] = '00:00';
+                    updatedData[endKey] = '23:59';
                 }
             });
         });

@@ -445,14 +445,13 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
 
     // Atualiza os dados ao mudar a lista de terminais
     useEffect(() => {
-        if (devices.length > 0) {
+        const token = localStorage.getItem('token');
+        if (token && devices.length > 0) {
             fetchAllPayTerminal();
             fetchAllPayCoins();
             fetchAllMoveCard();
             fetchAllMoveKiosk();
             fetchAllMoveVP();
-            unifyTotalPayments();
-            unifyTotalMovements();
             fetchAllManualOpen();
             fetchAllCoin();
             fetchAllLimpezas();
@@ -461,6 +460,14 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
             fetchAllTasks();
         }
     }, [devices]);
+
+    // Unifica os pagamentos e movimentos
+    useEffect(() => {
+        if (payTerminal.length > 0 && payCoins.length > 0 && moveCard.length > 0 && moveKiosk.length > 0) {
+            unifyTotalPayments();
+            unifyTotalMovements();
+        }
+    }, [payTerminal, payCoins, moveCard, moveKiosk]);
 
     // Definindo o valor do contexto
     const contextValue = {

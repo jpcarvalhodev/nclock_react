@@ -16,6 +16,7 @@ import { License, LicenseKey } from "../../helpers/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { useNavbar } from "../../context/NavbarContext";
 import { useKiosk } from "../../context/KioskContext";
+import { useTerminals } from "../../context/TerminalsContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -31,9 +32,8 @@ type User = {
 export const Login = () => {
   const navigate = useNavigate();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllData, fetchAllRegisteredUsers } = usePersons();
-  const { fetchKioskConfig } = useNavbar();
-  const { fetchAllPayTerminal, fetchAllCoin, fetchAllMoveCard, fetchAllMoveKiosk } = useKiosk();
+  const { fetchAllRegisteredUsers, registeredUsers } = usePersons();
+  const { fetchKioskConfig, fetchEmailConfig } = useNavbar();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [companyName, setCompanyName] = useState("");
@@ -43,6 +43,18 @@ export const Login = () => {
   const [company, setCompany] = useState<License[]>([]);
   const [selectedNif, setSelectedNif] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
+  const [profileImage, setProfileImage] = useState<string>('');
+
+  // Obter a imagem do perfil do usuário
+  useEffect(() => {
+    const profileImagePath = localStorage.getItem('profileImage');
+    const profileImage = profileImagePath ? apiService.baseURL?.slice(0, -1) + profileImagePath : null;
+    if (!profileImage) {
+      setProfileImage(profileAvatar);
+    } else {
+      setProfileImage(profileImage);
+    }
+  }, []);
 
   // Função para buscar as licenças
   const fetchLicenseData = async () => {
@@ -155,7 +167,7 @@ export const Login = () => {
         toast.error("Dados incorretos. Tente novamente.");
       } else if (!response.ok) {
         const data = await response.json();
-        toast.error(data.message || "Erro ao fazer login.");
+        toast.error(data.message || "Erro ao fazer login. Tente novamente.");
         throw new Error();
       } else {
         const data = await response.json();
@@ -179,14 +191,15 @@ export const Login = () => {
             fetchAllLicensesWithoutKey(),
             fetchAllRegisteredUsers(),
             fetchKioskConfig(),
-            fetchAllPayTerminal(),
-            fetchAllCoin(),
-            fetchAllMoveCard(),
-            fetchAllMoveKiosk(),
-            fetchAllData(),
+            fetchEmailConfig(),
           ]);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");
+          const userName = localStorage.getItem('username');
+          const checkUser = registeredUsers.filter(user => user.userName === userName)
+          if (checkUser) {
+            localStorage.setItem('profileImage', checkUser[0].profileImage);
+          }
         } catch (error) {
           console.error("Erro ao carregar dados após o login:", error);
         }
@@ -318,7 +331,7 @@ export const Login = () => {
                 <div className="image-container">
                   <img
                     className="profile-login"
-                    src={profileAvatar}
+                    src={profileImage}
                     alt="foto perfil"
                   />
                 </div>

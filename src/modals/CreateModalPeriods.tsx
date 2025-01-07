@@ -167,7 +167,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
 
             endKeys.forEach(endKey => {
                 if (!updatedData[endKey]) {
-                    updatedData[endKey] = '00:00';
+                    updatedData[endKey] = '23:59';
                 }
             });
         });

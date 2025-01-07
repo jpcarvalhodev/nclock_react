@@ -24,13 +24,6 @@
     max-width: 250px;
 }
 
-#login .profile-login {
-    max-width: 120px;
-    height: auto;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
 .image-container {
     display: flex;
     justify-content: center;
@@ -41,7 +34,8 @@
     border-radius: 50%;
 }
 
-#login .profile-login-entity {
+#login .profile-login-entity,
+#login .profile-login {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -212,14 +206,14 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
 #login .footer-login {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 35px;
+    margin-top: 40px;
     width: 100%;
 }
 

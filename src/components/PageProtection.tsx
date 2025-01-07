@@ -15,18 +15,26 @@ export const PageProtection: React.FC<PageProtectionProps> = ({ children }) => {
     function isAuthenticated() {
       const token = localStorage.getItem('token');
       if (!token) {
-        setRedirectTo('/'); 
+        setRedirectTo('/');
         return false;
       }
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         if (payload.exp && Date.now() >= payload.exp * 1000) {
+          const profileImage = localStorage.getItem('profileImage');
           localStorage.clear();
-          setRedirectTo('/'); 
+          if (profileImage) {
+            localStorage.setItem('profileImage', profileImage);
+          }
+          setRedirectTo('/');
           return false;
         }
       } catch {
+        const profileImage = localStorage.getItem('profileImage');
         localStorage.clear();
+        if (profileImage) {
+          localStorage.setItem('profileImage', profileImage);
+        }
         setRedirectTo('/errors/notfound');
         return false;
       }

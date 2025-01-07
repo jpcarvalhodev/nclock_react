@@ -939,7 +939,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 				body: JSON.stringify({ token }),
 			});
 			if (response.ok) {
+				const profileImage = localStorage.getItem('profileImage');
 				localStorage.clear();
+				if (profileImage) {
+					localStorage.setItem('profileImage', profileImage);
+				}
 				navigate('/');
 			} else {
 				console.error("Erro ao fazer logout");
