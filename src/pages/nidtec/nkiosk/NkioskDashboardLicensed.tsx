@@ -175,8 +175,6 @@ export const NkioskDashboardLicensed = () => {
         }
     };
 
-    console.log(totalPayments);
-
     // Busca os dados ao carregar a página
     useEffect(() => {
         fetchAllData();
