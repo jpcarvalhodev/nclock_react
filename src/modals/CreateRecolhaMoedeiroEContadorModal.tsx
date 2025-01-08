@@ -36,7 +36,6 @@ interface Field {
 // Valores iniciais
 const initialValues: Partial<RecolhaMoedeiroEContador> = {
     dataFimRecolha: new Date().toISOString().slice(0, 16) as unknown as Date,
-    pessoaResponsavel: localStorage.getItem('username') || '',
 };
 
 // Define o componente
@@ -55,10 +54,11 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
         if (open) {
             fetchRecolhas();
             fetchAmount();
+            const username = localStorage.getItem("username") || "";
             if (initialValuesData.deviceID) {
                 setFormData({ ...initialValuesData });
             } else {
-                setFormData({ ...initialValues });
+                setFormData({ ...initialValues, pessoaResponsavel: username });
             }
         } else {
             setFormData({});

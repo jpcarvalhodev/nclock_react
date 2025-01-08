@@ -188,15 +188,13 @@ export const AccessControls = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || (accessControls[key] != null && String(accessControls[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(accessControls).some(value => {
-            if (value == null) {
-                return false;
-            } else if (typeof value === 'number') {
-                return value.toString().includes(filterText);
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else if (typeof value === 'string') {
-                return value.toLowerCase().includes(filterText.toLowerCase());
+        Object.entries(accessControls).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
             }
             return false;
         })

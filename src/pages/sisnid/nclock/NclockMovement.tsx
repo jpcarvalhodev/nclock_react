@@ -235,8 +235,18 @@ export const NclockMovement = () => {
     const filteredDataTable = filteredAttendances.filter(attendances =>
         new Date(attendances.attendanceTime) >= new Date(startDate) && new Date(attendances.attendanceTime) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(attendances[key]) === String(filters[key])
-        )
+            filters[key] === "" || (attendances[key] != null && String(attendances[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(attendances).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     );
 
     // Define os dados iniciais ao duplicar
@@ -451,6 +461,7 @@ export const NclockMovement = () => {
                                 pagination
                                 paginationComponentOptions={paginationOptions}
                                 selectableRows
+                                paginationPerPage={20}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
                                 noDataComponent="Não existem dados disponíveis para exibir."

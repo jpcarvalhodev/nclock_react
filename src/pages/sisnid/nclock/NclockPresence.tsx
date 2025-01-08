@@ -192,8 +192,18 @@ export const NclockPresence = () => {
     // Filtra os dados da tabela
     const filteredDataTable = filteredAttendances.filter(attendances =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(attendances[key]) === String(filters[key])
-        )
+            filters[key] === "" || (attendances[key] != null && String(attendances[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(attendances).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     );
 
     // Função para abrir o modal de edição
@@ -326,6 +336,7 @@ export const NclockPresence = () => {
                                 pagination
                                 paginationComponentOptions={paginationOptions}
                                 selectableRows
+                                paginationPerPage={20}
                                 onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight

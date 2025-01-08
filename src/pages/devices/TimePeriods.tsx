@@ -23,12 +23,12 @@ import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const TimePeriods = () => {
@@ -144,11 +144,21 @@ export const TimePeriods = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredPeriods.filter(periods =>
+    const filteredDataTable = filteredPeriods.filter(getCoin =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(periods[key]) === String(filters[key])
-        )
-    );
+            filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(getCoin).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
+    )
 
     // Define a função de seleção de linhas
     const handleRowSelected = (state: {

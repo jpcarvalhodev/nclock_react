@@ -17,6 +17,17 @@ import * as apiService from "../../helpers/apiService";
 import { mbDeviceCloseOpenFields } from "../../helpers/Fields";
 import { MBDeviceCloseOpen } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { TextField, TextFieldProps } from "@mui/material";
+
+// Define a interface para as propriedades do componente CustomSearchBox
+function CustomSearchBox(props: TextFieldProps) {
+  return (
+    <TextField
+      {...props}
+      className="SearchBox"
+    />
+  );
+}
 
 // Define a interface para os filtros
 interface Filters {
@@ -54,6 +65,7 @@ export const TerminalCloseOpen = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<MBDeviceCloseOpen[]>([]);
+    const [filterText, setFilterText] = useState('');
 
     // Função para buscar todos os dispositivos multibanco entre datas
     const fetchAllDevicesBetweenDates = async () => {
@@ -131,8 +143,18 @@ export const TerminalCloseOpen = () => {
     const filteredDeviceDataTable = filteredDevices.filter(device =>
         new Date(device.timestamp) >= new Date(startDate) && new Date(device.timestamp) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(device[key]) === String(filters[key])
-        )
+            filters[key] === "" || (device[key] != null && String(device[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(device).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     );
 
     // Define as colunas de dispositivos
@@ -216,6 +238,16 @@ export const TerminalCloseOpen = () => {
                                 <span>Fechos e Aberturas dos Terminais Multibanco</span>
                             </div>
                             <div className="datatable-header">
+                                <div>
+                                    <CustomSearchBox
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
+                                </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
                                         placement="top"

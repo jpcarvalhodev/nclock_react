@@ -323,7 +323,7 @@ export const NkioskMoveVP = () => {
                 <Footer style={{ backgroundColor: footerColor }} />
                 {openColumnSelector && (
                     <ColumnSelectorModal
-                        columns={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser')}
+                        columns={transactionCardFields.filter(field => field.key !== 'cardNo' && field.key !== 'nameUser' && field.key !== 'pin')}
                         selectedColumns={selectedColumns}
                         onClose={() => setOpenColumnSelector(false)}
                         onColumnToggle={toggleColumn}

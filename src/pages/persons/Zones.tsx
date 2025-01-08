@@ -204,8 +204,18 @@ export const Zones = () => {
     // Filtra os dados da tabela
     const filteredDataTable = zones.filter(zone =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(zone[key]) === String(filters[key])
-        )
+            filters[key] === "" || (zone[key] != null && String(zone[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(zone).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     );
 
     // Define as colunas da tabela

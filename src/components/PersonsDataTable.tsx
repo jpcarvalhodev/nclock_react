@@ -93,7 +93,11 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             : data.employees;
 
         let filteredBySearchText = filteredByIDs.filter(emp =>
-            Object.values(emp).some(value => String(value).toLowerCase().includes(filterText.toLowerCase()))
+            Object.entries(emp).some(([key, value]) =>
+                selectedColumns.includes(key) &&
+                value != null &&
+                String(value).toLowerCase().includes(filterText.toLowerCase())
+            )
         );
 
         const filteredByColumnFilters = filteredBySearchText.filter(employee =>
@@ -105,7 +109,7 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         const sortedFilteredData = filteredByColumnFilters.sort((a, b) => parseInt(a.enrollNumber) - parseInt(b.enrollNumber));
 
         filteredEmployees(sortedFilteredData);
-    }, [selectedEmployeeIds, filterText, filters, data.employees]);
+    }, [selectedEmployeeIds, filterText, filters, data.employees, selectedColumns]);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {

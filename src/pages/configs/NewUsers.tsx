@@ -161,11 +161,21 @@ export const NewUsers = () => {
     );
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredData.filter(user =>
+    const filteredDataTable = filteredData.filter(employee =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(user[key]) === String(filters[key])
-        )
-    );
+            filters[key] === "" || (employee[key] != null && String(employee[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(employee).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
+    )
 
     const excludedColumns = ['id', 'password', 'confirmPassword'];
 

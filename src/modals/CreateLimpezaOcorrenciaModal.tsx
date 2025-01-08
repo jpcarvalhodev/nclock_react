@@ -35,7 +35,6 @@ interface Field {
 // Valores iniciais
 const initialValues: Partial<LimpezasEOcorrencias> = {
     dataCreate: new Date(),
-    responsavel: localStorage.getItem('username') || '',
 };
 
 // Define o componente
@@ -50,7 +49,12 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
     useEffect(() => {
         if (open) {
             fetchDropdownOptions();
-            setFormData({ ...initialValues, ...initialValuesData });
+            const username = localStorage.getItem("username") || "";
+            setFormData({
+                ...initialValues,
+                ...initialValuesData,
+                responsavel: initialValuesData.responsavel || username,
+            });
         } else {
             setFormData({});
         }

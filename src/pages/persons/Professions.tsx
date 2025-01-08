@@ -181,8 +181,18 @@ export const Professions = () => {
     // Filtra os dados da tabela
     const filteredDataTable = professions.filter(profession =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(profession[key]) === String(filters[key])
-        )
+            filters[key] === "" || (profession[key] != null && String(profession[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(profession).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     ).sort((a, b) => a.code - b.code);
 
     // Seleciona a entidade anterior

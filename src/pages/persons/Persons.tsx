@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import Split from 'react-split';
 
 import { CustomOutlineButton } from '../../components/CustomOutlineButton';
@@ -110,13 +110,15 @@ export const Persons = () => {
     }, [resetSelection]);
 
     // Função para alternar a visibilidade das colunas
-    const handleColumnToggle = (columnKey: string) => {
-        if (selectedColumns.includes(columnKey)) {
-            setSelectedColumns(selectedColumns.filter(key => key !== columnKey));
-        } else {
-            setSelectedColumns([...selectedColumns, columnKey]);
-        }
-    };
+    const handleColumnToggle = useCallback((columnKey: string) => {
+        setSelectedColumns(prevColumns => {
+            if (prevColumns.includes(columnKey)) {
+                return prevColumns.filter(key => key !== columnKey);
+            } else {
+                return [...prevColumns, columnKey];
+            }
+        });
+    }, [selectedColumns, setSelectedColumns]);
 
     // Atualiza o estado de seleção de funcionários
     const handleSelectedRowsChange = (selectedRows: Employee[]) => {

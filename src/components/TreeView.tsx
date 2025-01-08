@@ -96,7 +96,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         if (departmentMap.has(deptCode)) {
           departmentMap.get(deptCode).employees.push({
             id: `emp-${emp.employeeID}`,
-            label: `${emp.enrollNumber} - ${emp.name}`
+            label: `${emp.enrollNumber} - ${emp.shortName}`
           });
         }
       }
@@ -132,7 +132,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
           .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
           .map((emp: Employee) => ({
             id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
-            label: `${emp.enrollNumber} - ${emp.name}`
+            label: `${emp.enrollNumber} - ${emp.shortName}`
           })),
       ],
     });
@@ -151,18 +151,18 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
         .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
         .map((emp: Employee) => ({
           id: `group-${group.groupID}-emp-${emp.employeeID}`,
-          label: `${emp.enrollNumber} - ${emp.name}`
+          label: `${emp.enrollNumber} - ${emp.shortName}`
         })),
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
       id: `empd-${emp.employeeID}`,
-      label: `${emp.enrollNumber} - ${emp.name}`
+      label: `${emp.enrollNumber} - ${emp.shortName}`
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
       id: `empg-${emp.employeeID}`,
-      label: `${emp.enrollNumber} - ${emp.name}`
+      label: `${emp.enrollNumber} - ${emp.shortName}`
     }));
 
     const treeItems = [
@@ -187,7 +187,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
             label: 'INACTIVOS',
             children: deactivatedEmployees.map((emp: Employee) => ({
               id: `empoff-${emp.employeeID}`,
-              label: `${emp.enrollNumber} - ${emp.name}`
+              label: `${emp.enrollNumber} - ${emp.shortName}`
             })),
           }] : []),
         ],

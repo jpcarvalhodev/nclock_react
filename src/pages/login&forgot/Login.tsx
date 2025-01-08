@@ -17,6 +17,9 @@ import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
 import { useEntity } from "../../context/EntityContext";
+import { useAttendance } from "../../context/MovementContext";
+import { useAds } from "../../context/AdsContext";
+import { useKiosk } from "../../context/KioskContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -31,11 +34,14 @@ type User = {
 // Define a página de login
 export const Login = () => {
   const navigate = useNavigate();
+  const { fetchAds } = useAds();
+  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllRegisteredUsers, registeredUsers } = usePersons();
-  const { fetchKioskConfig, fetchEmailConfig } = useNavbar();
-  const { fetchAllDevices } = useTerminals();
-  const { fetchAllEntity } = useEntity();
+  const { fetchAllAttendances } = useAttendance();
+  const { registeredUsers, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
+  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods } = useTerminals();
+  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal } = useKiosk();
+  const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [companyName, setCompanyName] = useState("");
@@ -49,9 +55,8 @@ export const Login = () => {
 
   // Obter a imagem do perfil do usuário
   useEffect(() => {
-    const profileImagePath = localStorage.getItem('profileImage');
-    const profileImage = profileImagePath ? apiService.baseURL?.slice(0, -1) + profileImagePath : null;
-    if (!profileImage) {
+    const profileImage = localStorage.getItem('profileImage');
+    if (!profileImage || profileImage === 'null') {
       setProfileImage(profileAvatar);
     } else {
       setProfileImage(profileImage);
@@ -191,11 +196,37 @@ export const Login = () => {
         try {
           await Promise.all([
             fetchAllLicensesWithoutKey(),
-            fetchAllRegisteredUsers(),
             fetchAllDevices(),
-            fetchKioskConfig(),
+            fetchAllEmployees(),
+            fetchAllDepartments(),
+            fetchAllGroups(),
+            fetchAllRegisteredUsers(),
+            fetchAllCardData(),
+            fetchAllCategories(),
+            fetchAllExternalEntitiesData(),
+            fetchAllProfessions(),
+            fetchAllZones(),
+            fetchAds(),
+            fetchAllEntity(),
+            fetchAllLoginLogs(),
+            fetchAllHistoryLogs(),
+            fetchAllAttendances(),
+            fetchAllMBDevices(),
+            fetchAccessControl(),
+            fetchAllMBCloseOpen(),
+            fetchTimePeriods(),
+            fetchAllCoin(),
+            fetchAllCounter(),
+            fetchAllLimpezas(),
+            fetchAllManualOpen(),
+            fetchAllMoveCard(),
+            fetchAllMoveKiosk(),
+            fetchAllMoveVP(),
+            fetchAllOcorrencias(),
+            fetchAllPayCoins(),
+            fetchAllPayTerminal(),
             fetchEmailConfig(),
-            fetchAllEntity()
+            fetchKioskConfig(),
           ]);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");

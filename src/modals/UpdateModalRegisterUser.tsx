@@ -317,8 +317,10 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                     <Form.Control
                                         type={showPassword ? "text" : "password"}
                                         name="password"
-                                        value={formData.password || ''}
+                                        value={formData.password || passwordPlaceholder}
                                         onChange={handleChange}
+                                        onFocus={handleFocus}
+                                        onBlur={handleBlur}
                                         autoComplete="off"
                                         minLength={8}
                                         className={`custom-input-height custom-select-font-size ${showValidationErrors && errors['password'] && errors['password'].hasError ? 'error-border' : ''}`}

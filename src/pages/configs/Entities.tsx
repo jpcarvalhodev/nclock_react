@@ -180,8 +180,18 @@ export const Entities = () => {
     // Filtra os dados da tabela
     const filteredDataTable = Array.isArray(entity) ? entity.filter(user =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(user[key]) === String(filters[key])
-        )
+            filters[key] === "" || (user[key] != null && String(user[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(user).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     ) : [];
 
     // Define as colunas excluídas

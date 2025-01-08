@@ -588,7 +588,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			const username = localStorage.getItem('username');
 			const findUser = registeredUsers.find(user => user.userName === username);
 			const imageUrl = findUser?.profileImage ? `${apiService.baseURL?.slice(0, -1)}${findUser.profileImage}` : profileAvatar;
-
+			localStorage.setItem('profileImage', imageUrl);
 			setUserImage(imageUrl);
 		};
 		fetchAndSetUserImage();
@@ -9998,7 +9998,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 										</div>
 									)}
 									<div className="title-container" onClick={() => toggleGroupVisibility('paineis ncity')}>
-										<span className="title">Painéis</span>
+										<span className="title">Multimédia</span>
 									</div>
 								</div>
 								<div className="group">

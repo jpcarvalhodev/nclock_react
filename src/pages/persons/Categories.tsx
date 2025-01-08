@@ -199,8 +199,18 @@ export const Categories = () => {
     // Filtra os dados da tabela
     const filteredDataTable = categories.filter(category =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(category[key]) === String(filters[key])
-        )
+            filters[key] === "" || (category[key] != null && String(category[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(category).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     ).sort((a, b) => a.code - b.code);
 
     // Define os dados iniciais ao duplicar

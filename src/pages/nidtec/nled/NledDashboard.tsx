@@ -78,7 +78,7 @@ type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
     'Eventos' | 'Serviços' | 'Tarefas' | 'Produção' | 'Bilhetes' | 'CRM' | 'Faturação' | 'Documental' |
     'Desporto' | 'Ginásios' | 'Escolar' | 'Clínicas' | 'Ópticas' | 'Ourivesarias' |
     'Inteligência' | 'Virtual' | 'Hologramas' | 'Energias' | 'Recarga' | 'Mobilidade' |
-    'Painéis' | 'Incêndios' |
+    'Multimédia' | 'Incêndios' |
     'Mobiliário' | 'Divisórias' | 'Design' | 'Redes' | 'Electricidade' | 'Iluminação' |
     'Climatização' | 'Áudio' | 'Domótica';
 
@@ -127,7 +127,7 @@ const tabData: Record<CardTitle, { route: string; tabKey: string; ribbonKey: str
     Energias: { route: '/npower/npowerdashboard', tabKey: 'showNpowerTab', ribbonKey: 'showNpowerRibbon' },
     Recarga: { route: '/ncharge/nchargedashboard', tabKey: 'showNchargeTab', ribbonKey: 'showNchargeRibbon' },
     Mobilidade: { route: '/ncity/ncitydashboard', tabKey: 'showNcityTab', ribbonKey: 'showNcityRibbon' },
-    Painéis: { route: '/nled/nleddashboard', tabKey: 'showNledTab', ribbonKey: 'showNledRibbon' },
+    Multimédia: { route: '/nled/nleddashboard', tabKey: 'showNledTab', ribbonKey: 'showNledRibbon' },
     Incêndios: { route: '/nfire/nfiredashboard', tabKey: 'showNfireTab', ribbonKey: 'showNfireRibbon' },
     Mobiliário: { route: '/nfurniture/nfurnituredashboard', tabKey: 'showNfurnitureTab', ribbonKey: 'showNfurnitureRibbon' },
     Divisórias: { route: '/npartition/npartitiondashboard', tabKey: 'showNpartitionTab', ribbonKey: 'showNpartitionRibbon' },
@@ -218,7 +218,7 @@ export const NledDashboard = () => {
             { title: 'Recarga', img: ncharge, tab: 'ncharge' },
             { title: 'Mobilidade', img: ncity, tab: 'ncity' },
             { title: 'Quiosques', img: nkiosk, tab: 'nkiosk' },
-            { title: 'Painéis', img: nled, tab: 'nled' },
+            { title: 'Multimédia', img: nled, tab: 'nled' },
             { title: 'Incêndios', img: nfire, tab: 'nfire' },
             { title: 'NSoftwares', img: nidtec, tab: 'nidtec' }
         ],
@@ -271,9 +271,9 @@ export const NledDashboard = () => {
                     </Carousel>
                 </div>
                 <div className="dashboard-carousel-container">
-                    <h3 className="dashboard-title-text-inside">SOFTWARE NLED - Painéis de LEDs</h3>
+                    <h3 className="dashboard-title-text-inside">SOFTWARE NLED - Multimédia de LEDs</h3>
                     <p className="dashboard-text-inside">
-                        O Nled é um software dedicado Painéis LED da sua empresa. Ele permite-lhe:
+                        O Nled é um software dedicado Multimédia LED da sua empresa. Ele permite-lhe:
                     </p>
                     <p>- Versatilizar a informação e venda;</p>
                     <p>- Aumentar o grau de atração e memorabilidade da peça publicitária;</p>

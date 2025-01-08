@@ -175,8 +175,18 @@ export const Types = () => {
     // Filtra os dados da tabela
     const filteredDataTable = dataEE.externalEntityTypes.filter(externalEntityType =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(externalEntityType[key]) === String(filters[key])
-        )
+            filters[key] === "" || (externalEntityType[key] != null && String(externalEntityType[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(externalEntityType).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     ).sort((a, b) => a.order - b.order);
 
     // Define os dados iniciais ao duplicar

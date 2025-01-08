@@ -35,12 +35,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página de Contactos
@@ -218,9 +218,19 @@ export const Contacts = () => {
     // Filtra os dados da tabela
     const filteredDataTable = filteredEmployees.filter(employee =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(employee[key]) === String(filters[key])
-        )
-    );
+            filters[key] === "" || (employee[key] != null && String(employee[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(employee).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
+    )
 
     // Define as colunas
     const columns: TableColumn<Employee>[] = employeeFields

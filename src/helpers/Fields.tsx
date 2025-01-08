@@ -109,7 +109,7 @@ export const zoneFields = [
 ];
 
 export const employeeAttendanceTimesFields = [
-    { key: 'attendanceTime', label: 'Data e Hora de presença', type: 'datetime-local', required: true },
+    { key: 'attendanceTime', label: 'Data e Hora de Presença', type: 'datetime-local', required: true },
     { key: 'deviceId', label: 'Equipamento', type: 'dropdown' },
     { key: 'deviceNumber', label: 'Número do Equipamento', type: 'number' },
     { key: 'employeeId', label: 'Nome do Funcionário', type: 'dropdown', required: true },
@@ -452,9 +452,9 @@ export const recolhaMoedeiroEContadorFields = [
 export const manualOpenDoorFields = [
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
     { key: 'nomeResponsavel', label: 'Nome do Utilizador', type: 'string' },
+    { key: 'doorName', label: 'Nome', type: 'string' },
     { key: 'nomeEvento', label: 'Nome do Evento', type: 'string' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
-    { key: 'doorName', label: 'Nome', type: 'string' },
     { key: 'deviceName', label: 'Nome do Local', type: 'string' },
 ];
 

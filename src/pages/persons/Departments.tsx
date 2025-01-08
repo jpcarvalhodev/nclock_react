@@ -175,8 +175,18 @@ export const Departments = () => {
     // Filtra os dados da tabela
     const filteredDataTable = departments.filter(department =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(department[key]) === String(filters[key])
-        )
+            filters[key] === "" || (department[key] != null && String(department[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(department).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     );
 
     // Define as colunas da tabela

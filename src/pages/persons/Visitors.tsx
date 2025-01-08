@@ -219,9 +219,19 @@ export const Visitors = () => {
     // Filtra os dados da tabela
     const filteredDataTable = filteredEmployees.filter(employee =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(employee[key]) === String(filters[key])
-        )
-    );
+            filters[key] === "" || (employee[key] != null && String(employee[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(employee).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
+    )
 
     // Define as colunas da tabela
     const columns: TableColumn<Employee>[] = employeeFields

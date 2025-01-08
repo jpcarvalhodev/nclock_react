@@ -550,7 +550,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
             </Form.Group>
             <Form.Group controlId="formShortName">
               <Form.Label>
-                Nome Resumido <span style={{ color: 'red' }}>*</span>
+                Nome Abreviado <span style={{ color: 'red' }}>*</span>
               </Form.Label>
               <OverlayTrigger
                 placement="right"
@@ -562,7 +562,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                   value={formData.shortName || ''}
                   onChange={handleChange}
                   name="shortName"
-                  maxLength={20}
+                  maxLength={25}
                 />
               </OverlayTrigger>
               {errors.shortName && <Form.Text className="text-danger">{errors.shortName}</Form.Text>}

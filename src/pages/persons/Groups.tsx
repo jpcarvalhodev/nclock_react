@@ -202,8 +202,18 @@ export const Groups = () => {
     // Filtra os dados da tabela
     const filteredDataTable = groups.filter(group =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(group[key]) === String(filters[key])
-        )
+            filters[key] === "" || (group[key] != null && String(group[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(group).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     );
 
     // Define os dados iniciais ao duplicar

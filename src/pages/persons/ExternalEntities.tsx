@@ -179,8 +179,18 @@ export const ExternalEntities = () => {
     // Filtra os dados da tabela
     const filteredDataTable = dataEE.externalEntity.filter(externalEntity =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || String(externalEntity[key]) === String(filters[key])
-        )
+            filters[key] === "" || (externalEntity[key] != null && String(externalEntity[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(externalEntity).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
+            }
+            return false;
+        })
     );
 
     // Define os dados iniciais ao duplicar uma entidade externa
