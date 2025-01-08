@@ -216,7 +216,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
         try {
             const data = await apiService.restartMBDevice(mbDevice);
-            toast.success(data.message || 'Dispositivo reiniciado com sucesso!');
+            toast.success(data.message || 'Comando enviado com sucesso!');
 
         } catch (error) {
             console.error('Erro ao reiniciar o dispositivo:', error);
