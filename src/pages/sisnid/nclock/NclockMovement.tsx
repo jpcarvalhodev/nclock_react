@@ -107,11 +107,11 @@ export const NclockMovement = () => {
     }
 
     // Função para atualizar um movimento
-    const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
+    /* const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
         await handleUpdateAttendance(attendance);
         refreshAttendance();
         setClearSelectionToggle(!clearSelectionToggle);
-    }
+    } */
 
     // Função para deletar um movimento
     const deleteAttendance = async (attendanceTimeId: string) => {
@@ -213,20 +213,20 @@ export const NclockMovement = () => {
     }
 
     // Seleciona a assiduidade anterior
-    const handleNextAttendance = () => {
+    /* const handleNextAttendance = () => {
         if (currentAttendanceIndex < filteredAttendances.length - 1) {
             setCurrentAttendanceIndex(currentAttendanceIndex + 1);
             setSelectedAttendances([filteredAttendances[currentAttendanceIndex + 1]]);
         }
-    };
+    }; */
 
     // Seleciona a assiduidade seguinte
-    const handlePrevDepartment = () => {
+    /* const handlePrevDepartment = () => {
         if (currentAttendanceIndex > 0) {
             setCurrentAttendanceIndex(currentAttendanceIndex - 1);
             setSelectedAttendances([filteredAttendances[currentAttendanceIndex - 1]]);
         }
-    };
+    }; */
 
     // Remove o campo de observação, número, nome do funcionário e o tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type' && field.key !== 'deviceNumber');
@@ -240,10 +240,10 @@ export const NclockMovement = () => {
     );
 
     // Define os dados iniciais ao duplicar
-    const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {
+    /* const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {
         setInitialData(attendance);
         setShowAddAttendanceModal(true);
-    }
+    } */
 
      // Função para abrir o modal de edição
      const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
@@ -316,28 +316,28 @@ export const NclockMovement = () => {
     };
 
     // Define a função de seleção de linhas
-    const handleRowSelected = (state: {
+    /* const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
         selectedRows: EmployeeAttendanceTimes[];
     }) => {
         setSelectedRows(state.selectedRows);
-    };
+    }; */
 
     // Define a função de abertura do modal de edição
-    const handleEditAssiduity = (row: EmployeeAttendanceTimes[]) => {
+    /* const handleEditAssiduity = (row: EmployeeAttendanceTimes[]) => {
         setSelectedAttendances(row);
         setShowUpdateAttendanceModal(true);
-    };
+    }; */
 
     // Define a função de abertura do modal de exclusão
-    const handleOpenDeleteModal = (employeeId: string) => {
+    /* const handleOpenDeleteModal = (employeeId: string) => {
         setSelectedAttendanceToDelete(employeeId);
         setShowDeleteModal(true);
-    };
+    }; */
 
     // Define as colunas de ação
-    const actionColumn: TableColumn<EmployeeAttendanceTimes> = {
+    /* const actionColumn: TableColumn<EmployeeAttendanceTimes> = {
         name: 'Ações',
         cell: (row: EmployeeAttendanceTimes) => (
             <div style={{ display: 'flex' }}>
@@ -363,7 +363,7 @@ export const NclockMovement = () => {
         ),
         selector: (row: EmployeeAttendanceTimes) => row.employeeID,
         ignoreRowClick: true,
-    };
+    }; */
 
     // Função para obter os campos selecionados baseado em selectedColumns
     const getSelectedFields = () => {
@@ -442,7 +442,7 @@ export const NclockMovement = () => {
                                 </div>
                             </div>
                             <DataTable
-                                columns={[...columns, actionColumn]}
+                                columns={columns}
                                 data={filteredDataTable}
                                 onRowDoubleClicked={(row) => {
                                     setSelectedAttendances([row]);
@@ -451,7 +451,6 @@ export const NclockMovement = () => {
                                 pagination
                                 paginationComponentOptions={paginationOptions}
                                 selectableRows
-                                onSelectedRowsChange={handleRowSelected}
                                 clearSelectedRows={clearSelectionToggle}
                                 selectableRowsHighlight
                                 noDataComponent="Não existem dados disponíveis para exibir."
@@ -473,22 +472,6 @@ export const NclockMovement = () => {
                         fields={employeeAttendanceTimesFields}
                         initialValues={initialData}
                         entityType='movimentos'
-                    />
-                )}
-                {selectedAttendances.length > 0 && showUpdateAttendanceModal && (
-                    <UpdateModalAttendance
-                        open={showUpdateAttendanceModal}
-                        onClose={() => setShowUpdateAttendanceModal(false)}
-                        onUpdate={updateAttendance}
-                        entity={selectedAttendances[0]}
-                        fields={employeeAttendanceTimesFields}
-                        onDuplicate={handleDuplicate}
-                        title='Atualizar Assiduidade'
-                        entityType='movimentos'
-                        onNext={handlePrevDepartment}
-                        onPrev={handleNextAttendance}
-                        canMoveNext={currentAttendanceIndex > 0}
-                        canMovePrev={currentAttendanceIndex < filteredAttendances.length - 1}
                     />
                 )}
                 {selectedAttendanceToDelete && showDeleteModal && (

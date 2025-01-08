@@ -435,14 +435,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Busca os dados ao carregar a página
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetchAllDevices();
-        }
-    }, []);
-
     // Atualiza os dados ao mudar a lista de terminais
     useEffect(() => {
         const token = localStorage.getItem('token');

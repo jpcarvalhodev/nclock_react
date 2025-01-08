@@ -15,7 +15,6 @@ import * as apiService from "../../helpers/apiService";
 import { License, LicenseKey } from "../../helpers/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { useNavbar } from "../../context/NavbarContext";
-import { useKiosk } from "../../context/KioskContext";
 import { useTerminals } from "../../context/TerminalsContext";
 
 // Define a interface para os itens de campo
@@ -34,6 +33,7 @@ export const Login = () => {
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllRegisteredUsers, registeredUsers } = usePersons();
   const { fetchKioskConfig, fetchEmailConfig } = useNavbar();
+  const { fetchAllDevices } = useTerminals();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [companyName, setCompanyName] = useState("");
@@ -190,6 +190,7 @@ export const Login = () => {
           await Promise.all([
             fetchAllLicensesWithoutKey(),
             fetchAllRegisteredUsers(),
+            fetchAllDevices(),
             fetchKioskConfig(),
             fetchEmailConfig(),
           ]);

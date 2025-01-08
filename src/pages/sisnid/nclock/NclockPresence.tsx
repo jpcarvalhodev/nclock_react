@@ -101,7 +101,7 @@ export const NclockPresence = () => {
             setAttendancePresence(attendances);
             setFilteredAttendances(attendances);
         }).catch(error => {
-            console.error("Error fetching presence data:", error);
+            console.error("Erro ao tentar buscar os dados:", error);
         });
     };
 
