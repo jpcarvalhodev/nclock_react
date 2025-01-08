@@ -31,12 +31,12 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NkioskCounter = () => {
@@ -119,14 +119,15 @@ export const NkioskCounter = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(getCoin).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+        Object.entries(getCoin).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
             }
+            return false;
         })
     )
     .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
@@ -209,7 +210,7 @@ export const NkioskCounter = () => {
                                     size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
                             <div className="buttons-container-others">

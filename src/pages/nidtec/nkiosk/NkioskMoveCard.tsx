@@ -196,17 +196,17 @@ export const NkioskMoveCard = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(moveCards).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+        Object.entries(moveCards).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
             }
+            return false;
         })
-    )
-        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
+    ).sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
 
     // Função para abrir o modal de edição
     const handleOpenEditModal = (person: KioskTransactionCard) => {

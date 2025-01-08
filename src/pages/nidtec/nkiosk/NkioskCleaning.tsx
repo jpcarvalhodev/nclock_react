@@ -222,17 +222,17 @@ export const NkioskCleaning = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(getCoin).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+        Object.entries(getCoin).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
             }
+            return false;
         })
-    )
-        .sort((a, b) => new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime());
+    ).sort((a, b) => new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<LimpezasEOcorrencias>[] = limpezasEOcorrenciasFields

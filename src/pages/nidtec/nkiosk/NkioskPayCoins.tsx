@@ -42,7 +42,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskPayCoins = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    const { navbarColor, footerColor, kioskConfig } = useNavbar();
     const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
@@ -174,17 +174,17 @@ export const NkioskPayCoins = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || (payCoin[key] != null && String(payCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(payCoin).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+        Object.entries(payCoin).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
             }
+            return false;
         })
-    )
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -225,7 +225,7 @@ export const NkioskPayCoins = () => {
         });
 
     // Calcula o total do valor dos pagamentos
-    const totalAmount = filteredDataTable.length * 0.50;
+    const totalAmount = filteredDataTable.length * (kioskConfig.amount ?? 0);
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {

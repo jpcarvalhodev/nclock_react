@@ -32,16 +32,16 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NkioskPayTerminal = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    const { navbarColor, footerColor, kioskConfig } = useNavbar();
     const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
     const currentDate = new Date();
     const pastDate = new Date();
@@ -134,17 +134,17 @@ export const NkioskPayTerminal = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || (payTerminals[key] != null && String(payTerminals[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(payTerminals).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+        Object.entries(payTerminals).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
             }
+            return false;
         })
-    )
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -198,9 +198,7 @@ export const NkioskPayTerminal = () => {
         });
 
     // Calcula o total do valor dos pagamentos
-    const totalAmount = filteredDataTable.reduce((total, transaction) => {
-        return total + (typeof transaction.amount === 'number' ? transaction.amount : parseFloat(transaction.amount) || 0);
-    }, 0);
+    const totalAmount = filteredDataTable.length * (kioskConfig.amount ?? 0);
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {

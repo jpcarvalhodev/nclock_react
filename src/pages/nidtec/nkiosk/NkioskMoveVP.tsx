@@ -155,24 +155,22 @@ export const NkioskMoveVP = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = useMemo(() => {
-        return filteredDevices.filter(moveCards =>
-            moveCards.eventTime >= new Date(startDate) && moveCards.eventTime <= new Date(endDate) &&
-            Object.keys(filters).every(key =>
-                filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
-            ) &&
-            Object.values(moveCards).some(value => {
-                if (value == null) {
-                    return false;
-                } else if (value instanceof Date) {
+    const filteredDataTable = filteredDevices.filter(moveCards =>
+        moveCards.eventTime >= new Date(startDate) && moveCards.eventTime <= new Date(endDate) &&
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(moveCards).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
                     return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
                 } else {
                     return value.toString().toLowerCase().includes(filterText.toLowerCase());
                 }
-            })
-        )
-            .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
-    }, [filteredDevices, filters, filterText, startDate, endDate]);
+            }
+            return false;
+        })
+    ).sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields

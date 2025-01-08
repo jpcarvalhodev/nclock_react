@@ -122,6 +122,12 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
     // Função para acionar o popup de seleção de arquivo
     const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
+    // Define a função para resetar a foto de perfil
+    const resetToDefaultAvatar = () => {
+        setDeviceImage(no_entity);
+        setFormData({ ...formData, logotipo: null });
+    };
+
     // Função para lidar com a mudança dos campos do formulário
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target as HTMLInputElement;
@@ -145,6 +151,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
 
     // Função para lidar com a atualização
     const handleUpdate = () => {
+        console.log('formData', formData);
 
         const dataToSend = new FormData();
 
@@ -206,7 +213,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                                 <img
                                     src={deviceImage || no_entity}
                                     alt="Logo da entidade"
-                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 30, objectFit: 'cover', borderRadius: '10%' }}
+                                    style={{ width: 128, height: 128, cursor: 'pointer', marginBottom: 15, objectFit: 'cover', borderRadius: '10%' }}
                                     onClick={triggerFileSelectPopup}
                                 />
                                 <div>
@@ -217,6 +224,11 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                                         onChange={handleImageChange}
                                         ref={fileInputRef}
                                     />
+                                </div>
+                                <div>
+                                    <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm'>
+                                        Remover Foto
+                                    </Button>
                                 </div>
                             </Col>
                         </Row>

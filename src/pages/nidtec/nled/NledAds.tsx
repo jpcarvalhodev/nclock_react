@@ -34,12 +34,12 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NledAds = () => {
@@ -221,14 +221,15 @@ export const NledAds = () => {
         Object.keys(filters).every(key =>
             filters[key] === "" || (ad[key] != null && String(ad[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(ad).some(value => {
-            if (value == null) {
-                return false;
-            } else if (value instanceof Date) {
-                return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-            } else {
-                return value.toString().toLowerCase().includes(filterText.toLowerCase());
+        Object.entries(ad).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
+                }
             }
+            return false;
         })
     );
 
@@ -286,7 +287,7 @@ export const NledAds = () => {
                                     size='small'
                                     value={filterText}
                                     onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
                             <div className="buttons-container-others">

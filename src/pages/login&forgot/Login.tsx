@@ -16,6 +16,7 @@ import { License, LicenseKey } from "../../helpers/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
+import { useEntity } from "../../context/EntityContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -34,6 +35,7 @@ export const Login = () => {
   const { fetchAllRegisteredUsers, registeredUsers } = usePersons();
   const { fetchKioskConfig, fetchEmailConfig } = useNavbar();
   const { fetchAllDevices } = useTerminals();
+  const { fetchAllEntity } = useEntity();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
   const [companyName, setCompanyName] = useState("");
@@ -193,6 +195,7 @@ export const Login = () => {
             fetchAllDevices(),
             fetchKioskConfig(),
             fetchEmailConfig(),
+            fetchAllEntity()
           ]);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");

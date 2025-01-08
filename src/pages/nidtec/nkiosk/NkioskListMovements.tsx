@@ -187,30 +187,23 @@ export const NkioskListMovements = () => {
     };
 
     // Filtra os dados da tabela com base no filtro de 'eventName'
-    const filteredDataTable = useMemo(() => {
-        return filteredDevices.filter(listMovement =>
-            new Date(listMovement.eventTime) >= new Date(startDate) && new Date(listMovement.eventTime) <= new Date(endDate) &&
-            Object.keys(filters).every(key =>
-                filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
-            ) &&
-            (filterText === '' || Object.entries(listMovement).some(([key, value]) => {
-                if (key === 'eventDoorId') {
-                    const typeText = value === 4 ? 'Quiosque' : 'Torniquete';
-                    return typeText.toLowerCase().includes(filterText.toLowerCase());
-                }
-                if (value == null) {
-                    return false;
-                } else if (typeof value === 'number') {
-                    return value.toString().includes(filterText);
-                } else if (value instanceof Date) {
+    const filteredDataTable = filteredDevices.filter(moveCards =>
+        new Date(moveCards.eventTime) >= new Date(startDate) && new Date(moveCards.eventTime) <= new Date(endDate) &&
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(moveCards).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
                     return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-                } else if (typeof value === 'string') {
-                    return value.toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
                 }
-                return false;
-            }))
-        ).sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
-    }, [totalMovements, filteredDevices, filterText, filters, startDate, endDate]);
+            }
+            return false;
+        })
+    )
+        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
 
     // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
     const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {

@@ -106,7 +106,7 @@ export const NkioskDashboardLicensed = () => {
     // Função para verificar se a resposta tem uma mensagem de erro
     const checkForErrorMessage = (response: string | any[]) => {
         return response.length === 0 || (response[0] && response[0].message);
-    };    
+    };
 
     // Função para buscar os dados para os gráficos
     const fetchAllData = async () => {
@@ -189,61 +189,61 @@ export const NkioskDashboardLicensed = () => {
         );
     };
 
-    // Calcula o montante total por mês
-    const calculatePayMonthlyTotals = (transactions: KioskTransactionMB[]) => {
+    // Calcula a quantidade todal de pagamentos por mês
+    const calculatePayMonthlyCounts = (transactions: KioskTransactionMB[]) => {
         const currentYear = new Date().getFullYear();
-        const monthlyTotals = Array(12).fill(0);
+        const monthlyCounts = Array(12).fill(0);
+
         const filteredTransactions = transactions.filter(transaction => {
             const transactionDate = new Date(transaction.timestamp);
             return transactionDate.getFullYear() === currentYear;
         });
+
         filteredTransactions.forEach(transaction => {
-            if (transaction.timestamp && transaction.amount) {
+            if (transaction.timestamp) {
                 const date = new Date(transaction.timestamp);
                 const month = date.getMonth();
-                const amount = parseFloat(transaction.amount.replace(',', '.'));
-                if (!isNaN(amount)) {
-                    monthlyTotals[month] += amount;
-                }
+                monthlyCounts[month] += 1;
             }
         });
-        return monthlyTotals;
+
+        return monthlyCounts;
     };
 
-    // Calcula o montante total por mês
-    const calculateMoveMonthlyTotals = (transactions: KioskTransactionCard[]) => {
+    // Calcula a quantidade total de movimentos por mês
+    const calculateMoveMonthlyCounts = (transactions: KioskTransactionCard[]) => {
         const currentYear = new Date().getFullYear();
-        const monthlyTotals = Array(12).fill(0);
-    
+        const monthlyCounts = Array(12).fill(0);
+
         const filteredTransactions = transactions.filter(transaction => {
             let transactionDate;
             if (transaction.eventTime.toString().includes('-')) {
                 transactionDate = parseISO(transaction.eventTime.toString());
             } else {
-                transactionDate = parse(transaction.eventTime.toString(), 'EEE MMM dd yyyy HH:mm:ss x (zzzz)', new Date());
+                transactionDate = parse(
+                    transaction.eventTime.toString(),
+                    'EEE MMM dd yyyy HH:mm:ss x (zzzz)',
+                    new Date()
+                );
             }
-            
             return transactionDate.getFullYear() === currentYear;
         });
-    
+
         filteredTransactions.forEach(transaction => {
-            const transactionDate = transaction.eventTime.toString().includes('-') ? 
-                                    parseISO(transaction.eventTime.toString()) : 
-                                    parse(transaction.eventTime.toString(), 'EEE MMM dd yyyy HH:mm:ss x (zzzz)', new Date());
-            
+            const transactionDate = transaction.eventTime.toString().includes('-')
+                ? parseISO(transaction.eventTime.toString())
+                : parse(transaction.eventTime.toString(), 'EEE MMM dd yyyy HH:mm:ss x (zzzz)', new Date());
+
             const month = getMonth(transactionDate);
-            let amount = parseFloat(transaction.amount.replace(',', '.'));
-            amount = isNaN(amount) ? 0 : amount;
-    
-            monthlyTotals[month] += amount;
+            monthlyCounts[month] += 1;
         });
-    
-        return monthlyTotals;
+
+        return monthlyCounts;
     };
 
     // Atualiza os dados do gráfico com base nos pagamentos anuais
     useEffect(() => {
-        const monthlyTotals = calculatePayMonthlyTotals(totalPayments);
+        const monthlyTotals = calculatePayMonthlyCounts(totalPayments);
         const newLineData = {
             labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
             datasets: [
@@ -261,7 +261,7 @@ export const NkioskDashboardLicensed = () => {
 
     // Atualiza os dados do gráfico com base nos movimentos anuais
     useEffect(() => {
-        const monthlyTotals = calculateMoveMonthlyTotals(totalMovements);
+        const monthlyTotals = calculateMoveMonthlyCounts(totalMovements);
         const newLineData = {
             labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
             datasets: [

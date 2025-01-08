@@ -48,6 +48,7 @@ export const NkioskListPayments = () => {
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
     const { payTerminal, fetchAllPayTerminal, payCoins, fetchAllPayCoins, totalPayments, setTotalPayments } = useKiosk();
+    const { kioskConfig } = useNavbar();
     const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
     const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>([]);
     const [filterText, setFilterText] = useState<string>('');
@@ -173,30 +174,25 @@ export const NkioskListPayments = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = useMemo(() => {
-        return filteredDevices.filter(listPayment =>
-            new Date(listPayment.timestamp) >= new Date(startDate) && new Date(listPayment.timestamp) <= new Date(endDate) &&
-            Object.keys(filters).every(key =>
-                filters[key] === "" || (listPayment[key] != null && String(listPayment[key]).toLowerCase().includes(filters[key].toLowerCase()))
-            ) &&
-            (filterText === '' || Object.entries(listPayment).some(([key, value]) => {
+    const filteredDataTable = filteredDevices.filter(payTerminals =>
+        new Date(payTerminals.timestamp) >= new Date(startDate) && new Date(payTerminals.timestamp) <= new Date(endDate) &&
+        Object.keys(filters).every(key =>
+            filters[key] === "" || (payTerminals[key] != null && String(payTerminals[key]).toLowerCase().includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(payTerminals).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
                 if (key === 'transactionType') {
                     const typeText = value === 1 ? 'Multibanco' : 'Moedeiro';
                     return typeText.toLowerCase().includes(filterText.toLowerCase());
-                }
-                if (value == null) {
-                    return false;
-                } else if (typeof value === 'number') {
-                    return value.toString().includes(filterText);
                 } else if (value instanceof Date) {
                     return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-                } else if (typeof value === 'string') {
-                    return value.toLowerCase().includes(filterText.toLowerCase());
+                } else {
+                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
                 }
-                return false;
-            }))
-        ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    }, [totalPayments, filters, filterText, filteredDevices, startDate, endDate]);
+            }
+            return false;
+        })
+    ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     // Define as colunas da tabela
     const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -249,17 +245,8 @@ export const NkioskListPayments = () => {
             };
         });
 
-    // Calcula o valor total dos pagamentos no terminal
-    const totalAmountTransactions = filteredDataTable.reduce((total, transaction) => {
-        const amount = transaction.amount ? String(transaction.amount) : '0';
-        return total + (typeof transaction.amount === 'number' ? transaction.amount : parseFloat(amount) || 0);
-    }, 0);
-
     // Calcula o valor total dos pagamentos no moedeiro
-    const totalAmountFixed = filteredDataTable.length * 0.50;
-
-    // Calcula o total do valor dos pagamentos
-    const totalAmount = totalAmountTransactions + totalAmountFixed;
+    const totalAmount = filteredDataTable.length * (kioskConfig.amount ?? 0);
 
     // Função para gerar os dados com nomes substituídos para o export/print
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {

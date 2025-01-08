@@ -11,7 +11,7 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { EntityContext, EntityContextType } from "../../context/EntityContext";
+import { useEntity } from "../../context/EntityContext";
 import { useNavbar } from "../../context/NavbarContext";
 import { entityFields } from "../../helpers/Fields";
 import { Entity } from "../../helpers/Types";
@@ -31,7 +31,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const Entities = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { entity, fetchAllEntity, updateEntity } = useContext(EntityContext) as EntityContextType;
+    const { entity, fetchAllEntity, updateEntity } = useEntity();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nome', 'nif', 'email', 'enabled']);
     const [filterText, setFilterText] = useState("");
