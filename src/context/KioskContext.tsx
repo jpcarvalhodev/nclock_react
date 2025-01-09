@@ -54,6 +54,8 @@ export interface KioskContextType {
     alerts: MBDeviceStatus[];
     setAlerts: (alerts: MBDeviceStatus[]) => void;
     fetchAllTasks: () => void;
+    unifyTotalPayments: () => void;
+    unifyTotalMovements: () => void;
 }
 
 // Cria o contexto
@@ -455,11 +457,16 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
 
     // Unifica os pagamentos e movimentos
     useEffect(() => {
-        if (payTerminal.length > 0 && payCoins.length > 0 && moveCard.length > 0 && moveKiosk.length > 0) {
+        if (payTerminal.length > 0 && payCoins.length > 0) {
             unifyTotalPayments();
+        }
+    }, [payTerminal, payCoins]);
+
+    useEffect(() => {
+        if (moveCard.length > 0 && moveKiosk.length > 0) {
             unifyTotalMovements();
         }
-    }, [payTerminal, payCoins, moveCard, moveKiosk]);
+    }, [moveCard, moveKiosk]);
 
     // Definindo o valor do contexto
     const contextValue = {
@@ -508,7 +515,9 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         setTotalMovements,
         alerts,
         setAlerts,
-        fetchAllTasks
+        fetchAllTasks,
+        unifyTotalPayments,
+        unifyTotalMovements
     };
 
     return (

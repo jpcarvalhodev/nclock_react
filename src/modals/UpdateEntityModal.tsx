@@ -151,7 +151,6 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
 
     // Função para lidar com a atualização
     const handleUpdate = () => {
-        console.log('formData', formData);
 
         const dataToSend = new FormData();
 

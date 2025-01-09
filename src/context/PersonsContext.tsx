@@ -149,14 +149,16 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         try {
             let data = await apiService.fetchAllEmployees();
 
+            const sortedData = data.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
+
             if (options?.filterFunc) {
                 data = options.filterFunc(data);
             }
             if (options?.postFetch) {
                 options.postFetch(data);
             }
-            setEmployees(data);
-            return data;
+            setEmployees(sortedData);
+            return sortedData;
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
             return [];
@@ -168,14 +170,16 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         try {
             let data = await apiService.fetchAllEmployeesWithDisabled();
 
+            const sortedData = data.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
+
             if (options?.filterFunc) {
                 data = options.filterFunc(data);
             }
             if (options?.postFetch) {
                 options.postFetch(data);
             }
-            setDisabledEmployees(data);
-            return data;
+            setDisabledEmployees(sortedData);
+            return sortedData;
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
             return [];
@@ -186,8 +190,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllDepartments = async (): Promise<Department[]> => {
         try {
             const departments = await apiService.fetchAllDepartments();
-            setDepartments(departments);
-            return departments;
+            const sortedDepartments = departments.sort((a: { code: number; }, b: { code: number; }) => a.code - b.code);
+            setDepartments(sortedDepartments);
+            return sortedDepartments;
         } catch (error) {
             console.error('Erro ao buscar departamentos:', error);
         }
@@ -393,7 +398,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllCategories = async () => {
         try {
             const data = await apiService.fetchAllCategories();
-            setCategories(data);
+            const sortedData = data.sort((a: { code: number; }, b: { code: number; }) => a.code - b.code);
+            setCategories(sortedData);
         } catch (error) {
             console.error('Erro ao buscar os dados das categorias:', error);
         }
@@ -444,9 +450,10 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllExternalEntitiesData = async () => {
         try {
             const { ExternalEntities, ExternalEntityTypes } = await apiService.fetchAllExternalEntitiesData() as { ExternalEntities: ExternalEntity[]; ExternalEntityTypes: ExternalEntityTypes[]; };
+            const sortedData = ExternalEntityTypes.sort((a: { order: number; }, b: { order: number; }) => a.order - b.order);
             setDataEE({
                 externalEntity: ExternalEntities,
-                externalEntityTypes: ExternalEntityTypes,
+                externalEntityTypes: sortedData,
             });
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
@@ -535,7 +542,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllProfessions = async () => {
         try {
             const data = await apiService.fetchAllProfessions();
-            setProfessions(data);
+            const sortedData = data.sort((a: { code: number; }, b: { code: number; }) => a.code - b.code);
+            setProfessions(sortedData);
         } catch (error) {
             console.error('Erro ao buscar os dados das profissões:', error);
         }

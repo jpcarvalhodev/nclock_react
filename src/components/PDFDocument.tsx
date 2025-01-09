@@ -2,7 +2,7 @@ import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/render
 import React from 'react';
 
 import { useTerminals } from '../context/TerminalsContext';
-import { Devices, Entity, MBDevice } from '../helpers/Types';
+import { AccessControl, Devices, Entity, MBDevice } from '../helpers/Types';
 
 // Estilos para o documento PDF
 const styles = StyleSheet.create({
@@ -97,6 +97,7 @@ interface PDFDocumentProps {
     entityLogo: Blob | null;
     device: Devices[];
     mbDevice: MBDevice[];
+    accessControl: AccessControl[];
 }
 
 // Define a interface para os itens de dados
@@ -108,7 +109,7 @@ interface DataItem {
 type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | 'isPresent' | 'urlArquivo' | 'fechoImage' | 'aberturaImage' | string;
 
 // Componente para renderizar o documento PDF
-export const PDFDocument = ({ data, fields, entity, entityLogo, device, mbDevice }: PDFDocumentProps) => {
+export const PDFDocument = ({ data, fields, entity, entityLogo, device, mbDevice, accessControl }: PDFDocumentProps) => {
 
     // Obtém o nome e o logotipo da entidade
     const entityName = entity && entity.length > 0 && entity[0].nome ? entity[0].nome : 'Nome da entidade não disponível';
@@ -203,6 +204,22 @@ export const PDFDocument = ({ data, fields, entity, entityLogo, device, mbDevice
                 return device.find(device => device.serialNumber === item.deviceSN)?.deviceName || '';
             case 'tpId':
                 return mbDevice.find(mbDevice => mbDevice.id === item.tpId)?.nomeQuiosque || '';
+            case "doorName": {
+                const found = accessControl.find((acObj) => acObj.employeesId === item.employeesId);
+                if (!found) {
+                    return "";
+                }
+                const doorNames = found.acc.map((accItem: AccessControl) => accItem.doorName);
+                return doorNames.join(", ");
+            }
+            case "timezoneName": {
+                const found = accessControl.find((acObj) => acObj.employeesId === item.employeesId);
+                if (!found) {
+                    return "";
+                }
+                const timezones = found.acc.map((accItem: AccessControl) => accItem.timezoneName);
+                return timezones.join(", ");
+            }
             default:
                 return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
         }
@@ -211,7 +228,7 @@ export const PDFDocument = ({ data, fields, entity, entityLogo, device, mbDevice
     const maxColsPerPage = 8;
     const maxRowsPerPage = 20;
     const allColumns = ['eventId', 'appId', 'timezoneId', 'doorId', 'id', 'deviceId', 'birthday', 'admissionDate', 'biIssuance', 'biValidity', 'exitDate', 'status', 'statusEmail', 'rgpdAut', 'departmentId', 'professionId', 'categoryId', 'groupId', 'zoneId', 'externalEntityId', 'attendanceTime', 'inOutMode', 'code', 'machineNumber', 'cardNumber', 'productTime', 'createDate', 'updateDate', 'createTime', 'updateTime', 'eventTime', 'timestamp', 'transactionType', 'estadoTerminal', 'timeReboot', 'dataRecolha'];
-    const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo', 'url', 'passwordCamera', 'urlArquivo', 'fechoImage', 'aberturaImage', 'paiId'];
+    const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo', 'url', 'passwordCamera', 'urlArquivo', 'fechoImage', 'aberturaImage', 'paiId', 'employeesId'];
 
     const updateColumnsToIgnore = () => {
         const idColumns = allColumns.filter(column => column.toLowerCase().includes('id'));

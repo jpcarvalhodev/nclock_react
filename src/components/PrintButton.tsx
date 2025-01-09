@@ -35,7 +35,7 @@ interface PrintButtonProps {
 
 // Componente para visualizar e imprimir ou salvar o PDF
 export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onClose }: PrintButtonProps) => {
-    const { devices, mbDevices } = useTerminals();
+    const { devices, mbDevices, accessControl } = useTerminals();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [calculatedTimeout, setCalculatedTimeout] = useState(renderTimeout || 5000);
@@ -136,7 +136,7 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
                         </div>
                     ) : (
                         <PDFViewer width="100%" height="600px">
-                            <PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />
+                            <PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} accessControl={accessControl} />
                         </PDFViewer>
                     )}
                 </Modal.Body>
@@ -145,7 +145,7 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
                         Fechar
                     </Button>
                     <PDFDownloadLink
-                        document={<PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />}
+                        document={<PDFDocument data={data} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} accessControl={accessControl} />}
                         fileName="dados_impressos.pdf"
                     >
                         <Button variant="outline-primary">

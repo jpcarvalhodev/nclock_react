@@ -103,9 +103,10 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
         try {
             const devices = await apiService.fetchAllDevices();
             const employeeCard = await apiService.fetchAllEmployeeCards();
+            const sortedPin = employeeCard.sort((a: any, b: any) => a.enrollNumber - b.enrollNumber);
             setDropdownData({
                 deviceSN: devices,
-                pin: employeeCard
+                pin: sortedPin
             });
         } catch (error) {
             console.error('Erro ao buscar os dados de funcionários, cartões e dispositivos', error);
@@ -216,7 +217,7 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
                                             switch ('pin') {
                                                 case 'pin':
                                                     optionId = option.enrollNumber;
-                                                    optionName = option.employeeName;
+                                                    optionName = option.enrollNumber + ' - ' + option.employeeName;
                                                     break;
                                                 default:
                                                     optionId = option.id;

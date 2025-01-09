@@ -481,7 +481,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     }
 
     dataToSend = removeEmptyFields(dataToSend) as typeof dataToSend;
-    console.log('Data to send:', dataToSend);
     onUpdate(dataToSend as unknown as T);
   };
 

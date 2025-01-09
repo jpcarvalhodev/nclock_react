@@ -28,9 +28,9 @@ export const ResetPassword = () => {
 
   // Função para validar a senha
   const validatePassword = (password: string): boolean => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{6,})/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-_])(?=.{6,})/;
     return regex.test(password);
-  };
+};
 
   // Função para enviar o formulário de redefinição de senha
   const handleResetPasswordFormSubmit = async (event: React.FormEvent) => {

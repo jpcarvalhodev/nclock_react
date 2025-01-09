@@ -335,7 +335,7 @@ export const accessControlFields = [
     { key: 'doorId', label: 'Porta', type: 'dropdown' },
     { key: 'doorName', label: 'Nome da Porta', type: 'string' },
     { key: 'timezoneId', label: 'Período', type: 'dropdown' },
-    { key: 'timezoneName', label: 'Nome do Fuso Horário', type: 'string' },
+    { key: 'timezoneName', label: 'Nome do Período', type: 'string' },
     { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true },
     { key: 'createDate', label: 'Data de Criação', type: 'Date' },
     { key: 'updateDate', label: 'Data de Atualização', type: 'Date' },

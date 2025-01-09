@@ -80,7 +80,7 @@ export const NkioskDashboardLicensed = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const { navbarColor, footerColor } = useNavbar();
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const { totalPayments, setTotalPayments, totalMovements, setTotalMovements } = useKiosk();
+    const { payTerminal, payCoins, moveCard, moveKiosk, totalPayments, setTotalPayments, totalMovements, setTotalMovements } = useKiosk();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [payLineChartData, setPayLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
     const [moveLineChartData, setMoveLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
@@ -284,7 +284,7 @@ export const NkioskDashboardLicensed = () => {
             datasets: [
                 {
                     label: 'Pagamentos com Multibanco Hoje',
-                    data: [todayTotalMb.length],
+                    data: [todayTotalMb.flat().length],
                     backgroundColor: '#009739',
                 }
             ]
