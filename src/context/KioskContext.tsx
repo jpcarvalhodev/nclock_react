@@ -457,13 +457,13 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
 
     // Unifica os pagamentos e movimentos
     useEffect(() => {
-        if (payTerminal.length > 0 && payCoins.length > 0) {
+        if (payTerminal.length > 0 || payCoins.length > 0) {
             unifyTotalPayments();
         }
     }, [payTerminal, payCoins]);
 
     useEffect(() => {
-        if (moveCard.length > 0 && moveKiosk.length > 0) {
+        if (moveCard.length > 0 || moveKiosk.length > 0) {
             unifyTotalMovements();
         }
     }, [moveCard, moveKiosk]);

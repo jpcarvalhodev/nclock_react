@@ -38,7 +38,7 @@ export const Login = () => {
   const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances } = useAttendance();
-  const { registeredUsers, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
+  const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
   const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
@@ -197,6 +197,7 @@ export const Login = () => {
           await Promise.all([
             fetchAllLicensesWithoutKey(),
             fetchAllDevices(),
+            fetchAllData(),
             fetchAllEmployees(),
             fetchAllDepartments(),
             fetchAllGroups(),

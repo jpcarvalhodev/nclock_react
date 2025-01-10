@@ -35,12 +35,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página movimentos
@@ -53,29 +53,22 @@ export const NclockMovement = () => {
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
         handleAddAttendance,
-        handleUpdateAttendance,
-        handleDeleteAttendance
     } = useContext(AttendanceContext) as AttendanceContextType;
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
     const [attendanceMovement, setAttendanceMovement] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
-    const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
-    const [showUpdateAttendanceModal, setShowUpdateAttendanceModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeId', 'inOutMode', 'attendanceTime']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeName', 'inOutMode', 'attendanceTime']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>([]);
     const [filterText, setFilterText] = useState('');
-    const [selectedAttendanceToDelete, setSelectedAttendanceToDelete] = useState<string | null>(null);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [filters, setFilters] = useState<Filters>({});
     const [initialData, setInitialData] = useState<Partial<EmployeeAttendanceTimes>>({});
-    const [currentAttendanceIndex, setCurrentAttendanceIndex] = useState(0);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
 
@@ -106,20 +99,6 @@ export const NclockMovement = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     }
 
-    // Função para atualizar um movimento
-    /* const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
-        await handleUpdateAttendance(attendance);
-        refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
-    } */
-
-    // Função para deletar um movimento
-    const deleteAttendance = async (attendanceTimeId: string) => {
-        await handleDeleteAttendance(attendanceTimeId);
-        refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
-    }
-
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
@@ -143,7 +122,19 @@ export const NclockMovement = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendanceMovement.filter(att => {
-            return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
+            return Object.entries(att).some(([key, value]) => {
+                if (selectedColumns.includes(key)) {
+                    if (key === 'attendanceTime') {
+                        const formattedDate = new Date(value).toLocaleString('pt');
+                        return formattedDate.toLowerCase().includes(lowercasedFilter);
+                    } else if (typeof value === 'string') {
+                        return value.toLowerCase().includes(lowercasedFilter);
+                    } else if (value != null) {
+                        return value.toString().toLowerCase().includes(lowercasedFilter);
+                    }
+                }
+                return false;
+            });
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendanceMovement]);
@@ -157,15 +148,6 @@ export const NclockMovement = () => {
             setFilteredAttendances(attendanceMovement);
         }
     }, [selectedEmployeeId, selectedEmployeeIds]);
-
-    // Atualiza o índice selecionado
-    useEffect(() => {
-        if (selectedAttendances && selectedAttendances.length > 0) {
-            const sortedAttendances = filteredAttendances.sort((a, b) => a.attendanceTime.toString().localeCompare(b.attendanceTime.toString()));
-            const attendanceIndex = sortedAttendances.findIndex(att => att.attendanceTimeId === selectedAttendances[0].attendanceTimeId);
-            setCurrentAttendanceIndex(attendanceIndex);
-        }
-    }, [selectedAttendances, filteredAttendances]);
 
     // Define a seleção de funcionários
     const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -190,7 +172,7 @@ export const NclockMovement = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['employeeId', 'inOutMode', 'attendanceTime']);
+        setSelectedColumns(['employeeName', 'inOutMode', 'attendanceTime']);
     };
 
     // Função para atualizar os funcionários
@@ -211,22 +193,6 @@ export const NclockMovement = () => {
             toast.warn('Selecione um funcionário primeiro!');
         }
     }
-
-    // Seleciona a assiduidade anterior
-    /* const handleNextAttendance = () => {
-        if (currentAttendanceIndex < filteredAttendances.length - 1) {
-            setCurrentAttendanceIndex(currentAttendanceIndex + 1);
-            setSelectedAttendances([filteredAttendances[currentAttendanceIndex + 1]]);
-        }
-    }; */
-
-    // Seleciona a assiduidade seguinte
-    /* const handlePrevDepartment = () => {
-        if (currentAttendanceIndex > 0) {
-            setCurrentAttendanceIndex(currentAttendanceIndex - 1);
-            setSelectedAttendances([filteredAttendances[currentAttendanceIndex - 1]]);
-        }
-    }; */
 
     // Remove o campo de observação, número, nome do funcionário e o tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type' && field.key !== 'deviceNumber');
@@ -249,14 +215,8 @@ export const NclockMovement = () => {
         })
     );
 
-    // Define os dados iniciais ao duplicar
-    /* const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {
-        setInitialData(attendance);
-        setShowAddAttendanceModal(true);
-    } */
-
-     // Função para abrir o modal de edição
-     const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
+    // Função para abrir o modal de edição
+    const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
         const employeeDetails = employees.find(emp => emp.employeeID === person.employeeId);
         if (employeeDetails) {
             setSelectedEmployee(employeeDetails);
@@ -270,7 +230,7 @@ export const NclockMovement = () => {
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
-            if (field.key === 'employeeId') {
+            if (field.key === 'employeeName') {
                 return {
                     ...field,
                     name: field.label,
@@ -325,56 +285,6 @@ export const NclockMovement = () => {
         rangeSeparatorText: 'de',
     };
 
-    // Define a função de seleção de linhas
-    /* const handleRowSelected = (state: {
-        allSelected: boolean;
-        selectedCount: number;
-        selectedRows: EmployeeAttendanceTimes[];
-    }) => {
-        setSelectedRows(state.selectedRows);
-    }; */
-
-    // Define a função de abertura do modal de edição
-    /* const handleEditAssiduity = (row: EmployeeAttendanceTimes[]) => {
-        setSelectedAttendances(row);
-        setShowUpdateAttendanceModal(true);
-    }; */
-
-    // Define a função de abertura do modal de exclusão
-    /* const handleOpenDeleteModal = (employeeId: string) => {
-        setSelectedAttendanceToDelete(employeeId);
-        setShowDeleteModal(true);
-    }; */
-
-    // Define as colunas de ação
-    /* const actionColumn: TableColumn<EmployeeAttendanceTimes> = {
-        name: 'Ações',
-        cell: (row: EmployeeAttendanceTimes) => (
-            <div style={{ display: 'flex' }}>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
-                >
-                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                </OverlayTrigger>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
-                >
-                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditAssiduity([row])} />
-                </OverlayTrigger>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
-                >
-                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.attendanceTimeId)} />
-                </OverlayTrigger>
-            </div>
-        ),
-        selector: (row: EmployeeAttendanceTimes) => row.employeeID,
-        ignoreRowClick: true,
-    }; */
-
     // Função para obter os campos selecionados baseado em selectedColumns
     const getSelectedFields = () => {
         return employeeAttendanceTimesFields.filter(field => selectedColumns.includes(field.key));
@@ -396,13 +306,13 @@ export const NclockMovement = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                            label="Pesquisa"
-                            variant="outlined"
-                            size='small'
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                            style={{ marginTop: -5 }}
-                        />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container">
                                     <OverlayTrigger
@@ -454,10 +364,6 @@ export const NclockMovement = () => {
                             <DataTable
                                 columns={columns}
                                 data={filteredDataTable}
-                                onRowDoubleClicked={(row) => {
-                                    setSelectedAttendances([row]);
-                                    setShowUpdateAttendanceModal(true);
-                                }}
                                 pagination
                                 paginationComponentOptions={paginationOptions}
                                 selectableRows
@@ -483,14 +389,6 @@ export const NclockMovement = () => {
                         fields={employeeAttendanceTimesFields}
                         initialValues={initialData}
                         entityType='movimentos'
-                    />
-                )}
-                {selectedAttendanceToDelete && showDeleteModal && (
-                    <DeleteModal
-                        open={showDeleteModal}
-                        onClose={() => setShowDeleteModal(false)}
-                        onDelete={deleteAttendance}
-                        entityId={selectedAttendanceToDelete}
                     />
                 )}
                 {showColumnSelector && (

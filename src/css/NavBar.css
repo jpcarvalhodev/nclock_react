@@ -657,6 +657,10 @@ input::-ms-clear {
         display: none;
     }
 
+    .mobile-adjust {
+        margin-left: 10px;
+    }
+
     .pessoas-tab,
     .dispositivos-tab,
     .configuracao-tab,
@@ -792,11 +796,6 @@ input::-ms-clear {
         width: 100%;
     }
 
-    .btn-group {
-        display: flex;
-        flex-direction: column;
-    }
-
     .ribbon-button-pessoas .icon img,
     .dropdown-content img {
         width: 40px;
@@ -926,4 +925,20 @@ input::-ms-clear {
     .icon-text-entidades {
         margin-bottom: 10px;
     }
+}
+
+@media (min-width: 1200px) and (max-width: 1366px) {
+
+    body {
+        overflow: auto;
+    }
+
+}
+
+@media (max-width: 1600px) {
+
+    body {
+        overflow: auto;
+    }
+
 }

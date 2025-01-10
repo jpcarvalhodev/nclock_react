@@ -57,14 +57,14 @@ export const NclockRequests = () => {
         handleDeleteAttendance,
     } = useContext(AttendanceContext) as AttendanceContextType;
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
     const [attendanceRequests, setAttendanceRequests] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
     const [showUpdateAttendanceModal, setShowUpdateAttendanceModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeId', 'observation', 'attendanceTime']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeName', 'observation', 'attendanceTime']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>([]);
@@ -143,7 +143,19 @@ export const NclockRequests = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendanceRequests.filter(att => {
-            return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
+            return Object.entries(att).some(([key, value]) => {
+                if (selectedColumns.includes(key)) {
+                    if (key === 'attendanceTime') {
+                        const formattedDate = new Date(value).toLocaleString('pt');
+                        return formattedDate.toLowerCase().includes(lowercasedFilter);
+                    } else if (typeof value === 'string') {
+                        return value.toLowerCase().includes(lowercasedFilter);
+                    } else if (value != null) {
+                        return value.toString().toLowerCase().includes(lowercasedFilter);
+                    }
+                }
+                return false;
+            });
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendanceRequests]);
@@ -190,7 +202,7 @@ export const NclockRequests = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['employeeId', 'observation', 'attendanceTime']);
+        setSelectedColumns(['employeeName', 'observation', 'attendanceTime']);
     };
 
     // Função para atualizar os funcionários
@@ -229,7 +241,7 @@ export const NclockRequests = () => {
     };
 
     // Remove o campo de número, nome, modo de entrada/saída e tipo
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'inOutMode' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeId' && field.key !== 'inOutMode' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredAttendances.filter(attendances =>
@@ -270,7 +282,7 @@ export const NclockRequests = () => {
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
-            if (field.key === 'employeeId') {
+            if (field.key === 'employeeName') {
                 return {
                     ...field,
                     name: field.label,

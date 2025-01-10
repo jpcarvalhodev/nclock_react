@@ -80,7 +80,7 @@ export const NkioskDashboardLicensed = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const { navbarColor, footerColor } = useNavbar();
     const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const { payTerminal, payCoins, moveCard, moveKiosk, totalPayments, setTotalPayments, totalMovements, setTotalMovements } = useKiosk();
+    const { totalPayments, setTotalPayments, totalMovements, setTotalMovements } = useKiosk();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [payLineChartData, setPayLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
     const [moveLineChartData, setMoveLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
@@ -243,13 +243,13 @@ export const NkioskDashboardLicensed = () => {
 
     // Atualiza os dados do gráfico com base nos pagamentos anuais
     useEffect(() => {
-        const monthlyTotals = calculatePayMonthlyCounts(totalPayments);
+        const monthlyPayTotals = calculatePayMonthlyCounts(totalPayments);
         const newLineData = {
             labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
             datasets: [
                 {
                     label: 'Total de Pagamentos por Mês',
-                    data: monthlyTotals,
+                    data: monthlyPayTotals,
                     fill: false,
                     borderColor: '#009739',
                     tension: 0.1
@@ -261,13 +261,13 @@ export const NkioskDashboardLicensed = () => {
 
     // Atualiza os dados do gráfico com base nos movimentos anuais
     useEffect(() => {
-        const monthlyTotals = calculateMoveMonthlyCounts(totalMovements);
+        const monthlyMoveTotals = calculateMoveMonthlyCounts(totalMovements);
         const newLineData = {
             labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
             datasets: [
                 {
-                    label: 'Total de Pagamentos por Mês',
-                    data: monthlyTotals,
+                    label: 'Total de Movimentos por Mês',
+                    data: monthlyMoveTotals,
                     fill: false,
                     borderColor: '#009739',
                     tension: 0.1
@@ -350,15 +350,15 @@ export const NkioskDashboardLicensed = () => {
                 </div>
                 <div className="carousel-chart-container" id="carousel-chart" style={{ marginTop: 5 }}>
                     <Carousel infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                        <div className="departments-groups-chart" style={{ height: '450px' }}>
+                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Pagamentos em {currentYear}: { }</h2>
                             <Line className="departments-groups-chart-data" data={payLineChartData} />
                         </div>
-                        <div className="departments-groups-chart" style={{ height: '450px' }}>
+                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Movimentos em {currentYear}: { }</h2>
                             <Line className="departments-groups-chart-data" data={moveLineChartData} />
                         </div>
-                        <div style={{ height: '450px', width: '56rem', margin: 'auto' }}>
+                        <div style={{ height: '28rem', maxWidth: '56rem', margin: 'auto' }}>
                             <Calendar
                                 localizer={localizer}
                                 events={events}
@@ -376,26 +376,26 @@ export const NkioskDashboardLicensed = () => {
                 </div>
             </div>
             <div className="dashboard-content" style={{ marginTop: 5 }}>
-                <div className="carousel-chart-container" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '240px' }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Multibanco Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayMbLineChartData} />
                     </div>
                 </div>
-                <div className="carousel-chart-container" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '240px' }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Moedeiro Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayCoinLineChartData} />
                     </div>
                 </div>
-                <div className="carousel-chart-container" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '240px' }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Torniquete Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayCardLineChartData} />
                     </div>
                 </div>
-                <div className="carousel-chart-container" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '240px' }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Quiosque Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} />
                     </div>

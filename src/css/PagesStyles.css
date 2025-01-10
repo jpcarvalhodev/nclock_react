@@ -295,6 +295,19 @@ body {
     max-width: 50%;
 }
 
+.carousel-chart-container-graphs {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
+    border-radius: 5px;
+    background: white;
+    max-height: 32rem;
+    max-width: 25%;
+}
+
 #carousel-chart .carousel .control-dots {
     bottom: -15px !important;
 }
@@ -939,6 +952,10 @@ body {
         margin-top: 20px !important;
     }
 
+    .carousel-chart-container-graphs {
+        max-width: 100%;
+    }
+
     .dashboard-carousel-container-main {
         padding: 10px;
     }
@@ -994,14 +1011,6 @@ body {
     .buttons-container-others-mb {
         display: flex;
         flex-direction: column;
-    }
-
-    .departments-groups-chart {
-        height: 400px !important;
-    }
-
-    .departments-groups-chart-text {
-        margin-bottom: 100px;
     }
 
     .cards-container {
@@ -1090,7 +1099,8 @@ body {
     .cards-container,
     .dashboard-carousel-container-main,
     .dashboard-carousel-container-pages-no-title,
-    .carousel-chart-container {
+    .carousel-chart-container,
+    .carousel-chart-container-graphs {
         max-width: 100%;
     }
 
@@ -1109,10 +1119,6 @@ body {
 
     .treeview-container .datatable-container {
         flex: 2;
-    }
-
-    .departments-groups-chart-text {
-        margin-bottom: 100px;
     }
 
     .dashboard-container {
@@ -1225,7 +1231,7 @@ body {
 
 }
 
-@media (max-width: 1366px) {
+@media (min-width: 1200px) and (max-width: 1366px) {
 
     .dashboard-cards-container {
         height: 30vh;

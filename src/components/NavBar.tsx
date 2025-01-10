@@ -48,7 +48,6 @@ import nserver from '../assets/img/navbar/navbar/nserver.webp';
 import naut from '../assets/img/navbar/navbar/naut.webp';
 import nequip from '../assets/img/navbar/navbar/nequip.webp';
 import nproject from '../assets/img/navbar/navbar/nproject.webp';
-import nidgroup from '../assets/img/navbar/navbar/nidgroup.png';
 import nsoftwares from '../assets/img/navbar/navbar/nsoftwares.png';
 import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
 import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
@@ -272,6 +271,7 @@ import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
 import workflow from '../assets/img/navbar/ndoc/workflow.png';
 import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
 import ticket from '../assets/img/navbar/nticket/ticket.png';
+import { AccessControlModal } from '../modals/AccessControlModal';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -506,6 +506,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showCardDropdown, setShowCardDropdown] = useState(false);
 	const [showBackupDBModal, setShowBackupDBModal] = useState(false);
 	const [showTaskDropdown, setShowTaskDropdown] = useState(false);
+	const [showAccessControlModal, setShowAccessControlModal] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -615,7 +616,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Verificar se a tela é mobile
 	const checkIfMobile = () => {
-		setIsMobile(window.innerWidth <= 500);
+		setIsMobile(window.innerWidth <= 1200);
 	};
 
 	// Adicionar listener para redimensionar a janela
@@ -1445,6 +1446,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 			return null;
 		}
 
+		const pathsNotRequired = ['view', 'caravan', 'mechanic', 'events', 'service', 'task', 'production', 'sales', 'sports', 'gym', 'school', 'clinic', 'optics', 'gold', 'reality', 'hologram', 'fire', 'light', 'comfort', 'sound', 'home'];
+
+		const isPageNotRequired = pathsNotRequired.some(path => location.pathname.includes(path));
+
 		const isWideMenu = menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk' || menuKey === 'contador' || menuKey === 'sensor' || menuKey === 'fotocelula' || menuKey === 'painel' || menuKey === 'revista';
 		const isWideSubmenu = menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
 
@@ -1452,7 +1457,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
 				style={{
 					minWidth: isWideMenu ? '200px' : 'auto',
-					zIndex: 1000
 				}}
 			>
 				<MenuItem
@@ -1476,9 +1480,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 				{activeMenu === menuKey && menu.submenu && (
 					<div className="submenu" style={{
 						width: isWideSubmenu ? '300px' : 'auto',
-						right: isWideSubmenu ? '100%' : undefined,
-						left: isWideSubmenu ? undefined : '100%',
-						zIndex: 1000
+						right: isWideSubmenu && !isPageNotRequired ? '100%' : 'auto',
+						left: isWideSubmenu && !isPageNotRequired ? 'auto' : '100%',
 					}}>
 						{menu.submenu.map((item: MenuItem) => (
 							<MenuItem
@@ -2171,7 +2174,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleRibbonMouseLeave = () => {
 		setIsMouseOver(false);
 	};
-	
+
 	return (
 		<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
 			<div className="nav-container">
@@ -2214,7 +2217,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<li className={`nav-item ${activeTab === 'configuracao' ? 'active' : ''}`}>
 								<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={() => handleRibbonClick('configuracao')}>CONFIGURAÇÃO</a>
 							</li>
-							<div className='logos mobile-only'>
+							<div className='logos mobile-only mobile-adjust'>
 								<Dropdown
 									onMouseOver={() => setShowSoftwaresDropdown(true)}
 									onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 300)}
@@ -12222,6 +12225,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 				onUpdate={(formData: FormData) => Promise.resolve(importBackupDB(formData))}
 				fields={backupDBFields}
 				title='Backup BD'
+			/>
+			<AccessControlModal
+				open={showAccessControlModal}
+				onClose={() => setShowAccessControlModal(false)}
+				title='Plano de Acessos'
 			/>
 		</nav>
 	);

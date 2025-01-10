@@ -1,86 +1,47 @@
-import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
-import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
-import { useEffect, useState } from "react";
-import { Bar , Pie } from "react-chartjs-2";
+import { ArcElement, BarElement, CategoryScale, ChartData, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
+import { Bar, Pie } from "react-chartjs-2";
 
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { Department, Employee, Group } from "../../../helpers/Types";
+import { usePersons } from '../../../context/PersonsContext';
+import { useEffect, useState } from 'react';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NclockGraph = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const [totalEmployees, setTotalEmployees] = useState<number>(0);
-    const [totalDepartments, setTotalDepartments] = useState<number>(0);
-    const [totalGroups, setTotalGroups] = useState<number>(0);
+    const { employees, departments, groups } = usePersons();
+    const [chartDataEmployees, setChartDataEmployees] = useState<ChartData>({ labels: [], datasets: [] });
+    const [chartDataDepartmentsGroups, setChartDataDepartmentsGroups] = useState<ChartData>({ labels: [], datasets: [] });
 
-    // Função para buscar os departamentos
-    const fetchDepartments = async (): Promise<void> => {
-        try {
-            const departments: Department[] = await apiService.fetchAllDepartments();
-            setTotalDepartments(departments.length);
-        } catch (error) {
-            console.error('Erro ao buscar departamentos:', error);
-        }
-    };
-
-    // Função para buscar os grupos
-    const fetchGroups = async (): Promise<void> => {
-        try {
-            const groups: Group[] = await apiService.fetchAllGroups();
-            setTotalGroups(groups.length);
-        } catch (error) {
-            console.error('Erro ao buscar grupos:', error);
-        }
-    };
-
-    // Define os dados do gráfico circular
-    const chartData = {
-        labels: ['Total de Funcionários'],
-        datasets: [{
-            label: 'Contagem de Funcionários',
-            data: [totalEmployees],
-            backgroundColor: [
-                '#0050a0'
-            ],
-            borderColor: [
-                '#0080ff'
-            ],
-            borderWidth: 1
-        }]
-    };
-
-    // Define os dados do gráfico de barras
-    const chartDataDepartmentsGroups = {
-        labels: ['Departamentos', 'Grupos'],
-        datasets: [{
-            label: 'Contagem de Departamentos e Grupos',
-            data: [totalDepartments, totalGroups],
-            backgroundColor: ['#0050a0'],
-            borderColor: ['#0080ff'],
-            borderWidth: 1
-        }]
-    };
-
-    // Carrega os dados
+    // Atualiza os gráficos de acordo com a quantidade de funcionários
     useEffect(() => {
-        loadData();
-    }, []);
+        setChartDataEmployees({
+            labels: ['Total de Funcionários'],
+            datasets: [{
+                label: 'Contagem de Funcionários',
+                data: [employees.length],
+                backgroundColor: ['#0050a0'],
+                borderColor: ['#0080ff'],
+                borderWidth: 1,
+            }]
+        });
+    }, [employees]);
 
-    // Função para carregar os dados
-    const loadData = async () => {
-        try {
-            const employees: Employee[] = await apiService.fetchAllEmployees();
-            setTotalEmployees(employees.length);
-            await fetchDepartments();
-            await fetchGroups();
-        } catch (error) {
-            console.error("Erro ao carregar dados: ", error);
-        }
-    };
+    // Atualiza os gráficos de acordo com a quantidade de departamentos e grupos
+    useEffect(() => {
+        setChartDataDepartmentsGroups({
+            labels: ['Departamentos', 'Grupos'],
+            datasets: [{
+                label: 'Contagem de Departamentos e Grupos',
+                data: [departments.length, groups.length],
+                backgroundColor: ['#0050a0'],
+                borderColor: ['#0080ff'],
+                borderWidth: 1
+            }]
+        });
+    }, [departments, groups]);
 
     return (
         <div className="dashboard-container">
@@ -91,8 +52,8 @@ export const NclockGraph = () => {
             <div className="dashboard-content">
                 <div className="chart-container">
                     <div className="employee-pie-chart" style={{ flex: 1 }}>
-                        <h2 className="employee-pie-chart-text">Total de Funcionários: {totalEmployees}</h2>
-                        <Pie className="employee-pie-chart-pie" data={chartData} />
+                        <h2 className="employee-pie-chart-text">Total de Funcionários: { }</h2>
+                        <Pie className="employee-pie-chart-pie" data={chartDataEmployees} />
                     </div>
                 </div>
                 <div className="chart-container">

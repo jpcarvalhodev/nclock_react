@@ -284,7 +284,7 @@ export const NviewOnlineCameras = () => {
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="datatable-container">
+            <div className="datatable-container" style={{ flex: 1 }}>
                 <div className="datatable-title-text">
                     <span style={{ color: '#0050a0' }}>Câmeras Online</span>
                 </div>

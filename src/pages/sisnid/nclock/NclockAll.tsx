@@ -51,7 +51,7 @@ export const NclockAll = () => {
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
     } = useContext(AttendanceContext) as AttendanceContextType;
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
     const { navbarColor, footerColor } = useNavbar();
     const [attendanceAll, setAttendanceAll] = useState<EmployeeAttendanceTimes[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -107,7 +107,19 @@ export const NclockAll = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendanceAll.filter(att => {
-            return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
+            return Object.entries(att).some(([key, value]) => {
+                if (selectedColumns.includes(key)) {
+                    if (key === 'attendanceTime') {
+                        const formattedDate = new Date(value).toLocaleString('pt');
+                        return formattedDate.toLowerCase().includes(lowercasedFilter);
+                    } else if (typeof value === 'string') {
+                        return value.toLowerCase().includes(lowercasedFilter);
+                    } else if (value != null) {
+                        return value.toString().toLowerCase().includes(lowercasedFilter);
+                    }
+                }
+                return false;
+            });
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendanceAll]);

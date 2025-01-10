@@ -307,7 +307,7 @@ export const NkioskPayTerminal = () => {
                             />
                         </div>
                         <div style={{ marginLeft: 10, marginTop: -5 }}>
-                            <strong>Total: </strong> Valor - {totalAmount.toFixed(2)}€ | Visitantes - {filteredDataTable.length}
+                            <strong>Recebimentos Multibanco: </strong> Valor - {totalAmount.toFixed(2)}€ | Visitantes - {filteredDataTable.length}
                         </div>
                     </div>
                 </Split>

@@ -53,6 +53,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   const [showPassword, setShowPassword] = useState(false);
   const [entities, setEntities] = useState<Array<License>>([]);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
+  const [allEnabled, setAllEnabled] = useState(false);
 
   // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
   useEffect(() => {
@@ -91,7 +92,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       const isKeyValid = await fetchAllLicenses(key);
       if (isKeyValid && Array.isArray(isKeyValid) && isKeyValid.length > 0) {
         setEntities(isKeyValid);
-        const defaultNif = isKeyValid[0]?.nif?.toString() || "";
         setActiveTab(isKeyValid[0]?.entidadeNumber);
         setFormData(isKeyValid[0]);
         setIsCheckVisible(false);
@@ -116,6 +116,22 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       }
     }
   }, [activeTab, entities]);
+
+  // useEffect para verificar se todos os produtos estão ativados
+  useEffect(() => {
+    const allProductsEnabled = checkAllProductsEnabled();
+    if (allProductsEnabled !== allEnabled) {
+      setAllEnabled(allProductsEnabled);
+    }
+  }, [formData]);
+
+  // Função para verificar se todos os produtos no formData estão ativados
+  const checkAllProductsEnabled = () => {
+    return Object.keys(formData).every(key => {
+      const product = formData[key];
+      return typeof product === 'object' && product !== null ? product.enable : true;
+    });
+  };
 
   // Função para mostrar o modal
   const showModal = () => {
@@ -417,6 +433,21 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     }
   };
 
+  // Função para ativar todos os produtos
+  const toggleAllEnabled = () => {
+    const currentState = !allEnabled;
+    setAllEnabled(currentState);
+    setFormData(prevState => {
+      const updatedFormData = { ...prevState };
+      Object.keys(updatedFormData).forEach(key => {
+        if (typeof updatedFormData[key] === 'object' && updatedFormData[key] !== null) {
+          updatedFormData[key] = { ...updatedFormData[key], enable: currentState };
+        }
+      });
+      return updatedFormData;
+    });
+  };
+
   return (
     <div>
       <Modal show={isCheckVisible} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
@@ -575,6 +606,17 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                       </Form.Group>
                     </Col>
                   </Row>
+                  <Form style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Form.Group controlId="formAllEnabledSwitch">
+                      <Form.Check
+                        type="switch"
+                        id="all-enabled-switch"
+                        label="Ativar Todos"
+                        checked={allEnabled}
+                        onChange={toggleAllEnabled}
+                      />
+                    </Form.Group>
+                  </Form>
                   <Tabs defaultActiveKey={Object.keys(formData).find(key => typeof formData[key] === 'object' && formData[key] !== null)} id="product-tabs" className='nav-modal' style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                     {Object.keys(formData)
                       .filter(key => typeof formData[key] === 'object' && formData[key] !== null)

@@ -57,7 +57,7 @@ export const NclockPresence = () => {
         fetchAllAttendances,
     } = useContext(AttendanceContext) as AttendanceContextType;
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
     const [attendancePresence, setAttendancePresence] = useState<EmployeeAttendanceWithPresence[]>([]);
     const [filterText, setFilterText] = useState('');
     const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -127,7 +127,19 @@ export const NclockPresence = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendancePresence.filter(att => {
-            return att.employeeName && att.employeeName.toLowerCase().includes(lowercasedFilter);
+            return Object.entries(att).some(([key, value]) => {
+                if (selectedColumns.includes(key)) {
+                    if (key === 'attendanceTime') {
+                        const formattedDate = new Date(value).toLocaleString('pt');
+                        return formattedDate.toLowerCase().includes(lowercasedFilter);
+                    } else if (typeof value === 'string') {
+                        return value.toLowerCase().includes(lowercasedFilter);
+                    } else if (value != null) {
+                        return value.toString().toLowerCase().includes(lowercasedFilter);
+                    }
+                }
+                return false;
+            });
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendancePresence]);

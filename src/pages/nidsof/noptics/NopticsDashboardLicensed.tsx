@@ -10,6 +10,7 @@ import banner_nsoftware from "../../../assets/img/carousel/banner_nsoftware.webp
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -60,37 +61,34 @@ const messages = {
 };
 
 export const NopticsDashboardLicensed = () => {
+    const currentYear = new Date().getFullYear();
     const { navbarColor, footerColor } = useNavbar();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
-
-    const barData = {
-        labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'],
+    const [lineChartData, setLineChartData] = useState({
+        labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'],
         datasets: [
             {
-                label: 'Total',
-                data: [300, 250, 220, 350, 300, 320, 400],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(199, 199, 199, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(199, 199, 199, 1)',
-                ],
-                borderWidth: 1,
+                label: 'Exemplo de Dados 1',
+                data: [0],
+                fill: true,
+                borderColor: '#D01313',
+                tension: 0.1
             },
-        ],
-    };
+        ]
+    });
+    const [barChartData, setBarChartData] = useState({
+        labels: ['Hoje'],
+        datasets: [
+            {
+                label: 'Exemplo de Dados 3',
+                data: [0],
+                backgroundColor: [
+                    '#D01313',
+                ],
+                borderWidth: 1
+            }
+        ]
+    });
 
     // Função para renderizar os eventos no calendário
     const MyEvent = ({ event }: MyEventProps) => {
@@ -105,25 +103,63 @@ export const NopticsDashboardLicensed = () => {
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-content">
-                <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 108 }}>
+                <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
-                            <img className="img-carousel-licensed" src={banner_nsoftware} alt="nsoftware" />                        </div>
+                            <img className="img-carousel-licensed" src={banner_nsoftware} alt="Nsoftware" />
+                        </div>
                     </Carousel>
                 </div>
-                <div className="calendar-container" style={{ marginTop: 70 }}>
-                    <div className="dashboard-calendar" style={{ height: 495 }}>
-                        <Calendar
-                            localizer={localizer}
-                            events={events}
-                            startAccessor="start"
-                            endAccessor="end"
-                            messages={messages}
-                            culture="pt"
-                            components={{
-                                event: MyEvent
-                            }}
-                        />
+                <div className="carousel-chart-container" id="carousel-chart" style={{ marginTop: 5 }}>
+                    <Carousel infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
+                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
+                            <h2 className="departments-groups-chart-text">Exemplo {currentYear}: { }</h2>
+                            <Line className="departments-groups-chart-data" data={lineChartData} />
+                        </div>
+                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
+                            <h2 className="departments-groups-chart-text">Exemplo 2 {currentYear}: { }</h2>
+                            <Line className="departments-groups-chart-data" data={lineChartData} />
+                        </div>
+                        <div style={{ height: '28rem', maxWidth: '56rem', margin: 'auto' }}>
+                            <Calendar
+                                localizer={localizer}
+                                events={events}
+                                startAccessor="start"
+                                endAccessor="end"
+                                defaultView="month"
+                                messages={messages}
+                                culture="pt"
+                                components={{
+                                    event: MyEvent
+                                }}
+                            />
+                        </div>
+                    </Carousel>
+                </div>
+            </div>
+            <div className="dashboard-content" style={{ marginTop: 5 }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                        <h2 className="departments-groups-chart-text">Exemplo 3: { }</h2>
+                        <Bar className="departments-groups-chart-data" data={barChartData} />
+                    </div>
+                </div>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                        <h2 className="departments-groups-chart-text">Exemplo 4: { }</h2>
+                        <Bar className="departments-groups-chart-data" data={barChartData} />
+                    </div>
+                </div>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                        <h2 className="departments-groups-chart-text">Exemplo 5: { }</h2>
+                        <Bar className="departments-groups-chart-data" data={barChartData} />
+                    </div>
+                </div>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                        <h2 className="departments-groups-chart-text">Exemplo 6: { }</h2>
+                        <Bar className="departments-groups-chart-data" data={barChartData} />
                     </div>
                 </div>
             </div>
