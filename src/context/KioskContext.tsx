@@ -78,7 +78,7 @@ const convertStringToDate = (dateStr: string) => {
 
 // Provider do contexto
 export const KioskProvider = ({ children }: { children: ReactNode }) => {
-    const { devices, fetchAllDevices } = useTerminals();
+    const { devices } = useTerminals();
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);

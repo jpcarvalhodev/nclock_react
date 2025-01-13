@@ -1,4 +1,4 @@
-import { Ads, Category, Department, Devices, Doors, Employee, EmployeeAndCard, EmployeeAttendanceTimes, EmployeeDevices, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskTransaction, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, Logs, MBDevice, ManualOpenDoor, Profession, RecolhaMoedeiroEContador, Register, Zone } from "../helpers/Types";
+import { AccessControl, Ads, Category, Department, Devices, Doors, Employee, EmployeeAndCard, EmployeeAttendanceTimes, EmployeeDevices, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskTransaction, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, Logs, MBDevice, ManualOpenDoor, Profession, RecolhaMoedeiroEContador, Register, Zone } from "../helpers/Types";
 
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
@@ -17,7 +17,7 @@ interface SelectFilterProps {
 }
 
 // Função de formatação de item de dados
-const formatDataItem = (item: DataItem, column: string, device: Devices[], mbDevice: MBDevice[]) => {
+const formatDataItem = (item: DataItem, column: string, device: Devices[], mbDevice: MBDevice[], accessControl: AccessControl[]) => {
     const currentRoute = window.location.pathname;
     const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
     const videoporteiro = currentRoute.endsWith('movevp') ? 'Video Porteiro' : '';
@@ -55,14 +55,21 @@ const formatDataItem = (item: DataItem, column: string, device: Devices[], mbDev
         case 'rgpdAut':
             return item[column] ? 'Autorizado' : 'Não Autorizado';
         case 'employeeId':
-            return item.employeeName;
+            return item.employeeName || '';
         case 'departmentId':
+            return item.departmentName || '';
         case 'professionId':
+            return item.professionName || '';
         case 'categoryId':
+            return item.categoryName || '';
         case 'groupId':
+            return item.groupName || '';
         case 'zoneId':
+            return item.zoneName || '';
         case 'externalEntityId':
-            return item[column] || '';
+            return item.externalEntityName || '';
+        case 'entidadeId':
+            return item.entidadeName || '';
         case 'inOutMode':
             if (item.inOutModeDescription) {
                 return item.inOutModeDescription || '';
@@ -106,6 +113,24 @@ const formatDataItem = (item: DataItem, column: string, device: Devices[], mbDev
             return device.find(device => device.serialNumber === item.deviceSN)?.deviceName || '';
         case 'tpId':
             return mbDevice.find(mbDevice => mbDevice.id === item.tpId)?.nomeQuiosque || '';
+        case "doorName": {
+            const found = accessControl.find((acObj) => acObj.employeesId === item.employeesId);
+            if (!found) {
+                return "";
+            }
+            const doorNames = found.acc.map((accItem: AccessControl) => accItem.doorName);
+            return doorNames.join(", ");
+        }
+        case "timezoneName": {
+            const found = accessControl.find((acObj) => acObj.employeesId === item.employeesId);
+            if (!found) {
+                return "";
+            }
+            const timezones = found.acc.map((accItem: AccessControl) => accItem.timezoneName);
+            return timezones.join(", ");
+        }
+        case 'cardNumber':
+            return item.employeeCards?.[0]?.cardNumber || '';
         default:
             return item[column] !== undefined && item[column] !== null && item[column] !== '' ? item[column] : ' ';
     }
@@ -113,10 +138,10 @@ const formatDataItem = (item: DataItem, column: string, device: Devices[], mbDev
 
 // Componente de filtro de seleção
 export const SelectFilter = ({ column, setFilters, data }: SelectFilterProps) => {
-    const { devices, mbDevices } = useTerminals();
+    const { devices, mbDevices, accessControl } = useTerminals();
 
     // Formata os dados
-    const options = Array.from(new Set(data.map(item => formatDataItem(item, column, devices, mbDevices))));
+    const options = Array.from(new Set(data.map(item => formatDataItem(item, column, devices, mbDevices, accessControl))));
 
     // Obter o elemento do portal
     const portalElement = document.getElementById('portal-root');

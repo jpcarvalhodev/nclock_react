@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Col, Form, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap';
+import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';

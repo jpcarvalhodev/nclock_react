@@ -61,7 +61,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [showPassword, setShowPassword] = useState(false);
-    const [passwordPlaceholder, setPasswordPlaceholder] = useState('●●●●●●●●');
+    const [passwordPlaceholder, setPasswordPlaceholder] = useState('●●●●●●');
     const [password, setPassword] = useState('');
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
@@ -113,6 +113,11 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             }
         });
 
+        if (formData.emailAddress && !validateEmail(formData.emailAddress as string)) {
+            isValid = false;
+            newErrors['emailAddress'] = { hasError: true, message: 'O email é inválido.' };
+        }
+
         if (formData.password && !validatePassword(formData.password as string)) {
             isValid = false;
             newErrors['password'] = { hasError: true, message: 'A password deve ter pelo menos 6 caracteres, uma letra maiúscula, uma minúscula e um caractere especial.' };
@@ -138,6 +143,12 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         setProfileImageFile(null);
         setFormData({ ...formData, profileImage: '' });
     };
+
+    // Função para validar o email
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }; 
 
     // Função para validar a senha
     const validatePassword = (password: string): boolean => {
@@ -174,7 +185,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         } else if (type === 'number') {
             parsedValue = Number(value);
         } else {
-            parsedValue = name === 'userName' ? value.replace(/\s+/g, '') : value;
+            parsedValue = name === 'userName' || name === 'password' || name === 'confirmPassword' ? value.replace(/\s+/g, '') : value;
         }
         setFormData(prevState => ({
             ...prevState,
@@ -321,7 +332,6 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                         onChange={handleChange}
                                         onFocus={handleFocus}
                                         onBlur={handleBlur}
-                                        autoComplete="off"
                                         minLength={8}
                                         className={`custom-input-height custom-select-font-size ${showValidationErrors && errors['password'] && errors['password'].hasError ? 'error-border' : ''}`}
                                         style={{ paddingRight: '40px', borderRight: 'none' }}

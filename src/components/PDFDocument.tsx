@@ -1,7 +1,6 @@
 import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import React from 'react';
 
-import { useTerminals } from '../context/TerminalsContext';
 import { AccessControl, Devices, Entity, MBDevice } from '../helpers/Types';
 
 // Estilos para o documento PDF
@@ -153,14 +152,21 @@ export const PDFDocument = ({ data, fields, entity, entityLogo, device, mbDevice
             case 'rgpdAut':
                 return item[fieldKey] ? 'Autorizado' : 'Não Autorizado';
             case 'employeeId':
-                return item.employeeName;
+                return item.employeeName || '';
             case 'departmentId':
+                return item.departmentName || '';
             case 'professionId':
+                return item.professionName || '';
             case 'categoryId':
+                return item.categoryName || '';
             case 'groupId':
+                return item.groupName || '';
             case 'zoneId':
+                return item.zoneName || '';
             case 'externalEntityId':
-                return item[fieldKey] || '';
+                return item.externalEntityName || '';
+            case 'entidadeId':
+                return item.entidadeName || '';
             case 'inOutMode':
                 if (item.inOutModeDescription) {
                     return item.inOutModeDescription || '';
@@ -220,6 +226,8 @@ export const PDFDocument = ({ data, fields, entity, entityLogo, device, mbDevice
                 const timezones = found.acc.map((accItem: AccessControl) => accItem.timezoneName);
                 return timezones.join(", ");
             }
+            case 'cardNumber':
+                return item.employeeCards?.[0]?.cardNumber || '';
             default:
                 return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
         }

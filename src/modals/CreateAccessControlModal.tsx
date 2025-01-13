@@ -1,248 +1,309 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import { toast } from 'react-toastify';
-import '../css/PagesStyles.css';
-import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import "../css/PagesStyles.css";
+import { Col, Form, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import { customStyles } from "../components/CustomStylesDataTable";
+import { Doors, Employee } from "../helpers/Types";
+import { doorsFields, employeeFields } from "../helpers/Fields";
+import { useTerminals } from "../context/TerminalsContext";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { usePersons } from "../context/PersonsContext";
+import { AddTerminalToACModal } from "./AddTerminalToACModal";
+import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 
-import * as apiService from "../helpers/apiService";
-import { Doors } from '../helpers/Types';
-
-// Define a interface para os itens de campo
-type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-
-// Interface para as propriedades do modal
-interface CreateModalProps<T> {
+// Define as propriedades do componente
+interface Props<T> {
     title: string;
     open: boolean;
     onClose: () => void;
-    onSave: (data: Partial<T>) => void;
-    fields: Field[];
-    initialValues: Partial<T>;
-}
-
-// Interface para os campos do formulário
-interface Field {
-    key: string;
-    label: string;
-    type: string;
-    required?: boolean;
-    validate?: (value: any) => boolean;
-    errorMessage?: string;
+    onSave: (data: T) => void;
 }
 
 // Define o componente
-export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T> & { doorTimezoneList: any[] }>({ ...initialValues, doorTimezoneList: [], currentDoorId: '', currentTimezoneId: '', createrName: localStorage.getItem('username') });
-    const [errors, setErrors] = useState<Record<string, boolean>>({});
-    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
-    const [showValidationErrors, setShowValidationErrors] = useState(false);
+export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave }: Props<T>) => {
+    const { employees } = usePersons();
+    const { devices, fetchAllDoorData, period } = useTerminals();
+    const [formData, setFormData] = useState<T>({} as T);
+    const [doors, setDoors] = useState<Doors[]>([]);
+    const [loadingDoorData, setLoadingDoorData] = useState(false);
+    const [loadingEmployeeData, setLoadingEmployeeData] = useState(false);
+    const [filters, setFilters] = useState<Record<string, string>>({});
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
 
-    // UseEffect para validar o formulário
-    useEffect(() => {
-        validateForm();
-    }, [formData, fields]);
-
-    // Função para validar o formulário
-    const validateForm = () => {
-        if (!showValidationErrors) return true;
-        let newErrors: Record<string, boolean> = {};
-        let isValid = true;
-
-        fields.forEach((field) => {
-            const fieldValue = formData[field.key];
-            if (field.required && !fieldValue) {
-                isValid = false;
-                newErrors[field.key] = true;
-            } else {
-                newErrors[field.key] = false;
-            }
-        });
-
-        if (formData.doorTimezoneList.length === 0) {
-            isValid = false;
-        }
-
-        setErrors(newErrors);
-        return isValid;
-    };
-
-    // Função para buscar as opções do dropdown
-    const fetchDropdownOptions = async () => {
-        try {
-            const employee = await apiService.fetchAllEmployees();
-            const sortedEmployee = employee.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
-            const door = await apiService.fetchAllDoors();
-            const timezone = await apiService.fetchAllTimePeriods();
-            const filteredDoors = door.filter((door: Doors) => door.doorNo === 3 || door.doorNo === 4);
-            setDropdownData({
-                employeesId: sortedEmployee,
-                doorId: filteredDoors,
-                timezoneId: timezone
-            });
-        } catch (error) {
-            console.error('Erro ao buscar os dados de funcionários, portas e períodos', error);
-        }
-    };
-
-    // Atualiza o estado do componente ao abrir o modal
+    // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         if (open) {
-            setFormData({
-                ...initialValues,
-                doorTimezoneList: [],
-                createrName: localStorage.getItem('username'),
-            });
-            fetchDropdownOptions();
-        } else {
-            setFormData({
-                ...initialValues,
-                doorTimezoneList: []
-            });
+            fetchDoors();
         }
     }, [open]);
 
-    // Função para adicionar um período e porta
-    const addDoorTimezone = () => {
-        if (formData.doorTimezoneList.some(entry => entry.doorId === formData.currentDoorId && entry.timezoneId === formData.currentTimezoneId)) {
-            toast.warn('Esta porta e período já foram adicionados!');
-            return;
-        }
-        if (formData.currentDoorId && formData.currentTimezoneId) {
-            const newEntry = {
-                doorId: formData.currentDoorId,
-                doorName: dropdownData.doorId.find(door => door.id === formData.currentDoorId)?.name,
-                timezoneId: formData.currentTimezoneId,
-                timezoneName: dropdownData.timezoneId.find(timezone => timezone.id === formData.currentTimezoneId)?.name
+    // Função para buscar as portas
+    const fetchDoors = async () => {
+        const dataDoors = await fetchAllDoorData();
+        const filteredDoorsOrdered = dataDoors.sort((a, b) => a.doorNo - b.doorNo);
+        setDoors(filteredDoorsOrdered);
+    };
+
+    // Define as opções de paginação de EN para PT
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
+    };
+
+    // Função para atualizar os campos do formulário
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    // Filtra os dados da tabela de portas
+    const filteredDoorDataTable = doors.filter(door =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(door[key]) === String(filters[key])
+        )
+    );
+
+    // Define as colunas que serão exibidas
+    const includedColumns = ['enabled', 'name', 'doorNo', 'timezoneId'];
+
+    // Define as colunas
+    const doorColumns: TableColumn<Doors>[] = doorsFields
+        .filter(field => includedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'timezoneId') return -1; else if (b.key === 'timezoneId') return 1; else return 0; })
+        .sort((a, b) => { if (a.key === 'name') return -1; else if (b.key === 'name') return 1; else return 0; })
+        .sort((a, b) => { if (a.key === 'enabled') return 1; else if (b.key === 'enabled') return -1; else return 0; })
+        .map(field => {
+            const formatField = (row: Doors) => {
+                switch (field.key) {
+                    case 'enabled':
+                        return row[field.key] === true ? 'Activo' : 'Inactivo';
+                    case 'timezoneId':
+                        return period.find(p => p.id === row[field.key])?.name || '';
+                    default:
+                        return row[field.key] || '';
+                }
             };
-            setFormData(prevState => ({
-                ...prevState,
-                doorTimezoneList: [...prevState.doorTimezoneList, newEntry],
-                currentDoorId: '',
-                currentTimezoneId: ''
-            }));
-        } else {
-            toast.warn('Selecione uma porta e um período antes de adicionar!');
-        }
-    };
+            return {
+                id: field.key,
+                name: (
+                    <>
+                        {field.label}
+                    </>
+                ),
+                selector: (row: Doors) => {
+                    if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                },
+                sortable: true,
+                cell: (row: Doors) => {
+                    if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                }
+            };
+        });
 
-    // Função para remover um período e porta
-    const removeDoorTimezone = (index: number) => {
-        setFormData(prevState => ({
-            ...prevState,
-            doorTimezoneList: prevState.doorTimezoneList.filter((_, idx) => idx !== index)
-        }));
-    };
+    // Filtra os dados da tabela de funcionários
+    const filteredEmployeeDataTable = employees
+        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+        .filter(employee =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || String(employee[key]) === String(filters[key])
+            )
+        );
 
-    // Função para fechar o modal
-    const handleClose = () => {
-        window.location.reload();
-        onClose();
-    }
+    // Define as colunas que serão exibidas
+    const includedEmployeeColumns = ['enrollNumber', 'name', 'cardNumber', 'type'];
 
-    // Função para verificar se o formulário é válido antes de salvar
-    const handleCheckForSave = () => {
-        const formIsValid = validateForm();
-        if (!formIsValid) {
-            setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
-            return;
-        }
-        handleSave();
-    }
+    // Define as colunas
+    const employeeColumns: TableColumn<Employee>[] = employeeFields
+        .filter(field => includedEmployeeColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'name') return -1; else if (b.key === 'name') return 1; else return 0; })
+        .sort((a, b) => { if (a.key === 'cardNumber') return -1; else if (b.key === 'cardNumber') return 1; else return 0; })
+        .sort((a, b) => { if (a.key === 'type') return 1; else if (b.key === 'type') return -1; else return 0; })
+        .map(field => {
+            const formatField = (row: Employee) => {
+                switch (field.key) {
+                    case 'cardNumber':
+                        return row.employeeCards?.[0]?.cardNumber || '';
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                id: field.key,
+                name: (
+                    <>
+                        {field.label}
+                    </>
+                ),
+                selector: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return parseInt(row.enrollNumber) || 0;
+                    }
+                    return row[field.key] || '';
+                },
+                sortable: true,
+                cell: (row: Employee) => formatField(row)
+            };
+        });
 
     // Função para salvar os dados
     const handleSave = () => {
-        const { currentDoorId, currentTimezoneId, ...restFormData } = formData;
-        onSave(restFormData as Partial<T>);
-    };
+        onSave({} as T);
+        onClose();
+    }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="lg" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <div className="container-fluid">
-                    <Row>
-                        <Col md={4}>
-                            <Form.Group controlId="formEmployeesId">
-                                <Form.Label>Funcionário<span style={{ color: 'red' }}>*</span></Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    value={formData.employeesId || ''}
-                                    onChange={e => setFormData({ ...formData, employeesId: e.target.value })}
-                                    className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                >
-                                    <option value="">Selecione...</option>
-                                    {dropdownData.employeesId && dropdownData.employeesId.map(option => (
-                                        <option key={option.employeeID} value={option.employeeID}>
-                                            {`${option.enrollNumber} - ${option.shortName}`}
-                                        </option>
-                                    ))}
-                                </Form.Control>
-                                {errors.employeesId && <Form.Text className="text-danger">{errors.employeesId}</Form.Text>}
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md={4}>
-                            <Form.Group>
-                                <Form.Label>Porta <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    value={formData.currentDoorId}
-                                    onChange={e => setFormData({ ...formData, currentDoorId: e.target.value })}
-                                    className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                >
-                                    <option value="">Selecione a Porta...</option>
-                                    {dropdownData.doorId && dropdownData.doorId.map(option => (
-                                        <option key={option.id} value={option.id}>{`${option.doorNo} - ${option.name}`}</option>
-                                    ))}
-                                </Form.Control>
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group>
-                                <Form.Label>Período <span style={{ color: 'red' }}>*</span></Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    value={formData.currentTimezoneId}
-                                    onChange={e => setFormData({ ...formData, currentTimezoneId: e.target.value })}
-                                    className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                >
-                                    <option value="">Selecione o Período...</option>
-                                    {dropdownData.timezoneId && dropdownData.timezoneId.map(option => (
-                                        <option key={option.id} value={option.id}>{option.name}</option>
-                                    ))}
-                                </Form.Control>
-                            </Form.Group>
-                        </Col>
-                        <Col className="d-flex align-items-end">
-                            <Button style={{ height: 30, display: 'flex', alignItems: 'center' }} variant="outline-primary" onClick={addDoorTimezone}>Adicionar</Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        {formData.doorTimezoneList.map((entry, index) => (
-                            <Col md={8} key={index}>
-                                <div className="d-flex justify-content-between align-items-center p-2 border rounded my-2">
-                                    Porta: {entry.doorName}, Período: {entry.timezoneName}
-                                    <Button variant="danger" size="sm" onClick={() => removeDoorTimezone(index)}>Remover</Button>
-                                </div>
-                            </Col>
-                        ))}
-                    </Row>
-                </div>
+                <Col md={3}>
+                    <Form.Group controlId="formNome">
+                        <Form.Label>Nome</Form.Label>
+                        <Form.Control
+                            className="custom-input-height custom-select-font-size"
+                            type="text"
+                            name="nome"
+                            value={formData.morada}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+                </Col>
+                <Tab.Container defaultActiveKey="geral">
+                    <Nav variant="tabs" className="nav-modal">
+                        <Nav.Item>
+                            <Nav.Link eventKey="geral">Geral</Nav.Link>
+                        </Nav.Item>
+                    </Nav>
+                    <Tab.Content>
+                        <Tab.Pane eventKey="geral">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                <Tab.Container defaultActiveKey="equipamentos">
+                                    <Nav variant="tabs" className="nav-modal">
+                                        <Nav.Item>
+                                            <Nav.Link eventKey="equipamentos">Equipamentos</Nav.Link>
+                                        </Nav.Item>
+                                        <Nav.Item>
+                                            <Nav.Link eventKey="pessoas">Pessoas</Nav.Link>
+                                        </Nav.Item>
+                                    </Nav>
+                                    <Tab.Content>
+                                        <Tab.Pane eventKey="equipamentos">
+                                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                                <Row>
+                                                    {loadingDoorData ?
+                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                        </div> :
+                                                        <DataTable
+                                                            columns={doorColumns}
+                                                            data={[]}
+                                                            pagination
+                                                            paginationComponentOptions={paginationOptions}
+                                                            paginationPerPage={10}
+                                                            paginationRowsPerPageOptions={[5, 10]}
+                                                            selectableRows
+                                                            noDataComponent="Não existem dados disponíveis para exibir."
+                                                            customStyles={customStyles}
+                                                            striped
+                                                            defaultSortAsc={true}
+                                                            defaultSortFieldId="doorNo"
+                                                        />
+                                                    }
+                                                </Row>
+                                                <div style={{ display: 'flex', marginTop: 10 }}>
+                                                    <OverlayTrigger
+                                                        placement="top"
+                                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                                    >
+                                                        <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                                    </OverlayTrigger>
+                                                    <OverlayTrigger
+                                                        placement="top"
+                                                        overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                                    >
+                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={() => console.log('delete')} iconSize='1.1em' />
+                                                    </OverlayTrigger>
+                                                </div>
+                                            </Form>
+                                        </Tab.Pane>
+                                        <Tab.Pane eventKey="pessoas">
+                                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                                <Row>
+                                                    {loadingEmployeeData ?
+                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                        </div> :
+                                                        <DataTable
+                                                            columns={employeeColumns}
+                                                            data={[]}
+                                                            pagination
+                                                            paginationComponentOptions={paginationOptions}
+                                                            paginationPerPage={10}
+                                                            paginationRowsPerPageOptions={[5, 10]}
+                                                            selectableRows
+                                                            noDataComponent="Não existem dados disponíveis para exibir."
+                                                            customStyles={customStyles}
+                                                            striped
+                                                            defaultSortAsc={true}
+                                                            defaultSortFieldId="enrollNumber"
+                                                        />
+                                                    }
+                                                </Row>
+                                                <div style={{ display: 'flex', marginTop: 10 }}>
+                                                    <OverlayTrigger
+                                                        placement="top"
+                                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                                    >
+                                                        <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowEmployeeAddModal(true)} iconSize='1.1em' />
+                                                    </OverlayTrigger>
+                                                    <OverlayTrigger
+                                                        placement="top"
+                                                        overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                                    >
+                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={() => console.log('delete')} iconSize='1.1em' />
+                                                    </OverlayTrigger>
+                                                </div>
+                                            </Form>
+                                        </Tab.Pane>
+                                    </Tab.Content>
+                                </Tab.Container>
+                            </Form>
+                        </Tab.Pane>
+                    </Tab.Content>
+                </Tab.Container>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>
+                <Button variant="outline-secondary" type="button" onClick={onClose} >
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button variant="outline-primary" type="button" onClick={handleSave} >
                     Guardar
                 </Button>
             </Modal.Footer>
+            <AddTerminalToACModal
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={() => console.log('save')}
+                title="Adicionar Equipamento ao Plano"
+                devices={devices}
+                doors={doors}
+            />
+            <AddEmployeeToACModal
+                open={showEmployeeAddModal}
+                onClose={() => setShowEmployeeAddModal(false)}
+                onSave={() => console.log('save')}
+                title="Adicionar Pessoa ao Plano"
+            />
         </Modal>
     );
 };

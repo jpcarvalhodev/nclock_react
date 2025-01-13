@@ -1,6 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { set } from "date-fns";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -15,11 +14,11 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { KioskTransactionMB } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { useTerminals } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -43,7 +42,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskListPayments = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -95,10 +94,43 @@ export const NkioskListPayments = () => {
             const validCoinData = allCoinData.filter(data => Array.isArray(data) && data.length > 0);
             const combinedCoinData = validCoinData.flat();
 
-            setListPaymentMB(combinedMBData);
-            setListPaymentCoin(combinedCoinData);
+            setTotalPayments([...combinedMBData, ...combinedCoinData]); 
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de pagamentos:', error);
+            setListPaymentMB([]);
+            setListPaymentCoin([]);
+        }
+    };
+
+    // Função para buscar as listagens de pagamentos hoje
+    const fetchTotalPaymentsToday = async () => {
+        try {
+            if (devices.length === 0) {
+                setListPaymentMB([]);
+                setListPaymentCoin([]);
+                return;
+            }
+
+            const mbPromises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByMBAndDeviceSN(formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            });
+
+            const coinPromises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            });
+
+            const allMBData = await Promise.all(mbPromises);
+            const allCoinData = await Promise.all(coinPromises);
+
+            const validMBData = allMBData.filter(data => Array.isArray(data) && data.length > 0);
+            const combinedMBData = validMBData.flat();
+
+            const validCoinData = allCoinData.filter(data => Array.isArray(data) && data.length > 0);
+            const combinedCoinData = validCoinData.flat();
+
+            setTotalPayments([...combinedMBData, ...combinedCoinData]); 
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de pagamentos hoje:', error);
             setListPaymentMB([]);
             setListPaymentCoin([]);
         }
@@ -114,7 +146,7 @@ export const NkioskListPayments = () => {
     useEffect(() => {
         settingVariables();
         mergePaymentData();
-    }, [totalPayments]);
+    }, []);
 
     // Função para atualizar as listagens de pagamentos
     const refreshListPayments = () => {
@@ -276,103 +308,107 @@ export const NkioskListPayments = () => {
     };
 
     return (
-        <TerminalsProvider>
-            <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='content-container'>
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataNkioskPay onSelectDevices={handleSelectFromTreeView} />
+        <div className="main-container">
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkioskPay onSelectDevices={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Recebimentos Totais</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Recebimentos Totais</span>
-                            </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
-                                        label="Pesquisa"
-                                        variant="outlined"
-                                        size='small'
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        style={{ marginTop: -5 }}
-                                    />
-                                </div>
-                                <div className="buttons-container-others">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={listTerminalsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listTerminalsWithNames} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listTerminalsWithNames} fields={getSelectedFields()} />
-                                </div>
-                                <div className="date-range-search">
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                            <div className='table-css'>
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="timestamp"
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
                                 />
-                                <div style={{ marginLeft: 10, marginTop: -5 }}>
-                                    <strong>Recebimentos Totais: </strong> Valor - {totalAmount.toFixed(2)}€ | Visitantes - {filteredDataTable.length}
-                                </div>
+                            </div>
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListPayments} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={listTerminalsWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listTerminalsWithNames} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listTerminalsWithNames} fields={getSelectedFields()} />
+                            </div>
+                            <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Total Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchTotalPaymentsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchPaymentsBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
                             </div>
                         </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {openColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={transactionMBFields}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setOpenColumnSelector(false)}
-                        onColumnToggle={toggleColumn}
-                        onResetColumns={resetColumns}
-                        onSelectAllColumns={onSelectAllColumns}
-                    />
-                )}
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="timestamp"
+                            />
+                            <div style={{ marginLeft: 10, marginTop: -5 }}>
+                                <strong>Recebimentos Totais: </strong> Valor - {totalAmount.toFixed(2)}€ | Visitantes - {filteredDataTable.length}
+                            </div>
+                        </div>
+                    </div>
+                </Split>
             </div>
-        </TerminalsProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {openColumnSelector && (
+                <ColumnSelectorModal
+                    columns={transactionMBFields}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setOpenColumnSelector(false)}
+                    onColumnToggle={toggleColumn}
+                    onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
+                />
+            )}
+        </div>
     );
 }

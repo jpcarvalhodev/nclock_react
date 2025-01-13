@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -15,7 +15,6 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { recolhaMoedeiroEContadorFields, resetFields } from "../../../helpers/Fields";
 import { RecolhaMoedeiroEContador, ResetCoin } from "../../../helpers/Types";
@@ -24,6 +23,7 @@ import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecol
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { ResetCoinModal } from "../../../modals/ResetCoinModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
+import { useTerminals } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -47,7 +47,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskGetCoins = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);

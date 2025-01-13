@@ -88,7 +88,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         } else {
             setFormData({} as T);
         }
-    }, [open, entity, employees]);
+    }, [open, entity]);
 
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
@@ -212,10 +212,10 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
-        const parsedValue = type === 'number' ? Number(value) : value;
         if (showValidationErrors) {
             setShowValidationErrors(false);
         }
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prev => ({
             ...prev,
             [name]: parsedValue
@@ -424,8 +424,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                         name="name"
                                                         value={formData['name'] || ''}
                                                         onChange={handleChange}
-                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''
-                                                            }`}
+                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         required
                                                     />
                                                 </OverlayTrigger>

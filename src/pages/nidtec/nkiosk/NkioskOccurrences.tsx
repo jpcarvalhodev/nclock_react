@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -14,7 +14,6 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
 import { LimpezasEOcorrencias } from "../../../helpers/Types";
@@ -22,6 +21,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateLimpezaOcorrenciaModal } from "../../../modals/UpdateLimpezaOcorrenciaModal";
+import { useTerminals } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -48,7 +48,7 @@ export const NkioskOccurrences = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useTerminals();
     const { occurrences, setOccurrences, fetchAllOcorrencias, handleAddOcorrencia, handleUpdateOcorrencia, handleDeleteOcurrences } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);

@@ -100,6 +100,11 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             }
         });
 
+        if (formData.emailAddress && !validateEmail(formData.emailAddress as string)) {
+            isValid = false;
+            newErrors['emailAddress'] = { hasError: true, message: 'O email é inválido.' };
+        }
+
         if (formData.password && !validatePassword(formData.password as string)) {
             isValid = false;
             newErrors['password'] = { hasError: true, message: 'A password deve ter pelo menos 6 caracteres, uma letra maiúscula, uma minúscula e um caractere especial.' };
@@ -127,7 +132,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         if (type === 'number') {
             parsedValue = Number(value);
         } else {
-            parsedValue = name === 'userName' ? value.replace(/\s+/g, '') : value;
+            parsedValue = name === 'userName' || name === 'password' || name === 'confirmPassword' ? value.replace(/\s+/g, '') : value;
         }
 
         setFormData(prevState => ({
@@ -145,6 +150,12 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
             setProfileImage(objectUrl);
         }
     };
+
+    // Função para validar o email
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };    
 
     // Função para validar a senha
     const validatePassword = (password: string): boolean => {
@@ -224,6 +235,11 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         setShowConfirmPassword(!showConfirmPassword);
     };
 
+    // Função para lidar com a colagem
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        e.preventDefault();
+    };
+
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' style={{ marginTop: 100 }}>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
@@ -294,7 +310,6 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                         name="password"
                                         value={formData.password || ''}
                                         onChange={handleChange}
-                                        autoComplete="off"
                                         minLength={8}
                                         className={`custom-input-height custom-select-font-size ${showValidationErrors && errors['password'] && errors['password'].hasError ? 'error-border' : ''}`}
                                         style={{ paddingRight: '40px', borderRight: 'none' }}
@@ -366,7 +381,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                         name="confirmPassword"
                                         value={formData.confirmPassword || ''}
                                         onChange={handleChange}
-                                        autoComplete="off"
+                                        onPaste={handlePaste}
                                         minLength={8}
                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors && errors['confirmPassword'] && errors['confirmPassword'].hasError ? 'error-border' : ''}`}
                                         style={{ paddingRight: '40px', borderRight: 'none' }}

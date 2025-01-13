@@ -6,8 +6,8 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import * as apiService from "../helpers/apiService";
 import { DoorDevice, Doors } from '../helpers/Types';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -45,6 +45,7 @@ const initialValues: Partial<DoorDevice> = {
 
 // Define o componente
 export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, entity, fields }: DoorModalProps<T>) => {
+    const { door } = useTerminals();
     const [formData, setFormData] = useState<Partial<DoorDevice>>({ ...entity, ...initialValues });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -106,7 +107,6 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const door = await apiService.fetchAllDoors();
             const filteredDoors = door.filter((door: Doors) => door.devId === entity.zktecoDeviceID);
             setDropdownData({
                 nrDoor: filteredDoors

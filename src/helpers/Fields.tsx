@@ -31,6 +31,7 @@ export const employeeFields = [
     { label: 'Estado de Face', key: 'statusFace', type: 'boolean' },
     { label: 'Estado de Palma', key: 'statusPalm', type: 'boolean' },
     { label: 'Tipo', key: 'type', type: 'string' },
+    { label: 'Cartão', key: 'cardNumber', type: 'string' },
     { label: 'Entidade', key: 'entidadeId', type: 'dropdown' },
     { label: 'Departamento', key: 'departmentId', type: 'dropdown', required: true },
     { label: 'Profissão', key: 'professionId', type: 'dropdown' },

@@ -88,7 +88,7 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
             .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
             .map(employee => ({
                 id: employee.employeeID || 'Sem ID',
-                label: `${employee.enrollNumber} - ${employee.shortName}`,
+                label: `${employee.enrollNumber} - ${employee.shortName}` || 'Sem Nome',
                 children: []
             }));
 

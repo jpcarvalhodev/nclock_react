@@ -104,7 +104,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         if (departmentMap.has(deptCode)) {
           departmentMap.get(deptCode).employees.push({
             id: `emp-${emp.employeeID}` || 'Sem ID',
-            label: `${emp.enrollNumber} - ${emp.shortName}`
+            label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
           });
         }
       }
@@ -136,7 +136,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
         .map((emp: Employee) => ({
           id: `dept-${dept.departmentID}-emp-${emp.employeeID}` || 'Sem ID',
-          label: `${emp.enrollNumber} - ${emp.shortName}`
+          label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
         })),
       ],
     });
@@ -151,18 +151,18 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
       .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
       .map((emp: Employee) => ({
         id: `group-${group.groupID}-emp-${emp.employeeID}` || 'Sem ID',
-        label: `${emp.enrollNumber} - ${emp.shortName}`
+        label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
       })),
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
       id: `unassigned-empdept-${emp.employeeID}`,
-      label: `${emp.enrollNumber} - ${emp.shortName}`
+      label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
       id: `unassigned-empgrp-${emp.employeeID}`,
-      label: `${emp.enrollNumber} - ${emp.shortName}`
+      label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
     }));
 
     const treeItems = [

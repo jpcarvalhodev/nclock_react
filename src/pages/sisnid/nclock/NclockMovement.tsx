@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import Split from 'react-split';
 import { toast } from "react-toastify";
@@ -12,18 +12,16 @@ import { PrintButton } from '../../../components/PrintButton';
 import { SelectFilter } from '../../../components/SelectFilter';
 import { TreeViewDataNclock } from '../../../components/TreeViewNclock';
 import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
-import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
+import { Employee, EmployeeAttendanceTimes } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAttendance } from '../../../modals/CreateModalAttendance';
-import { DeleteModal } from "../../../modals/DeleteModal";
-import { UpdateModalAttendance } from '../../../modals/UpdateModalAttendance';
 
 import "../../../css/PagesStyles.css";
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../../context/MovementContext';
+import { useAttendance } from '../../../context/MovementContext';
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from '../../../context/PersonsContext';
+import { usePersons } from '../../../context/PersonsContext';
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
 
 import { TextField, TextFieldProps } from '@mui/material';
@@ -53,9 +51,9 @@ export const NclockMovement = () => {
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
         handleAddAttendance,
-    } = useContext(AttendanceContext) as AttendanceContextType;
+    } = useAttendance();
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = usePersons();
     const [attendanceMovement, setAttendanceMovement] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
@@ -291,127 +289,125 @@ export const NclockMovement = () => {
     };
 
     return (
-        <AttendanceProvider>
-            <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className="content-container">
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+        <div className="main-container">
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className="content-container">
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span>Movimentos</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span>Movimentos</span>
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
+                                />
                             </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
-                                        label="Pesquisa"
-                                        variant="outlined"
-                                        size='small'
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        style={{ marginTop: -5 }}
+                            <div className="buttons-container">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
                                     />
-                                </div>
-                                <div className="buttons-container">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
-                                        />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em'
-                                        />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
-                                        />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                </div>
-                                <div className="date-range-search">
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em'
                                     />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
                                     />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementsBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
+                                </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
-                            <DataTable
-                                columns={columns}
-                                data={filteredDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                selectableRows
-                                paginationPerPage={20}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId="attendanceTime"
-                            />
+                            <div className="date-range-search">
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchMovementsBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
+                            </div>
                         </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {showAddAttendanceModal && (
-                    <CreateModalAttendance
-                        open={showAddAttendanceModal}
-                        onClose={() => setShowAddAttendanceModal(false)}
-                        onSave={addAttendance}
-                        title='Adicionar Assiduidade'
-                        fields={employeeAttendanceTimesFields}
-                        initialValues={initialData}
-                        entityType='movimentos'
-                    />
-                )}
-                {showColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={filteredColumns}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setShowColumnSelector(false)}
-                        onColumnToggle={handleColumnToggle}
-                        onResetColumns={handleResetColumns}
-                        onSelectAllColumns={handleSelectAllColumns}
-                    />
-                )}
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showEditModal}
-                        onClose={() => setShowEditModal(false)}
-                        onUpdate={updateEmployeeAndCard}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Funcionário"
-                    />
-                )}
+                        <DataTable
+                            columns={columns}
+                            data={filteredDataTable}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            paginationPerPage={20}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="attendanceTime"
+                        />
+                    </div>
+                </Split>
             </div>
-        </AttendanceProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {showAddAttendanceModal && (
+                <CreateModalAttendance
+                    open={showAddAttendanceModal}
+                    onClose={() => setShowAddAttendanceModal(false)}
+                    onSave={addAttendance}
+                    title='Adicionar Assiduidade'
+                    fields={employeeAttendanceTimesFields}
+                    initialValues={initialData}
+                    entityType='movimentos'
+                />
+            )}
+            {showColumnSelector && (
+                <ColumnSelectorModal
+                    columns={filteredColumns}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setShowColumnSelector(false)}
+                    onColumnToggle={handleColumnToggle}
+                    onResetColumns={handleResetColumns}
+                    onSelectAllColumns={handleSelectAllColumns}
+                />
+            )}
+            {selectedEmployee && (
+                <UpdateModalEmployees
+                    open={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={updateEmployeeAndCard}
+                    entity={selectedEmployee}
+                    fields={employeeFields}
+                    title="Atualizar Funcionário"
+                />
+            )}
+        </div>
     );
 }

@@ -7,16 +7,15 @@ import "../../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { ExportButton } from "../../../components/ExportButton";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
-import { AttendanceContext, AttendanceContextType, AttendanceProvider } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/MovementContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
-import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
+import { Employee, EmployeeAttendanceTimes } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
 import Split from 'react-split';
@@ -25,6 +24,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
 import { TextField, TextFieldProps } from "@mui/material";
+import { usePersons } from "../../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -33,12 +33,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página de todas as assiduidades
@@ -50,8 +50,8 @@ export const NclockAll = () => {
         setEndDate,
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
-    } = useContext(AttendanceContext) as AttendanceContextType;
-    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
+    } = useAttendance();
+    const { employees, handleUpdateEmployee } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
     const [attendanceAll, setAttendanceAll] = useState<EmployeeAttendanceTimes[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -260,110 +260,108 @@ export const NclockAll = () => {
     };
 
     return (
-        <AttendanceProvider>
-            <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className="content-container">
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+        <div className="main-container">
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className="content-container">
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span>Todos (Movimentos e Pedidos)</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span>Todos (Movimentos e Pedidos)</span>
+                        <div className="datatable-header">
+                            <div className="search-box">
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
+                                />
                             </div>
-                            <div className="datatable-header">
-                                <div className="search-box">
-                                    <CustomSearchBox
-                            label="Pesquisa"
-                            variant="outlined"
-                            size='small'
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                            style={{ marginTop: -5 }}
+                            <div className="buttons-container">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
+                                    />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
+                                    />
+                                </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                            </div>
+                            <div className="date-range-search">
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchAllBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
+                            </div>
+                        </div>
+                        <DataTable
+                            columns={columns}
+                            data={filteredDataTable}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            paginationPerPage={20}
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="attendanceTime"
                         />
-                                </div>
-                                <div className="buttons-container">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
-                                        />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
-                                        />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                </div>
-                                <div className="date-range-search">
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchAllBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                            <DataTable
-                                columns={columns}
-                                data={filteredDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                selectableRows
-                                paginationPerPage={20}
-                                onSelectedRowsChange={handleRowSelected}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId="attendanceTime"
-                            />
-                        </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {showColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={filteredColumns}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setShowColumnSelector(false)}
-                        onColumnToggle={handleColumnToggle}
-                        onResetColumns={handleResetColumns}
-                        onSelectAllColumns={handleSelectAllColumns}
-                    />
-                )}
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showEditModal}
-                        onClose={() => setShowEditModal(false)}
-                        onUpdate={updateEmployeeAndCard}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Funcionário"
-                    />
-                )}
+                    </div>
+                </Split>
             </div>
-        </AttendanceProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {showColumnSelector && (
+                <ColumnSelectorModal
+                    columns={filteredColumns}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setShowColumnSelector(false)}
+                    onColumnToggle={handleColumnToggle}
+                    onResetColumns={handleResetColumns}
+                    onSelectAllColumns={handleSelectAllColumns}
+                />
+            )}
+            {selectedEmployee && (
+                <UpdateModalEmployees
+                    open={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={updateEmployeeAndCard}
+                    entity={selectedEmployee}
+                    fields={employeeFields}
+                    title="Atualizar Funcionário"
+                />
+            )}
+        </div>
     );
 };

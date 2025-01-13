@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -14,13 +14,13 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
+import { usePersons } from "../../../context/PersonsContext";
 import * as apiService from "../../../helpers/apiService";
 import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { Employee, KioskTransactionCard } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+import { useTerminals } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -44,8 +44,8 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskListMovements = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { employees, handleUpdateEmployee } = usePersons();
+    const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -96,10 +96,40 @@ export const NkioskListMovements = () => {
             const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
             const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
 
-            setListMovementCard(validDataCard);
-            setListMovementKiosk(validDataKiosk);
+            setTotalMovements([...validDataCard, ...validDataKiosk]);
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de movimentos', error);
+            setListMovementCard([]);
+            setListMovementKiosk([]);
+        }
+    };
+
+    // Função para buscar os movimentos entre datas
+    const fetchTotalMovementsToday = async () => {
+        try {
+            if (devices.length === 0) {
+                setListMovementCard([]);
+                setListMovementKiosk([]);
+                return;
+            }
+
+            const promisesMovementCard = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate))
+            );
+
+            const promisesMovementKiosk = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate))
+            );
+
+            const resultsMovementCard = await Promise.all(promisesMovementCard);
+            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
+
+            setTotalMovements([...validDataCard, ...validDataKiosk]);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
             setListMovementCard([]);
             setListMovementKiosk([]);
         }
@@ -120,7 +150,7 @@ export const NkioskListMovements = () => {
     useEffect(() => {
         settingVariables();
         mergeMovementData();
-    }, [totalMovements]);
+    }, []);
 
     // Função para atualizar as listagens de movimentos
     const refreshListMovements = () => {
@@ -295,113 +325,117 @@ export const NkioskListMovements = () => {
     };
 
     return (
-        <TerminalsProvider>
-            <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='content-container'>
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
+        <div className="main-container">
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Movimentos Totais</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Movimentos Totais</span>
-                            </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
-                                        label="Pesquisa"
-                                        variant="outlined"
-                                        size='small'
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        style={{ marginTop: -5 }}
-                                    />
-                                </div>
-                                <div className="buttons-container-others">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={listMoveWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
-                                </div>
-                                <div className="date-range-search">
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                            <div className='table-css'>
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="eventTime"
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
                                 />
-                                <div style={{ marginLeft: 10, marginTop: -5 }}>
-                                    <strong>Movimentos Totais: </strong>{totalAmount}
-                                </div>
+                            </div>
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={listMoveWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
+                            </div>
+                            <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Total Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchTotalMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
                             </div>
                         </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {openColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={combinedMovements}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setOpenColumnSelector(false)}
-                        onColumnToggle={toggleColumn}
-                        onResetColumns={resetColumns}
-                        onSelectAllColumns={onSelectAllColumns}
-                    />
-                )}
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showEditModal}
-                        onClose={() => setShowEditModal(false)}
-                        onUpdate={updateEmployeeAndCard}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Funcionário"
-                    />
-                )}
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="eventTime"
+                            />
+                            <div style={{ marginLeft: 10, marginTop: -5 }}>
+                                <strong>Movimentos Totais: </strong>{totalAmount}
+                            </div>
+                        </div>
+                    </div>
+                </Split>
             </div>
-        </TerminalsProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {openColumnSelector && (
+                <ColumnSelectorModal
+                    columns={combinedMovements}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setOpenColumnSelector(false)}
+                    onColumnToggle={toggleColumn}
+                    onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
+                />
+            )}
+            {selectedEmployee && (
+                <UpdateModalEmployees
+                    open={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={updateEmployeeAndCard}
+                    entity={selectedEmployee}
+                    fields={employeeFields}
+                    title="Atualizar Funcionário"
+                />
+            )}
+        </div>
     );
 }

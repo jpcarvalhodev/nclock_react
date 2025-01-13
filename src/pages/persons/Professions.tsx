@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -6,7 +6,6 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
 import { professionFields } from "../../helpers/Fields";
 import { Profession } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -23,6 +22,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
+import { usePersons } from "../../context/PersonsContext";
 
 
 // Define a interface para os filtros
@@ -49,7 +49,7 @@ export const Professions = () => {
         handleAddProfession,
         handleUpdateProfession,
         handleDeleteProfessions,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);

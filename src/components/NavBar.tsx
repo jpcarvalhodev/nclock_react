@@ -271,7 +271,6 @@ import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
 import workflow from '../assets/img/navbar/ndoc/workflow.png';
 import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
 import ticket from '../assets/img/navbar/nticket/ticket.png';
-import { AccessControlModal } from '../modals/AccessControlModal';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -506,7 +505,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showCardDropdown, setShowCardDropdown] = useState(false);
 	const [showBackupDBModal, setShowBackupDBModal] = useState(false);
 	const [showTaskDropdown, setShowTaskDropdown] = useState(false);
-	const [showAccessControlModal, setShowAccessControlModal] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -1026,11 +1024,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Define a estrutura do menu de softwares
 	useEffect(() => {
-		const enabledSoftware = getSoftwareEnabledStatus(license);
-
-		const filterUnlicensedSoftware = (submenu: MenuItem[]): MenuItem[] => {
-			return submenu.filter(item => enabledSoftware[item.label.toLowerCase()] === false);
-		};
 
 		// Estrutura de menu original
 		const originalMenuStructure: MenuStructure = {
@@ -1130,15 +1123,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const newMenuStructure: MenuStructure = {};
 		Object.keys(originalMenuStructure).forEach(key => {
 			const menu = originalMenuStructure[key];
-			const filteredSubmenu = menu.submenu ? filterUnlicensedSoftware(menu.submenu) : [];
 			newMenuStructure[key] = {
 				...menu,
-				submenu: filteredSubmenu
+				submenu: menu.submenu
 			};
 		});
 
 		setMenuStructureNG(newMenuStructure);
-	}, [license]);
+	}, []);
 
 	// Estrutura de menu opcional para o nkiosk
 	const KioskOptionalMenuStructure: MenuStructure = {
@@ -12225,11 +12217,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 				onUpdate={(formData: FormData) => Promise.resolve(importBackupDB(formData))}
 				fields={backupDBFields}
 				title='Backup BD'
-			/>
-			<AccessControlModal
-				open={showAccessControlModal}
-				onClose={() => setShowAccessControlModal(false)}
-				title='Plano de Acessos'
 			/>
 		</nav>
 	);

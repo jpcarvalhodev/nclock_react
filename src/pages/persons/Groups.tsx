@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -6,7 +6,7 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+import { usePersons } from "../../context/PersonsContext";
 import { groupFields } from "../../helpers/Fields";
 import { Group } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -49,7 +49,7 @@ export const Groups = () => {
         handleAddGroup,
         handleUpdateGroup,
         handleDeleteGroup,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'description']);

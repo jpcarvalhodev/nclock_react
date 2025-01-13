@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { toast } from 'react-toastify';
 
@@ -24,7 +24,7 @@ import { useNavbar } from "../../context/NavbarContext";
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextField, TextFieldProps } from '@mui/material';
 
-import { PersonsContext, PersonsContextType } from '../../context/PersonsContext';
+import { usePersons } from '../../context/PersonsContext';
 
 // Define a interface para os filtros
 interface Filters {
@@ -52,7 +52,7 @@ export const Departments = () => {
         handleAddDepartment,
         handleUpdateDepartment,
         handleDeleteDepartment
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'name', 'description']);

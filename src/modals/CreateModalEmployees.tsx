@@ -464,6 +464,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
     dataToSend = removeEmptyFields(dataToSend) as typeof dataToSend;
     onSave(dataToSend as unknown as Partial<T>);
+    onClose();
   };
 
   // Opções do tipo

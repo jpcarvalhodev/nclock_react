@@ -7,7 +7,16 @@ import { toast } from 'react-toastify';
 
 import { KioskConfig } from '../helpers/Types';
 
-import { set } from 'date-fns';
+// Define a interface para os itens de erro
+interface ErrorDetails {
+    hasError: boolean;
+    message: string;
+}
+
+// Define a interface para os itens de erro
+interface ErrorRecord {
+    [key: string]: ErrorDetails;
+}
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -33,7 +42,7 @@ interface Props<T> {
 export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, entity, fields }: Props<T>) => {
     const [kioskFormData, setKioskFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [errors, setErrors] = useState<ErrorRecord>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza o formData com os dados da entity
@@ -58,20 +67,19 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
 
     // Usa useEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, boolean> = {};
+        const newErrors: ErrorRecord = {};
+        let isValid = true;
 
-        const isValid = fields.every(field => {
+        fields.forEach(field => {
             const fieldValue = kioskFormData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
+            if (field.required && (fieldValue === null || fieldValue === '')) {
+                isValid = false;
             }
+
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
+                isValid = false;
             }
 
-            return valid;
         });
 
         setErrors(newErrors);
@@ -82,22 +90,32 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
     // Função para validar o formulário
     const validateForm = () => {
         if (!showValidationErrors) return true;
-        let newErrors: Record<string, boolean> = {};
+        let newErrors: ErrorRecord = {};
         let isValid = true;
 
         fields.forEach((field) => {
             const fieldValue = kioskFormData[field.key];
             if (field.required && !fieldValue) {
                 isValid = false;
-                newErrors[field.key] = true;
-            } else {
-                newErrors[field.key] = false;
+            } else if (field.validate && !field.validate(fieldValue)) {
+                isValid = false;
             }
         });
+
+        if (kioskFormData.emails && !validateEmail(kioskFormData.emails as string)) {
+            isValid = false;
+            newErrors['emails'] = { hasError: true, message: 'O email é inválido.' };
+        }
 
         setErrors(newErrors);
         setIsFormValid(isValid);
         return isValid;
+    };
+
+    // Função para validar o email
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     };
 
     // Chame validateForm apropriadamente em useEffect
@@ -203,7 +221,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         onChange={handleChange}
                                                     />
                                                 </OverlayTrigger>
-                                                {errors.amount && <Form.Text className="text-danger">{errors.amount}</Form.Text>}
+                                                {errors['amount'] && errors['amount'].hasError && <Form.Text className="text-danger">{errors['amount'].message}</Form.Text>}
                                             </Form.Group>
                                             <Form.Group controlId="formTotalMoedas">
                                                 <Form.Label>Total Moedas <span style={{ color: 'red' }}>*</span></Form.Label>
@@ -219,7 +237,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         onChange={handleChange}
                                                     />
                                                 </OverlayTrigger>
-                                                {errors.totalMoedas && <Form.Text className="text-danger">{errors.totalMoedas}</Form.Text>}
+                                                {errors['totalMoedas'] && errors['totalMoedas'].hasError && <Form.Text className="text-danger">{errors['totalMoedas'].message}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                         <Col md={6}>
@@ -240,7 +258,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         rows={4}
                                                     />
                                                 </OverlayTrigger>
-                                                {errors.emails && <Form.Text className="text-danger">{errors.emails}</Form.Text>}
+                                                {errors['emails'] && errors['emails'].hasError && <Form.Text className="text-danger">{errors['emails'].message}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                     </Row>

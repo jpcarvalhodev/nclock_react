@@ -168,6 +168,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     // Salva os dados
     const handleSave = () => {
         onSave(formData as T);
+        onClose();
     };
 
     // Opções de tipo

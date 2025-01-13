@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
 
@@ -17,11 +17,10 @@ import { Button, Form, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react
 
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
+import { useAttendance } from "../../context/MovementContext";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import * as apiService from "../../helpers/apiService";
+import { usePersons } from "../../context/PersonsContext";
+import { TerminalsProvider, useTerminals } from "../../context/TerminalsContext";
 import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../helpers/Fields";
 import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -29,8 +28,6 @@ import { CreateModalDevices } from "../../modals/CreateModalDevices";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { DoorModal } from "../../modals/DoorModal";
 import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
-
-import { id } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {
@@ -63,11 +60,6 @@ interface Movement {
     Time: string;
 }
 
-// Define a interface para os dados de utilizadores e cartões
-interface MergedEmployeeAndCard extends Omit<Employee, 'enrollNumber'>, Partial<Omit<EmployeeCard, 'id'>> {
-    enrollNumber: string;
-}
-
 // Junta os campos de utilizadores e cartões
 const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
 
@@ -91,17 +83,17 @@ export const Terminals = () => {
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
-    } = useContext(TerminalsContext) as DeviceContextType;
+    } = useTerminals();
     const {
         handleAddImportedAttendance,
-    } = useContext(AttendanceContext) as AttendanceContextType;
+    } = useAttendance();
     const {
         fetchAllEmployees,
         fetchAllCardData,
         handleImportEmployeeCard,
         handleImportEmployeeFP,
         handleImportEmployeeFace
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
     const [employees, setEmployees] = useState<EmployeeAndCard[]>([]);
     const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
@@ -953,7 +945,7 @@ export const Terminals = () => {
         return results;
     };
 
-    /* // Funções para acionar o popup de seleção de arquivo dos movimentos, utilizadores e biometria
+    // Funções para acionar o popup de seleção de arquivo dos movimentos, utilizadores e biometria
     const triggerFileAttendanceSelectPopup = () => {
         fileInputAttendanceRef.current?.click();
         setLoadingImportAttendance(true);
@@ -998,7 +990,7 @@ export const Terminals = () => {
                 setLoadingImportFace(false);
             }
         }, 5000);
-    }; */
+    }; 
 
     // Função para enviar os utilizadores selecionados
     const handleSendSelectedUsers = async () => {
@@ -1574,7 +1566,7 @@ export const Terminals = () => {
                                 </Button> */}
                             </div>
                         </Tab>
-                        {/* <Tab eventKey="files" title="Ficheiros">
+                        <Tab eventKey="files" title="Ficheiros">
                             <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
                                     {loadingImportAttendance ? (
@@ -1617,7 +1609,7 @@ export const Terminals = () => {
                                     Importar movimentos do log
                                 </Button>
                             </div>
-                        </Tab> */}
+                        </Tab>
                     </Tabs>
                 </div>
                 <Footer style={{ backgroundColor: footerColor }} />

@@ -254,7 +254,6 @@ function AnimatedRoutes() {
       setLoading(false);
       setShowContent(true);
     };
-
     loadPage();
   }, [location]);
 
@@ -298,7 +297,7 @@ function AnimatedRoutes() {
               <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
               <Route path="/devices/terminalsmb" element={<PageProtection><TerminalsMB /></PageProtection>} />
               <Route path="/devices/terminalcloseopen" element={<PageProtection><TerminalCloseOpen /></PageProtection>} />
-              <Route path="/devices/AccessControls" element={<PageProtection><AccessControls /></PageProtection>} />
+              <Route path="/devices/accesscontrols" element={<PageProtection><AccessControls /></PageProtection>} />
               <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
 
               <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />

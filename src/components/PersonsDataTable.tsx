@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable, { TableColumn } from 'react-data-table-component';
 
-import { PersonsContext, PersonsContextType, PersonsProvider } from '../context/PersonsContext';
+import { usePersons } from '../context/PersonsContext';
 import { employeeFields } from '../helpers/Fields';
-import { Department, Employee, EmployeeCard, Group } from '../helpers/Types';
+import { Department, Employee, Group } from '../helpers/Types';
 import { DeleteModal } from '../modals/DeleteModal';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 
@@ -43,12 +43,12 @@ interface Filters {
 }
 
 // Define o componente
-export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, resetSelection, data, onRefreshData, filteredData, onDuplicate, onSelectedRowsChange }: PersonsDataTableProps) => {
+export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, data, onRefreshData, filteredData, onDuplicate, onSelectedRowsChange }: PersonsDataTableProps) => {
     const {
         fetchAllDisabledEmployees,
         handleUpdateEmployee,
         handleDeleteEmployee,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -232,6 +232,8 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
                         return row.statusFprint ? 'Activo' : 'Inactivo';
                     case 'statusPalm':
                         return row.statusFprint ? 'Activo' : 'Inactivo';
+                    case 'cardNumber':
+                        return row.employeeCards?.[0]?.cardNumber || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -293,54 +295,52 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     };
 
     return (
-        <PersonsProvider>
-            <div>
-                <>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredData}
-                        highlightOnHover
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        onRowDoubleClicked={handleRowDoubleClicked}
-                        expandableRows
-                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        selectableRowsHighlight
-                        clearSelectedRows={clearSelectionToggle}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId='enrollNumber'
+        <div>
+            <>
+                <DataTable
+                    columns={[...columns, actionColumn]}
+                    data={filteredData}
+                    highlightOnHover
+                    pagination
+                    paginationComponentOptions={paginationOptions}
+                    paginationPerPage={20}
+                    onRowDoubleClicked={handleRowDoubleClicked}
+                    expandableRows
+                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                    selectableRows
+                    onSelectedRowsChange={handleRowSelected}
+                    selectableRowsHighlight
+                    clearSelectedRows={clearSelectionToggle}
+                    noDataComponent="Não existem dados disponíveis para exibir."
+                    customStyles={customStyles}
+                    striped
+                    defaultSortAsc={true}
+                    defaultSortFieldId='enrollNumber'
+                />
+                {selectedEmployee && (
+                    <UpdateModalEmployees
+                        open={showUpdateModal}
+                        onClose={handleCloseUpdateModal}
+                        onDuplicate={handleDuplicateAndClose}
+                        onUpdate={updateEmployeeAndCard}
+                        entity={selectedEmployee}
+                        fields={employeeFields}
+                        title="Atualizar Pessoa"
+                        onPrev={handlePrevEmployee}
+                        onNext={handleNextEmployee}
+                        canMoveNext={currentEmployeeIndex < data.employees.length - 1}
+                        canMovePrev={currentEmployeeIndex > 0}
                     />
-                    {selectedEmployee && (
-                        <UpdateModalEmployees
-                            open={showUpdateModal}
-                            onClose={handleCloseUpdateModal}
-                            onDuplicate={handleDuplicateAndClose}
-                            onUpdate={updateEmployeeAndCard}
-                            entity={selectedEmployee}
-                            fields={employeeFields}
-                            title="Atualizar Pessoa"
-                            onPrev={handlePrevEmployee}
-                            onNext={handleNextEmployee}
-                            canMoveNext={currentEmployeeIndex < data.employees.length - 1}
-                            canMovePrev={currentEmployeeIndex > 0}
-                        />
-                    )}
-                    {showDeleteModal && (
-                        <DeleteModal
-                            open={showDeleteModal}
-                            onClose={() => setShowDeleteModal(false)}
-                            onDelete={deleteEmployee}
-                            entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
-                        />
-                    )}
-                </>
-            </div>
-        </PersonsProvider>
+                )}
+                {showDeleteModal && (
+                    <DeleteModal
+                        open={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        onDelete={deleteEmployee}
+                        entityId={selectedEmployeeToDelete ? selectedEmployeeToDelete.employeeID : ''}
+                    />
+                )}
+            </>
+        </div>
     );
 };

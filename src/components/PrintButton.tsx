@@ -4,11 +4,11 @@ import { Button, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useTerminals } from '../context/TerminalsContext';
 import * as apiService from "../helpers/apiService";
-import { Entity } from '../helpers/Types';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { CustomSpinner } from './CustomSpinner';
 import { PDFDocument } from './PDFDocument';
+import { useEntity } from '../context/EntityContext';
 
 
 // Interfaces para os itens de dados e campos
@@ -36,27 +36,12 @@ interface PrintButtonProps {
 // Componente para visualizar e imprimir ou salvar o PDF
 export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onClose }: PrintButtonProps) => {
     const { devices, mbDevices, accessControl } = useTerminals();
+    const { entity } = useEntity();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [calculatedTimeout, setCalculatedTimeout] = useState(renderTimeout || 5000);
-    const [entity, setEntity] = useState<Entity[]>([]);
     const [entityLogo, setEntityLogo] = useState<Blob | null>(null);
-    const [isEntityLoading, setIsEntityLoading] = useState(true);
     const [isEntityLogoLoading, setIsEntityLogoLoading] = useState(true);
-
-    // Busca as entidades para exibir no PDF
-    const fetchEntityData = async () => {
-        setIsEntityLoading(true);
-        try {
-            const data = await apiService.fetchAllCompanyConfig();
-            setEntity(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error('Erro ao buscar entidades:', error);
-            setEntity([]);
-        } finally {
-            setIsEntityLoading(false);
-        }
-    };
 
     // Obtém o logotipo da entidade
     const fetchLogo = async () => {
@@ -89,7 +74,6 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
     // Atualiza o estado de loading quando o modal é exibido
     useEffect(() => {
         if (showModal) {
-            fetchEntityData();
             fetchLogo();
             setCalculatedTimeout(calculateRenderTimeout(data.length));
             setLoading(true);
@@ -126,7 +110,7 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
                     <Modal.Title>Visualizar PDF</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {loading || isEntityLoading || isEntityLogoLoading ? (
+                    {loading || isEntityLogoLoading ? (
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
                             <CustomSpinner />
                         </div>

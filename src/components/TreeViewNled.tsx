@@ -7,8 +7,6 @@ import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useTerminals } from '../context/TerminalsContext';
-import * as apiService from "../helpers/apiService";
-import { Devices } from '../helpers/Types';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 

@@ -939,6 +939,10 @@ body {
     display: none;
 }
 
+.accesscontrol-buttons {
+    margin-right: 5px;
+}
+
 @media (max-width: 500px) {
 
     .chart-container,

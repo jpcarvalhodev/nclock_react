@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -14,7 +14,7 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
+import { useTerminals } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { KioskTransactionMB } from "../../../helpers/Types";
@@ -42,7 +42,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskPayTerminal = () => {
     const { navbarColor, footerColor, kioskConfig } = useNavbar();
-    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -69,6 +69,20 @@ export const NkioskPayTerminal = () => {
             }
         } catch (error) {
             console.error('Erro ao buscar os dados de pagamento dos terminais:', error);
+        }
+    }
+
+    // Função para buscar os pagamentos dos terminais de hoje
+    const fetchPaymentsToday = async () => {
+        try {
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            if (Array.isArray(data)) {
+                setPayTerminal(data);
+            } else {
+                setPayTerminal([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados de pagamento dos terminais hoje:', error);
         }
     }
 
@@ -267,6 +281,12 @@ export const NkioskPayTerminal = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : payTerminalsWithNames} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">MB Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchPaymentsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -15,7 +15,7 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
+import { TerminalsProvider, useTerminals } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { transactionMBFields } from "../../../helpers/Fields";
 import { KioskTransactionMB } from "../../../helpers/Types";
@@ -33,17 +33,17 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NkioskPayCoins = () => {
     const { navbarColor, footerColor, kioskConfig } = useNavbar();
-    const { devices, mbDevices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, mbDevices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -85,15 +85,40 @@ export const NkioskPayCoins = () => {
         }
     }
 
+    // Função para buscar os pagamentos do moedeiro de hoje
+    const fetchPaymentsCoinToday = async () => {
+        try {
+            if (devices.length === 0) {
+                setPayCoins([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setPayCoins(combinedData);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões hoje:', error);
+            setPayCoins([]);
+        }
+    }
+
     // Função para buscar os dados da última recolha
     const fetchAllDataFromLastRecolha = async () => {
         if (selectedDevicesIds.length === 0) {
             toast.warn('Selecione um dispositivo primeiro!');
         }
-        const hasDispositivosOrNidGroup = selectedDevicesIds.some(id => 
+        const hasDispositivosOrNidGroup = selectedDevicesIds.some(id =>
             id === 'dispositivos' || id === 'nidgroup'
         );
-    
+
         if (hasDispositivosOrNidGroup) {
             toast.warn('Selecione apenas o dispositivo!');
             return;
@@ -231,10 +256,10 @@ export const NkioskPayCoins = () => {
     const transformTransactionWithNames = (transaction: { tpId: string; deviceSN: string; amount: any; }) => {
         const terminalMatch = mbDevices.find(terminal => terminal.id === transaction.tpId);
         const terminalName = terminalMatch?.nomeQuiosque || '';
-    
+
         const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
         const deviceName = deviceMatch?.deviceName || '';
-    
+
         return {
             ...transaction,
             tpId: terminalName,
@@ -270,13 +295,13 @@ export const NkioskPayCoins = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
-                                />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
@@ -300,6 +325,12 @@ export const NkioskPayCoins = () => {
                                         overlay={<Tooltip className="custom-tooltip">Moedas Online</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi bi-cash-coin" onClick={fetchAllDataFromLastRecolha} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Moedas Hoje</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchPaymentsCoinToday} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <input
                                         type="datetime-local"

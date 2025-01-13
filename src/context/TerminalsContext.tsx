@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from "../helpers/apiService";
-import { AccessControl, Devices, DoorDevice, Doors, Employee, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, MBDeviceStatus, TimePeriod } from '../helpers/Types';
+import { AccessControl, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, TimePeriod } from '../helpers/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -11,6 +11,7 @@ export interface DeviceContextType {
     mbCloseOpen: MBDeviceCloseOpen[];
     setMbCloseOpen: (mbCloseOpen: MBDeviceCloseOpen[]) => void;
     employeeDevices: EmployeesOnDevice[];
+    door: Doors[];
     fetchAllDevices: () => Promise<Devices[]>;
     fetchAllEmployeeDevices: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
@@ -56,6 +57,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [employeeDevices, setEmployeeDevices] = useState<EmployeesOnDevice[]>([]);
     const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
     const [period, setPeriod] = useState<TimePeriod[]>([]);
+    const [door, setDoor] = useState<Doors[]>([]);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -105,6 +107,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllDoorData = async (): Promise<Doors[]> => {
         try {
             const doorData = await apiService.fetchAllDoors();
+            setDoor(doorData)
             return doorData;
         } catch (error) {
             console.error('Erro ao buscar dados da porta:', error);
@@ -424,6 +427,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllMBCloseOpen();
             fetchAccessControl();
             fetchTimePeriods();
+            fetchAllDoorData();
         }
     }, []);
 
@@ -434,6 +438,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         mbCloseOpen,
         setMbCloseOpen,
         employeeDevices,
+        door,
         fetchAllDevices,
         fetchAllEmployeeDevices,
         fetchAllKioskTransaction,

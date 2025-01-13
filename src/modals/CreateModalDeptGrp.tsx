@@ -532,7 +532,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 </Form>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
                 <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
             {showEmployeeModal && (

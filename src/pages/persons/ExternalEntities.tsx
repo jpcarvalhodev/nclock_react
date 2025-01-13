@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -6,9 +6,9 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
+import { usePersons } from "../../context/PersonsContext";
 import { externalEntityFields } from "../../helpers/Fields";
-import { ExternalEntity, ExternalEntityTypes } from "../../helpers/Types";
+import { ExternalEntity } from "../../helpers/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -49,7 +49,7 @@ export const ExternalEntities = () => {
         handleAddExternalEntity,
         handleUpdateExternalEntity,
         handleDeleteExternalEntity,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'nif']);

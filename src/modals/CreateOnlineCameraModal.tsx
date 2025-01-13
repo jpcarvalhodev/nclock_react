@@ -166,6 +166,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
+        onClose();
     };
 
     return (

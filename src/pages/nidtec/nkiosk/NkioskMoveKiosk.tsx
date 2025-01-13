@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -14,13 +14,13 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
+import { useTerminals } from "../../../context/TerminalsContext";
 import * as apiService from "../../../helpers/apiService";
 import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { Employee, KioskTransactionCard } from "../../../helpers/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+import { usePersons } from "../../../context/PersonsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -44,8 +44,8 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskMoveKiosk = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { employees, handleUpdateEmployee } = usePersons();
+    const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -84,6 +84,30 @@ export const NkioskMoveKiosk = () => {
             setMoveKiosk(combinedData);
         } catch (error) {
             console.error('Erro ao buscar os dados de movimentos no quiosque:', error);
+            setMoveKiosk([]);
+        }
+    };
+
+    // Função para buscar os movimentos de quiosque hoje
+    const fetchKioskMovementsToday = async () => {
+        try {
+            if (devices.length === 0) {
+                setMoveKiosk([]);
+                return;
+            }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveKiosk(combinedData);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos no quiosque hoje:', error);
             setMoveKiosk([]);
         }
     };
@@ -296,6 +320,12 @@ export const NkioskMoveKiosk = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveKioskWithNames} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Entradas Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchKioskMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

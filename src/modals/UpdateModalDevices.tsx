@@ -1,4 +1,3 @@
-import { set } from "date-fns";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -18,7 +17,7 @@ import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
-import { DeviceContextType, TerminalsContext } from "../context/TerminalsContext";
+import { useTerminals } from "../context/TerminalsContext";
 import * as apiService from "../helpers/apiService";
 import { auxiliariesFields, doorsFields } from "../helpers/Fields";
 import { Auxiliaries, Doors, TimePeriod } from "../helpers/Types";
@@ -60,15 +59,17 @@ interface UpdateModalProps<T extends Entity> {
 
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const {
+        door,
+        period,
         fetchAllDevices,
         fetchAllDoorData,
-    } = useContext(TerminalsContext) as DeviceContextType;
+        fetchTimePeriods
+    } = useTerminals();
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
-    const [doors, setDoors] = useState<Doors[]>([]);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -78,7 +79,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [showAuxUpdateModal, setShowAuxUpdateModal] = useState(false);
     const [selectedAuxIn, setSelectedAuxIn] = useState<Auxiliaries | null>(null);
     const [selectedAuxOut, setSelectedAuxOut] = useState<Auxiliaries | null>(null);
-    const [period, setPeriod] = useState<TimePeriod[]>([]);
     const [auxIn, setAuxIn] = useState<Auxiliaries[]>([]);
     const [auxOut, setAuxOut] = useState<Auxiliaries[]>([]);
     const [currentAuxInIndex, setCurrentAuxInIndex] = useState(0);
@@ -148,20 +148,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         return isValid;
     };
 
-    // Função para buscar os períodos
-    const fetchPeriods = async () => {
-        const dataPeriods = await apiService.fetchAllTimePeriods();
-        setPeriod(dataPeriods);
-    }
-
-    // Função para buscar as portas e filtrar pelo SN
-    const fetchDoors = async () => {
-        const dataDoors = await fetchAllDoorData();
-        const filteredDoors = dataDoors.filter((door) => door.devId === entity.zktecoDeviceID);
-        const filteredDoorsOrdered = filteredDoors.sort((a, b) => a.doorNo - b.doorNo);
-        setDoors(filteredDoorsOrdered);
-    }
-
     // Função para buscar as auxiliares
     const fetchAuxiliaries = async () => {
         const dataAuxiliaries = await apiService.fetchAllAux();
@@ -190,7 +176,6 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         } finally {
             setShowUpdateModal(false);
             setLoadingDoorData(false);
-            fetchDoors();
         }
     }
 
@@ -214,9 +199,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // UseEffect para atualizar lista de todos os dispositivos
     useEffect(() => {
         fetchAllDevices();
-        fetchDoors();
+        fetchAllDoorData();
         fetchAuxiliaries();
-        fetchPeriods();
+        fetchTimePeriods();
     }, []);
 
     // Função para manipular o clique no botão Duplicar
@@ -322,7 +307,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = doors.filter(door =>
+    const filteredDataTable = door.filter(door =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(door[key]) === String(filters[key])
         )
@@ -330,9 +315,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // Seleciona a entidade anterior
     const handleNextDoor = () => {
-        if (currentDoorIndex < doors.length - 1) {
+        if (currentDoorIndex < door.length - 1) {
             setCurrentDoorIndex(currentDoorIndex + 1);
-            setSelectedDoor(doors[currentDoorIndex + 1]);
+            setSelectedDoor(door[currentDoorIndex + 1]);
         }
     };
 
@@ -340,7 +325,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const handlePrevDoor = () => {
         if (currentDoorIndex > 0) {
             setCurrentDoorIndex(currentDoorIndex - 1);
-            setSelectedDoor(doors[currentDoorIndex - 1]);
+            setSelectedDoor(door[currentDoorIndex - 1]);
         }
     };
 
@@ -906,7 +891,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     entity={selectedDoor}
                     fields={doorsFields}
                     title="Atualizar Porta"
-                    canMoveNext={currentDoorIndex < doors.length - 1}
+                    canMoveNext={currentDoorIndex < door.length - 1}
                     canMovePrev={currentDoorIndex > 0}
                     onNext={handleNextDoor}
                     onPrev={handlePrevDoor}

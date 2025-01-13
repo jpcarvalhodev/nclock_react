@@ -35,7 +35,7 @@ interface ExportButtonProps {
 type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | 'isPresent' | 'urlArquivo' | 'fechoImage' | 'aberturaImage' | string;
 
 // Formata o campo com base no tipo de campo
-const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDevice: MBDevice[], accessControl:AccessControl[]) => {
+const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDevice: MBDevice[], accessControl: AccessControl[]) => {
 
     const currentRoute = window.location.pathname;
     const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
@@ -74,14 +74,21 @@ const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDe
         case 'rgpdAut':
             return item[fieldKey] ? 'Autorizado' : 'Não Autorizado';
         case 'employeeId':
-            return item.employeeName;
+            return item.employeeName || '';
         case 'departmentId':
+            return item.departmentName || '';
         case 'professionId':
+            return item.professionName || '';
         case 'categoryId':
+            return item.categoryName || '';
         case 'groupId':
+            return item.groupName || '';
         case 'zoneId':
+            return item.zoneName || '';
         case 'externalEntityId':
-            return item[fieldKey] || '';
+            return item.externalEntityName || '';
+        case 'entidadeId':
+            return item.entidadeName || '';
         case 'inOutMode':
             if (item.inOutModeDescription) {
                 return item.inOutModeDescription || '';
@@ -141,6 +148,8 @@ const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDe
             const timezones = found.acc.map((accItem: AccessControl) => accItem.timezoneName);
             return timezones.join(", ");
         }
+        case 'cardNumber':
+            return item.employeeCards?.[0]?.cardNumber || '';
         default:
             return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
     }
