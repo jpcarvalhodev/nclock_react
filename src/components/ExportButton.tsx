@@ -3,16 +3,15 @@ import { saveAs } from 'file-saver';
 import { useEffect, useState } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 import { useTerminals } from '../context/TerminalsContext';
 import * as apiService from "../api/apiService";
-import { AccessControl, Devices, Entity, MBDevice } from '../types/Types';
+import { AccessControl, Devices, MBDevice } from '../types/Types';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { PDFDocument } from './PDFDocument';
 import { useEntity } from '../context/EntityContext';
-import { CustomSpinner } from './CustomSpinner';
 
 
 // Define a interface para os itens de dados
@@ -200,26 +199,32 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device
 
 // Função para exportar os dados para XLSX
 const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[], device: Devices[], mbDevice: MBDevice[], accessControl: AccessControl[]): void => {
-    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-    const fileExtension = '.xlsx';
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Data');
 
-    const filteredFields = fields.filter(field => !columnsToIgnore.includes(field.key));
+    const headers = fields.filter(field => !columnsToIgnore.includes(field.key)).map(field => ({
+        header: field.label, key: field.key, width: 20
+    }));
+    worksheet.columns = headers;
 
-    const output = data.map(item => {
-        return filteredFields.reduce((result: Record<string, any>, field) => {
-            const value = formatField(item, field.key, device, mbDevice, accessControl);
-            if (value !== undefined && value !== null && value !== '') {
-                result[field.label] = value;
-            }
-            return result;
-        }, {});
+    data.forEach(item => {
+        const row: Record<string, any> = {};
+        headers.forEach(header => {
+            const value = formatField(item, header.key, device, mbDevice, accessControl);
+            row[header.key] = value;
+        });
+        worksheet.addRow(row);
     });
 
-    const ws = XLSX.utils.json_to_sheet(output);
-    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: fileType });
-    saveAs(blob, fileName + fileExtension);
+    worksheet.eachRow({ includeEmpty: true }, function (row) {
+        row.eachCell((cell) => {
+            cell.numFmt = '@';
+        });
+    });
+
+    workbook.xlsx.writeBuffer().then(function (buffer) {
+        saveAs(new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), `${fileName}.xlsx`);
+    });
 };
 
 // Função para exportar os dados para TXT
