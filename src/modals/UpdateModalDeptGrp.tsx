@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -7,9 +7,9 @@ import { toast } from 'react-toastify';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { customStyles } from '../components/CustomStylesDataTable';
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
-import { employeeFields } from '../helpers/Fields';
-import { Department, Employee, Group } from '../helpers/Types';
+import { usePersons } from '../context/PersonsContext';
+import { employeeFields } from '../fields/Fields';
+import { Department, Employee, Group } from '../types/Types';
 
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
@@ -59,7 +59,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         fetchAllGroups,
         handleAddEmployee,
         handleUpdateEmployee,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [employeeData, setEmployeeData] = useState<Employee[]>([]);
@@ -88,7 +88,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         } else {
             setFormData({} as T);
         }
-    }, [open, entity, employees]);
+    }, [open, entity]);
 
     // Atualiza o estado do formulário com as validações
     useEffect(() => {
@@ -212,10 +212,10 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
-        const parsedValue = type === 'number' ? Number(value) : value;
         if (showValidationErrors) {
             setShowValidationErrors(false);
         }
+        const parsedValue = type === 'number' ? Number(value) : value;
         setFormData(prev => ({
             ...prev,
             [name]: parsedValue
@@ -424,8 +424,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                         name="name"
                                                         value={formData['name'] || ''}
                                                         onChange={handleChange}
-                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''
-                                                            }`}
+                                                        className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         required
                                                     />
                                                 </OverlayTrigger>
