@@ -6,8 +6,9 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import * as apiService from "../helpers/apiService";
-import { LimpezasEOcorrencias, NewTransactionCard } from '../helpers/Types';
+import { NewTransactionCard } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -38,6 +39,8 @@ const initialValues: Partial<NewTransactionCard> = {
 
 // Define o componente
 export const CreateModalNewCard = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
+    const { devices } = useTerminals();
+    const { fetchAllCardData } = usePersons();
     const [formData, setFormData] = useState<Partial<T>>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -52,7 +55,7 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
         } else {
             setFormData({});
         }
-    }, [open]);
+    }, [open, devices]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -101,8 +104,7 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const devices = await apiService.fetchAllDevices();
-            const employeeCard = await apiService.fetchAllEmployeeCards();
+            const employeeCard = await fetchAllCardData();
             const sortedPin = employeeCard.sort((a: any, b: any) => a.enrollNumber - b.enrollNumber);
             setDropdownData({
                 deviceSN: devices,

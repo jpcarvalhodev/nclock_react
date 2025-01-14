@@ -7,8 +7,8 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from "../../context/PersonsContext";
-import { categoryFields } from "../../helpers/Fields";
-import { Category } from "../../helpers/Types";
+import { categoryFields } from "../../fields/Fields";
+import { Category } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 import DataTable, { TableColumn } from 'react-data-table-component';

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, Group } from '../types/Types';
 import { customStyles } from '../components/CustomStylesDataTable';
 import DataTable from 'react-data-table-component';
 

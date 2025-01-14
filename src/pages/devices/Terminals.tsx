@@ -21,8 +21,8 @@ import { useAttendance } from "../../context/MovementContext";
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from "../../context/PersonsContext";
 import { TerminalsProvider, useTerminals } from "../../context/TerminalsContext";
-import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../helpers/Fields";
-import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../helpers/Types";
+import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../fields/Fields";
+import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalDevices } from "../../modals/CreateModalDevices";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -61,7 +61,12 @@ interface Movement {
 }
 
 // Junta os campos de utilizadores e cartões
-const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
+const combinedEmployeeFields = [
+    ...employeeFields,
+    ...employeeCardFields
+].filter((field, index, self) =>
+    index === self.findIndex((f) => f.key === field.key)
+);
 
 // Define o componente de terminais
 export const Terminals = () => {
@@ -782,7 +787,7 @@ export const Terminals = () => {
                 if (typeof result === 'string') {
                     const fileName = file.name;
                     const parsedData = parseAttendanceData(result, fileName);
-                    await handleAddImportedAttendance(parsedData);
+                    await handleAddImportedAttendance(parsedData as any);
                 } else {
                     console.error('Erro: o conteúdo do arquivo não é uma string ou number');
                 }
@@ -826,9 +831,7 @@ export const Terminals = () => {
             reader.onload = async (e) => {
                 const buffer = e.target?.result as ArrayBuffer;
                 const data = parseUserData(buffer);
-                for (const item of data) {
-                    await handleImportEmployeeCard(item);
-                }
+                await handleImportEmployeeCard(data);
             };
             setLoadingImportUsers(false);
             reader.readAsArrayBuffer(file);
@@ -864,7 +867,7 @@ export const Terminals = () => {
     // Função para decodificar a string
     const decodeString = (dataView: DataView, offset: number, length: number): string => {
         const bytes = new Uint8Array(dataView.buffer, offset, length);
-        return new TextDecoder('utf-8').decode(bytes).replace(/\0/g, '');
+        return new TextDecoder('windows-1252').decode(bytes).replace(/\0/g, '').trim();
     };
 
     // Função para controlar a mudança de arquivo da biometria
@@ -990,7 +993,7 @@ export const Terminals = () => {
                 setLoadingImportFace(false);
             }
         }, 5000);
-    }; 
+    };
 
     // Função para enviar os utilizadores selecionados
     const handleSendSelectedUsers = async () => {

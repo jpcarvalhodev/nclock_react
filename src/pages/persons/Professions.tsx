@@ -6,8 +6,8 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { professionFields } from "../../helpers/Fields";
-import { Profession } from "../../helpers/Types";
+import { professionFields } from "../../fields/Fields";
+import { Profession } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 import DataTable, { TableColumn } from 'react-data-table-component';

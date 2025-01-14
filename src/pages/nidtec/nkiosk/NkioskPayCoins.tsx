@@ -16,9 +16,9 @@ import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { TerminalsProvider, useTerminals } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { transactionMBFields } from "../../../helpers/Fields";
-import { KioskTransactionMB } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { transactionMBFields } from "../../../fields/Fields";
+import { KioskTransactionMB } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
 // Formata a data para o início do dia às 00:00

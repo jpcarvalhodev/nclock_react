@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
@@ -9,12 +9,12 @@ import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
 import modalAvatar from "../assets/img/navbar/navbar/modalAvatar.png";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { PersonsContext, PersonsContextType } from "../context/PersonsContext";
-import * as apiService from "../helpers/apiService";
-import { departmentFields, groupFields } from "../helpers/Fields";
-import { Department, Employee, EmployeeCard, Group } from "../helpers/Types";
+import { usePersons } from "../context/PersonsContext";
+import { departmentFields, groupFields } from "../fields/Fields";
+import { Employee, EmployeeCard } from "../types/Types";
 
 import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
+import { useEntity } from "../context/EntityContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -42,9 +42,8 @@ interface Props<T> {
 
 // Define o componente
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups } = useContext(
-    PersonsContext
-  ) as PersonsContextType;
+  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllCategories, fetchAllProfessions, fetchAllZones, fetchAllExternalEntitiesData, handleAddDepartment, handleAddGroup } = usePersons();
+  const { fetchAllEntity } = useEntity();
   const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -141,56 +140,28 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     try {
       const departments = await fetchAllDepartments();
       const groups = await fetchAllGroups();
-      const categories = await apiService.fetchAllCategories();
-      const professions = await apiService.fetchAllProfessions();
-      const zones = await apiService.fetchAllZones();
-      const externalEntities = await apiService.fetchAllExternalEntities();
-      const entities = await apiService.fetchAllCompanyConfig();
+      const categories = await fetchAllCategories();
+      const professions = await fetchAllProfessions();
+      const zones = await fetchAllZones();
+      const externalEntities = await fetchAllExternalEntitiesData();
+      const entities = await fetchAllEntity();
       setDropdownData({
         departmentId: departments,
         groupId: groups,
         categoryId: categories,
         professionId: professions,
         zoneId: zones,
-        externalEntityId: externalEntities,
+        externalEntityId: externalEntities.ExternalEntities,
         entidadeId: entities,
       });
       if (entities.length === 1) {
         setFormData((prevState) => ({
           ...prevState,
-          entidadeId: entities[0].id,
+          entidadeId: entities?.[0]?.id || '',
         }));
       }
     } catch (error) {
       console.error("Erro ao buscar os dados de departamentos e grupos", error);
-    }
-  };
-
-  // Adiciona um departamento
-  const handleAddDepartment = async (department: Department) => {
-    try {
-      const data = await apiService.addDepartment(department);
-      toast.success(data.value || "Departamento adicionado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao adicionar novo departamento:", error);
-    } finally {
-      setShowDeptModal(false);
-      const data = await fetchAllDepartments();
-      setDropdownData((prevState) => ({ ...prevState, departmentId: data }));
-    }
-  };
-
-  // Função para adicionar um grupo
-  const handleAddGroup = async (group: Group) => {
-    try {
-      const data = await apiService.addGroup(group);
-      toast.success(data.value || "Grupo adicionado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao adicionar novo grupo:", error);
-    } finally {
-      setShowGrpModal(false);
-      const data = await fetchAllGroups();
-      setDropdownData((prevState) => ({ ...prevState, groupId: data }));
     }
   };
 

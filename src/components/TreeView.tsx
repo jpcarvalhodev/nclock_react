@@ -6,7 +6,7 @@ import { TextField, TextFieldProps } from '@mui/material';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { usePersons } from '../context/PersonsContext';
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, Group } from '../types/Types';
 
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
 

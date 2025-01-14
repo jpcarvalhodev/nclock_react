@@ -13,8 +13,8 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useEntity } from "../../context/EntityContext";
 import { useNavbar } from "../../context/NavbarContext";
-import { entityFields } from "../../helpers/Fields";
-import { Entity } from "../../helpers/Types";
+import { entityFields } from "../../fields/Fields";
+import { Entity } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
 

@@ -1,4 +1,4 @@
-import { AccessControl, Ads, Category, Department, Devices, Doors, Employee, EmployeeAndCard, EmployeeAttendanceTimes, EmployeeDevices, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskTransaction, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, Logs, MBDevice, ManualOpenDoor, Profession, RecolhaMoedeiroEContador, Register, Zone } from "../helpers/Types";
+import { AccessControl, Ads, Category, Department, Devices, Doors, Employee, EmployeeAndCard, EmployeeAttendanceTimes, EmployeeDevices, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskTransaction, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, Logs, MBDevice, ManualOpenDoor, Profession, RecolhaMoedeiroEContador, Register, Zone } from "../types/Types";
 
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"

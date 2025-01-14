@@ -12,8 +12,8 @@ import { TreeViewData } from "../../components/TreeView";
 import '../../css/PagesStyles.css';
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from '../../context/PersonsContext';
-import { employeeFields } from '../../helpers/Fields';
-import { Employee } from '../../helpers/Types';
+import { employeeFields } from '../../fields/Fields';
+import { Employee } from '../../types/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 

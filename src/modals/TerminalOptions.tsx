@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Col, Form, Modal, Tab, Tabs } from 'react-bootstrap';
 import "../css/TerminalOptionsModal.css";
 

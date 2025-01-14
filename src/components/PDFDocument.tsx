@@ -1,7 +1,7 @@
 import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import React from 'react';
 
-import { AccessControl, Devices, Entity, MBDevice } from '../helpers/Types';
+import { AccessControl, Devices, Entity, MBDevice } from '../types/Types';
 
 // Estilos para o documento PDF
 const styles = StyleSheet.create({

@@ -3,8 +3,8 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable, { TableColumn } from 'react-data-table-component';
 
 import { usePersons } from '../context/PersonsContext';
-import { employeeFields } from '../helpers/Fields';
-import { Department, Employee, Group } from '../helpers/Types';
+import { employeeFields } from '../fields/Fields';
+import { Department, Employee, Group } from '../types/Types';
 import { DeleteModal } from '../modals/DeleteModal';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
 

@@ -7,8 +7,6 @@ import { toast } from 'react-toastify';
 
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 
-import { set } from 'date-fns';
-
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
     label: string;

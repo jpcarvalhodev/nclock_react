@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from '../helpers/apiService';
-import { Ads } from '../helpers/Types';
+import * as apiService from '../api/apiService';
+import { Ads } from '../types/Types';
 
 // Define o tipo do contexto
 export interface AdsContextType {

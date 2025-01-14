@@ -9,8 +9,8 @@ import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { Department, Employee, Group } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { Department, Employee, Group } from "../../../types/Types";
 import { Line } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 

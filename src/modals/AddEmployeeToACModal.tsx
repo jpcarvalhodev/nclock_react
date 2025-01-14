@@ -7,8 +7,8 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { TreeViewData } from '../components/TreeView';
 import Split from 'react-split';
-import { Employee } from '../helpers/Types';
-import { employeeFields } from '../helpers/Fields';
+import { Employee } from '../types/Types';
+import { employeeFields } from '../fields/Fields';
 import { usePersons } from '../context/PersonsContext';
 
 // Interface para as propriedades do modal

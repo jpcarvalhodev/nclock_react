@@ -6,11 +6,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import * as XLSX from 'xlsx';
 
 import { useTerminals } from '../context/TerminalsContext';
-import * as apiService from "../helpers/apiService";
-import { AccessControl, Devices, Entity, MBDevice } from '../helpers/Types';
+import * as apiService from "../api/apiService";
+import { AccessControl, Devices, Entity, MBDevice } from '../types/Types';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { PDFDocument } from './PDFDocument';
+import { useEntity } from '../context/EntityContext';
+import { CustomSpinner } from './CustomSpinner';
 
 
 // Define a interface para os itens de dados
@@ -247,44 +249,24 @@ const exportToTXT = (data: DataItem[], fileName: string, device: Devices[], mbDe
 // Define o componente
 export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProps) => {
     const { devices, mbDevices, accessControl } = useTerminals();
+    const { entity } = useEntity();
     const fileName = 'dados_exportados';
     const dataToExport = selectedData.length > 0 ? selectedData : allData;
-    const [entity, setEntity] = useState<Entity[]>([]);
     const [entityLogo, setEntityLogo] = useState<Blob | null>(null);
-    const [isEntityLoading, setIsEntityLoading] = useState(true);
-    const [isEntityLogoLoading, setIsEntityLogoLoading] = useState(true);
-
-    // Busca as entidades para exibir no PDF
-    const fetchEntityData = async () => {
-        setIsEntityLoading(true);
-        try {
-            const data = await apiService.fetchAllCompanyConfig();
-            setEntity(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error('Erro ao buscar entidades:', error);
-            setEntity([]);
-        } finally {
-            setIsEntityLoading(false);
-        }
-    };
 
     // Obtém o logotipo da entidade
     const fetchLogo = async () => {
-        setIsEntityLogoLoading(true);
         try {
             const nif = localStorage.getItem('nif');
             const logo = await apiService.fetchCompanyLogo(Number(nif));
             setEntityLogo(logo);
         } catch (error) {
             console.error('Erro ao buscar logotipo:', error);
-        } finally {
-            setIsEntityLogoLoading(false);
         }
     };
 
     // Busca as entidades ao montar o componente
     useEffect(() => {
-        fetchEntityData();
         fetchLogo();
     }, []);
 

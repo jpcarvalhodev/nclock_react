@@ -1,4 +1,3 @@
-import { set } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, FormControl, InputGroup, Modal, OverlayTrigger, Row, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,7 @@ import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { useLicense } from "../context/LicenseContext";
-import { License } from "../helpers/Types";
+import { License } from "../types/Types";
 
 // Define o tipo FormControlElement
 type FormControlElement =
@@ -448,6 +447,21 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     });
   };
 
+  // Função para remover entidade localmente
+  const handleDeleteEntity = (entidadeNumber: number) => {
+    const updatedEntities = entities.filter((ent) => ent.entidadeNumber !== entidadeNumber);
+
+    setEntities(updatedEntities);
+
+    if (activeTab === String(entidadeNumber)) {
+      if (updatedEntities.length > 0) {
+        setActiveTab(updatedEntities[0].entidadeNumber?.toString());
+      } else {
+        setActiveTab(undefined);
+      }
+    }
+  };
+
   return (
     <div>
       <Modal show={isCheckVisible} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
@@ -515,8 +529,22 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             {entities.map((entity) => (
               <Tab
                 eventKey={entity.entidadeNumber?.toString()}
-                title={truncateText(entity.name || '', 20) || `Entidade ${entity.entidadeNumber}`}
                 key={entity.entidadeNumber}
+                title={
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span>
+                      {truncateText(entity.name || '', 20) || `Entidade ${entity.entidadeNumber}`}
+                    </span>
+                    <i
+                      className="bi bi-trash-fill ms-2"
+                      style={{ cursor: 'pointer', color: 'red' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteEntity(entity.entidadeNumber!);
+                      }}
+                    />
+                  </div>
+                }
               >
                 <div className="p-3">
                   <Row style={{ marginBottom: 20 }}>

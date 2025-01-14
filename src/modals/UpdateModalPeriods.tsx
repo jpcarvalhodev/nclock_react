@@ -6,7 +6,7 @@ import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { TimePeriod } from '../helpers/Types';
+import { TimePeriod } from '../types/Types';
 
 // Define a interface Entity
 export interface Entity {

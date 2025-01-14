@@ -6,8 +6,8 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import * as apiService from "../helpers/apiService";
-import { LimpezasEOcorrencias } from '../helpers/Types';
+import { LimpezasEOcorrencias } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -39,6 +39,7 @@ const initialValues: Partial<LimpezasEOcorrencias> = {
 
 // Define o componente
 export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValuesData }: CreateModalProps<T>) => {
+    const { devices } = useTerminals();
     const [formData, setFormData] = useState<Partial<LimpezasEOcorrencias>>({ ...initialValuesData, ...initialValues });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -107,7 +108,6 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const devices = await apiService.fetchAllDevices();
             setDropdownData({
                 deviceId: devices
             });

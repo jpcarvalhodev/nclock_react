@@ -6,8 +6,8 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import * as apiService from "../helpers/apiService";
-import { ResetCoin } from '../helpers/Types';
+import { ResetCoin } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -39,6 +39,7 @@ interface Field {
 
 // Define o componente
 export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave, fields }: ModalProps<T>) => {
+    const { fetchAllDevices } = useTerminals();
     const [formData, setFormData] = useState<Partial<ResetCoin>>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -101,7 +102,7 @@ export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave,
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const device = await apiService.fetchAllDevices();
+            const device = await fetchAllDevices();
             setDropdownData({
                 deviceId: device
             });

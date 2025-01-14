@@ -17,8 +17,8 @@ import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
 import { DeviceContextType, TerminalsContext } from "../context/TerminalsContext";
-import { doorsFields } from "../helpers/Fields";
-import { Devices, Doors } from "../helpers/Types";
+import { doorsFields } from "../fields/Fields";
+import { Devices, Doors } from "../types/Types";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {

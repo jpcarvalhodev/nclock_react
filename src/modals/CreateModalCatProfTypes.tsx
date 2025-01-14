@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 
-import * as apiService from "../helpers/apiService";
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -36,6 +36,7 @@ interface CodeItem {
 
 // Define o componente
 export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
+    const { fetchAllCategories, fetchAllProfessions, fetchAllExternalEntitiesData } = usePersons();
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -97,28 +98,28 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
 
     // Função para buscar os dados de categoria, profissão ou tipo
     const fetchEntityData = async () => {
-        let url;
+        let url: (() => Promise<CodeItem[]>) | CodeItem[] | undefined;
         let requiresNextCode = false;
         let requiresNextOrder = false;
         switch (entityType) {
             case 'categorias':
-                url = apiService.fetchAllCategories;
+                url = () => fetchAllCategories();
                 requiresNextCode = true;
                 break;
             case 'profissões':
-                url = apiService.fetchAllProfessions;
+                url = () => fetchAllProfessions();
                 requiresNextCode = true;
                 break;
             case 'tipos':
-                url = apiService.fetchAllExternalEntityTypes;
+                url = (await fetchAllExternalEntitiesData()).ExternalEntityTypes;
                 requiresNextOrder = true;
                 break;
             default:
-                toast.error(`Tipo de entidade '${entityType}' não existe.`);
+                console.error(`Tipo de entidade '${entityType}' não existe.`);
                 return;
         }
         try {
-            const response = await url();
+            const response = typeof url === 'function' ? await url() : await Promise.resolve(url);
             if (response) {
                 const data: CodeItem[] = response
 
@@ -149,7 +150,6 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
             }
         } catch (error) {
             console.error(`Erro ao buscar dados de ${entityType}:`, error);
-            toast.error(`Erro ao conectar ao servidor para ${entityType}`);
         }
     };
 

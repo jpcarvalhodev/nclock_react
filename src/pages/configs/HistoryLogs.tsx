@@ -14,9 +14,9 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataHistory } from "../../components/TreeViewHistory";
 import { useEntity } from "../../context/EntityContext";
 import { useNavbar } from "../../context/NavbarContext";
-import * as apiService from "../../helpers/apiService";
-import { logsFields } from "../../helpers/Fields";
-import { Logs } from "../../helpers/Types";
+import * as apiService from "../../api/apiService";
+import { logsFields } from "../../fields/Fields";
+import { Logs } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 // Formata a data para o início do dia às 00:00

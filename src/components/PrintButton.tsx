@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useTerminals } from '../context/TerminalsContext';
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { CustomSpinner } from './CustomSpinner';

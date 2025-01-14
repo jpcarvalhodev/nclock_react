@@ -5,7 +5,7 @@ import '../css/TreeView.css';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 
 import { useTerminals } from '../context/TerminalsContext';
-import { DevicesDoors, Doors } from '../helpers/Types';
+import { DevicesDoors, Doors } from '../types/Types';
 
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewACProps {

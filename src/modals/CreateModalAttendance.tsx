@@ -1,12 +1,13 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
-import { Employee } from '../helpers/Types';
+import { Devices, Employee } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -42,13 +43,19 @@ const getCurrentDateTimeLocal = () => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
+// Define a interface para os dados do dropdown
+interface DropdownData {
+    [key: string]: Employee[] | Devices[] | undefined;
+    employeeId?: Employee[];
+    deviceId?: Devices[];
+}
+
 // Define o componente
 export const CreateModalAttendance = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
-    const {
-        fetchAllEmployees,
-    } = useContext(PersonsContext) as PersonsContextType;
+    const { fetchAllEmployees } = usePersons();
+    const { fetchAllDevices } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
-    const [dropdownData, setDropdownData] = useState<Record<string, Employee[]>>({});
+    const [dropdownData, setDropdownData] = useState<DropdownData>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
@@ -101,9 +108,12 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     const fetchDropdownOptions = async () => {
         try {
             const employees = await fetchAllEmployees();
+            const devices = await fetchAllDevices();
+            const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
             setDropdownData(prevState => ({
                 ...prevState,
-                employeeId: employees
+                employeeId: employees,
+                deviceId: sortedDevices
             }));
             const selectedEmployee = employees.find(emp => emp.employeeID === initialValues.selectedEmployeeIds);
             if (selectedEmployee) {
@@ -111,6 +121,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                     ...prevState,
                     employeeId: selectedEmployee.employeeID,
                     employeeName: selectedEmployee.name,
+                    enrollNumber: selectedEmployee.enrollNumber
                 }));
             }
         } catch (error) {
@@ -161,6 +172,21 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                     [key]: selectedEmployee.employeeID,
                     employeeName: selectedEmployee.name,
                     enrollNumber: selectedEmployee.enrollNumber
+                }));
+            } else {
+                setFormData(prevState => ({
+                    ...prevState,
+                    [key]: value
+                }));
+            }
+        }
+        if (key === 'deviceId') {
+            const selectedDevice = dropdownData.deviceId?.find(dev => dev.zktecoDeviceID === value);
+            if (selectedDevice) {
+                setFormData(prevState => ({
+                    ...prevState,
+                    [key]: selectedDevice.zktecoDeviceID,
+                    deviceNumber: selectedDevice.deviceNumber
                 }));
             } else {
                 setFormData(prevState => ({
@@ -291,87 +317,86 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                         </Form.Group>
                     </>
                 )}
-                {entityType === 'movimentos' && fields.map((field) => {
-                    if (!['deviceId', 'deviceNumber', 'enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
-                        return (
-                            <Form.Group controlId={`form${field.key}`} key={field.key}>
-                                <Form.Label>
-                                    {field.label}
-                                    {field.required && <span style={{ color: 'red' }}> *</span>}
-                                </Form.Label>
-                                {field.type === 'dropdown' ? (
-                                    <OverlayTrigger
-                                        placement="right"
-                                        overlay={<Tooltip id={`tooltip-${field.key}`}>{'Campo obrigatório'}</Tooltip>}
-                                    >
-                                        <Form.Control
-                                            as="select"
-                                            className="custom-input-height custom-select-font-size"
-                                            value={formData[field.key] || ''}
-                                            onChange={(e) => handleDropdownChange(field.key, e)}
-                                        >
-                                            <option value="">Selecione...</option>
-                                            {dropdownData[field.key]?.map((option) => (
-                                                <option key={option.employeeID} value={option.employeeID}>
-                                                    {option.name}
-                                                </option>
-                                            ))}
-                                        </Form.Control>
-                                    </OverlayTrigger>
-                                ) : (
-                                    field.key === 'attendanceTime' ? (
-                                        <OverlayTrigger
-                                            placement="right"
-                                            overlay={
-                                                <Tooltip id={`tooltip-${field.key}`}>
-                                                    {`Campo obrigatório`}
-                                                </Tooltip>
-                                            }
-                                        >
-                                            <Form.Control
-                                                type={field.type}
-                                                className="custom-input-height custom-select-font-size"
-                                                value={formData[field.key] || ''}
-                                                onChange={handleChange}
-                                                name={field.key}
-                                            />
-                                        </OverlayTrigger>
-                                    ) : (
-                                        field.key === 'inOutMode' ? (
-                                            <Form.Control
-                                                as="select"
-                                                type={field.type}
-                                                className="custom-input-height custom-select-font-size"
-                                                value={formData[field.key] || ''}
-                                                onChange={handleChange}
-                                                name={field.key}
-                                            >
-                                                {typeOptions.map(option => (
-                                                    <option key={option.value} value={option.value}>{option.label}</option>
-                                                ))}
-                                            </Form.Control>
-                                        ) : (
-                                            <Form.Control
-                                                type={field.type}
-                                                className="custom-input-height custom-select-font-size"
-                                                value={formData[field.key] || ''}
-                                                onChange={handleChange}
-                                                name={field.key}
-                                            />
-                                        )))}
-                                {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
-                            </Form.Group>
-                        );
-                    }
-                    return (
-                        <Form.Control
-                            key={field.key}
-                            type="hidden"
-                            value={formData[field.key] || ''}
-                            name={field.key}
-                        />
-                    );
-                })}
+                {entityType === 'movimentos' && (
+                    <div className="row">
+                        {fields.map((field) => {
+                            if (!['deviceNumber', 'enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
+                                return (
+                                    <div className="col-md-6" key={field.key}>
+                                        <Form.Group controlId={`form${field.key}`}>
+                                            <Form.Label>
+                                                {field.label}
+                                                {field.required && <span style={{ color: 'red' }}> *</span>}
+                                            </Form.Label>
+                                            {field.type === 'dropdown' ? (
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id={`tooltip-${field.key}`}>{'Campo obrigatório'}</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        as="select"
+                                                        className="custom-input-height custom-select-font-size"
+                                                        value={formData[field.key] || ''}
+                                                        onChange={(e) => handleDropdownChange(field.key, e)}
+                                                    >
+                                                        <option value="">Selecione...</option>
+                                                        {dropdownData[field.key]?.map((option) => (
+                                                            <option key={option.employeeID || option.zktecoDeviceID} value={option.employeeID || option.zktecoDeviceID}>
+                                                                {option.name || option.deviceName}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </OverlayTrigger>
+                                            ) : (
+                                                field.key === 'attendanceTime' ? (
+                                                    <OverlayTrigger
+                                                        placement="right"
+                                                        overlay={
+                                                            <Tooltip id={`tooltip-${field.key}`}>
+                                                                {`Campo obrigatório`}
+                                                            </Tooltip>
+                                                        }
+                                                    >
+                                                        <Form.Control
+                                                            type={field.type}
+                                                            className="custom-input-height custom-select-font-size"
+                                                            value={formData[field.key] || ''}
+                                                            onChange={handleChange}
+                                                            name={field.key}
+                                                        />
+                                                    </OverlayTrigger>
+                                                ) : (
+                                                    field.key === 'inOutMode' ? (
+                                                        <Form.Control
+                                                            as="select"
+                                                            type={field.type}
+                                                            className="custom-input-height custom-select-font-size"
+                                                            value={formData[field.key] || ''}
+                                                            onChange={handleChange}
+                                                            name={field.key}
+                                                        >
+                                                            {typeOptions.map(option => (
+                                                                <option key={option.value} value={option.value}>{option.label}</option>
+                                                            ))}
+                                                        </Form.Control>
+                                                    ) : (
+                                                        <Form.Control
+                                                            type={field.type}
+                                                            className="custom-input-height custom-select-font-size"
+                                                            value={formData[field.key] || ''}
+                                                            onChange={handleChange}
+                                                            name={field.key}
+                                                        />
+                                                    )))}
+                                            {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
+                                        </Form.Group>
+                                    </div>
+                                );
+                            }
+                            return null;
+                        })}
+                    </div>
+                )}
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>

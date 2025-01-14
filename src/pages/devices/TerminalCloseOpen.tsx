@@ -13,9 +13,9 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../components/TreeViewDevice";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
-import * as apiService from "../../helpers/apiService";
-import { mbDeviceCloseOpenFields } from "../../helpers/Fields";
-import { MBDeviceCloseOpen } from "../../helpers/Types";
+import * as apiService from "../../api/apiService";
+import { mbDeviceCloseOpenFields } from "../../fields/Fields";
+import { MBDeviceCloseOpen } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { TextField, TextFieldProps } from "@mui/material";
 

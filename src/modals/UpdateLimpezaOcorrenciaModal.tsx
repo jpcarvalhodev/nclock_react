@@ -7,8 +7,8 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
-import { LimpezasEOcorrencias } from '../helpers/Types';
+import { LimpezasEOcorrencias } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -46,6 +46,7 @@ interface Field {
 
 // Define o componente
 export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
+    const { fetchAllDevices } = useTerminals();
     const [formData, setFormData] = useState<Partial<LimpezasEOcorrencias>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -109,7 +110,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const devices = await apiService.fetchAllDevices();
+            const devices = await fetchAllDevices();
             setDropdownData({
                 deviceId: devices
             });

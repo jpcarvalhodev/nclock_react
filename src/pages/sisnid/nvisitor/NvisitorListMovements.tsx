@@ -16,9 +16,9 @@ import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { employeeFields, transactionCardFields } from "../../../fields/Fields";
+import { Employee, EmployeeCard, KioskTransactionCard } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 

@@ -7,7 +7,7 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { Ads } from '../helpers/Types';
+import { Ads } from '../types/Types';
 
 // Define a interface Entity
 export interface Entity {

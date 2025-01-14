@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from '../helpers/apiService';
-import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, MBDeviceStatus, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../helpers/Types';
+import * as apiService from '../api/apiService';
+import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, MBDeviceStatus, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../types/Types';
 
 import { useTerminals } from './TerminalsContext';
 
@@ -29,7 +29,7 @@ export interface KioskContextType {
     fetchAllManualOpen: () => void;
     getCoins: RecolhaMoedeiroEContador[];
     setGetCoins: (getCoins: RecolhaMoedeiroEContador[]) => void;
-    fetchAllCoin: () => void;
+    fetchAllCoin: () => Promise<RecolhaMoedeiroEContador[]>;
     handleAddRecolhaMoedeiro: (recolhaMoedeiro: RecolhaMoedeiroEContador) => void;
     handleUpdateRecolhaMoedeiro: (recolhaMoedeiro: RecolhaMoedeiroEContador) => void;
     handleDeleteRecolhaMoedeiro: (id: string[]) => void;
@@ -249,17 +249,20 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar as recolhas do moedeiro
-    const fetchAllCoin = async () => {
+    const fetchAllCoin = async (): Promise<RecolhaMoedeiroEContador[]> => {
         try {
             const data = await apiService.fetchRecolhasMoedeiro();
             if (Array.isArray(data)) {
                 setGetCoins(data);
+                return data;
             } else {
                 setGetCoins([]);
+                return [];
             }
         } catch (error) {
             console.error('Erro ao buscar os dados de recolha do moedeiro:', error);
         }
+        return [];
     };
 
     // Função para adicionar recolha do moedeiro

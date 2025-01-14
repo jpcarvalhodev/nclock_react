@@ -14,8 +14,8 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { useNavbar } from "../../../context/NavbarContext";
 import { usePersons } from "../../../context/PersonsContext";
-import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
-import { Employee, EmployeeAttendanceTimes } from "../../../helpers/Types";
+import { employeeAttendanceTimesFields, employeeFields } from "../../../fields/Fields";
+import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
 import Split from 'react-split';

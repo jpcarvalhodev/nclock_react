@@ -14,9 +14,9 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { transactionCardFields } from "../../../helpers/Fields";
-import { KioskTransactionCard } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { transactionCardFields } from "../../../fields/Fields";
+import { KioskTransactionCard } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { useTerminals } from "../../../context/TerminalsContext";
 

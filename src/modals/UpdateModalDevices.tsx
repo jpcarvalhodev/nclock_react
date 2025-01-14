@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
@@ -18,9 +18,8 @@ import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
 import { useTerminals } from "../context/TerminalsContext";
-import * as apiService from "../helpers/apiService";
-import { auxiliariesFields, doorsFields } from "../helpers/Fields";
-import { Auxiliaries, Doors, TimePeriod } from "../helpers/Types";
+import { auxiliariesFields, doorsFields } from "../fields/Fields";
+import { Auxiliaries, Doors } from "../types/Types";
 
 import { UpdateModalAux } from "./UpdateModalAux";
 import { UpdateModalDoor } from "./UpdateModalDoor";
@@ -63,7 +62,10 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         period,
         fetchAllDevices,
         fetchAllDoorData,
-        fetchTimePeriods
+        fetchTimePeriods,
+        fetchAllAux,
+        handleUpdateDoor,
+        handleUpdateAux,
     } = useTerminals();
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -150,7 +152,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // Função para buscar as auxiliares
     const fetchAuxiliaries = async () => {
-        const dataAuxiliaries = await apiService.fetchAllAux();
+        const dataAuxiliaries = await fetchAllAux();
         const filteredAuxiliaries = dataAuxiliaries.filter((aux: Auxiliaries) => aux.deviceId === entity.zktecoDeviceID);
         setAuxiliaries(filteredAuxiliaries);
     }
@@ -166,43 +168,25 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     }, [auxiliaries]);
 
     // Função para lidar com a atualização das portas
-    const handleUpdateDoor = async (door: Doors) => {
-        try {
-            const data = await apiService.updateDoor(door);
-            toast.success(data.message || 'Porta atualizada com sucesso!');
-            setLoadingDoorData(false);
-        } catch (error) {
-            console.error('Erro ao atualizar a porta:', error);
-        } finally {
-            setShowUpdateModal(false);
-            setLoadingDoorData(false);
-        }
+    const updateDoor = async (door: Doors) => {
+        await handleUpdateDoor(door);
+        setLoadingDoorData(false);
+        refreshDoorsAndAux();
     }
 
     // Função para lidar com a atualização das auxiliares
-    const handleUpdateAux = async (aux: Auxiliaries) => {
-        try {
-            const data = await apiService.updateAllAux(aux);
-            toast.success(data.message || 'Auxiliar atualizada com sucesso!');
-            setLoadingAuxInData(false);
-            setLoadingAuxOutData(false);
-        } catch (error) {
-            console.error('Erro ao atualizar a porta:', error);
-        } finally {
-            setShowAuxUpdateModal(false);
-            setLoadingAuxInData(false);
-            setLoadingAuxOutData(false);
-            fetchAuxiliaries();
-        }
+    const updateAux = async (aux: Auxiliaries) => {
+        await handleUpdateAux(aux);
+        setLoadingAuxInData(false);
+        setLoadingAuxOutData(false);
+        refreshDoorsAndAux();
     }
 
-    // UseEffect para atualizar lista de todos os dispositivos
-    useEffect(() => {
-        fetchAllDevices();
+    // Função para atualizar as portas e auxiliares
+    const refreshDoorsAndAux = () => {
         fetchAllDoorData();
         fetchAuxiliaries();
-        fetchTimePeriods();
-    }, []);
+    }
 
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
@@ -416,7 +400,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             setSelectedAuxOut(auxOut[currentAuxOutIndex - 1]);
         }
     };
-    
+
     // Função para fechar o modal de atualização das auxiliares
     const handleCloseAuxModal = (type: 'in' | 'out') => {
         if (type === 'in') {
@@ -429,7 +413,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             setLoadingAuxOutData(false);
         }
         setShowAuxUpdateModal(false);
-    };    
+    };
 
     // Define as colunas
     const auxColumns: TableColumn<Auxiliaries>[] = auxiliariesFields
@@ -887,7 +871,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                         setShowUpdateModal(false)
                         setLoadingDoorData(false)
                     }}
-                    onUpdate={handleUpdateDoor}
+                    onUpdate={updateDoor}
                     entity={selectedDoor}
                     fields={doorsFields}
                     title="Atualizar Porta"
@@ -901,7 +885,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 <UpdateModalAux
                     open={showAuxUpdateModal}
                     onClose={() => handleCloseAuxModal('in')}
-                    onUpdate={handleUpdateAux}
+                    onUpdate={updateAux}
                     entity={selectedAuxIn}
                     fields={auxiliariesFields}
                     title="Atualizar Auxiliar IN"
@@ -915,7 +899,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 <UpdateModalAux
                     open={showAuxUpdateModal}
                     onClose={() => handleCloseAuxModal('out')}
-                    onUpdate={handleUpdateAux}
+                    onUpdate={updateAux}
                     entity={selectedAuxOut}
                     fields={auxiliariesFields}
                     title="Atualizar Auxiliar OUT"

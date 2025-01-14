@@ -11,8 +11,8 @@ import no_entity from "../../assets/img/navbar/no_entity.png";
 import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
 import { useLicense } from "../../context/LicenseContext";
 import { usePersons } from "../../context/PersonsContext";
-import * as apiService from "../../helpers/apiService";
-import { License, LicenseKey } from "../../helpers/Types";
+import * as apiService from "../../api/apiService";
+import { License, LicenseKey } from "../../types/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
@@ -39,7 +39,7 @@ export const Login = () => {
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
-  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData } = useTerminals();
+  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAuxData } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
@@ -217,6 +217,7 @@ export const Login = () => {
             fetchAllMBCloseOpen(),
             fetchTimePeriods(),
             fetchAllDoorData(),
+            fetchAllAuxData(),
             fetchAllCoin(),
             fetchAllCounter(),
             fetchAllLimpezas(),

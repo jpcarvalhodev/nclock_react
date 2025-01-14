@@ -9,7 +9,7 @@ import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 
 // Define a interface Entity
 export interface Entity {
@@ -61,8 +61,6 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [showPassword, setShowPassword] = useState(false);
-    const [passwordPlaceholder, setPasswordPlaceholder] = useState('●●●●●●');
-    const [password, setPassword] = useState('');
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza o formData com os dados da entity
@@ -169,13 +167,6 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         const { name, value, type } = target;
         let parsedValue: string | number | boolean;
 
-        if (name === 'password') {
-            setPassword(value);
-            if (!value) {
-                setPasswordPlaceholder('●●●●●●●●');
-            }
-        }
-
         if (showValidationErrors) {
             setShowValidationErrors(false);
         }
@@ -191,20 +182,6 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             ...prevState,
             [name]: parsedValue
         }));
-    };
-
-    // Função para lidar com o foco no campo de senha
-    const handleFocus = () => {
-        if (!password) {
-            setPasswordPlaceholder('');
-        }
-    };
-
-    // Função para lidar com o desfoque no campo de senha
-    const handleBlur = () => {
-        if (!password) {
-            setPasswordPlaceholder('●●●●●●●●');
-        }
     };
 
     // Define a função para acionar o popup de seleção de arquivo
@@ -323,16 +300,14 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 {errors['emailAddress'] && errors['emailAddress'].hasError && <Form.Text className="text-danger">{errors['emailAddress'].message}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formPassword" style={{ marginBottom: '30px' }}>
-                                <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Label>Alterar Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <InputGroup className="mb-3">
                                     <Form.Control
                                         type={showPassword ? "text" : "password"}
                                         name="password"
-                                        value={formData.password || passwordPlaceholder}
+                                        value={formData.password}
                                         onChange={handleChange}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
-                                        minLength={8}
+                                        minLength={6}
                                         className={`custom-input-height custom-select-font-size ${showValidationErrors && errors['password'] && errors['password'].hasError ? 'error-border' : ''}`}
                                         style={{ paddingRight: '40px', borderRight: 'none' }}
                                     />

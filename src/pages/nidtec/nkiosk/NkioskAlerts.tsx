@@ -15,9 +15,9 @@ import { TreeViewDataMBTerminals } from "../../../components/TreeViewMBTerminals
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { mbDeviceStatusFields } from "../../../helpers/Fields";
-import { MBDeviceStatus } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { mbDeviceStatusFields } from "../../../fields/Fields";
+import { MBDeviceStatus } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
 // Formata a data para o início do dia às 00:00

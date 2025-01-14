@@ -11,8 +11,8 @@ import { NavBar } from "../../../components/NavBar"
 import { PrintButton } from '../../../components/PrintButton';
 import { SelectFilter } from '../../../components/SelectFilter';
 import { TreeViewDataNclock } from '../../../components/TreeViewNclock';
-import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
-import { Employee, EmployeeAttendanceTimes } from "../../../helpers/Types";
+import { employeeAttendanceTimesFields, employeeFields } from "../../../fields/Fields";
+import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAttendance } from '../../../modals/CreateModalAttendance';
 import { DeleteModal } from "../../../modals/DeleteModal";

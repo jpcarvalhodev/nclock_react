@@ -15,8 +15,8 @@ import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import { counterFields } from "../../../helpers/Fields";
-import { Counter } from "../../../helpers/Types";
+import { counterFields } from "../../../fields/Fields";
+import { Counter } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
 // Formata a data para o início do dia às 00:00

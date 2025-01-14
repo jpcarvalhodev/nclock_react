@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -6,9 +6,11 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
-import * as apiService from "../helpers/apiService";
-import { KioskConfig, RecolhaMoedeiroEContador } from '../helpers/Types';
+import { useTerminals } from '../context/TerminalsContext';
+import * as apiService from "../api/apiService";
+import { KioskConfig, RecolhaMoedeiroEContador } from '../types/Types';
+import { useNavbar } from '../context/NavbarContext';
+import { useKiosk } from '../context/KioskContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -40,11 +42,11 @@ const initialValues: Partial<RecolhaMoedeiroEContador> = {
 
 // Define o componente
 export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValuesData }: CreateModalProps<T>) => {
-    const {
-        devices,
-    } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useTerminals();
+    const { fetchAllCoin } = useKiosk();
+    const { fetchKioskConfig } = useNavbar();
     const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>({ ...initialValues, ...initialValuesData });
-    const [amounts, setAmounts] = useState<KioskConfig>();
+    const [amounts, setAmounts] = useState<KioskConfig[]>();
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
@@ -112,7 +114,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
     // Buscar as recolhas para o moedeiro
     const fetchRecolhas = async () => {
         try {
-            const recolhas = await apiService.fetchRecolhasMoedeiro();
+            const recolhas = await fetchAllCoin();
             const recolhaDevice = recolhas.find((recolha: RecolhaMoedeiroEContador) => devices.some(device => device.zktecoDeviceID === recolha.deviceID));
             if (recolhas && recolhas.length > 0 && recolhaDevice) {
                 const lastRecolha = recolhas.sort((a: RecolhaMoedeiroEContador, b: RecolhaMoedeiroEContador) => new Date(b.dataFimRecolha).getTime() - new Date(a.dataFimRecolha).getTime())[0];
@@ -134,7 +136,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
     // Buscar os valores de moedas
     const fetchAmount = async () => {
         try {
-            const amounts = await apiService.fetchKioskConfig();
+            const amounts = await fetchKioskConfig();
             setAmounts(amounts);
         } catch (error) {
             console.error('Erro ao buscar o valor', error);
@@ -165,10 +167,10 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                 if (selectedOption.serialNumber === deviceCount.serialNumber) {
                     setFormData(prevState => ({
                         ...prevState,
-                        valorTotalSistema: amounts?.amount ? deviceCount.contagemTransacoes * amounts.amount : 0,
+                        valorTotalSistema: amounts?.[0].amount ? deviceCount.contagemTransacoes * amounts[0].amount : 0,
                         numeroMoedasSistema: deviceCount.contagemTransacoes,
                         diferencaMoedas: (formData.numeroMoedas || 0) - (deviceCount.contagemTransacoes || 0),
-                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (amounts?.amount ?? 0))
+                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (amounts?.[0]?.amount ?? 0))
                     }));
                 }
             } catch (error) {
@@ -198,7 +200,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
             };
 
             if (name === 'numeroMoedas') {
-                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (amounts?.amount || 0)).toFixed(2));
+                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (amounts?.[0].amount || 0)).toFixed(2));
             }
 
             if (['numeroMoedas', 'valorTotalRecolhido'].includes(name)) {

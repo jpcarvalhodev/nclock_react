@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 import '../css/PagesStyles.css';
-import { BackupDB } from '../helpers/Types';
+import { BackupDB } from '../types/Types';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {

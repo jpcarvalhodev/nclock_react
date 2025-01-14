@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from "../helpers/apiService";
-import { AccessControl, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, TimePeriod } from '../helpers/Types';
+import * as apiService from "../api/apiService";
+import { AccessControl, Auxiliaries, AuxOut, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, TimePeriod } from '../types/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -12,11 +12,15 @@ export interface DeviceContextType {
     setMbCloseOpen: (mbCloseOpen: MBDeviceCloseOpen[]) => void;
     employeeDevices: EmployeesOnDevice[];
     door: Doors[];
+    aux: Auxiliaries[];
+    auxData: AuxOut[];
     fetchAllDevices: () => Promise<Devices[]>;
     fetchAllEmployeeDevices: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllKioskTransactionOnDevice: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllDoorData: () => Promise<Doors[]>;
+    fetchAllAux: () => Promise<Auxiliaries[]>;
+    fetchAllAuxData: () => Promise<AuxOut[]>;
     fetchAllMBDevices: () => Promise<MBDevice[]>;
     fetchAllMBCloseOpen: () => Promise<MBDeviceCloseOpen[]>;
     sendAllEmployeesToDevice: (zktecoDeviceID: Devices, employee: string[] | null) => Promise<void>;
@@ -40,10 +44,12 @@ export interface DeviceContextType {
     handleUpdateAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
     handleDeleteAccessControl: (employeesId: string[], doorId: string) => Promise<void>;
     period: TimePeriod[];
-    fetchTimePeriods: () => Promise<void>;
+    fetchTimePeriods: () => Promise<TimePeriod[]>;
     handleAddPeriod: (newPeriod: Partial<TimePeriod>) => Promise<void>;
     handleUpdatePeriod: (updatedPeriod: TimePeriod) => Promise<void>;
     handleDeletePeriod: (id: string) => Promise<void>;
+    handleUpdateDoor: (door: Doors) => Promise<void>;
+    handleUpdateAux: (aux: Auxiliaries) => Promise<void>;
 }
 
 // Cria o contexto	
@@ -58,6 +64,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
     const [period, setPeriod] = useState<TimePeriod[]>([]);
     const [door, setDoor] = useState<Doors[]>([]);
+    const [auxData, setAuxData] = useState<AuxOut[]>([]);
+    const [aux, setAux] = useState<Auxiliaries[]>([]);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -111,6 +119,30 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             return doorData;
         } catch (error) {
             console.error('Erro ao buscar dados da porta:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar todos os dados auxiliares
+    const fetchAllAux = async (): Promise<Auxiliaries[]> => {
+        try {
+            const data = await apiService.fetchAllAux();
+            setAux(data);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar dados auxiliares:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar todos os dados auxiliares
+    const fetchAllAuxData = async (): Promise<AuxOut[]> => {
+        try {
+            const data = await apiService.fetchOutAuxEnabled();
+            setAuxData(data);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar dados auxiliares:', error);
         }
         return [];
     }
@@ -370,13 +402,15 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar os dados dos períodos
-    const fetchTimePeriods = async () => {
+    const fetchTimePeriods = async (): Promise<TimePeriod[]> => {
         try {
             const data = await apiService.fetchAllTimePeriods();
             setPeriod(data);
+            return data;
         } catch (error) {
             console.error('Erro ao buscar os dados dos períodos:', error);
         }
+        return [];
     };
 
     // Função para adicionar um período
@@ -418,6 +452,34 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para lidar com a atualização das portas
+    const handleUpdateDoor = async (door: Doors) => {
+        try {
+            const data = await apiService.updateDoor(door);
+            const updatedDoors = door.map((d: Doors) => d.id === data.id ? data : d);
+            setDoor(updatedDoors);
+            toast.success(data.message || 'Porta atualizada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar a porta:', error);
+        } finally {
+            fetchAllDoorData();
+        }
+    }
+
+    // Função para lidar com a atualização das auxiliares
+    const handleUpdateAux = async (aux: Auxiliaries) => {
+        try {
+            const data = await apiService.updateAllAux(aux);
+            const updatedAux = aux.map((d: Auxiliaries) => d.id === data.id ? data : d);
+            setAux(updatedAux);
+            toast.success(data.message || 'Auxiliar atualizada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar a porta:', error);
+        } finally {
+            fetchAllAux();
+        }
+    }
+
     // Busca todos os dispositivos ao carregar a página
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -428,6 +490,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAccessControl();
             fetchTimePeriods();
             fetchAllDoorData();
+            fetchAllAuxData();
         }
     }, []);
 
@@ -439,11 +502,15 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         setMbCloseOpen,
         employeeDevices,
         door,
+        aux,
+        auxData,
         fetchAllDevices,
         fetchAllEmployeeDevices,
         fetchAllKioskTransaction,
         fetchAllKioskTransactionOnDevice,
         fetchAllDoorData,
+        fetchAllAux,
+        fetchAllAuxData,
         fetchAllMBDevices,
         fetchAllMBCloseOpen,
         sendAllEmployeesToDevice,
@@ -471,6 +538,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleAddPeriod,
         handleUpdatePeriod,
         handleDeletePeriod,
+        handleUpdateDoor,
+        handleUpdateAux,
     };
 
     return (

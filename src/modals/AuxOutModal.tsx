@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -6,9 +6,8 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
-import * as apiService from "../helpers/apiService";
-import { AuxOut } from '../helpers/Types';
+import { useTerminals } from '../context/TerminalsContext';
+import { AuxOut } from '../types/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -51,9 +50,7 @@ const initialValues: Partial<AuxOut> = {
 
 // Define o componente
 export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fields }: AuxOutModalProps<T>) => {
-    const {
-        devices
-    } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllAuxData } = useTerminals();
     const [formData, setFormData] = useState<Partial<AuxOut>>({ nrAuxOut: 0, time: initialValues.time, deviceSN: '' });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -115,7 +112,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const data = await apiService.fetchOutAuxEnabled();
+            const data = await fetchAllAuxData();
             const auxWithOptions = data.map((aux: AuxOut) => ({
                 ...aux,
                 deviceSN: devices.find(device => device.zktecoDeviceID === aux.deviceId)?.serialNumber || ''

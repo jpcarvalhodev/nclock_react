@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 
-import { KioskConfig } from '../helpers/Types';
+import { KioskConfig } from '../types/Types';
 
 // Define a interface para os itens de erro
 interface ErrorDetails {

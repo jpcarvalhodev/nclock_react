@@ -5,7 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
 
 import warning from "../assets/img/modals/warning.png";
-import { Doors } from "../helpers/Types";
+import { Doors } from "../types/Types";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

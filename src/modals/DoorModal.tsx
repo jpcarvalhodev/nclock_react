@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import { DoorDevice, Doors } from '../helpers/Types';
+import { DoorDevice, Doors } from '../types/Types';
 import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo

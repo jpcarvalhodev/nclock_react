@@ -6,8 +6,8 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { zoneFields } from "../../helpers/Fields";
-import { Zone } from "../../helpers/Types";
+import { zoneFields } from "../../fields/Fields";
+import { Zone } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 import DataTable, { TableColumn } from 'react-data-table-component';

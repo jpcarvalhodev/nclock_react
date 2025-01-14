@@ -7,7 +7,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { AttendanceProvider } from '../context/MovementContext';
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, Group } from '../types/Types';
 
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 

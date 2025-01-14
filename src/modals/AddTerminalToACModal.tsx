@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { Row } from 'react-bootstrap';
 
-import { Devices, DevicesDoors, Doors } from '../helpers/Types';
+import { Devices, DevicesDoors, Doors } from '../types/Types';
 import DataTable from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { TreeViewAC } from '../components/TreeViewAC';

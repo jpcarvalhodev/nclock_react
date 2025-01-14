@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { toast } from "react-toastify";
 
-import * as apiService from "../helpers/apiService";
-import { EmployeeAttendanceTimes } from "../helpers/Types";
+import * as apiService from "../api/apiService";
+import { EmployeeAttendanceTimes } from "../types/Types";
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {
@@ -14,7 +14,7 @@ export interface AttendanceContextType {
     fetchAllAttendances: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     fetchAllAttendancesBetweenDates: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     handleAddAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
-    handleAddImportedAttendance: (attendance: Partial<EmployeeAttendanceTimes>) => Promise<void>;
+    handleAddImportedAttendance: (attendance: Partial<EmployeeAttendanceTimes>[]) => Promise<void>;
     handleUpdateAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
     handleDeleteAttendance: (attendanceTimeId: string) => Promise<void>;
 }
@@ -96,7 +96,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para adicionar assiduidades importadas
-    const handleAddImportedAttendance = async (attendances: Partial<EmployeeAttendanceTimes>) => {
+    const handleAddImportedAttendance = async (attendances: Partial<EmployeeAttendanceTimes>[]) => {
         try {
             const newAttendance = await apiService.addImportedAttendance(attendances);
             setAttendance([...attendance, newAttendance]);

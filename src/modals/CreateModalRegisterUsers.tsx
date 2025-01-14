@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -310,7 +310,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                         name="password"
                                         value={formData.password || ''}
                                         onChange={handleChange}
-                                        minLength={8}
+                                        minLength={6}
                                         className={`custom-input-height custom-select-font-size ${showValidationErrors && errors['password'] && errors['password'].hasError ? 'error-border' : ''}`}
                                         style={{ paddingRight: '40px', borderRight: 'none' }}
                                     />
@@ -382,7 +382,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                         value={formData.confirmPassword || ''}
                                         onChange={handleChange}
                                         onPaste={handlePaste}
-                                        minLength={8}
+                                        minLength={6}
                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors && errors['confirmPassword'] && errors['confirmPassword'].hasError ? 'error-border' : ''}`}
                                         style={{ paddingRight: '40px', borderRight: 'none' }}
                                     />

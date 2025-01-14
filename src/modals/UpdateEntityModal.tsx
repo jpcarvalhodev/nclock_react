@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 import no_entity from '../assets/img/navbar/no_entity.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 
 // Define a interface para os itens de erro
 interface ErrorDetails {

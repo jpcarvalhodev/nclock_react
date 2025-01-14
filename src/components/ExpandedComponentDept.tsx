@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 
 import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
-import { departmentFields } from '../helpers/Fields';
+import { departmentFields } from '../fields/Fields';
 
 // Define a interface para os dados do departamento
 interface DepartmentData {

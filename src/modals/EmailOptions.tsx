@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
 
-import { EmailUser } from '../helpers/Types';
+import { EmailUser } from '../types/Types';
 import { TestEmailModal } from './TestEmailModal';
 import { useNavbar } from '../context/NavbarContext';
 

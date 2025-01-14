@@ -9,9 +9,9 @@ import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { adsFields } from "../../../helpers/Fields";
-import { Ads } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { adsFields } from "../../../fields/Fields";
+import { Ads } from "../../../types/Types";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { EmployeeAttendanceTimes } from "../../../helpers/Types";
+import { EmployeeAttendanceTimes } from "../../../types/Types";
 import '../../../css/PagesStyles.css';
-import * as apiService from "../../../helpers/apiService";
+import * as apiService from "../../../api/apiService";
 
 import { Carousel } from "react-responsive-carousel";
 

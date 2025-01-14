@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from "../helpers/apiService";
-import { Category, Department, Employee, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, Zone } from '../helpers/Types';
+import * as apiService from "../api/apiService";
+import { Category, Department, Employee, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, Zone } from '../types/Types';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -46,10 +46,10 @@ export interface PersonsContextType {
     handleAddEmployeeCard: (employeeCard: EmployeeCard) => Promise<void>;
     handleUpdateEmployeeCard: (employeeCard: EmployeeCard) => Promise<void>;
     handleDeleteEmployeeCard: (cardId: string) => Promise<void>;
-    handleImportEmployeeFP: (employeeFP: Partial<EmployeeFP>) => Promise<void>;
-    handleImportEmployeeFace: (employeeFace: Partial<EmployeeFace>) => Promise<void>;
-    handleImportEmployeeCard: (employeeCard: Partial<EmployeeCard>) => Promise<void>;
-    fetchAllCategories: () => Promise<void>;
+    handleImportEmployeeFP: (employeeFP: Partial<EmployeeFP>[]) => Promise<void>;
+    handleImportEmployeeFace: (employeeFace: Partial<EmployeeFace>[]) => Promise<void>;
+    handleImportEmployeeCard: (employeeCard: Partial<EmployeeCard>[]) => Promise<void>;
+    fetchAllCategories: () => Promise<Category[]>;
     handleAddCategory: (category: Category) => Promise<void>;
     handleUpdateCategory: (category: Category) => Promise<void>;
     handleDeleteCategory: (categoryID: string[]) => Promise<void>;
@@ -63,7 +63,7 @@ export interface PersonsContextType {
     handleUpdateGroup: (group: Group) => Promise<void>;
     handleDeleteGroup: (groupID: string[]) => Promise<void>;
     dataEE: DataStateExternalEntities;
-    fetchAllExternalEntitiesData: () => Promise<void>;
+    fetchAllExternalEntitiesData: () => Promise<{ ExternalEntities: ExternalEntity[], ExternalEntityTypes: ExternalEntityTypes[] }>;
     handleAddExternalEntity: (externalEntity: ExternalEntity) => Promise<void>;
     handleUpdateExternalEntity: (externalEntity: ExternalEntity) => Promise<void>;
     handleDeleteExternalEntity: (externalEntityID: string[]) => Promise<void>;
@@ -71,12 +71,12 @@ export interface PersonsContextType {
     handleUpdateExternalEntityTypes: (externalEntityType: ExternalEntityTypes) => Promise<void>;
     handleDeleteExternalEntityTypes: (externalEntityTypeID: string[]) => Promise<void>;
     professions: Profession[];
-    fetchAllProfessions: () => Promise<void>;
+    fetchAllProfessions: () => Promise<Profession[]>;
     handleAddProfession: (profession: Profession) => Promise<void>;
     handleUpdateProfession: (profession: Profession) => Promise<void>;
     handleDeleteProfessions: (professionID: string[]) => Promise<void>;
     zones: Zone[];
-    fetchAllZones: () => Promise<void>;
+    fetchAllZones: () => Promise<Zone[]>;
     handleAddZone: (zone: Zone) => Promise<void>;
     handleUpdateZone: (zone: Zone) => Promise<void>;
     handleDeleteZone: (zoneID: string[]) => Promise<void>;
@@ -395,14 +395,16 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para buscar as categorias
-    const fetchAllCategories = async () => {
+    const fetchAllCategories = async (): Promise<Category[]> => {
         try {
             const data = await apiService.fetchAllCategories();
             const sortedData = data.sort((a: { code: number; }, b: { code: number; }) => a.code - b.code);
             setCategories(sortedData);
+            return sortedData;
         } catch (error) {
             console.error('Erro ao buscar os dados das categorias:', error);
         }
+        return [];
     };
 
     // Função para adicionar uma categoria
@@ -447,7 +449,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Busca as entidades externas e os tipos de entidades externas
-    const fetchAllExternalEntitiesData = async () => {
+    const fetchAllExternalEntitiesData = async (): Promise<{ ExternalEntities: ExternalEntity[], ExternalEntityTypes: ExternalEntityTypes[] }> => {
         try {
             const { ExternalEntities, ExternalEntityTypes } = await apiService.fetchAllExternalEntitiesData() as { ExternalEntities: ExternalEntity[]; ExternalEntityTypes: ExternalEntityTypes[]; };
             const sortedData = ExternalEntityTypes.sort((a: { order: number; }, b: { order: number; }) => a.order - b.order);
@@ -455,9 +457,11 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
                 externalEntity: ExternalEntities,
                 externalEntityTypes: sortedData,
             });
+            return { ExternalEntities, ExternalEntityTypes };
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
         }
+        return { ExternalEntities: [], ExternalEntityTypes: [] };
     };
 
     // Função para adicionar uma nova entidade externa
@@ -539,14 +543,16 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para buscar as profissões
-    const fetchAllProfessions = async () => {
+    const fetchAllProfessions = async (): Promise<Profession[]> => {
         try {
             const data = await apiService.fetchAllProfessions();
             const sortedData = data.sort((a: { code: number; }, b: { code: number; }) => a.code - b.code);
             setProfessions(sortedData);
+            return sortedData;
         } catch (error) {
             console.error('Erro ao buscar os dados das profissões:', error);
         }
+        return [];
     };
 
     // Função para adicionar uma nova profissão
@@ -591,13 +597,15 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para buscar as zonas
-    const fetchAllZones = async () => {
+    const fetchAllZones = async (): Promise<Zone[]> => {
         try {
             const data = await apiService.fetchAllZones();
             setZones(data);
+            return data;
         } catch (error) {
             console.error('Erro ao buscar os dados das zonas:', error);
         }
+        return [];
     };
 
     // Função para adicionar uma zona
@@ -707,7 +715,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Define a função de importação de biometria digital
-    const handleImportEmployeeFP = async (employeeFP: Partial<EmployeeFP>) => {
+    const handleImportEmployeeFP = async (employeeFP: Partial<EmployeeFP>[]) => {
         try {
             const employeesData = await apiService.employeeImportFP(employeeFP);
             setEmployeesFP([...employeesFP, employeesData]);
@@ -718,7 +726,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Define a função de importação de biometria facial
-    const handleImportEmployeeFace = async (employeeFace: Partial<EmployeeFace>) => {
+    const handleImportEmployeeFace = async (employeeFace: Partial<EmployeeFace>[]) => {
         try {
             const employeesData = await apiService.employeeImportFace(employeeFace);
             setEmployeesFace([...employeesFace, employeesData]);
@@ -729,7 +737,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Define a função de importação de cartão
-    const handleImportEmployeeCard = async (employeeCard: Partial<EmployeeCard>) => {
+    const handleImportEmployeeCard = async (employeeCard: Partial<EmployeeCard>[]) => {
         try {
             const employeesData = await apiService.employeeImportCard(employeeCard);
             setEmployeeCards([...employeeCards, employeesData]);

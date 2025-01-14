@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from "../helpers/apiService";
-import { EmailUser, KioskConfig } from '../helpers/Types';
+import * as apiService from "../api/apiService";
+import { EmailUser, KioskConfig } from '../types/Types';
 
 // Defina a interface para o contexto
 export interface NavbarContextType {
@@ -18,8 +18,8 @@ export interface NavbarContextType {
   setLastClosedRibbon: (ribbon: RibbonToggler | null) => void;
   emailCompanyConfig: EmailUser[];
   kioskConfig: Partial<KioskConfig>;
-  fetchEmailConfig: () => void;
-  fetchKioskConfig: () => void;
+  fetchEmailConfig: () => Promise<EmailUser[]>;
+  fetchKioskConfig: () => Promise<KioskConfig[]>;
   handleAddEmailConfig: (email: Partial<EmailUser>) => void;
   handleAddKioskConfig: (kioskConfig: Partial<KioskConfig>) => void;
   handleUpdateEmailConfig: (email: Partial<EmailUser>) => void;
@@ -44,23 +44,27 @@ export const NavbarProvider = ({ children }: { children: ReactNode }) => {
   const [kioskConfig, setKioskConfig] = useState<Partial<KioskConfig>>({});
 
   // Função para carregar os dados das configurações de email
-  const fetchEmailConfig = async () => {
+  const fetchEmailConfig = async (): Promise<EmailUser[]> => {
     try {
       const data = await apiService.fetchAllEmailConfig();
       setEmailCompanyConfig(data);
+      return data;
     } catch (error) {
       console.error('Erro ao carregar os emails registados:', error);
     }
+    return [];
   }
 
   // Função para carregar as configurações dos quiosques
-  const fetchKioskConfig = async () => {
+  const fetchKioskConfig = async (): Promise<KioskConfig[]> => {
     try {
       const data = await apiService.fetchKioskConfig();
       setKioskConfig(data);
+      return data;
     } catch (error) {
       console.error('Erro ao carregar as configurações dos quiosques:', error);
     }
+    return [];
   }
 
   // Função para adicionar emails de utilizadores

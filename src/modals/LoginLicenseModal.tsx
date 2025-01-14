@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import "../css/Login.css";
 import { Col, Form, Row } from 'react-bootstrap';
 
-import { LicenseKey } from '../helpers/Types';
+import { LicenseKey } from '../types/Types';
 
 // Interface para as propriedades do modal
 interface LoginLicenseModalProps<T> {

@@ -14,9 +14,9 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { transactionMBFields } from "../../../helpers/Fields";
-import { KioskTransactionMB } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { transactionMBFields } from "../../../fields/Fields";
+import { KioskTransactionMB } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { useTerminals } from "../../../context/TerminalsContext";
 

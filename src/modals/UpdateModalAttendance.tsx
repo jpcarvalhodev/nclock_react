@@ -83,8 +83,8 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
         validateForm();
     }, [formData, fields]);
 
-     // Função para validar o formulário
-     const validateForm = () => {
+    // Função para validar o formulário
+    const validateForm = () => {
         if (!showValidationErrors) return true;
         let newErrors: Record<string, boolean> = {};
         let isValid = true;
@@ -187,7 +187,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" style={{ marginTop: 115 }}>
-            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}> 
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
@@ -258,87 +258,86 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                         </Form.Group>
                     </>
                 )}
-                {entityType === 'movimentos' && fields.map((field) => {
-                    if (!['deviceId', 'deviceNumber', 'enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
-                        return (
-                            <Form.Group controlId={`form${field.key}`} key={field.key}>
-                                <Form.Label>
-                                    {field.label}
-                                    {field.required && <span style={{ color: 'red' }}> *</span>}
-                                </Form.Label>
-                                {field.type === 'dropdown' ? (
-                                    <OverlayTrigger
-                                        placement="right"
-                                        overlay={<Tooltip id={`tooltip-${field.key}`}>{'Campo obrigatório'}</Tooltip>}
-                                    >
-                                        <Form.Control
-                                            as="select"
-                                            className="custom-input-height custom-select-font-size"
-                                            value={formData[field.key] || ''}
-                                            onChange={(e) => handleDropdownChange(field.key, e)}
-                                        >
-                                            <option value="">Selecione...</option>
-                                            {dropdownData[field.key]?.map((option) => (
-                                                <option key={option.employeeID} value={option.employeeID}>
-                                                    {option.name}
-                                                </option>
-                                            ))}
-                                        </Form.Control>
-                                    </OverlayTrigger>
-                                ) : (
-                                    field.key === 'attendanceTime' ? (
-                                        <OverlayTrigger
-                                            placement="right"
-                                            overlay={
-                                                <Tooltip id={`tooltip-${field.key}`}>
-                                                    {`Campo obrigatório`}
-                                                </Tooltip>
-                                            }
-                                        >
-                                            <Form.Control
-                                                type={field.type}
-                                                className="custom-input-height custom-select-font-size"
-                                                value={formData[field.key] || ''}
-                                                onChange={handleChange}
-                                                name={field.key}
-                                            />
-                                        </OverlayTrigger>
-                                    ) : (
-                                        field.key === 'inOutMode' ? (
-                                            <Form.Control
-                                                as="select"
-                                                type={field.type}
-                                                className="custom-input-height custom-select-font-size"
-                                                value={formData[field.key] || ''}
-                                                onChange={handleChange}
-                                                name={field.key}
-                                            >
-                                                {typeOptions.map(option => (
-                                                    <option key={option.value} value={option.value}>{option.label}</option>
-                                                ))}
-                                            </Form.Control>
-                                        ) : (
-                                            <Form.Control
-                                                type={field.type}
-                                                className="custom-input-height custom-select-font-size"
-                                                value={formData[field.key] || ''}
-                                                onChange={handleChange}
-                                                name={field.key}
-                                            />
-                                        )))}
-                                {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
-                            </Form.Group>
-                        );
-                    }
-                    return (
-                        <Form.Control
-                            key={field.key}
-                            type="hidden"
-                            value={formData[field.key] || ''}
-                            name={field.key}
-                        />
-                    );
-                })}
+                {entityType === 'movimentos' && (
+                    <div className="row">
+                        {fields.map((field) => {
+                            if (!['deviceNumber', 'enrollNumber', 'employeeName', 'observation', 'type', 'verifyMode', 'workCode'].includes(field.key)) {
+                                return (
+                                    <div className="col-md-6" key={field.key}>
+                                        <Form.Group controlId={`form${field.key}`}>
+                                            <Form.Label>
+                                                {field.label}
+                                                {field.required && <span style={{ color: 'red' }}> *</span>}
+                                            </Form.Label>
+                                            {field.type === 'dropdown' ? (
+                                                <OverlayTrigger
+                                                    placement="right"
+                                                    overlay={<Tooltip id={`tooltip-${field.key}`}>{'Campo obrigatório'}</Tooltip>}
+                                                >
+                                                    <Form.Control
+                                                        as="select"
+                                                        className="custom-input-height custom-select-font-size"
+                                                        value={formData[field.key] || ''}
+                                                        onChange={(e) => handleDropdownChange(field.key, e)}
+                                                    >
+                                                        <option value="">Selecione...</option>
+                                                        {dropdownData[field.key]?.map((option) => (
+                                                            <option key={option.employeeID || option.zktecoDeviceID} value={option.employeeID || option.zktecoDeviceID}>
+                                                                {option.name || option.deviceName}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </OverlayTrigger>
+                                            ) : (
+                                                field.key === 'attendanceTime' ? (
+                                                    <OverlayTrigger
+                                                        placement="right"
+                                                        overlay={
+                                                            <Tooltip id={`tooltip-${field.key}`}>
+                                                                {`Campo obrigatório`}
+                                                            </Tooltip>
+                                                        }
+                                                    >
+                                                        <Form.Control
+                                                            type={field.type}
+                                                            className="custom-input-height custom-select-font-size"
+                                                            value={formData[field.key] || ''}
+                                                            onChange={handleChange}
+                                                            name={field.key}
+                                                        />
+                                                    </OverlayTrigger>
+                                                ) : (
+                                                    field.key === 'inOutMode' ? (
+                                                        <Form.Control
+                                                            as="select"
+                                                            type={field.type}
+                                                            className="custom-input-height custom-select-font-size"
+                                                            value={formData[field.key] || ''}
+                                                            onChange={handleChange}
+                                                            name={field.key}
+                                                        >
+                                                            {typeOptions.map(option => (
+                                                                <option key={option.value} value={option.value}>{option.label}</option>
+                                                            ))}
+                                                        </Form.Control>
+                                                    ) : (
+                                                        <Form.Control
+                                                            type={field.type}
+                                                            className="custom-input-height custom-select-font-size"
+                                                            value={formData[field.key] || ''}
+                                                            onChange={handleChange}
+                                                            name={field.key}
+                                                        />
+                                                    )))}
+                                            {errors[field.key] && <div style={{ color: 'red', fontSize: 'small' }}>{errors[field.key]}</div>}
+                                        </Form.Group>
+                                    </div>
+                                );
+                            }
+                            return null;
+                        })}
+                    </div>
+                )}
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <OverlayTrigger
