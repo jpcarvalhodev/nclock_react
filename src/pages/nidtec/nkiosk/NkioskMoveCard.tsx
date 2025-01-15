@@ -132,6 +132,11 @@ export const NkioskMoveCard = () => {
         }
     };
 
+    // Busca os movimentos dos cartões ao carregar a página
+    useEffect(() => {
+        fetchAllMoveCard();
+    }, []);
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);

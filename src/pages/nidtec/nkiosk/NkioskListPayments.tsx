@@ -142,8 +142,10 @@ export const NkioskListPayments = () => {
         setTotalPayments(unifiedData);
     };
 
-    // Atualiza a lista de pagamentos ao receber novos dados
+    // Atualiza a lista de pagamentos ao montar o componente
     useEffect(() => {
+        fetchAllPayTerminal();
+        fetchAllPayCoins();
         settingVariables();
         mergePaymentData();
     }, []);

@@ -88,6 +88,8 @@ export const Terminals = () => {
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
+        fetchAllAux,
+        fetchAllDoorData
     } = useTerminals();
     const {
         handleAddImportedAttendance,
@@ -249,13 +251,6 @@ export const Terminals = () => {
         }
     }
 
-    // Atualiza os dados de renderização
-    useEffect(() => {
-        fetchAllDevices();
-        fetchEmployeesAndCards();
-        fetchAllCardData();
-    }, []);
-
     // Atualiza a seleção ao resetar
     useEffect(() => {
         if (resetSelection) {
@@ -267,6 +262,9 @@ export const Terminals = () => {
     const refreshAll = () => {
         fetchAllDevices();
         fetchEmployeesAndCards();
+        fetchAllCardData();
+        fetchAllAux();
+        fetchAllDoorData();
         setClearSelectionToggle(!clearSelectionToggle);
     }
 

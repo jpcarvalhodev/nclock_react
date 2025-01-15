@@ -112,6 +112,11 @@ export const NkioskMoveKiosk = () => {
         }
     };
 
+    // Busca os movimentos de quiosque ao carregar a página
+    useEffect(() => {
+        fetchAllMoveKiosk();
+    }, []);
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);

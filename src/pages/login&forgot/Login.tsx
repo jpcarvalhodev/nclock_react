@@ -20,6 +20,7 @@ import { useEntity } from "../../context/EntityContext";
 import { useAttendance } from "../../context/MovementContext";
 import { useAds } from "../../context/AdsContext";
 import { useKiosk } from "../../context/KioskContext";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -39,7 +40,7 @@ export const Login = () => {
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
-  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAuxData } = useTerminals();
+  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
@@ -52,6 +53,7 @@ export const Login = () => {
   const [selectedNif, setSelectedNif] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
   const [profileImage, setProfileImage] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   // Obter a imagem do perfil do usuário
   useEffect(() => {
@@ -193,6 +195,7 @@ export const Login = () => {
           localStorage.removeItem("rememberMePassword");
         }
 
+        setLoading(true);
         try {
           await Promise.all([
             fetchAllLicensesWithoutKey(),
@@ -217,6 +220,7 @@ export const Login = () => {
             fetchAllMBCloseOpen(),
             fetchTimePeriods(),
             fetchAllDoorData(),
+            fetchAllAux(),
             fetchAllAuxData(),
             fetchAllCoin(),
             fetchAllCounter(),
@@ -231,6 +235,7 @@ export const Login = () => {
             fetchEmailConfig(),
             fetchKioskConfig(),
           ]);
+          setLoading(false);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");
           const userName = localStorage.getItem('username');
@@ -259,6 +264,11 @@ export const Login = () => {
 
   return (
     <div className="background-login">
+      {loading && (
+        <div className="loading-spinner-overlay">
+          <CustomSpinner />
+        </div>
+      )}
       <div className="div-logo-p" id="logo-login">
         <img className="logo-login" src="/logo_login.png" alt="Logo Login" />
       </div>

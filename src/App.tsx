@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -9,7 +9,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
-import { CustomSpinner } from './components/CustomSpinner';
 import { PageProtection } from './components/PageProtection';
 import { AdsProvider } from './context/AdsContext';
 import { CardScrollProvider } from './context/CardScrollContext';
@@ -235,43 +234,21 @@ import { Contacts } from './pages/persons/Contacts';
 import { Groups } from './pages/persons/Groups';
 import { Types } from './pages/persons/Types';
 
-// Define o tempo de delay
-const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
-
 // Define a função de rotas com animação
 function AnimatedRoutes() {
   const location = useLocation();
   const nodeRef = useRef(null);
-  const [loading, setLoading] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-
-  // Carrega a página com delay e mostra o conteúdo
-  useEffect(() => {
-    const loadPage = async () => {
-      setLoading(true);
-      setShowContent(false);
-      await delay(300);
-      setLoading(false);
-      setShowContent(true);
-    };
-    loadPage();
-  }, [location]);
 
   return (
     <div>
-      {loading && (
-        <div className="loading-spinner">
-          <CustomSpinner />
-        </div>
-      )}
       <TransitionGroup>
         <CSSTransition
           key={location.key}
           nodeRef={nodeRef}
-          timeout={500}
+          timeout={200}
           classNames="fade"
         >
-          <div ref={nodeRef} style={{ display: showContent ? 'block' : 'none' }}>
+          <div ref={nodeRef}>
             <Routes location={location}>
               <Route path="/" element={<Login />} />
               <Route path="/login&forgot/forgotpassword" element={<ForgotPassword />} />

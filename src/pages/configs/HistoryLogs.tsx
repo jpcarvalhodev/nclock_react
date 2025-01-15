@@ -70,11 +70,6 @@ export const HistoryLogs = () => {
         }
     }
 
-    // Busca os logs ao carregar a página
-    useEffect(() => {
-        fetchAllHistoryLogs();
-    }, []);
-
     // Função para atualizar os logs
     const refreshLogs = () => {
         fetchAllHistoryLogs();

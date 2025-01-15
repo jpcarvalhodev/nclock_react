@@ -6,10 +6,10 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import * as apiService from "../api/apiService";
 import { Cameras } from '../types/Types';
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
+import { useTerminals } from '../context/TerminalsContext';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
@@ -33,6 +33,7 @@ interface Field {
 
 // Define o componente
 export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
+    const { fetchCameras } = useTerminals();
     const [formData, setFormData] = useState<Partial<Cameras>>(initialValues);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -97,7 +98,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
     useEffect(() => {
         const fetchCamerasAndSetNextNumber = async () => {
             try {
-                const data = await apiService.fetchAllCameras();
+                const data = await fetchCameras();
                 if (data && data.length > 0) {
                     const maxNumber = data.reduce((max: number, data: Cameras) => Math.max(max, data.numeroCamera), 0);
                     const nextCameraNumber = maxNumber + 1;

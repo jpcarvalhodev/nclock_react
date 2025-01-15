@@ -146,8 +146,10 @@ export const NkioskListMovements = () => {
         setTotalMovements(unifiedData);
     };
 
-    // Atualiza a lista de movimentos ao receber novos dados
+    // Atualiza a lista de movimentos ao montar o componente
     useEffect(() => {
+        fetchAllMoveCard();
+        fetchAllMoveKiosk();
         settingVariables();
         mergeMovementData();
     }, []);

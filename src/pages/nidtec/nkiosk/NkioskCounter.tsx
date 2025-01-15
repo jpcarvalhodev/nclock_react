@@ -48,7 +48,7 @@ export const NkioskCounter = () => {
     const { counter, fetchAllCounter } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'pin', 'nameUser', 'eventType', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventType', 'eventName', 'deviceSN']);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedRows, setSelectedRows] = useState<Counter[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -84,7 +84,7 @@ export const NkioskCounter = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'pin', 'nameUser', 'eventType', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'eventType', 'eventName', 'deviceSN']);
     };
 
     // Função para selecionar todas as colunas

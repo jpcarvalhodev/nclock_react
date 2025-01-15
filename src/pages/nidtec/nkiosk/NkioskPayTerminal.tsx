@@ -86,6 +86,11 @@ export const NkioskPayTerminal = () => {
         }
     }
 
+    // Busca os pagamentos dos terminais ao carregar a página
+    useEffect(() => {
+        fetchAllPayTerminal();
+    }, []);
+
     // Função para atualizar os pagamentos dos terminais
     const refreshPayTerminal = () => {
         fetchAllPayTerminal();

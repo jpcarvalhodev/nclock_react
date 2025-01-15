@@ -24,4 +24,3 @@ declare module 'react-bootstrap-icons';
 // Declarações de módulos de exportação que não possuem tipos
 declare module 'file-saver';
 declare module '@react-pdf/renderer';
-declare module 'xlsx';

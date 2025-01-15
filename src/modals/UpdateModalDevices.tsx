@@ -59,11 +59,9 @@ interface UpdateModalProps<T extends Entity> {
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const {
         door,
+        aux,
         period,
-        fetchAllDevices,
         fetchAllDoorData,
-        fetchTimePeriods,
-        fetchAllAux,
         handleUpdateDoor,
         handleUpdateAux,
     } = useTerminals();
@@ -94,6 +92,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         if (open && entity) {
+            fetchAuxiliaries();
             setFormData({ ...entity } as T);
             const matchedDevice = deviceOptions.find(option => option.label === entity.model);
             if (matchedDevice) {
@@ -152,8 +151,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // Função para buscar as auxiliares
     const fetchAuxiliaries = async () => {
-        const dataAuxiliaries = await fetchAllAux();
-        const filteredAuxiliaries = dataAuxiliaries.filter((aux: Auxiliaries) => aux.deviceId === entity.zktecoDeviceID);
+        const filteredAuxiliaries = aux.filter((aux: Auxiliaries) => aux.deviceId === entity.zktecoDeviceID);
         setAuxiliaries(filteredAuxiliaries);
     }
 
@@ -492,7 +490,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         { value: 'SISNID-C3-200', label: 'SISNID-C3-200', img: c3_200 },
         { value: 'SISNID-C3-400', label: 'SISNID-C3-400', img: c3_400 },
         { value: 'SISNID-INBIO160', label: 'SISNID-INBIO160', img: inbio160 },
-        { value: 'SISNID-INBIO260', label: 'SISNID-INBIO160', img: inbio260 },
+        { value: 'SISNID-INBIO260', label: 'SISNID-INBIO260', img: inbio260 },
         { value: 'SISNID-INBIO460', label: 'SISNID-INBIO460', img: inbio460 },
         { value: 'SISNID-PROFACEX-TD', label: 'SISNID-PROFACEX-TD', img: profacex },
         { value: 'SpeedFace-RFID-TD', label: 'SpeedFace-RFID-TD', img: rfid_td },

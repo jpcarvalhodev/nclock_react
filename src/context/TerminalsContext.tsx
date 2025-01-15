@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from "../api/apiService";
-import { AccessControl, Auxiliaries, AuxOut, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, TimePeriod } from '../types/Types';
+import { AccessControl, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, TimePeriod } from '../types/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -14,6 +14,7 @@ export interface DeviceContextType {
     door: Doors[];
     aux: Auxiliaries[];
     auxData: AuxOut[];
+    cameras: Cameras[];
     fetchAllDevices: () => Promise<Devices[]>;
     fetchAllEmployeeDevices: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
@@ -50,6 +51,7 @@ export interface DeviceContextType {
     handleDeletePeriod: (id: string) => Promise<void>;
     handleUpdateDoor: (door: Doors) => Promise<void>;
     handleUpdateAux: (aux: Auxiliaries) => Promise<void>;
+    fetchCameras: () => Promise<Cameras[]>;
 }
 
 // Cria o contexto	
@@ -66,6 +68,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [door, setDoor] = useState<Doors[]>([]);
     const [auxData, setAuxData] = useState<AuxOut[]>([]);
     const [aux, setAux] = useState<Auxiliaries[]>([]);
+    const [cameras, setCameras] = useState<Cameras[]>([]);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -480,6 +483,18 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para buscar todas as câmeras
+    const fetchCameras = async (): Promise<Cameras[]> => {
+        try {
+            const data = await apiService.fetchAllCameras();
+            setCameras(data);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar as câmeras:', error);
+        }
+        return [];
+    }
+
     // Busca todos os dispositivos ao carregar a página
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -490,6 +505,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAccessControl();
             fetchTimePeriods();
             fetchAllDoorData();
+            fetchAllAux();
             fetchAllAuxData();
         }
     }, []);
@@ -504,6 +520,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         door,
         aux,
         auxData,
+        cameras,
         fetchAllDevices,
         fetchAllEmployeeDevices,
         fetchAllKioskTransaction,
@@ -540,6 +557,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleDeletePeriod,
         handleUpdateDoor,
         handleUpdateAux,
+        fetchCameras,
     };
 
     return (
