@@ -339,6 +339,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             return acc;
         }, {});
         onSave(payload as T);
+        handleClose();
     };
 
     // Define os campos required
