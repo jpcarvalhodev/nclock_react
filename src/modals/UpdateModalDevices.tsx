@@ -157,13 +157,13 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // UseEffect para filtrar as auxiliares de entrada e saída
     useEffect(() => {
-        const auxInData = auxiliaries.filter(aux => aux.auxInOut === 0).map(aux => ({ ...aux, type: 'in' }));
-        const auxOutData = auxiliaries.filter(aux => aux.auxInOut === 1).map(aux => ({ ...aux, type: 'out' }));
+        const auxInData = aux.filter(aux => aux.auxInOut === 0).map(aux => ({ ...aux, type: 'in' }));
+        const auxOutData = aux.filter(aux => aux.auxInOut === 1).map(aux => ({ ...aux, type: 'out' }));
         const auxInOrdered = auxInData.sort((a, b) => a.auxNo - b.auxNo);
         const auxOutOrdered = auxOutData.sort((a, b) => a.auxNo - b.auxNo);
         setAuxIn(auxInOrdered);
         setAuxOut(auxOutOrdered);
-    }, [auxiliaries]);
+    }, [aux, auxiliaries]);
 
     // Função para lidar com a atualização das portas
     const updateDoor = async (door: Doors) => {

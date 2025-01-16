@@ -266,6 +266,7 @@ export const Terminals = () => {
         fetchAllAux();
         fetchAllDoorData();
         setClearSelectionToggle(!clearSelectionToggle);
+        setSelectedTerminal(null);
     }
 
     // Função para resetar as colunas
@@ -1042,6 +1043,7 @@ export const Terminals = () => {
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID);
             setLoadingUser(false);
             setClearSelectionToggle(!clearSelectionToggle);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1054,6 +1056,7 @@ export const Terminals = () => {
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingAllUser(false);
             setClearSelectionToggle(!clearSelectionToggle);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1066,6 +1069,7 @@ export const Terminals = () => {
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingSyncAllUser(false);
             setClearSelectionToggle(!clearSelectionToggle);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1078,6 +1082,7 @@ export const Terminals = () => {
             await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingMovements(false);
             setClearSelectionToggle(!clearSelectionToggle);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1090,6 +1095,7 @@ export const Terminals = () => {
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingDeleteAllUsers(false);
             setClearSelectionToggle(!clearSelectionToggle);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1102,6 +1108,7 @@ export const Terminals = () => {
             await restartDevice(selectedTerminal.zktecoDeviceID);
             setLoadingRestartDevice(false);
             setClearSelectionToggle(!clearSelectionToggle);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1114,6 +1121,7 @@ export const Terminals = () => {
             await sendClockToDevice(selectedTerminal.serialNumber);
             setLoadingSendClock(false);
             setClearSelectionToggle(!clearSelectionToggle);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1124,6 +1132,7 @@ export const Terminals = () => {
         await openDeviceDoor(sn, doorData);
         setLoadingOpenDoor(false);
         setClearSelectionToggle(!clearSelectionToggle);
+        setSelectedTerminal(null);
     }
 
     // Função para sincronizar a hora
@@ -1133,6 +1142,7 @@ export const Terminals = () => {
             await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
             setLoadingSyncTime(false);
             setClearSelectionToggle(!clearSelectionToggle);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }

@@ -127,11 +127,6 @@ export const NclockRequests = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
-    // Atualiza os dados de renderização
-    useEffect(() => {
-        fetchRequests();
-    }, []);
-
     // Atualiza a seleção ao resetar
     useEffect(() => {
         if (resetSelection) {

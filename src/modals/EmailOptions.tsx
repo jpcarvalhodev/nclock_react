@@ -186,6 +186,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             return;
         }
         onSave(emailFormData as T);
+        onClose();
     };
 
     // Função para lidar com o clique em atualizar

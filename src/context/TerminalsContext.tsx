@@ -458,9 +458,13 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para lidar com a atualização das portas
     const handleUpdateDoor = async (door: Doors) => {
         try {
-            const data = await apiService.updateDoor(door);
-            const updatedDoors = door.map((d: Doors) => d.id === data.id ? data : d);
-            setDoor(updatedDoors);
+            const data: Doors = await apiService.updateDoor(door);
+            if (Array.isArray(data)) {
+                const updatedDoors = door.map((d: Doors) => d.id === data.id ? data : d);
+                setDoor(updatedDoors);
+            } else {
+                setDoor((prev) => prev.map((item) => (item.id === data.id ? data : item)));
+            }
             toast.success(data.message || 'Porta atualizada com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar a porta:', error);
@@ -472,10 +476,14 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     // Função para lidar com a atualização das auxiliares
     const handleUpdateAux = async (aux: Auxiliaries) => {
         try {
-            const data = await apiService.updateAllAux(aux);
-            const updatedAux = aux.map((d: Auxiliaries) => d.id === data.id ? data : d);
-            setAux(updatedAux);
-            toast.success(data.message || 'Auxiliar atualizada com sucesso!');
+            const data: Auxiliaries = await apiService.updateAllAux(aux);
+            if (Array.isArray(data)) {
+                const updatedAux = aux.map((d: Auxiliaries) => d.id === data.id ? data : d);
+                setAux(updatedAux);
+            } else {
+                setAux((prev) => prev.map((item) => (item.id === data.id ? data : item)));
+                console.log('aux setado unicamente');
+            }
         } catch (error) {
             console.error('Erro ao atualizar a porta:', error);
         } finally {

@@ -134,7 +134,7 @@ export const CardContainer = ({ cards, handleCardClick }: CardContainerProps) =>
                         cardContainerRef.current.removeEventListener('scroll', handleScroll);
                     }
                 };
-            }, 200);
+            }, 300);
         }
     }, [isReady]);
 

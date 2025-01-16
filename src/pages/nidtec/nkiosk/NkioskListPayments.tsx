@@ -94,7 +94,7 @@ export const NkioskListPayments = () => {
             const validCoinData = allCoinData.filter(data => Array.isArray(data) && data.length > 0);
             const combinedCoinData = validCoinData.flat();
 
-            setTotalPayments([...combinedMBData, ...combinedCoinData]); 
+            setTotalPayments([...combinedMBData, ...combinedCoinData]);
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de pagamentos:', error);
             setListPaymentMB([]);
@@ -128,9 +128,100 @@ export const NkioskListPayments = () => {
             const validCoinData = allCoinData.filter(data => Array.isArray(data) && data.length > 0);
             const combinedCoinData = validCoinData.flat();
 
-            setTotalPayments([...combinedMBData, ...combinedCoinData]); 
+            setTotalPayments([...combinedMBData, ...combinedCoinData]);
+            setStartDate(formatDateToStartOfDay(currentDate));
+            setEndDate(formatDateToEndOfDay(currentDate));
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de pagamentos hoje:', error);
+            setListPaymentMB([]);
+            setListPaymentCoin([]);
+        }
+    };
+
+    // Função para buscar os pagamentos do moedeiro de ontem
+    const fetchPaymentsCoinForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            if (devices.length === 0) {
+                setListPaymentMB([]);
+                setListPaymentCoin([]);
+                return;
+            }
+
+            const mbPromises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByMBAndDeviceSN(start, end);
+            });
+
+            const coinPromises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allMBData = await Promise.all(mbPromises);
+            const allCoinData = await Promise.all(coinPromises);
+
+            const validMBData = allMBData.filter(data => Array.isArray(data) && data.length > 0);
+            const combinedMBData = validMBData.flat();
+
+            const validCoinData = allCoinData.filter(data => Array.isArray(data) && data.length > 0);
+            const combinedCoinData = validCoinData.flat();
+
+            setTotalPayments([...combinedMBData, ...combinedCoinData]);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de pagamento de ontem:', error);
+            setListPaymentMB([]);
+            setListPaymentCoin([]);
+        }
+    };
+
+    // Função para buscar os pagamentos do moedeiro de amanhã
+    const fetchPaymentsCoinForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar pagamentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            if (devices.length === 0) {
+                setListPaymentMB([]);
+                setListPaymentCoin([]);
+                return;
+            }
+
+            const mbPromises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByMBAndDeviceSN(start, end);
+            });
+
+            const coinPromises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByPayCoins(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allMBData = await Promise.all(mbPromises);
+            const allCoinData = await Promise.all(coinPromises);
+
+            const validMBData = allMBData.filter(data => Array.isArray(data) && data.length > 0);
+            const combinedMBData = validMBData.flat();
+
+            const validCoinData = allCoinData.filter(data => Array.isArray(data) && data.length > 0);
+            const combinedCoinData = validCoinData.flat();
+
+            setTotalPayments([...combinedMBData, ...combinedCoinData]);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de pagamentos de amanhã:', error);
             setListPaymentMB([]);
             setListPaymentCoin([]);
         }
@@ -154,6 +245,8 @@ export const NkioskListPayments = () => {
     const refreshListPayments = () => {
         fetchAllPayTerminal();
         fetchAllPayCoins();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -351,9 +444,21 @@ export const NkioskListPayments = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Total Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchPaymentsCoinForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Total Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchTotalPaymentsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Total Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchPaymentsCoinForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
                                 </OverlayTrigger>
                                 <input
                                     type="datetime-local"

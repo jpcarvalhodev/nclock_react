@@ -126,8 +126,84 @@ export const NkioskMoveCard = () => {
             const combinedData = validData.flat();
 
             setMoveCard(combinedData);
+
+            setStartDate(formatDateToStartOfDay(currentDate));
+            setEndDate(formatDateToEndOfDay(currentDate));
         } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            console.error('Erro ao buscar os dados de movimentos de cartões hoje:', error);
+            setMoveCard([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchCardMovementsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            if (devices.length === 0) {
+                setMoveCard([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveCard(combinedData);
+
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões ontem:', error);
+            setMoveCard([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchCardMovementsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            if (devices.length === 0) {
+                setMoveCard([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveCard(combinedData);
+
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões amanhã:', error);
             setMoveCard([]);
         }
     };
@@ -146,6 +222,8 @@ export const NkioskMoveCard = () => {
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
         fetchAllMoveCard();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -378,9 +456,21 @@ export const NkioskMoveCard = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Entradas Hoje</Tooltip>}
+                                    overlay={<Tooltip className="custom-tooltip">Torniquete Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchCardMovementsForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Torniquete Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchCardMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Torniquete Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchCardMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
                                 </OverlayTrigger>
                                 <input
                                     type="datetime-local"

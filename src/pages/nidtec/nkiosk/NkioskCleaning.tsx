@@ -114,6 +114,8 @@ export const NkioskCleaning = () => {
     // Função para atualizar as recolhas do moedeiro
     const refreshLimpezas = () => {
         fetchAllLimpezas();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

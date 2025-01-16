@@ -92,11 +92,6 @@ export const NclockAll = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
-    // Atualiza a lista de funcionários ao carregar a página
-    useEffect(() => {
-        fetchAll();
-    }, []);
-
     // Função para atualizar os dados da tabela
     const refreshAttendance = () => {
         fetchAll();

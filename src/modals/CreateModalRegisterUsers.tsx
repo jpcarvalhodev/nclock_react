@@ -217,6 +217,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
         }
 
         onSave(dataToSend);
+        handleClose();
     };
 
     // Define as seleções de tipo de conta

@@ -70,6 +70,8 @@ export const NkioskCounter = () => {
     // Função para atualizar as recolhas do moedeiro
     const refreshCounter = () => {
         fetchAllCounter();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

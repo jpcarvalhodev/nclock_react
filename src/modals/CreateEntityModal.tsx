@@ -170,7 +170,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
         }
 
         onSave(dataToSend);
-        onClose();
+        handleClose();
     };
 
     return (

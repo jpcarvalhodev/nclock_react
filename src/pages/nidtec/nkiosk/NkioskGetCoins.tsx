@@ -117,6 +117,8 @@ export const NkioskGetCoins = () => {
     // Função para atualizar as recolhas do moedeiro
     const refreshRecolhaMoedeiro = () => {
         fetchAllCoin();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

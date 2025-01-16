@@ -58,6 +58,8 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
                 options.postFetch(data);
             }
             setAttendance(data);
+            setStartDate(formatDateToStartOfDay(pastDate));
+            setEndDate(formatDateToEndOfDay(currentDate));
             return data;
         } catch (error) {
             console.error('Erro ao buscar assiduidades:', error);

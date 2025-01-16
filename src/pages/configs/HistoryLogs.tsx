@@ -73,6 +73,8 @@ export const HistoryLogs = () => {
     // Função para atualizar os logs
     const refreshLogs = () => {
         fetchAllHistoryLogs();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

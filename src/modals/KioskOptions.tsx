@@ -173,6 +173,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             amount: parseFloat(kioskFormData.amount).toFixed(2)
         };
         onSave(formattedData as T);
+        onClose();
     };
 
     // Função para lidar com o clique em atualizar

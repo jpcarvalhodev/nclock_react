@@ -203,7 +203,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
         }
         const preparedData = prepareFormData(formData);
         onSave(preparedData as T);
-        onClose();
+        handleClose();
     };
 
     // Traduz as keys dos dias da semana

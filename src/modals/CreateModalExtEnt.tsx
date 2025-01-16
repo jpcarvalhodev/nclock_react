@@ -228,7 +228,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     // Define a função de salvar
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
+        handleClose();
     };
 
     return (

@@ -185,6 +185,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
             auxData: formDataToSend,
             deviceSN: formData.deviceSN
         });
+        onClose();
     };
 
     return (

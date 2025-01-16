@@ -75,6 +75,8 @@ export const NkioskAlerts = () => {
     // Função para atualizar as recolhas do moedeiro
     const refreshTasks = () => {
         fetchAllTasks();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

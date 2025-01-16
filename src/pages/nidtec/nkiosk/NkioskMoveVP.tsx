@@ -106,6 +106,8 @@ export const NkioskMoveVP = () => {
     // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {
         fetchAllMoveVP();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

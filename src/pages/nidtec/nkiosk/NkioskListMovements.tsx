@@ -21,6 +21,7 @@ import { Employee, KioskTransactionCard } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { useTerminals } from "../../../context/TerminalsContext";
+import { set } from "date-fns";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -128,6 +129,91 @@ export const NkioskListMovements = () => {
             const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
 
             setTotalMovements([...validDataCard, ...validDataKiosk]);
+            setStartDate(formatDateToStartOfDay(currentDate));
+            setEndDate(formatDateToEndOfDay(currentDate));
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
+            setListMovementCard([]);
+            setListMovementKiosk([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchTotalMovementsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            if (devices.length === 0) {
+                setListMovementCard([]);
+                setListMovementKiosk([]);
+                return;
+            }
+
+            const promisesMovementCard = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end)
+            );
+
+            const promisesMovementKiosk = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, start, end)
+            );
+
+            const resultsMovementCard = await Promise.all(promisesMovementCard);
+            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
+
+            setTotalMovements([...validDataCard, ...validDataKiosk]);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
+            setListMovementCard([]);
+            setListMovementKiosk([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchTotalMovementsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            if (devices.length === 0) {
+                setListMovementCard([]);
+                setListMovementKiosk([]);
+                return;
+            }
+
+            const promisesMovementCard = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end)
+            );
+
+            const promisesMovementKiosk = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, start, end)
+            );
+
+            const resultsMovementCard = await Promise.all(promisesMovementCard);
+            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
+
+            setTotalMovements([...validDataCard, ...validDataKiosk]);
+            setStartDate(start);
+            setEndDate(end);
         } catch (error) {
             console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
             setListMovementCard([]);
@@ -158,6 +244,8 @@ export const NkioskListMovements = () => {
     const refreshListMovements = () => {
         fetchAllMoveCard();
         fetchAllMoveKiosk();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -368,9 +456,21 @@ export const NkioskListMovements = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Total Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchTotalMovementsForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Total Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchTotalMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Total Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchTotalMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
                                 </OverlayTrigger>
                                 <input
                                     type="datetime-local"

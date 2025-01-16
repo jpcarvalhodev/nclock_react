@@ -74,17 +74,63 @@ export const NkioskPayTerminal = () => {
 
     // Função para buscar os pagamentos dos terminais de hoje
     const fetchPaymentsToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
         try {
-            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(start, end);
             if (Array.isArray(data)) {
                 setPayTerminal(data);
             } else {
                 setPayTerminal([]);
             }
+            setStartDate(start);
+            setEndDate(end);
         } catch (error) {
             console.error('Erro ao buscar os dados de pagamento dos terminais hoje:', error);
         }
     }
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchPaymentsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(start, end);
+            setPayTerminal(Array.isArray(data) ? data : []);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de pagamento dos terminais de ontem:', error);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchPaymentsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar pagamentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(start, end);
+            setPayTerminal(Array.isArray(data) ? data : []);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de pagamento dos terminais de amanhã:', error);
+        }
+    };
 
     // Busca os pagamentos dos terminais ao carregar a página
     useEffect(() => {
@@ -94,6 +140,8 @@ export const NkioskPayTerminal = () => {
     // Função para atualizar os pagamentos dos terminais
     const refreshPayTerminal = () => {
         fetchAllPayTerminal();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -288,9 +336,21 @@ export const NkioskPayTerminal = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">MB Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchPaymentsForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">MB Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchPaymentsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">MB Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchPaymentsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
                                 </OverlayTrigger>
                                 <input
                                     type="datetime-local"

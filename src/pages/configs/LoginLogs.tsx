@@ -73,6 +73,8 @@ export const LoginLogs = () => {
     // Função para atualizar os logs
     const refreshLogs = () => {
         fetchAllLoginLogs();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

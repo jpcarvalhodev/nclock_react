@@ -26,7 +26,7 @@ interface Props<T> {
     title: string;
 }
 
-export const BackupDBModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, fields }: Props<T>) => {
+export const BackupDBModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate }: Props<T>) => {
     const [formData, setFormData] = useState<T>({} as T);
     const [file, setFile] = useState<File | null>(null);
     const [activeKey, setActiveKey] = useState<string>('exportBackup');
@@ -56,6 +56,7 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         onSave(formData as unknown as BackupDB);
+        onClose();
     };
 
     // Função para lidar com o clique em atualizar
@@ -64,6 +65,7 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
             const fileToSend = new FormData();
             fileToSend.append('fileName', file);
             onUpdate(fileToSend);
+            onClose();
         }
     }
 

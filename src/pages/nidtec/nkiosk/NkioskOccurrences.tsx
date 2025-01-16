@@ -114,6 +114,8 @@ export const NkioskOccurrences = () => {
     // Função para atualizar as recolhas do moedeiro
     const refreshOcorrencias = () => {
         fetchAllOcorrencias();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 

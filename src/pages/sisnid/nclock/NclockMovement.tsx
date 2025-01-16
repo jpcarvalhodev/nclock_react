@@ -104,11 +104,6 @@ export const NclockMovement = () => {
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
-    // Atualiza os dados de renderização
-    useEffect(() => {
-        fetchMovements();
-    }, []);
-
     // Atualiza a seleção ao resetar
     useEffect(() => {
         if (resetSelection) {

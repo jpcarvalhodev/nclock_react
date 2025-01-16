@@ -18,7 +18,7 @@ import { PersonsContext, PersonsContextType } from "../../../context/PersonsCont
 import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
 import * as apiService from "../../../api/apiService";
 import { employeeFields, transactionCardFields } from "../../../fields/Fields";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../types/Types";
+import { Employee, KioskTransactionCard } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
@@ -34,12 +34,12 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NvisitorListMovements = () => {
@@ -49,8 +49,7 @@ export const NvisitorListMovements = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { moveCard, fetchAllMoveCard, moveKiosk, fetchAllMoveKiosk } = useKiosk();
-    const [listMovements, setListMovements] = useState<KioskTransactionCard[]>([]);
+    const { moveCard, fetchAllMoveCard, moveKiosk, fetchAllMoveKiosk, totalMovements, setTotalMovements } = useKiosk();
     const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
     const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
     const [filterText, setFilterText] = useState<string>('');
@@ -106,6 +105,122 @@ export const NvisitorListMovements = () => {
         }
     };
 
+    // Função para buscar os movimentos entre datas
+    const fetchTotalMovementsToday = async () => {
+        try {
+            if (devices.length === 0) {
+                setListMovementCard([]);
+                setListMovementKiosk([]);
+                return;
+            }
+
+            const promisesMovementCard = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate))
+            );
+
+            const promisesMovementKiosk = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate))
+            );
+
+            const resultsMovementCard = await Promise.all(promisesMovementCard);
+            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
+
+            setTotalMovements([...validDataCard, ...validDataKiosk]);
+            setStartDate(formatDateToStartOfDay(currentDate));
+            setEndDate(formatDateToEndOfDay(currentDate));
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
+            setListMovementCard([]);
+            setListMovementKiosk([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchTotalMovementsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            if (devices.length === 0) {
+                setListMovementCard([]);
+                setListMovementKiosk([]);
+                return;
+            }
+
+            const promisesMovementCard = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end)
+            );
+
+            const promisesMovementKiosk = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, start, end)
+            );
+
+            const resultsMovementCard = await Promise.all(promisesMovementCard);
+            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
+
+            setTotalMovements([...validDataCard, ...validDataKiosk]);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
+            setListMovementCard([]);
+            setListMovementKiosk([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchTotalMovementsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            if (devices.length === 0) {
+                setListMovementCard([]);
+                setListMovementKiosk([]);
+                return;
+            }
+
+            const promisesMovementCard = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end)
+            );
+
+            const promisesMovementKiosk = devices.map(device =>
+                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, start, end)
+            );
+
+            const resultsMovementCard = await Promise.all(promisesMovementCard);
+            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
+            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
+
+            setTotalMovements([...validDataCard, ...validDataKiosk]);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
+            setListMovementCard([]);
+            setListMovementKiosk([]);
+        }
+    };
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
@@ -114,54 +229,24 @@ export const NvisitorListMovements = () => {
 
     // Unifica os dados de movimentos de cartão e porteiro
     const mergeMovementData = () => {
-        const unifiedData: KioskTransactionCard[] = [
-            ...listMovementCard.map((movement) => ({
-                id: movement.id,
-                cardNo: movement.cardNo,
-                nameUser: movement.nameUser,
-                deviceSN: movement.deviceSN,
-                eventNo: movement.eventNo,
-                eventName: movement.eventName,
-                eventDoorId: movement.eventDoorId,
-                eventDoorName: movement.eventDoorName,
-                eventTime: movement.eventTime,
-                pin: movement.pin,
-                verifyModeNo: movement.verifyModeNo,
-            })),
-            ...listMovementKiosk.map((movement) => ({
-                id: movement.id,
-                cardNo: movement.cardNo,
-                nameUser: movement.nameUser,
-                deviceSN: movement.deviceSN,
-                eventNo: movement.eventNo,
-                eventName: movement.eventName,
-                eventDoorId: movement.eventDoorId,
-                eventDoorName: movement.eventDoorName,
-                eventTime: movement.eventTime,
-                pin: movement.pin,
-                verifyModeNo: movement.verifyModeNo,
-            }))
-        ];
-
-        setListMovements(unifiedData);
+        const unifiedData = [...listMovementCard, ...listMovementKiosk];
+        setTotalMovements(unifiedData);
     };
 
-    // Busca todos os movimentos de cartão
+    // Atualiza a lista de movimentos ao montar o componente
     useEffect(() => {
         fetchAllMoveCard();
         fetchAllMoveKiosk();
-    }, []);
-
-    // Atualiza a lista de movimentos ao receber novos dados
-    useEffect(() => {
         settingVariables();
         mergeMovementData();
-    }, [moveCard, moveKiosk]);
+    }, []);
 
     // Função para atualizar as listagens de movimentos
     const refreshListMovements = () => {
         fetchAllMoveCard();
         fetchAllMoveKiosk();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle(!clearSelectionToggle);
     };
 
@@ -173,14 +258,14 @@ export const NvisitorListMovements = () => {
                 return employee ? employee.shortName : null;
             }).filter(name => name !== null);
 
-            const filtered = moveCard.filter(listMovement =>
+            const filtered = totalMovements.filter(listMovement =>
                 employeeShortNames.includes(listMovement.nameUser)
             );
             setFilteredDevices(filtered);
         } else {
-            setFilteredDevices(listMovements);
+            setFilteredDevices(totalMovements);
         }
-    }, [selectedDevicesIds, listMovements]);
+    }, [selectedDevicesIds, totalMovements]);
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -319,7 +404,7 @@ export const NvisitorListMovements = () => {
     };
 
     // Dados com nomes substituídos para o export/print
-    const listMoveWithNames = listMovements.map(transformTransactionWithNames);
+    const listMoveWithNames = totalMovements.map(transformTransactionWithNames);
 
     // Transforma as linhas selecionadas com nomes substituídos
     const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
@@ -370,6 +455,24 @@ export const NvisitorListMovements = () => {
                                     <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
                                 </div>
                                 <div className="date-range-search">
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Total Dia Anterior</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchTotalMovementsForPreviousDay} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Total Hoje</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchTotalMovementsToday} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Total Dia Seguinte</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchTotalMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                    </OverlayTrigger>
                                     <input
                                         type="datetime-local"
                                         value={startDate}

@@ -277,7 +277,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     // Função para lidar com o salvamento
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
+        handleClose();
     };
 
     // Opções de dispositivos

@@ -80,6 +80,9 @@ export const NledAds = () => {
     // Função para atualizar as publicidades
     const refreshAds = () => {
         fetchAds();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle(!clearSelectionToggle);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados

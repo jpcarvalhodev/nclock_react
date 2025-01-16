@@ -231,7 +231,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
+        handleClose();
     };
 
     return (

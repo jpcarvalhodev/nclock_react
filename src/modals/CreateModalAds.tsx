@@ -153,15 +153,6 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
         resetFileInput();
     };
 
-    // Função para verificar se o formulário é válido antes de salvar
-    const handleCheckForSave = () => {
-        /* if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
-            return;
-        } */
-        handleSave();
-    }
-
     // Função para salvar os dados
     const handleSave = () => {
         const dataToSend = new FormData();
@@ -213,7 +204,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
         }
 
         onSave(dataToSend);
-        onClose();
+        handleClose();
     };
 
     return (
@@ -325,7 +316,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                 <Button variant="outline-secondary" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button variant="outline-primary" onClick={handleSave}>
                     Guardar
                 </Button>
             </Modal.Footer>
