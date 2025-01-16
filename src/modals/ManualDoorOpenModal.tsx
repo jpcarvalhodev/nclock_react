@@ -160,6 +160,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as Partial<T>);
+        onClose();
     };
 
     return (
