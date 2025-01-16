@@ -156,6 +156,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     const handleSave = () => {
         const { currentDoorId, currentTimezoneId, ...restFormData } = formData;
         onSave(restFormData as Partial<T>);
+        handleClose();
     };
 
     return (
