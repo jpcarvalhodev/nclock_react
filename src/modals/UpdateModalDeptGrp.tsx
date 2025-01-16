@@ -8,8 +8,8 @@ import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { usePersons } from '../context/PersonsContext';
-import { employeeFields } from '../fields/Fields';
-import { Department, Employee, Group } from '../types/Types';
+import { employeeFields } from '../helpers/Fields';
+import { Department, Employee, Group } from '../helpers/Types';
 
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
