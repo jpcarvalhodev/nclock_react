@@ -180,6 +180,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
             return;
         }
         onSave(formData as T);
+        handleClose();
     };
 
     return (
