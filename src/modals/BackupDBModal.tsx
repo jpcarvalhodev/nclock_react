@@ -64,6 +64,7 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
             const fileToSend = new FormData();
             fileToSend.append('fileName', file);
             onUpdate(fileToSend);
+            onClose();
         }
     }
 
