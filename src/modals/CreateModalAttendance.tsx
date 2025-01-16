@@ -205,6 +205,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     const handleSave = () => {
         const { initialValues, selectedEmployeeIds, ...cleanedData } = formData;
         onSave(cleanedData as T);
+        handleClose();
     };
 
     // Opções do tipo
