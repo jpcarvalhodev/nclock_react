@@ -30,6 +30,7 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData);
+        onClose();
     };
 
     return (
