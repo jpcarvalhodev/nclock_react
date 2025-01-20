@@ -1,11 +1,11 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { usePersons } from '../context/PersonsContext';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -45,7 +45,7 @@ interface UpdateModalProps<T extends Entity> {
 export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const {
         fetchAllEmployees,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -186,7 +186,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" style={{ marginTop: 115 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
@@ -352,9 +352,9 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

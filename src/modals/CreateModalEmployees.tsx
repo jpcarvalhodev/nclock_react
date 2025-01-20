@@ -161,7 +161,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         }));
       }
     } catch (error) {
-      console.error("Erro ao buscar os dados de departamentos e grupos", error);
+      console.error("Erro ao buscar os dados", error);
     }
   };
 
@@ -288,12 +288,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
   // Função para lidar com o fechamento do modal
   const handleClose = () => {
-    if (window.location.pathname.startsWith('/persons/Departments') || window.location.pathname.startsWith('/persons/Groups')) {
-      onClose();
-    } else {
-      window.location.reload();
-      onClose();
-    }
+    setFormData({ ...initialValues, status: true });
+    setCardFormData({});
+    setProfileImage(null);
+    setShowValidationErrors(false);
+    onClose();
   };
 
   // Função para remover campos vazios
@@ -460,7 +459,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   };
 
   return (
-    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 110 }}>
+    <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
       <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -795,7 +794,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                   >
                                     <option value="">Selecione...</option>
                                     {dropdownData[field.key]?.map((option: any) => {
-                                      let optionId = option.professionID || option.zoneID || option.externalEntityID;
+                                      let optionId = option.professionID || option.zoneID || option.externalEntityID || option.categoryID;
                                       let optionName = option.name || option.description;
                                       return (
                                         <option key={optionId} value={optionId}>
@@ -887,11 +886,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         </Tab.Container>
       </Modal.Body>
       <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-        <Button variant="outline-secondary" type="button" onClick={handleClose}>
+        <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleClose}>
           Fechar
         </Button>
         <Button
-          variant="outline-primary"
+          className='narrow-mobile-modal-button'
+          variant="outline-dark"
           type="button"
           onClick={handleSaveClick}
         >

@@ -482,7 +482,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
                 setAux(updatedAux);
             } else {
                 setAux((prev) => prev.map((item) => (item.id === data.id ? data : item)));
-                console.log('aux setado unicamente');
             }
         } catch (error) {
             console.error('Erro ao atualizar a porta:', error);

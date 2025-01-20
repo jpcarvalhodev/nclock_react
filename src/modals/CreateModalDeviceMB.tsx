@@ -104,7 +104,8 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        window.location.reload();
+        setFormData(initialValues);
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -130,7 +131,7 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
     ]
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -180,10 +181,10 @@ export const CreateModalDeviceMB = <T extends Record<string, any>>({ title, open
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

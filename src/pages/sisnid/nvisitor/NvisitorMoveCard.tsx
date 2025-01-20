@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -15,8 +15,8 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
+import { usePersons } from "../../../context/PersonsContext";
+import { TerminalsProvider, useTerminals } from "../../../context/TerminalsContext";
 import * as apiService from "../../../api/apiService";
 import { auxOutFields, employeeFields, transactionCardFields } from "../../../fields/Fields";
 import { Employee, KioskTransactionCard } from "../../../types/Types";
@@ -53,8 +53,8 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NvisitorMoveCard = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { employees, handleUpdateEmployee } = usePersons();
+    const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -217,7 +217,7 @@ export const NvisitorMoveCard = () => {
         fetchAllMoveCard();
         setStartDate(formatDateToStartOfDay(pastDate));
         setEndDate(formatDateToEndOfDay(currentDate));
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir a auxiliar

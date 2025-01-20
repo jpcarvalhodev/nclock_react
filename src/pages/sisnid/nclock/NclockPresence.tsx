@@ -109,7 +109,7 @@ export const NclockPresence = () => {
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
         refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Atualiza a lista de funcionários ao carregar a página
@@ -120,7 +120,7 @@ export const NclockPresence = () => {
     // Função para atualizar os dados da tabela
     const refreshAttendance = () => {
         fetchPresence();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para filtrar as presenças com base no texto de pesquisa

@@ -149,6 +149,13 @@ export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave,
         }));
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setFormData({});
+        setShowValidationErrors(false);
+        onClose();
+    };
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -162,11 +169,11 @@ export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave,
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -226,10 +233,10 @@ export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave,
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-dark" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Reset
                 </Button>
             </Modal.Footer>

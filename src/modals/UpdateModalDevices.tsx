@@ -75,6 +75,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState('');
     const [currentDoorIndex, setCurrentDoorIndex] = useState(0);
+    const [filteredDoors, setFilteredDoors] = useState<Doors[]>([]);
     const [auxiliaries, setAuxiliaries] = useState<Auxiliaries[]>([]);
     const [showAuxUpdateModal, setShowAuxUpdateModal] = useState(false);
     const [selectedAuxIn, setSelectedAuxIn] = useState<Auxiliaries | null>(null);
@@ -92,6 +93,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         if (open && entity) {
+            fetchDoors();
             fetchAuxiliaries();
             setFormData({ ...entity } as T);
             const matchedDevice = deviceOptions.find(option => option.label === entity.model);
@@ -149,6 +151,12 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         return isValid;
     };
 
+    // Função para buscar as portas
+    const fetchDoors = async () => {
+        const filteredDoors = door.filter((door: Doors) => door.devId === entity.zktecoDeviceID);
+        setFilteredDoors(filteredDoors);
+    }
+
     // Função para buscar as auxiliares
     const fetchAuxiliaries = async () => {
         const filteredAuxiliaries = aux.filter((aux: Auxiliaries) => aux.deviceId === entity.zktecoDeviceID);
@@ -157,13 +165,13 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // UseEffect para filtrar as auxiliares de entrada e saída
     useEffect(() => {
-        const auxInData = aux.filter(aux => aux.auxInOut === 0).map(aux => ({ ...aux, type: 'in' }));
-        const auxOutData = aux.filter(aux => aux.auxInOut === 1).map(aux => ({ ...aux, type: 'out' }));
+        const auxInData = auxiliaries.filter(aux => aux.auxInOut === 0).map(aux => ({ ...aux, type: 'in' }));
+        const auxOutData = auxiliaries.filter(aux => aux.auxInOut === 1).map(aux => ({ ...aux, type: 'out' }));
         const auxInOrdered = auxInData.sort((a, b) => a.auxNo - b.auxNo);
         const auxOutOrdered = auxOutData.sort((a, b) => a.auxNo - b.auxNo);
         setAuxIn(auxInOrdered);
         setAuxOut(auxOutOrdered);
-    }, [aux, auxiliaries]);
+    }, [auxiliaries]);
 
     // Função para lidar com a atualização das portas
     const updateDoor = async (door: Doors) => {
@@ -289,7 +297,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = door.filter(door =>
+    const filteredDataTable = filteredDoors.filter(door =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(door[key]) === String(filters[key])
         )
@@ -920,9 +928,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
+                <Button variant="outline-dark" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

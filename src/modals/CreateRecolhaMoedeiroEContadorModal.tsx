@@ -44,9 +44,8 @@ const initialValues: Partial<RecolhaMoedeiroEContador> = {
 export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValuesData }: CreateModalProps<T>) => {
     const { devices } = useTerminals();
     const { fetchAllCoin } = useKiosk();
-    const { fetchKioskConfig } = useNavbar();
+    const { kioskConfig } = useNavbar();
     const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>({ ...initialValues, ...initialValuesData });
-    const [amounts, setAmounts] = useState<KioskConfig[]>();
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
@@ -55,7 +54,6 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
     useEffect(() => {
         if (open) {
             fetchRecolhas();
-            fetchAmount();
             const username = localStorage.getItem("username") || "";
             if (initialValuesData.deviceID) {
                 setFormData({ ...initialValuesData });
@@ -78,9 +76,6 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
             if (field.required && (fieldValue === undefined || fieldValue === '')) {
                 valid = false;
             }
-            /* if (field.type === 'number' && fieldValue != null) {
-                valid = false;
-            } */
 
             return valid;
         });
@@ -133,16 +128,6 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
         }
     }
 
-    // Buscar os valores de moedas
-    const fetchAmount = async () => {
-        try {
-            const amounts = await fetchKioskConfig();
-            setAmounts(amounts);
-        } catch (error) {
-            console.error('Erro ao buscar o valor', error);
-        }
-    };
-
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = async (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
@@ -167,10 +152,11 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                 if (selectedOption.serialNumber === deviceCount.serialNumber) {
                     setFormData(prevState => ({
                         ...prevState,
-                        valorTotalSistema: amounts?.[0].amount ? deviceCount.contagemTransacoes * amounts[0].amount : 0,
+                        valorTotalSistema: kioskConfig.amount ? deviceCount.contagemTransacoes * kioskConfig.amount : 0,
                         numeroMoedasSistema: deviceCount.contagemTransacoes,
                         diferencaMoedas: (formData.numeroMoedas || 0) - (deviceCount.contagemTransacoes || 0),
-                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (amounts?.[0]?.amount ?? 0))
+                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (kioskConfig.amount ?? 0))
+                        
                     }));
                 }
             } catch (error) {
@@ -200,11 +186,11 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
             };
 
             if (name === 'numeroMoedas') {
-                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (amounts?.[0].amount || 0)).toFixed(2));
+                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (kioskConfig.amount || 0)).toFixed(2));
+                updatedState.deviceID = "";
             }
 
             if (['numeroMoedas', 'valorTotalRecolhido'].includes(name)) {
-                updatedState.diferencaMoedas = (updatedState.numeroMoedas || 0) - (updatedState.valorTotalSistema || 0);
                 updatedState.diferencaEuros = (updatedState.valorTotalRecolhido || 0) - (updatedState.numeroMoedasSistema || 0);
             }
 
@@ -214,7 +200,8 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        window.location.reload();
+        setFormData({ ...initialValues, ...initialValuesData });
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -235,7 +222,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -305,7 +292,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="number"
                                         name="numeroMoedas"
-                                        value={formData.numeroMoedas === undefined ? 0 : formData.numeroMoedas}
+                                        value={formData.numeroMoedas || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
@@ -346,6 +333,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         value={formData.deviceID || ''}
                                         onChange={(e) => handleDropdownChange('deviceID', e)}
+                                        disabled={!formData.numeroMoedas || formData.numeroMoedas === 0}
                                     >
                                         <option value="">Selecione...</option>
                                         {devices?.map((option: any) => {
@@ -412,10 +400,10 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

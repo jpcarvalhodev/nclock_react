@@ -42,7 +42,7 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
     const filteredColumns = columns.filter((column) => column.key !== 'photo');
 
     return (
-        <Modal show={true} onHide={onClose} backdrop="static" centered size='xl' style={{ marginTop: -190 }}>
+        <Modal show={true} onHide={onClose} backdrop="static" centered size='xl'>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>Selecionar Colunas</Modal.Title>
             </Modal.Header>
@@ -67,8 +67,8 @@ export const ColumnSelectorModal: React.FC<ColumnSelectorModalProps> = ({
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onResetColumns}>Reset</Button>
-                <Button variant="outline-primary" onClick={onClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onResetColumns}>Reset</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>Fechar</Button>
             </Modal.Footer>
         </Modal>
     );

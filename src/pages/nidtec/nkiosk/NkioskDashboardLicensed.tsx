@@ -1,7 +1,7 @@
 import { ArcElement, BarElement, CategoryScale, ChartData, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
-import { format, getDay, getMonth, parse, parseISO, set, startOfWeek } from 'date-fns';
-import { pt, ptBR } from 'date-fns/locale';
-import { useContext, useEffect, useState } from "react";
+import { format, getDay, getMonth, parse, parseISO, startOfWeek } from 'date-fns';
+import { pt } from 'date-fns/locale';
+import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Line, Bar } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
@@ -11,7 +11,7 @@ import * as apiService from "../../../api/apiService";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
+import { useTerminals } from "../../../context/TerminalsContext";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 import { useKiosk } from '../../../context/KioskContext';
 
@@ -19,7 +19,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarEleme
 
 // Define a linguagem do calendário
 const locales = {
-    'pt': ptBR,
+    'pt': pt,
 };
 
 // Define o localizador de datas
@@ -79,7 +79,7 @@ export const NkioskDashboardLicensed = () => {
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const { navbarColor, footerColor } = useNavbar();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useTerminals();
     const { totalPayments, setTotalPayments, totalMovements, setTotalMovements } = useKiosk();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [payLineChartData, setPayLineChartData] = useState<ChartData>({ labels: [], datasets: [] });

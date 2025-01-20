@@ -224,7 +224,7 @@ export const NkioskMoveCard = () => {
         fetchAllMoveCard();
         setStartDate(formatDateToStartOfDay(pastDate));
         setEndDate(formatDateToEndOfDay(currentDate));
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir a auxiliar

@@ -86,22 +86,90 @@ export const NkioskGetCoins = () => {
         }
     };
 
+    // Função para buscar os dados de aberturas manuais de hoje
+    const fetchRecolhasToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchRecolhasMoedeiro(start, end);
+            if (Array.isArray(data)) {
+                setGetCoins(data);
+            } else {
+                setGetCoins([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de recolha do moedeiro hoje:', error);
+        }
+    }
+
+    // Função para buscar os dados de aberturas manuais de ontem
+    const fetchRecolhasForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchRecolhasMoedeiro(start, end);
+            if (Array.isArray(data)) {
+                setGetCoins(data);
+            } else {
+                setGetCoins([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de recolha do moedeiro ontem:', error);
+        }
+    };
+
+    // Função para buscar os dados de aberturas manuais de amanhã
+    const fetchRecolhasForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar recolhas para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchRecolhasMoedeiro(start, end);
+            if (Array.isArray(data)) {
+                setGetCoins(data);
+            } else {
+                setGetCoins([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de recolha do moedeiro amanhã:', error);
+        }
+    };
+
     // Função para adicionar recolha do moedeiro
     const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
         await handleAddRecolhaMoedeiro(recolhaMoedeiro);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar recolha do moedeiro
     const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContador) => {
         await handleUpdateRecolhaMoedeiro(recolhaMoedeiro);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar recolha do moedeiro
     const deleteRecolhaMoedeiro = async (id: string[]) => {
         await handleDeleteRecolhaMoedeiro(id);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -119,7 +187,7 @@ export const NkioskGetCoins = () => {
         fetchAllCoin();
         setStartDate(formatDateToStartOfDay(pastDate));
         setEndDate(formatDateToEndOfDay(currentDate));
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para editar uma recolha do moedeiro
@@ -437,6 +505,24 @@ export const NkioskGetCoins = () => {
                                 )}
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Recolhas Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchRecolhasForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Recolhas Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchRecolhasToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Recolhas Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchRecolhasForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

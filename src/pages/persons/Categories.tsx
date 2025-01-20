@@ -67,19 +67,19 @@ export const Categories = () => {
     // Função para adicionar uma categoria
     const addCategory = async (category: Category) => {
         await handleAddCategory(category);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar uma categoria
     const updateCategory = async (category: Category) => {
         await handleUpdateCategory(category);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para apagar uma categoria
     const deleteCategory = async (categoryID: string[]) => {
         await handleDeleteCategory(categoryID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca as categorias ao carregar a página
@@ -90,7 +90,7 @@ export const Categories = () => {
     // Função para atualizar as categorias
     const refreshCategories = () => {
         fetchAllCategories();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para editar uma categoria

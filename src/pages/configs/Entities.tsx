@@ -45,13 +45,13 @@ export const Entities = () => {
     // Função para atualizar os dados da entidade
     const handleUpdateCompanyData = async (entityData: FormData) => {
         await updateEntity(entityData);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar as entidade
     const refreshEntity = () => {
         fetchAllEntity();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para editar uma entidade

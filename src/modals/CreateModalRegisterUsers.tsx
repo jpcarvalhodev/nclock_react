@@ -172,7 +172,10 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        window.location.reload();
+        setFormData(initialValues);
+        setProfileImage(null);
+        setProfileImageFile(null);
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -242,7 +245,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -412,8 +415,8 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

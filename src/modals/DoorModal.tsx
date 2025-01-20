@@ -154,6 +154,13 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
         }));
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setFormData({ ...entity, ...initialValues });
+        setShowValidationErrors(false);
+        onClose();
+    }
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -167,11 +174,11 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -237,10 +244,10 @@ export const DoorModal = <T extends Entity>({ title, open, onClose, onSave, enti
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-success" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Abrir
                 </Button>
             </Modal.Footer>

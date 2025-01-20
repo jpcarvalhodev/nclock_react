@@ -213,7 +213,8 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        window.location.reload();
+        setFormData({ ...initialValues });
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -245,7 +246,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" style={{ marginTop: 115 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title className='modal-title h5'>{title}</Modal.Title>
             </Modal.Header>
@@ -399,8 +400,8 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                 )}
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

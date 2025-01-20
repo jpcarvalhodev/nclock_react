@@ -216,13 +216,13 @@ const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[], devic
         worksheet.addRow(row);
     });
 
-    worksheet.eachRow({ includeEmpty: true }, function (row) {
+    worksheet.eachRow({ includeEmpty: true }, function (row: { eachCell: (arg0: (cell: any) => void) => void; }) {
         row.eachCell((cell) => {
             cell.numFmt = '@';
         });
     });
 
-    workbook.xlsx.writeBuffer().then(function (buffer) {
+    workbook.xlsx.writeBuffer().then(function (buffer: BlobPart) {
         saveAs(new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), `${fileName}.xlsx`);
     });
 };

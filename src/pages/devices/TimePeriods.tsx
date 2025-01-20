@@ -59,19 +59,19 @@ export const TimePeriods = () => {
     // Função para adicionar um período
     const addPeriod = async (newPeriod: Partial<TimePeriod>) => {
         await handleAddPeriod(newPeriod);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um período
     const updatePeriod = async (updatedPeriod: TimePeriod) => {
         await handleUpdatePeriod(updatedPeriod);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para eliminar um período
     const deletePeriod = async (id: string) => {
         await handleDeletePeriod(id);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Busca os utilizadores ao carregar a página
@@ -92,7 +92,7 @@ export const TimePeriods = () => {
     // Função para atualizar os utilizadores
     const refreshPeriods = () => {
         fetchTimePeriods();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Define a seleção da árvore

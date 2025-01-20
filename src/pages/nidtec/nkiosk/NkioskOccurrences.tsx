@@ -83,22 +83,90 @@ export const NkioskOccurrences = () => {
         }
     };
 
+    // Função para buscar os dados de ocorrências de hoje
+    const fetchOcurrencesToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo, start, end);
+            if (Array.isArray(data)) {
+                setOccurrences(data);
+            } else {
+                setOccurrences([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ocorrências:', error);
+        }
+    }
+
+    // Função para buscar os dados de ocorrências de ontem
+    const fetchOcurrencesForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo, start, end);
+            if (Array.isArray(data)) {
+                setOccurrences(data);
+            } else {
+                setOccurrences([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ocorrências:', error);
+        }
+    };
+
+    // Função para buscar os dados de ocorrências de amanhã
+    const fetchOcurrencesForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar ocorrências para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo, start, end);
+            if (Array.isArray(data)) {
+                setOccurrences(data);
+            } else {
+                setOccurrences([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ocorrências:', error);
+        }
+    };
+
     // Função para adicionar Ocorrências
     const addOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
         await handleAddOcorrencia(occurrence);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar ocorrências
     const updateOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
         await handleUpdateOcorrencia(occurrence);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar Ocorrências
     const deleteOcurrences = async (id: string[]) => {
         await handleDeleteOcurrences(id);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -116,7 +184,7 @@ export const NkioskOccurrences = () => {
         fetchAllOcorrencias();
         setStartDate(formatDateToStartOfDay(pastDate));
         setEndDate(formatDateToEndOfDay(currentDate));
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as colunas
@@ -194,7 +262,7 @@ export const NkioskOccurrences = () => {
 
         setShowDeleteModal(false);
         deleteOcurrences(occurrencesIds);
-    };  
+    };
 
     // Seleciona a entidade anterior
     const handleNextOccurences = () => {
@@ -350,6 +418,24 @@ export const NkioskOccurrences = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ocorrências Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchOcurrencesForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ocorrências Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchOcurrencesToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ocorrências Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchOcurrencesForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

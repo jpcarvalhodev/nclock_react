@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -14,10 +14,11 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
+import { DeviceContextType, TerminalsContext, useTerminals } from "../../../context/TerminalsContext";
 import { counterFields } from "../../../fields/Fields";
 import { Counter } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import * as apiService from '../../../api/apiService';
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -39,13 +40,32 @@ function CustomSearchBox(props: TextFieldProps) {
     );
 }
 
+// Função para converter string em data
+const convertStringToDate = (dateStr: string) => {
+    if (!dateStr || typeof dateStr !== "string") {
+        console.error("Data inválida recebida:", dateStr);
+        return new Date("");
+    }
+    const parts = dateStr.split(' ');
+    const dateParts = parts[0].split('/');
+    const timeParts = parts[1].split(':');
+    return new Date(
+        parseInt(dateParts[2], 10),
+        parseInt(dateParts[1], 10) - 1,
+        parseInt(dateParts[0], 10),
+        parseInt(timeParts[0], 10),
+        parseInt(timeParts[1], 10),
+        parseInt(timeParts[2], 10)
+    );
+};
+
 export const NkioskCounter = () => {
     const { navbarColor, footerColor } = useNavbar();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const { counter, fetchAllCounter } = useKiosk();
+    const { devices } = useTerminals();
+    const { counter, setCounter, fetchAllCounter } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'eventType', 'eventName', 'deviceSN']);
@@ -56,6 +76,104 @@ export const NkioskCounter = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<Counter[]>([]);
+
+    // Busca os dados do contador entre as datas especificadas
+    const fetchAllCounterBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchAllContador(startDate, endDate);
+            if (Array.isArray(data)) {
+                const convertedData = data.map(item => ({
+                    ...item,
+                    eventTime: convertStringToDate(item.eventTime)
+                }));
+                setCounter(convertedData);
+            } else {
+                setCounter([]);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar os dados do contador:', error);
+        }
+    };
+
+    // Função para buscar os dados do contador de hoje
+    const fetchCounterToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchAllContador(start, end);
+            if (Array.isArray(data)) {
+                const convertedData = data.map(item => ({
+                    ...item,
+                    eventTime: convertStringToDate(item.eventTime)
+                }));
+                setCounter(convertedData);
+            } else {
+                setCounter([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados do contador hoje:', error);
+        }
+    }
+
+    // Função para buscar os dados do contador de ontem
+    const fetchCounterForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchAllContador(start, end);
+            if (Array.isArray(data)) {
+                const convertedData = data.map(item => ({
+                    ...item,
+                    eventTime: convertStringToDate(item.eventTime)
+                }));
+                setCounter(convertedData);
+            } else {
+                setCounter([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados do contador ontem:', error);
+        }
+    };
+
+    // Função para buscar os dados do contador de amanhã
+    const fetchCounterForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar dados do contador para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchAllContador(start, end);
+            if (Array.isArray(data)) {
+                const convertedData = data.map(item => ({
+                    ...item,
+                    eventTime: convertStringToDate(item.eventTime)
+                }));
+                setCounter(convertedData);
+            } else {
+                setCounter([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados do contador amanhã:', error);
+        }
+    };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
     useEffect(() => {
@@ -72,7 +190,7 @@ export const NkioskCounter = () => {
         fetchAllCounter();
         setStartDate(formatDateToStartOfDay(pastDate));
         setEndDate(formatDateToEndOfDay(currentDate));
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as colunas
@@ -232,6 +350,24 @@ export const NkioskCounter = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : getCounterWithNames} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Contador Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchCounterForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Contador Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchCounterToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Contador Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchCounterForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}
@@ -249,7 +385,7 @@ export const NkioskCounter = () => {
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi-search" onClick={() => fetchAllCounter(startDate, endDate)} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchAllCounterBetweenDates} iconSize='1.1em' />
                                 </OverlayTrigger>
                             </div>
                         </div>

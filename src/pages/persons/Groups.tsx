@@ -67,19 +67,19 @@ export const Groups = () => {
     // Função para adicionar um grupo
     const addGroup = async (group: Group) => {
         await handleAddGroup(group);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar um grupo
     const updateGroup = async (group: Group) => {
         await handleUpdateGroup(group);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar um grupo
     const deleteGroup = async (groupID: string[]) => {
         await handleDeleteGroup(groupID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca os grupos ao carregar a página
@@ -99,7 +99,7 @@ export const Groups = () => {
     // Função para atualizar os grupos
     const refreshGroups = () => {
         fetchAllGroups();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de atualizar grupo

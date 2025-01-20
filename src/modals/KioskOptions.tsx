@@ -152,6 +152,13 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
         }));
     }
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setKioskFormData({ ...entity });
+        setShowValidationErrors(false);
+        onClose();
+    };
+
     // Função para lidar com o clique em adicionar ou atualizar
     const handleAddOrUpdate = () => {
         if (entity.amount !== 0 && entity.totalMoedas !== 0 && entity.emails.length !== 0) {
@@ -173,7 +180,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
             amount: parseFloat(kioskFormData.amount).toFixed(2)
         };
         onSave(formattedData as T);
-        onClose();
+        handleClose();
     };
 
     // Função para lidar com o clique em atualizar
@@ -191,7 +198,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -270,8 +277,8 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleAddOrUpdate}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleAddOrUpdate}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

@@ -165,6 +165,13 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
         }));
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setFormData({ ...initialValues });
+        setShowValidationErrors(false);
+        onClose();
+    }
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -185,11 +192,11 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
             auxData: formDataToSend,
             deviceSN: formData.deviceSN
         });
-        onClose();
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -255,10 +262,10 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-success" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Abrir
                 </Button>
             </Modal.Footer>

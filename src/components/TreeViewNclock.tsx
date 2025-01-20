@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { SyntheticEvent, useContext, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { AttendanceProvider } from '../context/MovementContext';
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { usePersons } from '../context/PersonsContext';
 import { Department, Employee, Group } from '../types/Types';
 
 import { TreeViewBaseItem } from '@mui/x-tree-view';
@@ -72,7 +72,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProps) {
-  const { data, fetchAllData } = useContext(PersonsContext) as PersonsContextType;
+  const { data, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);

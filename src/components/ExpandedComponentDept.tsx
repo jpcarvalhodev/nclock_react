@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
+import { usePersons } from '../context/PersonsContext';
 import { departmentFields } from '../fields/Fields';
 
 // Define a interface para os dados do departamento
@@ -23,7 +23,7 @@ interface ExpandedComponentProps {
 export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: ExpandedComponentProps) => {
     const {
         departments
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [subdepartments, setSubdepartments] = useState<DepartmentData[]>(data.subdepartments || []);
 
     // Usa useEffect para buscar subdepartamentos quando o componente é montado ou data/fetchSubdepartments mudam

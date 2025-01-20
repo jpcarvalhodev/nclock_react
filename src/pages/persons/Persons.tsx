@@ -61,7 +61,7 @@ export const Persons = () => {
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar funcionários
@@ -80,7 +80,7 @@ export const Persons = () => {
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Configurando a função onDelete para iniciar o processo de exclusão
@@ -93,7 +93,7 @@ export const Persons = () => {
     // Função para atualizar a lista de funcionários
     const refreshEmployees = () => {
         fetchAllDisabledEmployees();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Define a função de duplicar funcionários

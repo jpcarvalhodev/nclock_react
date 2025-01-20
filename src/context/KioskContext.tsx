@@ -46,6 +46,7 @@ export interface KioskContextType {
     handleUpdateOcorrencia: (occurrence: LimpezasEOcorrencias) => void;
     handleDeleteOcurrences: (id: string[]) => void;
     counter: Counter[];
+    setCounter: (counter: Counter[]) => void;
     fetchAllCounter: (startDate?: string, endDate?: string) => void;
     totalPayments: KioskTransactionMB[];
     setTotalPayments: (totalPayments: KioskTransactionMB[]) => void;
@@ -413,11 +414,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await apiService.fetchAllContador(startDate, endDate);
             if (Array.isArray(data)) {
-                const convertedData = data.map(item => ({
-                    ...item,
-                    eventTime: convertStringToDate(item.eventTime)
-                }));
-                setCounter(convertedData);
+                setCounter(data);
             } else {
                 setCounter([]);
             }
@@ -511,6 +508,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         handleUpdateOcorrencia,
         handleDeleteOcurrences,
         counter,
+        setCounter,
         fetchAllCounter,
         totalPayments,
         setTotalPayments,

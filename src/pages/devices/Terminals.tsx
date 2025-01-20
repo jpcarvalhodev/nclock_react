@@ -79,7 +79,6 @@ export const Terminals = () => {
         fetchAllKioskTransactionOnDevice,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
-        saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
         deleteAllUsersOnDevice,
         openDeviceDoor,
@@ -95,16 +94,14 @@ export const Terminals = () => {
         handleAddImportedAttendance,
     } = useAttendance();
     const {
-        fetchAllEmployees,
+        employees,
         fetchAllCardData,
         handleImportEmployeeCard,
         handleImportEmployeeFP,
         handleImportEmployeeFace
     } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
-    const [employees, setEmployees] = useState<EmployeeAndCard[]>([]);
     const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
-    const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [initialData, setInitialData] = useState<Partial<Devices> | null>(null);
@@ -158,10 +155,7 @@ export const Terminals = () => {
 
     // Função para buscar todos os utilizadores e cartões
     const fetchEmployeesAndCards = async () => {
-        const employeesData: Employee[] = await fetchAllEmployees();
-        setEmployees(employeesData);
-
-        const filteredEmployeesBio = employeesData.filter(
+        const filteredEmployeesBio = employees.filter(
             (employee) => employee.statusFprint === true || employee.statusFace === true
         );
         const sortedEmployeesBio = filteredEmployeesBio.slice().sort((a, b) => {
@@ -170,22 +164,6 @@ export const Terminals = () => {
             return aNum - bNum;
         });
         setEmployeesBio(sortedEmployeesBio);
-
-        const allEmployeeCards = employeesData.flatMap(
-            (employee) => employee.employeeCards || []
-        );
-
-        const filteredCards = allEmployeeCards.filter(
-            (card) => card.cardNumber !== "0"
-        );
-
-        const sortedCards = filteredCards.slice().sort((a, b) => {
-            const aNum = parseInt(a.cardNumber || "0", 10);
-            const bNum = parseInt(b.cardNumber || "0", 10);
-            return aNum - bNum;
-        });
-
-        setEmployeeCards(sortedCards);
     };
 
     // Função para buscar todas as transações de quiosques
@@ -232,14 +210,14 @@ export const Terminals = () => {
         await handleAddDevice(device);
         setLoadingTerminals(false);
         refreshAll();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um dispositivo
     const updateDevice = async (device: Devices) => {
         await handleUpdateDevice(device);
         refreshAll();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para excluir um dispositivo
@@ -247,7 +225,7 @@ export const Terminals = () => {
         if (selectedDeviceToDelete) {
             await handleDeleteDevice(selectedDeviceToDelete);
             refreshAll();
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
 
@@ -265,8 +243,7 @@ export const Terminals = () => {
         fetchAllCardData();
         fetchAllAux();
         fetchAllDoorData();
-        setClearSelectionToggle(!clearSelectionToggle);
-        setSelectedTerminal(null);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para resetar as colunas
@@ -463,6 +440,17 @@ export const Terminals = () => {
                         }
                     case 'deviceSN':
                         return devices.find(device => device.serialNumber === row[field.key])?.deviceName || '';
+                    case 'eventName':
+                        return (
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip>{row[field.key]}</Tooltip>}
+                            >
+                                <span style={{ cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {row[field.key]}
+                                </span>
+                            </OverlayTrigger>
+                        );
                     default:
                         return row[field.key];
                 }
@@ -1004,7 +992,7 @@ export const Terminals = () => {
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingSendSelectedUsers(false);
             setSelectedTerminal(null);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
 
@@ -1018,7 +1006,7 @@ export const Terminals = () => {
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingDeleteSelectedUsers(false);
             setSelectedTerminal(null);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
 
@@ -1032,7 +1020,7 @@ export const Terminals = () => {
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingFetchSelectedUsers(false);
             setSelectedTerminal(null);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
 
@@ -1042,7 +1030,7 @@ export const Terminals = () => {
             setLoadingUser(true);
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID);
             setLoadingUser(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
             setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1055,7 +1043,7 @@ export const Terminals = () => {
             setLoadingAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingAllUser(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
             setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1068,7 +1056,7 @@ export const Terminals = () => {
             setLoadingSyncAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingSyncAllUser(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
             setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1081,7 +1069,7 @@ export const Terminals = () => {
             setLoadingMovements(true);
             await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingMovements(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
             setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1094,7 +1082,7 @@ export const Terminals = () => {
             setLoadingDeleteAllUsers(true);
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingDeleteAllUsers(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
             setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1107,7 +1095,7 @@ export const Terminals = () => {
             setLoadingRestartDevice(true);
             await restartDevice(selectedTerminal.zktecoDeviceID);
             setLoadingRestartDevice(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
             setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1120,7 +1108,7 @@ export const Terminals = () => {
             setLoadingSendClock(true);
             await sendClockToDevice(selectedTerminal.serialNumber);
             setLoadingSendClock(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
             setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1131,7 +1119,7 @@ export const Terminals = () => {
     const handleOpenDoor = async (sn: string, doorData: DoorDevice) => {
         await openDeviceDoor(sn, doorData);
         setLoadingOpenDoor(false);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
         setSelectedTerminal(null);
     }
 
@@ -1141,7 +1129,7 @@ export const Terminals = () => {
             setLoadingSyncTime(true);
             await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
             setLoadingSyncTime(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
             setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
@@ -1447,7 +1435,7 @@ export const Terminals = () => {
                         style={{ marginBottom: 10, marginTop: 10 }}
                     >
                         <Tab eventKey="users" title="Utilizadores">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button
                                     variant="outline-primary"
                                     size="sm"
@@ -1498,27 +1486,24 @@ export const Terminals = () => {
                                         label="Utilizadores"
                                         checked={showAllUsers}
                                         onChange={handleAllUsersChange}
-                                        className="mb-2"
                                     />
                                     <Form.Check
                                         type="checkbox"
                                         label="Biometria digital"
                                         checked={showFingerprintUsers}
                                         onChange={handleFingerprintUsersChange}
-                                        className="mb-2"
                                     />
                                     <Form.Check
                                         type="checkbox"
                                         label="Biometria facial"
                                         checked={showFacialRecognitionUsers}
                                         onChange={handleFacialRecognitionUsersChange}
-                                        className="mb-2"
                                     />
                                 </div>
                             </div>
                         </Tab>
                         <Tab eventKey="onOff" title="Ligação">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
                                     {loadingRestartDevice ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -1530,7 +1515,7 @@ export const Terminals = () => {
                             </div>
                         </Tab>
                         <Tab eventKey="access" title="Acessos">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSendClock}>
                                     {loadingSendClock ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -1554,7 +1539,7 @@ export const Terminals = () => {
                             </div>
                         </Tab>
                         <Tab eventKey="configuration" title="Configurações">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncTime}>
                                     {loadingSyncTime ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -1578,7 +1563,7 @@ export const Terminals = () => {
                             </div>
                         </Tab>
                         <Tab eventKey="files" title="Ficheiros">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
                                     {loadingImportAttendance ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />

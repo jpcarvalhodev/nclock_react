@@ -71,14 +71,14 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
         fetchEmployees();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para deletar um funcionário
     const deleteEmployee = async (employeeId: string) => {
         await handleDeleteEmployee([employeeId]);
         fetchEmployees();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca todos os dados

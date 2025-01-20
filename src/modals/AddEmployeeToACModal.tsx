@@ -148,10 +148,10 @@ export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, ope
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSave}>
                     Adicionar
                 </Button>
             </Modal.Footer>

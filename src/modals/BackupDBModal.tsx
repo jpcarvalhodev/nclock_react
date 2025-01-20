@@ -70,7 +70,7 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
     }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -118,9 +118,9 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                {activeKey === 'exportBackup' && <Button variant="outline-primary" onClick={handleSaveClick}>Exportar</Button>}
-                {activeKey === 'importBackup' && <Button variant="outline-primary" onClick={handleUpdateClick}>Importar</Button>}
+                <Button variant="outline-dark" onClick={onClose}>Fechar</Button>
+                {activeKey === 'exportBackup' && <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Exportar</Button>}
+                {activeKey === 'importBackup' && <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleUpdateClick}>Importar</Button>}
             </Modal.Footer>
         </Modal >
     );

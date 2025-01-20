@@ -67,19 +67,19 @@ export const Zones = () => {
     // Função para adicionar uma zona
     const addZone = async (zone: Zone) => {
         await handleAddZone(zone);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar uma zona
     const updateZone = async (zone: Zone) => {
         await handleUpdateZone(zone);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar uma zona
     const deleteZone = async (zoneID: string[]) => {
         await handleDeleteZone(zoneID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca as zonas ao carregar a página
@@ -99,7 +99,7 @@ export const Zones = () => {
     // Função para atualizar as zonas
     const refreshZones = () => {
         fetchAllZones();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de editar zona

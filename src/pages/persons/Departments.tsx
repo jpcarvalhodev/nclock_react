@@ -93,19 +93,19 @@ export const Departments = () => {
     // Adiciona um departamento
     const addDepartment = async (department: Department) => {
         await handleAddDepartment(department);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Atualiza um departamento
     const updateDepartment = async (department: Department) => {
         await handleUpdateDepartment(department);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Apaga um departamento
     const deleteDepartment = async (departmentID: string[]) => {
         await handleDeleteDepartment(departmentID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca os departamentos ao carregar a página
@@ -116,7 +116,7 @@ export const Departments = () => {
     // função de atualizar os departamentos
     const refreshDepartments = () => {
         fetchDepartments();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as linhas

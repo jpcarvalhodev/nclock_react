@@ -796,6 +796,11 @@ input::-ms-clear {
         width: 100%;
     }
 
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+    }
+
     .ribbon-button-pessoas .icon img,
     .dropdown-content img {
         width: 40px;

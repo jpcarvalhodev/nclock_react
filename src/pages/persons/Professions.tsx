@@ -67,19 +67,19 @@ export const Professions = () => {
     // Função para adicionar uma nova profissão
     const addProfession = async (profession: Profession) => {
         await handleAddProfession(profession);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar uma profissão
     const updateProfession = async (profession: Profession) => {
         await handleUpdateProfession(profession);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar uma profissão
     const deleteProfessions = async (professionID: string[]) => {
         await handleDeleteProfessions(professionID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca as profissões ao carregar a página
@@ -90,7 +90,7 @@ export const Professions = () => {
     // Função para atualizar a lista de profissões
     const refreshProfessions = () => {
         fetchAllProfessions();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de editar profissão

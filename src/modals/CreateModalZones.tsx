@@ -149,7 +149,9 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        window.location.reload();
+        setFormData(initialValues);
+        setProfileImage(null);
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -177,7 +179,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 115 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -322,8 +324,8 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

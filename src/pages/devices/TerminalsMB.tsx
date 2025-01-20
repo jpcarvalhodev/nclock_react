@@ -71,27 +71,27 @@ export const TerminalsMB = () => {
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
         fetchAllMBDevices();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: MBDevice) => {
         await handleAddMBDevice(device);
         refreshMBDevices();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um dispositivo
     const updateDevice = async (device: MBDevice) => {
         await handleUpdateMBDevice(device);
         refreshMBDevices();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     const deleteDevice = async (id: string) => {
         await handleDeleteMBDevice(id);
         refreshMBDevices();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Atualiza os dados de renderização

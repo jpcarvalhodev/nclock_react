@@ -296,10 +296,10 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-secondary" type="button" onClick={onClose} >
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
                     Fechar
                 </Button>
-                <Button variant="outline-primary" type="button" onClick={handleSave} >
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleSave} >
                     Guardar
                 </Button>
             </Modal.Footer>

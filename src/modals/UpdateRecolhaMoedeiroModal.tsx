@@ -51,18 +51,16 @@ interface Field {
 export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const { devices } = useTerminals();
     const { fetchAllCoin } = useKiosk();
-    const { fetchKioskConfig } = useNavbar();
+    const { kioskConfig } = useNavbar();
     const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
-    const [amounts, setAmounts] = useState<KioskConfig[]>();
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
         if (open && entity) {
             fetchRecolhas();
-            fetchAmount();
             setFormData({ ...entity });
         }
     }, [open, entity]);
@@ -133,16 +131,6 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
         }
     }
 
-    // Buscar os valores de moedas
-    const fetchAmount = async () => {
-        try {
-            const amounts = await fetchKioskConfig();
-            setAmounts(amounts);
-        } catch (error) {
-            console.error('Erro ao buscar o valor', error);
-        }
-    };
-
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = async (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;
@@ -167,10 +155,10 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                 if (selectedOption.serialNumber === deviceCount.serialNumber) {
                     setFormData(prevState => ({
                         ...prevState,
-                        valorTotalSistema: deviceCount.contagemTransacoes,
-                        numeroMoedasSistema: amounts?.[0].amount ? deviceCount.contagemTransacoes * amounts[0].amount : 0,
+                        valorTotalSistema: kioskConfig.amount ? deviceCount.contagemTransacoes * kioskConfig.amount : 0,
+                        numeroMoedasSistema: deviceCount.contagemTransacoes,
                         diferencaMoedas: (formData.numeroMoedas || 0) - (deviceCount.contagemTransacoes || 0),
-                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (amounts?.[0].amount ?? 0))
+                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (kioskConfig.amount ?? 0))
                     }));
                 }
             } catch (error) {
@@ -210,7 +198,8 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
             };
 
             if (name === 'numeroMoedas') {
-                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (amounts?.[0].amount || 0)).toFixed(2));
+                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (kioskConfig.amount || 0)).toFixed(2));
+                updatedState.deviceID = "";
             }
 
             if (['numeroMoedas', 'valorTotalRecolhido'].includes(name)) {
@@ -238,7 +227,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -308,7 +297,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="number"
                                         name="numeroMoedas"
-                                        value={formData.numeroMoedas === undefined ? 0 : formData.numeroMoedas}
+                                        value={formData.numeroMoedas || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
@@ -349,6 +338,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         value={formData.deviceID || ''}
                                         onChange={(e) => handleDropdownChange('deviceID', e)}
+                                        disabled={!formData.numeroMoedas || formData.numeroMoedas === 0}
                                     >
                                         <option value="">Selecione...</option>
                                         {devices?.map((option: any) => {
@@ -427,13 +417,13 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

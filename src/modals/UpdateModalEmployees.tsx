@@ -52,7 +52,7 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllCategories, fetchAllProfessions, fetchAllZones, fetchAllExternalEntitiesData, handleAddDepartment, handleAddGroup } = usePersons();
+  const { fetchAllDepartments, fetchAllGroups, fetchAllCategories, fetchAllProfessions, fetchAllZones, fetchAllExternalEntitiesData, handleAddDepartment, handleAddGroup } = usePersons();
   const { fetchAllEntity } = useEntity();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
@@ -156,7 +156,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         }));
       }
     } catch (error) {
-      console.error('Erro ao buscar os dados de departamentos e grupos', error);
+      console.error('Erro ao buscar os dados', error);
     }
   };
 
@@ -475,7 +475,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   };
 
   return (
-    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 110 }}>
+    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
       <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -498,7 +498,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               />
             </div>
             <div>
-              <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
+              <Button variant="outline-dark" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
                 Remover Foto
               </Button>
             </div>
@@ -815,7 +815,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                                   >
                                     <option value="">Selecione...</option>
                                     {dropdownData[field.key]?.map((option: any) => {
-                                      let optionId = option.professionID || option.zoneID || option.externalEntityID;
+                                      let optionId = option.professionID || option.zoneID || option.externalEntityID || option.categoryID;
                                       let optionName = option.name || option.description;
                                       return (
                                         <option key={optionId} value={optionId}>
@@ -919,9 +919,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         >
           <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
         </OverlayTrigger>
-        <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-        <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-        <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
+        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>Fechar</Button>
+        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
       </Modal.Footer>
       <CreateModalDeptGrp
         title="Adicionar Departamento"

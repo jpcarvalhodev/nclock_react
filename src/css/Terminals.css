@@ -44,11 +44,11 @@
 }
 
 .nav-modal .nav-link {
-    color: #0050a0;
+    color: #000000;
 }
 
 .nav-modal .nav-link.active {
-    color: #0050a0;
+    color: #000000;
 }
 
 @media (max-width: 500px) {

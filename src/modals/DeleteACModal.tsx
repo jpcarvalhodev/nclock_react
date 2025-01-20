@@ -95,7 +95,7 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
 
     return (
         <div>
-            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
+            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static" centered>
                 <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                     <Modal.Title>Selecione uma Porta para Eliminar</Modal.Title>
                 </Modal.Header>
@@ -115,7 +115,7 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
                     <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
                 </Modal.Footer>
             </Modal>
-            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
+            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} backdrop="static" centered>
                 <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                     <Modal.Title>Confirmar Eliminação</Modal.Title>
                 </Modal.Header>
@@ -126,10 +126,10 @@ export const DeleteACModal = <T extends Entity>({ open, onClose, onDelete, entit
                     </div>
                 </Modal.Body>
                 <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                    <Button variant="outline-secondary" onClick={handleCloseAllModals}>
+                    <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCloseAllModals}>
                         Cancelar
                     </Button>
-                    <Button variant="outline-danger" onClick={handleDelete}>
+                    <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDelete}>
                         Apagar
                     </Button>
                 </Modal.Footer>

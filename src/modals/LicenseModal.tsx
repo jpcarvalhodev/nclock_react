@@ -464,11 +464,11 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
   return (
     <div>
-      <Modal show={isCheckVisible} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+      <Modal show={isCheckVisible} onHide={onClose} backdrop="static" centered>
         <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
           <Modal.Title>Inserir Password</Modal.Title>
         </Modal.Header>
-        <InputGroup className="mb-3 license-check-modal">
+        <InputGroup className="license-check-modal">
           <FormControl
             placeholder="Insira a password de licenciamento"
             value={key}
@@ -496,7 +496,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
           <Button
             style={{ width: "40%" }}
-            variant="outline-primary"
+            variant="outline-dark"
             onClick={verifyKey}
           >
             Verificar Password
@@ -537,7 +537,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                     </span>
                     <i
                       className="bi bi-trash-fill ms-2"
-                      style={{ cursor: 'pointer', color: 'red' }}
+                      style={{ cursor: 'pointer', color: 'black' }}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteEntity(entity.entidadeNumber!);
@@ -677,10 +677,10 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
           </Tabs>
         </Modal.Body>
         <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-          <Button variant="outline-secondary" onClick={handleClose}>
+          <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
             Fechar
           </Button>
-          <Button variant="outline-primary" onClick={handleUpdate}>
+          <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleUpdate}>
             Guardar
           </Button>
         </Modal.Footer>

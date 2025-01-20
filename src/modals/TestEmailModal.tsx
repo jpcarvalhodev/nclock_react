@@ -25,14 +25,20 @@ export const TestEmailModal = <T extends Record<string, any>>({ title, open, onC
         }));
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setFormData({ email: '' });
+        onClose();
+    }
+
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData.email);
-        onClose();
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" centered>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -54,10 +60,10 @@ export const TestEmailModal = <T extends Record<string, any>>({ title, open, onC
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-success" onClick={handleSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSave}>
                     Enviar
                 </Button>
             </Modal.Footer>

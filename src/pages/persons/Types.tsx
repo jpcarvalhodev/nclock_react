@@ -61,19 +61,19 @@ export const Types = () => {
     // Função para adicionar um tipo de uma entidade externa
     const addExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         await handleAddExternalEntityTypes(externalEntityType);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar um tipo de uma entidade externa
     const updateExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         await handleUpdateExternalEntityTypes(externalEntityType);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar um tipo de uma entidade externa
     const deleteExternalEntityTypes = async (externalEntityTypeID: string[]) => {
         await handleDeleteExternalEntityTypes(externalEntityTypeID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca os tipos de entidades externas ao carregar a página
@@ -84,7 +84,7 @@ export const Types = () => {
     // Função para atualizar as entidades externas
     const refreshExternalEntitiesTypes = () => {
         fetchAllExternalEntitiesData();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de editar entidade externa

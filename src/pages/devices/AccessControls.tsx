@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -11,7 +11,7 @@ import { NavBar } from "../../components/NavBar";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../context/TerminalsContext";
+import { useTerminals } from "../../context/TerminalsContext";
 import { accessControlFields } from "../../fields/Fields";
 import { AccessControl } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -37,7 +37,7 @@ export const AccessControls = () => {
         handleAddAccessControl,
         handleUpdateAccessControl,
         handleDeleteAccessControl
-    } = useContext(TerminalsContext) as DeviceContextType;
+    } = useTerminals();
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
     const [selectedRows, setSelectedRows] = useState<AccessControl[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState<boolean>(false);
@@ -58,20 +58,20 @@ export const AccessControls = () => {
     const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         await handleAddAccessControl(newAccessControl);
         refreshAccessControl();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para editar o controle de acesso
     const updateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         await handleUpdateAccessControl(newAccessControl);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
         refreshAccessControl();
     };
 
     // Função para deletar o controle de acesso
     const deleteAccessControl = async (employeesId: string[], doorId: string) => {
         await handleDeleteAccessControl(employeesId, doorId);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
         refreshAccessControl();
         window.location.reload();
     }
@@ -84,7 +84,7 @@ export const AccessControls = () => {
     // Função para atualizar as listagens de movimentos
     const refreshAccessControl = () => {
         fetchAccessControl();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as colunas

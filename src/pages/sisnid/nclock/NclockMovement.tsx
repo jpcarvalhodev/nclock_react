@@ -41,19 +41,30 @@ function CustomSearchBox(props: TextFieldProps) {
     );
 }
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
+
 // Define a página movimentos
 export const NclockMovement = () => {
     const {
-        startDate,
-        endDate,
-        setStartDate,
-        setEndDate,
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
         handleAddAttendance,
     } = useAttendance();
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const { navbarColor, footerColor } = useNavbar();
     const { employees, handleUpdateEmployee } = usePersons();
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [attendanceMovement, setAttendanceMovement] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
@@ -90,19 +101,92 @@ export const NclockMovement = () => {
         });
     }
 
+    // Função para buscar os pagamentos dos terminais de hoje
+    const fetchMovementsToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            await fetchAllAttendancesBetweenDates({
+                filterFunc: data => data.filter(att => att.type !== 3),
+                postFetch: filteredData => {
+                    setFilteredAttendances(filteredData);
+                    setStartDate(start);
+                    setEndDate(end);
+                }
+            });
+        } catch (error) {
+            console.error("Erro ao buscar movimentos de hoje:", error);
+        }
+    }
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchMovementsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            await fetchAllAttendancesBetweenDates({
+                filterFunc: data => data.filter(att => att.type !== 3),
+                postFetch: filteredData => {
+                    setFilteredAttendances(filteredData);
+                    setStartDate(start);
+                    setEndDate(end);
+                }
+            });
+        } catch (error) {
+            console.error("Erro ao buscar movimentos do dia anterior:", error);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchMovementsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            await fetchAllAttendancesBetweenDates({
+                filterFunc: data => data.filter(att => att.type !== 3),
+                postFetch: filteredData => {
+                    setFilteredAttendances(filteredData);
+                    setStartDate(start);
+                    setEndDate(end);
+                }
+            });
+        } catch (error) {
+            console.error("Erro ao buscar movimentos do dia seguinte:", error);
+        }
+    };
+
     // Função para adicionar um movimento
     const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
         await handleAddAttendance(attendance);
         refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
         refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
+
+    // Busca os movimentos ao carregar a página
+    useEffect(() => {
+        fetchMovements();
+    }, []);
 
     // Atualiza a seleção ao resetar
     useEffect(() => {
@@ -171,7 +255,9 @@ export const NclockMovement = () => {
     // Função para atualizar os funcionários
     const refreshAttendance = () => {
         fetchMovements();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de adição de assiduidade
@@ -332,6 +418,24 @@ export const NclockMovement = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchMovementsForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

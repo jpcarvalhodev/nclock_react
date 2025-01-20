@@ -67,19 +67,19 @@ export const ExternalEntities = () => {
     // Função para adicionar uma nova entidade externa
     const addExternalEntity = async (externalEntity: ExternalEntity) => {
         await handleAddExternalEntity(externalEntity);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar uma entidade externa
     const updateExternalEntity = async (externalEntity: ExternalEntity) => {
         await handleUpdateExternalEntity(externalEntity);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar uma entidade externa
     const deleteExternalEntity = async (externalEntityID: string[]) => {
         await handleDeleteExternalEntity(externalEntityID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca as entidades externas ao carregar a página
@@ -99,7 +99,7 @@ export const ExternalEntities = () => {
     // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {
         fetchAllExternalEntitiesData();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de editar entidade externa

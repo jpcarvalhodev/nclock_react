@@ -283,10 +283,10 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" type="button" onClick={onClose} >
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
                     Fechar
                 </Button>
-                <Button variant="outline-primary" type="button" onClick={handleSave} >
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleSave} >
                     Guardar
                 </Button>
             </Modal.Footer>

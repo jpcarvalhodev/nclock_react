@@ -148,7 +148,8 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        window.location.reload();
+        setFormData({ ...initialValues, ...initialValuesData });
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -218,7 +219,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -315,8 +316,8 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
                 </Form>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

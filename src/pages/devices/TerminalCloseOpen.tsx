@@ -77,9 +77,67 @@ export const TerminalCloseOpen = () => {
         }
     }
 
+    // Função para buscar os pagamentos dos terminais de hoje
+    const fetchCloseOpenToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchAllTPCloseOpen(start, end);
+            setMbCloseOpen(data);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error("Erro ao buscar movimentos de hoje:", error);
+        }
+    }
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchCloseOpenForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchAllTPCloseOpen(start, end);
+            setMbCloseOpen(data);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error("Erro ao buscar movimentos do dia anterior:", error);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchCloseOpenForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchAllTPCloseOpen(start, end);
+            setMbCloseOpen(data);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error("Erro ao buscar movimentos do dia seguinte:", error);
+        }
+    };
+
     // Função para atualizar todos os dispositivos
     const refreshOpenCloseDevices = () => {
         fetchAllMBCloseOpen();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
     }
 
     // Atualiza os dados de renderização
@@ -264,6 +322,24 @@ export const TerminalCloseOpen = () => {
                                 <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchCloseOpenForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchCloseOpenToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchCloseOpenForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

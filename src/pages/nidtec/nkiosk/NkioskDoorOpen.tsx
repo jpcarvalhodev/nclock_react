@@ -67,6 +67,7 @@ export const NkioskDoorOpen = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<ManualOpenDoor[]>([]);
     const [selectedRows, setSelectedRows] = useState<ManualOpenDoor[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Função para buscar os dados de aberturas manuais entre datas
     const fetchManualOpenBetweenDates = async () => {
@@ -82,9 +83,80 @@ export const NkioskDoorOpen = () => {
         }
     }
 
+    // Função para buscar os dados de aberturas manuais de hoje
+    const fetchDoorOpenToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchAllManualDoorOpen(start, end);
+            if (Array.isArray(data)) {
+                setManualOpenDoor(data);
+            } else {
+                setManualOpenDoor([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de aberturas manuais hoje:', error);
+        }
+    }
+
+    // Função para buscar os dados de aberturas manuais de ontem
+    const fetchDoorOpenForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchAllManualDoorOpen(start, end);
+            if (Array.isArray(data)) {
+                setManualOpenDoor(data);
+            } else {
+                setManualOpenDoor([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de aberturas manuais ontem:', error);
+        }
+    };
+
+    // Função para buscar os dados de aberturas manuais de amanhã
+    const fetchDoorOpenForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar dados de aberturas manuais para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchAllManualDoorOpen(start, end);
+            if (Array.isArray(data)) {
+                setManualOpenDoor(data);
+            } else {
+                setManualOpenDoor([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de aberturas manuais amanhã:', error);
+        }
+    };
+
     // Função para atualizar os dados de aberura manual
     const refreshAllManualOpen = () => {
         fetchAllManualOpen();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -284,6 +356,24 @@ export const NkioskDoorOpen = () => {
                                     )}
                                 </div>
                                 <div className="date-range-search">
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Aberturas Dia Anterior</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchDoorOpenForPreviousDay} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Aberturas Hoje</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchDoorOpenToday} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Aberturas Dia Seguinte</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchDoorOpenForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                    </OverlayTrigger>
                                     <input
                                         type="datetime-local"
                                         value={startDate}
@@ -316,6 +406,7 @@ export const NkioskDoorOpen = () => {
                                 selectableRows
                                 onSelectedRowsChange={handleDeviceRowSelected}
                                 selectableRowsHighlight
+                                clearSelectedRows={clearSelectionToggle}
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
                                 striped

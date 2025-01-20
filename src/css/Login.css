@@ -245,14 +245,85 @@
 
 #modal-login .modal-content {
     background-color: rgba(133, 133, 133, 0.6) !important;
-    margin-top: 350px !important;
 }
 
 #modal-login .modal-input {
     background-color: rgba(255, 255, 255, 0.6);
 }
 
-@media (max-width: 500px) {
+@media (max-width: 390px) {
+
+    .background-login {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    #logo-login .logo-login {
+        display: none;
+    }
+
+    .login-container {
+        margin-left: 0;
+        margin-right: 6.5rem;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #login .header-entity {
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+
+    #login .footer-entity {
+        margin-top: 30px;
+    }
+
+    #login .form-login-entity {
+        padding: 20px;
+    }
+
+    #login .form-login {
+        max-width: 100vw;
+        max-height: 100vh;
+        padding: 30px;
+        margin-top: 10px !important;
+    }
+
+    #login .image-container {
+        width: 100px;
+        height: 100px;
+    }
+
+    #login .input-username-password {
+        width: 160px;
+    }
+
+    #login .license-button {
+        width: 90px;
+    }
+
+    #login .profile-login {
+        width: 100px;
+    }
+
+    #login .username-password-labels {
+        margin-top: -15px;
+    }
+
+    #login .col-profile-img-2 {
+        margin-top: 10px;
+    }
+
+    #login .password-label {
+        margin-bottom: 0;
+    }
+
+    #login .buttons-container {
+        margin-bottom: -20px;
+    }
+}
+
+@media (min-width: 391px) and (max-width: 500px) {
 
     .background-login {
         width: 100vw;
@@ -275,6 +346,10 @@
         margin-bottom: 20px;
     }
 
+    #login .form-login-entity {
+        padding: 45px;
+    }
+
     #login .footer-entity {
         margin-top: 45px;
     }
@@ -282,6 +357,7 @@
     #login .form-login {
         max-width: 100vw;
         max-height: 100vh;
+        padding: 40px;
         margin-top: 10px !important;
     }
 
@@ -311,7 +387,11 @@
     }
 
     #login .buttons-container {
-        margin-bottom: -5px;
+        margin-top: 40px;
+    }
+
+    #login .footer-login {
+        margin-top: 40px;
     }
 }
 
@@ -323,22 +403,4 @@
         margin-right: 100px;
     }
 
-}
-
-@media (max-width: 1920px) {
-    #modal-login .modal-content {
-        margin-top: 170px !important;
-    }
-}
-
-@media (max-width: 1600px) {
-    #modal-login .modal-content {
-        margin-top: 165px !important;
-    }
-}
-
-@media (max-width: 1366px) {
-    #modal-login .modal-content {
-        margin-top: 100px !important;
-    }
 }
